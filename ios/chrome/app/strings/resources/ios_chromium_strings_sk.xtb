@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané</translation>
 <translation id="4787850887676698916">Tu sa zobrazia karty, ktoré ste otvorili v prehliadači Chromium na iných zariadeniach.</translation>
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
+<translation id="4852878756222711218">Ak chcete využívať Chromium naplno, prihláste sa svojím účtom Google</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="6827294685447036764">Ak povolíte prehliadaču Chromium prístup k svojej polohe, bude ju odosielať všetkým webom, ktoré povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
+<translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="7118091470949186573">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="7208566199746267865">Vaše účty sú na webe, čím Chromium šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>

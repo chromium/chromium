@@ -426,7 +426,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>
-<translation id="3845098929839618392">Ouvrir onglet nav. privée</translation>
+<translation id="3845098929839618392">Ouvrir en navigation privée</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -578,7 +578,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4865987431642283918">Langue par défaut de l'appareil</translation>
 <translation id="4866368707455379617">Impossible d'installer le module <ph name="MODULE" /> pour Chrome</translation>
 <translation id="4875775213178255010">Recommandations de contenus</translation>
-<translation id="4877678010818027629">Activer le mode navigation privée</translation>
+<translation id="4877678010818027629">Entrer en mode navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel via un serveur proxy</translation>
 <translation id="4880127995492972015">Traduire…</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
@@ -905,7 +905,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="686366188661646310">Supprimer le mot de passe ?</translation>
 <translation id="6864459304226931083">Télécharger l'image</translation>
 <translation id="6865313869410766144">Données de saisie automatique</translation>
-<translation id="6867400383614725881">Nouvel onglet nav. privée</translation>
+<translation id="6867400383614725881">Nouvel onglet de navigation privée</translation>
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="688738109438487280">Ajoutez les données existantes au compte <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Déverrouillez pour copier votre mot de passe</translation>
@@ -921,7 +921,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
-<translation id="696447261358045621">Désactiver le mode navigation privée</translation>
+<translation id="696447261358045621">Quitter le mode navigation privée</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="6989267951144302301">Échec du téléchargement</translation>
@@ -1193,7 +1193,6 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
 <translation id="8798449543960971550">Lu</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer depuis votre appareil avec les applications de paiement compatibles indiquées ci-dessus.</translation>
-<translation id="8814190375133053267">Wi-Fi </translation>
 <translation id="881688628773363275">Le contenu de l'onglet "Aperçu" n'est pas visible.</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="883806473910249246">Une erreur s'est produite lors du téléchargement du contenu.</translation>

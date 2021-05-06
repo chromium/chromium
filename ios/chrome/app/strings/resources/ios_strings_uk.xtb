@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Вибрати папку</translation>
 <translation id="1265739287306757398">Докладніше</translation>
 <translation id="1272079795634619415">Зупинити</translation>
+<translation id="1282311502488501110">Не входити</translation>
 <translation id="1283524564873030414">Останні 24 години</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1321993286294231467">Не вдалося зберегти зображення.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="2116625576999540962">Переміщено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
+<translation id="214201757571129614">Увійти…</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2198757192731523470">Ваша історія може допомогти нам персоналізувати Пошук, оголошення й інші сервіси Google.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Перекласти сторінки</translation>
 <translation id="4634124774493850572">Прийняти пароль</translation>
 <translation id="4636930964841734540">Інформація</translation>
+<translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
 <translation id="46614316059270592">Зберегти пароль</translation>

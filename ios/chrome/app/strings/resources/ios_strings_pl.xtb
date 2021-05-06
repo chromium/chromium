@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Wybierz folder</translation>
 <translation id="1265739287306757398">Instrukcje</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
+<translation id="1282311502488501110">Nie loguj się</translation>
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Wyszukaj skopiowany tekst</translation>
+<translation id="214201757571129614">Zaloguj się…</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2198757192731523470">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania, reklamy i działanie innych usług.</translation>
@@ -341,6 +343,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="4630540211544979320">Tłumacz strony</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
 <translation id="4636930964841734540">Informacje</translation>
+<translation id="4650125387981512669">Nadal używaj konta użytkownika <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ta funkcja zostanie włączona, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="4659667755519643272">Otwórz przełącznik kart</translation>
 <translation id="46614316059270592">Zapisz hasło</translation>

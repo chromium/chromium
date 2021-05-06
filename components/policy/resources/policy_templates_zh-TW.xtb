@@ -2901,6 +2901,7 @@
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。</translation>
 <translation id="4923806312383904642">允許 WebDriver 覆寫不相容的政策</translation>
+<translation id="4924377847308623325">禁止其他 DNS 查詢類型</translation>
 <translation id="4927214690104703256">你可以透過這項政策指定要讓哪些擴充功能使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函式進行遠端認證。只有列在這個清單上的擴充功能才能使用該 API。
 
       如果擴充功能未列在清單上，或是未設定清單，將導致 API 呼叫失敗，並收到錯誤代碼。</translation>
@@ -4530,6 +4531,7 @@
 <translation id="7030205756530739128">如果將 <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> 設為<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，則你可以透過 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 自訂開始充電的時機 (根據電量百分比進行設定)。設定值必須至少比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 的值低 5 個百分點。
 
       如果不設定這項政策，系統會套用標準充電模式。</translation>
+<translation id="7030407698292813622">允許對其他 DNS 記錄類型進行 DNS 查詢</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">你可以透過這項政策建立清單，指定針對不安全來源所設的安全性限制不適用於哪些來源 (網址) 或主機名稱模式 (例如 *.example.com)。機構可以為無法部署傳輸層安全標準 (TLS) 的舊版應用程式指定來源，或設定內部網頁開發所需的暫存伺服器。這樣一來，開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
 
@@ -5176,31 +5178,6 @@
 
       建議做法：如要針對閒置狀態鎖定螢幕，可以啟用在暫停狀態下鎖定螢幕的功能，然後讓 <ph name="PRODUCT_OS_NAME" />在閒置延遲時間過後進入暫停狀態。這項政策僅限用於兩種情況：螢幕鎖定觸發時間比暫停觸發時間早很多，或是你完全不想針對閒置狀態啟用暫停功能。</translation>
 <translation id="7895553628261067384">遠端存取</translation>
-<translation id="7896787076628252574">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" />發生資料外洩的情況。
-      複製並貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
-
-      每條規則都包含下列項目：
-      - 以網址定義的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
-      - 以網址或元件定義的目的地清單，用於指定要允許或禁止將機密資料分享到哪些目的地。
-      - 要套用到來源資料的限制清單。
-
-      你可以透過新增規則控管下列項目：
-      - 來源與目的地共用的剪貼簿資料。
-      - 任何來源的螢幕畫面擷取動作設定。
-      - 任何來源的列印動作設定。
-      - 任何來源在顯示狀態下的隱私保護畫面設定。
-      - 任何來源的螢幕畫面分享動作設定。
-
-      限制等級可設為「BLOCK」或「ALLOW」。
-      - 如果將限制設為「BLOCK」，將無法執行該動作。
-      - 如果將限制設為「ALLOW」，則可以執行該動作。
-
-      注意：
-      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護畫面，而會強制執行該功能。
-      - 如果有任一限制是「CLIPBOARD」，請勿將目的地留空，但目的地對其餘限制沒有影響。
-      - 網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。
-
-      如未設定這項政策，系統不會套用任何限制。</translation>
 <translation id="7902040092815978832">在輸入密碼時顯示數字鍵盤</translation>
 <translation id="7904177352786629708">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時會使用先前輸入的伺服器名稱。
 
@@ -5861,6 +5838,7 @@
 
        注意：這項政策不適用於無痕模式。請前往以下頁面，參閱有關代管擴充功能的資訊：https://developer.chrome.com/extensions/hosting。</translation>
 <translation id="8827366480126575426">通訊協定處理常式的通訊協定。</translation>
+<translation id="8827417642396462482">允許其他 DNS 查詢類型</translation>
 <translation id="8831911834413504983">你可以透過這項政策設定網址模式清單，用於指定可執行 JavaScript 的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -6141,6 +6119,13 @@
 
       注意：消費者專用裝置與企業專用裝置的預設行為有所不同；受管理的裝置預設會啟用 P2P，未受管理的裝置則不會。</translation>
 <translation id="9164656078867027374">定義可存取 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 的網域</translation>
+<translation id="9166670902476893480">這項政策用於控管當 <ph name="PRODUCT_NAME" /> 提出不安全的 DNS 要求時，是否能夠查詢其他 DNS 記錄類型。這項政策不會影響透過安全 DNS 提出的 DNS 查詢；換句話說，透過安全 DNS 依然一律可以查詢其他 DNS 類型。
+
+      如未設定這項政策，或將這項政策設為「啟用」，則除了 <ph name="DNS_TYPE_A" /> (DNS 類型 1) 與 <ph name="DNS_TYPE_AAAA" /> (DNS 類型 28) 以外，還可查詢 <ph name="DNS_TYPE_HTTPS" /> (DNS 類型 65) 等其他 DNS 類型。
+
+      如將這項政策設為「停用」，便只能查詢 <ph name="DNS_TYPE_A" /> (DNS 類型 1) 和/或 <ph name="DNS_TYPE_AAAA" /> (DNS 類型 28) 的 DNS。
+
+      這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
 <translation id="9190456586252617675">這項政策可控管 Google 助理入門使用體驗的模式。

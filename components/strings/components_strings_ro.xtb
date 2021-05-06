@@ -432,6 +432,7 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2536110899380797252">Adaugă o adresă</translation>
 <translation id="2539524384386349900">Detectează</translation>
+<translation id="2541219929084442027">Paginile pe care le accesezi în filele incognito nu vor fi înregistrate în istoricul browserului, nu vor stoca cookie-uri și nu vor rămâne în istoricul căutărilor după ce închizi toate filele incognito. Fișierele descărcate și marcajele create vor fi păstrate.</translation>
 <translation id="2544644783021658368">Un document</translation>
 <translation id="254947805923345898">Valoarea politicii nu este validă.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> a trimis un răspuns nevalid.</translation>
@@ -502,6 +503,7 @@
 <translation id="2850739647070081192">Invite (Plic)</translation>
 <translation id="2856444702002559011">Atacatorii pot încerca să îți fure informațiile de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (de exemplu, parole, mesaje sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Acest site afișează anunțuri deranjante sau înșelătoare.</translation>
+<translation id="2876489322757410363">Vei părăsi modul incognito pentru a plăti folosind o aplicație externă. Continui?</translation>
 <translation id="2878197950673342043">Îndoire de tip afiș</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Poziționarea ferestrelor</translation>
@@ -696,6 +698,7 @@
 <translation id="3584299510153766161">Perforare dublă în partea de jos</translation>
 <translation id="3586931643579894722">Ascunde detaliile</translation>
 <translation id="3587738293690942763">Central</translation>
+<translation id="3590643883886679995">Datele de conectare vor fi stocate pe acest dispozitiv după ce ieși din modul incognito.</translation>
 <translation id="3592413004129370115">Italian (Plic)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicația a fost blocată de administrator</translation>
@@ -899,7 +902,6 @@
 <translation id="4302514097724775343">Atinge dinozaurul ca să joci</translation>
 <translation id="4302965934281694568">Chou3 (Plic)</translation>
 <translation id="4305666528087210886">Fișierul nu a putut fi accesat</translation>
-<translation id="4305817255990598646">Comută</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
@@ -1005,6 +1007,7 @@
 <translation id="4738601419177586157">Sugestie de căutare <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Gestionează parolele…</translation>
 <translation id="4744603770635761495">Cale executabilă</translation>
+<translation id="4749011317274908093">Ai trecut în modul incognito</translation>
 <translation id="4750917950439032686">Informațiile tale (de exemplu, parolele și numerele cardurilor de credit) sunt private când sunt trimise la acest site.</translation>
 <translation id="4756388243121344051">&amp;Istoric</translation>
 <translation id="4758311279753947758">Adaugă informații de contact</translation>
@@ -1668,6 +1671,7 @@ Detalii suplimentare:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>
+<translation id="7363096869660964304">Cu toate acestea, nu ești invizibil(ă). Trecerea în modul incognito nu ascunde activitatea de navigare față de angajator, față de furnizorul de servicii de internet sau față de site-urile pe care le accesezi.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a adăuga și a gestiona adrese din setările Chrome</translation>
 <translation id="7365849542400970216">Permiți detectarea folosirii dispozitivului?</translation>
 <translation id="7372973238305370288">rezultat al căutării</translation>
@@ -1893,6 +1897,7 @@ Detalii suplimentare:
 <translation id="8175796834047840627">Chrome oferă salvarea cardurilor în Contul Google pentru că te-ai conectat. Poți schimba acest comportament în setări.</translation>
 <translation id="8176440868214972690">Administratorul dispozitivului a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
 <translation id="8184538546369750125">Utilizați setarea prestabilită la nivel global (Permiteți)</translation>
+<translation id="8193086767630290324">Acțiuni realizate cu datele marcate drept confidențiale</translation>
 <translation id="8194797478851900357">&amp;Anulați mutarea</translation>
 <translation id="8201077131113104583">Adresa URL pentru actualizarea extensiei cu ID-ul „<ph name="EXTENSION_ID" />” nu este validă.</translation>
 <translation id="8202097416529803614">Rezumatul comenzii</translation>

@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Хавтсыг сонгох</translation>
 <translation id="1265739287306757398">Заавар харах</translation>
 <translation id="1272079795634619415">Зогс</translation>
+<translation id="1282311502488501110">Бүү нэвтэр</translation>
 <translation id="1283524564873030414">Сүүлийн 24 цаг</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
 <translation id="1321993286294231467">Зургийг хадгалахад алдаа гарлаа.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">History.google.com-г нээх</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> зүйлүүдийг зөөсөн байна</translation>
 <translation id="2139867232736819575">Хуулсан текстээ хайх</translation>
+<translation id="214201757571129614">Нэвтрэх…</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2198757192731523470">Google таны түүхийг хайлт, зар болон Google-н бусад үйлчилгээг хувийн болгохын тулд ашиглаж болзошгүй.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Хуудсыг орчуулах</translation>
 <translation id="4634124774493850572">Нууц үг ашиглах</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="4659126640776004816">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна.</translation>
 <translation id="4659667755519643272">Цонх хооронд шилжигчийг оруулна уу</translation>
 <translation id="46614316059270592">Нууц үг хадгалах</translation>

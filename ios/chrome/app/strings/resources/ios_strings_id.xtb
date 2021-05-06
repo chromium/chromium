@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Pilih Folder</translation>
 <translation id="1265739287306757398">Pelajari Caranya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
+<translation id="1282311502488501110">Jangan Login</translation>
 <translation id="1283524564873030414">24 Jam Terakhir</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
 <translation id="1321993286294231467">Error saat menyimpan gambar.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Buka history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dipindah</translation>
 <translation id="2139867232736819575">Telusuri Teks yang Anda Salin</translation>
+<translation id="214201757571129614">Login …</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2175927920773552910">Kode QR</translation>
 <translation id="2198757192731523470">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran, iklan, dan layanan Google lainnya.</translation>
@@ -343,6 +345,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="4630540211544979320">Terjemahkan Halaman</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4650125387981512669">Lanjutkan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Saat login ke Akun Google Anda, fitur ini akan diaktifkan.</translation>
 <translation id="4659667755519643272">Masuk Pengalih Tab</translation>
 <translation id="46614316059270592">Simpan Sandi</translation>

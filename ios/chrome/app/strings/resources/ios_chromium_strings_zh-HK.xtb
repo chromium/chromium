@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chromium 資料將會從此裝置上清除</translation>
 <translation id="4787850887676698916">您在其他裝置上開啟的 Chromium 分頁會在這裡顯示。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼。請稍後再試。</translation>
+<translation id="4852878756222711218">如要充分運用 Chromium 的所有功能，請登入您的 Google 帳戶</translation>
 <translation id="4985291216379576555">離線，Chromium 無法檢查更新</translation>
 <translation id="4999538639245140991">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chromium 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
 <translation id="6827294685447036764">如果您允許 Chromium 存取您的位置，Chromium 會將位置資料傳送至您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
+<translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
 <translation id="7118091470949186573">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
 <translation id="7208566199746267865">Chromium 允許您將帳戶同步至網路上，以節省時間。您可在設定中新增或移除帳戶。</translation>

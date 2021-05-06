@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">За да управувате со сметката на Google, допрете на копчето „Управувајте со сметката“</translation>
 <translation id="1549000191223877751">Премести во друг прозорец</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
+<translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="1569387923882100876">Поврзан уред</translation>
 <translation id="1571304935088121812">Копирај го корисничкото име</translation>
 <translation id="1592864538817356322">Стандардна заштита:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2518590038762162553">Во Lite-режим, Chrome побрзо ги вчитува страниците и користи до 60 проценти помалку интернет. За да ги оптимизира страниците што ги посетувате, Chrome го испраќа вашиот сообраќај на интернет во Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Испраќа URL-адреси од страници што ги посетувате до Google</translation>
+<translation id="2527497042232966453">Префрлено на картички „Инкогнито“</translation>
 <translation id="2527779675047087889">Сокриј содржини од привремената меморија</translation>
 <translation id="2532336938189706096">Преглед на веб</translation>
 <translation id="2534155362429831547">Избришани се <ph name="NUMBER_OF_ITEMS" /> ставки</translation>
@@ -424,11 +426,13 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
+<translation id="3845098929839618392">Отвори во картичка „Инкогнито“</translation>
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="3861633093716975811">Популарни видеа</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
+<translation id="3899682235662194879">Затвори ги сите картички „Инкогнито“</translation>
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Го наоѓаме најдоброто на интернет…</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
@@ -482,6 +486,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4263656433980196874">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на цел екран</translation>
 <translation id="4269820728363426813">Копирај адреса на врска</translation>
 <translation id="4290281343757112331">Да се преземе подоцна?</translation>
+<translation id="4296252229500326964">Нова картичка „Инкогнито“</translation>
 <translation id="4298388696830689168">Поврзани сајтови</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основи</translation>
@@ -573,6 +578,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4865987431642283918">Стандарден јазик на уредот</translation>
 <translation id="4866368707455379617">Не може да се инсталира <ph name="MODULE" /> за Chrome</translation>
 <translation id="4875775213178255010">Предлози за содржина</translation>
+<translation id="4877678010818027629">Влезете во режим „Инкогнито“</translation>
 <translation id="4878404682131129617">Воспоставувањето тунел преку прокси-сервер не успеа</translation>
 <translation id="4880127995492972015">Преведи…</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -899,6 +905,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="686366188661646310">Да се избрише лозинката?</translation>
 <translation id="6864459304226931083">Преземи слика</translation>
 <translation id="6865313869410766144">Автоматско пополнување податоци во формулар</translation>
+<translation id="6867400383614725881">Нова картичка „Инкогнито“</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="688738109438487280">Додајте ги постоечките податоци во <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Отклучете за да ја копирате лозинката</translation>
@@ -914,6 +921,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6955535239952325894">Поставкава е оневозможена на управувани прелистувачи</translation>
 <translation id="6963766334940102469">Избриши обележувачи</translation>
+<translation id="696447261358045621">Излезете од режимот „Инкогнито“</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6989267951144302301">Не може да се преземе</translation>
@@ -1185,7 +1193,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8788968922598763114">Повторно отворете ја последната затворена картичка</translation>
 <translation id="8798449543960971550">Прочитано</translation>
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>

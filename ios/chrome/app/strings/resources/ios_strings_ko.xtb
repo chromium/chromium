@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">폴더 선택</translation>
 <translation id="1265739287306757398">자세히 알아보기</translation>
 <translation id="1272079795634619415">중지</translation>
+<translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1283524564873030414">지난 24시간</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1321993286294231467">이미지를 저장하는 중에 오류가 발생했습니다.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
+<translation id="214201757571129614">로그인…</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2198757192731523470">Google에서 검색, 광고 및 다른 Google 서비스를 맞춤설정하기 위하여 내 방문 기록을 사용할 수 있습니다.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">페이지 번역</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4636930964841734540">정보</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> 계정으로 로그인</translation>
 <translation id="4659126640776004816">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
 <translation id="4659667755519643272">탭 전환 실행</translation>
 <translation id="46614316059270592">비밀번호 저장</translation>

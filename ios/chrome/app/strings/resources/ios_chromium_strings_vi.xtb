@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="4787850887676698916">Các thẻ bạn đã mở trong Chromium trên thiết bị khác sẽ xuất hiện tại đây.</translation>
 <translation id="4828317641996116749">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
+<translation id="4852878756222711218">Để khai thác tối đa Chromium, hãy đăng nhập bằng Tài khoản Google của bạn</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4999538639245140991">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chromium của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
 <translation id="6827294685447036764">Nếu bạn cho Chromium biết vị trí của bạn, thì Chromium sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
 <translation id="7018284295775193585">Chromium không thể cập nhật</translation>
+<translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
 <translation id="7118091470949186573">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7208566199746267865">Chromium giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>

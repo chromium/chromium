@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4787850887676698916">Les onglets que vous avez ouverts dans Chromium sur vos autres appareils s'affichent ici.</translation>
 <translation id="4828317641996116749">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="4852878756222711218">Pour tirer pleinement parti de Chromium, connectez-vous avec votre compte Google</translation>
 <translation id="4985291216379576555">Chromium ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
@@ -67,6 +68,7 @@
 <translation id="6820823224820483452">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="6827294685447036764">Si vous l'autorisez à connaître votre position, Chromium la communique à tous les sites que vous autorisez. Certains sites peuvent demander votre position lorsqu'ils souhaitent vous montrer des informations locales, comme des magasins à proximité ou des actualités.</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
+<translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue fractionnée.</translation>
 <translation id="7118091470949186573">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>
 <translation id="7208566199746267865">Chromium vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>

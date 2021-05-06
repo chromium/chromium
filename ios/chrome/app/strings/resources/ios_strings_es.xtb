@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
+<translation id="1282311502488501110">No iniciar sesión</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
+<translation id="214201757571129614">Iniciar sesión…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2198757192731523470">Es posible que se utilice tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google.</translation>
@@ -343,6 +345,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4630540211544979320">Traducir páginas</translation>
 <translation id="4634124774493850572">Utilizar contraseña</translation>
 <translation id="4636930964841734540">Información</translation>
+<translation id="4650125387981512669">Seguir como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Esta función se activará cuando inicies sesión en tu cuenta de Google.</translation>
 <translation id="4659667755519643272">Acceder a la función de cambio de pestaña</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>

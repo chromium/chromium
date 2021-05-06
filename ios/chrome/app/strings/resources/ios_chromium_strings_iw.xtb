@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chromium יימחקו מהמכשיר הזה</translation>
 <translation id="4787850887676698916">‏כרטיסיות שפתחת ב-Chromium במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="4852878756222711218">‏כדי להפיק את המרב מ-Chromium, יש להיכנס לחשבון Google</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="6827294685447036764">‏אם מאפשרים ל-Chromium לדעת את המיקום, Chromium יכול לשלוח את המידע הזה לאתרים שנתת להם הרשאה. אתרים עשויים לבקש את המיקום שלך כאשר יש להם מידע מקומי להציג לך, כמו חדשות או חנויות קרובות.</translation>
 <translation id="7018284295775193585">‏לא ניתן לעדכן את Chromium</translation>
+<translation id="7045244423563602563">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>
 <translation id="7099326575020694068">‏Chromium לא יכול להשתמש במצלמה במצב תצוגה מפוצלת</translation>
 <translation id="7118091470949186573">‏אפשר עכשיו להשתמש ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7208566199746267865">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>

@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 <translation id="4787850887676698916">Šeit būs redzamas cilnes, kuras esat atvēris pārlūkā Chromium citās ierīcēs.</translation>
 <translation id="4828317641996116749">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="4852878756222711218">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties Google kontā</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4999538639245140991">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chromium dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
 <translation id="6827294685447036764">Ja atļaujat pārlūkam Chromium piekļūt jūsu atrašanās vietas informācijai, pārlūkā Chromium šī informācija tiek nosūtīta uz visām vietnēm, kurām piešķirat atļauju. Vietnēs var tikt lūgta atļauja piekļūt atrašanās vietas informācijai, lai rādītu jums vietēju informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošiem veikaliem.</translation>
 <translation id="7018284295775193585">Nevar atjaunināt pārlūku Chromium.</translation>
+<translation id="7045244423563602563">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
 <translation id="7118091470949186573">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="7208566199746267865">Chromium ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>

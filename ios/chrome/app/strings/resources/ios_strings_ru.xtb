@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Выбор папки</translation>
 <translation id="1265739287306757398">Подробнее</translation>
 <translation id="1272079795634619415">Остановить</translation>
+<translation id="1282311502488501110">Отмена</translation>
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
+<translation id="214201757571129614">Войти</translation>
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2198757192731523470">Google может использовать вашу историю, чтобы персонализировать рекламу, а также Поиск и другие сервисы.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Переводить страницы</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4636930964841734540">Информация</translation>
+<translation id="4650125387981512669">Продолжить как <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="4659667755519643272">Открыть переключатель вкладок</translation>
 <translation id="46614316059270592">Сохранить пароль</translation>

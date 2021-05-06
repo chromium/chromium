@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
 <translation id="4787850887676698916">Filele deschise în Chromium pe alte dispozitive vor apărea aici.</translation>
 <translation id="4828317641996116749">Chromium nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
+<translation id="4852878756222711218">Pentru a profita din plin de Chromium, conectează-te folosind Contul Google</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="6827294685447036764">Dacă permiți accesul Chromium la locație, Chromium trimite informații privind locația la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
 <translation id="7018284295775193585">Chromium nu se poate actualiza</translation>
+<translation id="7045244423563602563">Personalizează Chromium</translation>
 <translation id="7099326575020694068">Chromium nu poate folosi camera foto în modul Vizualizare împărțită</translation>
 <translation id="7118091470949186573">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="7208566199746267865">Folosind Chromium, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>

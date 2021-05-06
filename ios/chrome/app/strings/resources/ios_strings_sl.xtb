@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Izbira mape</translation>
 <translation id="1265739287306757398">Več o tem</translation>
 <translation id="1272079795634619415">Ustavi</translation>
+<translation id="1282311502488501110">Brez prijave</translation>
 <translation id="1283524564873030414">Zadnjih 24 ur</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Odpri history.google.com</translation>
 <translation id="2116625576999540962">Št. premaknjenih elementov: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Iskanje besedila, ki ste ga kopirali</translation>
+<translation id="214201757571129614">Prijava …</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="2198757192731523470">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google, oglasov in drugih Googlovih storitev.</translation>
@@ -343,6 +345,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4630540211544979320">Prevajanje strani</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
 <translation id="4636930964841734540">Informacije</translation>
+<translation id="4650125387981512669">Nadaljuj kot <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ko se prijavite v račun Google, se ta funkcija vklopi.</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
 <translation id="46614316059270592">Shrani geslo</translation>

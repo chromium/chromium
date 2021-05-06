@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Escolher pasta</translation>
 <translation id="1265739287306757398">Saiba como</translation>
 <translation id="1272079795634619415">Parar</translation>
+<translation id="1282311502488501110">Não fazer login</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
 <translation id="2139867232736819575">Pesquisar o texto que você copiou</translation>
+<translation id="214201757571129614">Login…</translation>
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2198757192731523470">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços Google.</translation>
@@ -343,6 +345,7 @@ Siga estas etapas:</translation>
 <translation id="4630540211544979320">Traduzir páginas</translation>
 <translation id="4634124774493850572">Usar senha</translation>
 <translation id="4636930964841734540">Informações</translation>
+<translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Quando você faz login na sua Conta do Google, este recurso é ativado.</translation>
 <translation id="4659667755519643272">Entrar no seletor guias</translation>
 <translation id="46614316059270592">Salvar senha</translation>

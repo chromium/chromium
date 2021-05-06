@@ -698,7 +698,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3584299510153766161">Double perforation en bas</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Milieu</translation>
-<translation id="3590643883886679995">Les données de connexion seront stockées sur l'appareil lorsque vous quitterez le mode navigation privée.</translation>
+<translation id="3590643883886679995">Les données de connexion seront stockées sur l'appareil lorsque vous aurez quitté le mode navigation privée.</translation>
 <translation id="3592413004129370115">Italian (enveloppe)</translation>
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
@@ -902,7 +902,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4302514097724775343">Appuyez sur le dinosaure pour jouer</translation>
 <translation id="4302965934281694568">Chou3 (enveloppe)</translation>
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
-<translation id="4305817255990598646">Changer</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
@@ -1008,7 +1007,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4738601419177586157">Suggestion de recherche sur "<ph name="TEXT" />"</translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
 <translation id="4744603770635761495">Chemin d'accès exécutable</translation>
-<translation id="4749011317274908093">Vous êtes passé en mode navigation privée</translation>
+<translation id="4749011317274908093">Vous êtes passé en navigation privée</translation>
 <translation id="4750917950439032686">Vos informations, comme vos mots de passe ou vos numéros de carte de paiement, sont privées lorsqu'elles sont transmises à ce site.</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4758311279753947758">Ajouter des coordonnées</translation>
@@ -1672,7 +1671,7 @@ Informations supplémentaires :
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>
-<translation id="7363096869660964304">Cela ne vous rend pas invisible pour autant. Si vous passez en mode navigation privée, votre employeur, votre fournisseur d'accès à Internet ou les sites Web que vous consultez pourront toujours avoir accès à votre historique de navigation.</translation>
+<translation id="7363096869660964304">Cela ne vous rend pas invisible pour autant. Si vous passez en navigation privée, votre employeur, votre fournisseur d'accès à Internet ou les sites Web que vous consultez pourront toujours avoir accès à votre navigation.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les adresses et en ajouter dans les paramètres Chrome</translation>
 <translation id="7365849542400970216">Savoir si vous utilisez cet appareil ?</translation>
 <translation id="7372973238305370288">résultat de recherche</translation>
@@ -1898,7 +1897,7 @@ Informations supplémentaires :
 <translation id="8175796834047840627">Chrome propose d'enregistrer vos cartes dans votre compte Google, car vous êtes connecté. Vous pouvez modifier ce comportement dans les paramètres.</translation>
 <translation id="8176440868214972690">L'administrateur de cet appareil a envoyé des infos, comme des paramètres ou des règles, aux sites Web suivants.</translation>
 <translation id="8184538546369750125">Utiliser le paramètre global par défaut ("Autoriser")</translation>
-<translation id="8193086767630290324">Actions effectuées dont les données sont signalées comme confidentielles</translation>
+<translation id="8193086767630290324">Actions effectuées sur des données signalées comme confidentielles</translation>
 <translation id="8194797478851900357">&amp;Annuler le déplacement</translation>
 <translation id="8201077131113104583">URL de mise à jour non valide pour l'extension associée à l'identifiant "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Récapitulatif de la commande</translation>

@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1272079795634619415">Ndalo</translation>
+<translation id="1282311502488501110">Mos u identifiko</translation>
 <translation id="1283524564873030414">24 orët e fundit</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="1321993286294231467">Gabim në ruajtjen e imazhit.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Hap history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u lëvizën</translation>
 <translation id="2139867232736819575">Kërko për tekstin që kopjove</translation>
+<translation id="214201757571129614">Identifikohu…</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2198757192731523470">Google mund ta përdorë historikun tënd për të personalizuar "Kërko me Google", reklamat dhe shërbime të tjera të Google.</translation>
@@ -204,6 +206,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="3081338492074632642">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3131206671572504478">Bllokoji të gjitha</translation>
+<translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3153862085237805241">Ruaj kartën</translation>
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
 <translation id="3157684681743766797">Shëno të gjitha…</translation>
@@ -342,6 +345,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4630540211544979320">Përkthe faqet</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
 <translation id="4636930964841734540">Informacion</translation>
+<translation id="4650125387981512669">Vazhdo si <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar.</translation>
 <translation id="4659667755519643272">Futu te "Ndërruesi i skedave"</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
@@ -498,6 +502,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6202364442240589072">{COUNT,plural, =1{Mbyll {COUNT} skedë}other{Mbyll {COUNT} skeda}}</translation>
 <translation id="6219688215832490856">Asnjëherë mos përkthe</translation>
 <translation id="6223816392543092032">Merr faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
+<translation id="6232329973559504466">Kërkimi "i fshehtë"</translation>
 <translation id="6254066287920239840">Hapi lidhjet në aplikacion në vend të shfletuesit.</translation>
 <translation id="6255097610484507482">Modifiko kartën e kreditit</translation>
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
@@ -562,6 +567,9 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6656103420185847513">Redakto dosjen</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6668619169535738264">Redakto faqeshënuesin</translation>
+<translation id="6672241253012342409">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
+
+Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat.</translation>
 <translation id="6674571176963658787">Për të nisur sinkronizimin, fut frazën e kalimit</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Menaxho të dhënat e sinkronizuara në "Panelin analitik të Google"</translation>
@@ -573,6 +581,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6780034285637185932">Kodi postar</translation>
 <translation id="6785453220513215166">Po dërgon raportin e ndërprerjeve aksidentale...</translation>
 <translation id="6797885426782475225">Kërkimi me zë</translation>
+<translation id="6801927553864092214">Për të shfletuar në mënyrë private, hap një skedë "të fshehtë"</translation>
 <translation id="6807889908376551050">Shfaqi të gjitha...</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6831043979455480757">Përkthe</translation>
@@ -715,6 +724,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8281886186245836920">Kapërceje</translation>
 <translation id="8283172974887967105">Cakto…</translation>
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
+<translation id="8299613349954694191">Hap një skedë "të fshehtë" për të shfletuar në mënyrë private në ueb.</translation>
 <translation id="83100941411593607">Identifikimi është çaktivizuar</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8323906514956095947">Prek dhe mbaj të shtypur për opsione të tjera të skedës</translation>

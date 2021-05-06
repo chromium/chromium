@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Välj mapp</translation>
 <translation id="1265739287306757398">Läs mer</translation>
 <translation id="1272079795634619415">Stopp</translation>
+<translation id="1282311502488501110">Logga inte in</translation>
 <translation id="1283524564873030414">Senaste 24 timmarna</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1321993286294231467">Ett fel uppstod när bilden skulle sparas.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt flyttades</translation>
 <translation id="2139867232736819575">Sök efter kopierad text</translation>
+<translation id="214201757571129614">Logga in …</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="2198757192731523470">Google kan anpassa Sök, annonser och andra Google-tjänster utifrån historiken.</translation>
@@ -343,6 +345,7 @@ Följ stegen nedan:</translation>
 <translation id="4630540211544979320">Översätt sidor</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Den här funktionen är aktiverad när du loggar in på Google-kontot.</translation>
 <translation id="4659667755519643272">Öppna funktionen för flikbyte</translation>
 <translation id="46614316059270592">Spara lösenord</translation>

@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu</translation>
 <translation id="4787850887676698916">Les pestanyes que tinguis obertes a Chromium als altres dispositius es mostraran aquí.</translation>
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
+<translation id="4852878756222711218">Per treure el màxim profit de Chromium, inicia la sessió amb el teu Compte de Google</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="6827294685447036764">Si permets que Chromium sàpiga la teva ubicació, l'enviarà als llocs web a què donis permís. Pot ser que els llocs web demanin la teva ubicació quan tinguin informació local per mostrar-te, com ara botigues o notícies a prop.</translation>
 <translation id="7018284295775193585">Chromium no es pot actualitzar</translation>
+<translation id="7045244423563602563">Personalitza Chromium</translation>
 <translation id="7099326575020694068">Chromium no pot utilitzar la càmera en mode de visualització dividida</translation>
 <translation id="7118091470949186573">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="7208566199746267865">Per ajudar-te a estalviar temps, Chromium connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>

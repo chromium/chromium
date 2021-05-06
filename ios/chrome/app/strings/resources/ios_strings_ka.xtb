@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">აირჩიეთ საქაღალდე</translation>
 <translation id="1265739287306757398">შეიტყვეთ როგორ</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
+<translation id="1282311502488501110">არ მსურს შესვლა</translation>
 <translation id="1283524564873030414">ბოლო 24 საათი</translation>
 <translation id="1285320974508926690">არასდროს გადათარგმნო ეს საიტი</translation>
 <translation id="1321993286294231467">სურათის შენახვისას შეცდომა მოხდა.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
 <translation id="2139867232736819575">თქვენ მიერ კოპირებული ტექსტის მოძიება</translation>
+<translation id="214201757571129614">შესვლა…</translation>
 <translation id="2149973817440762519">სანიშნის რედაქტირება</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
 <translation id="2198757192731523470">Google-ს თქვენი ისტორიის გამოყენება შეუძლია Search-ის, რეკლამისა და Google-ის სხვა სერვისების თქვენზე მოსარგებად.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">გვერდების თარგმნა</translation>
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
+<translation id="4650125387981512669">გაგრძელება, როგორც <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება.</translation>
 <translation id="4659667755519643272">ჩანართების გადამრთველში შესვლა</translation>
 <translation id="46614316059270592">პაროლის შენახვა</translation>

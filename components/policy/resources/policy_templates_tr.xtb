@@ -2924,6 +2924,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 
       Bu politika kullanımdan kaldırıldı, bunun yerine lütfen <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="4923806312383904642">WebDriver'ın Uyumlu Olmayan Politikaları Geçersiz Kılmasına İzin Ver</translation>
+<translation id="4924377847308623325">İlave DNS sorgu türlerini engelle</translation>
 <translation id="4927214690104703256">Politikanın ayarlanması, uzaktan onay için <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> işlevlerini kullanmasına izin verilen uzantıları belirtir. API'yi kullanmak için uzantılar bu listede olmalıdır.
 
       Bir uzantı listede yoksa veya liste ayarlanmamışsa API'ye yapılan çağrılar başarısız olur ve hata kodu görüntülenir.</translation>
@@ -4565,6 +4566,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7030205756530739128"><ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> olarak ayarlanırsa <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> ayarı, şarj yüzdesine göre pilin ne zaman şarj edilmeye başlayacağını özelleştirir. Değer, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> değerinin en az yüzde 5 altında olmalıdır.
 
       Bu politika ayarlanmadan bırakılırsa standart pil şarj modu uygulanır.</translation>
+<translation id="7030407698292813622">İlave DNS kayıt türleri için DNS sorgularına izin ver</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS modunu devre dışı bırak</translation>
 <translation id="7033778618670823541">Bu politika ayarlanırsa güvenli olmayan kaynaklarda güvenlik kısıtlamalarının geçerli olmayacağı kaynakların (URL'ler) veya ana makine adı kalıplarının (örneğin, *.example.com) bir listesi belirtilir. Kuruluşlar, TLS dağıtamayan eski uygulamalar için kaynak ayarlayabilir veya dahili web geliştirme için hazırlık sunucusu kurulumu yapabilir. Böylece geliştiriciler hazırlık sunucusunda TLS dağıtmak zorunda kalmadan güvenli içerik gerektiren özellikleri test edebilir. Bu politika, kaynağın adres çubuğunda "Güvenli Değil" olarak etiketlenmesini de önler.
 
@@ -5221,31 +5223,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Öneri: Boşta kaldığında ekranı kilitlemek için askıya alındığında ekran kilidini etkinleştirin ve boşta kalma gecikmesi ile ilgili süre dolduğunda <ph name="PRODUCT_OS_NAME" /> tarafından askıya alma işlemi yapılacak şekilde ayarlayın. Bu politikayı yalnızca ekran kilitleme işleminin askıya alma işleminden epey önce olması istendiğinde veya boşta kalma durumunda askıya alma işleminin yapılmasını istemediğinizde kullanın.</translation>
 <translation id="7895553628261067384">Uzaktan erişim</translation>
-<translation id="7896787076628252574"><ph name="PRODUCT_OS_NAME" /> ürününde veri sızıntısı önleme kuralları listesini yapılandırır.
-      Veri sızıntısı verileri kopyalayıp yapıştırma, dosya aktarma, yazdırma, ekran paylaşma, ekran görüntüsü alma vb. sonucunda meydana gelebilir.
-
-      Her kural aşağıdakilerden oluşur:
-      - URL'ler tarafından tanımlanan kaynakların listesi. Kaynaklardaki tüm veriler, kısıtlamaların uygulanacağı gizli veriler olarak kabul edilir.
-      - Gizli verilerin paylaşılmasına izin verilen ya da verilmeyen URL veya bileşen olarak tanımlanan hedeflerin listesi.
-      - Kaynakların verilerine uygulanan kısıtlamaların listesi.
-
-      Kurallar şunları yapmak için eklenebilir:
-      - Kaynaklar ve hedefler arasında paylaşılan pano verilerini kontrol etme.
-      - Herhangi bir kaynağın ekran görüntüsünün alınmasını kontrol etme.
-      - Herhangi bir kaynağın yazdırılmasını kontrol etme.
-      - Herhangi bir kaynak görünür haldeyken gizlilik ekranını kontrol etme.
-      - Herhangi bir kaynağın ekran paylaşımını kontrol etme.
-
-      Kısıtlama seviyesi, BLOCK (ENGELLE) veya ALLOW (İZİN VER) değerine ayarlanabilir.
-      - Kısıtlama, BLOCK (ENGELLE) değerine ayarlanırsa işleme izin verilmez.
-      - Kısıtlama, ALLOW (İZİN VER) değerine ayarlanırsa işleme izin verilir.
-
-      Notlar:
-      - PRIVACY_SCREEN kısıtlaması, gizlilik ekranını açabilmeyi engellemez, ancak kısıtlama sınıfı BLOCK (ENGELLE) değerine ayarlandığında gizlilik ekranını zorunlu kılar.
-      - Kısıtlamalardan birinin CLIPBOARD (PANO) olması durumunda hedefler boş olamaz, ancak kalan kısıtlamalar açısından bir fark yaratmaz.
-      - URL kalıplarını şuna göre biçimlendirin: https://www.chromium.org/administrators/url-blocklist-filter-format
-
-      Politika ayarlanmazsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="7902040092815978832">Şifre için sayısal klavyeyi gösterir</translation>
 <translation id="7904177352786629708">Politika Etkin değerine ayarlanırsa CNAME araması atlanır. Kerberos SPN oluşturulurken sunucu adı girildiği şekliyle kullanılır.
 
@@ -5907,6 +5884,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
        Not: Bu politika gizli mod için geçerli değildir. Uzantıların barındırılması (https://developer.chrome.com/extensions/hosting) ile ilgili bilgi edinin.</translation>
 <translation id="8827366480126575426">Protokol işleyicinin protokolü.</translation>
+<translation id="8827417642396462482">İlave DNS sorgu türlerine izin ver</translation>
 <translation id="8831911834413504983">Politikayı ayarlamak, JavaScript çalıştırabilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
 
       Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
@@ -6192,6 +6170,13 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       NOT: Tüketici cihazlarıyla kurumsal cihazların varsayılan davranışı farklıdır: P2P; yönetilen cihazlarda etkin, yönetilmeyen cihazlarda devre dışıdır.</translation>
 <translation id="9164656078867027374"><ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ürününe erişim izni olan alanları belirle</translation>
+<translation id="9166670902476893480">Bu politika, <ph name="PRODUCT_NAME" /> tarayıcısının güvenli olmayan DNS istekleri yaparken ilave DNS kayıt türleri sorgulayıp sorgulamayacağını kontrol eder. Bu politika, Güvenli DNS üzerinden yapılan DNS sorgularını etkilemez. Güvenli DNS, her zaman ilave DNS türlerini sorgulayabilir.
+
+      Bu politika ayarlanmaz veya Etkin değerine ayarlanırsa <ph name="DNS_TYPE_A" /> (DNS tür 1) ve <ph name="DNS_TYPE_AAAA" /> (DNS tür 28) türlerine ek olarak <ph name="DNS_TYPE_HTTPS" /> (DNS tür 65) gibi ilave türler sorgulanabilir.
+
+      Bu politika, Devre Dışı değerine ayarlanırsa DNS, yalnızca <ph name="DNS_TYPE_A" /> (DNS tür 1) ve/veya <ph name="DNS_TYPE_AAAA" /> (DNS tür 28) için sorgulanır.
+
+      Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır. Politikanın kaldırılmasından sonra <ph name="PRODUCT_NAME" />, her zaman ilave DNS türlerini sorgulayabilecektir.</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında Drive'ı devre dışı bırak</translation>
 <translation id="9187743794267626640">Harici depolama birimi eklemeyi devre dışı bırak</translation>
 <translation id="9190456586252617675">Bu politika, Asistan ilk katılım deneyimi modunu kontrol eder.

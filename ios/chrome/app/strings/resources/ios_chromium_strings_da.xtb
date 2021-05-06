@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed</translation>
 <translation id="4787850887676698916">Faner, du har åbnet i Chromium på dine andre enheder, vises her.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
+<translation id="4852878756222711218">Log ind med din Google-konto for at få mest muligt ud af Chromium</translation>
 <translation id="4985291216379576555">Offline – Chromium kan ikke søge efter opdateringer</translation>
 <translation id="4999538639245140991">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chromium-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="6827294685447036764">Hvis du giver Chromium tilladelse til at kende din placering, sender Chromium den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="7018284295775193585">Chromium kan ikke opdateres</translation>
+<translation id="7045244423563602563">Tilpas Chromium</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
 <translation id="7118091470949186573">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="7208566199746267865">Med Chromium sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>

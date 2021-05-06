@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">మీ Google ఖాతాను నిర్వహించడానికి, "ఖాతాను నిర్వహించు" బటన్‌ను నొక్కండి</translation>
 <translation id="1549000191223877751">వేరే విండోకు తరలించు</translation>
 <translation id="1553358976309200471">Chromeని నవీకరించు</translation>
+<translation id="1558391695376153246">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="1569387923882100876">కనెక్ట్ చేసిన డివైజ్</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1592864538817356322">ప్రామాణిక రక్షణ:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2518590038762162553">లైట్ మోడ్‌లో, Chrome పేజీలను వేగంగా లోడ్ చేస్తుంది, అలాగే 60 శాతం వరకు తక్కువ డేటాను ఉపయోగిస్తుంది. మీరు సందర్శించే పేజీలను ఆప్టిమైజ్ చేయడానికి, Chrome మీ వెబ్ ట్రాఫిక్‌ను Googleకు పంపుతుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకి పంపుతుంది</translation>
+<translation id="2527497042232966453">అజ్ఞాత ట్యాబ్‌లకు స్విచ్ చేయబడింది</translation>
 <translation id="2527779675047087889">క్లిప్ బోర్డ్ కంటెంట్‌లను దాచండి</translation>
 <translation id="2532336938189706096">వెబ్ వీక్షణ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> అంశాలు తొలగించబడ్డాయి</translation>
@@ -424,11 +426,13 @@
 <translation id="3810838688059735925">వీడియో</translation>
 <translation id="3810973564298564668">నిర్వహించు</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు తొలగించబడ్డాయి</translation>
+<translation id="3845098929839618392">అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="3856096718352044181">దయచేసి ఇది చెల్లుబాటు అయ్యే ప్రొవైడర్ అని వెరిఫై చేయండి లేదా తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="3861633093716975811">జనాదరణ పొందిన వీడియోలు</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
 <translation id="3895926599014793903">జూమ్ చేయడాన్ని నిర్బంధంగా ప్రారంభించు</translation>
+<translation id="3899682235662194879">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయి</translation>
 <translation id="3912508018559818924">వెబ్ నుండి ఉత్తమమైనది కనుగొంటోంది…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ఆన్‌లో ఉంది</translation>
@@ -482,6 +486,7 @@
 <translation id="4263656433980196874">Assistant వాయిస్ సెర్చ్ సమ్మతి UI పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4290281343757112331">తర్వాత డౌన్‌లోడ్ చేయాలా?</translation>
+<translation id="4296252229500326964">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
@@ -573,6 +578,7 @@
 <translation id="4865987431642283918">ఆటోమేటిక్ పరికర భాష</translation>
 <translation id="4866368707455379617">Chromeలో <ph name="MODULE" />ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4875775213178255010">కంటెంట్ సూచనలు</translation>
+<translation id="4877678010818027629">అజ్ఞాత మోడ్‌లోకి ఎంటర్ అవ్వండి</translation>
 <translation id="4878404682131129617">ప్రాక్సీ సర్వర్ ద్వారా ఒక సొరంగంను ఏర్పాటు చేయడం విఫలమైంది</translation>
 <translation id="4880127995492972015">అనువదించు…</translation>
 <translation id="4881695831933465202">తెరువు</translation>
@@ -899,6 +905,7 @@
 <translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6864459304226931083">చిత్రాన్ని డౌన్‌లోడ్ చేయి</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
+<translation id="6867400383614725881">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="6882836635272038266">ప్రమాదకరంగా గుర్తించిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి ప్రామాణిక రక్షణ.</translation>
 <translation id="688738109438487280">ఇప్పటికే ఉన్న డేటాను <ph name="TO_ACCOUNT" />కి జోడించండి.</translation>
 <translation id="6891726759199484455">మీ పాస్‌వర్డ్‌ను కాపీ చేయడానికి అన్‌లాక్ చేయండి</translation>
@@ -914,6 +921,7 @@
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
 <translation id="6963766334940102469">బుక్‌మార్క్‌లను తొలగించు</translation>
+<translation id="696447261358045621">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="6989267951144302301">డౌన్‌లోడ్ సాధ్యపడలేదు</translation>
@@ -1185,7 +1193,6 @@
 <translation id="8788968922598763114">చివరగా మూసివేసిన ట్యాబ్‌ను మళ్లీ తెరవండి</translation>
 <translation id="8798449543960971550">చదవండి</translation>
 <translation id="8812260976093120287">కొన్ని వెబ్‌సైట్‌ల‌లో, మీరు మీ పరికరంలో ఎగువ పేర్కొన్న మద్దతు గల చెల్లింపు యాప్‌లతోచెల్లించవచ్చు.</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">ప్రివ్యూ ట్యాబ్‌లో ఉన్న కంటెంట్‌ను చూడటం సాధ్యం కాదు.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">కంటెంట్‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది.</translation>

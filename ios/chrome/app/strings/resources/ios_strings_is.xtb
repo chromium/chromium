@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Velja möppu</translation>
 <translation id="1265739287306757398">Kynntu þér hvernig</translation>
 <translation id="1272079795634619415">Stöðva</translation>
+<translation id="1282311502488501110">Ekki skrá inn</translation>
 <translation id="1283524564873030414">Síðastliðinn sólarhring</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
 <translation id="1321993286294231467">Villa kom upp við að vista mynd.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Opna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> atriði færð</translation>
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
+<translation id="214201757571129614">Skrá inn…</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2198757192731523470">Google notar hugsanlega ferilinn þinn til að sérsníða leitina, auglýsingar og aðra þjónustu Google.</translation>
@@ -343,6 +345,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4630540211544979320">Þýða síður</translation>
 <translation id="4634124774493850572">Nota aðgangsorð</translation>
 <translation id="4636930964841734540">Upplýsingar</translation>
+<translation id="4650125387981512669">Halda áfram sem <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Kveikt er á þessum eiginleika þegar þú skráir þig inn á Google reikninginn þinn.</translation>
 <translation id="4659667755519643272">Fara í flipaval</translation>
 <translation id="46614316059270592">Vista aðgangsorð</translation>

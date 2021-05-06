@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Jildni tanlash</translation>
 <translation id="1265739287306757398">Batafsil axborot</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
+<translation id="1282311502488501110">Kirilmasin</translation>
 <translation id="1283524564873030414">Oxirgi 24 soat</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1321993286294231467">Rasm saqlanmadi.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
 <translation id="2139867232736819575">Nusxalangan matnni qidirish</translation>
+<translation id="214201757571129614">Kirish...</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="2198757192731523470">Qidiruv, rekama va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
@@ -343,6 +345,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4630540211544979320">Sahifalarni tarjima qilish</translation>
 <translation id="4634124774493850572">Paroldan foydalanish</translation>
 <translation id="4636930964841734540">Ma’lumot</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> nomidan kirish</translation>
 <translation id="4659126640776004816">Bu funksiya Google hisobingizga kirganingizda yoqiladi.</translation>
 <translation id="4659667755519643272">Sahifalarni tezkor almashtirish funksiyasini yoqish</translation>
 <translation id="46614316059270592">Parolni saqlash</translation>

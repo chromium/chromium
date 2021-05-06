@@ -204,6 +204,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="3081338492074632642">Das Passwort, das Sie speichern, muss mit dem Passwort für <ph name="WEBSITE" /> übereinstimmen</translation>
 <translation id="3112556859945124369">Markieren…</translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
+<translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
@@ -498,6 +499,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="6219688215832490856">Nie übersetzen</translation>
 <translation id="6223816392543092032">Sie können Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten aufrufen.</translation>
+<translation id="6232329973559504466">Inkognitosuche</translation>
 <translation id="6254066287920239840">Links in der App statt im Browser öffnen.</translation>
 <translation id="6255097610484507482">Kreditkarte bearbeiten</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
@@ -562,6 +564,9 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6656103420185847513">Ordner bearbeiten</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6668619169535738264">Lesezeichen bearbeiten</translation>
+<translation id="6672241253012342409">Websites können Cookies verwenden, um Ihnen das Surfen zu erleichtern; zum Beispiel, damit Sie angemeldet oder Artikel in Ihrem Einkaufswagen gespeichert bleiben.
+
+Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um Ihre Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="6674571176963658787">Geben Sie Ihre Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Synchronisierte Daten im Google Dashboard verwalten</translation>
@@ -573,6 +578,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
 <translation id="6797885426782475225">Sprachsuche</translation>
+<translation id="6801927553864092214">Wenn Sie privat surfen möchten, öffnen Sie einen Inkognitotab</translation>
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
@@ -715,6 +721,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8299417921174340354">Sie müssen zuerst einen Sicherheitscode auf Ihrem Gerät einrichten, um Passwörter zu verwenden.</translation>
+<translation id="8299613349954694191">Öffnet einen Inkognitotab zum anonymen Surfen im Web.</translation>
 <translation id="83100941411593607">Anmeldung ist deaktiviert</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8323906514956095947">Für weitere Tab-Optionen berühren und halten</translation>

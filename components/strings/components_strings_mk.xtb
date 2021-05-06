@@ -432,6 +432,7 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{и уште 1}one{и уште #}other{и уште #}}</translation>
 <translation id="2536110899380797252">Додајте адреса</translation>
 <translation id="2539524384386349900">Откриј</translation>
+<translation id="2541219929084442027">Страниците што ги гледате во картичките „Инкогнито“ нема да се задржат во историјата на прелистувачот, во колачињата или во историјата на пребарување откако ќе ги затворите сите ваши картички „Инкогнито“. Сите преземени датотеки или создадени обележувачи ќе се задржат.</translation>
 <translation id="2544644783021658368">Еден документ</translation>
 <translation id="254947805923345898">Вредноста на правилото не е важечка.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> испрати неважечки одговор.</translation>
@@ -504,6 +505,7 @@
 <translation id="2850739647070081192">Invite (плик)</translation>
 <translation id="2856444702002559011">Напаѓачите можеби се обидуваат да ги украдат вашите информации од <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример, лозинки, пораки или кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">Сајтов прикажува нападни или лажни реклами.</translation>
+<translation id="2876489322757410363">Ќе излезете од режимот „Инкогнито“ за да платите преку надворешна апликација. Дали сакате да продолжите?</translation>
 <translation id="2878197950673342043">Превиткување постер</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Поставување прозорец</translation>
@@ -698,6 +700,7 @@
 <translation id="3584299510153766161">Две дупки долу</translation>
 <translation id="3586931643579894722">Сокриј детали</translation>
 <translation id="3587738293690942763">Средна</translation>
+<translation id="3590643883886679995">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“.</translation>
 <translation id="3592413004129370115">Italian (плик)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Администраторот ја блокирал апликацијата</translation>
@@ -901,7 +904,6 @@
 <translation id="4302514097724775343">Допрете го диносаурусот за да играте</translation>
 <translation id="4302965934281694568">Chou3 (плик)</translation>
 <translation id="4305666528087210886">Не може да се пристапи до вашата датотека</translation>
-<translation id="4305817255990598646">Префрли</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
@@ -1007,6 +1009,7 @@
 <translation id="4738601419177586157">Предлог за пребарување: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Управувајте со лозинките…</translation>
 <translation id="4744603770635761495">Извршна патека</translation>
+<translation id="4749011317274908093">Влеговте во режим „Инкогнито“</translation>
 <translation id="4750917950439032686">Вашите информации (на пример, лозинките или броевите на кредитните картички) се приватни кога се испраќаат на овој сајт.</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4758311279753947758">Додај информации за контакт</translation>
@@ -1670,6 +1673,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Командна линија</translation>
 <translation id="7359588939039777303">Рекламите се блокирани.</translation>
+<translation id="7363096869660964304">Сепак, не сте невидливи. Режимот „Инкогнито“ не го сокрива вашето прелистување од работодавецот, интернет-операторот, ниту од веб-сајтовите што ги посетувате.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да додавате и да управувате со адреси во поставките за Chrome</translation>
 <translation id="7365849542400970216">Да се знае користењето на уредот?</translation>
 <translation id="7372973238305370288">резултат од пребарувањето</translation>
@@ -1895,6 +1899,7 @@
 <translation id="8175796834047840627">Chrome нуди да ви ги зачува картичките во вашата сметка на Google бидејќи сте најавени. Ваквото однесување може да го смените во поставки.</translation>
 <translation id="8176440868214972690">Администраторот на уредов испратил одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
 <translation id="8184538546369750125">Користи глобална стандардна поставка (Дозволи)</translation>
+<translation id="8193086767630290324">Дејствата преземени со податоци означени како доверливи</translation>
 <translation id="8194797478851900357">&amp;Врати преместување</translation>
 <translation id="8201077131113104583">Неважечка URL на ажурирање за наставката со ИД „<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Краток преглед на нарачка</translation>

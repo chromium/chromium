@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chromium Anda akan dihapus dari perangkat ini</translation>
 <translation id="4787850887676698916">Tab yang telah dibuka di Chromium pada perangkat lainnya akan muncul di sini.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
+<translation id="4852878756222711218">Untuk mengoptimalkan Chromium, login dengan Akun Google Anda</translation>
 <translation id="4985291216379576555">Offline, Chromium tidak dapat memeriksa update</translation>
 <translation id="4999538639245140991">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="6827294685447036764">Jika Anda mengizinkan Chromium mengetahui lokasi, Chromium akan mengirimkannya ke situs apa pun yang diizinkan. Situs mungkin meminta lokasi Anda saat mereka memiliki info lokal untuk ditampilkan, seperti toko terdekat atau berita.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat diupdate</translation>
+<translation id="7045244423563602563">Sesuaikan Chromium dengan Selera Anda</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
 <translation id="7118091470949186573">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="7208566199746267865">Chromium menghemat waktu Anda dengan membawa akun ke web. Anda dapat menambahkan atau menghapus akun di Setelan.</translation>

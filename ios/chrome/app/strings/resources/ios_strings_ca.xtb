@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Tria la carpeta</translation>
 <translation id="1265739287306757398">Informació</translation>
 <translation id="1272079795634619415">Atura</translation>
+<translation id="1282311502488501110">No iniciïs la sessió</translation>
 <translation id="1283524564873030414">24 darreres hores</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1321993286294231467">S'ha produït un error en desar la imatge.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Obre history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elements desplaçats</translation>
 <translation id="2139867232736819575">Cerca el text que has copiat</translation>
+<translation id="214201757571129614">Inicia la sessió…</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2198757192731523470">És possible que Google utilitzi el teu historial per personalitzar la Cerca, els anuncis i altres serveis de Google.</translation>
@@ -343,6 +345,7 @@ Segueix aquests passos:</translation>
 <translation id="4630540211544979320">Tradueix pàgines</translation>
 <translation id="4634124774493850572">Fes servir la contrasenya</translation>
 <translation id="4636930964841734540">Informació</translation>
+<translation id="4650125387981512669">Continua com a <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4659667755519643272">Entra al selector de pestanyes</translation>
 <translation id="46614316059270592">Desa la contrasenya</translation>

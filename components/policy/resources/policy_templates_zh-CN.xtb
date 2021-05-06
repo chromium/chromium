@@ -2550,6 +2550,7 @@
 
       如果将此政策设置为 false，在操作系统升级后，该浏览器首次启动时将不会重新显示欢迎页面。</translation>
 <translation id="4423597592074154136">手动指定代理设置</translation>
+<translation id="4424004842303301809">停用关于数据泄露预防事件的报告</translation>
 <translation id="4427173305799125784">PDF 查看器无法在 PDF 文件中添加注释</translation>
 <translation id="4432762137771104529">启用安全浏览扩展报告功能</translation>
 <translation id="443454694385851356">旧版（不安全）</translation>
@@ -3125,6 +3126,7 @@
       如果已注册的用户启动了版本降级，他们可自行决定是要重置还是要等待，也可让系统根据此政策的值替他们做出选择。如果管理员通过设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 启动了版本降级，仅当已选择回滚后，设备才会在下次检查是否有可用更新时进行回滚。否则，设备便会等待其当前版本有可用的稳定版。
 
       如果此政策未设置或无效，则等同于选择了“为实现版本降级，等待当前版本有可用的稳定版”这一行为选项。</translation>
+<translation id="5229339291699779956">为 Thunderbolt/USB4 外围设备启用 PCIe 隧道，外围设备会将自身的所有功能都发挥到极致</translation>
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="52393120393725840">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
 
@@ -3286,6 +3288,7 @@
 <translation id="5418892536013005088">如果此政策已启用或未设置，系统将可以删除 Chrome 中的浏览器历史记录和下载记录，并且用户无法更改此设置。
 
       如果此政策已停用，系统将无法删除浏览器历史记录和下载记录。即使此政策停用，浏览和下载记录也不一定会保留。用户可能能够直接修改或删除历史记录数据库文件，而且浏览器本身也可能会随时将任意或所有历史记录项设为失效或进行归档。</translation>
+<translation id="5420245232720940848">为 Thunderbolt/USB4 外围设备停用 PCIe 隧道以限制设备功能</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> 许可密钥</translation>
 <translation id="5423197884968724595">Android WebView 限制名称：</translation>
 <translation id="5424147596523390018">允许所有颜色模式</translation>
@@ -4997,6 +5000,10 @@
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">允许使用系统通知</translation>
 <translation id="7643883929273267746">限制可在<ph name="PRODUCT_NAME" />中显示的帐号</translation>
+<translation id="7648664871086956188">此政策是一个通用开关，适用于在 DataLeakPreventionRulesList 政策中定义的所有规则。
+      如果此政策设为 True，系统会开启关于数据泄露预防事件的实时报告。
+      如果此政策设为 False 或未设置，系统将会关闭这种报告。
+      在这两种情况下，使用 DataLeakPreventionRulesList 中的 ALLOW 级限制定义的规则将不会报告事件。</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
 <translation id="7657261947024629645">针对性能进行优化。</translation>
 <translation id="7666228839913571182">允许使用第三方 Cookie</translation>
@@ -5189,31 +5196,6 @@
 
       建议：若要在设备闲置时锁定屏幕，您可让系统在进入暂停状态时锁定屏幕，并指示 <ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：屏幕锁定时间应显著早于系统进入暂停状态的时间，或者您不需要在设备闲置时暂停系统。</translation>
 <translation id="7895553628261067384">远程访问</translation>
-<translation id="7896787076628252574">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
-      复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
-
-      每条规则均包含以下内容：
-      - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制。
-      - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
-      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
-
-      您可通过添加规则来实现以下目的：
-      - 控制在来源和目的地之间共享的剪贴板数据。
-      - 控制针对任何来源的截屏操作。
-      - 控制针对任何来源的打印操作。
-      - 在任何来源可见时控制隐私保护屏幕。
-      - 控制针对任何来源的屏幕共享操作。
-
-      限制级别可设为 BLOCK 或 ALLOW。
-      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
-      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
-
-      注意：
-      - PRIVACY_SCREEN 限制不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
-      - 如果限制列表中含有 CLIPBOARD，目的地便不能为空，但它们对其余的限制没有任何影响。
-      - 所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。
-
-      如果此政策未设置，系统将不会应用任何限制。</translation>
 <translation id="7902040092815978832">在用户输入密码时显示数字键盘</translation>
 <translation id="7904177352786629708">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
 
@@ -5289,6 +5271,7 @@
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。</translation>
 <translation id="7995610550667275367">扫描（自 87 版起受支持）</translation>
 <translation id="7999023147219236247">此政策用于向应用授予所请求的权限。PERMISSION_POLICY_UNSPECIFIED：未指定此政策。如果在任何等级都未针对相应权限指定政策，系统便会默认使用“PROMPT”行为。PROMPT：提示用户授予相应权限。GRANT：自动授予相应权限。DENY：自动拒绝授予相应权限。</translation>
+<translation id="7999818120028621358">启用关于数据泄露预防事件的报告</translation>
 <translation id="8001701200415781021">限制哪些 Google 帐号可以设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号</translation>
 <translation id="8006219716745491366">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 来指定用于从搜索引擎提取搜索字词的备用网址列表。网址应包含字符串<ph name="SEARCH_TERM_MARKER" />。
 
@@ -5385,6 +5368,7 @@
 
       如果此政策设为停用或未设置，用户登录时系统会使用常规个人资料。</translation>
 <translation id="8151299379693359769">允许根据远程认证结果进行额外的安全检查（可选，默认为 True）。</translation>
+<translation id="8151490482515839285">启用数据泄露预防报告</translation>
 <translation id="8158758865057576716">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本。</translation>
 <translation id="8158897487095710470">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 中会显示书签栏。如果此政策设为 False，用户一律不会看到书签栏。
 

@@ -432,6 +432,7 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
 <translation id="2536110899380797252">ठेगाना थप्नुहोस्</translation>
 <translation id="2539524384386349900">पत्ता लगाउनुहोस्</translation>
+<translation id="2541219929084442027">तपाईंले आफ्ना सबै इन्कोग्निटो ट्याबहरू बन्द गरेपछि तपाईंले ती इन्कोग्निटो ट्याबमा हेर्ने पेजहरू तपाईंको ब्राजउरको इतिहास, कुकी स्टोर वा खोजको इतिहासमा भण्डारण हुने छैनन्। तपाईंले डाउनलोड गर्ने कुनै फाइल वा बनाउने कुनै बुकमार्क भने भण्डारण गरिने छ।</translation>
 <translation id="2544644783021658368">एउटा कागजात</translation>
 <translation id="254947805923345898">नीतिको मान मान्य छैन।</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ले अमान्य प्रतिक्रिया पठायो।</translation>
@@ -504,6 +505,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">आक्रमणकारीहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> बाट तपाईंको जानकारी (उदाहरणका लागि, पासवर्ड, सन्देश वा क्रेडिट कार्डहरू) चोर्ने प्रयास गरिरहेका हुनसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ।</translation>
+<translation id="2876489322757410363">कुनै बाह्य एपमार्फत भुक्तानी गर्न इन्कोग्निटो मोडबाट बाहिरिँदै हुनुहुन्छ। जारी राख्ने हो?</translation>
 <translation id="2878197950673342043">पोस्टर फोल्ड</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">विन्डो रहने स्थान</translation>
@@ -695,6 +697,7 @@
 <translation id="3584299510153766161">फेदमा दुई प्वाल</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
+<translation id="3590643883886679995">तपाईं इन्कोग्निटो मोडबाट बाहिरिएपछि साइन इन गर्न चाहिने डेटा यो डिभाइसमा भण्डारण गरिने छ।</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">तपाईंका प्रशासकले रोक लगाउनुभएको एप</translation>
@@ -897,7 +900,6 @@
 <translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
-<translation id="4305817255990598646">स्विच</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
@@ -1003,6 +1005,7 @@
 <translation id="4738601419177586157"><ph name="TEXT" /> को खोजसम्बन्धी सुझाव</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="4744603770635761495">कार्यान्वयनयोग्य मार्ग</translation>
+<translation id="4749011317274908093">तपाईं इन्कोग्निटो मोडमा जानुभएको छ</translation>
 <translation id="4750917950439032686">यस साइटमा तपाईँको जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्डको नम्बर) पठाउँदा त्यो निजी रहन्छ।</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
@@ -1666,6 +1669,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">आदेश रेखा</translation>
 <translation id="7359588939039777303">विज्ञापनहरूमाथि रोक लगाइयो।</translation>
+<translation id="7363096869660964304">तथापि, तपाईंले गर्नुभएका सबै क्रियाकलाप कसैले देख्न सक्दैन भन्ने हुँदैन। तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईं आफ्नो रोजगारदाता, इन्टरनेट सेवा प्रदायक वा आफूले प्रयोग गर्ने वेबसाइटहरूसँग आफ्नो ब्राउजिङ इतिहास लुकाउन सक्नुहुन्न।</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई ठेगानाहरू थप्न तथा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="7365849542400970216">तपाईंलाई आफ्नो यन्त्रले के काम गर्छ भन्ने कुरा थाहा छ?</translation>
 <translation id="7372973238305370288">खोजको परिणाम</translation>
@@ -1891,6 +1895,7 @@
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
 <translation id="8184538546369750125">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
+<translation id="8193086767630290324">गोप्य डेटाका रूपमा फ्ल्याग गरिएको डेटा प्रयोग गरी गरिएका कारबाहीहरू</translation>
 <translation id="8194797478851900357">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" भएको विस्तारका लागि अवैध अद्यावधिक URL</translation>
 <translation id="8202097416529803614">अर्डरको सारांश</translation>

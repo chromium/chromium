@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">Pentru a gestiona contul Google, atinge butonul „Gestionează contul”</translation>
 <translation id="1549000191223877751">Mută în altă fereastră</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
+<translation id="1558391695376153246">Închide filele incognito</translation>
 <translation id="1569387923882100876">Dispozitiv conectat</translation>
 <translation id="1571304935088121812">Copiază numele de utilizator</translation>
 <translation id="1592864538817356322">Protecție standard:</translation>
@@ -235,6 +236,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2518590038762162553">În modul Lite, Chrome încarcă mai repede paginile și folosește cu până la 60 % mai puține date. Pentru a optimiza paginile pe care le accesezi, Chrome trimite traficul tău web la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Trimite la Google adresele URL ale paginilor pe care le accesezi</translation>
+<translation id="2527497042232966453">Ai comutat la filele incognito</translation>
 <translation id="2527779675047087889">Ascunde conținutul clipboardului</translation>
 <translation id="2532336938189706096">Vizualizare pe web</translation>
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -424,11 +426,13 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descărcări șterse</translation>
+<translation id="3845098929839618392">Deschide într-o filă incognito</translation>
 <translation id="3856096718352044181">Confirmă dacă acesta este un furnizor valid sau încearcă din nou mai târziu</translation>
 <translation id="3861633093716975811">Videoclipuri populare</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="3894427358181296146">Adaugă un dosar</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
+<translation id="3899682235662194879">Închide toate filele incognito</translation>
 <translation id="3908308510347173149">Actualizează <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Se caută tot ce e mai bun de pe web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> este activă</translation>
@@ -482,6 +486,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="4263656433980196874">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului, deschisă la înălțimea completă</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
 <translation id="4290281343757112331">Descarci mai târziu?</translation>
+<translation id="4296252229500326964">Filă incognito nouă</translation>
 <translation id="4298388696830689168">Site-uri conectate</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
@@ -573,6 +578,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4865987431642283918">Limba prestabilită a dispozitivului</translation>
 <translation id="4866368707455379617">Nu se poate instala <ph name="MODULE" /> pentru Chrome</translation>
 <translation id="4875775213178255010">Sugestii de conținut</translation>
+<translation id="4877678010818027629">Intră în modul incognito</translation>
 <translation id="4878404682131129617">Nu s-a putut stabili un tunel prin serverul proxy</translation>
 <translation id="4880127995492972015">Tradu…</translation>
 <translation id="4881695831933465202">Deschide</translation>
@@ -899,6 +905,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="686366188661646310">Ștergi parola?</translation>
 <translation id="6864459304226931083">Descarcă imaginea</translation>
 <translation id="6865313869410766144">Datele salvate pentru completarea automată a formularelor</translation>
+<translation id="6867400383614725881">Filă incognito nouă</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="688738109438487280">Adaugă datele existente în <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Deblochează pentru a copia parola</translation>
@@ -914,6 +921,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6955535239952325894">Setarea este dezactivată în browserele gestionate</translation>
 <translation id="6963766334940102469">Șterge marcaje</translation>
+<translation id="696447261358045621">Ieși din modul incognito</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6989267951144302301">Nu s-a putut descărca</translation>
@@ -1185,7 +1193,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8788968922598763114">Redeschide ultima filă închisă</translation>
 <translation id="8798449543960971550">Citite</translation>
 <translation id="8812260976093120287">Pe unele site-uri, poți plăti folosind aplicațiile acceptate pentru plăți de mai sus de pe dispozitiv.</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Conținutul filei Previzualizează nu poate fi afișat.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="883806473910249246">A apărut o eroare la descărcarea conținutului.</translation>

@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chromiumi andmed sellest seadmest</translation>
 <translation id="4787850887676698916">Siin kuvatakse teie teistes seadmetes Chromiumis avatud vahelehed.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
+<translation id="4852878756222711218">Chromiumi kasutamiseks parimal moel logige sisse oma Google'i kontoga</translation>
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4999538639245140991">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chromiumi andmed. Google'i kontole jäävad teie andmed alles.</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="6827294685447036764">Kui lubate Chromiumil teada teie asukohateavet, saadab Chromium selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
 <translation id="7018284295775193585">Chromiumit ei saa värskendada</translation>
+<translation id="7045244423563602563">Isikupärastage Chromiumi</translation>
 <translation id="7099326575020694068">Chromium ei saa poolitatud vaate režiimis kaamerat kasutada</translation>
 <translation id="7118091470949186573">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7208566199746267865">Chromium säästab aega, tuues teie kontod veebi. Kontosid saate lisada või eemaldada menüüs Seaded.</translation>

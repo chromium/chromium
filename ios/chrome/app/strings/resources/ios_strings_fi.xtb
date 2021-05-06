@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Valitse kansio</translation>
 <translation id="1265739287306757398">Lisätietoja</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
+<translation id="1282311502488501110">Älä kirjaudu sisään</translation>
 <translation id="1283524564873030414">Viimeiset 24 tuntia</translation>
 <translation id="1285320974508926690">Älä käännä tätä sivustoa</translation>
 <translation id="1321993286294231467">Virhe tallennettaessa kuvaa</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Avaa history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kohdetta siirretty</translation>
 <translation id="2139867232736819575">Hae kopioitua tekstiä</translation>
+<translation id="214201757571129614">Kirjaudu sisään…</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2198757192731523470">Google voi muokata Hakua, mainoksia ja muita Googlen palveluita historiasi perusteella.</translation>
@@ -343,6 +345,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4630540211544979320">Käännä sivuja</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4636930964841734540">Tietoja</translation>
+<translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi.</translation>
 <translation id="4659667755519643272">Avaa välilehtien vaihtaja</translation>
 <translation id="46614316059270592">Tallenna salasana</translation>

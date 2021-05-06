@@ -2947,6 +2947,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Esta política está obsoleta. Usa la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> en su lugar.</translation>
 <translation id="4923806312383904642">Permitir que WebDriver anule las políticas incompatibles</translation>
+<translation id="4924377847308623325">Prevenir tipos de consultas de DNS adicionales</translation>
 <translation id="4927214690104703256">Si se establece esta política, se especificarán las extensiones que pueden usar las funciones de la <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para la atestación remota. Para usar la API, las extensiones deben estar incluidas en esta lista.
 
       Si una extensión no está en la lista o no se ha configurado la lista, la llamada a la API devolverá un código de error.</translation>
@@ -4624,6 +4625,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7030205756530739128">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> se definirá cuándo deberá empezar a cargarse la batería, en función del porcentaje de carga de la batería. El valor debe ser al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Si no se asigna ningún valor a esta política, se aplicará el modo de carga estándar de la batería.</translation>
+<translation id="7030407698292813622">Permitir consultas de DNS de tipos de registro DNS adicionales</translation>
 <translation id="7032813174556919004">Inhabilitar DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor staging para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
 
@@ -5280,31 +5282,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Recomendación: Bloquea la pantalla en modo de inactividad activando el bloqueo de pantalla en el modo de suspensión y configurando <ph name="PRODUCT_OS_NAME" /> para que realice la suspensión después del periodo de inactividad indicado. Utiliza esta política únicamente si el bloqueo de la pantalla debería producirse mucho antes que la suspensión, o cuando no quieras que se produzca la suspensión en modo de inactividad.</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
-<translation id="7896787076628252574">Configura una lista de reglas para evitar las filtraciones de datos en <ph name="PRODUCT_OS_NAME" />.
-      Las filtraciones de datos se pueden producir cuando se copia y pega información, se transfieren archivos, se imprime, se comparte pantalla, se hacen capturas de pantalla, etc.
-
-      Cada regla se compone de lo siguiente:
-      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se consideran confidenciales y se les aplicarán las restricciones.
-      - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
-      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
-
-      Se pueden añadir reglas para:
-      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
-      - Controlar que se puedan hacer capturas de pantalla de cualquiera de las fuentes.
-      - Controlar la impresión de cualquiera de las fuentes.
-      - Controlar la pantalla de privacidad cuando se está visualizando alguna de las fuentes.
-      - Controlar la pantalla compartida de cualquiera de las fuentes.
-
-      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK o ALLOW.
-      - Si se le asigna el valor BLOCK, la acción no se permitirá.
-      - Si se le asigna el valor ALLOW, la acción se permitirá.
-
-      Notas:
-      - La restricción PRIVACY_SCREEN no bloquea la opción de activar la pantalla de privacidad, sino que la requiere cuando la clase de la restricción tiene el valor BLOCK.
-      - Los destinos no pueden estar vacíos en caso de que alguna de las restricciones sea CLIPBOARD, pero no afectan al resto de las restricciones.
-      - Los patrones de URL deben tener el formato que se indica en esta página: https://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para introducir la contraseña</translation>
 <translation id="7904177352786629708">Si se asigna el valor "Enabled" a esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
 
@@ -5976,6 +5953,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
        Nota: Esta política no se aplica al modo de incógnito. Para obtener más información sobre el alojamiento de extensiones, consulta https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8827366480126575426">El protocolo del controlador de protocolos.</translation>
+<translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
 <translation id="8831911834413504983">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden ejecutar JavaScript.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -6264,6 +6242,13 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       NOTA: El comportamiento predeterminado de los dispositivos de usuarios particulares no es el mismo que el de los dispositivos de empresas. En los dispositivos gestionados, las conexiones P2P estarán habilitadas de forma predeterminada. Sin embargo, en los dispositivos no gestionados, las conexiones P2P estarán inhabilitadas de forma predeterminada.</translation>
 <translation id="9164656078867027374">Definir dominios con permiso para acceder a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9166670902476893480">Esta política controla si <ph name="PRODUCT_NAME" /> puede consultar tipos de registro DNS adicionales al hacer solicitudes DNS no seguras. Esta política no afecta a las consultas de DNS realizadas a través de la función DNS seguro, que puede consultar tipos de DNS adicionales en cualquier momento.
+
+      Si se le asigna el valor Enabled a esta política o no se establece, se podrán consultar tipos adicionales, como <ph name="DNS_TYPE_HTTPS" /> (tipo de DNS 65), además de <ph name="DNS_TYPE_A" /> (tipo de DNS 1) y <ph name="DNS_TYPE_AAAA" /> (tipo de DNS 28).
+
+      Si se le asigna el valor Disabled a la política, solo se podrán consultar los tipos <ph name="DNS_TYPE_A" /> (tipo de DNS 1) y <ph name="DNS_TYPE_AAAA" /> (tipo de DNS 28).
+
+      Esta política es una medida temporal y se eliminará en futuras versiones de <ph name="PRODUCT_NAME" />. Cuando se elimine, <ph name="PRODUCT_NAME" /> podrá consultar tipos de DNS adicionales en cualquier momento.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de incorporación del Asistente.

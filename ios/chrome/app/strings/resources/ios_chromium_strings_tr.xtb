@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chromium verileri bu cihazdan silinecek</translation>
 <translation id="4787850887676698916">Diğer cihazlarınızda Chromium'da açtığınız sekmeler burada görünür.</translation>
 <translation id="4828317641996116749">Chromium, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
+<translation id="4852878756222711218">Chromium'dan en iyi şekilde yararlanmak için Google Hesabınızla oturum açın</translation>
 <translation id="4985291216379576555">Çevrimdışı, Chromium güncellemeleri denetleyemiyor</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chromium verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="6827294685447036764">Konumunuzu bilmesine izin verirseniz Chromium bu bilgiyi, izin verdiğiniz tüm sitelere gönderir. Yakındaki mağazalar veya haberler gibi size gösterecek yerel bilgileri olduğunda siteler konum bilginize erişmek isteyebilir.</translation>
 <translation id="7018284295775193585">Chromium güncellenemiyor</translation>
+<translation id="7045244423563602563">Chromium'u Kendinize Uyarlayın</translation>
 <translation id="7099326575020694068">Chromium, kameranızı Bölünmüş Görünüm modunda kullanamıyor</translation>
 <translation id="7118091470949186573">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
 <translation id="7208566199746267865">Chromium, hesaplarınızı web'e getirerek size zaman kazandırır. Hesapları Ayarlar'dan ekleyebilir veya kaldırabilirsiniz.</translation>

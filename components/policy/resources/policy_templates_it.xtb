@@ -2927,6 +2927,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Questo criterio è deprecato. Usa il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">Consenti a WebDriver di eseguire l'override delle norme non compatibili</translation>
+<translation id="4924377847308623325">Sono vietati tipi di query DNS aggiuntivi</translation>
 <translation id="4927214690104703256">La configurazione del criterio consente di specificare le estensioni consentite per utilizzare le funzioni di <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> per l'attestazione da remoto. Per utilizzare l'API, le estensioni devono essere presenti in questo elenco.
 
       Se un'estensione non è presente nell'elenco o se l'elenco non viene configurato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
@@ -4577,6 +4578,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="7030205756530739128">Se il criterio <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> viene impostato su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene avviata la ricarica della batteria, in base alla percentuale di carica. Il valore deve essere di almeno 5 punti percentuali inferiore a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se il criterio non viene configurato, viene applicata la modalità di ricarica standard della batteria.</translation>
+<translation id="7030407698292813622">Consenti query DNS per tipi di record DNS aggiuntivi</translation>
 <translation id="7032813174556919004">Disattiva DNS over HTTPS</translation>
 <translation id="7033778618670823541">Questo criterio consente di specificare un elenco di origini (URL) o modelli di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
 
@@ -5232,31 +5234,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Consiglio: blocca lo schermo in caso di inattività attivando il blocco schermo in caso di sospensione e fai in modo che <ph name="PRODUCT_OS_NAME" /> entri in sospensione dopo il ritardo di inattività. Usa questo criterio soltanto quando il blocco dello schermo dovrebbe avvenire molto tempo prima della sospensione o quando non vuoi che venga attivata la sospensione in caso di inattività.</translation>
 <translation id="7895553628261067384">Accesso remoto</translation>
-<translation id="7896787076628252574">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
-      La fuga di dati può verificarsi, ad esempio, tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione dello schermo o l'acquisizione di screenshot.
-
-      Ogni regola prevede quanto segue:
-      - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
-      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o non consentita.
-      - Un elenco di limitazioni da applicare ai dati delle origini.
-
-      È possibile aggiungere regole per:
-      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
-      - Controllare l'acquisizione di screenshot di tutte le origini.
-      - Controllare la stampa di tutte le origini.
-      - Controllare la Schermata privata quando una delle origini è visibile.
-      - Controllare la condivisione schermo di tutte le origini.
-
-      Il livello di limitazione può essere impostato su BLOCK o su ALLOW.
-      - Se la limitazione è impostata su BLOCK, l'azione non sarà consentita.
-      - Se la limitazione è imposta su ALLOW, l'azione sarà consentita.
-
-      Note:
-      - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la Schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
-      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma questo non fa alcuna differenza per le altre limitazioni.
-      - I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="7902040092815978832">Mostra la tastiera numerica per la password</translation>
 <translation id="7904177352786629708">Impostando il criterio su Attivato, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
 
@@ -5920,6 +5897,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
        Nota: questo criterio non viene applicato alla Modalità di navigazione in incognito. Leggi ulteriori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8827366480126575426">Il protocollo del gestore di protocollo.</translation>
+<translation id="8827417642396462482">Sono consentiti tipi di query DNS aggiuntivi</translation>
 <translation id="8831911834413504983">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono eseguire JavaScript.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -6198,6 +6176,13 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       NOTA: il comportamento predefinito per i dispositivi di utenti e aziende è diverso perché sui dispositivi gestiti viene attivato P2P, che invece non viene attivato sui dispositivi non gestiti.</translation>
 <translation id="9164656078867027374">Definisci i domini autorizzati ad accedere a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9166670902476893480">Questo criterio consente di stabilire se <ph name="PRODUCT_NAME" /> può eseguire query su tipi di record DNS aggiuntivi quando fa richieste DNS non sicure. Questo criterio non viene applicato per query DNS effettuate tramite DNS sicuro, che potrebbe sempre eseguire query su tipi DNS aggiuntivi.
+
+      Se questo criterio non viene configurato o se viene impostato su Attivato, è possibile eseguire query su tipi aggiuntivi quali <ph name="DNS_TYPE_HTTPS" /> (tipo DNS 65) oltre che su <ph name="DNS_TYPE_A" /> (tipo DNS 1) e <ph name="DNS_TYPE_AAAA" /> (tipo DNS 28).
+
+      Se questo criterio viene impostato su Disattivato, al DNS verranno inviate query soltanto per <ph name="DNS_TYPE_A" /> (tipo DNS 1) e/o <ph name="DNS_TYPE_AAAA" /> (tipo DNS 28).
+
+      Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
 <translation id="9190456586252617675">Questo criterio consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.

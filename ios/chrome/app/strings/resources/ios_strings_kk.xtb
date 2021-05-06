@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Қалтаны таңдау</translation>
 <translation id="1265739287306757398">Әдісін білу</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
+<translation id="1282311502488501110">Кірмеу</translation>
 <translation id="1283524564873030414">Соңғы 24 сағат</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
 <translation id="1321993286294231467">Сурет сақтау кезінде қате шықты.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com сайтын ашу</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> элементтің орны ауыстырылды</translation>
 <translation id="2139867232736819575">Көшірілген мәтінді іздеу</translation>
+<translation id="214201757571129614">Кіру…</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
 <translation id="2175927920773552910">QR коды</translation>
 <translation id="2198757192731523470">Search, жарнамалар және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін интернетті шолу тарихы пайдаланылуы мүмкін.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Беттерді аудару</translation>
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ретінде жалғастыру</translation>
 <translation id="4659126640776004816">Google есептік жазбаңызға кіргенде, бұл функция қосылады.</translation>
 <translation id="4659667755519643272">Tab Switcher енгізу</translation>
 <translation id="46614316059270592">Құпия сөзді сақтау</translation>

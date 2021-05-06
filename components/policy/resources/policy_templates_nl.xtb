@@ -2908,6 +2908,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">WebDriver toestaan niet-compatibele beleidsregels te negeren</translation>
+<translation id="4924377847308623325">Aanvullende DNS-zoekopdrachttypen voorkomen</translation>
 <translation id="4927214690104703256">Als je het beleid instelt, geef je de toegestane extensies op die de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />-functies moeten gebruiken voor externe attesten. Extensies moeten op deze lijst staan om de API te gebruiken.
 
       Als een extensie niet in de lijst voorkomt of als de lijst niet is ingesteld, mislukt de API-aanroep en wordt er een foutcode weergegeven.</translation>
@@ -4545,6 +4546,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="7030205756530739128">Als <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> is ingesteld op <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, stel je met <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> in wanneer de batterij begint met opladen, op basis van het percentage van de batterijlading. De waarde moet ten minste 5 procentpunten lager zijn dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Als je het beleid niet instelt, is de standaard batterijoplaadmodus van toepassing.</translation>
+<translation id="7030407698292813622">DNS-zoekopdrachten voor aanvullende DNS-recordtypen toestaan</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS uitzetten</translation>
 <translation id="7033778618670823541">Als je dit beleid instelt, wordt een lijst met herkomsten (URL's) of hostnaampatronen (zoals '*.example.com') gedefinieerd waarop beveiligingsbeperkingen voor onveilige beginpunten niet van toepassing zijn. Organisaties kunnen herkomsten specificeren voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen instellen, zodat de ontwikkelaars functies die een veilige context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als 'Niet veilig' in de adresbalk.
 
@@ -5199,31 +5201,6 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 
       De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve periode. Gebruik dit beleid alleen als schermvergrendeling veel eerder moet plaatsvinden dan opschorting of als je helemaal niet wilt opschorten bij inactiviteit.</translation>
 <translation id="7895553628261067384">Externe toegang</translation>
-<translation id="7896787076628252574">Hiermee stel je een lijst op met regels ter voorkoming van datalekken op <ph name="PRODUCT_OS_NAME" />.
-      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
-
-Elke regel bevat het volgende:
-- Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
-      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
-      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
-
-      Regels kunnen om deze redenen worden toegevoegd:
-- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
-      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
-      - Bepalen of er bronnen mogen worden afgedrukt.
-      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
-      - Bepalen of de bronnen het scherm mogen delen.
-
-      Het beperkingsniveau kan worden ingesteld op BLOCK of ALLOW.
-      - Als de beperking is ingesteld op BLOCK, is de actie niet toegestaan.
-      - Als de beperking is ingesteld op ALLOW, is de actie toegestaan.
-
-      Opmerkingen:
-- Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm aan te zetten maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
-      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
-      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format).
-
-Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="7902040092815978832">Numeriek toetsenbord tonen voor wachtwoord</translation>
 <translation id="7904177352786629708">Als je het beleid toepast, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is opgegeven tijdens het genereren van de Kerberos SPN.
 
@@ -5891,6 +5868,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 
        Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
 <translation id="8827366480126575426">Het protocol voor de protocolhandler.</translation>
+<translation id="8827417642396462482">Aanvullende DNS-zoekopdrachttypen toestaan</translation>
 <translation id="8831911834413504983">Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites JavaScript mogen uitvoeren.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -6176,6 +6154,13 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       OPMERKING: Het standaardgedrag voor consumenten- en zakelijke apparaten verschilt. P2P staat aan op beheerde apparaten maar niet op niet-beheerde apparaten.</translation>
 <translation id="9164656078867027374">Domeinen definiëren die toegang mogen hebben tot <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9166670902476893480">Dit beleid bepaalt of <ph name="PRODUCT_NAME" /> zoekopdrachten voor aanvullende DNS-recordtypen mag uitvoeren als er niet-beveiligde DNS-verzoeken worden gestuurd. Dit beleid heeft geen effect op DNS-zoekopdrachten die worden uitgevoerd via Beveiligde DNS, waarmee altijd zoekopdrachten voor aanvullende DNS-typen mogen worden uitgevoerd.
+
+      Als je dit beleid toepast of niet instelt, mogen zoekopdrachten voor aanvullende typen zoals <ph name="DNS_TYPE_HTTPS" /> (DNS-type 65) worden uitgevoerd in aanvulling op <ph name="DNS_TYPE_A" /> (DNS-type 1) en <ph name="DNS_TYPE_AAAA" /> (DNS-type 28).
+
+      Als je dit beleid niet toepast, worden zoekopdrachten voor DNS alleen uitgevoerd voor <ph name="DNS_TYPE_A" /> (DNS-type 1) en/of <ph name="DNS_TYPE_AAAA" /> (DNS-type 28).
+
+      Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
 <translation id="9187743794267626640">Koppeling van externe opslag uitzetten</translation>
 <translation id="9190456586252617675">Met dit beleid wordt de modus voor introductie van de Assistent beheerd.

@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">உங்கள் Google கணக்கை நிர்வகிக்க "கணக்கை நிர்வகி" என்ற பட்டனைத் தட்டுங்கள்</translation>
 <translation id="1549000191223877751">வேறு சாளரத்திற்கு நகர்த்து</translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
+<translation id="1558391695376153246">மறைநிலைத் தாவல்களை மூடுக</translation>
 <translation id="1569387923882100876">இணைத்த சாதனம்</translation>
 <translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
 <translation id="1592864538817356322">நிலையான பாதுகாப்பு:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2518590038762162553">லைட் பயன்முறையில் பக்கங்களை Chrome வேகமாக ஏற்றுவதோடு டேட்டாவை 60 சதவீதம் வரை குறைவாகவும் பயன்படுத்தும். நீங்கள் பார்க்கும் பக்கங்களை மேம்படுத்த Chrome உங்கள் இணைய டிராஃபிக்கை Googleளுக்கு அனுப்பும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
+<translation id="2527497042232966453">மறைநிலைத் தாவல்களுக்கு மாற்றப்பட்டது</translation>
 <translation id="2527779675047087889">கிளிப்போர்டில் உள்ளவற்றை மறைக்கும்</translation>
 <translation id="2532336938189706096">இணைய பார்வை</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
@@ -424,11 +426,13 @@
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>
+<translation id="3845098929839618392">மறைநிலைத் தாவலில் திற</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
 <translation id="3861633093716975811">பிரபலமான வீடியோக்கள்</translation>
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
 <translation id="3895926599014793903">பெரிதாக்குவதைச் செயல்படுத்த வலியுறுத்து</translation>
+<translation id="3899682235662194879">மறைநிலைத் தாவல்கள் அனைத்தையும் மூடுக</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ஐப் புதுப்பி</translation>
 <translation id="3912508018559818924">இணையத்திலிருந்து தரவை ஏற்றுகிறோம்…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
@@ -482,6 +486,7 @@
 <translation id="4263656433980196874">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="4269820728363426813">இணைப்பு முகவரியை நகலெடு</translation>
 <translation id="4290281343757112331">பின்னர் பதிவிறக்கவா?</translation>
+<translation id="4296252229500326964">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="4298388696830689168">இணைக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="4303044213806199882">chrome_ஸ்கிரீன்ஷாட்_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">அடிப்படைகள்</translation>
@@ -573,6 +578,7 @@
 <translation id="4865987431642283918">சாதனத்தின் இயல்பு மொழி</translation>
 <translation id="4866368707455379617">Chromeமுக்கான <ph name="MODULE" />ஐ நிறுவ முடியவில்லை</translation>
 <translation id="4875775213178255010">உள்ளடக்கப் பரிந்துரைகள்</translation>
+<translation id="4877678010818027629">மறைநிலையில் திறக்கும்</translation>
 <translation id="4878404682131129617">ப்ராக்ஸி சர்வர் மூலமாக டனல் இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="4880127995492972015">மொழிபெயர்…</translation>
 <translation id="4881695831933465202">திற</translation>
@@ -899,6 +905,7 @@
 <translation id="686366188661646310">கடவுச்சொல்லை நீக்கவா?</translation>
 <translation id="6864459304226931083">படத்தைப் பதிவிறக்கு</translation>
 <translation id="6865313869410766144">தன்னிரப்பி படிவத் தரவு</translation>
+<translation id="6867400383614725881">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="6882836635272038266">நிலையான பாதுகாப்பு பயன்முறையானது ஆபத்து என அறியப்படும் இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிரானது.</translation>
 <translation id="688738109438487280">ஏற்கனவே உள்ள தரவை <ph name="TO_ACCOUNT" /> இல் சேர்.</translation>
 <translation id="6891726759199484455">உங்கள் கடவுச்சொல்லை நகலெடுக்க, திறக்கவும்</translation>
@@ -914,6 +921,7 @@
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6955535239952325894">நிர்வகிக்கப்பட்ட உலாவிகளில் இந்த அமைப்பு முடக்கப்பட்டுள்ளது</translation>
 <translation id="6963766334940102469">புத்தகக்குறிகளை நீக்கு</translation>
+<translation id="696447261358045621">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="6979737339423435258">எல்லா நேரமும்</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="6989267951144302301">பதிவிறக்க முடியவில்லை</translation>
@@ -1185,7 +1193,6 @@
 <translation id="8788968922598763114">கடைசியாக மூடிய தாவலைத் திறக்கும்</translation>
 <translation id="8798449543960971550">படித்தவை</translation>
 <translation id="8812260976093120287">உங்கள் சாதனத்தில் ஆதரிக்கப்படும் கட்டணம் செலுத்துவதற்கான பயன்பாடுகளைப் (மேலே குறிப்பிட்டவை) பயன்படுத்தி, சில இணையதளங்களின் மூலம் பணம் செலுத்தலாம்.</translation>
-<translation id="8814190375133053267">வைஃபை</translation>
 <translation id="881688628773363275">தாவல் உள்ளடக்கத்தின் மாதிரிக்காட்சியைப் பார்க்க முடியாது.</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>

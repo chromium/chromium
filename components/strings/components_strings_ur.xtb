@@ -433,6 +433,7 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{اور 1 مزید}other{اور # مزید}}</translation>
 <translation id="2536110899380797252">پتہ شامل کریں</translation>
 <translation id="2539524384386349900">پتا لگائیں</translation>
+<translation id="2541219929084442027">صفحات جنہیں آپ پوشیدگی ٹیبز میں دیکھتے ہیں وہ آپ کے براؤزر کی سرگزشت، کوکی اسٹور یا تلاش کی سرگزشت میں آپ کی جانب سے آپ کے سبھی پوشیدگی ٹیبز بند کر دیے جانے کے بعد موجود نہیں رہیں گے۔ کوئی فائل جو آپ ڈاؤن لوڈ کرتے ہیں یا بُک مارکس جو آپ بناتے ہیں وہ باقی رہیں گے۔</translation>
 <translation id="2544644783021658368">واحد دستاویز</translation>
 <translation id="254947805923345898">پالیسی کی قدر درست نہیں ہے۔</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> نے ایک غلط جواب بھیجا۔</translation>
@@ -506,6 +507,7 @@
 <translation id="2850739647070081192">Invite ‎(Envelope‎)‎</translation>
 <translation id="2856444702002559011">حملہ آور <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سے آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) چوری کرنے کی کوشش کر سکتے ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے۔</translation>
+<translation id="2876489322757410363">کسی خارجی ایپلیکیشن کے ذریعے ادائیگی کرنے کے لیے پوشیدگی وضع کو چھوڑ رہے ہیں۔ جاری رکھیں؟</translation>
 <translation id="2878197950673342043">پوسٹر جیسے فولڈ</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">ونڈو کا مقام</translation>
@@ -701,6 +703,7 @@
 <translation id="3584299510153766161">نیچے دُہرا سوراخ</translation>
 <translation id="3586931643579894722">تفصیلات چھپائیں</translation>
 <translation id="3587738293690942763">وسطی</translation>
+<translation id="3590643883886679995">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔</translation>
 <translation id="3592413004129370115">Italian ‎(Envelope‎)‎</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3603507503523709">ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کیا گیا</translation>
@@ -904,7 +907,6 @@
 <translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
 <translation id="4302965934281694568">Chou3 ‎(Envelope‎)‎</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
-<translation id="4305817255990598646">سوئچ کریں</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">مسدود کریں (ڈیفالٹ)</translation>
 <translation id="4314815835985389558">مطابقت پذیری کا نظم کريں</translation>
@@ -1010,6 +1012,7 @@
 <translation id="4738601419177586157"><ph name="TEXT" /> تلاش کی تجویز</translation>
 <translation id="4742407542027196863">پاس ورڈز کا نظم کریں…</translation>
 <translation id="4744603770635761495">قابل کارروائی پاتھ</translation>
+<translation id="4749011317274908093">آپ پوشیدگی وضع میں چلے گئے ہیں</translation>
 <translation id="4750917950439032686">جب آپ کی معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈ نمبرز) اس سائٹ پر بھیجی جاتی ہے تو اس وقت وہ نجی ہوتی ہے۔</translation>
 <translation id="4756388243121344051">&amp;سرگزشت</translation>
 <translation id="4758311279753947758">رابطے کی معلومات شامل کریں</translation>
@@ -1674,6 +1677,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">کمانڈ لائن</translation>
 <translation id="7359588939039777303">اشتہارات مسدود ہیں۔</translation>
+<translation id="7363096869660964304">تاہم، آپ غیر مرئی نہیں ہیں۔ پوشیدگی اختیار کرنا آپ کے آجر، آپ کے انٹرنیٹ سروس فراہم کنندہ یا آپ جو ویب سائٹس ملاحظہ کرتے ہیں ان سے آپ کی براؤزنگ کو نہیں چھپاتا ہے۔</translation>
 <translation id="7365596969960773405">‏<ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں پتوں کو شامل کرنے اور ان کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="7365849542400970216">اپنے آلے کا استعمال جانتے ہیں؟</translation>
 <translation id="7372973238305370288">تلاش کا نتیجہ</translation>
@@ -1899,6 +1903,7 @@
 <translation id="8175796834047840627">‏آپ کے سائن ان ہونے کی وجہ سے Chrome آپ کے کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کرنے کی پیشکش کر رہا ہے۔ آپ اس برتاؤ کو ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8176440868214972690">اس آلہ کے منتظم نے کچھ معلومات جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹ پر بھیجی ہیں۔</translation>
 <translation id="8184538546369750125">عالمی ڈیفالٹ استعمال کریں (اجازت دیں)</translation>
+<translation id="8193086767630290324">رازدارانہ کے بطور پرچم لگائے گئے ڈیٹا کے متعلق کی گئی کاروائیاں</translation>
 <translation id="8194797478851900357">منتقلی کو &amp;کالعدم کریں</translation>
 <translation id="8201077131113104583">‏‎ID "<ph name="EXTENSION_ID" />"‎ کے ساتھ ایکسٹینشن کیلئے غلط اپ ڈیٹ URL۔</translation>
 <translation id="8202097416529803614">آرڈر کا خلاصہ</translation>

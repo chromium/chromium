@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">要管理您的 Google 帐号，请点按“管理帐号”按钮</translation>
 <translation id="1549000191223877751">移至其他窗口</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1569387923882100876">连接的设备</translation>
 <translation id="1571304935088121812">复制用户名</translation>
 <translation id="1592864538817356322">标准保护：</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2518590038762162553">在精简模式下，Chrome 可更快速地加载网页，并可节省多达 60% 的流量。为了优化您访问的网页，Chrome 会将您的网络流量数据发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
+<translation id="2527497042232966453">已切换到无痕式标签页</translation>
 <translation id="2527779675047087889">隐藏剪贴板内容</translation>
 <translation id="2532336938189706096">网页视图</translation>
 <translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
@@ -424,11 +426,13 @@
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已删除 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
+<translation id="3845098929839618392">在无痕式标签页中打开</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="3861633093716975811">热门视频</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3894427358181296146">添加文件夹</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
+<translation id="3899682235662194879">关闭所有无痕模式标签页</translation>
 <translation id="3908308510347173149">更新 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">正在从网络中查找最具价值的数据…</translation>
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
@@ -482,6 +486,7 @@
 <translation id="4263656433980196874">针对 Google 助理语音搜索功能的用户意见征求界面已全屏打开</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4290281343757112331">改为在晚些时候下载？</translation>
+<translation id="4296252229500326964">打开新的无痕式标签页</translation>
 <translation id="4298388696830689168">已关联的网站</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">基本</translation>
@@ -573,6 +578,7 @@
 <translation id="4865987431642283918">默认设备语言</translation>
 <translation id="4866368707455379617">无法为 Chrome 安装<ph name="MODULE" /></translation>
 <translation id="4875775213178255010">内容建议</translation>
+<translation id="4877678010818027629">进入无痕模式</translation>
 <translation id="4878404682131129617">未能成功通过代理服务器建立隧道</translation>
 <translation id="4880127995492972015">翻译…</translation>
 <translation id="4881695831933465202">打开</translation>
@@ -899,6 +905,7 @@
 <translation id="686366188661646310">删除密码？</translation>
 <translation id="6864459304226931083">下载图片</translation>
 <translation id="6865313869410766144">自动填充表单数据</translation>
+<translation id="6867400383614725881">打开新的无痕式标签页</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="688738109438487280">将现有数据添加到 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">需解锁才能复制您的密码</translation>
@@ -914,6 +921,7 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
 <translation id="6963766334940102469">删除书签</translation>
+<translation id="696447261358045621">退出无痕模式</translation>
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6989267951144302301">无法下载</translation>
@@ -1185,7 +1193,6 @@
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>
 <translation id="8798449543960971550">已读</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="883806473910249246">下载此内容时出错。</translation>

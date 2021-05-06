@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Պանակի ընտրում</translation>
 <translation id="1265739287306757398">Իմանալ ինչպես</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
+<translation id="1282311502488501110">Մուտք չգործել</translation>
 <translation id="1283524564873030414">Վերջին 24 ժամվա</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1321993286294231467">Չհաջողվեց պահել պատկերը։</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
+<translation id="214201757571129614">Մտնել…</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2198757192731523470">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար:</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Թարգմանել էջերը</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
+<translation id="4650125387981512669">Շարունակել որպես <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Այս գործառույթը միանում է, երբ դուք մտնում եք Google հաշիվ:</translation>
 <translation id="4659667755519643272">Բացել ներդիրների փոխանջատիչը</translation>
 <translation id="46614316059270592">Պահել գաղտնաբառը</translation>

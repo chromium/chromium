@@ -204,6 +204,7 @@
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
+<translation id="313283613037595347">创建新的无痕式标签页。</translation>
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
@@ -498,6 +499,7 @@
 <translation id="6202364442240589072">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
 <translation id="6219688215832490856">一律不翻译</translation>
 <translation id="6223816392543092032">获取您在自己的所有设备上保存的书签、历史记录、密码和其他设置。</translation>
+<translation id="6232329973559504466">无痕搜索</translation>
 <translation id="6254066287920239840">在应用（而非浏览器）中打开链接。</translation>
 <translation id="6255097610484507482">修改信用卡</translation>
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
@@ -562,6 +564,9 @@
 <translation id="6656103420185847513">修改文件夹</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6668619169535738264">修改书签</translation>
+<translation id="6672241253012342409">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
+
+不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
@@ -573,6 +578,7 @@
 <translation id="6780034285637185932">邮编</translation>
 <translation id="6785453220513215166">正在发送崩溃报告…</translation>
 <translation id="6797885426782475225">语音搜索</translation>
+<translation id="6801927553864092214">若要私密地浏览网页，请打开一个无痕式标签页</translation>
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6831043979455480757">翻译</translation>
@@ -715,6 +721,7 @@
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
+<translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="83100941411593607">登录功能已被停用</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>

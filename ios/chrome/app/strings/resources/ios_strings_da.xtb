@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Vælg mappe</translation>
 <translation id="1265739287306757398">Se, hvordan du gør</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="1282311502488501110">Log ikke ind</translation>
 <translation id="1283524564873030414">De seneste 24 timer</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
 <translation id="1321993286294231467">Billedet kunne ikke gemmes.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
+<translation id="214201757571129614">Log ind…</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2198757192731523470">Google kan bruge din historik til at tilpasse Søgning, annoncer og andre Google-tjenester.</translation>
@@ -343,6 +345,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4630540211544979320">Oversæt sider</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
+<translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Når du logger ind på din Google-konto, er denne funktion aktiveret.</translation>
 <translation id="4659667755519643272">Åbn Faneskift</translation>
 <translation id="46614316059270592">Gem adgangskode</translation>

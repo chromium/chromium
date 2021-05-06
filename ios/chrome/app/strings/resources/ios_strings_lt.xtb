@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Pasirinkti aplanką</translation>
 <translation id="1265739287306757398">Sužinoti, kaip tai padaryti</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
+<translation id="1282311502488501110">Neprisijungti</translation>
 <translation id="1283524564873030414">Pastarosios 24 valandos</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1321993286294231467">Klaida išsaugant vaizdą.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Atidaryti history.google.com</translation>
 <translation id="2116625576999540962">Perkelta elementų: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Ieškoti nukopijuoto teksto</translation>
+<translation id="214201757571129614">Prisijungti…</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
 <translation id="2175927920773552910">QR kodas</translation>
 <translation id="2198757192731523470">„Google“ gali naudoti jūsų istoriją, kad suasmenintų Paiešką, skelbimus ir kitas „Google“ paslaugas.</translation>
@@ -343,6 +345,7 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="4630540211544979320">Versti puslapius</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
 <translation id="4636930964841734540">Informacija</translation>
+<translation id="4650125387981512669">Tęsti kaip <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Prisijungus prie „Google“ paskyros, ši funkcija yra įjungta.</translation>
 <translation id="4659667755519643272">Įjungti skirtukų perjungiklį</translation>
 <translation id="46614316059270592">Išsaugoti slaptažodį</translation>

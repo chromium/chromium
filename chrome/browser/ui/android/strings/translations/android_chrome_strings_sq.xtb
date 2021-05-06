@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">Për të menaxhuar "Llogarinë tënde të Google", prek butonin "Menaxho llogarinë"</translation>
 <translation id="1549000191223877751">Zhvendose te dritarja tjetër</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
+<translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1569387923882100876">Pajisja e lidhur</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
 <translation id="1592864538817356322">Mbrojtja standarde:</translation>
@@ -235,6 +236,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2518590038762162553">Në "Modalitetin e lehtë", Chrome i ngarkon faqet më shpejt dhe përdor deri në 60 përqind më pak të dhëna. Për të optimizuar faqet që viziton, Chrome e dërgon trafikun tënd të uebit te Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Dërgon te Google URL-të e faqeve që ti viziton</translation>
+<translation id="2527497042232966453">Kaloi te skedat "e fshehta"</translation>
 <translation id="2527779675047087889">Fshih përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="2532336938189706096">Pamja e uebit</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> artikuj të fshirë</translation>
@@ -424,11 +426,13 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3819178904835489326">U fshinë <ph name="NUMBER_OF_DOWNLOADS" /> shkarkime</translation>
+<translation id="3845098929839618392">Hape në skedë "të fshehtë"</translation>
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3861633093716975811">Video të njohura</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3894427358181296146">Shto dosje</translation>
 <translation id="3895926599014793903">Aktivizo me detyrim zmadhimin</translation>
+<translation id="3899682235662194879">Mbylli të gjitha skedat "e fshehta"</translation>
 <translation id="3908308510347173149">Përditëso <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Po gjen më të mirën nga uebi…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> është aktiv</translation>
@@ -482,6 +486,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4263656433980196874">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit" e hapur në lartësi të plotë</translation>
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="4290281343757112331">Të shkarkohet më vonë më mirë?</translation>
+<translation id="4296252229500326964">Skedë e re "e fshehtë"</translation>
 <translation id="4298388696830689168">Sajtet e lidhura</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Bazat</translation>
@@ -573,6 +578,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4865987431642283918">Gjuha e parazgjedhur e pajisjes</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> nuk mund të instalohet për Chrome</translation>
 <translation id="4875775213178255010">Sugjerimet e përmbajtjes</translation>
+<translation id="4877678010818027629">Hyr në modalitetin "e fshehtë"</translation>
 <translation id="4878404682131129617">Dështoi krijimi i një tuneli përmes serverit përfaqësues</translation>
 <translation id="4880127995492972015">Përkthe…</translation>
 <translation id="4881695831933465202">Hap</translation>
@@ -899,6 +905,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="686366188661646310">Të fshihet fjalëkalimi?</translation>
 <translation id="6864459304226931083">Shkarko imazhin</translation>
 <translation id="6865313869410766144">Plotëso automatikisht të dhënat e formularit</translation>
+<translation id="6867400383614725881">Skedë e re "e fshehtë"</translation>
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="688738109438487280">Shto të dhënat ekzistuese te <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Shkyçe për të kopjuar fjalëkalimin</translation>
@@ -914,6 +921,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6955535239952325894">Ky cilësim është i çaktivizuar në shfletuesit e menaxhuar</translation>
 <translation id="6963766334940102469">Fshi faqeshënuesit</translation>
+<translation id="696447261358045621">Dil nga modaliteti "i fshehtë"</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6989267951144302301">Nuk mund të shkarkohej</translation>
@@ -1185,7 +1193,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8788968922598763114">Hap përsëri skedën e fundit të mbyllur</translation>
 <translation id="8798449543960971550">Të lexuara</translation>
 <translation id="8812260976093120287">Në disa sajte uebi, mund të paguash me aplikacionet e mësipërme të mbështetura të pagesës në pajisjen tënde.</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Përmbajtja e skedës së shikimit paraprak nuk është e shikueshme.</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="883806473910249246">Ndodhi një gabim gjatë shkarkimit të përmbajtjes.</translation>

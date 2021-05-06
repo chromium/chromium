@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Scegli cartella</translation>
 <translation id="1265739287306757398">Scopri come</translation>
 <translation id="1272079795634619415">Interrompi</translation>
+<translation id="1282311502488501110">Non accedere</translation>
 <translation id="1283524564873030414">Ultime 24 ore</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1321993286294231467">Errore durante il salvataggio dell'immagine.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi spostati</translation>
 <translation id="2139867232736819575">Cerca il testo copiato</translation>
+<translation id="214201757571129614">Accedi…</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2198757192731523470">Google può utilizzare la tua cronologia per personalizzare la Ricerca, gli annunci e altri servizi Google.</translation>
@@ -343,6 +345,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4630540211544979320">Traduci pagine</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Questa funzionalità viene attivata quando accedi al tuo Account Google.</translation>
 <translation id="4659667755519643272">Apri selettore di schede</translation>
 <translation id="46614316059270592">Salva password</translation>

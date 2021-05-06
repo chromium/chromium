@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1265739287306757398">En savoir plus</translation>
 <translation id="1272079795634619415">Arrêter</translation>
+<translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1283524564873030414">Dernières 24 heures</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés.</translation>
 <translation id="2139867232736819575">Rechercher le texte copié</translation>
+<translation id="214201757571129614">Connectez-vous…</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2198757192731523470">Google peut utiliser votre historique pour personnaliser la recherche, les annonces et d'autres services Google.</translation>
@@ -343,6 +345,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4630540211544979320">Traduire les pages</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4636930964841734540">Infos</translation>
+<translation id="4650125387981512669">Continuer en tant que <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Lorsque vous vous connectez à votre compte Google, cette fonctionnalité est activée.</translation>
 <translation id="4659667755519643272">Lancer le sélecteur d'onglets</translation>
 <translation id="46614316059270592">Enregistrer le mot de passe</translation>
@@ -499,7 +502,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
-<translation id="6232329973559504466">Recherche en mode navigation privée</translation>
+<translation id="6232329973559504466">Recherche en navigation privée</translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6255097610484507482">Modifier la carte de paiement</translation>
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
@@ -566,7 +569,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6668619169535738264">Modifier le favori</translation>
 <translation id="6672241253012342409">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 
-Lorsque vous êtes en mode navigation privée, ils ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
+Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gérer les données synchronisées dans Google Dashboard</translation>
@@ -721,7 +724,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
-<translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web en toute confidentialité.</translation>
+<translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web en mode privé.</translation>
 <translation id="83100941411593607">Connexion désactivée</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>

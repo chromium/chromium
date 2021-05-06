@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo</translation>
 <translation id="4787850887676698916">As guias abertas no Chromium nos outros dispositivos aparecerão aqui.</translation>
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
+<translation id="4852878756222711218">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
 <translation id="6827294685447036764">Se você permitir que o Chromium saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium</translation>
+<translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="7118091470949186573">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7208566199746267865">O Chromium permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>

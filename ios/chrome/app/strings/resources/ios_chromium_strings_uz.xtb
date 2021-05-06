@@ -43,6 +43,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="4736424910885271643">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi</translation>
 <translation id="4787850887676698916">Boshqa qurilmalaringizda ochilgan Chromium sahifalari shu yerda ko‘rsatiladi.</translation>
 <translation id="4828317641996116749">Chromium barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
+<translation id="4852878756222711218">Chromium imkoniyatlaridan maksimal foydalanish uchun Google hisobingiz bilan kiring</translation>
 <translation id="4985291216379576555">Oflayn, Chromium yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="4999538639245140991">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chromium maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizdagi axborotlar saqlanib qoladi.</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
@@ -68,6 +69,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="6820823224820483452">Chromium barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="6827294685447036764">Geolokatsiyadan foydalanishga ruxsat bersangiz, Chromium bu maʼlumotlarni siz ruxsat bergan saytlarga yuboradi. Saytlar atrofdagi doʻkonlar yoki yangiliklar kabi axborotlarni chiqarish uchun joylashuvingizni soʻrashi mumkin.</translation>
 <translation id="7018284295775193585">Chromium yangilanmadi</translation>
+<translation id="7045244423563602563">Chromium brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7099326575020694068">Chromium kamerangizdan Split View rejimida foydalana olmaydi</translation>
 <translation id="7118091470949186573">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="7208566199746267865">Chromium xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chromium qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>

@@ -86,6 +86,7 @@
 <translation id="1544826120773021464">आफ्नो Google खाताको व्यवस्थापन गर्न "खाताको व्यवस्थापन गर्नुहोस्" नामक बटनमा क्लिक गर्नुहोस्</translation>
 <translation id="1549000191223877751">अर्को विन्डोमा सार्नुहोस्</translation>
 <translation id="1553358976309200471">Chrome अपडेट गर्नुहोस्</translation>
+<translation id="1558391695376153246">इन्कोग्निटो ट्याबहरू बन्द गरियोस्</translation>
 <translation id="1569387923882100876">जडित यन्त्र</translation>
 <translation id="1571304935088121812">प्रयोगकर्ता नामको कपी गर्नुहोस्</translation>
 <translation id="1592864538817356322">मानक सुरक्षा:</translation>
@@ -235,6 +236,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2518590038762162553">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नाका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ। तपाईंले भ्रमण गर्ने पृष्ठहरू अप्टिमाइज गर्न, Chrome ले तपाईंको वेबसम्बन्धी ट्राफिक Google मा पठाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
+<translation id="2527497042232966453">इन्कोग्निटो ट्याबहरू चयन गरिएका छन्</translation>
 <translation id="2527779675047087889">क्लिपबोर्डमा भएका सामग्री लुकाइयोस्</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
@@ -424,11 +426,13 @@
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>
+<translation id="3845098929839618392">इन्कोग्निटो ट्याबमा खोलियोस्</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3861633093716975811">लोकप्रिय भिडियोहरू</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="3894427358181296146">फोल्डर थप्नुहोस्</translation>
 <translation id="3895926599014793903">जूम सक्षम गर्न दबाब दिनु</translation>
+<translation id="3899682235662194879">सबै इन्कोग्निटो ट्याबहरू बन्द गरियोस्</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="3912508018559818924">वेबका उत्कृष्ट सामग्रीहरू फेला पार्दै…</translation>
 <translation id="3924911262913579434">'<ph name="SAFE_BROWSING_MODE" />' अन छ</translation>
@@ -482,6 +486,7 @@
 <translation id="4263656433980196874">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI पूर्ण उचाइमा खोलिएको छ</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4290281343757112331">बरु पछि डाउनलोड गर्ने हो?</translation>
+<translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">आधारभूत</translation>
@@ -572,6 +577,7 @@
 <translation id="4865987431642283918">यन्त्रको डिफल्ट भाषा</translation>
 <translation id="4866368707455379617">Chrome को <ph name="MODULE" /> स्थापना गर्न सकिएन</translation>
 <translation id="4875775213178255010">सामग्रीसम्बन्धी सुझावहरू</translation>
+<translation id="4877678010818027629">इन्कोग्निटो मोडमा जानुहोस्</translation>
 <translation id="4878404682131129617">प्रोक्सी सर्भरमार्फत कुनै टनेल स्थापना गर्न सकिएन</translation>
 <translation id="4880127995492972015">अनुवाद गर्नुहोस्…</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
@@ -898,6 +904,7 @@
 <translation id="686366188661646310">पासवर्ड मेट्ने हो?</translation>
 <translation id="6864459304226931083">छवि डाउनलोड गर्नुहोस्</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
+<translation id="6867400383614725881">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="6882836635272038266">खतरनाक मानिने वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट स्तरीय सुरक्षा।</translation>
 <translation id="688738109438487280">विद्यमान डेटा <ph name="TO_ACCOUNT" /> मा थप्नुहोस्।</translation>
 <translation id="6891726759199484455">आफ्नो पासवर्ड प्रतिलिपि गर्न अनलक गर्नुहोस्</translation>
@@ -913,6 +920,7 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6955535239952325894">व्यवस्थापन गरिएका ब्राउजरहरूमा यो सेटिङ असक्षम पारिएको हुन्छ</translation>
 <translation id="6963766334940102469">बुकमार्कहरू मेट्नुहोस्</translation>
+<translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6989267951144302301">डाउनलोड गर्न सकिएन</translation>
@@ -1184,7 +1192,6 @@
 <translation id="8788968922598763114">पछिल्लो पटक बन्द गरिएको ट्याब पुनः खोल्नुहोस्</translation>
 <translation id="8798449543960971550">पढिसकिएको</translation>
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>

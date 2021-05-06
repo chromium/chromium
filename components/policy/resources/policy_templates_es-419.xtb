@@ -2933,6 +2933,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Esta política es obsoleta; usa la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> en su lugar.</translation>
 <translation id="4923806312383904642">Permitir que WebDriver anule las políticas incompatibles</translation>
+<translation id="4924377847308623325">Impedir tipos de consultas de DNS adicionales</translation>
 <translation id="4927214690104703256">Si estableces la política, se especificarán las extensiones con permiso para usar las funciones de <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para la certificación remota. Para usar la API, las extensiones deben estar en esta lista.
 
       Si una extensión no está en la lista o no se establece la lista, las llamadas a la API fallarán y se mostrará un código de error.</translation>
@@ -4606,6 +4607,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7030205756530739128">Si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configuración <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> personalizará cuándo la batería comienza a cargarse, en función del porcentaje de carga de la batería. El valor debe estar al menos 5 puntos porcentuales por debajo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Si no estableces la política, se aplicará el modo estándar para la carga de la batería.</translation>
+<translation id="7030407698292813622">Permitir consultas de DNS para tipos de registro DNS adicionales</translation>
 <translation id="7032813174556919004">Inhabilitar DNS sobre HTTPS</translation>
 <translation id="7033778618670823541">Si estableces la política, se especificará una lista de orígenes (URL) o patrones de nombres de host (como *.example.com) para los que no se aplicarán restricciones de seguridad en orígenes inseguros. Las organizaciones pueden especificar orígenes para las apps heredadas que no pueden implementar TLS o configurar un servidor de etapa de pruebas para desarrollos web internos. Así, los desarrolladores pueden probar las funciones que requieren contextos seguros sin tener que implementar TLS en el servidor de pruebas. Esta política también previene que el origen se considere "No seguro" en la barra de direcciones.
 
@@ -5258,31 +5260,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Recomendación: Para bloquear la pantalla cuando está inactiva, activa el bloqueo de pantalla en el modo de suspensión y que se suspenda <ph name="PRODUCT_OS_NAME" /> después del tiempo de espera de inactividad. Esta política solo debe usarse si el bloqueo de pantalla ocurre mucho antes que la suspensión o si no se desea la suspensión por inactividad.</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
-<translation id="7896787076628252574">Configura una lista de reglas para impedir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
-      Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etcétera.
-
-      Cada regla consta de lo siguiente:
-      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales y se les aplicarán restricciones conforme a esta condición)
-      - Una lista de destinos definidos como URL o componentes (se podrá determinar si se pueden compartir o no los datos confidenciales con estos destinos)
-      - Una lista de restricciones que se aplicarán a los datos de los orígenes
-
-      Se pueden definir reglas para realizar lo siguiente:
-      - Controlar los datos del portapapeles que se comparten entre los orígenes y los destinos
-      - Controlar si se realizan capturas de pantalla de los orígenes
-      - Controlar si se imprime contenido de los orígenes
-      - Controlar la pantalla de privacidad cuando alguno de los orígenes está visible
-      - Controlar la función de compartir pantalla de los orígenes
-
-      Puedes establecer BLOCK o ALLOW como nivel de restricción.
-      - Si se establece la restricción como BLOCK, no se permitirá la acción.
-      - Si se establece la restricción como ALLOW, se permitirá la acción.
-
-      Notas:
-      - La restricción de PRIVACY_SCREEN no impide que se active la pantalla de privacidad, pero sí lo hace cuando se establece la clase de restricción como BLOCK.
-      - Los campos de destino no pueden estar vacíos cuando una de las restricciones es CLIPBOARD; sin embargo, sí pueden quedar vacíos para las demás restricciones, puesto que no tienen ningún efecto en ellas.
-      - Los patrones de las URL deben presentar un formato conforme a lo especificado en ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
-
-      Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para la contraseña</translation>
 <translation id="7904177352786629708">Si habilitas la política, se omitirá la búsqueda de CNAME. Se usará el nombre del servidor tal como se haya introducido al generar el SPN de Kerberos.
 
@@ -5967,6 +5944,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
        Nota: Esta política no se aplica al modo Incógnito. Obtén más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8827366480126575426">El protocolo para el controlador de protocolos.</translation>
+<translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
 <translation id="8831911834413504983">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden ejecutar JavaScript.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -6248,6 +6226,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       NOTA: El comportamiento predeterminado de los dispositivos de usuario y empresariales será diferente: en dispositivos administrados, se habilitará la conexión P2P, pero no así en dispositivos no administrados.</translation>
 <translation id="9164656078867027374">Definir los dominios que pueden acceder a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9166670902476893480">Esta política controla si <ph name="PRODUCT_NAME" /> puede hacer consultas sobre los tipos de registro DNS adicionales cuando hace solicitudes de DNS no seguras. Esta política no tiene efecto en las consultas de DNS que se realizan a través del DNS seguro, el cual siempre puede hacer consultas sobre los tipos de DNS adicionales.
+
+      Si no estableces esta política o la habilitas, es posible que se hagan consultas sobre los tipos adicionales como <ph name="DNS_TYPE_HTTPS" /> (DNS tipo 65), además de <ph name="DNS_TYPE_A" /> (DNS tipo 1) y <ph name="DNS_TYPE_AAAA" /> (DNS tipo 28).
+
+      Si inhabilitas esta política, solo se harán consultas sobre DNS para <ph name="DNS_TYPE_A" /> (DNS tipo 1) o <ph name="DNS_TYPE_AAAA" /> (DNS tipo 28).
+
+      Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.

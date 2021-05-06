@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Vybrať priečinok</translation>
 <translation id="1265739287306757398">Ako na to</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
+<translation id="1282311502488501110">Neprihlasovať sa</translation>
 <translation id="1283524564873030414">Posledných 24 hodín</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
 <translation id="1321993286294231467">Chyba pri ukladaní obrázka.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Otvoriť history.google.com</translation>
 <translation id="2116625576999540962">Počet presunutých položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Vyhľadať skopírovaný text</translation>
+<translation id="214201757571129614">Prihlásiť sa…</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2198757192731523470">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie, reklamy a ďalšie služby Googlu.</translation>
@@ -343,6 +345,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4630540211544979320">Preložiť stránky</translation>
 <translation id="4634124774493850572">Použiť heslo</translation>
 <translation id="4636930964841734540">Informácie</translation>
+<translation id="4650125387981512669">Pokračovať ako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Keď sa prihlásite do svojho účtu Google, táto funkcia je zapnutá.</translation>
 <translation id="4659667755519643272">Prejsť do Prepínača kariet</translation>
 <translation id="46614316059270592">Uložiť heslo</translation>

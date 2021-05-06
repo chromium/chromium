@@ -2949,6 +2949,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">Izinkan WebDriver Mengganti Kebijakan yang Tidak Kompatibel</translation>
+<translation id="4924377847308623325">Cegah jenis kueri DNS tambahan</translation>
 <translation id="4927214690104703256">Menyetel kebijakan akan menentukan ekstensi yang diizinkan untuk menggunakan fungsi <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> untuk pengesahan jarak jauh. Ekstensi harus ada dalam daftar ini agar dapat menggunakan API.
 
       Jika ekstensi tidak ada dalam daftar, atau daftar tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
@@ -4625,6 +4626,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7030205756530739128">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu mulai pengisian daya baterai, berdasarkan persentase pengisian daya baterai. Nilai harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai standar.</translation>
+<translation id="7030407698292813622">Mengizinkan kueri DNS untuk jenis data DNS tambahan</translation>
 <translation id="7032813174556919004">Nonaktifkan DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">Menyetel kebijakan akan menentukan daftar sumber (URL) dan pola hostname (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk sumber yang tidak aman. Organisasi dapat menentukan sumber untuk aplikasi lama yang tidak dapat menerapkan TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus menerapkan TLS di server staging. Kebijakan ini juga mencegah sumber diberi label "Not Secure" (Tidak Aman) di kolom URL.
 
@@ -5277,31 +5279,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Rekomendasi: Kunci layar saat tidak ada aktivitas dengan mengaktifkan penguncian layar selama penangguhan dan menangguhkan <ph name="PRODUCT_OS_NAME" /> setelah penundaan waktu tidak ada aktivitas. Hanya gunakan kebijakan ini jika penguncian layar terjadi pada waktu yang jauh lebih awal daripada penangguhan, atau jika Anda tidak ingin penangguhan saat tidak ada aktivitas.</translation>
 <translation id="7895553628261067384">Akses jarak jauh</translation>
-<translation id="7896787076628252574">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
-      Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
-
-      Setiap aturan terdiri dari hal-hal berikut:
-      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Batasan akan diterapkan terhadap data tersebut.
-      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
-      - Daftar batasan yang akan diterapkan pada data sumber.
-
-      Aturan dapat ditambahkan untuk:
-      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
-      - Mengontrol pengambilan screenshot dari sumber mana pun.
-      - Mengontrol pencetakan dari sumber mana pun.
-      - Mengontrol layar privasi saat sumber mana pun terlihat.
-      - Mengontrol berbagi layar dari sumber mana pun.
-
-      Level batasan dapat disetel ke BLOCK atau ALLOW.
-      - Jika batasan disetel ke BLOCK, tindakan tidak akan diizinkan.
-      - Jika batasan disetel ke ALLOW, tindakan akan diizinkan.
-
-      Catatan:
-      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
-      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi tujuan tidak berpengaruh pada batasan lainnya.
-      - Format pola URL sesuai dengan format ini ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
-
-      Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="7902040092815978832">Menampilkan keyboard numerik untuk sandi</translation>
 <translation id="7904177352786629708">Jika kebijakan disetel ke Aktif, CNAME lookup akan dilewati. Nama server akan digunakan sebagaimana dimasukkan saat menghasilkan SPN Kerberos.
 
@@ -5964,6 +5941,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
        Catatan: Kebijakan ini tidak berlaku untuk mode Samaran. Baca tentang ekstensi hosting (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8827366480126575426">Protokol untuk pengendali protokol.</translation>
+<translation id="8827417642396462482">Izinkan jenis kueri DNS tambahan</translation>
 <translation id="8831911834413504983">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menjalankan JavaScript.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -6245,6 +6223,13 @@ Kebijakan akan dihapus pada M75.</translation>
 
       CATATAN: Perilaku default bagi perangkat konsumen dan perusahaan berbeda: P2P akan diaktifkan di perangkat terkelola, tetapi tidak akan diaktifkan di perangkat yang tidak terkelola.</translation>
 <translation id="9164656078867027374">Menentukan domain yang diizinkan untuk mengakses <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
+<translation id="9166670902476893480">Kebijakan ini mengontrol apakah <ph name="PRODUCT_NAME" /> dapat mengkueri jenis data DNS tambahan saat membuat permintaan DNS yang tidak aman. Kebijakan ini tidak memengaruhi kueri DNS yang dibuat melalui DNS Aman, yang selalu dapat mengkueri jenis DNS tambahan.
+
+      Jika kebijakan ini tidak disetel atau disetel ke Aktif, jenis tambahan seperti <ph name="DNS_TYPE_HTTPS" /> (DNS jenis 65) dapat dikueri, selain <ph name="DNS_TYPE_A" /> (DNS jenis 1) dan <ph name="DNS_TYPE_AAAA" /> (DNS jenis 28).
+
+      Jika kebijakan ini disetel ke Nonaktif, DNS hanya akan dikueri untuk <ph name="DNS_TYPE_A" /> (DNS jenis 1) dan/atau <ph name="DNS_TYPE_AAAA" /> (DNS jenis 28).
+
+      Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.

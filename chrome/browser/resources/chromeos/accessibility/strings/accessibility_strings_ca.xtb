@@ -102,7 +102,7 @@
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611649489706141841">avança</translation>
 <translation id="1612960140435400149">No hi ha cap camp de formulari més</translation>
-<translation id="1613476421962910979">Earcons activats</translation>
+<translation id="1613476421962910979">Icones sonores activades</translation>
 <translation id="1616111909442424068">Blat</translation>
 <translation id="1618597272655350600">Anuncia una descripció completa de la posició actual.</translation>
 <translation id="1627222324347828322">Blanc fantasma</translation>
@@ -240,6 +240,7 @@
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Tanca el tutorial de ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
+<translation id="2697786971245905543">Candidat a la conversió de text</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parèntesi d'obertura}other{# parèntesis d'obertura}}</translation>
 <translation id="270523456882008230">Suggeriment: fes doble toc amb un dit per activar l'element actual.</translation>
 <translation id="2705875883745373140">Sense prémer.</translation>
@@ -621,14 +622,14 @@
 <translation id="5336381510091010269">autoinl+lst</translation>
 <translation id="5349770431644471053">Enllaç d'entrada</translation>
 <translation id="5355014376930441909">No hi ha cap secció més</translation>
-<translation id="5368000168321181111">Earcons desactivats</translation>
+<translation id="5368000168321181111">Icones sonores desactivades</translation>
 <translation id="5368505757342402527">S'ha baixat un <ph name="PROGRESS" />% del fitxer <ph name="FILE_NAME" />. Temps restant: <ph name="TIME" /> <ph name="UNITS" />.</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Una alerta modal</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{punt i coma}other{# punts i coma}}</translation>
 <translation id="5420259671171615858">Cerca als menús</translation>
-<translation id="5435274640623994081">Activa el registre d'icones auditives</translation>
+<translation id="5435274640623994081">Activa el registre d'icones sonores</translation>
 <translation id="5436105723448703439">{COUNT,plural, =1{menor que}other{# símbols menor que}}</translation>
 <translation id="5444587279251314700">(activa)</translation>
 <translation id="5451268436205074266">punts <ph name="DOT" /></translation>
@@ -643,7 +644,7 @@
 <translation id="5522423213731659107">Orientació ràpida completada!</translation>
 <translation id="5534303576632885660">capçalera</translation>
 <translation id="5539820223028224601">Gris pàl·lid</translation>
-<translation id="5549179427201066174">Activa o desactiva els avisos sonors (sons)</translation>
+<translation id="5549179427201066174">Activa o desactiva els avisos sonors (icones sonores)</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5561345396546889625">Llista següent</translation>
 <translation id="5562645715554321347">hdnggrp</translation>

@@ -428,6 +428,7 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
 <translation id="2536110899380797252">添加地址</translation>
 <translation id="2539524384386349900">检测</translation>
+<translation id="2541219929084442027">在您关闭所有无痕式标签页后，您在这些标签页中浏览的网页不会在浏览器历史记录、Cookie 存储区或搜索记录中留下任何痕迹。不过，您下载的所有文件或创建的书签均会保留下来。</translation>
 <translation id="2544644783021658368">单一文档</translation>
 <translation id="254947805923345898">政策值无效。</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> 发送的响应无效。</translation>
@@ -498,6 +499,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、通讯内容或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
+<translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
 <translation id="2878197950673342043">海报折</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">窗口放置</translation>
@@ -689,6 +691,7 @@
 <translation id="3584299510153766161">双孔（底部）</translation>
 <translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587738293690942763">中间</translation>
+<translation id="3590643883886679995">当您退出无痕模式后，登录数据会存储在此设备中。</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
@@ -886,7 +889,6 @@
 <translation id="4302514097724775343">点按恐龙图标即可开始玩这款游戏</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">无法访问您的文件</translation>
-<translation id="4305817255990598646">切换</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
@@ -992,6 +994,7 @@
 <translation id="4738601419177586157"><ph name="TEXT" />搜索建议</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="4744603770635761495">可执行文件路径</translation>
+<translation id="4749011317274908093">您已进入无痕模式</translation>
 <translation id="4750917950439032686">您发送给这个网站的信息（例如密码或信用卡号）不会外泄。</translation>
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
@@ -1654,6 +1657,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">命令行</translation>
 <translation id="7359588939039777303">广告已被拦截。</translation>
+<translation id="7363096869660964304">但是，这并不意味着您能完全隐身。即使您进入无痕模式，您的雇主、互联网服务提供商和您访问的网站仍然能看到您的浏览活动。</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中添加和管理地址</translation>
 <translation id="7365849542400970216">允许网站了解您的设备使用情况？</translation>
 <translation id="7372973238305370288">搜索结果</translation>
@@ -1879,6 +1883,7 @@
 <translation id="8175796834047840627">Chrome 会主动询问是否要将您的卡保存到您的 Google 帐号中，因为您已登录。您可在“设置”中更改此行为。</translation>
 <translation id="8176440868214972690">此设备的管理员已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="8184538546369750125">使用全局默认设置（允许）</translation>
+<translation id="8193086767630290324">使用标记为机密的数据执行的操作</translation>
 <translation id="8194797478851900357">撤消移动(&amp;U)</translation>
 <translation id="8201077131113104583">ID 为“<ph name="EXTENSION_ID" />”的扩展程序的更新网址无效。</translation>
 <translation id="8202097416529803614">订单摘要</translation>

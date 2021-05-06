@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Pumili ng Folder</translation>
 <translation id="1265739287306757398">Alamin kung paano</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="1282311502488501110">Huwag Mag-sign In</translation>
 <translation id="1283524564873030414">Nakalipas na 24 na Oras</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
 <translation id="1321993286294231467">Nagka-error sa pag-save ng larawan.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Buksan ang history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> (na) item ang inilipat</translation>
 <translation id="2139867232736819575">Maghanap para sa Text na Kinopya Mo</translation>
+<translation id="214201757571129614">Mag-sign In…</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="2198757192731523470">Maaaring gamitin ng Google ang iyong history para i-personalize ang Search, mga ad, at iba pang serbisyo ng Google.</translation>
@@ -343,6 +345,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4630540211544979320">I-translate ang Mga Page</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
 <translation id="4636930964841734540">Impormasyon</translation>
+<translation id="4650125387981512669">Magpatuloy bilang <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Kapag nag-sign in ka sa iyong Google Account, mao-on ang feature na ito.</translation>
 <translation id="4659667755519643272">Pumasok sa Tagalipat ng Tab</translation>
 <translation id="46614316059270592">I-save ang Password</translation>

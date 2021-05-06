@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Kausta valimine</translation>
 <translation id="1265739287306757398">Lisateave</translation>
 <translation id="1272079795634619415">Peata</translation>
+<translation id="1282311502488501110">Ära logi sisse</translation>
 <translation id="1283524564873030414">Viimased 24 tundi</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1321993286294231467">Viga pildi salvestamisel.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Ava history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> üksust on teisaldatud</translation>
 <translation id="2139867232736819575">Otsi kopeeritud teksti</translation>
+<translation id="214201757571129614">Logige sisse …</translation>
 <translation id="2149973817440762519">Muuda järjehoidjat</translation>
 <translation id="2175927920773552910">QR-kood</translation>
 <translation id="2198757192731523470">Google võib kasutada teie ajalugu otsingu, reklaamide ja muude Google'i teenuste isikupärastamiseks.</translation>
@@ -343,6 +345,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="4630540211544979320">Tõlgi lehed</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
 <translation id="4636930964841734540">Teave</translation>
+<translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Kui logite oma Google'i kontole sisse, lülitatakse see funktsioon sisse.</translation>
 <translation id="4659667755519643272">Ava vahelehtede vaheti</translation>
 <translation id="46614316059270592">Salvesta parool</translation>

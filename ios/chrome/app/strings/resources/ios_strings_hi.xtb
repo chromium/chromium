@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">फ़ोल्डर चुनें</translation>
 <translation id="1265739287306757398">तरीका जानें</translation>
 <translation id="1272079795634619415">रोकें</translation>
+<translation id="1282311502488501110">साइन इन न करें</translation>
 <translation id="1283524564873030414">पिछले 24 घंटे</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
 <translation id="1321993286294231467">इमेज सेव करने के दौरान कोई गड़बड़ी हुई.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com खोलें</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> आइटम ले जाए गए</translation>
 <translation id="2139867232736819575">आपका कॉपी किया गया टेक्स्ट</translation>
+<translation id="214201757571129614">साइन इन करें…</translation>
 <translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
 <translation id="2198757192731523470">खोज, विज्ञापन, और दूसरी Google सेवाओं को मनमुताबिक बनाने के लिए Google आपके इतिहास का इस्तेमाल कर सकता है.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">पेजों का अनुवाद करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
 <translation id="4636930964841734540">जानकारी</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> के तौर पर जारी रखें</translation>
 <translation id="4659126640776004816">जब आप अपने Google खाते में लॉग इन करते हैं, तो यह सुविधा चालू हो जाती है.</translation>
 <translation id="4659667755519643272">टैब स्विचर में प्रवेश करें</translation>
 <translation id="46614316059270592">पासवर्ड सेव करें</translation>

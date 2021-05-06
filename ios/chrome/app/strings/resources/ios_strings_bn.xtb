@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">ফোল্ডার বেছে নিন</translation>
 <translation id="1265739287306757398">কীভাবে করবেন জানুন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
+<translation id="1282311502488501110">সাইন-ইন করতে চাই না</translation>
 <translation id="1283524564873030414">গত ২৪ ঘণ্টা</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
 <translation id="1321993286294231467">ছবি সেভ করার সময় কোনও সমস্যা হয়েছে।</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">history.google.com খুলুন</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম সরানো হয়েছে</translation>
 <translation id="2139867232736819575">আপনার কপি করা টেক্সট সার্চ করুন</translation>
+<translation id="214201757571129614">সাইন-ইন করুন…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2198757192731523470">সার্চ, বিজ্ঞাপন এবং অন্যান্য Google পরিষেবাকে আপনার মতো করে সাজিয়ে নিতে Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="4634124774493850572">পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="4636930964841734540">তথ্য</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="4659126640776004816">আপনার Google অ্যাকাউন্টে সাইন-ইন করলে এই ফিচারটি চালু হয়ে যাবে।</translation>
 <translation id="4659667755519643272">ট্যাব পরিবর্তনকারী আনুন</translation>
 <translation id="46614316059270592">পাসওয়ার্ড সেভ করুন</translation>

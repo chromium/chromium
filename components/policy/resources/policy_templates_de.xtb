@@ -2563,6 +2563,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Ist die Richtlinie auf "false" gesetzt, wird die Begrüßungsseite beim ersten Start nach einer Aktualisierung des Betriebssystems nicht noch einmal angezeigt.</translation>
 <translation id="4423597592074154136">Proxy-Einstellungen manuell angeben</translation>
+<translation id="4424004842303301809">Berichte zur Verhinderung von Datenlecks deaktivieren</translation>
 <translation id="4427173305799125784">Mit dem PDF-Viewer können PDFs nicht mit Anmerkungen versehen werden</translation>
 <translation id="4432762137771104529">Erweiterte Berichterstellung bei der Verwendung von Safe Browsing aktivieren</translation>
 <translation id="443454694385851356">Veraltet (nicht sicher)</translation>
@@ -3141,6 +3142,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn ein registrierter Nutzer ein Versionsdowngrade veranlasst, kann er entweder die Updates aussetzen oder die Version zurücksetzen – je nachdem welcher Wert für diese Richtlinie festgelegt ist, kann diese Entscheidung auch automatisch getroffen werden. Wenn ein Administrator durch Konfiguration von <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ein Versionsdowngrade veranlasst, wird bei der nächsten Versionsprüfung nur dann ein Rollback ausgeführt, wenn diese Option ausgewählt wurde. Andernfalls wartet das Gerät, bis die Zielversion auf dem Stand der aktuellen Version ist.
 
       Ist die Richtlinie nicht konfiguriert oder ungültig, gilt dasselbe Verhalten wie für "Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist".</translation>
+<translation id="5229339291699779956">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte; Peripheriegeräte sind voll funktionsfähig</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
 <translation id="52393120393725840">Wenn die Richtlinie aktiviert ist, können Nutzer einstellen, dass <ph name="PRODUCT_NAME" /> Passwörter speichert und sie bei der nächsten Anmeldung auf einer Website bereitstellt.
 
@@ -3302,6 +3304,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="5418892536013005088">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können der Browser- und der Downloadverlauf in Chrome gelöscht werden und Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert, können der Browser- und der Downloadverlauf nicht gelöscht werden. Das bedeutet jedoch nicht unbedingt, dass der Verlauf erhalten bleibt. Möglicherweise sind die Nutzer berechtigt, die Verlaufsdatenbankdateien direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
+<translation id="5420245232720940848">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte und schränkt die Gerätefunktion ein</translation>
 <translation id="5422643441807528365">Lizenzschlüssel "<ph name="PLUGIN_VM_NAME" />"</translation>
 <translation id="5423197884968724595">Name der Android WebView-Einschränkung:</translation>
 <translation id="5424147596523390018">Alle Farbmodi zulassen</translation>
@@ -5032,6 +5035,10 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
+<translation id="7648664871086956188">Mit dieser Richtlinie werden alle in der Richtlinie DataLeakPreventionRulesList definierten Regeln gesteuert.
+      Wenn die Richtlinie auf „True“ gesetzt ist, werden Echtzeitberichte zur Verhinderung von Datenlecks aktiviert.
+      Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Berichterstellung deaktiviert.
+      Regeln, die in DataLeakPreventionRulesList mit ALLOW-Ebene-Beschränkungen definiert sind, melden in beiden Fällen keine Ereignisse.</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="7666228839913571182">Drittanbieter-Cookies zulassen</translation>
@@ -5224,31 +5231,6 @@ Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME"
 
       Die empfohlene Vorgehensweise ist, die Bildschirmsperre im Ruhemodus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Ruhemodus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre erheblich früher als der Ruhemodus eintreten oder der Ruhemodus bei Inaktivität gar nicht erfolgen soll.</translation>
 <translation id="7895553628261067384">Remotezugriff</translation>
-<translation id="7896787076628252574">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
-      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
-
-Jede Regel hat folgende Bestandteile:
-– Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
-      – Eine Liste von Zielen, die als URLs oder Komponenten definiert sind und für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
-      – Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
-
-      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
-– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
-      – Die Aufnahme von Screenshots der Quellen.
-      – Das Drucken von Quellen.
-      - Die Privatsphärefunktion, wenn eine der Quellen sichtbar ist
-      – Die Bildschirmfreigabe, wenn eine der Quellen sichtbar ist.
-
-      Die Einschränkungsebene kann mit BLOCK oder ALLOW festgelegt werden.
-      – Wenn die Einschränkung auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
-      – Wenn die Einschränkung auf ALLOW gesetzt ist, wird die Aktion zugelassen.
-
-      Hinweise:
-– Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
-      – Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD lautet. Sie wirken sich jedoch nicht auf andere Einschränkungen aus.
-      – Formatieren Sie die URL-Muster entsprechend dem Format https://www.chromium.org/administrators/url-blocklist-filter-format.
-
-Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="7902040092815978832">Numerische Tastatur für Passwort anzeigen</translation>
 <translation id="7904177352786629708">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.
 
@@ -5324,6 +5306,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
 <translation id="7995610550667275367">Scannen (wird seit Version 87 unterstützt)</translation>
 <translation id="7999023147219236247">Richtlinie für die Gewährung von Berechtigungen für Apps. PERMISSION_POLICY_UNSPECIFIED: Die Richtlinie ist nicht konfiguriert. Wenn für eine Berechtigung auf keiner Ebene eine Richtlinie konfiguriert ist, wird standardmäßig das Verhalten „PROMPT“ verwendet. PROMPT: Der Nutzer wird aufgefordert, eine Berechtigung zu gewähren. GRANT: Die Berechtigung wird automatisch gewährt. DENY: Die Berechtigung wird automatisch verweigert.</translation>
+<translation id="7999818120028621358">Berichte zur Verhinderung von Datenlecks aktivieren</translation>
 <translation id="8001701200415781021">Einschränken, welche Google-Konten als primäre Browserkonten in <ph name="PRODUCT_NAME" /> festgelegt werden können</translation>
 <translation id="8006219716745491366">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />" eine Liste alternativer URLs an, die verwendet werden, um Suchbegriffe aus der Suchmaschine zu extrahieren. Die URLs sollten den String <ph name="SEARCH_TERM_MARKER" /> enthalten.
 
@@ -5420,6 +5403,7 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 
       Falls die Richtlinie deaktiviert oder nicht eingestellt wird, werden bei einer Anmeldung reguläre Profile erstellt.</translation>
 <translation id="8151299379693359769">Aktiviert eine zusätzliche Sicherheitsprüfung, basierend auf Remote-Attestierung (optional, standardmäßig auf „True“ gesetzt).</translation>
+<translation id="8151490482515839285">Berichte zur Verhinderung von Datenlecks aktivieren</translation>
 <translation id="8158758865057576716">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren.</translation>
 <translation id="8158897487095710470">Wenn die Richtlinie auf "True" gesetzt ist, wird eine Lesezeichenleiste in <ph name="PRODUCT_NAME" /> angezeigt. Ist sie auf "False" gesetzt, sehen Nutzer keine Lesezeichenleiste.
 

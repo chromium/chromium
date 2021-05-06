@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Alegeți dosarul</translation>
 <translation id="1265739287306757398">Află cum</translation>
 <translation id="1272079795634619415">Oprește</translation>
+<translation id="1282311502488501110">Nu mă conectez</translation>
 <translation id="1283524564873030414">Ultimele 24 de ore</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1321993286294231467">Eroare la salvarea imaginii.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2139867232736819575">Caută textul pe care l-ai copiat</translation>
+<translation id="214201757571129614">Conectează-te…</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2198757192731523470">Google poate folosi istoricul pentru a personaliza Căutarea, anunțurile și alte servicii Google.</translation>
@@ -204,6 +206,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3081338492074632642">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
+<translation id="313283613037595347">Creează o nouă filă incognito.</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
@@ -342,6 +345,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4630540211544979320">Tradu paginile</translation>
 <translation id="4634124774493850572">Folosește parola</translation>
 <translation id="4636930964841734540">Informații</translation>
+<translation id="4650125387981512669">Continuă ca <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Când te conectezi la Contul Google, această funcție este activată.</translation>
 <translation id="4659667755519643272">Accesează comutatorul de file</translation>
 <translation id="46614316059270592">Salvează parola</translation>
@@ -498,6 +502,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6202364442240589072">{COUNT,plural, =1{Închide {COUNT} filă}few{Închide {COUNT} file}other{Închide {COUNT} de file}}</translation>
 <translation id="6219688215832490856">Nu traduce niciodată</translation>
 <translation id="6223816392543092032">Accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
+<translation id="6232329973559504466">Căutare incognito</translation>
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
 <translation id="6255097610484507482">Editați cardul de credit</translation>
 <translation id="6284652193729350524">Oferă traducerea din <ph name="LANGUAGE" /></translation>
@@ -562,6 +567,9 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6656103420185847513">Modificați dosarul</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6668619169535738264">Editează marcajul</translation>
+<translation id="6672241253012342409">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
+
+În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="6674571176963658787">Pentru a porni sincronizarea, introdu expresia de acces</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gestionează datele sincronizate în Tabloul de bord Google</translation>
@@ -573,6 +581,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6780034285637185932">Codul poștal</translation>
 <translation id="6785453220513215166">Se trimite raportul de blocare...</translation>
 <translation id="6797885426782475225">Căutare vocală</translation>
+<translation id="6801927553864092214">Pentru a naviga privat, deschide o filă incognito</translation>
 <translation id="6807889908376551050">Afișați toate...</translation>
 <translation id="681368974849482173">Element creat</translation>
 <translation id="6831043979455480757">Tradu</translation>
@@ -715,6 +724,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8283172974887967105">Setează…</translation>
 <translation id="8299417921174340354">Pentru a folosi parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
+<translation id="8299613349954694191">Deschide o filă incognito pentru a naviga privat pe web.</translation>
 <translation id="83100941411593607">Conectarea este dezactivată</translation>
 <translation id="8319076807703933069">Căutare nouă</translation>
 <translation id="8323906514956095947">Atinge lung pentru mai multe opțiuni de file</translation>

@@ -88,6 +88,7 @@
 <translation id="1095761715416917775">Sigurohu që gjithmonë të mund të qasesh në të dhënat e tua të sinkronizimit</translation>
 <translation id="109647177154844434">Çinstalimi i Parallels Desktop do të fshijë imazhin e sistemit Windows. Kjo përfshin aplikacionet, cilësimet dhe të dhënat e saj. Je i sigurt që dëshiron të vazhdosh?</translation>
 <translation id="1097658378307015415">Para se të identifikohesh, hyr si vizitor për të aktivizuar rrjetin <ph name="NETWORK_ID" /></translation>
+<translation id="1099383081182863812">Arrin ta shikosh Chromecast-in tënd në <ph name="BEGIN_LINK" />aplikacionin Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Imazhi u kopjua nga <ph name="DEVICE_NAME" /></translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Ndalo</translation>
@@ -190,6 +191,7 @@
 <translation id="1197979282329025000">Ndodhi një gabim gjatë gjetjes së aftësive të printerit për printerin <ph name="PRINTER_NAME" />. Ky printer nuk mund të regjistrohej me <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
 <translation id="1199814941632954229">Certifikatat po përgatiten për këto profile të certifikatave</translation>
+<translation id="120069043972472860">Nuk shikohet</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1202596434010270079">Aplikacioni "kioskë" është përditësuar. Hiqe memorien USB.</translation>
 <translation id="120368089816228251">Notë muzikore</translation>
@@ -416,6 +418,7 @@
 <translation id="1444628761356461360">Ky cilësim menaxhohet nga zotëruesi i pajisjes, <ph name="OWNER_EMAIL" /></translation>
 <translation id="144518587530125858">Nuk mundi të ngarkonte "<ph name="IMAGE_PATH" />" për temën.</translation>
 <translation id="1451375123200651445">Faqja e uebit, një skedar i vetëm</translation>
+<translation id="1453561711872398978">Dërgo <ph name="BEGIN_LINK" />evidencat e korrigjimit<ph name="END_LINK" /> (rekomandohet)</translation>
 <translation id="1454223536435069390">&amp;Nxirr një pamje të ekranit</translation>
 <translation id="145432137617179457">Gjuhët e kontrollit drejtshkrimor</translation>
 <translation id="1459693405370120464">Moti</translation>
@@ -510,6 +513,7 @@
 <translation id="1553538517812678578">e pakufizuar</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1556537182262721003">Direktoria e shtesës nuk mund të zhvendoset te profili.</translation>
+<translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
 <translation id="1562119309884184621">Shtimi i këtij kontakti do ta kujtojë atë herën tjetër që do të ndajë</translation>
 <translation id="1563702743503072935">Fjalëkalimet nga "Llogaria jote e Google" do të jenë të disponueshme gjithashtu në pajisjen tënde ndërsa je i identifikuar</translation>
@@ -566,6 +570,7 @@
 <translation id="1616206807336925449">Kjo shtesë nuk kërkon leje të veçanta.</translation>
 <translation id="1616298854599875024">Importimi i shtesës "<ph name="IMPORT_NAME" />" është i pamundur, sepse nuk është një modul i ndarë.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Po kontrollon këto të dhëna me politikat e sigurisë së organizatës sate...}=1{Po kontrollon këtë skedar me politikat e sigurisë së organizatës sate...}other{Po kontrollon këta skedarë me politikat e sigurisë së organizatës sate...}}</translation>
+<translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Qendra e n&amp;dihmës</translation>
 <translation id="1620307519959413822">Fjalëkalim i gabuar. Provo përsëri ose kliko te "Harrova fjalëkalimin" për ta rivendosur.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -626,6 +631,7 @@
 <translation id="1668979692599483141">Mëso për sugjerimet</translation>
 <translation id="1670399744444387456">Themeloret</translation>
 <translation id="1673137583248014546"><ph name="URL" /> dëshiron të shohë markën dhe modelin e çelësit tënd të sigurisë</translation>
+<translation id="1674073353928166410">Hapi të gjitha (<ph name="URL_COUNT" />) në dritare "të fshehtë"</translation>
 <translation id="1677306805708094828">Nuk mund të shtohet kjo <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
 <translation id="1679068421605151609">Mjetet e zhvilluesit</translation>
@@ -657,6 +663,7 @@
 <translation id="1704230497453185209">Mos lejo që sajtet të luajnë tinguj</translation>
 <translation id="1704970325597567340">Kontrolli i sigurisë u ekzekutua më <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Shtuar nga administratori yt</translation>
+<translation id="170658918174941828">Versioni yt i Chrome, versioni i sistemit operativ, cilësimet e Cast, statistikat e rendimentit të pasqyrimit dhe regjistrat e diagnostikimit të kanalit të komunikimit do të dërgohen bashkë me çdo informacion që zgjedh të përfshish më sipër. Ky koment përdoret për diagnostikimin e problemeve dhe për të ndihmuar në përmirësimin e veçorisë. Çdo informacion personal që dorëzon, me pajtimin tënd apo jo, do të mbrohet në përputhje me politikat tona të privatësisë. Duke e dorëzuar këtë koment, ti pranon që Google të mund ta përdorë komentin e dhënë për të përmirësuar çdo produkt ose shërbim të Google.</translation>
 <translation id="1706625117072057435">Nivelet e zmadhimit</translation>
 <translation id="1708338024780164500">(Joaktive)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
@@ -728,6 +735,7 @@
 <translation id="1776712937009046120">Shto përdorues</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Shëno si të palexuar</translation>
+<translation id="1778991607452011493">Dërgo evidencën e korrigjimit (rekomandohet)</translation>
 <translation id="1779162884187776723">Kjo faqe të lejon të menaxhosh "Llogaritë e tua të Google" ku je identifikuar. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1779468444204342338">Minimumi</translation>
 <translation id="1779652936965200207">Fut këtë çelës kalimi në "<ph name="DEVICE_NAME" />":</translation>
@@ -773,6 +781,7 @@
 <translation id="1817871734039893258">Rikuperimi i skedarëve i Microsoft</translation>
 <translation id="1818007989243628752">Fshi fjalëkalimin për <ph name="USERNAME" /></translation>
 <translation id="1818913467757368489">Ngarkimi i evidencës në vazhdim.</translation>
+<translation id="1819443852740954262">Hapi të gjitha në dritare "të fshehtë"</translation>
 <translation id="1819721979226826163">Trokit te Njoftimet e aplikacioneve &gt; Shërbimet e Google Play.</translation>
 <translation id="1820028137326691631">Fut fjalëkalimin e ofruar nga administratori</translation>
 <translation id="182139138257690338">shkarkimet automatike</translation>
@@ -798,6 +807,7 @@
 <translation id="1842766183094193446">Je i sigurt për aktivizimin e modalitetit të demonstrimit?</translation>
 <translation id="1845727111305721124">Lejohen të luajnë tinguj</translation>
 <translation id="1846308012215045257">Kliko "kontroll" për të ekzekutuar <ph name="PLUGIN_NAME" /></translation>
+<translation id="184862733444771842">Kërkesë për funksione</translation>
 <translation id="1849186935225320012">Kjo faqe ka kontroll të plotë të pajisjeve MIDI.</translation>
 <translation id="1850508293116537636">Rrotullo në drejtim &amp;të akrepave të orës</translation>
 <translation id="1852141627593563189">Gjej softuer keqdashës</translation>
@@ -807,6 +817,7 @@
 <translation id="1856715684130786728">Shto një vendndodhje...</translation>
 <translation id="1858585891038687145">Besoji kësaj certifikate për identifikimin e prodhuesve të softuerëve</translation>
 <translation id="1861262398884155592">Kjo dosje është bosh</translation>
+<translation id="1862311223300693744">A ke VPN të veçantë, proxy, mur mbrojtës apo softuer NAS të instaluar?</translation>
 <translation id="1863182668524159459">Nuk u gjet asnjë portë seriale</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" është çaktivizuar sepse përmban softuer keqdashës</translation>
 <translation id="1864111464094315414">Identifikimi</translation>
@@ -940,9 +951,11 @@
 <translation id="2006638907958895361">Hape lidhjen në <ph name="APP" /></translation>
 <translation id="2007404777272201486">Raporto një problem...</translation>
 <translation id="2010501376126504057">Pajisjet e pajtueshme</translation>
+<translation id="2015232545623037616">Kompjuteri dhe Chromecast-i në të njëjtin rrjet Wi-Fi</translation>
 <translation id="2016574333161572915">Hardueri i Google Meet është gati për t'u konfiguruar</translation>
 <translation id="2017334798163366053">Çaktivizo mbledhjen e të dhënave të aktivitetit</translation>
 <translation id="2018352199541442911">Na vjen keq, por hapësira e jashtme ruajtëse në pajisjen tënde nuk mbështetet në këtë moment.</translation>
+<translation id="2018615379714355980">Kompjuteri është i lidhur me kabllo dhe Chromecast-i është në Wi-Fi</translation>
 <translation id="2019718679933488176">&amp;Hape audion në një skedë të re</translation>
 <translation id="2020183425253392403">Shfaq cilësimet e adresës së rrjetit</translation>
 <translation id="2020225359413970060">Skano skedarin</translation>
@@ -982,6 +995,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2058456167109518507">U diktua pajisje</translation>
 <translation id="2059913712424898428">Brezi orar</translation>
 <translation id="2060375639911876205">Hiq profilin e eSIM</translation>
+<translation id="2062354623176996748">Përdor uebin pa ruajtur historikun tënd të shfletimit me një dritare "të fshehtë"</translation>
 <translation id="2065405795449409761">Chrome po kontrollohet nga një softuer testues i automatizuar.</translation>
 <translation id="2071393345806050157">Nuk ka skedar lokal të regjistrit.</translation>
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
@@ -1000,12 +1014,14 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2082187087049518845">Skeda e grupit</translation>
 <translation id="2082510809738716738">Zgjidh një ngjyrë teme</translation>
 <translation id="208586643495776849">Provo sërish</translation>
+<translation id="208634871997892083">Rrjeti VPN gjithmonë aktiv</translation>
 <translation id="2087822576218954668">Printo: <ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">Rrjeti VPN</translation>
 <translation id="208928984520943006">Për të shkuar në ekranin bazë në çdo kohë, rrëshqit shpejt lart nga fundi i ekranit.</translation>
 <translation id="2089566709556890888">Shfleto në mënyrë të sigurt me Google Chrome</translation>
 <translation id="2089795179672254991">Pyet kur një sajt dëshiron të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve (rekomandohet)</translation>
 <translation id="2090165459409185032">Për të rikuperuar informacionet e llogarisë tënde, shko te: google.com/accounts/recovery</translation>
+<translation id="2090507354966565596">Lidhet automatikisht kur identifikohesh</translation>
 <translation id="2090876986345970080">Cilësimi i sigurisë së sistemit</translation>
 <translation id="2091887806945687916">Tingulli</translation>
 <translation id="2096715839409389970">Pastro kukit e palëve të treta</translation>
@@ -1045,7 +1061,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2131077480075264">"<ph name="APP_NAME" />" nuk mund të instalohet sepse nuk lejohet nga "<ph name="IMPORT_NAME" />"</translation>
 <translation id="21354425047973905">Fshih kodet PIN</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
-<translation id="2135468118189259524">Mëso më shumë rreth të dhënave që grumbullon Google dhe pse në <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />.</translation>
 <translation id="2135787500304447609">&amp;Vazhdo</translation>
 <translation id="2136372518715274136">Fut fjalëkalimin e ri</translation>
 <translation id="2136476978468204130">Fraza e kalimit që fute është e pasaktë</translation>
@@ -1117,6 +1132,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2200094388063410062">Email-i</translation>
 <translation id="2200356397587687044">Chrome ka nevojë për leje për të vazhduar</translation>
 <translation id="2202898655984161076">Pati një problem në renditjen e printerëve. Disa prej tyre rinterëve mund të mos jenë regjistruar me sukses në <ph name="CLOUD_PRINT_NAME" />.</translation>
+<translation id="2203088913459920044">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta</translation>
 <translation id="2204034823255629767">Lexo dhe ndrysho gjithçka që shkruan</translation>
 <translation id="220858061631308971">Fut këtë kod PIN në "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
@@ -1157,6 +1173,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2249605167705922988">p.sh. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Hap me shikuesin e sistemit</translation>
 <translation id="225163402930830576">Rifresko rrjetet</translation>
+<translation id="2251809247798634662">Dritare e re "e fshehtë"</translation>
 <translation id="225240747099314620">Lejo identifikuesit në përmbajtjen e mbrojtur (mund të kërkohet rindezje e kompjuterit)</translation>
 <translation id="2255077166240162850">Kjo pajisje është kyçur në një domen ose modalitet tjetër.</translation>
 <translation id="2255317897038918278">Stampimi i orës nga Microsoft</translation>
@@ -1167,6 +1184,8 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2262888617381992508">Nuk lejohen të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2263189956353037928">Dil dhe identifikohu përsëri</translation>
 <translation id="2263371730707937087">Shpejtësia e rifreskimit të ekranit</translation>
+<translation id="2263679799334060788">Komentet e tua na ndihmojnë të përmirësojmë Google Cast dhe ne i vlerësojmë shumë ato.
+Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph name="BEGIN_LINK" />qendra e ndihmës<ph name="END_LINK" />.</translation>
 <translation id="2265889263013046172">Kodi PUK i pasaktë. Ke <ph name="RETRIES" /> përpjekje të mbetura përpara se të të duhet të kontaktosh me operatorin celular për të rifituar qasjen në rrjet.</translation>
 <translation id="22665427234727190">Pyet kur një sajt dëshiron të ketë qasje te pajisjet Bluetooth (rekomandohet)</translation>
 <translation id="2266957463645820432">IPP përmes USB-së (IPPUSB)</translation>
@@ -1196,6 +1215,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> rezultate</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> kërkon që pajisja të jetë në linjë kur identifikohesh në <ph name="EMAIL" /></translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome nuk gjeti softuerë të dëmshëm në kompjuterin tënd • Kontrolluar 1 orë më parë}other{Chrome nuk gjeti softuerë të dëmshëm në kompjuterin tënd • Kontrolluar {NUM_HOURS} orë më parë}}</translation>
+<translation id="2296218178174497398">Zbulimi i pajisjes</translation>
 <translation id="2297705863329999812">Kërko printerët</translation>
 <translation id="2299734369537008228">Rrëshqitësi: <ph name="MIN_LABEL" /> në <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Përfshi të gjithë skedarët e evidencave të mbledhur nga debugd si një arkiv të veçantë.</translation>
@@ -1203,7 +1223,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2300383962156589922">Personalizo dhe kontrollo <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Direktoria rrënjë e shtesës është e pavlefshme.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
-<translation id="230529452743010958">Këtë artikull po e shikon bazuar në aktivitetin tënd të mëparshëm duke përdorur shërbimet e Google. Mund t'i shikosh të dhënat e tua, t'i fshish ato dhe të ndryshosh cilësimet në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="2303282178633578561">Kyçe kartën SIM</translation>
 <translation id="23055578400314116">Zgjidh një emër përdoruesi</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="230927227160767054">kjo faqe dëshiron të instalojë një përpunues të shërbimit.</translation>
@@ -1264,6 +1284,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2361100938102002520">Po shton një profil të menaxhuar te ky shfletues. Administratori yt ka kontroll mbi profilin dhe mund të ketë qasje në të dhënat e tij.</translation>
 <translation id="236117173274098341">Optimizo</translation>
+<translation id="2361340419970998028">Komentet po dërgohen...</translation>
 <translation id="236141728043665931">Blloko gjithmonë qasjen te mikrofoni</translation>
 <translation id="2364498172489649528">Kaloi</translation>
 <translation id="2365507699358342471">Ky sajt mund të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve.</translation>
@@ -1653,6 +1674,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2792290659606763004">Të hiqen aplikacionet e Android?</translation>
 <translation id="2792465461386711506">Aktivizo Sinkronizimin e Chrome për të shikuar skedat e fundit të Chrome nga telefoni yt</translation>
 <translation id="2794233252405721443">Sajti u bllokua</translation>
+<translation id="2794522004398861033">Lidhu me Wi-Fi ose Ethernet-in për të konfiguruar kartën eSIM</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
 <translation id="2796424461616874739">Koha e pritjes për verifikim gjatë lidhjes me "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2796740370559399562">Vazhdo t'i lejosh kukit</translation>
@@ -1728,7 +1750,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="287286579981869940">Shto <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
-<translation id="2875140350998055906">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese (rekomandohet)</translation>
 <translation id="2875698561019555027">(Faqet e gabimit të Chrome)</translation>
 <translation id="2876336351874743617">Gishti 2</translation>
 <translation id="2876369937070532032">Dërgon URL-të e disa faqeve që viziton te Google, kur siguria jote është në rrezik</translation>
@@ -1763,6 +1784,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2910318910161511225">Lidhu me një rrjet dhe provo përsëri</translation>
 <translation id="291056154577034373">TË PALEXUARA</translation>
 <translation id="2910718431259223434">Ndodhi një gabim. Provo përsëri ose kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
+<translation id="2911433807131383493">Hap ndihmën e ChromeVox</translation>
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
 <translation id="2915102088417824677">Shiko evidencën e aktivitetit</translation>
 <translation id="2915873080513663243">Skanimi automatik</translation>
@@ -1825,7 +1847,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2979520980928493164">Një Chrome më i shëndetshëm dhe më i lumtur</translation>
 <translation id="2979639724566107830">Hape në një dritare të re</translation>
 <translation id="2981113813906970160">Shfaq kursorin e madh të miut</translation>
-<translation id="2983175648295374032"><ph name="WEBSITE" /> dërgoi një njoftim në telefonin tënd. Trokit "Po" për të konfirmuar që je ti. <ph name="LINK" /></translation>
+<translation id="2981474224638493138">Cilësia e projektimit të skedës/desktopit</translation>
 <translation id="2985348301114641460">Të dërgohet një kërkesë te administratori yt për të instaluar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Teksti i ndarë nga pajisje tjetër</translation>
 <translation id="2988018669686457659">Interpretuesi rezervë</translation>
@@ -1839,7 +1861,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2996286169319737844">Të dhënat janë enkriptuar me frazën tënde të kalimit. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="2996722619877761919">Ktheje në anën e gjatë</translation>
 <translation id="2996932914629936323">Pastron historikun nga të gjitha pajisjet e sinkronizuara</translation>
-<translation id="3000236644796679448">Sajtet mund të kërkojnë të përdorin mikrofonin tënd (rekomandohet)</translation>
 <translation id="3000378525979847272">Të lejuara: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3001144475369593262">Llogaritë e fëmijëve</translation>
@@ -1869,6 +1890,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3016641847947582299">Përbërësi u përditësua</translation>
 <translation id="3017079585324758401">Sfondi</translation>
 <translation id="3019285239893817657">Butoni i nënfaqes</translation>
+<translation id="3019595674945299805">Shërbimi VPN</translation>
 <translation id="3020183492814296499">Shkurtoret</translation>
 <translation id="3020990233660977256">Numri i serisë: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Gjatë kohës me bateri</translation>
@@ -1892,6 +1914,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3046178388369461825">Hapësira e diskut të Linux është tepër e ulët</translation>
 <translation id="3046910703532196514">Faqja e uebit, e plotë</translation>
 <translation id="304747341537320566">Motorët e ligjërimit</translation>
+<translation id="3048917188684939573">Regjistri i transmetimit dhe i pajisjes</translation>
 <translation id="3051250416341590778">Madhësia e ekranit</translation>
 <translation id="3053013834507634016">Përdorimi i çelësit të certifikatës</translation>
 <translation id="3053273573829329829">Aktivizo kodin PIN të përdoruesit</translation>
@@ -1927,6 +1950,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3088325635286126843">&amp;Riemërtoje...</translation>
 <translation id="3089064280130434511">Blloko sajtet që të mos hapin dhe vendosin dritare në ekranet e tua</translation>
 <translation id="3089137131053189723">Kërkimi u pastrua</translation>
+<translation id="3090589793601454425">Mos e zhvendos</translation>
 <translation id="3090819949319990166">Skedari i jashtëm crx nuk mund të kopjohet te <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" u çiftua</translation>
 <translation id="3093714882666365141">Mos lejo që sajtet të instalojnë përpunuesit e pagesave</translation>
@@ -1948,6 +1972,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3117791853215125017">{COUNT,plural, =1{Dërgimi te <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}other{Dërgimi te <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3118319026408854581">Ndihma e <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Provo ta nisësh përsëri Linux pas disa minutash.</translation>
+<translation id="3119948370277171654">Çfarë përmbajtjeje/URL-je po transmetoje?</translation>
 <translation id="3120430004221004537">Shifrimi i pamjaftueshëm për një veprim të dhënë në: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Dështoi në krijimin e direktorisë së të dhënave</translation>
@@ -1988,6 +2013,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3159493096109238499">Bezhë</translation>
 <translation id="3159978855457658359">Modifiko emrin e pajisjes</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (mbështetu nga hardueri)</translation>
+<translation id="3160928651883997588">Preferencat për VPN-në</translation>
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
 <translation id="3162853326462195145">Llogaria e shkollës</translation>
 <translation id="3162899666601560689">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve</translation>
@@ -2093,7 +2119,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="329838636886466101">Riparoje</translation>
 <translation id="3298789223962368867">U fut URL e pavlefshme.</translation>
 <translation id="32991397311664836">Pajisjet:</translation>
-<translation id="3300897181367504082">Mos lejo që sajtet të dërgojnë dritare kërcyese ose të përdorin ridrejtimet (rekomandohet)</translation>
 <translation id="33022249435934718">Profile GDI</translation>
 <translation id="3303260552072730022">Një shtesë aktivizoi ekranin e plotë.</translation>
 <translation id="3303818374450886607">Kopjet</translation>
@@ -2126,6 +2151,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3333961966071413176">Të gjitha kontaktet</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Videoja po luhet në modalitetin "figurë brenda figurës"</translation>
 <translation id="3335947283844343239">Rihap skedën e mbyllur</translation>
+<translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3337568642696914359">Mos lejo që sajtet të menaxhojnë protokollet</translation>
 <translation id="3340620525920140773">Shkarkimi përfundoi: <ph name="FILE_NAME" />.</translation>
 <translation id="3341699307020049241">Kodi PIN është i pasaktë. Të kanë mbetur <ph name="RETRIES" /> përpjekje.</translation>
@@ -2156,6 +2182,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3380365263193509176">Gabim i panjohur</translation>
 <translation id="3382073616108123819">Mos! Sistemi nuk arriti të përcaktonte identifikuesit e pajisjeve për këtë pajisje.</translation>
 <translation id="3382200254148930874">Po ndalon mbikëqyrjen...</translation>
+<translation id="338323348408199233">Blloko trafikun pa rrjetin VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Ndarës</translation>
 <translation id="338691029516748599">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
@@ -2169,8 +2196,10 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3391512812407811893">Provat e Privacy Sandbox</translation>
 <translation id="339178315942519818">Shiko njoftimet nga aplikacionet e tua të bisedës në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">Duke klikuar butonin "Prano dhe vazhdo", bie njëherësh dakord me përpunimin e përshkruar më lart për këto shërbime të Google.</translation>
+<translation id="339722927132407568">Ngrin</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herc) - të gërshetuara</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{Në këtë pajisje ruhet {COUNT} fjalëkalim}other{Në këtë pajisje ruhen {COUNT} fjalëkalime}}</translation>
 <translation id="3402255108239926910">Zgjidh një simbol</translation>
 <translation id="3402585168444815892">Po regjistrohesh në modalitetin e demonstrimit</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -2259,6 +2288,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="347785443197175480">Vazhdo të lejosh <ph name="HOST" /> që të qaset te kamera dhe mikrofoni</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3479685872808224578">Serveri i printimit nuk mund të zbulohej. Kontrollo adresën dhe provo përsëri.</translation>
+<translation id="3480612136143976912">Personalizo madhësinë dhe stilin e nëntitullit për "Titrat në çast". Disa aplikacione dhe faqe do ta përdorin gjithashtu këtë cilësim.</translation>
 <translation id="3480827850068960424">U gjetën <ph name="NUM" /> skeda</translation>
 <translation id="3481268647794498892">Po hapet në <ph name="ALTERNATIVE_BROWSER_NAME" /> pas <ph name="COUNTDOWN_SECONDS" /> sekondash</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> mund të shikojë skedarët e mëposhtëm</translation>
@@ -2341,7 +2371,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3576324189521867626">U instalua me sukses</translation>
 <translation id="3578594933904494462">Përmbajtja e kësaj skede po ndahet.</translation>
-<translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; do të ndajë një printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; me një grup që ti zotëron: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Nëse pranon, të gjithë anëtarët e grupit do të mund të printojnë në printer.</translation>
 <translation id="3581605050355435601">Konfiguro automatikisht adresën IP</translation>
 <translation id="3582057310199111521">Është futur në një sajt mashtrues dhe është gjendur në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3584169441612580296">Lexo dhe ndrysho fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
@@ -2430,7 +2459,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3670113805793654926">Pajisjet nga çdo shitës</translation>
 <translation id="3670229581627177274">Aktivizo Bluetooth-in</translation>
 <translation id="3672681487849735243">Është zbuluar një gabim fabrike</translation>
-<translation id="3674840410592648165">Sajtet mund të instalojnë përpunues të pagesave (rekomandohet)</translation>
 <translation id="367645871420407123">lëre bosh nëse dëshiron ta caktosh fjalëkalimin rrënjë në vlerën e parazgjedhur të imazhit testues</translation>
 <translation id="3677106374019847299">Fut ofruesin e personalizuar</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
@@ -2556,6 +2584,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3798449238516105146">Versioni</translation>
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
 <translation id="3800806661949714323">Shfaq të gjitha (e rekomanduar)</translation>
+<translation id="3803345858388753269">Cilësia e videos</translation>
 <translation id="380408572480438692">Aktivizimi i të dhënave të cilësisë së funksionimit do ta ndihmojë Google që të përmirësojë sistemin me kalimin e kohës. Nuk dërgohen të dhëna deri sa të paraqesësh një raport me komente (Alt-Shift-I) dhe të përfshish të dhënat e cilësisë së funksionimit. Mund të kthehesh te ky ekran në çdo kohë për ta çaktivizuar mbledhjen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk lejohet në një ekran identifikimi.</translation>
 <translation id="3807747707162121253">&amp;Anulo</translation>
@@ -2607,6 +2636,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3844888638014364087">Emoji u fut</translation>
 <translation id="3846116211488856547">Merr vegla për zhvillimin e faqeve të internetit, aplikacioneve për Android dhe shumë të tjera. Instalimi i Linux do të shkarkojë <ph name="DOWNLOAD_SIZE" /> të dhëna.</translation>
 <translation id="3847319713229060696">Ndihmo në përmirësimin e sigurisë për të gjithë</translation>
+<translation id="3848547754896969219">Hape në &amp;dritare "të fshehtë"</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3851428669031642514">Ngarko skriptet e pasigurta</translation>
 <translation id="3854599674806204102">Zgjidh një opsion</translation>
@@ -2835,7 +2865,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Kontrolli i plotë mbi pajisjet MIDI u refuzua</translation>
-<translation id="4088095054444612037">Pranoje për grupin</translation>
 <translation id="4089235344645910861">Cilësimet u ruajtën. Sinkronizimi filloi.</translation>
 <translation id="4090103403438682346">Aktivizo qasjen e verifikuar</translation>
 <translation id="4090811767089219951">"Asistenti yt i Google" funksionon edhe këtu</translation>
@@ -2933,7 +2962,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Ndodhi një gabim gjatë aktivizimit.</translation>
 <translation id="4222772810963087151">Detajet e versionit</translation>
-<translation id="4224284700924043865">Pajisjet USB me ID produkti <ph name="PRODUCT_ID" /> nga shitësi <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Në të gjitha sajtet</translation>
 <translation id="4231095370974836764">Instalo aplikacione dhe lojëra nga Google Play në <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
@@ -2944,6 +2972,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4242577469625748426">Dështoi në instalimin e cilësimeve në këtë pajisje: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">Printeri është vendosur në pauzë</translation>
 <translation id="4244238649050961491">Gjej më shumë aplikacione të stilolapsit</translation>
+<translation id="4246980464509998944">Komentet shtesë:</translation>
 <translation id="424726838611654458">Hape gjithmonë në Adobe Reader</translation>
 <translation id="4247901771970415646">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
@@ -2978,6 +3007,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4278101229438943600">"Asistenti" yt është gati</translation>
 <translation id="4278390842282768270">Të lejuara</translation>
+<translation id="4279129444466079448">Mund të instalosh deri në <ph name="PROFILE_LIMIT" /> profile të kartës eSIM në këtë pajisje. Për të shtuar një profil tjetër, në fillim hiq një profil ekzistues.</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4282196459431406533">Smart Lock është i aktivizuar</translation>
 <translation id="4285418559658561636">Përditëso fjalëkalimin</translation>
@@ -2993,6 +3023,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4295979599050707005">Identifikohu përsëri për të konfirmuar se llogaria jote <ph name="USER_EMAIL" /> mund të përdoret me sajtet e uebit, aplikacionet dhe shtesat në Chrome dhe në Google Play. Gjithashtu edhe mund ta heqësh këtë llogari. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Rinis dhe rivendos</translation>
 <translation id="4297813521149011456">Rrotullimi i ekranit</translation>
+<translation id="4299022904780065004">Dritare e re "e &amp;fshehtë"</translation>
 <translation id="4301671483919369635">Kjo faqe lejohet të modifikojë skedarët</translation>
 <translation id="4303079906735388947">Konfiguro një kod të ri PIN për çelësin e sigurisë</translation>
 <translation id="4305402730127028764">Kopjo te <ph name="DEVICE_NAME" /></translation>
@@ -3005,7 +3036,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="431076611119798497">&amp;Detajet</translation>
 <translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
 <translation id="4314815835985389558">Menaxho sinkronizimin</translation>
-<translation id="4316650123995163262">Pajisjet USB me ID produkti <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Sajti i uebit i zhvilluesit</translation>
 <translation id="4317820549299924617">Verifikimi nuk u krye me sukses</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
@@ -3142,6 +3172,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
 <translation id="4475552974751346499">Kërko për shkarkimet</translation>
+<translation id="4475830133618397783">Zgjidh se cilat fjalëkalime do të zhvendosësh. Mund të qasesh tek ta sa herë që je i identifikuar.</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Për ta skanuar këtë kod, mund të përdorësh një aplikacion skaneri të kodeve QR në telefon ose disa aplikacione për kamera.</translation>
 <translation id="4477015793815781985">Përfshi Ctrl, Alt ose ⌘</translation>
@@ -3161,6 +3192,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4492698018379445570">Gjej atë që ke shtuar në karrocat e blerjeve dhe përfundo blerjen kur të jesh gati</translation>
 <translation id="4493468155686877504">E rekomanduar (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Mos e shfaq në këtë faqe</translation>
+<translation id="4497145443434063861">Kompjuteri dhe Chromecast-i në rrjete të ndryshme Wi-Fi (p.sh. 2,4 GHz në krahasim me 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> u ndërpre aksidentalisht</translation>
 <translation id="4500587658229086076">përmbajtja e pasigurt</translation>
 <translation id="450099669180426158">Ikona e pikëçuditëses</translation>
@@ -3172,6 +3204,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4507128560633489176">Të dhënat u pastruan.</translation>
 <translation id="4508265954913339219">Aktivizimi dështoi</translation>
 <translation id="4508765956121923607">Shiko b&amp;urimin</translation>
+<translation id="4510195992002502722">Dërgimi i komentit dështoi. Po riprovon...</translation>
 <translation id="4510479820467554003">Lista e llogarive të prindërve</translation>
 <translation id="4510614391273086606">Skedarët dhe aplikacionet e Linux po restaurohen në gjendjen e tyre të rezervimit.</translation>
 <translation id="451102079304155829">karroca</translation>
@@ -3304,6 +3337,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4641539339823703554">Chrome nuk mund të caktonte kohën e sistemit. Kontrollo kohën më poshtë dhe korrigjoje nëse duhet.</translation>
 <translation id="4642769377300286600">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4643612240819915418">&amp;Hap videon në skedë të re</translation>
+<translation id="4644205769234414680">Lejo në modalitetin "e fshehtë"</translation>
 <translation id="4645676300727003670">&amp;Mbaje</translation>
 <translation id="4646675363240786305">Portat</translation>
 <translation id="4647090755847581616">&amp;Mbylle skedën</translation>
@@ -3333,7 +3367,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4668721319092543482">Kliko për të aktivizuar <ph name="PLUGIN_NAME" /></translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
-<translation id="4671265665487288124">Sajtet mund të kërkojnë të shkarkojnë automatikisht shumë skedarë (rekomandohet)</translation>
 <translation id="46733273239502219">Do të fshihen gjithashtu edhe të dhënat jashtë linje në aplikacionet e instaluara</translation>
 <translation id="4673442866648850031">Hap veglat e stilolapsit kur hiqet stilolapsi</translation>
 <translation id="4676595058027112862">Phone Hub. Mëso më shumë</translation>
@@ -3459,6 +3492,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4838836835474292213">Qasja për leximin e kujtesës së fragmenteve u lejua</translation>
 <translation id="4838907349371614303">Fjalëkalimi u përditësua</translation>
 <translation id="4839303808932127586">Rua&amp;je videon si...</translation>
+<translation id="4840096453115567876">Të mbyllet gjithsesi modaliteti "i fshehtë"?</translation>
 <translation id="4842976633412754305">Kjo faqe po përpiqet të ngarkojë skripte nga burime të paverifikuara.</translation>
 <translation id="4844333629810439236">Tastiera të tjera</translation>
 <translation id="4846680374085650406">Po ndjek rekomandimin e administratorit për këtë cilësim.</translation>
@@ -3479,7 +3513,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4863769717153320198">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (e parazgjedhur)</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4864805589453749318">Zgjidh prindin që po jep lejen për shtimin e një llogarie shkolle.</translation>
-<translation id="4866265760644917470">Profili është shtuar me sukses.</translation>
 <translation id="486635084936119914">Hap automatikisht lloje të caktuara të skedarëve pas shkarkimit</translation>
 <translation id="48704129375571883">Shto funksione të tjera</translation>
 <translation id="4870758487381879312">Fut fjalëkalimin e dhënë nga administratori për të marrë informacionin e konfigurimit</translation>
@@ -3493,6 +3526,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4876273079589074638">Ndihmo inxhinierët tanë të hetojnë dhe të rregullojnë këtë ndërprerje aksidentale. Rendit hapat e saktë nëse është e mundur. Nuk ka detaje të tepërta!</translation>
 <translation id="4876895919560854374">Kyç dhe shkyç ekranin</translation>
 <translation id="4877276003880815204">Inspekto elementet</translation>
+<translation id="4878634973244289103">Nuk mund të dërgohen përshtypje. Provo sërish më vonë</translation>
 <translation id="4878653975845355462">Sfondet e personalizuara janë çaktivizuar nga administratori yt</translation>
 <translation id="4878718769565915065">Shtimi i një gjurme gishti te ky çelës sigurie dështoi</translation>
 <translation id="4879491255372875719">Automatike (e parazgjedhur)</translation>
@@ -3514,6 +3548,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4892811427319351753">Nuk mund të aktivizohet kjo <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="4893073099212494043">Aktivizo parashikimin e fjalës tjetër</translation>
 <translation id="4893336867552636863">Kjo do të fshijë në mënyrë të përhershme të dhënat e shfletimit nga kjo pajisje.</translation>
+<translation id="4893454800196085005">E mirë - DVD</translation>
 <translation id="4893522937062257019">Në ekranin e kyçjes</translation>
 <translation id="489454699928748701">Lejoju faqeve të përdorin sensorët e lëvizjes</translation>
 <translation id="4898011734382862273">Certifikata "<ph name="CERTIFICATE_NAME" />" përfaqëson një autoritet certifikimi</translation>
@@ -3575,6 +3610,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4964455510556214366">Sistemimi</translation>
 <translation id="496446150016900060">Sinkronizo rrjetet Wi-Fi me telefonin tënd</translation>
 <translation id="4965808351167763748">Je i sigurt që dëshiron ta konfigurosh këtë pajisje për të ekzekutuar Hangouts Meet?</translation>
+<translation id="4966972803217407697">Je në modalitetin "e fshehtë"</translation>
 <translation id="496888482094675990">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën e jashtme ruajtëse ose në pajisjen tënde të sistemit operativ Chrome.</translation>
 <translation id="4971412780836297815">Hape kur të përfundojë</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
@@ -3604,6 +3640,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5006218871145547804">ADB-ja e aplikacionit Android për Crostini</translation>
 <translation id="5007392906805964215">Rishiko</translation>
+<translation id="50080882645628821">Hiq profilin</translation>
 <translation id="5008936837313706385">Emri i aktivitetit</translation>
 <translation id="5010043101506446253">Autoriteti i certifikatës</translation>
 <translation id="5015344424288992913">Po zgjidh përfaqësuesin...</translation>
@@ -3678,7 +3715,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5097002363526479830">Dështoi lidhja me rrjetin "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">Vegla: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Kliko automatikisht kur të ndalojë kursori</translation>
-<translation id="5099399397495049098">Sajtet mund të përdorin JavaScript (rekomandohet)</translation>
 <translation id="5101839224773798795">Kliko automatikisht kur kursori ndalon</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> mbikëqyret nga Family Link. Mund të shtosh llogari të shkollës për të pasur qasje te burimet e shkollës me mbikëqyrjen e prindërve.</translation>
 <translation id="5107443654503185812">Një shtesë ka çaktivizuar "Shfletimin e sigurt"</translation>
@@ -3784,6 +3820,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5213114823401215820">Rihap grupin e mbyllur</translation>
 <translation id="5213481667492808996">Shërbimi yt i të dhënave të "<ph name="NAME" />" është gati për përdorim</translation>
 <translation id="5213891612754844763">Shfaq cilësimet e përfaqësuesit</translation>
+<translation id="5214249693262842685">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, për shembull, për të personalizuar reklamat. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="5215502535566372932">Zgjidh vendin</translation>
 <translation id="521582610500777512">Fotografia u hoq</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
@@ -3804,6 +3841,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5235050375939235066">Të çinstalohet aplikacioni?</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5235750401727657667">Zëvendëso faqen që shikon kur hap një skedë të re</translation>
+<translation id="5236374273162681467">Për t'i përdorur në të gjitha pajisjet e tua, mund t'i zhvendosësh te "Llogaria jote e Google"</translation>
 <translation id="5238278114306905396">Aplikacioni "<ph name="EXTENSION_NAME" />" u hoq automatikisht.</translation>
 <translation id="5241128660650683457">Lexo të gjitha të dhënat e tua në faqet e internetit që viziton</translation>
 <translation id="5242724311594467048">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
@@ -3894,6 +3932,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5336688142483283574">Kjo faqe do të hiqet gjithashtu edhe nga historiku yt dhe aktiviteti i <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5337771866151525739">U instalua nga një palë e tretë.</translation>
 <translation id="5337926771328966926">Emri i pajisjes aktuale është <ph name="DEVICE_NAME" /></translation>
+<translation id="5338338064218053691">Mund të shfletosh në mënyrë private duke përdorur një dritare "të fshehtë"</translation>
 <translation id="5338503421962489998">Hapësira ruajtëse lokale</translation>
 <translation id="5340638867532133571">Lejo që sajtet të instalojnë përpunues të pagesave (rekomandohet)</translation>
 <translation id="5341793073192892252">Kukit e mëposhtme u bllokuan (kukit e palëve të treta po bllokohen pa përjashtim)</translation>
@@ -3917,6 +3956,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="536638840841140142">Asnjë</translation>
 <translation id="5368720394188453070">Telefoni yt është i kyçur. Shkyçe për t'u futur.</translation>
 <translation id="5368779022775404937">Identifikohu në <ph name="REALM" /></translation>
+<translation id="536882527576164740">{0,plural, =1{E fshehtë}other{Të fshehta (#)}}</translation>
 <translation id="5369491905435686894">Aktivizo përshpejtimin e miut</translation>
 <translation id="5369694795837229225">Konfiguro mjedisin e zhvillimit të Linux</translation>
 <translation id="5370819323174483825">&amp;Ringarko</translation>
@@ -3926,7 +3966,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5375318608039113175">Për të përdorur "Ndarjen në afërsi" me këto kontakte, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
 <translation id="5376169624176189338">Kliko për t'u kthyer prapa, mbaje të shtypur për të parë historikun</translation>
 <translation id="5376931455988532197">Skedari është tepër i madh</translation>
-<translation id="5377721922656071359">{COUNT,plural, =1{Dërgimi te <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}other{Dërgimi te <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5379140238605961210">Vazhdo bllokimin e qasjes te mikrofoni</translation>
 <translation id="5382591305415226340">Menaxho lidhjet e mbështetura</translation>
 <translation id="5383377866517186886">Kamera është çaktivizuar te Mac System Preferences</translation>
@@ -3947,6 +3986,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="540495485885201800">Ndërro me të mëparshmin</translation>
 <translation id="5405146885510277940">Rivendos cilësimet</translation>
 <translation id="5407119150486192764">Fut kodin PUK me 8 shifra të dhënë nga operatori yt celular</translation>
+<translation id="5407167491482639988">E pakuptueshme</translation>
 <translation id="5408750356094797285">Zmadhimi: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Nga "Llogaria jote e Google"</translation>
 <translation id="5411472733320185105">Mos i përdor cilësimet e përfaqësuesit për këta strehues dhe domene:</translation>
@@ -3998,7 +4038,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5464660706533281090">Ky cilësim nuk mund të ndryshohet nga një përdorues fëmijë.</translation>
 <translation id="5466374726908360271">Ngj&amp;it dhe kërko për “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5467207440419968613">Të bllokuara: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
-<translation id="5468119583641912100">Sajtet mund të kërkojnë të luajnë përmbajtje të mbrojtura (rekomandohet)</translation>
 <translation id="5468173180030470402">Po kërkon për ndarjet e skedarëve</translation>
 <translation id="5469852975082458401">Mund t'i navigosh faqet me një kursor teksti. Shtyp F7 për ta çaktivizuar.</translation>
 <translation id="5470735824776589490">Kërkohet një rinisje para se pajisja jote të mund të rivendoset me Powerwash. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -4026,6 +4065,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5493792505296048976">ekrani aktiv</translation>
 <translation id="5494016731375030300">Skedat e mbyllura së fundmi</translation>
 <translation id="5494362494988149300">Hape kur të &amp;përfundosh</translation>
+<translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5495466433285976480">Kjo do të heqë të gjithë përdoruesit lokalë, skedarët, të dhënat dhe cilësimet e tjera pas rinisjes së radhës. Të gjithë përdoruesit do të duhet të identifikohen sërish.</translation>
 <translation id="5495597166260341369">Mbaje ekranin të ndezur</translation>
@@ -4057,6 +4097,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
 <translation id="5522156646677899028">Kjo shtesë përmban një dobësi serioze sigurie.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Një shtesë është instaluar nga administratori yt}other{# shtesa janë instaluar nga administratori yt}}</translation>
+<translation id="5523558474028191231">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta dhe duhet të ketë <ph name="MAX_CHARACTER_COUNT" /> karaktere ose më pak</translation>
 <translation id="5526701598901867718">Të gjitha (të pasigurta)</translation>
 <translation id="5526745900034778153">Identifikohu sërish për të rifilluar sinkronizimin</translation>
 <translation id="5527463195266282916">U përpoq të ulte versionin e shtesës.</translation>
@@ -4189,6 +4230,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5671658447180261823">Hiq sugjerimin <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567587836466137939">Kjo pajisje do të marrë përditësime automatike të softuerëve dhe të sigurisë deri në <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">Identifikohu dhe aktivizo sinkronizimin për të marrë faqeshënuesit, fjalëkalimet dhe më shumë në të gjitha pajisjet</translation>
+<translation id="567740581294087470">Çfarë lloj komenti po jep?</translation>
 <translation id="5677503058916217575">Gjuha e faqes:</translation>
 <translation id="5677928146339483299">Të bllokuara</translation>
 <translation id="5678550637669481956">Është dhënë qasja "për lexim dhe shkrim" për <ph name="VOLUME_NAME" />.</translation>
@@ -4306,6 +4348,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5814126672212206791">Lloji i lidhjes</translation>
 <translation id="5815645614496570556">Adresa X.400</translation>
 <translation id="5816434091619127343">Ndryshimet e kërkuara të printerit do ta bënin printerin të papërdorshëm.</translation>
+<translation id="5817069030404929329">Të zhvendosen fjalëkalimet nga kjo pajisje në "Llogarinë tënde të Google"?</translation>
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5821565227679781414">Krijo shkurtore</translation>
 <translation id="5825412242012995131">Aktive (rekomandohet)</translation>
@@ -4372,6 +4415,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5891688036610113830">Rrjetet e preferuara Wi-Fi</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5900302528761731119">Fotografia e profilit të Google</translation>
+<translation id="590036993063074298">Detajet e cilësisë së pasqyrimit</translation>
 <translation id="5901069264981746702">Të dhënat e gjurmëve të tua të gishtave ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5901494423252125310">Dera e printerit është e hapur</translation>
 <translation id="5901630391730855834">E verdhë</translation>
@@ -4447,6 +4491,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5972826969634861500">Nis <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" filloi korrigjimin e këtij shfletuesi</translation>
 <translation id="5973605538625120605">Ndrysho një PIN</translation>
+<translation id="5975056890546437204">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare "të fshehtë"}=1{Hape në &amp;dritare "të fshehtë"}other{Hapi të gjitha ({COUNT}) në &amp;dritare "të fshehtë"}}</translation>
 <translation id="5975792506968920132">Përqindja e ngarkimit të baterisë</translation>
 <translation id="5976160379964388480">Të tjera</translation>
 <translation id="5978277834170881274">&amp;Përdor kontrolluesin drejtshkrimor bazë</translation>
@@ -4479,6 +4524,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6016551720757758985">Konfirmo Powerwash me kthim në versionin e mëparshëm.</translation>
 <translation id="6016972670657536680">Zgjidh butonin e gjuhës dhe të tastierës. Gjuha e zgjedhur aktualisht është <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">E gjelbër</translation>
+<translation id="6019851026059441029">E shkëlqyer - HD</translation>
 <translation id="6020431688553761150">Serveri nuk të autorizoi të kesh qasje në këtë burim.</translation>
 <translation id="6022526133015258832">Hap ekranin e plotë</translation>
 <translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
@@ -4545,6 +4591,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6086004606538989567">Llogaria që ke verifikuar nuk është e autorizuar të qaset në këtë pajisje.</translation>
 <translation id="6086846494333236931">Instaluar nga administratori yt</translation>
 <translation id="6087960857463881712">Fytyrë e mrekullueshme</translation>
+<translation id="608912389580139775">Për ta shtuar këtë faqe te lista jote e leximit, kliko ikonën "Faqeshënuesi"</translation>
 <translation id="6091761513005122595">Ndarja u montua me sukses.</translation>
 <translation id="6093888419484831006">Po anulon përditësimin...</translation>
 <translation id="6095541101974653012">Ke dalë.</translation>
@@ -4582,6 +4629,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6124650939968185064">Shtesat vijuese varen nga kjo shtesë:</translation>
 <translation id="6124698108608891449">Ky sajt ka nevojë për më shumë autorizime.</translation>
 <translation id="6125479973208104919">Fatkeqësisht, do të duhet të shtosh përsëri llogarinë tënde në këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6126601353087978360">Shkruaji këtu komentet e tua:</translation>
 <translation id="6129691635767514872">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google, në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komenti i certifikatës së Netscape</translation>
 <translation id="6129953537138746214">Hapësirë</translation>
@@ -4599,6 +4647,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6147020289383635445">Pamja paraprake e printimit dështoi.</translation>
 <translation id="6148576794665275391">Hapur tani</translation>
 <translation id="6149015141270619212">Nuk mund të lidhet me internetin</translation>
+<translation id="6150116777338468525">Cilësia e audios</translation>
 <translation id="6150278227694566734">Disa kontakte</translation>
 <translation id="6150961653851236686">Kjo gjuhë përdoret kur përkthen faqe</translation>
 <translation id="6151323131516309312">Shtyp <ph name="SEARCH_KEY" /> për të kërkuar në <ph name="SITE_NAME" /></translation>
@@ -4691,6 +4740,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6251870443722440887">Profilet GDI</translation>
 <translation id="625369703868467034">Fuqia e rrjetit</translation>
 <translation id="6254503684448816922">Kompromisi për çelësin</translation>
+<translation id="6254892857036829079">E përkryer</translation>
 <translation id="6257602895346497974">Aktivizo sinkronizimin...</translation>
 <translation id="625895209797312329">Blloko sajtet që të mos përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="6259104249628300056">Zbulo pajisjet në rrjetin tënd lokal</translation>
@@ -4712,7 +4762,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6277105963844135994">Rrjetit i kaloi afati</translation>
 <translation id="6277518330158259200">N&amp;xjirr një pamje të ekranit</translation>
 <translation id="6278057325678116358">Përdor GTK+</translation>
-<translation id="6278068827862345700">Sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave (rekomandohet)</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Ndrysho vendin</translation>
 <translation id="6279183038361895380">Shtyp |<ph name="ACCELERATOR" />| për të shfaqur kursorin</translation>
@@ -4803,6 +4852,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup pa emër - 1 skedë}other{Grup pa emër - # skeda}}</translation>
 <translation id="6385149369087767061">Lidhu me internetin dhe provo sërish</translation>
 <translation id="6385543213911723544">Sajtet mund të ruajnë dhe të lexojnë të dhënat e kukive</translation>
+<translation id="6385994920693662133">Paralajmërim! Regjistrimi i detajuar është i aktivizuar; regjistrat më poshtë mund të përfshijnë URL ose informacione të tjera delikate. Rishiko dhe sigurohu që nuk e ke problem dorëzimin e këtyre informacioneve.</translation>
 <translation id="6387674443318562538">Vertikal i ndarë</translation>
 <translation id="6388429472088318283">Kërko për gjuhët</translation>
 <translation id="6390020764191254941">Lëvize skedën në dritare të re</translation>
@@ -5173,6 +5223,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="680572642341004180">Aktivizo gjurmimin RLZ në <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6808039367995747522">Për të vazhduar, fut dhe prek çelësin tënd të sigurisë</translation>
 <translation id="6808193438228982088">Dhelpër</translation>
+<translation id="6809470175540814047">Hape në dritare "të fshehtë"</translation>
 <translation id="6810613314571580006">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë konfirmimi përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="6810768462515084623">Mos! Duket sikur fjalëkalimi ka skaduar. Përtërije në një pajisje tjetër dhe provo sërish.</translation>
 <translation id="6811034713472274749">Faqja është gati për ta shikuar</translation>
@@ -5199,6 +5250,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Kalo te një shfletues inteligjent dhe i sigurt</translation>
+<translation id="683540480453879381">Hap skedarët <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Pyet kur një sajt kërkon që të hapë dhe vendosë dritare në ekranet e tua (rekomandohet)</translation>
 <translation id="6839225236531462745">Gabim në fshirjen e certifikatës</translation>
@@ -5234,6 +5286,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6865708901122695652">Evidencat e ngjarjeve WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">I ulët</translation>
 <translation id="686664946474413495">Temperatura e ngjyrës</translation>
+<translation id="6867400383614725881">Skedë e re "e fshehtë"</translation>
 <translation id="6868934826811377550">Shiko detajet</translation>
 <translation id="6871644448911473373">Reaguesi OCSP: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">Fjalëkalimi që fute u refuzua nga serveri.</translation>
@@ -5334,6 +5387,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6979044105893951891">Hap dhe dil nga sesionet e menaxhuara për vizitorët</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
+<translation id="6981553172137913845">Për të shfletuar në mënyrë private, kliko te menyja e ikonës me pika për të hapur një dritare "të fshehtë"</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6983507711977005608">Shkëput rrjetin e "Ndarjes së internetit në çast"</translation>
 <translation id="6983783921975806247">OID e regjistruar</translation>
@@ -5409,6 +5463,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7055451306017383754">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Parallels Desktop të ndalojë punën më pas.</translation>
+<translation id="7056418393177503237">{0,plural, =1{E fshehtë}other{# dritare të hapura "të fshehta"}}</translation>
 <translation id="7056526158851679338">&amp;Inspekto pajisjet</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 minutë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_MINS} minuta më parë}}</translation>
 <translation id="7057767408836081338">Marrja e të dhënave të aplikacionit dështoi, por po përpiqemi ta ekzekutojmë aplikacionin gjithsesi...</translation>
@@ -5436,7 +5491,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7078120482318506217">Të gjitha rrjetet</translation>
 <translation id="708060913198414444">K&amp;opjo adresën e audios</translation>
 <translation id="708278670402572152">Shkëputu për të aktivizuar skanimin</translation>
-<translation id="7084321615353200053">Sajtet mund të kërkojnë të përdorin kamerën tënde (rekomandohet)</translation>
 <translation id="7085389578340536476">Të lejohet Chrome të regjistrojë audion?</translation>
 <translation id="7085805695634549980">Nuk mund të lidhej me shërbimet e Google. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Përfshi skedarët e evidencave të Chrome në arkiv.</translation>
@@ -5465,6 +5519,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7117247127439884114">Identifikohu përsëri...</translation>
 <translation id="711840821796638741">Shfaq faqeshënuesit e menaxhuar</translation>
 <translation id="711902386174337313">Lexo listën e pajisjeve ku je identifikuar</translation>
+<translation id="7120762240626567834">Trafiku në shfletuesin Chrome dhe Android do të bllokohet përveçse nëse është lidhur një rrjet VPN</translation>
 <translation id="7120865473764644444">Nuk mund të lidhej me serverin e sinkronizimit.</translation>
 <translation id="7121438501124788993">Modaliteti i zhvilluesit</translation>
 <translation id="7121728544325372695">Vizat inteligjente</translation>
@@ -5654,6 +5709,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7347751611463936647">Për të përdorur këtë shtesë, shkruaj "<ph name="EXTENSION_KEYWORD" />", më pas TAB, më pas komandën ose kërkimin.</translation>
 <translation id="7347943691222276892">Kliko për t'u larguar nga <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
+<translation id="7349010927677336670">Qëndrueshmëria e videos</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7353261921908507769">Kontaktet e tua mund të ndajnë me ty kur të jenë në afërsi. Transferimet nuk do të fillojnë derisa të pranosh.</translation>
 <translation id="735361434055555355">Po instalohet Linux...</translation>
@@ -5690,6 +5746,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7385490373498027129">Të gjitha të dhënat në këtë <ph name="DEVICE_TYPE" /> do të fshihen përgjithmonë.</translation>
 <translation id="7385854874724088939">Ndodhi një gabim gjatë përpjekjes për të printuar. Kontrollo printerin dhe provo përsëri.</translation>
 <translation id="7385896526023870365">Kjo prapashtesë nuk ka qasje shtesë në sajt.</translation>
+<translation id="7387273928653486359">E pranueshme</translation>
 <translation id="7388209873137778229">Shfaqen vetëm pajisjet e mbështetura.</translation>
 <translation id="7392118418926456391">Skanimi për viruse dështoi</translation>
 <translation id="7392915005464253525">H&amp;ape sërish dritaren e mbyllur</translation>
@@ -5845,6 +5902,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="756445078718366910">Hap dritaren e shfletuesit</translation>
 <translation id="7564847347806291057">Përfundo procesin</translation>
+<translation id="756503097602602175">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në pajisjen <ph name="DEVICE_TYPE" /> si vizitor ose të shfletosh në ueb në një <ph name="LINK_2_BEGIN" />dritare të fshehtë<ph name="LINK_2_END" />.</translation>
 <translation id="7566118625369982896">Menaxho lidhjet për aplikacionet në Play</translation>
 <translation id="756809126120519699">Të dhënat e Chrome u pastruan</translation>
 <translation id="756876171895853918">Personalizo simbolin</translation>
@@ -5929,6 +5987,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7654941827281939388">Kjo llogari tashmë po përdoret në këtë kompjuter.</translation>
 <translation id="7655411746932645568">Sajtet mund të kërkojnë të lidhen me portat seriale</translation>
 <translation id="7658239707568436148">Anulo</translation>
+<translation id="7659154729610375585">Të dilet gjithsesi nga modaliteti "i fshehtë"?</translation>
 <translation id="7659297516559011665">Fjalëkalimet vetëm në këtë pajisje</translation>
 <translation id="7659584679870740384">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për të marrë leje për identifikim.</translation>
 <translation id="7661259717474717992">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive</translation>
@@ -5940,7 +5999,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Ktheje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_WEEKS} jave}other{Ktheje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_WEEKS} javësh}}</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Kodi PIN është i pasaktë. Të ka mbetur një përpjekje.}other{Kodi PIN është i pasaktë. Të kanë mbetur # përpjekje.}}</translation>
-<translation id="7670343634869448987">Sajtet mund të luajnë tinguj (rekomandohet)</translation>
 <translation id="7671130400130574146">Përdor shiritin dhe kufizimet e titullit të sistemit</translation>
 <translation id="767127784612208024">Prek për të konfirmuar rivendosjen</translation>
 <translation id="767147716926917172">Dërgon automatikisht të dhëna diagnostikuese dhe përdorimi te Google</translation>
@@ -5991,7 +6049,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7716648931428307506">Zgjidh ku do ta ruash fjalëkalimin</translation>
 <translation id="7716781361494605745">URL-ja e politikës së autoritetit të certifikimit të Netscape</translation>
 <translation id="7717014941119698257">Po shkarkon: <ph name="STATUS" /></translation>
-<translation id="7717134585801378441">Sajtet mund të kërkojnë vendndodhjen tënde (rekomandohet)</translation>
 <translation id="771721654176725387">Kjo do të fshijë në mënyrë të përhershme të dhënat e shfletimit nga kjo pajisje. Për të rikuperuar të dhënat, aktivizo "Sinkronizo si"</translation>
 <translation id="7717845620320228976">Kontrollo për përditësime</translation>
 <translation id="7719367874908701697">Zmadhimi i faqes</translation>
@@ -6122,6 +6179,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7844992432319478437">Po përditëson ndryshimin</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7847212883280406910">Shtyp Ctrl + Alt + S për të kaluar në <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7847617962681804761">Kërkohet PIN për të përdorur të dhënat celulare</translation>
 <translation id="7849264908733290972">Hape &amp;imazhin në një skedë të re</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
 <translation id="7851457902707056880">Identifikimi është i kufizuar vetëm për llogarinë e zotëruesit. Rindize dhe identifikohu me llogarinë e zotëruesit. Kompjuteri do të rindizet për 30 sekonda.</translation>
@@ -6176,6 +6234,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7908378463497120834">Na vjen keq, të paktën një pjesë në pajisjen e hapësirës ruajtëse të jashtme  nuk mund të montohej.</translation>
 <translation id="7909324225945368569">Riemërto profilin tënd</translation>
 <translation id="7909969815743704077">Shkarko në modalitetin "i fshehtë"</translation>
+<translation id="7909986151924474987">Mund të mos jesh në gjendje ta riinstalosh këtë profil</translation>
 <translation id="7910768399700579500">&amp;Dosje e re</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Fjalëkalimi yt është ndryshuar në server. Dil dhe më pas identifikohu përsëri.</translation>
@@ -6236,6 +6295,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7970673414865679092">Detajet e eternetit</translation>
 <translation id="7970882136539140748">Karta nuk mund të ruhet për momentin</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
+<translation id="7973776233567882054">Cilat nga të mëposhtmet e përshkruan më mirë rrjetin tënd?</translation>
 <translation id="797394244396603170">Zgjidh pajisjen me të cilën dëshiron të ndash skedarë</translation>
 <translation id="7973962044839454485">Vërtetimi i PPP-së dështoi për shkak të emrit të përdoruesit ose fjalëkalimit të gabuar</translation>
 <translation id="7974566588408714340">Riprovo duke përdorur <ph name="EXTENSIONNAME" /></translation>
@@ -6315,6 +6375,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8054883179223321715">Ofrohet për sajte specifike për video</translation>
 <translation id="8054921503121346576">Tastiera USB është e lidhur</translation>
 <translation id="8058655154417507695">Viti i skadimit</translation>
+<translation id="8058986560951482265">Me dridhje</translation>
 <translation id="8059417245945632445">&amp;Inspekto pajisjet</translation>
 <translation id="8059456211585183827">Nuk disponohen printerë për ruajtje.</translation>
 <translation id="8061091456562007989">Ndryshoje përsëri</translation>
@@ -6383,6 +6444,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
+<translation id="8133297578569873332">E pranueshme - FM</translation>
 <translation id="8133676275609324831">&amp;Shfaq në dosje</translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" /> KB</translation>
 <translation id="8136269678443988272">Kodet PIN që fute nuk përputhen</translation>
@@ -6406,6 +6468,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8154790740888707867">Asnjë skedar</translation>
 <translation id="815491593104042026">Gabim! Vërtetimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt (<ph name="BLOCKED_URL" />). Kontakto me administratorin tënd.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nuk u gjetën fjalëkalime të komprometuara}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
+<translation id="8157248655669507702">Aktivizo të dhënat celulare për të instaluar një profil të kartës eSIM</translation>
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
 <translation id="8158117992543756526">Marrja e përditësimeve automatike të sigurisë dhe softuerëve për këtë pajisje ka ndaluar në <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
@@ -6448,6 +6511,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8202160505685531999">Fut përsëri fjalëkalimin për të përditësuar profilin e pajisjes <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203152941016626022">Emri i pajisjes së "Ndarjes në afërsi"</translation>
 <translation id="8203732864715032075">Të dërgon njoftime dhe kthen parazgjedhjen për të kujtuar këtë kompjuter për "Mesazhet". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="8205432712228803050">Ekranet dhe pajisjet e tua periferike mund të rivendosen shkurtimisht. Që të zbatohet ky ndryshim, hiqi dhe rilidhi pajisjet periferike.</translation>
 <translation id="820568752112382238">Sajtet më të vizituara</translation>
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
@@ -6565,6 +6629,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8338952601723052325">Sajti i uebit i zhvilluesit</translation>
 <translation id="8339059274628563283">Të dhënat e <ph name="SITE" /> të ruajtura lokalisht</translation>
 <translation id="833986336429795709">Për të hapur këtë lidhje, zgjidh një aplikacion</translation>
+<translation id="8342221978608739536">Nuk e provova</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8350789879725387295">Veglat e stilolapsit në stacion</translation>
@@ -6589,6 +6654,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Çaktivizo zërin e sajtit}other{Çaktivizo zërin e sajteve}}</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8373652277231415614">Direktoritë e ndara të Crostini</translation>
+<translation id="8376137163494131156">Na trego se çfarë po ndodh me Google Cast.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8379878387931047019">Kjo pajisje nuk e mbështet llojin e çelësit të sigurisë që kërkohet nga ky sajt uebi</translation>
@@ -6685,6 +6751,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8490896350101740396">Aplikacionet e mëposhtme të kioskës "<ph name="UPDATED_APPS" />" janë përditësuar. Rindize pajisjen për të përfunduar procesin e përditësimit.</translation>
 <translation id="8492685019009920170">Prek me gisht sensorin e gjurmës së gishtit. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Sajtet mund të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>
+<translation id="8492960370534528742">Komentet për Google Cast</translation>
 <translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8493236660459102203">Mikrofoni:</translation>
 <translation id="8496717697661868878">Ekzekuto këtë përbërës shtesë</translation>
@@ -6761,6 +6828,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8588866096426746242">Shfaq statistikat e profilit</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR po prezanton te kufja</translation>
 <translation id="8590375307970699841">Konfiguro përditësimet automatike</translation>
+<translation id="8590506940709493916">,</translation>
 <translation id="8591783563402255548">1 sekondë</translation>
 <translation id="8592141010104017453">Mos shfaq asnjë njoftim</translation>
 <translation id="859246725979739260">Ky sajt është bllokuar që të mos ketë qasje te vendndodhja jote.</translation>
@@ -6826,6 +6894,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655972064210167941">Identifikimi dështoi pasi fjalëkalimi nuk mund të verifikohej. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="8656768832129462377">Mos e kontrollo</translation>
+<translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> po ndan ekranin tënd dhe audion me <ph name="TAB_NAME" />.</translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
@@ -6845,6 +6914,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8673026256276578048">Kërko në ueb...</translation>
 <translation id="8673383193459449849">Problem në server</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# video}}</translation>
+<translation id="8676313779986170923">Faleminderit për dërgimin e komentit.</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8677212948402625567">Palosi të gjitha...</translation>
@@ -6949,7 +7019,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="878069093594050299">Kjo certifikatë është verifikuar për përdorimet e mëposhtme:</translation>
 <translation id="8781834595282316166">Skedë e re në grup</translation>
 <translation id="8782565991310229362">Hapja e aplikacionit "kioskë" u anulua.</translation>
-<translation id="8783093612333542422">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; dëshiron të ndajë një printer &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; me ty.</translation>
 <translation id="8783834180813871000">Shkruaj kodin e çiftimit të Bluetooth-it, pastaj shtyp "Kthehu" ose "Hyr"</translation>
 <translation id="8784626084144195648">Mesatarja e reduktimit</translation>
 <translation id="8785622406424941542">Stilolapsi</translation>
@@ -7032,6 +7101,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8863753581171631212">Hape lidhjen në dritaren e re të <ph name="APP" /></translation>
 <translation id="8864055848767439877">Po ndahet <ph name="TAB_NAME" /> te <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> u hoq nga kjo pajisje</translation>
+<translation id="8865112428068029930">Po përdor një kompjuter të ndarë? Provo të hapësh një dritare "të fshehtë".</translation>
 <translation id="8867228703146808825">Kopjo detajet e ndërtimit në kujtesën e fragmenteve</translation>
 <translation id="8868333925931032127">Po niset modaliteti i demonstrimit</translation>
 <translation id="8868626022555786497">Në përdorim</translation>
@@ -7089,6 +7159,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8925458182817574960">Cilësimet</translation>
 <translation id="8926389886865778422">Mos pyet përsëri</translation>
 <translation id="892706138619340876">Disa cilësime u rivendosën</translation>
+<translation id="8929696694736010839">Vetëm sesioni aktual "i fshehtë"</translation>
 <translation id="8930351635855238750">Cilësimet e reja të kukive do të kenë efekt pas ringarkimit të faqes</translation>
 <translation id="8930622219860340959">Me valë</translation>
 <translation id="8931076093143205651">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky cilësim zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
@@ -7231,6 +7302,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9076283476770535406">Mund të ketë përmbajtje për të rritur</translation>
 <translation id="9076523132036239772">Na vjen keq, por mail-i yt ose fjalëkalimi nuk mundën të verifikoheshin. Provo të lidhesh me një rrjet në fillim.</translation>
 <translation id="9076977315710973122">Ndarja e SMB</translation>
+<translation id="9078193189520575214">Ndryshimet po zbatohen...</translation>
 <translation id="9078316009970372699">Çaktivizo "Ndarjen e internetit në çast"</translation>
 <translation id="9079267182985899251">Ky opsion nuk do të mbështetet së shpejti. Për të prezantuar një skedë, përdor <ph name="GOOGLE_MEET" />.</translation>
 <translation id="9084064520949870008">Hape si dritare</translation>
@@ -7320,7 +7392,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9170848237812810038">&amp;Zhbëj</translation>
 <translation id="9170884462774788842">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>
 <translation id="917350715406657904">Ke arritur kufirin kohor që ka caktuar prindi yt për <ph name="APP_NAME" />. Mund ta përdorësh atë për <ph name="TIME_LIMIT" /> nesër.</translation>
-<translation id="9173787391779732995">Sajtet mund të shfaqin imazhe (rekomandohet)</translation>
 <translation id="9173995187295789444">Po skanon për pajisje Bluetooth...</translation>
 <translation id="9174401638287877180">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës.</translation>
 <translation id="917510707618656279">Pyet kur një sajt dëshiron të ketë qasje te pajisjet Bluetooth</translation>
@@ -7345,7 +7416,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9209563766569767417">Po kontrollon konfigurimin e kontejnerit të Linux</translation>
 <translation id="9209689095351280025">Sajtet nuk mund të përdorin kuki që të monitorojnë nëpër ueb</translation>
 <translation id="9211177926627870898">Kërkohet përditësimi</translation>
-<translation id="9214510034298163263">Sajtet mund të kërkojnë të modifikojnë skedarët ose dosjet në pajisjen tënde (rekomandohet)</translation>
 <translation id="9214520840402538427">Mos! Nisjes së atributeve të kohës së instalimit i ka përfunduar afati. Kontakto me përfaqësuesin e mbështetjes.</translation>
 <translation id="9214695392875603905">Kek në kupë</translation>
 <translation id="9215293857209265904">U shtua "<ph name="EXTENSION_NAME" />"</translation>
@@ -7364,6 +7434,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="93393615658292258">Vetëm fjalëkalimi</translation>
 <translation id="934244546219308557">Emërtoje këtë grup</translation>
 <translation id="934503638756687833">Do të hiqen edhe artikuj që nuk janë listuar këtu, nëse është e nevojshme. Mëso më shumë për &lt;a href="<ph name="URL" />"&gt;mbrojtjen ndaj softuerëve të padëshiruar&lt;/a&gt; në dokumentin informues të privatësisë së Chrome.</translation>
+<translation id="93480724622239549">Defekt në kod ose gabim</translation>
 <translation id="935490618240037774">Faqeshënuesit e tu, historiku, fjalëkalimet dhe cilësimet e tjera do të sinkronizohen te llogaria jote e Google që të mund t'i përdorësh në të gjitha pajisjet e tua.</translation>
 <translation id="935854577147268200">Telefoni i Smart Lock ndryshoi. Fut fjalëkalimin për të përditësuar Smart Lock. Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund të çaktivizosh Smart Lock te "Cilësimet"</translation>
 <translation id="93610034168535821">Hapësira ruajtëse në total e përdorur nga sajtet:</translation>
@@ -7378,6 +7449,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion.</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>
+<translation id="947526284350604411">Përgjigjja jote</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> nuk mund t'i hapë skedarët në këtë dosje sepse ajo përmban skedarë sistemi</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="953434574221655299">Lejohen të dinë kur ti e përdor pajisjen tënde në mënyrë aktive</translation>
@@ -7414,6 +7486,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="987897973846887088">Nuk ka imazhe në dispozicion</translation>
+<translation id="988320949174893488">Belbëzon herë pas here</translation>
 <translation id="988978206646512040">Lënia bosh e frazës së kalimit nuk lejohet</translation>
 <translation id="991413375315957741">sensorët e lëvizjes ose të dritës</translation>
 <translation id="992032470292211616">Shtesat, aplikacionet dhe temat mund të dëmtojnë pajisjen tënde. Je i sigurt se dëshiron të vazhdosh?</translation>

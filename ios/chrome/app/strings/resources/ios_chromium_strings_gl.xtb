@@ -43,6 +43,7 @@
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
 <translation id="4787850887676698916">Aquí aparecerán as pestanas que abrises en Chromium noutros dispositivos.</translation>
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="4852878756222711218">Para tirarlle o máximo partido a Chromium, inicia sesión coa túa Conta de Google</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="6827294685447036764">Se permites que Chromium saiba cal é a túa localización, este enviaralla aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 <translation id="7018284295775193585">Chromium non se pode actualizar</translation>
+<translation id="7045244423563602563">Personaliza Chromium</translation>
 <translation id="7099326575020694068">Chromium non pode usar a cámara no modo Vista dividida</translation>
 <translation id="7118091470949186573">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7208566199746267865">Chromium fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>

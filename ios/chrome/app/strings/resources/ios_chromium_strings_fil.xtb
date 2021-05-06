@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4787850887676698916">Dito lalabas ang mga nabuksan mong tab sa Chromium sa iba mo pang mga device.</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="4852878756222711218">Para masulit ang Chromium, mag-sign in sa iyong Google Account</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="6827294685447036764">Kung papayagan mo ang Chromium na alamin ang iyong lokasyon, ipapadala ito ng Chromium sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
 <translation id="7018284295775193585">Hindi makapag-update ang Chromium</translation>
+<translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
 <translation id="7099326575020694068">Hindi magamit ng Chromium ang iyong camera sa Split View mode</translation>
 <translation id="7118091470949186573">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7208566199746267865">Nakakatipid ka ng oras sa Chromium sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>

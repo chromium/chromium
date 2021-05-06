@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Chọn thư mục</translation>
 <translation id="1265739287306757398">Tìm hiểu cách thức</translation>
 <translation id="1272079795634619415">Dừng</translation>
+<translation id="1282311502488501110">Không đăng nhập</translation>
 <translation id="1283524564873030414">24 giờ qua</translation>
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
 <translation id="1321993286294231467">Lỗi khi lưu hình ảnh.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Mở history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang đã được di chuyển</translation>
 <translation id="2139867232736819575">Tìm kiếm văn bản bạn đã sao chép</translation>
+<translation id="214201757571129614">Đăng nhập…</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2198757192731523470">Google có thể sử dụng lịch sử của bạn để cá nhân hóa tính năng Tìm kiếm, quảng cáo và các dịch vụ khác của Google.</translation>
@@ -343,6 +345,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4630540211544979320">Dịch trang</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
 <translation id="4636930964841734540">Thông tin</translation>
+<translation id="4650125387981512669">Tiếp tục bằng tên <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
 <translation id="4659667755519643272">Vào Trình chuyển đổi thẻ</translation>
 <translation id="46614316059270592">Lưu mật khẩu</translation>

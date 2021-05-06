@@ -43,6 +43,7 @@
 <translation id="4736424910885271643">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 <translation id="4787850887676698916">A más eszközökön futó Chromium böngészőben megnyitott lapok itt jelennek meg.</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
+<translation id="4852878756222711218">Annak érdekében, hogy a legtöbbet hozhassa ki Chromiumból, jelentkezzen be Google-fiókjával</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
@@ -68,6 +69,7 @@
 <translation id="6820823224820483452">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="6827294685447036764">Ha engedélyezi a Chromium számára a helyadatok használatát, akkor a böngésző továbbítja a helyadatokat az Ön által engedélyezett webhelyeknek. A webhelyek akkor kérhetnek hozzáférést a helyadatokhoz, ha helyi információkat jelenítenek meg (pl. közeli boltok vagy helyi hírek esetén).</translation>
 <translation id="7018284295775193585">Nem lehet frissíteni a Chromiumot</translation>
+<translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>
 <translation id="7099326575020694068">A Chromium Osztott nézet módban nem tudja használni a kamerát</translation>
 <translation id="7118091470949186573">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7208566199746267865">A Chromium időt takarít meg Önnek azzal, hogy fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>

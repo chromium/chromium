@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">เลือกโฟลเดอร์</translation>
 <translation id="1265739287306757398">เรียนรู้วิธี</translation>
 <translation id="1272079795634619415">หยุด</translation>
+<translation id="1282311502488501110">ไม่ต้องลงชื่อเข้าใช้</translation>
 <translation id="1283524564873030414">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1321993286294231467">เกิดข้อผิดพลาดในการบันทึกรูปภาพ</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="2116625576999540962">ย้ายแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
 <translation id="2139867232736819575">ค้นหาข้อความที่คุณคัดลอก</translation>
+<translation id="214201757571129614">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="2198757192731523470">Google อาจใช้ประวัติของคุณเพื่อปรับเปลี่ยนการค้นหา โฆษณา และบริการอื่นๆ ของ Google ในแบบของคุณ</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">แปลหน้าเว็บ</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
+<translation id="4650125387981512669">ดำเนินการต่อในชื่อ <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">ฟีเจอร์นี้จะเปิดเมื่อคุณลงชื่อเข้าใช้บัญชี Google</translation>
 <translation id="4659667755519643272">เข้าสู่มุมมองตัวสลับแท็บ</translation>
 <translation id="46614316059270592">บันทึกรหัสผ่าน</translation>

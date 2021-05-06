@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Επιλογή φακέλου</translation>
 <translation id="1265739287306757398">Μάθετε με ποιον τρόπο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
+<translation id="1282311502488501110">Να μην γίνει σύνδεση</translation>
 <translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1321993286294231467">Σφάλμα κατά την αποθήκευση εικόνας.</translation>
@@ -114,6 +115,7 @@
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
+<translation id="214201757571129614">Σύνδεση…</translation>
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
 <translation id="2198757192731523470">Η Google μπορεί να χρησιμοποιεί το ιστορικό σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google.</translation>
@@ -343,6 +345,7 @@
 <translation id="4630540211544979320">Μετάφραση σελίδων</translation>
 <translation id="4634124774493850572">Χρήση κωδικού πρόσβασης</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
+<translation id="4650125387981512669">Συνέχεια ως <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Αυτή η λειτουργία ενεργοποιείται όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="4659667755519643272">Εισαγωγή στην εναλλαγή καρτελών</translation>
 <translation id="46614316059270592">Αποθήκευση κωδικού πρόσβασης</translation>
