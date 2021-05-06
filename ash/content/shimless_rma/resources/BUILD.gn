@@ -15,6 +15,7 @@ polymer_element_files = [
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
   "base_page.js",
+  "onboarding_landing_page.js",
 ]
 
 generate_grd("build_grd") {
@@ -34,18 +35,26 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":base_page",
+    ":onboarding_landing_page",
     ":shimless_rma",
   ]
 }
 
 js_library("shimless_rma") {
   deps = [
+    ":onboarding_landing_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
 }
 
 js_library("base_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_landing_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
