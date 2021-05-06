@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

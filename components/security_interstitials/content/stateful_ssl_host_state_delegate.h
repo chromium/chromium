@@ -20,6 +20,7 @@ class PrefService;
 namespace base {
 class Clock;
 class DictionaryValue;
+class FilePath;
 }  //  namespace base
 
 namespace content {

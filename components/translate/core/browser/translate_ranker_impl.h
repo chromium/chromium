@@ -26,6 +26,10 @@ namespace assist_ranker {
 class RankerModel;
 }  // namespace assist_ranker
 
+namespace base {
+class FilePath;
+}
+
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm

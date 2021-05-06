@@ -6,6 +6,7 @@
 
 #include <link.h>
 #include <sys/mman.h>
+#include "base/bit_cast.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/memory/swap_configuration.h"

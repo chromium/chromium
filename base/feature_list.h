@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 
@@ -24,6 +23,7 @@ namespace base {
 
 class FieldTrial;
 class FieldTrialList;
+class PersistentMemoryAllocator;
 
 // Specifies whether a given feature is enabled or disabled by default.
 // NOTE: The actual runtime state may be different, due to a field trial or a

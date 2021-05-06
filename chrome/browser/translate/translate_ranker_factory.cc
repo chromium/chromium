@@ -4,6 +4,7 @@
 
 #include "chrome/browser/translate/translate_ranker_factory.h"
 
+#include "base/files/file_path.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"

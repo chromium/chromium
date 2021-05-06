@@ -4,6 +4,13 @@
 
 #include "base/feature_list.h"
 
+// feature_list.h is a widely included header and its size impacts build
+// time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 520000
+#endif
+
 #include <stddef.h>
 
 #include <utility>
@@ -16,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/persistent_memory_allocator.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"

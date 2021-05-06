@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

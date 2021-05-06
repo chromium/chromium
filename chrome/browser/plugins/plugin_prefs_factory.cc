@@ -4,6 +4,7 @@
 
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

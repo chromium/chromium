@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 
