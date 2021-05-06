@@ -1235,6 +1235,10 @@ bool TabStrip::IsTabStripEditable() const {
          !drag_context_->IsActiveDropTarget();
 }
 
+bool TabStrip::CanHighlightTabs() const {
+  return !drag_context_->IsDragSessionActive();
+}
+
 bool TabStrip::IsTabCrashed(int tab_index) const {
   return tab_at(tab_index)->data().IsCrashed();
 }

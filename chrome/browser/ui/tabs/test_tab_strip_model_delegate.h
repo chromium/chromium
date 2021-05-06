@@ -34,6 +34,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void WillAddWebContents(content::WebContents* contents) override;
   int GetDragActions() const override;
   bool CanDuplicateContentsAt(int index) override;
+  bool CanHighlightTabs() override;
   void DuplicateContentsAt(int index) override;
   void MoveToExistingWindow(const std::vector<int>& indices,
                             int browser_index) override;
