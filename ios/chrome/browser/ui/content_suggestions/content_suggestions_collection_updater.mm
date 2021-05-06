@@ -662,8 +662,10 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
   NSString* footerTitle = sectionInfo.footerTitle;
 
   __weak ContentSuggestionsCollectionUpdater* weakSelf = self;
-  if (footerTitle && ![self.collectionViewController.collectionViewModel
-                         footerForSectionWithIdentifier:sectionIdentifier]) {
+  if (footerTitle &&
+      ![self.collectionViewController.collectionViewModel
+          footerForSectionWithIdentifier:sectionIdentifier] &&
+      !IsDiscoverFeedEnabled()) {
     ContentSuggestionsFooterItem* footer = [[ContentSuggestionsFooterItem alloc]
         initWithType:ItemTypeFooter
                title:sectionInfo.footerTitle
@@ -697,13 +699,18 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 
   NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
   if ([self isDiscoverSection:section]) {
-    [model setHeader:[self headerForSectionInfo:sectionInfo]
-        forSectionWithIdentifier:sectionIdentifier];
+    CollectionViewItem* discoverSectionHeader =
+        [self headerForSectionInfo:sectionInfo];
+    // TODO(crbug.com/1145106): Potential fix for crash where cellClass is nil.
+    if ([discoverSectionHeader cellClass]) {
+      [model setHeader:discoverSectionHeader
+          forSectionWithIdentifier:sectionIdentifier];
+    }
     return;
   }
 
   if (![model headerForSectionWithIdentifier:sectionIdentifier] &&
-      sectionInfo.title) {
+      sectionInfo.title && !IsDiscoverFeedEnabled()) {
     DCHECK(IsFromContentSuggestionsService(sectionIdentifier));
     if ([self.sectionIdentifiersFromContentSuggestions
             containsObject:@(sectionIdentifier)]) {
