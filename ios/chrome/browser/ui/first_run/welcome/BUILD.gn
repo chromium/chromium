@@ -25,12 +25,15 @@ source_set("welcome") {
 source_set("welcome_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "checkbox_button.h",
+    "checkbox_button.mm",
     "welcome_screen_view_controller.h",
     "welcome_screen_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/browser/ui/first_run:first_run_ui",
-    #    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
+    "//ios/chrome/common/ui/colors",
   ]
   frameworks = [ "UIKit.framework" ]
 }
