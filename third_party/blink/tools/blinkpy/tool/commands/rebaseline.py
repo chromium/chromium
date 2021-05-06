@@ -125,9 +125,7 @@ class AbstractRebaseliningCommand(Command):
         if is_wpt:
             # *-actual.txt produced by wptrunner are actually manifest files
             # that can make the test pass if renamed to *.ini.
-            # WPT bots do not include "external/wpt" in test names.
-            file_name = self._host_port.get_file_path_for_wpt_test(
-                'external/wpt/' + test_name)
+            file_name = self._host_port.get_file_path_for_wpt_test(test_name)
             assert file_name, ('Cannot find %s in WPT' % test_name)
             return file_name + '.ini'
 

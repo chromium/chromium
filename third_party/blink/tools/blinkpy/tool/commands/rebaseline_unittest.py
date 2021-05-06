@@ -183,7 +183,7 @@ class TestAbstractRebaselineCommand(BaseTestCase):
         add_manifest_to_mock_filesystem(self.tool.port_factory.get())
         self.assertEqual(
             self.command._file_name_for_expected_result(
-                'console/console-is-a-namespace.any.worker.html',
+                'external/wpt/console/console-is-a-namespace.any.worker.html',
                 'txt',
                 is_wpt=True),
             'external/wpt/console/console-is-a-namespace.any.js.ini')
