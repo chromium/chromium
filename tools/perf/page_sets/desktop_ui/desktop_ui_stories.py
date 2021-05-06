@@ -31,6 +31,11 @@ class DesktopUIStorySet(story.StorySet):
       download_shelf_story.DownloadShelfStory5File,
   ]
 
+  DOWNLOAD_SHELF_WEBUI_STORIES = [
+      download_shelf_story.DownloadShelfWebUIStory1File,
+      download_shelf_story.DownloadShelfWebUIStory5File,
+  ]
+
   WEBUI_TAB_STRIP_STORIES = [
       webui_tab_strip_story.WebUITabStripStoryCleanSlate,
       webui_tab_strip_story.WebUITabStripStoryTop10,
@@ -49,7 +54,16 @@ class DesktopUIStorySet(story.StorySet):
           ]))
 
     for cls in self.DOWNLOAD_SHELF_STORIES:
-      self.AddStory(cls(self))
+      self.AddStory(cls(self, [
+          '--enable-ui-devtools=enabled',
+      ]))
+
+    for cls in self.DOWNLOAD_SHELF_WEBUI_STORIES:
+      self.AddStory(
+          cls(self, [
+              '--enable-features=WebUIDownloadShelf',
+              '--enable-ui-devtools=enabled',
+          ]))
 
     # WebUI Tab Strip is not available on Mac.
     if sys.platform != 'darwin':

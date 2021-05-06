@@ -2,20 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from telemetry.page import page
+from page_sets.desktop_ui.browser_utils import Resize
+from page_sets.desktop_ui.multitab_story import MultiTabStory
+from page_sets.desktop_ui.ui_devtools_utils import ClickOn, IsMac, PressKey
+from page_sets.desktop_ui.webui_utils import Inspect
+
+from telemetry.internal.browser.ui_devtools import MOUSE_EVENT_BUTTON_RIGHT
 
 DOWNLOAD_URL = 'https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
+WEBUI_DOWNLOAD_SHELF_URL = 'chrome://download-shelf.top-chrome/'
 
 
-class DownloadShelfStory(page.Page):
+class DownloadShelfStory(MultiTabStory):
   """Base class for stories to download files"""
-
-  def __init__(self, story_set, extra_browser_args=None):
-    super(DownloadShelfStory,
-          self).__init__(url=self.URL,
-                         name=self.NAME,
-                         page_set=story_set,
-                         extra_browser_args=extra_browser_args)
 
   def RunNavigateSteps(self, action_runner):
     url_list = self.URL_LIST
@@ -26,9 +25,37 @@ class DownloadShelfStory(page.Page):
         tabs.New(url=url)
       except Exception:
         pass
+    self._devtools = action_runner.tab.browser.GetUIDevtools()
+
+  def IsWebUI(self):
+    return 'webui' in self.NAME
 
   def RunPageInteractions(self, action_runner):
-    action_runner.Wait(10)
+    action_runner.Wait(2)
+    if self.IsWebUI():
+      action_runner = Inspect(action_runner.tab.browser,
+                              WEBUI_DOWNLOAD_SHELF_URL)
+    self.ContextMenu(action_runner)
+    action_runner.Wait(2)
+    browser = action_runner.tab.browser
+    Resize(browser, browser.tabs[0].id, start_width=600, end_width=800)
+    action_runner.Wait(2)
+
+  def ContextMenu(self, action_runner):
+    if IsMac():
+      return
+    if self.IsWebUI():
+      action_runner.ClickElement(
+          element_function=DROPDOWN_BUTTON_ELEMENT_FUNCTION)
+    else:
+      ClickOn(self._devtools,
+              'TransparentButton',
+              button=MOUSE_EVENT_BUTTON_RIGHT)
+    action_runner.Wait(1)
+    node_id = self._devtools.QueryNodes('<Window>')[
+        -1]  # Context menu lives in the last Window.
+    PressKey(self._devtools, node_id, 'Esc')
+    action_runner.Wait(1)
 
 
 class DownloadShelfStory1File(DownloadShelfStory):
@@ -41,3 +68,23 @@ class DownloadShelfStory5File(DownloadShelfStory):
   NAME = 'download_shelf:5file'
   URL_LIST = [DOWNLOAD_URL] * 5
   URL = URL_LIST[0]
+
+
+class DownloadShelfWebUIStory1File(DownloadShelfStory):
+  NAME = 'download_shelf_webui:1file'
+  URL_LIST = [DOWNLOAD_URL]
+  URL = URL_LIST[0]
+
+
+class DownloadShelfWebUIStory5File(DownloadShelfStory):
+  NAME = 'download_shelf_webui:5file'
+  URL_LIST = [DOWNLOAD_URL] * 5
+  URL = URL_LIST[0]
+
+
+DROPDOWN_BUTTON_ELEMENT_FUNCTION = '''
+document.querySelector('download-shelf-app').shadowRoot.
+querySelector('download-list').shadowRoot.
+querySelector('download-item').shadowRoot.
+getElementById('dropdown-button')
+'''
