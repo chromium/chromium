@@ -153,7 +153,7 @@ GREYElementInteraction* RequestDesktopButton() {
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return _visitCounter == visitCountBeforePrerender + 1;
+    return self->_visitCounter == visitCountBeforePrerender + 1;
   });
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 
@@ -204,7 +204,7 @@ GREYElementInteraction* RequestDesktopButton() {
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return _visitCounter == visitCountBeforePrerender + 1;
+    return self->_visitCounter == visitCountBeforePrerender + 1;
   });
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 
@@ -229,7 +229,7 @@ GREYElementInteraction* RequestDesktopButton() {
   [RequestDesktopButton() performAction:grey_tap()];
 
   prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return _visitCounter == visitCountBeforePrerender + 2;
+    return self->_visitCounter == visitCountBeforePrerender + 2;
   });
   GREYAssertTrue(prerendered, @"Page wasn't reloaded");
 
