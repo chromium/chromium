@@ -449,4 +449,10 @@ TEST_P(AudioDevicesPrefHandlerTest, TestSettingV2DeviceStateRemovesV1Entry) {
   ExpectDeviceStateEquals(device_v2, false, false);
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+  audio_pref_handler_->SetNoiseCancellationState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
+}
+
 }  // namespace ash

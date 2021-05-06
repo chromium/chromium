@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
                        bool* active,
                        bool* activate_by_user) override;
 
+  bool GetNoiseCancellationState() override;
+  void SetNoiseCancellationState(bool noise_cancellation_state) override;
+
   bool GetAudioOutputAllowedValue() override;
 
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;

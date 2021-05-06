@@ -266,6 +266,16 @@ double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
     return kDefaultOutputVolumePercent;
 }
 
+bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
+  return local_state_->GetBoolean(prefs::kInputNoiseCancellationEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetNoiseCancellationState(
+    bool noise_cancellation_state) {
+  local_state_->SetBoolean(prefs::kInputNoiseCancellationEnabled,
+                           noise_cancellation_state);
+}
+
 AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
     PrefService* local_state)
     : device_mute_settings_(std::make_unique<base::DictionaryValue>()),
@@ -395,6 +405,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesGainPercent);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
+  registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
 
   // Register the prefs backing the audio muting policies.
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome

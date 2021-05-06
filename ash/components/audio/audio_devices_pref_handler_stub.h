@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerStub
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
 
+  bool GetNoiseCancellationState() override;
+  void SetNoiseCancellationState(bool noise_cancellation_state) override;
+
  protected:
   ~AudioDevicesPrefHandlerStub() override;
 

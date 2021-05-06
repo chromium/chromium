@@ -37,6 +37,11 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Sets the audio mute value to prefs for a device.
   virtual void SetMuteValue(const AudioDevice& device, bool mute_on) = 0;
 
+  // Reads whether input noise cancellation is on from profile prefs.
+  virtual bool GetNoiseCancellationState() = 0;
+  // Sets the input noise cancellation in profile prefs.
+  virtual void SetNoiseCancellationState(bool noise_cancellation_state) = 0;
+
   // Sets the device active state in prefs.
   // Note: |activate_by_user| indicates whether |device| is set to active
   // by user or by priority, and it only matters when |active| is true.
