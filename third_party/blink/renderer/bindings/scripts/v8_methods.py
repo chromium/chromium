@@ -63,6 +63,12 @@ def is_origin_trial_enabled(method):
     return bool(method['origin_trial_feature_name'])
 
 
+def is_cross_origin_isolated(method):
+    return bool(
+        method['overloads']['cross_origin_isolated_test_all'] if 'overloads' in
+        method else method['cross_origin_isolated_test'])
+
+
 def is_secure_context(method):
     return bool(method['overloads']['secure_context_test_all'] if 'overloads'
                 in method else method['secure_context_test'])
@@ -71,7 +77,8 @@ def is_secure_context(method):
 def is_conditionally_enabled(method):
     exposed = method['overloads']['exposed_test_all'] \
         if 'overloads' in method else method['exposed_test']
-    return exposed or is_secure_context(method)
+    return exposed or is_secure_context(method) or is_cross_origin_isolated(
+        method)
 
 
 def filter_conditionally_enabled(methods, interface_is_partial):
@@ -234,9 +241,9 @@ def method_context(interface, method, component_info, is_visible=True):
         'exposed_test':
         v8_utilities.exposed(method, interface),  # [Exposed]
         'has_exception_state':
-        is_raises_exception or is_check_security_for_receiver or any(
-            argument for argument in arguments
-            if argument_conversion_needs_exception_state(method, argument)),
+        is_raises_exception or is_check_security_for_receiver
+        or any(argument for argument in arguments
+               if argument_conversion_needs_exception_state(method, argument)),
         'has_optional_argument_without_default_value':
         any(True for argument_context in argument_contexts
             if argument_context['is_optional_without_default_value']),
@@ -305,6 +312,9 @@ def method_context(interface, method, component_info, is_visible=True):
         # [RuntimeEnabled] if not in origin trial
         'runtime_enabled_feature_name':
         v8_utilities.runtime_enabled_feature_name(method, runtime_features),
+        # [CrossOriginIsolated]
+        'cross_origin_isolated_test':
+        v8_utilities.cross_origin_isolated(method, interface),
         # [SecureContext]
         'secure_context_test':
         v8_utilities.secure_context(method, interface),
@@ -320,8 +330,10 @@ def method_context(interface, method, component_info, is_visible=True):
         'v8_set_return_value':
         v8_set_return_value(interface.name, method, this_cpp_value),
         'v8_set_return_value_for_main_world':
-        v8_set_return_value(
-            interface.name, method, this_cpp_value, for_main_world=True),
+        v8_set_return_value(interface.name,
+                            method,
+                            this_cpp_value,
+                            for_main_world=True),
         'visible':
         is_visible,
         'world_suffixes':

@@ -619,6 +619,9 @@ V8SetReturnValue(info, wrapper);
 {######################################}
 {% macro install_conditional_methods(methods_to_install) %}
 {% for method in methods_to_install %}
+{% filter cross_origin_isolated(method.overloads.cross_origin_isolated_test_all
+                                if method.overloads else
+                                method.cross_origin_isolated_test) %}
 {% filter secure_context(method.overloads.secure_context_test_all
                          if method.overloads else
                          method.secure_context_test) %}
@@ -642,5 +645,6 @@ V8SetReturnValue(info, wrapper);
 {% endfilter %}{# runtime_enabled() #}
 {% endfilter %}{# exposed() #}
 {% endfilter %}{# secure_context() #}
+{% endfilter %}{# cross_origin_isolated() #}
 {% endfor %}
 {%- endmacro %}

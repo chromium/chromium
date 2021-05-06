@@ -62,6 +62,14 @@ def exposed_if(code, exposed_test):
         code, 'execution_context && (%s)' % exposed_test)
 
 
+# [CrossOriginIsolated]
+def cross_origin_isolated_if(code, cross_origin_isolated_test):
+    if not cross_origin_isolated_test:
+        return code
+    return generate_indented_conditional(
+        code, 'execution_context && (%s)' % cross_origin_isolated_test)
+
+
 # [SecureContext]
 def secure_context_if(code, secure_context_test):
     if secure_context_test is None:
@@ -107,22 +115,15 @@ def initialize_jinja_env(cache_dir):
         lstrip_blocks=True,  # so can indent control flow tags
         trim_blocks=True)
     jinja_env.filters.update({
-        'blink_capitalize':
-        capitalize,
-        'exposed':
-        exposed_if,
-        'format_blink_cpp_source_code':
-        format_blink_cpp_source_code,
-        'format_remove_duplicates':
-        format_remove_duplicates,
-        'origin_trial_enabled':
-        origin_trial_enabled_if,
-        'runtime_enabled':
-        runtime_enabled_if,
-        'runtime_enabled_function':
-        v8_utilities.runtime_enabled_function,
-        'secure_context':
-        secure_context_if
+        'blink_capitalize': capitalize,
+        'exposed': exposed_if,
+        'format_blink_cpp_source_code': format_blink_cpp_source_code,
+        'format_remove_duplicates': format_remove_duplicates,
+        'origin_trial_enabled': origin_trial_enabled_if,
+        'runtime_enabled': runtime_enabled_if,
+        'runtime_enabled_function': v8_utilities.runtime_enabled_function,
+        'cross_origin_isolated': cross_origin_isolated_if,
+        'secure_context': secure_context_if
     })
     jinja_env.filters.update(constant_filters())
     jinja_env.filters.update(method_filters())

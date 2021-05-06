@@ -102,6 +102,10 @@ def bind_member_iteration_local_vars(code_node):
             "v8_member_names", "const auto* ${v8_member_names} = "
             "GetV8MemberNames(${isolate}).data();"),
         SymbolNode(
+            "is_cross_origin_isolated",
+            "const bool ${is_cross_origin_isolated} = "
+            "${execution_context}->CrossOriginIsolatedCapability();"),
+        SymbolNode(
             "is_in_secure_context", "const bool ${is_in_secure_context} = "
             "${execution_context}->IsSecureContext();"),
     ]

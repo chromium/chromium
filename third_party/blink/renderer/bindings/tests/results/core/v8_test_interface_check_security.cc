@@ -461,6 +461,24 @@ static void SecureContextRuntimeEnabledMethodMethod(const v8::FunctionCallbackIn
   impl->secureContextRuntimeEnabledMethod(arg);
 }
 
+static void CrossOriginIsolatedRuntimeEnabledMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  ExceptionState exception_state(info.GetIsolate(), ExceptionState::kExecutionContext, "TestInterfaceCheckSecurity", "crossOriginIsolatedRuntimeEnabledMethod");
+
+  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
+
+  if (UNLIKELY(info.Length() < 1)) {
+    exception_state.ThrowTypeError(ExceptionMessages::NotEnoughArguments(1, info.Length()));
+    return;
+  }
+
+  V8StringResource<> arg;
+  arg = info[0];
+  if (!arg.Prepare())
+    return;
+
+  impl->crossOriginIsolatedRuntimeEnabledMethod(arg);
+}
+
 static const struct {
   using GetterCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
   using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginCallbackInfo&);
@@ -643,6 +661,13 @@ void V8TestInterfaceCheckSecurity::SecureContextRuntimeEnabledMethodMethodCallba
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceCheckSecurity_secureContextRuntimeEnabledMethod");
 
   test_interface_check_security_v8_internal::SecureContextRuntimeEnabledMethodMethod(info);
+}
+
+void V8TestInterfaceCheckSecurity::CrossOriginIsolatedRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  BLINK_BINDINGS_TRACE_EVENT("TestInterfaceCheckSecurity.crossOriginIsolatedRuntimeEnabledMethod");
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceCheckSecurity_crossOriginIsolatedRuntimeEnabledMethod");
+
+  test_interface_check_security_v8_internal::CrossOriginIsolatedRuntimeEnabledMethodMethod(info);
 }
 
 bool V8TestInterfaceCheckSecurity::SecurityCheck(v8::Local<v8::Context> accessing_context, v8::Local<v8::Object> accessed_object, v8::Local<v8::Value> data) {
@@ -912,6 +937,7 @@ void V8TestInterfaceCheckSecurity::InstallConditionalFeatures(
   ExecutionContext* execution_context = ToExecutionContext(context);
   DCHECK(execution_context);
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
+  bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
 
   if (!instance_object.IsEmpty()) {
     if (is_secure_context) {
@@ -920,6 +946,21 @@ void V8TestInterfaceCheckSecurity::InstallConditionalFeatures(
           // Install secureContextRuntimeEnabledMethod configuration
           const V8DOMConfiguration::MethodConfiguration kConfigurations[] = {
               {"secureContextRuntimeEnabledMethod", V8TestInterfaceCheckSecurity::SecureContextRuntimeEnabledMethodMethodCallback, 1, v8::None, V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds}
+          };
+          for (const auto& config : kConfigurations) {
+            V8DOMConfiguration::InstallMethod(
+                isolate, world, instance_object, prototype_object,
+                interface_object, signature, config);
+          }
+        }
+      }
+    }
+    if (execution_context && (is_cross_origin_isolated)) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
+        {
+          // Install crossOriginIsolatedRuntimeEnabledMethod configuration
+          const V8DOMConfiguration::MethodConfiguration kConfigurations[] = {
+              {"crossOriginIsolatedRuntimeEnabledMethod", V8TestInterfaceCheckSecurity::CrossOriginIsolatedRuntimeEnabledMethodMethodCallback, 1, v8::None, V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds}
           };
           for (const auto& config : kConfigurations) {
             V8DOMConfiguration::InstallMethod(

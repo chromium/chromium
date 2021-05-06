@@ -118,10 +118,13 @@ def record_global_constructors(idl_filename):
 
 def generate_global_constructors_list(interface_name, extended_attributes):
     extended_attributes_list = [
-        name + (('=' + extended_attributes[name])
-                if extended_attributes[name] else '')
-        for name in ['RuntimeEnabled', 'ContextEnabled', 'SecureContext']
-        if name in extended_attributes
+        name +
+        (('=' +
+          extended_attributes[name]) if extended_attributes[name] else '')
+        for name in [
+            'RuntimeEnabled', 'ContextEnabled', 'CrossOriginIsolated',
+            'SecureContext'
+        ] if name in extended_attributes
     ]
 
     # Getters for these Constructors are auto-generated and considered

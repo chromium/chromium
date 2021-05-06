@@ -350,6 +350,23 @@ def exposed(member, interface):
     return exposure_set.code()
 
 
+# [CrossOriginIsolated]
+def cross_origin_isolated(member, interface):
+    """Returns C++ code that checks whether an interface/method/attribute/etc. is exposed
+    to the current context. Requires that the surrounding code defines an |is_cross_origin_isolated|
+    variable prior to this check."""
+    member_is_cross_origin_isolated = 'CrossOriginIsolated' in member.extended_attributes
+    interface_is_cross_origin_isolated = (
+        (member.defined_in is None or member.defined_in == interface.name)
+        and 'CrossOriginIsolated' in interface.extended_attributes)
+
+    if not (member_is_cross_origin_isolated
+            or interface_is_cross_origin_isolated):
+        return None
+
+    return 'is_cross_origin_isolated'
+
+
 # [SecureContext]
 def secure_context(member, interface):
     """Returns C++ code that checks whether an interface/method/attribute/etc. is exposed

@@ -44,6 +44,7 @@ from utilities import idl_filename_to_component, is_valid_component_dependency, 
 # which changes the semantics and yields different code than the same extended
 # attribute on the main interface.
 DEPENDENCY_EXTENDED_ATTRIBUTES = frozenset([
+    'CrossOriginIsolated',
     'RuntimeEnabled',
     'SecureContext',
 ])

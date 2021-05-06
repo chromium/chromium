@@ -47,6 +47,7 @@ Constructor
 ConstructorCallWith=ExecutionContext|ScriptState|Document
 ContextEnabled=*
 CrossOrigin=|Getter|Setter
+CrossOriginIsolated
 Custom=|Getter|Setter|LegacyCallAsFunction|PropertyGetter|PropertyEnumerator|PropertyQuery
 CustomConstructor
 DefaultValue=Undefined

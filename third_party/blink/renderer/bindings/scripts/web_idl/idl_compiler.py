@@ -222,6 +222,8 @@ class IdlCompiler(object):
             propagate(('Exposed', 'add_global_name_and_feature'))
             propagate(('RuntimeEnabled', 'add_runtime_enabled_feature'))
             propagate(('ContextEnabled', 'add_context_enabled_feature'))
+            propagate(('CrossOriginIsolated', 'set_only_in_coi_contexts'),
+                      default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
                       default_value=True)
 
@@ -518,9 +520,10 @@ class IdlCompiler(object):
                         OperationGroup.IR, item.operations)
 
     def _propagate_extattrs_to_overload_group(self):
-        ANY_OF = ('CrossOrigin', 'Custom', 'LegacyLenientThis',
-                  'LegacyUnforgeable', 'NoAllocDirectCall', 'NotEnumerable',
-                  'PerWorldBindings', 'SecureContext', 'Unscopable')
+        ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'Custom',
+                  'LegacyLenientThis', 'LegacyUnforgeable',
+                  'NoAllocDirectCall', 'NotEnumerable', 'PerWorldBindings',
+                  'SecureContext', 'Unscopable')
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.INTERFACE,
                                             IRMap.IR.Kind.NAMESPACE)
@@ -567,6 +570,7 @@ class IdlCompiler(object):
                             group.exposure.add_global_name_and_feature(
                                 entry.global_name, entry.feature)
 
+
                 # [RuntimeEnabled]
                 if any(not exposure.runtime_enabled_features
                        for exposure in exposures):
@@ -584,6 +588,13 @@ class IdlCompiler(object):
                     for exposure in exposures:
                         for name in exposure.context_enabled_features:
                             group.exposure.add_context_enabled_feature(name)
+
+                # [CrossOriginIsolated]
+                if any(not exposure.only_in_coi_contexts
+                       for exposure in exposures):
+                    pass  # Exposed by default.
+                else:
+                    group.exposure.set_only_in_coi_contexts(True)
 
                 # [SecureContext]
                 if any(exposure.only_in_secure_contexts is False

@@ -863,10 +863,23 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% if feature.needs_context %}
   ExecutionContext* execution_context = ToExecutionContext(isolate->GetCurrentContext());
   {% endif %}{# needs context #}
+  {% if feature.needs_cross_origin_isolated %}
+  bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
+  {% endif %}{# needs cross-origin isolated #}
   {% if feature.needs_secure_context %}
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
   {% endif %}{# needs secure context #}
   {# Origin-Trial-enabled attributes #}
+  {% for cross_origin_isolated_test, attribute_list in feature.attributes | selectattr('is_data_type_property') | groupby('cross_origin_isolated_test') %}
+  {% filter cross_origin_isolated(cross_origin_isolated_test) %}
+  {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
+  {% endfilter %}
+  {% endfor %}
+  {% for cross_origin_isolated_test, attribute_list in feature.attributes | rejectattr('is_data_type_property') | groupby('cross_origin_isolated_test') %}
+  {% filter cross_origin_isolated(cross_origin_isolated_test) %}
+  {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
+  {% endfilter %}
+  {% endfor %}
   {% for secure_context_test, attribute_list in feature.attributes | selectattr('is_data_type_property') | groupby('secure_context_test') %}
   {% filter secure_context(secure_context_test) %}
   {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
@@ -889,6 +902,7 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% for method in feature.methods %}
   {% filter exposed(method.exposed_test) %}
   {% filter secure_context(method.secure_context_test) %}
+  {% filter cross_origin_isolated(method.cross_origin_isolated_test) %}
   static constexpr V8DOMConfiguration::MethodConfiguration
   k{{method.camel_case_name}}Configurations[] = {
       {{method_configuration(method) | trim | indent(6)}}
@@ -898,6 +912,7 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
         isolate, world, instance, prototype,
         interface, signature, config);
   }
+  {% endfilter %}{# cross_origin_isolated #}
   {% endfilter %}{# secure_context #}
   {% endfilter %}{# exposed_test #}
   {% endfor %}
@@ -988,6 +1003,9 @@ void {{v8_class_or_partial}}::InstallConditionalFeatures(
   DCHECK(execution_context);
   {% if has_conditional_secure_attributes or has_conditional_secure_methods %}
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
+  {% endif %}
+  {% if has_conditional_coi_attributes or has_conditional_coi_methods %}
+  bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
   {% endif %}
 
   {% set attributes_on_instance = conditional_attributes | selectattr('on_instance') | list %}

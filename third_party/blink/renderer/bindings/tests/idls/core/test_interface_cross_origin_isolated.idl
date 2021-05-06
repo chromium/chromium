@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    CrossOriginIsolated,
+    Exposed=(Window,Worker)
+] interface TestInterfaceCrossOriginIsolated {
+    void crossOriginIsolatedMethod();
+    attribute boolean crossOriginIsolatedAttribute;
+    [RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedRuntimeEnabledMethod();
+    [RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedRuntimeEnabledAttribute;
+    [Exposed=Window] void crossOriginIsolatedWindowExposedMethod();
+    [Exposed=Window] attribute boolean crossOriginIsolatedWindowExposedAttribute;
+    [Exposed=Worker] void crossOriginIsolatedWorkerExposedMethod();
+    [Exposed=Worker] attribute boolean crossOriginIsolatedWorkerExposedAttribute;
+    [Exposed=Window,RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedWindowExposedRuntimeEnabledMethod();
+    [Exposed=Window,RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedWindowExposedRuntimeEnabledAttribute;
+    [Exposed=Worker,RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedWorkerExposedRuntimeEnabledMethod();
+    [Exposed=Worker,RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedWorkerExposedRuntimeEnabledAttribute;
+};

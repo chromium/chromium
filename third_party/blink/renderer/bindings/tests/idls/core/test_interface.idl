@@ -149,6 +149,19 @@ typedef [StringContext=TrustedScriptURL] USVString TrustedScriptURLString;
     [SecureContext,Exposed=Worker,RuntimeEnabled=SecureFeature] void secureContextWorkerExposedRuntimeEnabledMethod();
     [SecureContext,Exposed=Worker,RuntimeEnabled=SecureFeature] attribute boolean secureContextWorkerExposedRuntimeEnabledAttribute;
 
+    [CrossOriginIsolated] void crossOriginIsolatedMethod();
+    [CrossOriginIsolated] attribute boolean crossOriginIsolatedAttribute;
+    [CrossOriginIsolated,RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedRuntimeEnabledMethod();
+    [CrossOriginIsolated,RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedRuntimeEnabledAttribute;
+    [CrossOriginIsolated,Exposed=Window] void crossOriginIsolatedWindowExposedMethod();
+    [CrossOriginIsolated,Exposed=Window] attribute boolean crossOriginIsolatedWindowExposedAttribute;
+    [CrossOriginIsolated,Exposed=Worker] void crossOriginIsolatedWorkerExposedMethod();
+    [CrossOriginIsolated,Exposed=Worker] attribute boolean crossOriginIsolatedWorkerExposedAttribute;
+    [CrossOriginIsolated,Exposed=Window,RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedWindowExposedRuntimeEnabledMethod();
+    [CrossOriginIsolated,Exposed=Window,RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedWindowExposedRuntimeEnabledAttribute;
+    [CrossOriginIsolated,Exposed=Worker,RuntimeEnabled=RuntimeFeature2] void crossOriginIsolatedWorkerExposedRuntimeEnabledMethod();
+    [CrossOriginIsolated,Exposed=Worker,RuntimeEnabled=RuntimeFeature2] attribute boolean crossOriginIsolatedWorkerExposedRuntimeEnabledAttribute;
+
     // Arguments that are sequences or records of nullable types.
     void methodWithNullableSequences(sequence<double?> numbers, sequence<DOMString?> strings, sequence<Element?> elements, sequence<(double or DOMString)?> unions);
     void methodWithNullableRecords(record<DOMString, double?> numbers, record<DOMString, DOMString?> strings, record<DOMString, Element?> elements, record<DOMString, (double or DOMString)?> unions);

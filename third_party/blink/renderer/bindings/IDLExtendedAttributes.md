@@ -217,6 +217,21 @@ Whether you should allow an interface to have constructor depends on the spec of
 Currently `[Constructor(...)]` does not yet support optional arguments w/o defaults. It just supports optional `[DefaultValue=Undefined]`.
 ***
 
+### [CrossOriginIsolated] _(a, i, m)_
+
+Standard: [CrossOriginIsolated](https://heycam.github.io/webidl/#CrossOriginIsolated)
+
+Summary: Interfaces and interface members with a `CrossOriginIsolated` attribute are exposed only inside contexts whose [cross-origin isolated capability](https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability) is enabled. 
+
+Usage: The `[CrossOriginIsolated]` attribute may be specified on interfaces, attributes, and members:
+
+```webidl
+[CrossOriginIsolated]
+interface HighResolutionTimer {
+  DOMHighResTimeStamp getHighResolutionTime();
+};
+```
+
 ### [EnforceRange] _(t)_
 
 Standard: [EnforceRange](https://heycam.github.io/webidl/#EnforceRange)
