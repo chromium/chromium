@@ -36,9 +36,6 @@ class ToolbarActionView : public views::MenuButton,
     // Whether the container supports showing extensions outside of the menu.
     virtual bool CanShowIconInToolbar() const;
 
-    // Notifies that a drag completed.
-    virtual void OnToolbarActionViewDragDone() = 0;
-
     // Returns the view of the toolbar actions overflow menu to use as a
     // reference point for a popup when this view isn't visible.
     virtual views::LabelButton* GetOverflowReferenceView() const = 0;

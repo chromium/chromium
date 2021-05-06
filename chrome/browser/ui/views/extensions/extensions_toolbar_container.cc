@@ -515,8 +515,6 @@ bool ExtensionsToolbarContainer::CanShowIconInToolbar() const {
   return !browser_->app_controller();
 }
 
-void ExtensionsToolbarContainer::OnToolbarActionViewDragDone() {}
-
 views::LabelButton* ExtensionsToolbarContainer::GetOverflowReferenceView()
     const {
   return extensions_button_;

@@ -39,7 +39,6 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   content::WebContents* GetCurrentWebContents() override {
     return web_contents_;
   }
-  void OnToolbarActionViewDragDone() override {}
   views::MenuButton* GetOverflowReferenceView() const override {
     return overflow_reference_view_.get();
   }

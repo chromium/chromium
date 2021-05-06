@@ -202,8 +202,6 @@ void ToolbarActionView::OnDragDone() {
   // the drag set |suppress_next_release_|, it must be reset here or the next
   // mouse release after the drag will be erroneously discarded.
   suppress_next_release_ = false;
-
-  delegate_->OnToolbarActionViewDragDone();
 }
 
 void ToolbarActionView::AddedToWidget() {
