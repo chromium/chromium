@@ -4,7 +4,7 @@ URL: The URL where the package lives
 Version: A searchable version number for the package (if the package does not version or is versioned by date or revision this field should be "0" and the revision, or date should be enumerated in the appropriate field)
 Date: (OPTIONAL if version is supplied) The date that the package was updated
 Revision: (OPTIONAL if version is supplied) The current revision of the package
-License: The license under which the package is distributed. Standard forms are only accepted, eg MIT/X11/BSD/Apache 2.0/GPL/LGPL. See ANDROID_WHITELISTED_LICENSES in PRESUBMIT.py for allowed patterns.
+License: The license under which the package is distributed. Standard forms are only accepted, eg MIT/X11/BSD/Apache 2.0/GPL/LGPL. See ANDROID_ALLOWED_LICENSES in PRESUBMIT.py for allowed patterns.
 License File: (OPTIONAL) File that contains a copy of the package's license. Use the special value NOT_SHIPPED to indicate that the package is not included in the shipped product, so its license does not need to be included in about:credits and no license file is required.
 Security Critical: Either yes or no depending on whether this package is shipped in releases. For example openssl is critical where cygwin is not.
 License Android Compatible: (OPTIONAL) Whether the package uses a license compatible with Android. Required only if the package is compatible and the 'License' field uses a non-standard value.

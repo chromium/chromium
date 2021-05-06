@@ -4,7 +4,7 @@
 
 import os
 
-ANDROID_WHITELISTED_LICENSES = [
+ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
   'Apache( License)?,?( Version)? 2(\.0)?',
@@ -27,7 +27,7 @@ ANDROID_WHITELISTED_LICENSES = [
 ]
 
 def LicenseIsCompatibleWithAndroid(input_api, license):
-  regex = '^(%s)$' % '|'.join(ANDROID_WHITELISTED_LICENSES)
+  regex = '^(%s)$' % '|'.join(ANDROID_ALLOWED_LICENSES)
   tokens = \
     [x.strip() for x in input_api.re.split(' and |,', license) if len(x) > 0]
   has_compatible_license = False
