@@ -380,6 +380,15 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kJXL;
 
+// Forces same-process display:none cross-origin iframes to be throttled in the
+// same manner that OOPIFs are.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes;
+
+// Master control for Fledge Interest Group feature
+BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroups;
+BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
+
 }  // namespace features
 }  // namespace blink
 

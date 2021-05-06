@@ -23,7 +23,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -42,6 +41,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom.h"
 #include "url/gurl.h"
@@ -76,7 +76,9 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
 class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kFledgeInterestGroups);
+    feature_list_.InitWithFeatures({blink::features::kFledgeInterestGroups,
+                                    blink::features::kFledgeInterestGroupAPI},
+                                   {});
   }
 
   ~InterestGroupBrowserTest() override {

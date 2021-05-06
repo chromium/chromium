@@ -125,6 +125,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -178,7 +179,9 @@ class DeclarativeNetRequestBrowserTest
       public ::testing::WithParamInterface<ExtensionLoadType> {
  public:
   DeclarativeNetRequestBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kFledgeInterestGroups);
+    feature_list_.InitWithFeatures({blink::features::kFledgeInterestGroups,
+                                    blink::features::kFledgeInterestGroupAPI},
+                                   {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 

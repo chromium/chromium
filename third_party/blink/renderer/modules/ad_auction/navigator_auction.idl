@@ -7,7 +7,7 @@
 
 [
   ImplementedAs=NavigatorAuction,
-  RuntimeEnabled=FledgeInterestGroups,
+  RuntimeEnabled=FledgeInterestGroupAPI,
   SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, Measure, RaisesException]
