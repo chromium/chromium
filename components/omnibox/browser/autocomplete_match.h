@@ -226,6 +226,8 @@ struct AutocompleteMatch {
 
   // Update the Java object with clipboard content.
   void UpdateClipboardContent(JNIEnv* env);
+  // Update the Java object with new destination URL.
+  void UpdateJavaDestinationUrl();
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)

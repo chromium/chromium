@@ -669,6 +669,9 @@ void AutocompleteController::UpdateMatchDestinationURL(
 
   match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service_->search_terms_data()));
+#if defined(OS_ANDROID)
+  match->UpdateJavaDestinationUrl();
+#endif
 }
 
 void AutocompleteController::InlineTailPrefixes() {

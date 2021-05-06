@@ -174,3 +174,12 @@ void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
       j_post_content_type, j_post_content,
       ToJavaByteArray(env, clipboard_image_data));
 }
+
+void AutocompleteMatch::UpdateJavaDestinationUrl() {
+  if (java_match_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AutocompleteMatch_setDestinationUrl(
+        env, *java_match_,
+        url::GURLAndroid::FromNativeGURL(env, destination_url));
+  }
+}

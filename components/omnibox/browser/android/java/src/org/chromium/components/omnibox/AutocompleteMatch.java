@@ -219,6 +219,11 @@ public class AutocompleteMatch {
         mNativeMatch = 0;
     }
 
+    @CalledByNative
+    private void setDestinationUrl(GURL url) {
+        mUrl = url;
+    }
+
     public int getType() {
         return mType;
     }
