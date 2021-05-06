@@ -212,6 +212,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* Get(const Node*);
   AXObject* Get(const LayoutObject*);
 
+  // Return true if the object is still part of the tree, meaning that ancestors
+  // exist or can be repaired all the way to the root.
+  bool IsStillInTree(AXObject*);
+
   AXObject* FirstAccessibleObjectFromNode(const Node*);
 
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,

@@ -1,0 +1,32 @@
+<!--
+@WAIT-FOR:done
+-->
+<!-- Applying the class "strange" turns <col> into a LayoutImage, which
+     cannot have children, yet a preexisting descendants exists that tries to
+     find its parent, triggering a DCHECK -->
+<style>
+.strange { text-align: center; content: url(data:image/png,aaa); }
+</style>
+
+<foo></foo>
+
+<script>
+const col = document.createElement('col');
+const span = document.createElement('span');
+const bar = document.createElement('bar');
+const baz = document.createElement('baz');
+
+// Create structure manually as parser will refuse:
+// <foo><col><span><bar>
+document.querySelector('foo').appendChild(col);
+col.appendChild(span);
+span.appendChild(bar);
+bar.appendChild(baz);
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelector('foo').className = 'strange';
+    document.title = 'done';
+  }, 50);
+});
+</script>

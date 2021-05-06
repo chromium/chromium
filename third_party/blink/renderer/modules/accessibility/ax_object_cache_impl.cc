@@ -1148,10 +1148,15 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   // Example: parent calls Init() => ComputeAccessibilityIsIgnored() =>
   // CanSetFocusAttribute() => CanBeActiveDescendant() =>
   // IsARIAControlledByTextboxWithActiveDescendant() => GetOrCreate().
-  if (layout_object_mapping_.at(layout_object))
-    return Get(layout_object);
+  if (layout_object_mapping_.at(layout_object)) {
+    AXObject* result = Get(layout_object);
+    DCHECK(result) << "Missing cached AXObject for " << layout_object;
+    return result;
+  }
 
   AXObject* new_obj = CreateFromRenderer(layout_object);
+
+  DCHECK(new_obj) << "Could not create AXObject for " << layout_object;
 
   // Will crash later if we have two objects for the same layoutObject.
   DCHECK(!layout_object_mapping_.at(layout_object))
@@ -1738,6 +1743,41 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
       &AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout, node);
 }
 
+bool AXObjectCacheImpl::IsStillInTree(AXObject* obj) {
+  // Return an AXObject for the node if the AXObject is still in the tree.
+  // If there is a viable included parent, that means it's still in the tree.
+  // Otherwise, repair missing parent, or prune the object if no viable parent
+  // can be found. For example, through CSS changes, an ancestor became an
+  // image, which is always a leaf; therefore, no descendants are "in the tree".
+
+  if (!obj)
+    return false;
+
+  if (obj->IsMissingParent()) {
+    // Parent is missing. Attempt to repair it with a viable recomputed parent.
+    AXObject* ax_parent = obj->ComputeParent();
+    if (!IsStillInTree(ax_parent)) {
+      // Parent is unrepairable, meaning that this AXObject can no longer be
+      // attached to the tree and is no longer viable. Prune it now.
+      Remove(obj);
+      return false;
+    }
+    obj->SetParent(ax_parent);
+    return true;
+  }
+
+  if (!obj->LastKnownIsIncludedInTreeValue()) {
+    // Current object was not included in the tree, therefore, recursively
+    // keep checking up a level until a viable included parent is found.
+    if (!IsStillInTree(obj->CachedParentObject())) {
+      Remove(obj);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     Node* node) {
   if (!node || !node->isConnected())
@@ -1915,8 +1955,11 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (obj)
+  if (obj) {
+    if (!IsStillInTree(obj))
+      return;  // Object is no longer in tree, and therefore not viable.
     obj->ChildrenChanged();
+  }
 
   if (optional_node)
     relation_cache_->UpdateRelatedTree(optional_node, obj);
