@@ -41,7 +41,7 @@ std::vector<std::string> ConvertToVector(const base::ListValue* list) {
     return string_list;
   }
 
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     if (value.is_string()) {
       string_list.push_back(value.GetString());
     }
