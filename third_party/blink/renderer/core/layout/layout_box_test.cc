@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -1752,36 +1753,48 @@ TEST_P(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
 
 TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
   SetBodyInnerHTML(R"HTML(
+    <style>
+    .transform { transform: translateX(10px); }
+    </style>
     <img id="img">
   )HTML");
-  LayoutObject* target = GetLayoutBoxByElementId("img");
+  Element* element = GetElementById("img");
+  LayoutObject* target = element->GetLayoutObject();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  target->SetNeedsOverflowRecalc();
+  element->classList().Add("transform");
+  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
-#if 0  // TODO(crbug.com/1205708): This should pass, but it's not ready yet.
   UpdateAllLifecyclePhasesForTest();
-  target->SetNeedsOverflowRecalc();
+  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+
+  element->classList().Remove("transform");
+  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
-#endif
 }
 
 TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   SetBodyInnerHTML(R"HTML(
+    <style>
+    .transform { transform: translateX(10px); }
+    </style>
     <div id="flex" style="display: flex"></div>
   )HTML");
-  LayoutObject* target = GetLayoutBoxByElementId("flex");
+  Element* element = GetElementById("flex");
+  LayoutObject* target = element->GetLayoutObject();
   EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
 
-  target->SetNeedsOverflowRecalc();
+  element->classList().Add("transform");
+  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
-#if 0  // TODO(crbug.com/1205708): This should pass, but it's not ready yet.
   UpdateAllLifecyclePhasesForTest();
-  target->SetNeedsOverflowRecalc();
+  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+
+  element->classList().Remove("transform");
+  element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
-#endif
 }
 
 }  // namespace blink
