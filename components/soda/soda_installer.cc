@@ -73,8 +73,10 @@ void SodaInstaller::NotifyOnSodaInstalled() {
 
 void SodaInstaller::NotifyOnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackInstalled(language_code);
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    for (Observer& observer : observers_)
+      observer.OnSodaLanguagePackInstalled(language_code);
+  }
 }
 
 void SodaInstaller::NotifyOnSodaError() {
@@ -84,8 +86,10 @@ void SodaInstaller::NotifyOnSodaError() {
 
 void SodaInstaller::NotifyOnSodaLanguagePackError(
     speech::LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackError(language_code);
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    for (Observer& observer : observers_)
+      observer.OnSodaLanguagePackError(language_code);
+  }
 }
 
 void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
@@ -96,8 +100,10 @@ void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
 void SodaInstaller::NotifyOnSodaLanguagePackProgress(
     int language_progress,
     LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackProgress(language_progress, language_code);
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    for (Observer& observer : observers_)
+      observer.OnSodaLanguagePackProgress(language_progress, language_code);
+  }
 }
 
 void SodaInstaller::NotifySodaInstalledForTesting() {
