@@ -623,7 +623,7 @@ void NewTabPageHandler::UpdateDisabledModules() {
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
     const auto* module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : *module_ids_value) {
+    for (const auto& id : module_ids_value->GetList()) {
       module_ids.push_back(id.GetString());
     }
   }
