@@ -14,6 +14,7 @@
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 suite('EsimRemoveProfileDialog', function() {
@@ -40,6 +41,7 @@ suite('EsimRemoveProfileDialog', function() {
     document.body.appendChild(esimRemoveProfileDialog);
     assertTrue(!!esimRemoveProfileDialog);
     await flushAsync();
+    assertEquals(esimRemoveProfileDialog.$$('#cancel'), getDeepActiveElement());
   }
 
   function flushAsync() {

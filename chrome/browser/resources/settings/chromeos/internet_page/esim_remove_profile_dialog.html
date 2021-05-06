@@ -41,18 +41,23 @@
         [[getTitleString_(esimProfileName_)]]
       </div>
       <div slot="body">
-        <div>$i18n{eSimRemoveProfileDialogDescription}</div>
+        <div id="description">$i18n{eSimRemoveProfileDialogDescription}</div>
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
           $i18n{eSimDialogConnectionWarning}
         </div>
       </div>
       <div slot="button-container">
-        <cr-button id="cancel" on-click="onCancelTap_"
-              class="cancel-button">
-            $i18n{eSimRemoveProfileDialogCancel}
+        <cr-button id="cancel"
+            aria-label="[[getCancelBtnA11yLabel_(esimProfileName_)]]"
+            on-click="onCancelTap_"
+            class="cancel-button">
+          $i18n{eSimRemoveProfileDialogCancel}
         </cr-button>
-        <cr-button id="remove" on-click="onRemoveProfileTap_"
+        <cr-button id="remove"
+            aria-label$="[[getRemoveBtnA11yLabel_(esimProfileName_)]]"
+            aria-describedby="description warningMessage"
+            on-click="onRemoveProfileTap_"
             class="action-button">
           $i18n{eSimRemoveProfileDialogRemove}
         </cr-button>

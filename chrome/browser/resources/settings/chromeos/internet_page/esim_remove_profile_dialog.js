@@ -57,6 +57,7 @@ Polymer({
       return;
     }
     this.esimProfileName_ = this.networkState.name;
+    this.$.cancel.focus();
   },
 
   /**
@@ -108,5 +109,23 @@ Polymer({
    */
   onCancelTap_(event) {
     this.$.dialog.close();
+  },
+
+  /**
+   * @param {string} esimProfileName
+   * @return {string}
+   * @private
+   */
+  getRemoveBtnA11yLabel_(esimProfileName) {
+    return this.i18n('eSimRemoveProfileRemoveA11yLabel', esimProfileName);
+  },
+
+  /**
+   * @param {string} esimProfileName
+   * @return {string}
+   * @private
+   */
+  getCancelBtnA11yLabel_(esimProfileName) {
+    return this.i18n('eSimRemoveProfileCancelA11yLabel', esimProfileName);
   }
 });
