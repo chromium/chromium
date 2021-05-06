@@ -1439,6 +1439,11 @@ extern const char kTopChromeTouchUiDescription[];
 extern const char kThreadedScrollingName[];
 extern const char kThreadedScrollingDescription[];
 
+extern const char
+    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[];
+extern const char
+    kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription[];
+
 extern const char kTouchDragDropName[];
 extern const char kTouchDragDropDescription[];
 
