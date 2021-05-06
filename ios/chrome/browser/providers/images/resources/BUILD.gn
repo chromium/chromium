@@ -25,6 +25,16 @@ imageset("chromium_ios_made") {
   ]
 }
 
+imageset("chromium_ipados_made") {
+  sources = [
+    "chromium_ipados_made.imageset/Contents.json",
+    "chromium_ipados_made.imageset/chromium_ipados_made@2x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made@3x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made_dark@2x.png",
+    "chromium_ipados_made.imageset/chromium_ipados_made_dark@3x.png",
+  ]
+}
+
 imageset("chromium_non_default_promo") {
   sources = [
     "chromium_non_default_promo.imageset/Contents.json",

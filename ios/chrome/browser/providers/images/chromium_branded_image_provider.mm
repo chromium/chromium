@@ -62,6 +62,10 @@ UIImage* ChromiumBrandedImageProvider::GetMadeForIOSPromoImage() {
   return [UIImage imageNamed:@"chromium_ios_made"];
 }
 
+UIImage* ChromiumBrandedImageProvider::GetMadeForIPadOSPromoImage() {
+  return [UIImage imageNamed:@"chromium_ipados_made"];
+}
+
 UIImage* ChromiumBrandedImageProvider::GetNonModalPromoImage() {
   return [UIImage imageNamed:@"chromium_non_default_promo"];
 }

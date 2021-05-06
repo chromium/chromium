@@ -59,6 +59,10 @@ UIImage* BrandedImageProvider::GetMadeForIOSPromoImage() {
   return nil;
 }
 
+UIImage* BrandedImageProvider::GetMadeForIPadOSPromoImage() {
+  return nil;
+}
+
 UIImage* BrandedImageProvider::GetNonModalPromoImage() {
   return nil;
 }

@@ -9,6 +9,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -42,12 +43,21 @@ void SetUpTailoredConsumerWithType(id<TailoredPromoConsumer> consumer,
                   ->GetStaySafePromoImage();
       break;
     case DefaultPromoTypeMadeForIOS:
-      title = GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_TITLE);
+      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+        title = GetNSString(
+            IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IPADOS_TITLE);
+        image = ios::GetChromeBrowserProvider()
+                    ->GetBrandedImageProvider()
+                    ->GetMadeForIPadOSPromoImage();
+      } else {
+        title =
+            GetNSString(IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_TITLE);
+        image = ios::GetChromeBrowserProvider()
+                    ->GetBrandedImageProvider()
+                    ->GetMadeForIOSPromoImage();
+      }
       subtitle = GetNSString(
           IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_DESCRIPTION);
-      image = ios::GetChromeBrowserProvider()
-                  ->GetBrandedImageProvider()
-                  ->GetMadeForIOSPromoImage();
       break;
   }
 

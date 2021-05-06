@@ -9,6 +9,7 @@ source_set("images") {
   ]
   deps = [
     "resources:chromium_ios_made",
+    "resources:chromium_ipados_made",
     "resources:chromium_non_default_promo",
     "resources:chromium_stay_safe",
     "resources:download_drivium",
