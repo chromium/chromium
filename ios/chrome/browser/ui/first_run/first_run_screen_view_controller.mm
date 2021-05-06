@@ -235,6 +235,8 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
   // Only add the scroll view delegate after all the view layouts are fully
   // done.
   dispatch_async(dispatch_get_main_queue(), ^{
