@@ -102,7 +102,7 @@ bool GetCertificateFromNotificationParams(base::DictionaryValue* params,
   if (!params->GetList("explanations", &explanations)) {
     return false;
   }
-  for (const auto& explanation : *explanations) {
+  for (const auto& explanation : explanations->GetList()) {
     const base::DictionaryValue* explanation_dict;
     if (explanation.GetAsDictionary(&explanation_dict) &&
         explanation_dict->GetList("certificate", certificate) &&
@@ -2221,7 +2221,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateExplanations) {
   const base::ListValue* certificate;
   ASSERT_TRUE(GetCertificateFromNotificationParams(params.get(), &certificate));
   std::vector<std::string> der_certs;
-  for (const auto& cert : *certificate) {
+  for (const auto& cert : certificate->GetList()) {
     std::string decoded;
     ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
     der_certs.push_back(decoded);
