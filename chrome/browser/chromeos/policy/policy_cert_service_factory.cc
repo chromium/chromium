@@ -87,7 +87,7 @@ bool PolicyCertServiceFactory::UsedPolicyCertificates(
     NOTREACHED();
     return false;
   }
-  return list->Find(value) != list->end();
+  return list->Find(value) != list->GetList().end();
 }
 
 // static

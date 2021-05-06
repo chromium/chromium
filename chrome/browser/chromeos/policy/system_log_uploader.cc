@@ -529,7 +529,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
 
   std::vector<base::Time> updated_log_uploads;
 
-  for (const base::Value& item : *prev_log_uploads) {
+  for (const base::Value& item : prev_log_uploads->GetList()) {
     // ListValue stores Value type and Value does not support base::Time,
     // so we store double and convert to base::Time here.
     const base::Time current_item_time =
