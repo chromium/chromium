@@ -42,7 +42,7 @@ base::Optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
     const base::Version& version);
 
 // The same as GetVersionedUpdaterFolderPathForVersion, where the version is
-// UPDATER_VERSION_STRING.
+// kUpdaterVersion.
 base::Optional<base::FilePath> GetVersionedUpdaterFolderPath(
     UpdaterScope scope);
 

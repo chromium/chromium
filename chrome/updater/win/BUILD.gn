@@ -38,6 +38,28 @@ executable("updater") {
     ":version_resources",
     "//build/win:default_exe_manifest",
     "//chrome/updater:lib",
+    "//chrome/updater:updater_version_cc",
+    "//chrome/updater/win/ui:ui_resources",
+  ]
+
+  data_deps = [ ":uninstall.cmd" ]
+}
+
+executable("updater_exe_test_v2") {
+  sources = [
+    "main.cc",
+    "updater.rc",
+  ]
+
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":app_install_controller",
+    ":version_resources",
+    "//build/win:default_exe_manifest",
+    "//chrome/updater:lib",
+    "//chrome/updater:updater_version_cc_offset",
     "//chrome/updater/win/ui:ui_resources",
   ]
 

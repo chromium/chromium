@@ -56,7 +56,7 @@ base::OnceClosure AppServer::ModeCheck() {
                           kErrorFailedToLockPrefsMutex);
   }
 
-  const base::Version this_version(UPDATER_VERSION_STRING);
+  const base::Version this_version(kUpdaterVersion);
   const base::Version active_version(global_prefs->GetActiveVersion());
 
   VLOG(2) << "This version: " << this_version.GetString()
@@ -99,7 +99,7 @@ void AppServer::Uninitialize() {
   if (config_)
     PrefsCommitPendingWrites(config_->GetPrefService());
   if (uninstall_self_) {
-    VLOG(1) << "Uninstalling version " << UPDATER_VERSION_STRING;
+    VLOG(1) << "Uninstalling version " << kUpdaterVersion;
     UninstallSelf();
   } else {
     MaybeUninstall();
@@ -157,7 +157,7 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   bool result = SwapRPCInterfaces();
   if (!result)
     return false;
-  global_prefs->SetActiveVersion(UPDATER_VERSION_STRING);
+  global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   return true;

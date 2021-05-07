@@ -67,7 +67,7 @@ void InitLogging(const base::CommandLine& command_line) {
                        true,    // enable_thread_id
                        true,    // enable_timestamp
                        false);  // enable_tickcount
-  VLOG(1) << "Version " << UPDATER_VERSION_STRING << ", log file "
+  VLOG(1) << "Version " << kUpdaterVersion << ", log file "
           << settings.log_file_path;
 }
 
@@ -80,7 +80,7 @@ void InitializeCrashReporting() {
     VLOG(1) << "Crash reporting initialized.";
   else
     VLOG(1) << "Crash reporting is not available.";
-  StartCrashReporter(UPDATER_VERSION_STRING);
+  StartCrashReporter(kUpdaterVersion);
 }
 
 }  // namespace

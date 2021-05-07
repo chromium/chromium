@@ -161,8 +161,8 @@ void UpdateServiceImpl::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                base::Version(UPDATER_VERSION_STRING)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), base::Version(kUpdaterVersion)));
 }
 
 void UpdateServiceImpl::RegisterApp(
@@ -174,7 +174,7 @@ void UpdateServiceImpl::RegisterApp(
   if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
     RegistrationRequest updater_request;
     updater_request.app_id = kUpdaterAppId;
-    updater_request.version = base::Version(UPDATER_VERSION_STRING);
+    updater_request.version = base::Version(kUpdaterVersion);
     persisted_data_->RegisterApp(updater_request);
     update_client_->SendRegistrationPing(
         updater_request.app_id, updater_request.version, base::DoNothing());

@@ -10,8 +10,8 @@
 
 namespace updater {
 
-extern const char kUpdateServiceInternalLaunchdName[];
-extern const char kUpdateServiceLaunchdName[];
+std::string GetUpdateServiceLaunchdName();
+std::string GetUpdateServiceInternalLaunchdName();
 
 base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName();
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName();

@@ -160,9 +160,9 @@ int Setup(UpdaterScope scope) {
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
     install_list->AddCreateRegKeyWorkItem(key, key_path,
                                           WorkItem::kWow64Default);
-    install_list->AddSetRegValueWorkItem(
-        key, key_path, WorkItem::kWow64Default, kRegValuePV,
-        base::ASCIIToWide(UPDATER_VERSION_STRING), true);
+    install_list->AddSetRegValueWorkItem(key, key_path, WorkItem::kWow64Default,
+                                         kRegValuePV, kUpdaterVersionUtf16,
+                                         true);
     install_list->AddSetRegValueWorkItem(
         key, key_path, WorkItem::kWow64Default, kRegValueName,
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);

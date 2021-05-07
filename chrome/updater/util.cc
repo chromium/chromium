@@ -122,7 +122,7 @@ base::Optional<base::FilePath> GetVersionedDirectory() {
     return base::nullopt;
   }
 
-  const auto versioned_dir = product_dir->AppendASCII(UPDATER_VERSION_STRING);
+  const auto versioned_dir = product_dir->AppendASCII(kUpdaterVersion);
   if (!base::CreateDirectory(versioned_dir)) {
     LOG(ERROR) << "Can't create versioned directory.";
     return base::nullopt;

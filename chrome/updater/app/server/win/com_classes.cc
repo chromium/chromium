@@ -104,10 +104,7 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
   // non-blocking function of `UpdateServiceImpl`. This results in some
   // code duplication but it avoids the complexities of making this function
   // non-blocking.
-  *version =
-      base::win::ScopedBstr(
-          base::UTF8ToWide(base::Version(UPDATER_VERSION_STRING).GetString()))
-          .Release();
+  *version = base::win::ScopedBstr(kUpdaterVersionUtf16).Release();
   return S_OK;
 }
 

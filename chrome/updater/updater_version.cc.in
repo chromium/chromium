@@ -1,0 +1,8 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/updater/updater_version.h"
+
+const char kUpdaterVersion[] = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
+const wchar_t kUpdaterVersionUtf16[] = L"@MAJOR@.@MINOR@.@BUILD@.@PATCH@";

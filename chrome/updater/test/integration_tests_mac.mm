@@ -193,8 +193,8 @@ void ExpectClean(UpdaterScope scope) {
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
 
-  ExpectServiceAbsent(scope, kUpdateServiceLaunchdName);
-  ExpectServiceAbsent(scope, kUpdateServiceInternalLaunchdName);
+  ExpectServiceAbsent(scope, GetUpdateServiceLaunchdName());
+  ExpectServiceAbsent(scope, GetUpdateServiceInternalLaunchdName());
 }
 
 void ExpectInstalled(UpdaterScope scope) {

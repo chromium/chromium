@@ -145,7 +145,7 @@ void SetupFakeUpdater(UpdaterScope scope, const base::Version& version) {
 void SetupFakeUpdaterVersion(UpdaterScope scope, int offset) {
   ASSERT_NE(offset, 0);
   std::vector<uint32_t> components =
-      base::Version(UPDATER_VERSION_STRING).components();
+      base::Version(kUpdaterVersion).components();
   base::CheckedNumeric<uint32_t> new_version = components[0];
   new_version += offset;
   ASSERT_TRUE(new_version.AssignIfValid(&components[0]));

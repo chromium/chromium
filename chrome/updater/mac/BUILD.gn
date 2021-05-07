@@ -63,6 +63,22 @@ mac_app_bundle("updater_bundle") {
     ":network_fetcher_sources",
     ":updater_setup_sources",
     "//chrome/updater:lib",
+    "//chrome/updater:updater_version_cc",
+  ]
+}
+
+mac_app_bundle("updater_bundle_test_v2") {
+  info_plist_target = ":updater_plist"
+  output_name = updater_product_full_name + "_Test_V2"
+  extra_substitutions =
+      [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
+
+  sources = [ "main.cc" ]
+  deps = [
+    ":network_fetcher_sources",
+    ":updater_setup_sources",
+    "//chrome/updater:lib",
+    "//chrome/updater:updater_version_cc_offset",
   ]
 }
 

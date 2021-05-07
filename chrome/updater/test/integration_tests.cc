@@ -157,7 +157,7 @@ class IntegrationTest : public ::testing::Test {
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
   ExpectInstalled();
-  ExpectVersionActive(UPDATER_VERSION_STRING);
+  ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
 #if defined(OS_WIN)
   // Tests the COM registration after the install. For now, tests that the
@@ -172,7 +172,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
   SetupFakeUpdaterHigherVersion();
-  ExpectVersionNotActive(UPDATER_VERSION_STRING);
+  ExpectVersionNotActive(kUpdaterVersion);
   SleepFor(2);
 
   RunWake(0);
@@ -184,7 +184,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
   ExpectCandidateUninstalled();
   // The candidate uninstall should not have altered global prefs.
-  ExpectVersionNotActive(UPDATER_VERSION_STRING);
+  ExpectVersionNotActive(kUpdaterVersion);
   ExpectVersionNotActive("0.0.0.0");
 
   Uninstall();
@@ -194,7 +194,7 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
-  ExpectVersionActive(UPDATER_VERSION_STRING);
+  ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   Uninstall();
 }
@@ -240,7 +240,7 @@ TEST_F(IntegrationTest, ReportsActive) {
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterTestApp();
   ExpectInstalled();
-  ExpectVersionActive(UPDATER_VERSION_STRING);
+  ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
 
   RegisterApp("test1");
@@ -262,7 +262,7 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
   ExpectInstalled();
-  ExpectVersionActive(UPDATER_VERSION_STRING);
+  ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
 
   SetExistenceCheckerPath(kTestAppId,
@@ -279,7 +279,7 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
 TEST_F(IntegrationTest, UnregisterUnownedApp) {
   Install();
   ExpectInstalled();
-  ExpectVersionActive(UPDATER_VERSION_STRING);
+  ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
 
   RegisterApp("test1");

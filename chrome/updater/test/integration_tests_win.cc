@@ -63,7 +63,7 @@ base::Optional<base::FilePath> GetProductPath() {
     return base::nullopt;
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING)
-      .AppendASCII(UPDATER_VERSION_STRING);
+      .AppendASCII(kUpdaterVersion);
 }
 
 std::wstring GetAppClientStateKey(const std::string& id) {

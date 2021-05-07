@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -78,7 +79,7 @@ class DefaultConfigurator : public DMClient::Configurator {
   }
 
   std::string GetAgentParameter() const override {
-    return "Updater-" UPDATER_VERSION_STRING;
+    return base::StrCat({"Updater-", kUpdaterVersion});
   }
 
   std::string GetPlatformParameter() const override;

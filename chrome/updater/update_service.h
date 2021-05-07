@@ -162,8 +162,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       base::OnceCallback<void(const RegistrationResponse&)>;
 
   // Returns the version of the active updater. In the current implementation,
-  // this value corresponds to UPDATER_VERSION. The version object is invalid
-  // ]if an error occurs.
+  // this value corresponds to kUpdaterVersion. The version object is invalid
+  // if an error occurs.
   virtual void GetVersion(
       base::OnceCallback<void(const base::Version&)>) const = 0;
 

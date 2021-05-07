@@ -100,7 +100,7 @@ void AppInstall::GetVersionDone(scoped_refptr<UpdateService>,
                                 const base::Version& version) {
   VLOG_IF(1, (version.IsValid()))
       << "Found active version: " << version.GetString();
-  if (version.IsValid() && version >= base::Version(UPDATER_VERSION_STRING)) {
+  if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
     splash_screen_->Dismiss(base::BindOnce(&AppInstall::MaybeInstallApp, this));
     return;
   }

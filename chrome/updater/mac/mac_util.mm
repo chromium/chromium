@@ -96,7 +96,7 @@ base::Optional<base::FilePath> GetVersionedUpdaterFolderPath(
   base::Optional<base::FilePath> path = GetUpdaterFolderPath(scope);
   if (!path)
     return base::nullopt;
-  return path->AppendASCII(UPDATER_VERSION_STRING);
+  return path->AppendASCII(kUpdaterVersion);
 }
 
 base::Optional<base::FilePath> GetExecutableFolderPathForVersion(

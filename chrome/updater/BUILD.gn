@@ -250,11 +250,22 @@ if (is_win || is_mac) {
     }
   }
 
-  process_version("version_header") {
+  source_set("version_header") {
+    sources = [ "updater_version.h" ]
+  }
+
+  process_version("updater_version_cc") {
     sources = [ "//chrome/VERSION" ]
 
-    template_file = "updater_version.h.in"
-    output = "$target_gen_dir/updater_version.h"
+    template_file = "updater_version.cc.in"
+    output = "$target_gen_dir/updater_version.cc"
+  }
+
+  process_version("updater_version_cc_offset") {
+    sources = [ "//chrome/VERSION" ]
+
+    template_file = "updater_version_offset.cc.in"
+    output = "$target_gen_dir/updater_version_offset.cc"
   }
 
   process_version("branding_header") {
@@ -367,6 +378,7 @@ if (is_win || is_mac) {
       ":lib",
       ":updater",
       ":updater_tests_support",
+      ":updater_version_cc",
       ":version_header",
       "//base",
       "//base/test:test_support",
