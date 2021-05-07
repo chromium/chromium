@@ -16,8 +16,7 @@ namespace ui {
 
 class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
  public:
-  AtkUtilAuraLinuxTest() {
-    AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
+  AtkUtilAuraLinuxTest() : ax_mode_setter_(kAXModeComplete) {
     // We need to create a platform node in order to install it as the root
     // ATK node. The ATK bridge will complain if we try to use it without a
     // root node installed.
@@ -44,6 +43,9 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
 
   AtkUtilAuraLinuxTest(const AtkUtilAuraLinuxTest&) = delete;
   AtkUtilAuraLinuxTest& operator=(const AtkUtilAuraLinuxTest&) = delete;
+
+ private:
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {

@@ -292,20 +292,9 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 class AutofillPopupControllerAccessibilityUnitTest
     : public AutofillPopupControllerUnitTest {
  public:
-  AutofillPopupControllerAccessibilityUnitTest() = default;
+  AutofillPopupControllerAccessibilityUnitTest()
+      : accessibility_mode_setter_(ui::AXMode::kScreenReader) {}
   ~AutofillPopupControllerAccessibilityUnitTest() override = default;
-
-  void SetUp() override {
-    AutofillPopupControllerUnitTest::SetUp();
-    content::BrowserAccessibilityState::GetInstance()
-        ->AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
-  }
-
-  void TearDown() override {
-    content::BrowserAccessibilityState::GetInstance()
-        ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
-    AutofillPopupControllerUnitTest::TearDown();
-  }
 
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() override {
@@ -320,6 +309,7 @@ class AutofillPopupControllerAccessibilityUnitTest
  protected:
   std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
+  content::testing::ScopedContentAXModeSetter accessibility_mode_setter_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutofillPopupControllerAccessibilityUnitTest);
@@ -805,6 +795,10 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     autofill_popup_controller_->FireControlsChangedEvent(true);
     EXPECT_EQ(base::nullopt, ui::GetActivePopupAxUniqueId());
   }
+  // This needs to happen before TearDown() because having the mode set to
+  // kScreenReader causes mocked functions to get called  with
+  // mock_ax_platform_node_delegate after it has been destroyed.
+  accessibility_mode_setter_.ResetMode();
 }
 #endif
 

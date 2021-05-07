@@ -37,15 +37,11 @@ namespace ui {
 
 class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
  public:
-  AXPlatformNodeAuraLinuxTest() = default;
+  AXPlatformNodeAuraLinuxTest() : ax_mode_setter_(kAXModeComplete) {}
   ~AXPlatformNodeAuraLinuxTest() override = default;
   AXPlatformNodeAuraLinuxTest(const AXPlatformNodeAuraLinuxTest&) = delete;
   AXPlatformNodeAuraLinuxTest& operator=(const AXPlatformNodeAuraLinuxTest&) =
       delete;
-
-  void SetUp() override {
-    AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
-  }
 
  protected:
   AXPlatformNodeAuraLinux* GetPlatformNode(AXNode* node) {
@@ -87,6 +83,9 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
     }
     return atk_state_type < max_state_type.value();
   }
+
+ private:
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 static void EnsureAtkObjectHasAttributeWithValue(
@@ -158,14 +157,14 @@ static void TestAtkObjectIntAttribute(
       std::make_pair(1000, "1000"),
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
+  for (const auto& test : tests) {
     AXNodeData new_data = AXNodeData();
     new_data.role = role.value_or(ax::mojom::Role::kApplication);
     new_data.id = ax_node->data().id;
-    new_data.AddIntAttribute(mojom_attribute, tests[i].first);
+    new_data.AddIntAttribute(mojom_attribute, test.first);
     ax_node->SetData(new_data);
     EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name,
-                                         tests[i].second);
+                                         test.second);
   }
 }
 
@@ -186,9 +185,9 @@ static void TestAtkObjectStringAttribute(
       "\xE2\x98\xBA",  // The smiley emoji.
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    SetStringAttributeOnNode(ax_node, mojom_attribute, tests[i], role);
-    EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name, tests[i]);
+  for (const char* test : tests) {
+    SetStringAttributeOnNode(ax_node, mojom_attribute, test, role);
+    EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name, test);
   }
 }
 
@@ -615,9 +614,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectStringAttributes) {
                      "container-relevant"),
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    TestAtkObjectStringAttribute(root_node, root_atk_object, tests[i].first,
-                                 tests[i].second);
+  for (const auto& test : tests) {
+    TestAtkObjectStringAttribute(root_node, root_atk_object, test.first,
+                                 test.second);
   }
 
   g_object_unref(root_atk_object);
@@ -643,9 +642,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectBoolAttributes) {
                      "container-busy"),
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    TestAtkObjectBoolAttribute(root_node, root_atk_object, tests[i].first,
-                               tests[i].second);
+  for (const auto& test : tests) {
+    TestAtkObjectBoolAttribute(root_node, root_atk_object, test.first,
+                               test.second);
   }
 
   g_object_unref(root_atk_object);
@@ -1215,7 +1214,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
 
   auto verify_text_at_offset = [&](const char* expected_text, int offset,
                                    int expected_start, int expected_end) {
-    testing::Message message;
+    ::testing::Message message;
     message << "While checking at offset " << offset;
     SCOPED_TRACE(message);
 
@@ -1233,7 +1232,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
 
   auto verify_text_after_offset = [&](const char* expected_text, int offset,
                                       int expected_start, int expected_end) {
-    testing::Message message;
+    ::testing::Message message;
     message << "While checking after offset " << offset;
     SCOPED_TRACE(message);
 
@@ -1253,7 +1252,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
 
   auto verify_text_before_offset = [&](const char* expected_text, int offset,
                                        int expected_start, int expected_end) {
-    testing::Message message;
+    ::testing::Message message;
     message << "While checking before offset " << offset;
     SCOPED_TRACE(message);
 
@@ -1299,38 +1298,40 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextWordGranularity) {
                                        {-1, nullptr, -1, -1},
                                        {1000, nullptr, -1, -1}};
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    testing::Message message;
-    message << "While checking at index " << tests[i].offset << " for \'"
-            << tests[i].content << "\' at " << tests[i].start_offset << '-'
-            << tests[i].end_offset << '.';
+  for (const auto& test : tests) {
+    ::testing::Message message;
+    message << "While checking at index " << test.offset << " for \'"
+            << test.content << "\' at " << test.start_offset << '-'
+            << test.end_offset << '.';
     SCOPED_TRACE(message);
 
     int start_offset = -1, end_offset = -1;
-    char* content = atk_text_get_text_at_offset(atk_text, tests[i].offset,
+    char* content = atk_text_get_text_at_offset(atk_text, test.offset,
                                                 ATK_TEXT_BOUNDARY_WORD_START,
                                                 &start_offset, &end_offset);
-    EXPECT_STREQ(content, tests[i].content);
-    EXPECT_EQ(start_offset, tests[i].start_offset);
-    EXPECT_EQ(end_offset, tests[i].end_offset);
+    EXPECT_STREQ(content, test.content);
+    EXPECT_EQ(start_offset, test.start_offset);
+    EXPECT_EQ(end_offset, test.end_offset);
     g_free(content);
   }
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    testing::Message message;
-    message << "While checking at index " << tests[i].offset << " for \'"
-            << tests[i].content << "\' at " << tests[i].start_offset << '-'
-            << tests[i].end_offset << '.';
+  for (const auto& test : tests) {
+    ::testing::Message message;
+    message << "While checking at index " << test.offset << " for \'"
+            << test.content << "\' at " << test.start_offset << '-'
+            << test.end_offset << '.';
     SCOPED_TRACE(message);
 
     int start_offset = -1, end_offset = -1;
-    char* content = atk_text_get_string_at_offset(atk_text, tests[i].offset,
+    char* content = atk_text_get_string_at_offset(atk_text, test.offset,
                                                   ATK_TEXT_GRANULARITY_WORD,
                                                   &start_offset, &end_offset);
-    ASSERT_STREQ(content, tests[i].content) << "with test index=" << i;
-    ASSERT_EQ(start_offset, tests[i].start_offset) << "with test index=" << i;
-    ASSERT_EQ(end_offset, tests[i].end_offset) << "with test index=" << i;
+    ASSERT_STREQ(content, test.content) << "with test offset=" << test.offset;
+    ASSERT_EQ(start_offset, test.start_offset)
+        << "with test offset=" << test.offset;
+    ASSERT_EQ(end_offset, test.end_offset)
+        << "with test offset=" << test.offset;
     g_free(content);
   }
 #endif
@@ -1363,38 +1364,38 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextSentenceGranularity) {
       {1000, nullptr, -1, -1},
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    testing::Message message;
-    message << "While checking at index " << tests[i].offset << " for \'"
-            << tests[i].content << "\' at " << tests[i].start_offset << '-'
-            << tests[i].end_offset << '.';
+  for (const auto& test : tests) {
+    ::testing::Message message;
+    message << "While checking at index " << test.offset << " for \'"
+            << test.content << "\' at " << test.start_offset << '-'
+            << test.end_offset << '.';
     SCOPED_TRACE(message);
 
     int start_offset = -1, end_offset = -1;
     char* content = atk_text_get_text_at_offset(
-        atk_text, tests[i].offset, ATK_TEXT_BOUNDARY_SENTENCE_START,
-        &start_offset, &end_offset);
-    ASSERT_STREQ(content, tests[i].content);
-    ASSERT_EQ(start_offset, tests[i].start_offset);
-    ASSERT_EQ(end_offset, tests[i].end_offset);
+        atk_text, test.offset, ATK_TEXT_BOUNDARY_SENTENCE_START, &start_offset,
+        &end_offset);
+    ASSERT_STREQ(content, test.content);
+    ASSERT_EQ(start_offset, test.start_offset);
+    ASSERT_EQ(end_offset, test.end_offset);
     g_free(content);
   }
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
-    testing::Message message;
-    message << "While checking at index " << tests[i].offset << " for \'"
-            << tests[i].content << "\' at " << tests[i].start_offset << '-'
-            << tests[i].end_offset << '.';
+  for (const auto& test : tests) {
+    ::testing::Message message;
+    message << "While checking at index " << test.offset << " for \'"
+            << test.content << "\' at " << test.start_offset << '-'
+            << test.end_offset << '.';
     SCOPED_TRACE(message);
 
     int start_offset = -1, end_offset = -1;
-    char* content = atk_text_get_string_at_offset(atk_text, tests[i].offset,
+    char* content = atk_text_get_string_at_offset(atk_text, test.offset,
                                                   ATK_TEXT_GRANULARITY_SENTENCE,
                                                   &start_offset, &end_offset);
-    ASSERT_STREQ(content, tests[i].content);
-    ASSERT_EQ(start_offset, tests[i].start_offset);
-    ASSERT_EQ(end_offset, tests[i].end_offset);
+    ASSERT_STREQ(content, test.content);
+    ASSERT_EQ(start_offset, test.start_offset);
+    ASSERT_EQ(end_offset, test.end_offset);
     g_free(content);
   }
 #endif
@@ -1426,14 +1427,16 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextParagraphGranularity) {
       {12345, nullptr, -1, -1},
   };
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
+  for (const auto& test : tests) {
     int start_offset = -1, end_offset = -1;
     char* content = atk_text_get_string_at_offset(
-        atk_text, tests[i].offset, ATK_TEXT_GRANULARITY_PARAGRAPH,
-        &start_offset, &end_offset);
-    ASSERT_STREQ(content, tests[i].content) << "with test index=" << i;
-    ASSERT_EQ(start_offset, tests[i].start_offset) << "with test index=" << i;
-    ASSERT_EQ(end_offset, tests[i].end_offset) << "with test index=" << i;
+        atk_text, test.offset, ATK_TEXT_GRANULARITY_PARAGRAPH, &start_offset,
+        &end_offset);
+    ASSERT_STREQ(content, test.content) << "with test offset=" << test.offset;
+    ASSERT_EQ(start_offset, test.start_offset)
+        << "with test offset=" << test.offset;
+    ASSERT_EQ(end_offset, test.end_offset)
+        << "with test offset=" << test.offset;
     g_free(content);
   }
 #endif
@@ -1465,7 +1468,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextWithNonBMPCharacters) {
   ASSERT_EQ(atk_text_get_character_count(atk_text), root_text_length);
 
   for (int i = 0; i < root_text_length; i++) {
-    testing::Message message;
+    ::testing::Message message;
     message << "Checking character at offset " << i;
     SCOPED_TRACE(message);
 
@@ -1500,20 +1503,20 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextWithNonBMPCharacters) {
   static GetTextSegmentTest tests[] = {{0, "\xF0\x9F\x83\x8f ", 0, 2},
                                        {6, "decently ", 4, 13}};
 
-  for (unsigned i = 0; i < G_N_ELEMENTS(tests); i++) {
+  for (const auto& test : tests) {
     int start_offset = -1, end_offset = -1;
-    char* word = atk_text_get_text_at_offset(atk_text, tests[i].offset,
+    char* word = atk_text_get_text_at_offset(atk_text, test.offset,
                                              ATK_TEXT_BOUNDARY_WORD_START,
                                              &start_offset, &end_offset);
-    testing::Message message;
-    message << "Checking test with index=" << i << " and expected text=\'"
-            << tests[i].content << "\' at " << tests[1].start_offset << '-'
-            << tests[1].end_offset << '.';
+    ::testing::Message message;
+    message << "Checking test with index=" << test.offset
+            << " and expected text=\'" << test.content << "\' at "
+            << tests[1].start_offset << '-' << tests[1].end_offset << '.';
     SCOPED_TRACE(message);
 
-    ASSERT_STREQ(word, tests[i].content);
-    ASSERT_EQ(start_offset, tests[i].start_offset);
-    ASSERT_EQ(end_offset, tests[i].end_offset);
+    ASSERT_STREQ(word, test.content);
+    ASSERT_EQ(start_offset, test.start_offset);
+    ASSERT_EQ(end_offset, test.end_offset);
 
     g_free(word);
   }

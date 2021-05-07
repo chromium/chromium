@@ -33,7 +33,7 @@ namespace content {
 class BrowserMainParts;
 class WebContents;
 
-class BrowserTestBase : public testing::Test {
+class BrowserTestBase : public ::testing::Test {
  public:
   BrowserTestBase();
   ~BrowserTestBase() override;

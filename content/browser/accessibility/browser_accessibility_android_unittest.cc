@@ -55,15 +55,16 @@ class BrowserAccessibilityAndroidTest : public testing::Test {
   void SetUp() override;
   base::test::TaskEnvironment task_environment_;
   MockContentClient client_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroidTest);
 };
 
-BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest() = default;
+BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest()
+    : ax_mode_setter_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityAndroidTest::~BrowserAccessibilityAndroidTest() = default;
 
 void BrowserAccessibilityAndroidTest::SetUp() {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
   SetContentClient(&client_);

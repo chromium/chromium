@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(), ui::AXMode(),
                                           ax::mojom::Event::kLoadComplete);
-  BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
       ui::AXMode::kScreenReader);
   waiter2.WaitForNotification();
 

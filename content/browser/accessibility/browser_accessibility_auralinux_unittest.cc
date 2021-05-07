@@ -30,18 +30,18 @@ class BrowserAccessibilityAuraLinuxTest : public testing::Test {
   void SetUp() override;
 
   content::BrowserTaskEnvironment task_environment_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAuraLinuxTest);
 };
 
-BrowserAccessibilityAuraLinuxTest::BrowserAccessibilityAuraLinuxTest() =
-    default;
+BrowserAccessibilityAuraLinuxTest::BrowserAccessibilityAuraLinuxTest()
+    : ax_mode_setter_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityAuraLinuxTest::~BrowserAccessibilityAuraLinuxTest() =
     default;
 
 void BrowserAccessibilityAuraLinuxTest::SetUp() {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }

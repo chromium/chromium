@@ -140,7 +140,7 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
           std::wstring(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
     }
 
-    ASSERT_THAT(names, testing::UnorderedElementsAreArray(expected_names));
+    ASSERT_THAT(names, ::testing::UnorderedElementsAreArray(expected_names));
   }
 
   void UIAIWindowProviderGetIsModalBrowserTestTemplate(

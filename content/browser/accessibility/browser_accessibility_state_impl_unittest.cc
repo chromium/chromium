@@ -13,7 +13,7 @@
 
 namespace content {
 
-class BrowserAccessibilityStateImplTest : public testing::Test {
+class BrowserAccessibilityStateImplTest : public ::testing::Test {
  public:
   BrowserAccessibilityStateImplTest() = default;
   BrowserAccessibilityStateImplTest(const BrowserAccessibilityStateImplTest&) =

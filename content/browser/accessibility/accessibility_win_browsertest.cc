@@ -583,7 +583,7 @@ void AccessibilityWinBrowserTest::CheckTextAtOffset(
     LONG expected_start_offset,
     LONG expected_end_offset,
     const std::wstring& expected_text) {
-  testing::Message message;
+  ::testing::Message message;
   message << "While checking for \'" << expected_text << "\' at "
           << expected_start_offset << '-' << expected_end_offset << '.';
   SCOPED_TRACE(message);

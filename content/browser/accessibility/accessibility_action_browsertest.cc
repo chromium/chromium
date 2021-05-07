@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
                      ax::mojom::ScrollAlignment::kScrollAlignmentClosestEdge);
   gfx::Rect bounds = target_node->GetUnclippedScreenBoundsRect();
   {
-    testing::Message message;
+    ::testing::Message message;
     message << "Expected" << bounds.ToString() << " to be within "
             << doc_bottom_third.ToString() << " and "
             << doc_right_third.ToString();
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
                      ax::mojom::ScrollAlignment::kScrollAlignmentTop);
   bounds = target_node->GetUnclippedScreenBoundsRect();
   {
-    testing::Message message;
+    ::testing::Message message;
     message << "Expected" << bounds.ToString() << " to be within "
             << doc_top_third.ToString() << " and " << doc_left_third.ToString();
     EXPECT_TRUE(doc_bounds.Contains(bounds));
@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
                      ax::mojom::ScrollAlignment::kScrollAlignmentBottom);
   bounds = target_node->GetUnclippedScreenBoundsRect();
   {
-    testing::Message message;
+    ::testing::Message message;
     message << "Expected" << bounds.ToString() << " to be within "
             << doc_bottom_third.ToString() << " and "
             << doc_right_third.ToString();
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
                      ax::mojom::ScrollAlignment::kScrollAlignmentCenter);
   bounds = target_node->GetUnclippedScreenBoundsRect();
   {
-    testing::Message message;
+    ::testing::Message message;
     message << "Expected" << bounds.ToString() << " to not be within "
             << doc_top_third.ToString() << ", " << doc_bottom_third.ToString()
             << ", " << doc_left_third.ToString() << ", and "

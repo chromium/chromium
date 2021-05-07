@@ -103,7 +103,7 @@ class TestTableModel : public ui::TableModel {
 
 class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
  public:
-  ViewAXPlatformNodeDelegateTest() = default;
+  ViewAXPlatformNodeDelegateTest() : ax_mode_setter_(ui::kAXModeComplete) {}
   ViewAXPlatformNodeDelegateTest(const ViewAXPlatformNodeDelegateTest&) =
       delete;
   ViewAXPlatformNodeDelegateTest& operator=(
@@ -112,7 +112,6 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
     widget_ = new Widget;
     Widget::InitParams params =
@@ -206,6 +205,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   Widget* widget_ = nullptr;
   Button* button_ = nullptr;
   Label* label_ = nullptr;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 class ViewAXPlatformNodeDelegateTableTest

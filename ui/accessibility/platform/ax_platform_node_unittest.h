@@ -15,7 +15,7 @@
 
 namespace ui {
 
-class AXPlatformNodeTest : public testing::Test, public TestAXTreeManager {
+class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPlatformNodeTest();
   ~AXPlatformNodeTest() override;

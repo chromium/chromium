@@ -46,14 +46,13 @@ class TestButton : public Button {
 
 class AXVirtualViewTest : public ViewsTestBase {
  public:
-  AXVirtualViewTest() = default;
+  AXVirtualViewTest() : ax_mode_setter_(ui::kAXModeComplete) {}
   AXVirtualViewTest(const AXVirtualViewTest&) = delete;
   AXVirtualViewTest& operator=(const AXVirtualViewTest&) = delete;
   ~AXVirtualViewTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
     widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
@@ -112,6 +111,7 @@ class AXVirtualViewTest : public ViewsTestBase {
   std::vector<
       std::pair<const ui::AXPlatformNodeDelegate*, const ax::mojom::Event>>
       accessibility_events_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {

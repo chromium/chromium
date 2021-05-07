@@ -378,6 +378,9 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
       accessibility_mode_.mode() ^ (mode.mode() & accessibility_mode_.mode());
   accessibility_mode_ = raw_flags;
 
+  // Proxy the new AXMode to AXPlatformNode.
+  ui::AXPlatformNode::SetAXMode(accessibility_mode_);
+
   std::vector<WebContentsImpl*> web_contents_vector =
       WebContentsImpl::GetAllWebContents();
   for (size_t i = 0; i < web_contents_vector.size(); ++i)

@@ -16,12 +16,12 @@ namespace test {
 
 class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
  public:
-  ViewAXPlatformNodeDelegateAuraLinuxTest() = default;
+  ViewAXPlatformNodeDelegateAuraLinuxTest()
+      : ax_mode_setter_(ui::kAXModeComplete) {}
   ~ViewAXPlatformNodeDelegateAuraLinuxTest() override = default;
-  void SetUp() override {
-    ViewsTestBase::SetUp();
-    ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
-  }
+
+ private:
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {

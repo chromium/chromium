@@ -196,7 +196,7 @@ class RenderViewHostTestEnabler {
 };
 
 // RenderViewHostTestHarness ---------------------------------------------------
-class RenderViewHostTestHarness : public testing::Test {
+class RenderViewHostTestHarness : public ::testing::Test {
  public:
   // Constructs a RenderViewHostTestHarness which uses |traits| to initialize
   // its BrowserTaskEnvironment.

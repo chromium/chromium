@@ -29,6 +29,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/ui_base_paths.h"
@@ -103,6 +104,9 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     TestingBrowserProcess::DeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
     base::PowerMonitor::ShutdownForTesting();
+    DCHECK(ui::AXPlatformNode::GetAccessibilityMode() == 0)
+        << "Please use ScopedAxModeSetter, or add a call to "
+           "AXPlatformNode::ResetAxModeForTesting() at the end of your test.";
   }
 
  private:

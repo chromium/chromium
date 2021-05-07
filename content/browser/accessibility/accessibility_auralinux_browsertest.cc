@@ -113,7 +113,7 @@ void AccessibilityAuraLinuxBrowserTest::CheckTextAtOffset(
     int expected_start_offset,
     int expected_end_offset,
     const char* expected_text) {
-  testing::Message message;
+  ::testing::Message message;
   message << "While checking at index \'" << offset << "\' for \'"
           << expected_text << "\' at " << expected_start_offset << '-'
           << expected_end_offset << '.';
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
     gfx::Rect combined_extents(x, y, width, height);
     for (int offset = 1; offset < newline_offset; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << newline_offset + 1;
       SCOPED_TRACE(message);
 
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
     combined_extents = gfx::Rect(x, y, width, height);
     for (int offset = newline_offset + 2; offset < n_characters; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     // Test that non offscreen characters have increasing x coordinates and a
     // height that is greater than 1px.
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset 0";
       SCOPED_TRACE(message);
 
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     for (int offset = 1; offset < first_line_end; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << last_line_start;
       SCOPED_TRACE(message);
 
@@ -722,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
     }
 
     for (int offset = last_line_start + 1; offset < n_characters; ++offset) {
-      testing::Message message;
+      ::testing::Message message;
       message << "While checking at offset " << offset;
       SCOPED_TRACE(message);
 

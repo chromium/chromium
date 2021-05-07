@@ -18,7 +18,8 @@ namespace content {
 
 class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
  public:
-  BrowserAccessibilityManagerAuraLinuxTest() = default;
+  BrowserAccessibilityManagerAuraLinuxTest()
+      : ax_mode_setter_(ui::kAXModeComplete) {}
   ~BrowserAccessibilityManagerAuraLinuxTest() override = default;
 
  protected:
@@ -27,12 +28,12 @@ class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
 
  private:
   void SetUp() override;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAuraLinuxTest);
 };
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }

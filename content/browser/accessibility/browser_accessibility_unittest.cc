@@ -26,15 +26,17 @@ class BrowserAccessibilityTest : public testing::Test {
   void SetUp() override;
 
   BrowserTaskEnvironment task_environment_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityTest);
 };
 
-BrowserAccessibilityTest::BrowserAccessibilityTest() = default;
+BrowserAccessibilityTest::BrowserAccessibilityTest()
+    : ax_mode_setter_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityTest::~BrowserAccessibilityTest() = default;
 
 void BrowserAccessibilityTest::SetUp() {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }

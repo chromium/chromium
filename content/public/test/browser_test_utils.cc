@@ -1649,10 +1649,10 @@ EvalJsResult EvalRunnerScript(const ToRenderFrameHost& execution_target,
 
 }  // namespace
 
-testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
-                                const std::string& script,
-                                int options,
-                                int32_t world_id) {
+::testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
+                                  const std::string& script,
+                                  int options,
+                                  int32_t world_id) {
   CHECK(!(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY))
       << "USE_MANUAL_REPLY does not make sense with ExecJs.";
 
@@ -1664,8 +1664,8 @@ testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
 
   // NOTE: |eval_result.value| is intentionally ignored by ExecJs().
   if (!eval_result.error.empty())
-    return testing::AssertionFailure() << eval_result.error;
-  return testing::AssertionSuccess();
+    return ::testing::AssertionFailure() << eval_result.error;
+  return ::testing::AssertionSuccess();
 }
 
 EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
@@ -2205,7 +2205,7 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
         std::wstring(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
   }
 
-  ASSERT_THAT(names, testing::UnorderedElementsAreArray(expected_names));
+  ASSERT_THAT(names, ::testing::UnorderedElementsAreArray(expected_names));
 }
 #endif
 

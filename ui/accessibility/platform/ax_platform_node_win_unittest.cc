@@ -185,42 +185,42 @@ ScopedVariant SELF(CHILDID_SELF);
                                      expected_property_values);             \
   }
 
-#define EXPECT_UIA_PROPERTY_UNORDERED_ELEMENT_ARRAY_BSTR_EQ(                   \
-    node, array_property_id, element_test_property_id,                         \
-    expected_property_values)                                                  \
-  {                                                                            \
-    ScopedVariant array;                                                       \
-    ASSERT_HRESULT_SUCCEEDED(                                                  \
-        node->GetPropertyValue(array_property_id, array.Receive()));           \
-    ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, array.type());                            \
-    ASSERT_EQ(1u, SafeArrayGetDim(array.ptr()->parray));                       \
-    LONG array_lower_bound;                                                    \
-    ASSERT_HRESULT_SUCCEEDED(                                                  \
-        SafeArrayGetLBound(array.ptr()->parray, 1, &array_lower_bound));       \
-    LONG array_upper_bound;                                                    \
-    ASSERT_HRESULT_SUCCEEDED(                                                  \
-        SafeArrayGetUBound(array.ptr()->parray, 1, &array_upper_bound));       \
-    IUnknown** array_data;                                                     \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                            \
-        array.ptr()->parray, reinterpret_cast<void**>(&array_data)));          \
-    size_t count = array_upper_bound - array_lower_bound + 1;                  \
-    ASSERT_EQ(expected_property_values.size(), count);                         \
-    std::vector<std::wstring> property_values;                                 \
-    for (size_t i = 0; i < count; ++i) {                                       \
-      ComPtr<IRawElementProviderSimple> element;                               \
-      ASSERT_HRESULT_SUCCEEDED(                                                \
-          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));              \
-      ScopedVariant actual;                                                    \
-      ASSERT_HRESULT_SUCCEEDED(element->GetPropertyValue(                      \
-          element_test_property_id, actual.Receive()));                        \
-      ASSERT_EQ(VT_BSTR, actual.type());                                       \
-      ASSERT_NE(nullptr, actual.ptr()->bstrVal);                               \
-      property_values.push_back(std::wstring(                                  \
-          V_BSTR(actual.ptr()), SysStringLen(V_BSTR(actual.ptr()))));          \
-    }                                                                          \
-    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array.ptr()->parray));    \
-    EXPECT_THAT(property_values,                                               \
-                testing::UnorderedElementsAreArray(expected_property_values)); \
+#define EXPECT_UIA_PROPERTY_UNORDERED_ELEMENT_ARRAY_BSTR_EQ(                \
+    node, array_property_id, element_test_property_id,                      \
+    expected_property_values)                                               \
+  {                                                                         \
+    ScopedVariant array;                                                    \
+    ASSERT_HRESULT_SUCCEEDED(                                               \
+        node->GetPropertyValue(array_property_id, array.Receive()));        \
+    ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, array.type());                         \
+    ASSERT_EQ(1u, SafeArrayGetDim(array.ptr()->parray));                    \
+    LONG array_lower_bound;                                                 \
+    ASSERT_HRESULT_SUCCEEDED(                                               \
+        SafeArrayGetLBound(array.ptr()->parray, 1, &array_lower_bound));    \
+    LONG array_upper_bound;                                                 \
+    ASSERT_HRESULT_SUCCEEDED(                                               \
+        SafeArrayGetUBound(array.ptr()->parray, 1, &array_upper_bound));    \
+    IUnknown** array_data;                                                  \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(                         \
+        array.ptr()->parray, reinterpret_cast<void**>(&array_data)));       \
+    size_t count = array_upper_bound - array_lower_bound + 1;               \
+    ASSERT_EQ(expected_property_values.size(), count);                      \
+    std::vector<std::wstring> property_values;                              \
+    for (size_t i = 0; i < count; ++i) {                                    \
+      ComPtr<IRawElementProviderSimple> element;                            \
+      ASSERT_HRESULT_SUCCEEDED(                                             \
+          array_data[i]->QueryInterface(IID_PPV_ARGS(&element)));           \
+      ScopedVariant actual;                                                 \
+      ASSERT_HRESULT_SUCCEEDED(element->GetPropertyValue(                   \
+          element_test_property_id, actual.Receive()));                     \
+      ASSERT_EQ(VT_BSTR, actual.type());                                    \
+      ASSERT_NE(nullptr, actual.ptr()->bstrVal);                            \
+      property_values.push_back(std::wstring(                               \
+          V_BSTR(actual.ptr()), SysStringLen(V_BSTR(actual.ptr()))));       \
+    }                                                                       \
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(array.ptr()->parray)); \
+    EXPECT_THAT(property_values, ::testing::UnorderedElementsAreArray(      \
+                                     expected_property_values));            \
   }
 
 MockIRawElementProviderSimple::MockIRawElementProviderSimple() = default;
@@ -6562,10 +6562,10 @@ TEST_F(AXPlatformNodeWinTest,
     EXPECT_NE(expandcollapse_provider.Get(), nullptr);
     EXPECT_HRESULT_SUCCEEDED(
         expandcollapse_provider->get_ExpandCollapseState(&state));
-    SCOPED_TRACE(testing::Message()
-                 << "node index: " << i << ", Actual Expanded/Collapsed State: "
-                 << state << ", Expected Expanded/Collapsed State: "
-                 << node_expected_state[i]);
+    SCOPED_TRACE(
+        ::testing::Message()
+        << "node index: " << i << ", Actual Expanded/Collapsed State: " << state
+        << ", Expected Expanded/Collapsed State: " << node_expected_state[i]);
     EXPECT_EQ(node_expected_state[i], state);
   }
 }

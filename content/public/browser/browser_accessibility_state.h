@@ -95,6 +95,26 @@ class CONTENT_EXPORT BrowserAccessibilityState {
       FocusChangedCallback callback) = 0;
 };
 
+namespace testing {
+
+class CONTENT_EXPORT ScopedContentAXModeSetter {
+ public:
+  explicit ScopedContentAXModeSetter(ui::AXMode mode) : mode_(mode) {
+    BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(mode);
+  }
+  ~ScopedContentAXModeSetter() { ResetMode(); }
+
+  void ResetMode() {
+    BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
+        mode_);
+  }
+
+ private:
+  ui::AXMode mode_;
+};
+
+}  // namespace testing
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_BROWSER_ACCESSIBILITY_STATE_H_

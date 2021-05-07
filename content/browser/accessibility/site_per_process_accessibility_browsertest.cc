@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
                                                 "Title Of Awesomeness");
 }
 
-INSTANTIATE_TEST_SUITE_P(MAYBE_All,
-                         MAYBE_SitePerProcessAccessibilityBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_All,
+    MAYBE_SitePerProcessAccessibilityBrowserTest,
+    ::testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content

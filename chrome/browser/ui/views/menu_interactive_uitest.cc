@@ -108,7 +108,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  ui::testing::ScopedAxModeSetter ax_mode_setter(ui::kAXModeComplete);
 #endif
 
   // Create a parent widget.
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   // Going into full screen mode prevents pre-test focus and mouse position
   // state from affecting test, and helps ui_controls function correctly.
   chrome::ToggleFullscreenMode(browser());
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  ui::testing::ScopedAxModeSetter ax_mode_setter(ui::kAXModeComplete);
   MenuDelegate menu_delegate;
   MenuItemView* menu_item = new MenuItemView(&menu_delegate);
   AXEventCounter ax_counter(views::AXEventManager::Get());

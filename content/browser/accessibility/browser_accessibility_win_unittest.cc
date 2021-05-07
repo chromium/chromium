@@ -97,7 +97,7 @@ namespace content {
 
 // BrowserAccessibilityWinTest ------------------------------------------------
 
-class BrowserAccessibilityWinTest : public testing::Test {
+class BrowserAccessibilityWinTest : public ::testing::Test {
  public:
   BrowserAccessibilityWinTest();
   ~BrowserAccessibilityWinTest() override;

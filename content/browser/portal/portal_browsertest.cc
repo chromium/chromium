@@ -76,7 +76,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-using testing::_;
+using ::testing::_;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
 using trace_analyzer::TraceEventVector;
@@ -1278,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RemovePortalWhenUnloading) {
 
 class PortalOrphanedNavigationBrowserTest
     : public PortalBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PortalOrphanedNavigationBrowserTest()
       : cross_site_(std::get<0>(GetParam())),
@@ -1286,7 +1286,7 @@ class PortalOrphanedNavigationBrowserTest
 
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
+      const ::testing::TestParamInfo<ParamType>& info) {
     bool cross_site;
     bool commit_after_adoption;
     std::tie(cross_site, commit_after_adoption) = info.param;
@@ -1308,7 +1308,8 @@ class PortalOrphanedNavigationBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PortalOrphanedNavigationBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()),
                          PortalOrphanedNavigationBrowserTest::DescribeParams);
 
 // Tests that a portal can navigate while orphaned.
