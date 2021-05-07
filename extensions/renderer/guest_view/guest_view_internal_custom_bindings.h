@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 #define EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 
-#include <map>
-
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {

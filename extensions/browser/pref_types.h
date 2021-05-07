@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_PREF_TYPES_H_
 #define EXTENSIONS_BROWSER_PREF_TYPES_H_
 
-#include <string>
-
 namespace extensions {
 
 enum PrefType {

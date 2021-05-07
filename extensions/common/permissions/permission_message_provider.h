@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_PERMISSIONS_PERMISSION_MESSAGE_PROVIDER_H_
 #define EXTENSIONS_COMMON_PERMISSIONS_PERMISSION_MESSAGE_PROVIDER_H_
 
-#include <vector>
-
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_message.h"
 

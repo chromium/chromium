@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_STORAGE_STORAGE_API_H_
 #define EXTENSIONS_BROWSER_API_STORAGE_STORAGE_API_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/storage/settings_observer.h"

@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 #define EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 
-#include <map>
-
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 

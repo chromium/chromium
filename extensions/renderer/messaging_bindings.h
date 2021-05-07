@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_MESSAGING_BINDINGS_H_
 #define EXTENSIONS_RENDERER_MESSAGING_BINDINGS_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 

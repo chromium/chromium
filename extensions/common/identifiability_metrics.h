@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_IDENTIFIABILITY_METRICS_H_
 #define EXTENSIONS_COMMON_IDENTIFIABILITY_METRICS_H_
 
-#include <string>
-
 #include "extensions/common/extension_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"

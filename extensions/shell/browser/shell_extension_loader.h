@@ -5,9 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_LOADER_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_LOADER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

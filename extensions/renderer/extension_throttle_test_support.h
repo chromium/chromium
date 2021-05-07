@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSION_THROTTLE_TEST_SUPPORT_H_
 #define EXTENSIONS_RENDERER_EXTENSION_THROTTLE_TEST_SUPPORT_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

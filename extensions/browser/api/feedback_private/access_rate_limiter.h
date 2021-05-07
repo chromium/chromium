@@ -5,9 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_ACCESS_RATE_LIMITER_H_
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_ACCESS_RATE_LIMITER_H_
 
-#include <algorithm>
-#include <memory>
-
 #include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"

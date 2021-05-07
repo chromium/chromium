@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_CONTENT_SCRIPT_TRACKER_H_
 #define EXTENSIONS_BROWSER_CONTENT_SCRIPT_TRACKER_H_
 
-#include <vector>
-
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"

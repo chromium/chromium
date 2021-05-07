@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_SYSTEM_NETWORK_SYSTEM_NETWORK_API_H_
 #define EXTENSIONS_BROWSER_API_SYSTEM_NETWORK_SYSTEM_NETWORK_API_H_
 
-#include <memory>
-
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/system_network.h"
 #include "net/base/network_interfaces.h"
