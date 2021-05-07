@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
+#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
@@ -24,7 +26,25 @@
 #include "ui/views/test/combobox_test_api.h"
 #include "ui/views/test/widget_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/settings/owner_flags_storage.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
+#endif
+
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kFakeUserName[] = "test@example.com";
+constexpr char kFakeGaiaId[] = "1234567890";
+#endif
+
 const char kFirstTestFeatureId[] = "feature-1";
 const char kTestFeatureWithVariationId[] = "feature-2";
 const char kThirdTestFeatureId[] = "feature-3";
@@ -82,7 +102,8 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
 
     ChromeLabsButton* button = chrome_labs_button();
     ChromeLabsBubbleView::Show(button, browser_view()->browser(),
-                               chrome_labs_model());
+                               chrome_labs_model(),
+                               /*user_is_chromeos_owner=*/false);
   }
 
   void TearDown() override {
@@ -112,11 +133,6 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
         ->GetFlagsStateForTesting();
   }
 
-  flags_ui::FlagsStorage* flags_storage() {
-    return ChromeLabsBubbleView::GetChromeLabsBubbleViewForTesting()
-        ->GetFlagsStorageForTesting();
-  }
-
   ChromeLabsItemView* first_lab_item() {
     views::View* menu_items = chrome_labs_menu_item_container();
     return static_cast<ChromeLabsItemView*>(menu_items->children().front());
@@ -129,12 +145,15 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
   }
 
   // Returns true if the option at index |option_index| is the enabled feature
-  // state.
-  bool IsSelected(int option_index, const flags_ui::FeatureEntry* entry) {
+  // state in the FlagsStorage we expect the entry to be in.
+  bool IsSelected(int option_index,
+                  const flags_ui::FeatureEntry* entry,
+                  flags_ui::FlagsStorage* expected_flags_storage) {
     std::string internal_name = std::string(entry->internal_name) + "@" +
                                 base::NumberToString(option_index);
     std::set<std::string> enabled_entries;
-    flags_state()->GetSanitizedEnabledFlags(flags_storage(), &enabled_entries);
+    flags_state()->GetSanitizedEnabledFlags(expected_flags_storage,
+                                            &enabled_entries);
     for (int i = 0; i < entry->NumOptions(); i++) {
       const std::string name = entry->NameForOption(i);
       if (internal_name == name && enabled_entries.count(name) > 0) {
@@ -145,9 +164,11 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
   }
 
   // Returns true if none of the entry's options have been enabled.
-  bool IsDefault(const flags_ui::FeatureEntry* entry) {
+  bool IsDefault(const flags_ui::FeatureEntry* entry,
+                 flags_ui::FlagsStorage* expected_flags_storage) {
     std::set<std::string> enabled_entries;
-    flags_state()->GetSanitizedEnabledFlags(flags_storage(), &enabled_entries);
+    flags_state()->GetSanitizedEnabledFlags(expected_flags_storage,
+                                            &enabled_entries);
     for (int i = 0; i < entry->NumOptions(); i++) {
       const std::string name = entry->NameForOption(i);
       if (enabled_entries.count(name) > 0) {
@@ -190,10 +211,7 @@ class ChromeLabsFeatureTest : public ChromeLabsBubbleTest,
   ChromeLabsFeatureTest() = default;
 };
 
-// TODO(elainechien): Some logic is still needed for ChromeOS and tests may not
-// behave as expected yet.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-
 // This test checks that selecting an option through the combobox on a lab will
 // enable the corresponding option on the feature.
 TEST_P(ChromeLabsFeatureTest, ChangeSelectedOption) {
@@ -207,7 +225,10 @@ TEST_P(ChromeLabsFeatureTest, ChangeSelectedOption) {
   lab_item_combobox->SetSelectedRow(row);
 
   const flags_ui::FeatureEntry* feature_entry = lab_item->GetFeatureEntry();
-  EXPECT_TRUE(IsSelected(row, feature_entry));
+  std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+          TestingBrowserProcess::GetGlobal()->local_state());
+  EXPECT_TRUE(IsSelected(row, feature_entry, flags_storage.get()));
 
   // FeatureEntry of type FEATURE_WITH_PARAMS_VALUE
   ChromeLabsItemView* lab_item_with_params = second_lab_item();
@@ -217,7 +238,7 @@ TEST_P(ChromeLabsFeatureTest, ChangeSelectedOption) {
 
   const flags_ui::FeatureEntry* feature_entry_with_params =
       lab_item_with_params->GetFeatureEntry();
-  EXPECT_TRUE(IsSelected(row, feature_entry_with_params));
+  EXPECT_TRUE(IsSelected(row, feature_entry_with_params, flags_storage.get()));
 }
 
 // For FeatureEntries of type FEATURE_VALUE, the option at index 1 corresponds
@@ -226,12 +247,6 @@ TEST_P(ChromeLabsFeatureTest, ChangeSelectedOption) {
 // corresponds to "Enabled" and the option at index 2 corresponds to the first
 // additional parameter.
 INSTANTIATE_TEST_SUITE_P(All, ChromeLabsFeatureTest, testing::Values(1, 2));
-
-// This test checks that only the two features that are supported on the current
-// platform and do not have expired flags are added to the bubble.
-TEST_F(ChromeLabsBubbleTest, OnlyCompatibleFeaturesShow) {
-  EXPECT_TRUE(chrome_labs_menu_item_container()->children().size() == 2);
-}
 
 // This test checks that selecting row 0 will reset the feature to it's Default
 // state.
@@ -244,9 +259,116 @@ TEST_F(ChromeLabsBubbleTest, ResetToDefault) {
   // selecting 0.
   const flags_ui::FeatureEntry* feature_entry = lab_item->GetFeatureEntry();
   lab_item_combobox->SetSelectedRow(1);
-  EXPECT_FALSE(IsDefault(feature_entry));
+  std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+          TestingBrowserProcess::GetGlobal()->local_state());
+  EXPECT_FALSE(IsDefault(feature_entry, flags_storage.get()));
   lab_item_combobox->SetSelectedRow(0);
-  EXPECT_TRUE(IsDefault(feature_entry));
+  EXPECT_TRUE(IsDefault(feature_entry, flags_storage.get()));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Ash versions of the above tests.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace ash {
+
+class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
+ public:
+  ChromeLabsAshFeatureTest()
+      : ChromeLabsFeatureTest(),
+        user_manager_(new FakeChromeUserManager()),
+        user_manager_enabler_(base::WrapUnique(user_manager_)) {
+    SessionManagerClient::InitializeFakeInMemory();
+    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+    user_manager_->AddUser(account_id);
+    user_manager_->LoginUser(account_id);
+  }
+
+ private:
+  FakeChromeUserManager* user_manager_;
+  user_manager::ScopedUserManager user_manager_enabler_;
+};
+
+TEST_P(ChromeLabsAshFeatureTest, ChangeSelectedOption) {
+  int row = GetParam();
+
+  // FeatureEntry of type FEATURE_VALUE
+  ChromeLabsItemView* lab_item = first_lab_item();
+  views::Combobox* lab_item_combobox =
+      lab_item->GetLabStateComboboxForTesting();
+
+  lab_item_combobox->SetSelectedRow(row);
+
+  const flags_ui::FeatureEntry* feature_entry = lab_item->GetFeatureEntry();
+  // On ash-chrome we expect the PrefService from the profile to be used.
+  std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+          profile()->GetPrefs());
+  EXPECT_TRUE(IsSelected(row, feature_entry, flags_storage.get()));
+
+  // FeatureEntry of type FEATURE_WITH_PARAMS_VALUE
+  ChromeLabsItemView* lab_item_with_params = second_lab_item();
+  views::Combobox* lab_item_with_params_combobox =
+      lab_item_with_params->GetLabStateComboboxForTesting();
+  lab_item_with_params_combobox->SetSelectedRow(row);
+
+  const flags_ui::FeatureEntry* feature_entry_with_params =
+      lab_item_with_params->GetFeatureEntry();
+  EXPECT_TRUE(IsSelected(row, feature_entry_with_params, flags_storage.get()));
+
+  // Make sure flags have been set since ChromeOS should apply flags through
+  // the session manager.
+  AccountId user_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  std::vector<std::string> raw_flags;
+  FakeSessionManagerClient* session_manager = FakeSessionManagerClient::Get();
+  chrome_labs_bubble()->RestartToApplyFlags();
+  const bool has_user_flags = session_manager->GetFlagsForUser(
+      cryptohome::CreateAccountIdentifierFromAccountId(user_id), &raw_flags);
+  EXPECT_TRUE(has_user_flags);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, ChromeLabsAshFeatureTest, testing::Values(1, 2));
+
+// OwnerFlagsStorage on build bots works the same way as the non-owner version
+// since we don't have the session manager daemon to write and sign the proto
+// blob. This test just opens the bubble to make sure there are no crashes.
+TEST_F(ChromeLabsBubbleTest, ShowBubbleWhenUserIsOwner) {
+  ChromeLabsBubbleView::Hide();
+  ChromeLabsBubbleView::Show(chrome_labs_button(), browser_view()->browser(),
+                             chrome_labs_model(),
+                             /*user_is_chromeos_owner=*/true);
+}
+
+TEST_F(ChromeLabsBubbleTest, ResetToDefault) {
+  ChromeLabsItemView* lab_item = first_lab_item();
+  views::Combobox* lab_item_combobox =
+      lab_item->GetLabStateComboboxForTesting();
+
+  // Selects an option and then attempts to reset the lab to Default by
+  // selecting 0.
+  const flags_ui::FeatureEntry* feature_entry = lab_item->GetFeatureEntry();
+  lab_item_combobox->SetSelectedRow(1);
+  // On ash-chrome we expect the PrefService from the profile to be used.
+  std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+          profile()->GetPrefs());
+  EXPECT_FALSE(IsDefault(feature_entry, flags_storage.get()));
+  lab_item_combobox->SetSelectedRow(0);
+  EXPECT_TRUE(IsDefault(feature_entry, flags_storage.get()));
+}
+
+}  // namespace ash
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// This test checks that only the two features that are supported on the current
+// platform and do not have expired flags are added to the bubble.
+TEST_F(ChromeLabsBubbleTest, OnlyCompatibleFeaturesShow) {
+  EXPECT_TRUE(chrome_labs_menu_item_container()->children().size() == 2);
 }
 
 // This test checks that the restart prompt becomes visible when a lab state is
@@ -263,7 +385,8 @@ TEST_F(ChromeLabsBubbleTest, RestartPromptShows) {
   ChromeLabsBubbleView::Hide();
   destroyed_waiter.Wait();
   ChromeLabsBubbleView::Show(chrome_labs_button(), browser_view()->browser(),
-                             chrome_labs_model());
+                             chrome_labs_model(),
+                             /*user_is_chromeos_owner=*/false);
   ChromeLabsBubbleView* bubble_view_after_restart = chrome_labs_bubble();
   EXPECT_TRUE(bubble_view_after_restart->IsRestartPromptVisibleForTesting());
 }
@@ -298,5 +421,3 @@ TEST_F(ChromeLabsBubbleTest, ShowFeedbackPage) {
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 #endif
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

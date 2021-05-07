@@ -15,6 +15,9 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class Profile;
+#endif
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
@@ -22,25 +25,28 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ChromeLabsBubbleView);
   static void Show(views::View* anchor_view,
                    Browser* browser,
-                   const ChromeLabsBubbleViewModel* model);
+                   const ChromeLabsBubbleViewModel* model,
+                   bool user_is_chromeos_owner);
 
   static bool IsShowing();
 
   static void Hide();
+
+  void RestartToApplyFlags();
 
   ~ChromeLabsBubbleView() override;
 
   // Getter functions for testing.
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
   flags_ui::FlagsState* GetFlagsStateForTesting();
-  flags_ui::FlagsStorage* GetFlagsStorageForTesting();
   views::View* GetMenuItemContainerForTesting();
   bool IsRestartPromptVisibleForTesting();
 
  private:
   ChromeLabsBubbleView(views::View* anchor_view,
                        Browser* browser,
-                       const ChromeLabsBubbleViewModel* model);
+                       const ChromeLabsBubbleViewModel* model,
+                       bool user_is_chromeos_owner);
 
   std::unique_ptr<ChromeLabsItemView> CreateLabItem(
       const LabInfo& lab,
@@ -66,6 +72,9 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   const ChromeLabsBubbleViewModel* model_;
 
   views::View* restart_prompt_;
-};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile_ = nullptr;
+#endif
+};
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_
