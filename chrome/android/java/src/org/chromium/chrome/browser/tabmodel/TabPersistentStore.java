@@ -1426,6 +1426,10 @@ public class TabPersistentStore {
             cleanUpPersistentData();
             onStateLoaded();
             mTabLoader = null;
+            RecordHistogram.recordCountHistogram(
+                    "Tabs.Startup.TabCount.Regular", mTabModelSelector.getModel(false).getCount());
+            RecordHistogram.recordCountHistogram(
+                    "Tabs.Startup.TabCount.Incognito", mTabModelSelector.getModel(true).getCount());
             Log.i(TAG,
                     "Loaded tab lists; counts: " + mTabModelSelector.getModel(false).getCount()
                             + "," + mTabModelSelector.getModel(true).getCount());
