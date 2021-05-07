@@ -7,10 +7,14 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
+
+class BubbleEventFilter;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI. Only one bubble can be visible at a time, across
@@ -36,6 +40,9 @@ class ASH_EXPORT AppListBubble {
 
  private:
   views::UniqueWidgetPtr bubble_widget_;
+
+  // Closes the widget when the user clicks outside of it.
+  std::unique_ptr<BubbleEventFilter> bubble_event_filter_;
 };
 
 }  // namespace ash

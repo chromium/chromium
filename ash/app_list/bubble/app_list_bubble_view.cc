@@ -13,22 +13,20 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
 
 namespace ash {
 
-AppListBubbleView::AppListBubbleView()
-    : views::BubbleDialogDelegateView(/*anchor_view=*/nullptr,
-                                      views::BubbleBorder::BOTTOM_LEFT) {
+AppListBubbleView::AppListBubbleView(aura::Window* root_window) {
+  DCHECK(root_window);
   // TODO(https://crbug.com/1204554): Support BubbleBorder::TOP_LEFT and
   // TOP_RIGHT for side-aligned shelf.
+  SetArrow(views::BubbleBorder::BOTTOM_LEFT);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
-
-  // TODO(https://crbug.com/1204554): Multi-display support.
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
   set_parent_window(
       Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
 
@@ -41,6 +39,8 @@ AppListBubbleView::AppListBubbleView()
 
   // TODO(https://crbug.com/1204551): Create real contents.
   AddChildView(std::make_unique<views::Label>(u"Placeholder"));
+  auto* textfield = AddChildView(std::make_unique<views::Textfield>());
+  SetInitiallyFocusedView(textfield);
 }
 
 AppListBubbleView::~AppListBubbleView() = default;

@@ -6,15 +6,21 @@
 
 #include <set>
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shelf/home_button.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
+using views::Widget;
 using views::test::WidgetDestroyedWaiter;
 
 namespace ash {
@@ -30,68 +36,83 @@ size_t NumberOfWidgetsInAppListContainer() {
   return widgets.size();
 }
 
-using AppListBubbleTest = AshTestBase;
+class AppListBubbleTest : public AshTestBase {
+ public:
+  AppListBubbleTest() {
+    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+  }
+  ~AppListBubbleTest() override = default;
+
+  // Returns the AppListBubble instance. Use this instead of creating a new
+  // AppListBubble instance in each test to avoid situations where two bubbles
+  // exist at the same time (the per-test one and the "production" one).
+  AppListBubble* GetAppListBubble() {
+    return Shell::Get()->app_list_controller()->app_list_bubble_for_test();
+  }
+
+  base::test::ScopedFeatureList scoped_features_;
+};
 
 TEST_F(AppListBubbleTest, ShowOpensOneWidgetInAppListContainer) {
-  AppListBubble bubble;
-  bubble.Show(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
 }
 
 TEST_F(AppListBubbleTest, DismissClosesWidget) {
-  AppListBubble bubble;
-  bubble.Show(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
 
-  WidgetDestroyedWaiter waiter(bubble.bubble_widget_for_test());
-  bubble.Dismiss();
+  WidgetDestroyedWaiter waiter(bubble->bubble_widget_for_test());
+  bubble->Dismiss();
   waiter.Wait();
 
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
 TEST_F(AppListBubbleTest, ToggleOpensOneWidgetInAppListContainer) {
-  AppListBubble bubble;
-  bubble.Toggle(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Toggle(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
 }
 
 TEST_F(AppListBubbleTest, ToggleClosesWidgetInAppListContainer) {
-  AppListBubble bubble;
-  bubble.Toggle(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Toggle(GetPrimaryDisplay().id());
 
-  WidgetDestroyedWaiter waiter(bubble.bubble_widget_for_test());
-  bubble.Toggle(GetPrimaryDisplay().id());
+  WidgetDestroyedWaiter waiter(bubble->bubble_widget_for_test());
+  bubble->Toggle(GetPrimaryDisplay().id());
   waiter.Wait();
 
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
 TEST_F(AppListBubbleTest, BubbleIsNotShowingByDefault) {
-  AppListBubble bubble;
+  AppListBubble* bubble = GetAppListBubble();
 
-  EXPECT_FALSE(bubble.IsShowing());
+  EXPECT_FALSE(bubble->IsShowing());
 }
 
 TEST_F(AppListBubbleTest, BubbleIsShowingAfterShow) {
-  AppListBubble bubble;
-  bubble.Show(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
 
-  EXPECT_TRUE(bubble.IsShowing());
+  EXPECT_TRUE(bubble->IsShowing());
 }
 
 TEST_F(AppListBubbleTest, BubbleIsNotShowingAfterDismiss) {
-  AppListBubble bubble;
-  bubble.Show(GetPrimaryDisplay().id());
-  bubble.Dismiss();
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
+  bubble->Dismiss();
 
-  EXPECT_FALSE(bubble.IsShowing());
+  EXPECT_FALSE(bubble->IsShowing());
 }
 
 TEST_F(AppListBubbleTest, DoesNotCrashWhenNativeWidgetDestroyed) {
-  AppListBubble bubble;
-  bubble.Show(GetPrimaryDisplay().id());
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
 
   aura::Window* container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
@@ -100,6 +121,36 @@ TEST_F(AppListBubbleTest, DoesNotCrashWhenNativeWidgetDestroyed) {
   delete native_window;
 
   // No crash.
+}
+
+TEST_F(AppListBubbleTest, ClickInTopLeftOfScreenClosesBubble) {
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
+
+  Widget* widget = bubble->bubble_widget_for_test();
+  WidgetDestroyedWaiter waiter(widget);
+  ASSERT_FALSE(widget->GetWindowBoundsInScreen().Contains(0, 0));
+  GetEventGenerator()->MoveMouseTo(0, 0);
+  GetEventGenerator()->ClickLeftButton();
+  waiter.Wait();
+
+  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+}
+
+// Verifies that the launcher does not reopen when it's closed by a click on the
+// home button.
+TEST_F(AppListBubbleTest, ClickOnHomeButtonClosesBubble) {
+  AppListBubble* bubble = GetAppListBubble();
+  bubble->Show(GetPrimaryDisplay().id());
+
+  // Click the home button.
+  WidgetDestroyedWaiter waiter(bubble->bubble_widget_for_test());
+  HomeButton* button = GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  waiter.Wait();
+
+  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
 }  // namespace

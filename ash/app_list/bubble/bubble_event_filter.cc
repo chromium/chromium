@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/app_list/bubble/bubble_event_filter.h"
+
+#include "ash/shell.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+
+BubbleEventFilter::BubbleEventFilter(
+    views::Widget* widget,
+    views::View* button,
+    base::RepeatingCallback<void()> on_click_outside)
+    : widget_(widget), button_(button), on_click_outside_(on_click_outside) {
+  DCHECK(widget_);
+  DCHECK(button_);
+  DCHECK(on_click_outside_);
+  Shell::Get()->AddPreTargetHandler(this);
+}
+
+BubbleEventFilter::~BubbleEventFilter() {
+  Shell::Get()->RemovePreTargetHandler(this);
+}
+
+void BubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED)
+    ProcessPressedEvent(*event);
+}
+
+void BubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
+  if (event->type() == ui::ET_TOUCH_PRESSED)
+    ProcessPressedEvent(*event);
+}
+
+void BubbleEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  // TODO(https://crbug.com/1204554): Exclude events during capture mode.
+  // TODO(https://crbug.com/1204554): Exclude accessibility autoclick bubble.
+  // TODO(https://crbug.com/1204554): Exclude events that shouldn't close the
+  // bubble, like tap-typing on virtual keyboard.
+
+  gfx::Point event_location = event.target()
+                                  ? event.target()->GetScreenLocation(event)
+                                  : event.root_location();
+  // Ignore clicks inside the widget.
+  if (widget_->GetWindowBoundsInScreen().Contains(event_location))
+    return;
+
+  // Ignore clicks inside the button (which usually spawned the widget).
+  if (button_->GetBoundsInScreen().Contains(event_location))
+    return;
+
+  on_click_outside_.Run();
+}
+
+}  // namespace ash

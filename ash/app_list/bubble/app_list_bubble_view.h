@@ -8,12 +8,17 @@
 #include "ash/ash_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ash {
 
 // Contains the views for the bubble version of the launcher.
 class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView {
  public:
-  AppListBubbleView();
+  // Creates the bubble on the display for `root_window`.
+  explicit AppListBubbleView(aura::Window* root_window);
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
