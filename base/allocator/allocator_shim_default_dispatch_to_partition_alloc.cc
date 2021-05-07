@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+
+#include <atomic>
 #include <cstddef>
 
 #include "base/allocator/allocator_shim_internals.h"
@@ -29,59 +31,61 @@ using base::allocator::AllocatorDispatch;
 
 namespace {
 
-// We would usually make g_root a static local variable, as these are guaranteed
-// to be thread-safe in C++11. However this does not work on Windows, as the
-// initialization calls into the runtime, which is not prepared to handle it.
+std::atomic<bool> g_initialization_lock{false};
+
+// We can't use a "static local" or a base::LazyInstance, as:
+// - static local variables call into the runtime on Windows, which is not
+//   prepared to handle it, as the first allocation happens during CRT init.
+// - We don't want to depend on base::LazyInstance, which may be converted to
+//   static locals one day.
 //
-// To sidestep that, we implement our own equivalent to a local `static
-// base::NoDestructor<base::ThreadSafePartitionRoot> root`.
-//
-// The ingredients are:
-// - Placement new to avoid a static constructor, and a static destructor.
-// - Double-checked locking to get the same guarantees as a static local
-//   variable.
+// Nevertheless, this provides essentially the same thing.
+template <typename T, typename Constructor>
+class LeakySingleton {
+ public:
+  constexpr LeakySingleton() = default;
 
-// Lock for double-checked locking.
-std::atomic<bool> g_initialization_lock;
-std::atomic<base::ThreadSafePartitionRoot*> g_root_;
-// Buffer for placement new.
-alignas(base::ThreadSafePartitionRoot) uint8_t
-    g_allocator_buffer[sizeof(base::ThreadSafePartitionRoot)];
+  ALWAYS_INLINE T* Get() {
+    auto* instance = instance_.load(std::memory_order_acquire);
+    if (LIKELY(instance))
+      return instance;
 
-// Original g_root_ if it was replaced by ConfigurePartitionRefCountSupport().
-std::atomic<base::ThreadSafePartitionRoot*> g_original_root_(nullptr);
+    return GetSlowPath();
+  }
 
-base::ThreadSafePartitionRoot* Allocator() {
-  // Double-checked locking.
+  // Replaces the instance pointer with a new one.
+  void Replace(T* new_instance) {
+    instance_.store(new_instance, std::memory_order_release);
+  }
+
+ private:
+  T* GetSlowPath();
+
+  std::atomic<T*> instance_;
+  alignas(T) uint8_t instance_buffer_[sizeof(T)];
+};
+
+template <typename T, typename Constructor>
+T* LeakySingleton<T, Constructor>::GetSlowPath() {
+  // The instance has not been set, the proper way to proceed (correct
+  // double-checked locking) is:
   //
-  // The proper way to proceed is:
-  //
-  // auto* root = load_acquire(g_root);
-  // if (!root) {
+  // auto* instance = instance_.load(std::memory_order_acquire);
+  // if (!instance) {
   //   ScopedLock initialization_lock;
-  //   root = load_relaxed(g_root);
+  //   root = instance_.load(std::memory_order_relaxed);
   //   if (root)
   //     return root;
-  //   new_root = Create new root.
-  //   release_store(g_root, new_root);
+  //   instance = Create new root;
+  //   instance_.store(instance, std::memory_order_release);
+  //   return instance;
   // }
   //
-  // We don't want to use a base::Lock here, so instead we use the
-  // compare-and-exchange on a lock variable, but this provides the same
-  // guarantees as a regular lock. The code could be made simpler as we have
-  // stricter requirements, but we stick to something close to a regular lock
-  // for ease of reading, as none of this is performance-critical anyway.
+  // However, we don't want to use a base::Lock here, so instead we use
+  // compare-and-exchange on a lock variable, which provides the same
+  // guarantees.
   //
-  // If we boldly assume that initialization will always be single-threaded,
-  // then we could remove all these atomic operations, but this seems a bit too
-  // bold to try yet. Might be worth revisiting though, since this would remove
-  // a memory barrier at each load. We could probably guarantee single-threaded
-  // init by adding a static constructor which allocates (and hence triggers
-  // initialization before any other thread is created).
-  auto* root = g_root_.load(std::memory_order_acquire);
-  if (LIKELY(root))
-    return root;
-
+  // Lock.
   bool expected = false;
   // Semantically equivalent to base::Lock::Acquire().
   while (!g_initialization_lock.compare_exchange_strong(
@@ -89,60 +93,107 @@ base::ThreadSafePartitionRoot* Allocator() {
     expected = false;
   }
 
-  root = g_root_.load(std::memory_order_relaxed);
+  T* instance = instance_.load(std::memory_order_relaxed);
   // Someone beat us.
-  if (root) {
-    // Semantically equivalent to base::Lock::Release().
+  if (instance) {
+    // Unlock.
     g_initialization_lock.store(false, std::memory_order_release);
-    return root;
+    return instance;
   }
 
-  auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot({
+  instance = Constructor::New(reinterpret_cast<void*>(instance_buffer_));
+  instance_.store(instance, std::memory_order_release);
+
+  // Unlock.
+  g_initialization_lock.store(false, std::memory_order_release);
+
+  return instance;
+}
+
+class MainPartitionConstructor {
+ public:
+  static base::ThreadSafePartitionRoot* New(void* buffer) {
+    auto* new_root = new (buffer) base::ThreadSafePartitionRoot({
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
+      base::PartitionOptions::AlignedAlloc::kDisallowed,
 #else
-    base::PartitionOptions::AlignedAlloc::kAllowed,
+      base::PartitionOptions::AlignedAlloc::kAllowed,
 #endif
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-        base::PartitionOptions::ThreadCache::kEnabled,
+          base::PartitionOptions::ThreadCache::kEnabled,
 #elif BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-        // With ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, if GigaCage is enabled,
-        // this partition is only temporary until BackupRefPtr is re-configured
-        // at run-time. Leave the ability to have a thread cache to the main
-        // partition. (Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies
-        // that USE_BACKUP_REF_PTR is true.)
-        //
-        // Note that it is ok to use RefCount::kEnabled below regardless of the
-        // GigaCage check, because the constructor will disable ref-count if
-        // GigaCage is disabled.
-        base::features::IsPartitionAllocGigaCageEnabled()
-            ? base::PartitionOptions::ThreadCache::kDisabled
-            : base::PartitionOptions::ThreadCache::kEnabled,
+          // With ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, if GigaCage is enabled,
+          // this partition is only temporary until BackupRefPtr is
+          // re-configured at run-time. Leave the ability to have a thread cache
+          // to the main partition. (Note that
+          // ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
+          // USE_BACKUP_REF_PTR is true.)
+          //
+          // Note that it is ok to use RefCount::kEnabled below regardless of
+          // the GigaCage check, because the constructor will disable ref-count
+          // if GigaCage is disabled.
+          base::features::IsPartitionAllocGigaCageEnabled()
+              ? base::PartitionOptions::ThreadCache::kDisabled
+              : base::PartitionOptions::ThreadCache::kEnabled,
 #else
-        // Other tests, such as the ThreadCache tests create a thread cache, and
-        // only one is supported at a time.
-        base::PartitionOptions::ThreadCache::kDisabled,
+      // Other tests, such as the ThreadCache tests create a thread cache, and
+      // only one is supported at a time.
+      base::PartitionOptions::ThreadCache::kDisabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-        base::PartitionOptions::Quarantine::kAllowed,
+          base::PartitionOptions::Quarantine::kAllowed,
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
-        base::PartitionOptions::Cookies::kAllowed,
+          base::PartitionOptions::Cookies::kAllowed,
 #else
-        base::PartitionOptions::Cookies::kDisallowed,
+          base::PartitionOptions::Cookies::kDisallowed,
 #endif
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC) || \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        base::PartitionOptions::RefCount::kAllowed,
+          base::PartitionOptions::RefCount::kAllowed,
 #else
-        base::PartitionOptions::RefCount::kDisallowed,
+          base::PartitionOptions::RefCount::kDisallowed,
 #endif
-  });
-  g_root_.store(new_root, std::memory_order_release);
+    });
 
-  // Semantically equivalent to base::Lock::Release().
-  g_initialization_lock.store(false, std::memory_order_release);
-  return new_root;
+    return new_root;
+  }
+};
+
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+class AlignedPartitionConstructor {
+ public:
+  static base::ThreadSafePartitionRoot* New(void* buffer) {
+    // Since the general-purpose allocator uses the thread cache, this one
+    // cannot.
+    auto* new_root =
+        new (buffer) base::ThreadSafePartitionRoot(base::PartitionOptions {
+          base::PartitionOptions::AlignedAlloc::kAllowed,
+              base::PartitionOptions::ThreadCache::kDisabled,
+              base::PartitionOptions::Quarantine::kAllowed,
+              base::PartitionOptions::Cookies::kDisallowed,
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+              // Given the outer #if, this is possible only when DCHECK_IS_ON().
+              base::PartitionOptions::RefCount::kAllowed,
+#else
+            base::PartitionOptions::RefCount::kDisallowed,
+#endif
+        });
+    return new_root;
+  }
+};
+
+LeakySingleton<base::ThreadSafePartitionRoot, AlignedPartitionConstructor>
+    g_aligned_root = {};
+#endif  // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+
+// Original g_root_ if it was replaced by ConfigurePartitionRefCountSupport().
+std::atomic<base::ThreadSafePartitionRoot*> g_original_root_(nullptr);
+
+LeakySingleton<base::ThreadSafePartitionRoot, MainPartitionConstructor> g_root =
+    {};
+base::ThreadSafePartitionRoot* Allocator() {
+  return g_root.Get();
 }
 
 base::ThreadSafePartitionRoot* OriginalAllocator() {
@@ -151,21 +202,7 @@ base::ThreadSafePartitionRoot* OriginalAllocator() {
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
-  // Since the general-purpose allocator uses the thread cache, this one cannot.
-  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
-      base::PartitionOptions {
-        base::PartitionOptions::AlignedAlloc::kAllowed,
-            base::PartitionOptions::ThreadCache::kDisabled,
-            base::PartitionOptions::Quarantine::kAllowed,
-            base::PartitionOptions::Cookies::kDisallowed,
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-            // Given the outer #if, this is possible only when DCHECK_IS_ON().
-            base::PartitionOptions::RefCount::kAllowed,
-#else
-            base::PartitionOptions::RefCount::kDisallowed,
-#endif
-      });
-  return aligned_allocator.get();
+  return g_aligned_root.Get();
 #else   // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
   return Allocator();
 #endif  // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
@@ -424,10 +461,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
   if (!base::features::IsPartitionAllocGigaCageEnabled())
     return;
 
-  auto* current_root = g_root_.load(std::memory_order_acquire);
-  // We expect a number of heap allocations to be made before this function is
-  // called, which should force the `g_root` initialization.
-  PA_CHECK(current_root);
+  auto* current_root = g_root.Get();
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
 
@@ -448,7 +482,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
             enable_ref_count ? base::PartitionOptions::RefCount::kAllowed
                              : base::PartitionOptions::RefCount::kDisallowed,
       });
-  g_root_.store(new_root, std::memory_order_release);
+  g_root.Replace(new_root);
   g_original_root_ = current_root;
 }
 #endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
