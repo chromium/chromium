@@ -66,8 +66,9 @@ v8::Local<v8::Object> CustomWrappableAdapter::CreateAndInitializeWrapper(
     ScriptState* script_state) {
   DCHECK(wrapper_.IsEmpty());
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Object> wrapper_object = V8DOMWrapper::CreateWrapper(
-      isolate, script_state->GetContext()->Global(), &custom_wrappable_info);
+  v8::Local<v8::Object> wrapper_object =
+      V8DOMWrapper::CreateWrapper(script_state, &custom_wrappable_info)
+          .ToLocalChecked();
   V8DOMWrapper::AssociateObjectWithWrapper(
       isolate, this, &custom_wrappable_info, wrapper_object);
   wrapper_.Set(isolate, wrapper_object);

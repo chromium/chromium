@@ -68,7 +68,7 @@ struct V8ReturnValue {
                          ScriptWrappable* wrappable,
                          v8::Local<v8::Context> creation_context) {
     v8::Local<v8::Value> wrapper;
-    if (!wrappable->WrapV2(ScriptState::From(creation_context))
+    if (!wrappable->Wrap(ScriptState::From(creation_context))
              .ToLocal(&wrapper)) {
       return;
     }

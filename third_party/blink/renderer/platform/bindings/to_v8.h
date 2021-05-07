@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TO_V8_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TO_V8_H_
 
+// ToV8() is a legacy API and deprecated. Use ToV8Traits<T>::ToV8() instead.
+// TODO(crbug.com/1172074): Replace this old ToV8 with ToV8Traits.
+
 // ToV8() provides C++ -> V8 conversion. Note that ToV8() can return an empty
 // handle. Call sites must check IsEmpty() before using return value.
 
@@ -39,7 +42,9 @@ inline v8::Local<v8::Value> ToV8(ScriptWrappable* impl,
   if (!wrapper.IsEmpty())
     return wrapper;
 
-  wrapper = impl->Wrap(isolate, creation_context);
+  ScriptState* script_state =
+      ScriptState::From(creation_context->CreationContext());
+  wrapper = impl->Wrap(script_state).ToLocalChecked();
   DCHECK(!wrapper.IsEmpty());
   return wrapper;
 }

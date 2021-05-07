@@ -99,23 +99,7 @@ DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(
   return Create(std::move(contents));
 }
 
-v8::Local<v8::Value> DOMArrayBuffer::Wrap(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> creation_context) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
-
-  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
-
-  v8::Local<v8::ArrayBuffer> wrapper;
-  {
-    v8::Context::Scope context_scope(creation_context->CreationContext());
-    wrapper = v8::ArrayBuffer::New(isolate, Content()->BackingStore());
-  }
-
-  return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
-}
-
-v8::MaybeLocal<v8::Value> DOMArrayBuffer::WrapV2(ScriptState* script_state) {
+v8::MaybeLocal<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();

@@ -212,10 +212,7 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperScriptWrappable(
     return wrapper;
   }
 
-  if (!script_wrappable->WrapV2(script_state).ToLocal(&wrapper)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-  return wrapper;
+  return script_wrappable->Wrap(script_state);
 }
 
 // For optimization
@@ -233,10 +230,7 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperScriptWrappable(
   CHECK(!creation_context_object.IsEmpty());
   ScriptState* script_state =
       ScriptState::From(creation_context_object->CreationContext());
-  if (!script_wrappable->WrapV2(script_state).ToLocal(&wrapper)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-  return wrapper;
+  return script_wrappable->Wrap(script_state);
 }
 
 }  // namespace bindings

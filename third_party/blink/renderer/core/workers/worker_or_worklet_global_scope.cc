@@ -214,20 +214,11 @@ const AtomicString& WorkerOrWorkletGlobalScope::InterfaceName() const {
   return g_null_atom;
 }
 
-v8::Local<v8::Value> WorkerOrWorkletGlobalScope::Wrap(
-    v8::Isolate*,
-    v8::Local<v8::Object> creation_context) {
+v8::MaybeLocal<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
   LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
                 "method. The global object of ECMAScript environment is used "
                 "as the wrapper.";
-  return v8::Local<v8::Object>();
-}
-
-v8::MaybeLocal<v8::Value> WorkerOrWorkletGlobalScope::WrapV2(ScriptState*) {
-  LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
-                "method. The global object of ECMAScript environment is used "
-                "as the wrapper.";
-  return v8::MaybeLocal<v8::Value>();
+  return v8::Local<v8::Value>();
 }
 
 v8::Local<v8::Object> WorkerOrWorkletGlobalScope::AssociateWithWrapper(

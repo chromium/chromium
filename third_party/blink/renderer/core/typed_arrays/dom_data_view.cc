@@ -20,27 +20,7 @@ DOMDataView* DOMDataView::Create(DOMArrayBufferBase* buffer,
   return MakeGarbageCollected<DOMDataView>(buffer, byte_offset, byte_length);
 }
 
-v8::Local<v8::Value> DOMDataView::Wrap(v8::Isolate* isolate,
-                                       v8::Local<v8::Object> creation_context) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
-
-  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
-  v8::Local<v8::Value> v8_buffer = ToV8(buffer(), creation_context, isolate);
-  if (v8_buffer.IsEmpty())
-    return v8::Local<v8::Object>();
-  DCHECK(v8_buffer->IsArrayBuffer());
-
-  v8::Local<v8::Object> wrapper;
-  {
-    v8::Context::Scope context_scope(creation_context->CreationContext());
-    wrapper = v8::DataView::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
-                                byteLength());
-  }
-
-  return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
-}
-
-v8::MaybeLocal<v8::Value> DOMDataView::WrapV2(ScriptState* script_state) {
+v8::MaybeLocal<v8::Value> DOMDataView::Wrap(ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
   const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();

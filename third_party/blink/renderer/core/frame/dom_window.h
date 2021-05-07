@@ -67,9 +67,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   virtual bool IsRemoteDOMWindow() const = 0;
 
   // ScriptWrappable overrides:
-  v8::Local<v8::Value> Wrap(v8::Isolate*,
-                            v8::Local<v8::Object> creation_context) final;
-  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) final;
+  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
