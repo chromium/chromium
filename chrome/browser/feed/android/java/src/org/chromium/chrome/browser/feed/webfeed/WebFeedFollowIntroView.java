@@ -25,6 +25,9 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * Manages the view of the WebFeed follow intro.
+ *
+ * This is the chip that shows up under the 3-dot menu informing users that this is a page
+ * they can follow.
  */
 class WebFeedFollowIntroView {
     private static final int sAcceleratorTimeout = 10 * 1000; // 10 seconds
@@ -100,8 +103,8 @@ class WebFeedFollowIntroView {
 
     private ViewRectProvider createRectProvider() {
         ViewRectProvider rectProvider = new ViewRectProvider(mMenuButtonAnchorView);
-        int yInsetPx = mActivity.getResources().getDimensionPixelOffset(
-                R.dimen.iph_text_bubble_menu_anchor_y_inset);
+        int yInsetPx =
+                mActivity.getResources().getDimensionPixelOffset(R.dimen.web_feed_intro_y_inset);
         Rect insetRect = new Rect(0, 0, 0, yInsetPx);
         rectProvider.setInsetPx(insetRect);
 

@@ -16,4 +16,7 @@
     <dimen name="web_feed_dialog_details_padding_top">16dp</dimen>
     <dimen name="web_feed_dialog_details_padding_bottom">8dp</dimen>
     <dimen name="web_feed_dialog_text_horizontal_padding">16dp</dimen>
+
+    <!-- Intro accelerator dimens. -->
+    <dimen name="web_feed_intro_y_inset">17dp</dimen>
 </resources>
