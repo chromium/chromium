@@ -508,12 +508,6 @@ const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
   return webview_->GetRendererPreferences();
 }
 
-void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
-#if defined(OS_ANDROID)
-  SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);
-#endif
-}
-
 void RenderViewImpl::OnPageFrozenChanged(bool frozen) {
   if (frozen) {
     // Make sure browser has the latest info before the page is frozen. If the
@@ -553,22 +547,5 @@ void RenderViewImpl::DidUpdateRendererPreferences() {
       renderer_prefs.arrow_bitmap_width_horizontal_scroll_bar_in_dips);
 #endif
 }
-
-#if defined(OS_ANDROID)
-void RenderViewImpl::SuspendVideoCaptureDevices(bool suspend) {
-  if (!main_render_frame_)
-    return;
-
-  blink::WebMediaStreamDeviceObserver* media_stream_device_observer =
-      main_render_frame_->MediaStreamDeviceObserver();
-  if (!media_stream_device_observer)
-    return;
-
-  blink::MediaStreamDevices video_devices =
-      media_stream_device_observer->GetNonScreenCaptureDevices();
-  RenderThreadImpl::current()->video_capture_impl_manager()->SuspendDevices(
-      video_devices, suspend);
-}
-#endif  // defined(OS_ANDROID)
 
 }  // namespace content

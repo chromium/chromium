@@ -61,7 +61,6 @@ struct WebWindowFeatures;
 namespace content {
 class AgentSchedulingGroup;
 class RenderViewImplTest;
-class RenderViewObserver;
 class RenderViewTest;
 
 namespace mojom {
@@ -122,10 +121,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   CompositorDependencies* compositor_deps() const { return compositor_deps_; }
 
-  // Functions to add and remove observers for this object.
-  void AddObserver(RenderViewObserver* observer);
-  void RemoveObserver(RenderViewObserver* observer);
-
   // Passes along the page zoom to the WebView to set it on a newly attached
   // LocalFrame.
   void PropagatePageZoomToNewlyAttachedFrame(bool use_zoom_for_dsf,
@@ -160,7 +155,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
-  void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void DidUpdateRendererPreferences() override;
 
@@ -207,13 +201,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       blink::WebNavigationPolicy policy);
 
   // Misc private functions ----------------------------------------------------
-
-#if defined(OS_ANDROID)
-  // Make the video capture devices (e.g. webcam) stop/resume delivering video
-  // frames to their clients, depending on flag |suspend|. This is called in
-  // response to a RenderView PageHidden/Shown().
-  void SuspendVideoCaptureDevices(bool suspend);
-#endif
 
   // In OOPIF-enabled modes, this tells each RenderFrame with a pending state
   // update to inform the browser process.
@@ -286,12 +273,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // Whether this was a renderer-created or browser-created RenderView.
   bool was_created_by_renderer_ = false;
 #endif
-
-  // Misc ----------------------------------------------------------------------
-
-  // All the registered observers.  We expect this list to be small, so vector
-  // is fine.
-  base::ObserverList<RenderViewObserver>::Unchecked observers_;
 
   // ---------------------------------------------------------------------------
   // ADDING NEW DATA? Please see if it fits appropriately in one of the above

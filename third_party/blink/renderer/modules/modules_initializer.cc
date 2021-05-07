@@ -104,10 +104,58 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if defined(OS_ANDROID)
+#include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
 #endif
 
 namespace blink {
+
+#if defined(OS_ANDROID)
+namespace {
+
+class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
+                               public Supplement<Page>,
+                               public PageVisibilityObserver {
+ public:
+  static const char kSupplementName[];
+
+  explicit SuspendCaptureObserver(Page& page)
+      : Supplement<Page>(page), PageVisibilityObserver(&page) {}
+
+  // PageVisibilityObserver overrides:
+  void PageVisibilityChanged() override {
+    // TODO(crbug.com/487935): We don't yet suspend video capture devices for
+    // OOPIFs.
+    WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(
+        DynamicTo<LocalFrame>(GetPage()->MainFrame()));
+    if (!frame)
+      return;
+    WebMediaStreamDeviceObserver* media_stream_device_observer =
+        frame->Client()->MediaStreamDeviceObserver();
+    if (!media_stream_device_observer)
+      return;
+
+    bool suspend = !GetPage()->IsPageVisible();
+    MediaStreamDevices video_devices =
+        media_stream_device_observer->GetNonScreenCaptureDevices();
+    Platform::Current()->GetVideoCaptureImplManager()->SuspendDevices(
+        video_devices, suspend);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    Supplement<Page>::Trace(visitor);
+    PageVisibilityObserver::Trace(visitor);
+  }
+};
+
+const char SuspendCaptureObserver::kSupplementName[] = "SuspendCaptureObserver";
+
+}  // namespace
+
+#endif  // OS_ANDROID
 
 void ModulesInitializer::Initialize() {
   // Strings must be initialized before calling CoreInitializer::init().
@@ -293,6 +341,9 @@ void ModulesInitializer::ProvideModulesToPage(
                                    MakeGarbageCollected<DatabaseClient>());
   StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
+#if defined(OS_ANDROID)
+  page.ProvideSupplement(MakeGarbageCollected<SuspendCaptureObserver>(page));
+#endif  // OS_ANDROID
 }
 
 void ModulesInitializer::ForceNextWebGLContextCreationToFail() const {

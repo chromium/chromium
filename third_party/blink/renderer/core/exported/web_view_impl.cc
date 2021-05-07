@@ -3525,7 +3525,6 @@ void WebViewImpl::SetVisibilityState(
   DCHECK(GetPage());
   if (!is_initial_state) {
     // Preserve the side effects of visibility change.
-    web_view_client_->OnPageVisibilityChanged(visibility_state);
     for (auto& observer : observers_)
       observer.OnPageVisibilityChanged(visibility_state);
   }

@@ -94,8 +94,6 @@ class WebViewClient {
   // should be printed.
   virtual void PrintPage(WebLocalFrame*) {}
 
-  virtual void OnPageVisibilityChanged(mojom::PageVisibilityState visibility) {}
-
   virtual void OnPageFrozenChanged(bool frozen) {}
 
   virtual void DidUpdateRendererPreferences() {}
