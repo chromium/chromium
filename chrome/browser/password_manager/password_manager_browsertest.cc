@@ -71,6 +71,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -4099,7 +4100,6 @@ class PasswordManagerBrowserTestWithSigninInterception
   PasswordManagerSigninInterceptTestHelper helper_;
 };
 
-
 // Checks that password update suppresses signin interception.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        InterceptionBubbleSuppressedByPasswordUpdate) {
@@ -4231,5 +4231,91 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 }
 #endif  // ENABLE_DICE_SUPPORT
 
+class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
+ public:
+  PasswordManagerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PasswordManagerPrerenderBrowserTest::WebContents,
+            base::Unretained(this))) {}
+  ~PasswordManagerPrerenderBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+
+    // Register requests handler before the server is started.
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleTestAuthRequest));
+
+    PasswordManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that the prerender doesn't proceed HTTP auth login and once the page
+// is loaded as the primary page the prompt is shown. As the page is
+// not loaded from the prerender, it also checks if it's not activated from the
+// prerender.
+IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
+                       ChromePasswordManagerClientInPrerender) {
+  content::NavigationController* nav_controller =
+      &WebContents()->GetController();
+  LoginPromptBrowserTestObserver login_observer;
+  login_observer.Register(
+      content::Source<content::NavigationController>(nav_controller));
+
+  GURL url = embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *WebContents());
+  auto prerender_url = embedded_test_server()->GetURL("/basic_auth");
+
+  // Loads a page requiring HTTP auth in the prerender.
+  prerender_helper()->AddPrerenderAsync(prerender_url);
+
+  // Ensure that the prerender has started.
+  registry_observer.WaitForTrigger(prerender_url);
+  auto prerender_id = prerender_helper()->GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::test::PrerenderHostObserver host_observer(*WebContents(),
+                                                     prerender_id);
+  // PrerenderHost is destroyed by net::INVALID_AUTH_CREDENTIALS and it stops
+  // prerendering.
+  host_observer.WaitForDestroyed();
+
+  BubbleObserver bubble_observer(WebContents());
+  EXPECT_FALSE(bubble_observer.IsSavePromptShownAutomatically());
+
+  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  auth_needed_observer.Wait();
+
+  NavigationObserver nav_observer(WebContents());
+  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
+  // Offer valid credentials on the auth challenge.
+  EXPECT_EQ(1u, login_observer.handlers().size());
+  LoginHandler* handler = *login_observer.handlers().begin();
+  EXPECT_TRUE(handler);
+  // Any username/password will work.
+  handler->SetAuth(u"user", u"pwd");
+  auth_supplied_observer.Wait();
+
+  // The password manager should be working correctly.
+  nav_observer.Wait();
+  WaitForPasswordStore();
+  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+
+  // Make sure that the prerender was not activated.
+  EXPECT_FALSE(host_observer.was_activated());
+}
+
 }  // namespace
+
 }  // namespace password_manager
