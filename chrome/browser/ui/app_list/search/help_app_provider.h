@@ -41,7 +41,10 @@ namespace app_list {
 class HelpAppResult : public ChromeSearchResult {
  public:
   // Constructor for the What's new chip.
-  HelpAppResult(Profile* profile, const gfx::ImageSkia& icon);
+  HelpAppResult(Profile* profile,
+                const std::string& id,
+                const std::u16string& title,
+                const gfx::ImageSkia& icon);
   // Constructor for a list result.
   HelpAppResult(const float& relevance,
                 Profile* profile,

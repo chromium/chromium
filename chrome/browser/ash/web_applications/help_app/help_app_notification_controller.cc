@@ -56,6 +56,8 @@ void HelpAppNotificationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDiscoverTabNotificationLastShownMilestone, -10);
+  registry->RegisterIntegerPref(
+      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
 }
 
 HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
@@ -73,6 +75,10 @@ void HelpAppNotificationController::MaybeShowNotification() {
     // Update milestone when notification is shown.
     profile_->GetPrefs()->SetInteger(
         prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
+    // When this notification has been shown, start showing the Discover tab
+    // suggestion chip in the launcher.
+    profile_->GetPrefs()->SetInteger(
+        prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
   } else if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ash::ReleaseNotesNotification>(profile_);

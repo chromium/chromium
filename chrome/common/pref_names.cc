@@ -955,6 +955,11 @@ const char kReleaseNotesSuggestionChipTimesLeftToShow[] =
 const char kDiscoverTabNotificationLastShownMilestone[] =
     "discover_tab_notification_last_shown_milestone";
 
+// Amount of times the discover tab suggestion chip should be shown before it
+// disappears.
+const char kDiscoverTabSuggestionChipTimesLeftToShow[] =
+    "times_left_to_show_discover_tab_suggestion_chip";
+
 // Boolean pref indicating whether the NTLM authentication protocol should be
 // enabled when mounting an SMB share with a user credential by the Network File
 // Shares for Chrome OS feature.

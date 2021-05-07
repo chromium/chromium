@@ -58,7 +58,9 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
 
   AppListSearchBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppLauncherSearch}, {});
+        {chromeos::features::kHelpAppLauncherSearch,
+         chromeos::features::kHelpAppDiscoverTab},
+        {});
   }
   ~AppListSearchBrowserTest() override = default;
 
@@ -160,6 +162,47 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
       "some query", {ResultType::kInstalledApp, ResultType::kFileSearch});
 }
 
+// Test that clicking the Discover tab suggestion chip launches the Help app on
+// the Discover page.
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
+                       ClickingDiscoverTabSuggestionChipLaunchesHelpApp) {
+  web_app::WebAppProvider::Get(GetProfile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
+
+  SearchAndWaitForProviders("", {ResultType::kHelpApp});
+
+  ChromeSearchResult* result = FindResult("help-app://discover");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Build a game");
+
+  // Open the search result. This should open the help app at the expected url.
+  size_t num_browsers = chrome::GetTotalBrowserCount();
+  const GURL expected_url("chrome://help-app/discover");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  GetClient()->OpenSearchResult(
+      result->id(), /*event_flags=*/0,
+      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
+      /*launch_as_default=*/false);
+
+  navigation_observer.Wait();
+
+  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, chrome::FindLastActive()
+                              ->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetVisibleURL());
+
+  // Clicking on the chip should stop showing it in the future.
+  EXPECT_EQ(0, GetProfile()->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+}
+
 // Test that Help App shows up as Release notes if pref shows we have some times
 // left to show it.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
@@ -198,6 +241,46 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
   EXPECT_EQ(times_left_to_show, 2);
+}
+
+// Test that clicking the Release Notes suggestion chip launches the Help app on
+// the What's New page.
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
+                       ClickingReleaseNotesSuggestionChipLaunchesHelpApp) {
+  web_app::WebAppProvider::Get(GetProfile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
+
+  SearchAndWaitForProviders("", {ResultType::kHelpApp});
+
+  ChromeSearchResult* result = FindResult("help-app://updates");
+
+  // Open the search result. This should open the help app at the expected url.
+  size_t num_browsers = chrome::GetTotalBrowserCount();
+  const GURL expected_url("chrome://help-app/updates");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  GetClient()->OpenSearchResult(
+      result->id(), /*event_flags=*/0,
+      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
+      /*launch_as_default=*/false);
+
+  navigation_observer.Wait();
+
+  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, chrome::FindLastActive()
+                              ->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetVisibleURL());
+
+  // Clicking on the chip should stop showing it in the future.
+  const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
+      prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+  EXPECT_EQ(times_left_to_show, 0);
 }
 
 // Test that the help app provider provides list search results.

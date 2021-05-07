@@ -328,6 +328,7 @@ extern const char kLastChildScreenTimeReset[];
 extern const char kReleaseNotesLastShownMilestone[];
 extern const char kReleaseNotesSuggestionChipTimesLeftToShow[];
 extern const char kDiscoverTabNotificationLastShownMilestone[];
+extern const char kDiscoverTabSuggestionChipTimesLeftToShow[];
 extern const char kNTLMShareAuthenticationEnabled[];
 extern const char kNetworkFileSharesPreconfiguredShares[];
 extern const char kMostRecentlyUsedNetworkFileShareURL[];

@@ -242,4 +242,46 @@ TEST_F(HelpAppNotificationControllerTest,
   EXPECT_EQ(false, HasReleaseNotesNotification());
 }
 
+// Tests for suggestion chips.
+TEST_F(HelpAppNotificationControllerTest,
+       UpdatesReleaseNotesChipPrefWhenReleaseNotesNotificationShown) {
+  std::unique_ptr<Profile> profile = CreateRegularProfile();
+  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+
+  controller->MaybeShowNotification();
+
+  EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       UpdatesDiscoverTabChipPrefWhenDiscoverTabNotificationShown) {
+  std::unique_ptr<Profile> profile = CreateChildProfile();
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+
+  controller->MaybeShowNotification();
+
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+  EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+}
+
 }  // namespace chromeos
