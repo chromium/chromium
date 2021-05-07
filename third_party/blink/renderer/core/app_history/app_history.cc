@@ -204,6 +204,13 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
                                    const String& url,
                                    AppHistoryNavigateOptions* options,
                                    ExceptionState& exception_state) {
+  if (!GetSupplementable()->GetFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "navigate() may not be called in a "
+                                      "detached window");
+    return ScriptPromise();
+  }
+
   KURL completed_url(GetSupplementable()->Url(), url);
   if (!completed_url.IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
@@ -232,10 +239,9 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
   // bypassing ScriptPromiseResolver and managing our own v8::Promise::Resolver,
   // special case detach here.
   if (!GetSupplementable()->GetFrame()) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "Navigation was aborted"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      "Navigation was aborted");
+    return ScriptPromise();
   }
   return navigate_method_call_promise_resolver_->Promise();
 }
