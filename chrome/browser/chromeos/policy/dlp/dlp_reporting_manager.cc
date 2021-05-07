@@ -53,25 +53,61 @@ DlpPolicyEvent_Restriction DlpRulesManagerRestriction2DlpEventRestriction(
   }
 }
 
-DlpPolicyEvent* CreateDlpPolicyEvent(const std::string& src_pattern,
-                                     DlpRulesManager::Level level,
-                                     DlpRulesManager::Restriction restriction) {
-  DlpPolicyEvent* event = new DlpPolicyEvent();
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  DlpPolicyEvent event;
 
-  DlpPolicyEventSource* event_source = new DlpPolicyEventSource();
+  DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
   event_source->set_url(src_pattern);
-  event->set_allocated_source(event_source);
+  event.set_allocated_source(event_source);
 
-  // TODO(1187479, marcgrimme): add proper destination as soon as available
-  // DlpPolicyEventDestination* event_destination = new
-  // DlpPolicyEventDestination();
-  // event_destination->set_component(DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
-  // event->set_allocated_destination(event_destination);
-
-  event->set_restriction(
+  event.set_restriction(
       DlpRulesManagerRestriction2DlpEventRestriction(restriction));
-  event->set_mode(DlpRulesManagerLevel2DlpEventMode(level));
-  event->set_timestamp(base::Time::Now().ToTimeT());
+  event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
+  event.set_timestamp(base::Time::Now().ToTimeT());
+
+  return event;
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    const std::string& dst_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
+
+  DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
+  event_destination->set_url(src_pattern);
+  event.set_allocated_destination(event_destination);
+
+  return event;
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Component dst_component,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
+
+  DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
+  switch (dst_component) {
+    case (DlpRulesManager::Component::kArc):
+      event_destination->set_component(DlpPolicyEventDestination_Component_ARC);
+      break;
+    case (DlpRulesManager::Component::kCrostini):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_CROSTINI);
+      break;
+    case (DlpRulesManager::Component::kPluginVm):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_PLUGIN_VM);
+      break;
+    case (DlpRulesManager::Component::kUnknownComponent):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
+      break;
+  }
+  event.set_allocated_destination(event_destination);
 
   return event;
 }
@@ -95,6 +131,38 @@ void DlpReportingManager::SetReportQueue(
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
                                       DlpRulesManager::Restriction restriction,
                                       DlpRulesManager::Level level) const {
+  auto event = CreateDlpPolicyEvent(
+      src_pattern, DlpRulesManager::Restriction::kPrinting, level);
+  ReportEvent(std::move(event));
+}
+
+void DlpReportingManager::ReportEvent(const std::string& src_pattern,
+                                      const std::string& dst_pattern,
+                                      DlpRulesManager::Restriction restriction,
+                                      DlpRulesManager::Level level) const {
+  auto event =
+      CreateDlpPolicyEvent(src_pattern, dst_pattern, restriction, level);
+  ReportEvent(std::move(event));
+}
+
+void DlpReportingManager::ReportEvent(
+    const std::string& src_pattern,
+    const DlpRulesManager::Component dst_component,
+    DlpRulesManager::Restriction restriction,
+    DlpRulesManager::Level level) const {
+  auto event =
+      CreateDlpPolicyEvent(src_pattern, dst_component, restriction, level);
+  ReportEvent(std::move(event));
+}
+
+void DlpReportingManager::OnEventEnqueued(reporting::Status status) const {
+  if (!status.ok()) {
+    VLOG(1) << "Could not enqueue event to DLP reporting queue because of "
+            << status;
+  }
+}
+
+void DlpReportingManager::ReportEvent(DlpPolicyEvent event) const {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
   if (!report_queue_.get()) {
@@ -104,14 +172,8 @@ void DlpReportingManager::ReportEvent(const std::string& src_pattern,
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
-  report_queue_->Enqueue(CreateDlpPolicyEvent(src_pattern, level, restriction),
-                         reporting::Priority::IMMEDIATE, std::move(callback));
+  report_queue_->Enqueue(&event, reporting::Priority::IMMEDIATE,
+                         std::move(callback));
 }
 
-void DlpReportingManager::OnEventEnqueued(reporting::Status status) const {
-  if (!status.ok()) {
-    VLOG(1) << "Could not enqueue event to DLP reporting queue because of "
-            << status;
-  }
-}
 }  // namespace policy

@@ -45,9 +45,9 @@ Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
 
 DlpPolicyEvent CreatePrintingRestrictedDlpEvent(
     const std::string& src_pattern) {
-  return *policy::CreateDlpPolicyEvent(
-      src_pattern, policy::DlpRulesManager::Level::kBlock,
-      policy::DlpRulesManager::Restriction::kPrinting);
+  return policy::CreateDlpPolicyEvent(
+      src_pattern, policy::DlpRulesManager::Restriction::kPrinting,
+      policy::DlpRulesManager::Level::kBlock);
 }
 
 void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,

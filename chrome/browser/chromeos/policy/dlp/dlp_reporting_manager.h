@@ -16,9 +16,17 @@ class DlpPolicyEvent;
 namespace policy {
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
-DlpPolicyEvent* CreateDlpPolicyEvent(const std::string& src_pattern,
-                                     DlpRulesManager::Level level,
-                                     DlpRulesManager::Restriction restriction);
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level);
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    const std::string& dst_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level);
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Component dst_component,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level);
 
 // DlpReportingManger controls the coordination and setup towards the reporting
 // pipeline so that other areas of the DLP functionality don't need to know
@@ -40,6 +48,14 @@ class DlpReportingManager {
   void ReportEvent(const std::string& src_pattern,
                    DlpRulesManager::Restriction restriction,
                    DlpRulesManager::Level level) const;
+  void ReportEvent(const std::string& src_pattern,
+                   const std::string& dst_pattern,
+                   DlpRulesManager::Restriction restriction,
+                   DlpRulesManager::Level level) const;
+  void ReportEvent(const std::string& src_pattern,
+                   DlpRulesManager::Component dst_component,
+                   DlpRulesManager::Restriction restriction,
+                   DlpRulesManager::Level level) const;
 
   ReportQueueSetterCallback GetReportQueueSetter();
 
@@ -49,6 +65,8 @@ class DlpReportingManager {
   void SetReportQueue(std::unique_ptr<reporting::ReportQueue> report_queue);
 
   void OnEventEnqueued(reporting::Status status) const;
+
+  void ReportEvent(DlpPolicyEvent event) const;
 
   std::unique_ptr<reporting::ReportQueue> report_queue_;
 
