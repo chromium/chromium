@@ -356,6 +356,9 @@ Additional details:
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
     Last fetched:
   </message>
+  <message name="IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP" desc="Label for the time when the last cloud report is sent successfully.">
+    Report sent:
+  </message>
   <message name="IDS_POLICY_NOT_SPECIFIED" desc="Indicates if that device attribute has not specified yet.">
     Not Specified
   </message>

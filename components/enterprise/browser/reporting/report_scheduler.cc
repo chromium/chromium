@@ -254,6 +254,9 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
 
       if (IsExtensionRequestUploaded(active_trigger_))
         delegate_->OnExtensionRequestUploaded();
+
+      delegate_->GetLocalState()->SetTime(kLastUploadSucceededTimestamp,
+                                          base::Time::Now());
       FALLTHROUGH;
     case ReportUploader::kTransientError:
       // Stop retrying and schedule the next report to avoid stale report.

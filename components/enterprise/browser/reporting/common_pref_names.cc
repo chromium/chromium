@@ -17,4 +17,8 @@ const char kCloudReportingEnabled[] =
 const char kLastUploadTimestamp[] =
     "enterprise_reporting.last_upload_timestamp";
 
+// The timestamp of the last enterprise report upload is succeeded.
+const char kLastUploadSucceededTimestamp[] =
+    "enterprise_reporting.last_upload_succeeded_timestamp";
+
 }  // namespace enterprise_reporting

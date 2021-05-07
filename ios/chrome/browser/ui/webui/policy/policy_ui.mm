@@ -74,6 +74,9 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"statusDevice", IDS_POLICY_STATUS_DEVICE},
       {"statusMachine", IDS_POLICY_STATUS_MACHINE},
       {"statusUser", IDS_POLICY_STATUS_USER},
+      {"labelLastCloudReportSentTimestamp",
+       IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
+
   };
   source->AddLocalizedStrings(kStrings);
   source->UseStringsJs();

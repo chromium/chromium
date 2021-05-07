@@ -25,6 +25,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // the migration.
   registry->RegisterBooleanPref(kCloudReportingEnabled, false);
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
+  registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterStringPref(kLastUploadVersion, std::string());
 }
 

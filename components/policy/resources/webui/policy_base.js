@@ -199,6 +199,13 @@ StatusBox.prototype = {
               status.policiesPushAvailable ? 'policiesPushOn' :
                                              'policiesPushOff'));
     }
+
+    if (status.lastCloudReportSentTimestamp) {
+      this.setLabelAndShow_(
+          '.last-cloud-report-sent-timestamp',
+          status.lastCloudReportSentTimestamp + ' (' +
+              status.timeSinceLastCloudReportSent + ')');
+    }
   },
 };
 

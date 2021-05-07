@@ -32,6 +32,7 @@
 #endif
 
 class PolicyStatusProvider;
+class PrefChangeRegistrar;
 struct GoogleUpdatePoliciesAndState;
 
 namespace policy {
@@ -136,6 +137,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<policy::PolicyMap> updater_policies_;
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 

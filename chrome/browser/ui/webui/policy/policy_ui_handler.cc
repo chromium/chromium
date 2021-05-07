@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +44,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -67,6 +69,8 @@
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -358,7 +362,8 @@ class MachineLevelUserCloudPolicyStatusProvider
       public policy::CloudPolicyStore::Observer {
  public:
   explicit MachineLevelUserCloudPolicyStatusProvider(
-      policy::CloudPolicyCore* core);
+      policy::CloudPolicyCore* core,
+      PrefService* pref_service);
   ~MachineLevelUserCloudPolicyStatusProvider() override;
 
   void GetStatus(base::DictionaryValue* dict) override;
@@ -369,6 +374,7 @@ class MachineLevelUserCloudPolicyStatusProvider
 
  private:
   policy::CloudPolicyCore* core_;
+  PrefService* pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStatusProvider);
 };
@@ -561,8 +567,9 @@ void UserCloudPolicyStatusProviderChromeOS::GetStatus(
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 MachineLevelUserCloudPolicyStatusProvider::
-    MachineLevelUserCloudPolicyStatusProvider(policy::CloudPolicyCore* core)
-    : core_(core) {
+    MachineLevelUserCloudPolicyStatusProvider(policy::CloudPolicyCore* core,
+                                              PrefService* pref_service)
+    : core_(core), pref_service_(pref_service) {
   if (core_->store())
     core_->store()->AddObserver(this);
 }
@@ -616,6 +623,16 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
     }
   }
   dict->SetString("machine", policy::GetMachineName());
+
+  if (pref_service_->HasPrefPath(
+          enterprise_reporting::kLastUploadSucceededTimestamp)) {
+    auto sent_time = pref_service_->GetTime(
+        enterprise_reporting::kLastUploadSucceededTimestamp);
+    dict->SetString("lastCloudReportSentTimestamp",
+                    base::TimeFormatShortDateAndTimeWithTimeZone(sent_time));
+    dict->SetString("timeSinceLastCloudReportSent",
+                    GetTimeSinceLastRefreshString(sent_time));
+  }
 }
 
 void MachineLevelUserCloudPolicyStatusProvider::OnStoreLoaded(
@@ -930,7 +947,7 @@ void PolicyUIHandler::RegisterMessages() {
   if (manager) {
     machine_status_provider_ =
         std::make_unique<MachineLevelUserCloudPolicyStatusProvider>(
-            manager->core());
+            manager->core(), g_browser_process->local_state());
   }
 #endif  // !defined(OS_ANDROID)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -954,6 +971,12 @@ void PolicyUIHandler::RegisterMessages() {
   device_status_provider_->SetStatusChangeCallback(update_callback);
   machine_status_provider_->SetStatusChangeCallback(update_callback);
   updater_status_provider_->SetStatusChangeCallback(update_callback);
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(g_browser_process->local_state());
+  pref_change_registrar_->Add(
+      enterprise_reporting::kLastUploadSucceededTimestamp, update_callback);
+
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
 

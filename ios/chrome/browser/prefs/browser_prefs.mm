@@ -166,6 +166,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
                              base::Time());
+  registry->RegisterTimePref(
+      enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
 
   registry->RegisterIntegerPref(kOmniboxGeolocationAuthorizationState, 0);
   registry->RegisterStringPref(kOmniboxGeolocationLastAuthorizationAlertVersion,

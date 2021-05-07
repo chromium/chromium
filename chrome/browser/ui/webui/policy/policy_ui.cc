@@ -72,6 +72,8 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"statusUpdater", IDS_POLICY_STATUS_UPDATER},
 #endif
     {"statusUser", IDS_POLICY_STATUS_USER},
+    {"labelLastCloudReportSentTimestamp",
+     IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
   };
   source->AddLocalizedStrings(kStrings);
 
