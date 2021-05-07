@@ -1,0 +1,17 @@
+Name: Cross-Platform Mach Interface Generator (mig)
+URL: https://github.com/markmentovai/bootstrap_cmds
+Version: 121
+Revision: 1146f2bf0e78b3a4855fb556cc08d83568d28a4a
+License: APPLE PUBLIC SOURCE LICENSE
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+mig takes Mach interface descriptions (.defs files) as input, and outputs
+headers (.h files) and implementations (.c files) for both clients and servers
+of the Mach RPC interface described.
+
+This contains a 3pp description used to build a CIPD package of the above code.
+
+Local Modifications:
+none
