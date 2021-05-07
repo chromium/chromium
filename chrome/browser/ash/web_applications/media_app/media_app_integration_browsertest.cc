@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(true, ExecuteScript(web_ui, kDomExceptionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
-            report.query.find("error_message=Unhandled%20rejection%3A%20Error%"
-                              "3A%20NotAFile%3A%20Not%20a%20file."))
+            report.query.find("error_message=Unhandled%20rejection%3A"
+                              "%20%5BNotAFile%5D%20Not%20a%20file."))
       << report.query;
   EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
 }
@@ -491,8 +491,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(true, ExecuteScript(web_ui, kUnhandledRejectionScript));
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
-            report.query.find("error_message=Unhandled%20rejection%3A%20Error%"
-                              "3A%20FakeErrorName%3A%20fake_throw"))
+            report.query.find("error_message=Unhandled%20rejection%3A%20%5B"
+                              "FakeErrorName%5D%20fake_throw"))
       << report.query;
   EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
 }
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   auto report = endpoint.WaitForReport();
   EXPECT_NE(std::string::npos,
             report.query.find(
-                "error_message=Error%3A%20ErrorEvent%3A%20Uncaught%20TypeError%"
+                "error_message=ErrorEvent%3A%20%5B%5D%20Uncaught%20TypeError%"
                 "3A%20event.notAFunction%20is%20not%20a%20function"))
       << report.query;
   EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));

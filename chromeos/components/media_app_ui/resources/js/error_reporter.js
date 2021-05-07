@@ -22,8 +22,14 @@ function reportCrashError(...errors) {
     if (errorArg !== undefined) {
       if (errorArg instanceof Error) {
         message += `\n${errorArg.name}: ${errorArg.message}`;
+      } else if (typeof errorArg === 'string') {
+        message += ', ' + errorArg;
       } else {
-        message += '\n' + JSON.stringify(errorArg);
+        try {
+          message += '\n' + JSON.stringify(errorArg);
+        } catch (e) {
+          message += '<object loop?>';
+        }
       }
     }
   }
@@ -45,6 +51,10 @@ function reportCrashError(...errors) {
   if (firstError instanceof PromiseRejectionEvent) {
     prefix = 'Unhandled rejection: ';
     firstError = firstError.reason;
+  } else if (
+      typeof firstError === 'object' && firstError !== null &&
+      firstError.constructor) {
+    prefix = firstError.constructor.name + ': ';
   }
 
   if (firstError instanceof Error || firstError instanceof ErrorEvent ||
@@ -52,12 +62,20 @@ function reportCrashError(...errors) {
     // Note: `ErrorEvent` doesn't have a name field, `DOMException`s are routed
     // through 'onerror' and treated as `ErrorEvents`, we can also have
     // `DOMExceptions` inside a unhandled rejection.
-    errorMessage =
-        `Error: ${firstError.name || 'ErrorEvent'}: ${firstError.message}`;
+    errorMessage = `[${firstError.name || ''}] ${firstError.message}`;
     errorObject = firstError;
+
+    // Events and exceptions won't have stacks. Make one.
+    if (!errorObject.stack) {
+      errorObject.stack = new Error().stack;
+    }
   } else {
     // Should just be a regular object.
-    errorMessage = `Unexpected: ${JSON.stringify(firstError)}`;
+    try {
+      errorMessage = `Unexpected: ${JSON.stringify(firstError)}`;
+    } catch (e) {
+      errorMessage = `Unexpected: <object loop?>`;
+    }
   }
 
   if (!errorObject) {
@@ -95,7 +113,7 @@ function captureConsoleErrors(realConsoleError, report) {
     // Still call real console.error.
     realConsoleError(...errors);
     // Send to error reporter.
-    report(...errors);
+    report(...errors, '(from console)');
   };
 }
 

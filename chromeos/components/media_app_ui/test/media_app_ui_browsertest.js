@@ -182,6 +182,8 @@ MediaAppUIBrowserTest.ReportsErrorsFromTrustedContext = async () => {
    */
   function suppressConsoleErrorsForErrorTesting() {
     chrome.crashReportPrivate.reportError = function(e) {
+      // Everything should have a non-empty stack.
+      assertEquals(!!e.stackTrace, true);
       reportedErrors.push(e);
     };
     // Set `realConsoleError` in `captureConsoleErrors` to console.log to
@@ -197,30 +199,56 @@ MediaAppUIBrowserTest.ReportsErrorsFromTrustedContext = async () => {
   error.name = 'yikes error';
   const extraData = {b: 'b'};
 
+  const loop = {};
+  loop.loop = loop;
+  class MySpecialException {
+    constructor() {
+      this.loop = loop;
+    }
+  }
+
   console.error('a');
   console.error(error);
   console.error('b', extraData);
   console.error(extraData, extraData, extraData);
   console.error(error, 'foo', extraData, {e: error});
+  console.error(new MySpecialException(), new MySpecialException());
+  console.error(1, 2, 3, 4, 5);
+  console.error(null, null, null);
 
-  assertEquals(5, reportedErrors.length);
+  assertEquals(8, reportedErrors.length);
   // Test handles console.error(string).
-  assertEquals('Unexpected: "a"', reportedErrors[0].message);
+  assertEquals('Unexpected: "a", (from console)', reportedErrors[0].message);
   // Test handles console.error(Error).
-  assertEquals('Error: yikes error: yikes message', reportedErrors[1].message);
+  assertEquals(
+      'Error: [yikes error] yikes message, (from console)',
+      reportedErrors[1].message);
   // Test handles console.error(string, Object).
-  assertEquals('Unexpected: "b"\n{"b":"b"}', reportedErrors[2].message);
+  assertEquals(
+      'Unexpected: "b"\n{"b":"b"}, (from console)', reportedErrors[2].message);
   // Test handles console.error(Object, Object, Object).
   assertEquals(
-      'Unexpected: {"b":"b"}\n{"b":"b"}\n{"b":"b"}', reportedErrors[3].message);
+      'Object: Unexpected: {"b":"b"}\n{"b":"b"}\n{"b":"b"}, (from console)',
+      reportedErrors[3].message);
   // Test handles console.error(string, Object, Error, Object).
   assertEquals(
-      'Error: yikes error: yikes message\n"foo"\n{"b":"b"}\n' +
-          '{"e":{"name":"yikes error"}}',
+      'Error: [yikes error] yikes message, foo\n{"b":"b"}\n' +
+          '{"e":{"name":"yikes error"}}, (from console)',
       reportedErrors[4].message);
+  // Test arbitrary classes.
+  assertEquals(
+      'MySpecialException: Unexpected: <object loop?><object loop?>, ' +
+          '(from console)',
+      reportedErrors[5].message);
+  // Test non-objects.
+  assertEquals(
+      'Unexpected: 1\n2\n3\n4\n5, (from console)', reportedErrors[6].message);
+  assertEquals(
+      'Unexpected: null\nnull\nnull, (from console)',
+      reportedErrors[7].message);
+
   // Note: This is not needed i.e. tests pass without this but it is good
   // practice to reset it since we stub it out for this test.
-
   console.error = originalConsoleError;
 };
 
