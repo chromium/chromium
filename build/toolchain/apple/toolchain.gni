@@ -447,9 +447,9 @@ template("apple_toolchain") {
       # hardlink but ensure the file have distinct metadata (thus avoid the
       # error with ditto, see https://crbug.com/1042182).
       if (host_os == "mac") {
-        command = "rm -rf {{output}} && cp -Rc {{source}} {{output}}"
+        command = "rm -rf {{output}} && /bin/cp -Rc {{source}} {{output}}"
       } else {
-        command = "rm -rf {{output}} && cp -Rl {{source}} {{output}}"
+        command = "rm -rf {{output}} && /bin/cp -Rl {{source}} {{output}}"
       }
       description = "COPY_BUNDLE_DATA {{source}} {{output}}"
       pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
