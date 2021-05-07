@@ -52,12 +52,6 @@ std::string WindowToAppId(Profile* profile, aura::Window* window) {
   return kBorealisAnonymousPrefix + *GetWindowId(window);
 }
 
-// Returns a name for the app with the given |anon_id|.
-std::string AnonymousIdentifierToName(const std::string& anon_id) {
-  return anon_id.substr(anon_id.find(kBorealisWindowPrefix) +
-                        sizeof(kBorealisWindowPrefix) - 1);
-}
-
 bool IsAnonymousAppId(const std::string& app_id) {
   return base::StartsWith(app_id, kBorealisAnonymousPrefix,
                           base::CompareCase::SENSITIVE);
@@ -184,9 +178,9 @@ void BorealisWindowManager::HandleWindowCreation(aura::Window* window,
     for (auto& observer : lifetime_observers_)
       observer.OnAppStarted(app_id);
     if (IsAnonymousAppId(app_id)) {
-      std::string anon_name = AnonymousIdentifierToName(app_id);
       for (auto& observer : anon_observers_)
-        observer.OnAnonymousAppAdded(app_id, anon_name);
+        observer.OnAnonymousAppAdded(app_id,
+                                     base::UTF16ToUTF8(window->GetTitle()));
     }
   }
   // If this window was not already in the set, notify our observers about it.

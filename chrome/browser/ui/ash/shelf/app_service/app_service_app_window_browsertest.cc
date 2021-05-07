@@ -130,6 +130,7 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   params.context = ash::Shell::GetPrimaryRootWindow();
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
+  widget->GetNativeWindow()->SetTitle(u"foo");
   // Set app id before showing the window to be recognized in
   // AppServiceAppWindowShelfController.
   exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
@@ -420,9 +421,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
   // window appearing and its app being published.
   app_service_proxy_->FlushMojoCallsForTesting();
 
-  // Now that the app is published, it will have a name based on the app_id
+  // Now that the app is published, it will have a name based on the window title
   EXPECT_EQ(
-      "wmclass.bar",
+      "foo",
       base::UTF16ToUTF8(shelf_model()
                             ->items()[shelf_model()->ItemIndexByAppID(app_id)]
                             .title));
