@@ -493,18 +493,16 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
 const base::Value* GetContainerPrefValue(Profile* profile,
                                          const ContainerId& container_id,
                                          const std::string& key) {
-  const base::ListValue* containers =
+  const base::Value* containers =
       profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
   if (!containers) {
     return nullptr;
   }
-  auto it = std::find_if(
-      containers->begin(), containers->end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it == containers->end()) {
-    return nullptr;
+  for (const auto& dict : containers->GetList()) {
+    if (MatchContainerDict(dict, container_id))
+      return dict.FindKey(key);
   }
-  return it->FindKey(key);
+  return nullptr;
 }
 
 void UpdateContainerPref(Profile* profile,
