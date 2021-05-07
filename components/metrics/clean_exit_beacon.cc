@@ -66,14 +66,6 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
 CleanExitBeacon::~CleanExitBeacon() {
 }
 
-// static
-void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kStabilityExitedCleanly, true);
-
-  registry->RegisterTimePref(prefs::kStabilityBrowserLastLiveTimeStamp,
-                             base::Time(), PrefRegistry::LOSSY_PREF);
-}
-
 void CleanExitBeacon::WriteBeaconValue(bool value) {
   UpdateLastLiveTimestamp();
   local_state_->SetBoolean(prefs::kStabilityExitedCleanly, value);
@@ -91,6 +83,19 @@ void CleanExitBeacon::WriteBeaconValue(bool value) {
 void CleanExitBeacon::UpdateLastLiveTimestamp() {
   local_state_->SetTime(prefs::kStabilityBrowserLastLiveTimeStamp,
                         base::Time::Now());
+}
+
+// static
+void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kStabilityExitedCleanly, true);
+
+  registry->RegisterTimePref(prefs::kStabilityBrowserLastLiveTimeStamp,
+                             base::Time(), PrefRegistry::LOSSY_PREF);
+}
+
+// static
+void CleanExitBeacon::EnsureCleanShutdown(PrefService* local_state) {
+  CHECK(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
 }
 
 }  // namespace metrics

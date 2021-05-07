@@ -144,10 +144,6 @@ class MetricsService : public base::HistogramFlattener {
   bool reporting_active() const;
   bool has_unsent_logs() const;
 
-  // Redundant test to ensure that we are notified of a clean exit.
-  // This value should be true when process has completed shutdown.
-  static bool UmaMetricsProperlyShutdown();
-
   // Register the specified |provider| to provide additional metrics into the
   // UMA log. Should be called during MetricsService initialization only.
   void RegisterMetricsProvider(std::unique_ptr<MetricsProvider> provider);
@@ -208,11 +204,6 @@ class MetricsService : public base::HistogramFlattener {
   State state() const { return state_; }
 
  private:
-  enum ShutdownCleanliness {
-    CLEANLY_SHUTDOWN = 0xdeadbeef,
-    NEED_TO_SHUTDOWN = ~CLEANLY_SHUTDOWN
-  };
-
   // The current state of recording for the MetricsService. The state is UNSET
   // until set to something else, at which point it remains INACTIVE or ACTIVE
   // for the lifetime of the object.
@@ -388,10 +379,6 @@ class MetricsService : public base::HistogramFlattener {
   // (false) was called.
   bool is_in_foreground_ = false;
 #endif
-
-  // Redundant marker to check that we completed our shutdown, and set the
-  // exited-cleanly bit in the prefs.
-  static ShutdownCleanliness clean_shutdown_status_;
 
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, ActiveFieldTrialsReported);
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, IsPluginProcess);

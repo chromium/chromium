@@ -187,10 +187,6 @@ void MarkAppCleanShutdownAndCommit(CleanExitBeacon* clean_exit_beacon,
 }  // namespace
 
 // static
-MetricsService::ShutdownCleanliness MetricsService::clean_shutdown_status_ =
-    MetricsService::CLEANLY_SHUTDOWN;
-
-// static
 void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   CleanExitBeacon::RegisterPrefs(registry);
   MetricsStateManager::RegisterPrefs(registry);
@@ -437,8 +433,6 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
 #else
 void MetricsService::LogNeedForCleanShutdown() {
   state_manager_->clean_exit_beacon()->WriteBeaconValue(false);
-  // Redundant setting to be sure we call for a clean shutdown.
-  clean_shutdown_status_ = NEED_TO_SHUTDOWN;
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
@@ -762,12 +756,6 @@ bool MetricsService::PrepareInitialStabilityLog(
   return true;
 }
 
-bool MetricsService::UmaMetricsProperlyShutdown() {
-  CHECK(clean_shutdown_status_ == CLEANLY_SHUTDOWN ||
-        clean_shutdown_status_ == NEED_TO_SHUTDOWN);
-  return clean_shutdown_status_ == CLEANLY_SHUTDOWN;
-}
-
 void MetricsService::RegisterMetricsProvider(
     std::unique_ptr<MetricsProvider> provider) {
   DCHECK_EQ(CONSTRUCTED, state_);
@@ -911,9 +899,6 @@ void MetricsService::PrepareProviderMetricsTask() {
 
 void MetricsService::LogCleanShutdown(bool end_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Redundant setting to assure that we always reset this value at shutdown
-  // (and that we don't use some alternate path, and not call LogCleanShutdown).
-  clean_shutdown_status_ = CLEANLY_SHUTDOWN;
   state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
   StabilityMetricsProvider(local_state_).MarkSessionEndCompleted(end_completed);
 }

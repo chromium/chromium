@@ -45,6 +45,9 @@ class CleanExitBeacon {
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // CHECKs that Chrome exited cleanly.
+  static void EnsureCleanShutdown(PrefService* local_state);
+
  private:
   PrefService* const local_state_;
   const bool initial_value_;
