@@ -2564,10 +2564,6 @@ gfx::Rect PDFiumEngine::GetPageContentsRect(int index) {
   return GetScreenRect(pages_[index]->rect());
 }
 
-int PDFiumEngine::GetVerticalScrollbarYPosition() {
-  return position_.y();
-}
-
 void PDFiumEngine::SetGrayscale(bool grayscale) {
   render_grayscale_ = grayscale;
 }

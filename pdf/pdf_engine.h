@@ -383,9 +383,6 @@ class PDFEngine {
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.
   virtual gfx::Rect GetPageScreenRect(int page_index) const = 0;
-  // Gets the offset of the vertical scrollbar from the top in document
-  // coordinates.
-  virtual int GetVerticalScrollbarYPosition() = 0;
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale) = 0;
   // Get the number of characters on a given page.
