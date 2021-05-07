@@ -26,7 +26,7 @@ namespace extensions {
 namespace {
 
 // The delimiter for a stack trace provided by WebKit.
-const char kStackFrameDelimiter[] = "\n    at ";
+const char16_t kStackFrameDelimiter[] = u"\n    at ";
 
 // Get a stack trace from a WebKit console message.
 // There are three possible scenarios:
@@ -46,17 +46,16 @@ StackTrace GetStackTraceFromMessage(std::u16string* message,
   std::vector<std::u16string> pieces;
   size_t index = 0;
 
-  if (message->find(base::UTF8ToUTF16(kStackFrameDelimiter)) !=
-      std::u16string::npos) {
-    pieces = base::SplitStringUsingSubstr(
-        *message, base::UTF8ToUTF16(kStackFrameDelimiter),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (message->find(kStackFrameDelimiter) != std::u16string::npos) {
+    pieces = base::SplitStringUsingSubstr(*message, kStackFrameDelimiter,
+                                          base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_ALL);
     *message = pieces[0];
     index = 1;
   } else if (!stack_trace.empty()) {
-    pieces = base::SplitStringUsingSubstr(
-        stack_trace, base::UTF8ToUTF16(kStackFrameDelimiter),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    pieces = base::SplitStringUsingSubstr(stack_trace, kStackFrameDelimiter,
+                                          base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_ALL);
   }
 
   // If we got a stack trace, parse each frame from the text.

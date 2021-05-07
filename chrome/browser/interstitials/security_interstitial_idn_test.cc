@@ -20,7 +20,7 @@ namespace chrome_browser_interstitials {
 
 testing::AssertionResult SecurityInterstitialIDNTest::VerifyIDNDecoded() const {
   const char kHostname[] = "xn--d1abbgf6aiiy.xn--p1ai";
-  const char kHostnameUnicode[] = "президент.рф";
+  const char16_t kHostnameUnicode[] = u"президент.рф";
   std::string request_url_spec = base::StringPrintf("https://%s/", kHostname);
   GURL request_url(request_url_spec);
 
@@ -35,9 +35,9 @@ testing::AssertionResult SecurityInterstitialIDNTest::VerifyIDNDecoded() const {
       net::ERR_BLOCKED_BY_CLIENT);
   observer.Wait();
   delete blocking_page;
-  if (ui_test_utils::FindInPage(contents, base::UTF8ToUTF16(kHostnameUnicode),
-                                true /*forward*/, true /*case_sensitive*/,
-                                nullptr, nullptr) == 1) {
+  if (ui_test_utils::FindInPage(contents, kHostnameUnicode, true /*forward*/,
+                                true /*case_sensitive*/, nullptr,
+                                nullptr) == 1) {
     return testing::AssertionSuccess();
   }
   return testing::AssertionFailure() << "Interstitial not displaying text";

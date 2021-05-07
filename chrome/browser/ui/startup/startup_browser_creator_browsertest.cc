@@ -149,7 +149,7 @@ namespace {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kAppId[] = "dofnemchnjfeendjmdhaldenaiabpiad";
-const char kAppName[] = "Test App";
+const char16_t kAppName[] = u"Test App";
 const char kStartUrl[] = "https://test.com";
 
 // Check that there are two browsers. Find the one that is not |browser|.
@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     base::RunLoop run_loop;
     WebApplicationInfo info;
     info.start_url = GURL(kStartUrl);
-    info.title = base::UTF8ToUTF16(kAppName);
+    info.title = kAppName;
     info.open_as_window = true;
     web_app_finalizer.FinalizeInstall(
         info, options,
@@ -1445,7 +1445,7 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
     std::unique_ptr<WebApplicationInfo> info =
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
-    info->title = base::UTF8ToUTF16(kAppName);
+    info->title = kAppName;
     info->open_as_window = true;
     info->url_handlers = url_handlers;
     web_app::AppId app_id =
@@ -1586,7 +1586,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     std::unique_ptr<WebApplicationInfo> info =
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
-    info->title = base::UTF8ToUTF16(kAppName);
+    info->title = kAppName;
     info->open_as_window = true;
     info->protocol_handlers = protocol_handlers;
     web_app::AppId app_id =

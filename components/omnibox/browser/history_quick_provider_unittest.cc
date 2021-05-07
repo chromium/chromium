@@ -559,9 +559,9 @@ TEST_F(HistoryQuickProviderTest, ContentsClass) {
       "%95%8C%E5%A4%A7%E6%88%A6#.E3.83.B4.E3.82.A7.E3.83.AB.E3.82.B5.E3.82."
       "A4.E3.83.A6.E4.BD.93.E5.88.B6");
   RunTest(u"第二 e3", false, expected_urls, false,
-          base::UTF8ToUTF16("ja.wikipedia.org/wiki/第二次世界大戦#.E3.83.B4.E3."
-                            "82.A7.E3.83.AB.E3.82.B5.E3.82.A4.E3.83.A6.E4.BD."
-                            "93.E5.88.B6"),
+          u"ja.wikipedia.org/wiki/第二次世界大戦#.E3.83.B4.E3."
+          u"82.A7.E3.83.AB.E3.82.B5.E3.82.A4.E3.83.A6.E4.BD."
+          u"93.E5.88.B6",
           std::u16string());
 #if DCHECK_IS_ON()
   ac_matches()[0].Validate();
@@ -813,10 +813,9 @@ TEST_F(HistoryQuickProviderTest, DoesNotProvideMatchesOnFocus) {
 }
 
 ScoredHistoryMatch BuildScoredHistoryMatch(const std::string& url_text,
-                                           const std::string& input_term) {
+                                           const std::u16string& input_term) {
   return ScoredHistoryMatch(history::URLRow(GURL(url_text)), VisitInfoVector(),
-                            base::UTF8ToUTF16(input_term),
-                            String16Vector(1, base::UTF8ToUTF16(input_term)),
+                            input_term, String16Vector(1, input_term),
                             WordStarts(1, 0), RowWordStarts(), false, 0,
                             base::Time());
 }
@@ -827,7 +826,7 @@ TEST_F(HistoryQuickProviderTest, DoTrimHttpScheme) {
                           TestSchemeClassifier());
   provider().Start(input, false);
   ScoredHistoryMatch history_match =
-      BuildScoredHistoryMatch("http://www.facebook.com", "face");
+      BuildScoredHistoryMatch("http://www.facebook.com", u"face");
 
   AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"facebook.com", match.contents);
@@ -840,7 +839,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
                           TestSchemeClassifier());
   provider().Start(input, false);
   ScoredHistoryMatch history_match =
-      BuildScoredHistoryMatch("http://www.facebook.com", "http://face");
+      BuildScoredHistoryMatch("http://www.facebook.com", u"http://face");
 
   AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"http://facebook.com", match.contents);
@@ -853,7 +852,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpSchemeIfInputMatches) {
                           TestSchemeClassifier());
   provider().Start(input, false);
   ScoredHistoryMatch history_match =
-      BuildScoredHistoryMatch("http://www.facebook.com", "ht");
+      BuildScoredHistoryMatch("http://www.facebook.com", u"ht");
   history_match.match_in_scheme = true;
 
   AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
@@ -867,7 +866,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
                           TestSchemeClassifier());
   provider().Start(input, false);
   ScoredHistoryMatch history_match =
-      BuildScoredHistoryMatch("https://www.facebook.com", "https://face");
+      BuildScoredHistoryMatch("https://www.facebook.com", u"https://face");
 
   AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"https://facebook.com", match.contents);
@@ -879,7 +878,7 @@ TEST_F(HistoryQuickProviderTest, DoTrimHttpsScheme) {
                           TestSchemeClassifier());
   provider().Start(input, false);
   ScoredHistoryMatch history_match =
-      BuildScoredHistoryMatch("https://www.facebook.com", "face");
+      BuildScoredHistoryMatch("https://www.facebook.com", u"face");
 
   AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"facebook.com", match.contents);

@@ -29,8 +29,8 @@ namespace {
 const char kContextMenuLabel[] = "settings";
 const char kEncodedId[] = "0|0|Default|0|https://example.com/|notification_id";
 const char kNotificationId[] = "notification_id";
-const char kNotificationTitle[] = "My Title";
-const char kNotificationMessage[] = "My Message";
+const char16_t kNotificationTitle[] = u"My Title";
+const char16_t kNotificationMessage[] = u"My Message";
 const char kNotificationOrigin[] = "https://example.com";
 
 base::Time FixedTime() {
@@ -67,8 +67,7 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
     GURL origin_url(kNotificationOrigin);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-        base::UTF8ToUTF16(kNotificationTitle),
-        base::UTF8ToUTF16(kNotificationMessage), gfx::Image() /* icon */,
+        kNotificationTitle, kNotificationMessage, gfx::Image() /* icon */,
         std::u16string() /* display_source */, origin_url,
         NotifierId(origin_url), RichNotificationData(), nullptr /* delegate */);
     // Set a fixed timestamp, to avoid having to test against current timestamp.

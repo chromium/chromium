@@ -63,7 +63,6 @@
 
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
-using base::UTF8ToUTF16;
 
 using testing::Contains;
 
@@ -366,8 +365,7 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
 // Some platforms store HTML as UTF-8 internally. Make sure fragment indices are
 // adjusted appropriately when converting back to UTF-16.
 TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
-  std::u16string markup(UTF8ToUTF16("<div>A \xc3\xb8 \xe6\xb0\xb4</div>")),
-      markup_result;
+  std::u16string markup(u"<div>A ø 水</div>"), markup_result;
   std::string url, url_result;
 
   {
@@ -443,7 +441,7 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
   this->clipboard().ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                        /* data_dst = */ nullptr, &types);
   EXPECT_EQ(1u, types.size());
-  EXPECT_EQ("text/uri-list", base::UTF16ToUTF8(types[0]));
+  EXPECT_EQ(u"text/uri-list", types[0]);
 
   std::vector<ui::FileInfo> filenames;
   this->clipboard().ReadFilenames(ClipboardBuffer::kCopyPaste,
@@ -708,6 +706,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
 
 TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "chromium/x-test-format";
+  const std::u16string kFormatString16 = u"chromium/x-test-format";
   const ClipboardFormatType kFormat =
       ClipboardFormatType::GetType(kFormatString);
   const std::string payload = "test string";
@@ -716,7 +715,7 @@ TYPED_TEST(ClipboardTest, DataTest) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteData(UTF8ToUTF16(kFormatString),
+    clipboard_writer.WriteData(kFormatString16,
                                mojo_base::BigBuffer(payload_span));
   }
 
@@ -736,6 +735,7 @@ TYPED_TEST(ClipboardTest, DataTest) {
     !BUILDFLAG(IS_CHROMEOS_ASH)
 TYPED_TEST(ClipboardTest, MultipleDataTest) {
   const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const ClipboardFormatType kFormat1 =
       ClipboardFormatType::GetType(kFormatString1);
   const std::string payload1("test string1");
@@ -743,6 +743,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
 
   const std::string kFormatString2 = "chromium/x-test-format2";
+  const std::u16string kFormatString216 = u"chromium/x-test-format2";
   const ClipboardFormatType kFormat2 =
       ClipboardFormatType::GetType(kFormatString2);
   const std::string payload2("test string2");
@@ -752,16 +753,16 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     // Both payloads should write successfully and not overwrite one another.
-    clipboard_writer.WriteData(UTF8ToUTF16(kFormatString1),
+    clipboard_writer.WriteData(kFormatString116,
                                mojo_base::BigBuffer(payload_span1));
-    clipboard_writer.WriteData(UTF8ToUTF16(kFormatString2),
+    clipboard_writer.WriteData(kFormatString216,
                                mojo_base::BigBuffer(payload_span2));
   }
 
   // Check format 1.
   EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(ASCIIToUTF16(kFormatString1)));
+              Contains(kFormatString116));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       kFormat1, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
   std::string output1;
@@ -771,7 +772,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 2.
   EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(ASCIIToUTF16(kFormatString2)));
+              Contains(kFormatString216));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       kFormat2, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
   std::string output2;
@@ -904,9 +905,9 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 TYPED_TEST(ClipboardTest, HyperlinkTest) {
   const std::string kTitle("The <Example> Company's \"home page\"");
   const std::string kUrl("http://www.example.com?x=3&lt=3#\"'<>");
-  const std::u16string kExpectedHtml(UTF8ToUTF16(
-      "<a href=\"http://www.example.com?x=3&amp;lt=3#&quot;&#39;&lt;&gt;\">"
-      "The &lt;Example&gt; Company&#39;s &quot;home page&quot;</a>"));
+  const std::u16string kExpectedHtml(
+      u"<a href=\"http://www.example.com?x=3&amp;lt=3#&quot;&#39;&lt;&gt;\">"
+      u"The &lt;Example&gt; Company&#39;s &quot;home page&quot;</a>");
 
   std::string url_result;
   std::u16string html_result;

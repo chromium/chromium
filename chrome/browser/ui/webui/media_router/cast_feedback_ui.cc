@@ -92,14 +92,12 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       "formDescription",
       l10n_util::GetStringFUTF8(
           IDS_MEDIA_ROUTER_FEEDBACK_FORM_DESCRIPTION,
-          base::UTF8ToUTF16("https://support.google.com/"
-                            "chromecast?p=troubleshoot_chromecast")));
+          u"https://support.google.com/chromecast?p=troubleshoot_chromecast"));
   source->AddString(
       "setupVisibilityQuestion",
       l10n_util::GetStringFUTF8(
           IDS_MEDIA_ROUTER_FEEDBACK_SETUP_VISIBILITY_QUESTION,
-          base::UTF8ToUTF16(
-              "https://support.google.com/chromecast?p=set_up_chromecast")));
+          u"https://support.google.com/chromecast?p=set_up_chromecast"));
 
   // TODO(jrw): Attach real log data.
   source->AddString("logData", "dummy log data");

@@ -522,14 +522,14 @@ TEST_F(TemplateURLTest, ReplaceArbitrarySearchTerms) {
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
-      {"BIG5", u"\x60BD", "http://foo/?{searchTerms}{inputEncoding}",
+      {"BIG5", u"悽", "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%B1~BIG5"},
       {"UTF-8", u"blah", "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?blahUTF-8"},
-      {"Shift_JIS", base::UTF8ToUTF16("\xe3\x81\x82"),
-       "http://foo/{searchTerms}/bar", "http://foo/%82%A0/bar"},
-      {"Shift_JIS", base::UTF8ToUTF16("\xe3\x81\x82 \xe3\x81\x84"),
-       "http://foo/{searchTerms}/bar", "http://foo/%82%A0%20%82%A2/bar"},
+      {"Shift_JIS", u"あ", "http://foo/{searchTerms}/bar",
+       "http://foo/%82%A0/bar"},
+      {"Shift_JIS", u"あ い", "http://foo/{searchTerms}/bar",
+       "http://foo/%82%A0%20%82%A2/bar"},
   };
   TemplateURLData data;
   for (size_t i = 0; i < base::size(test_data); ++i) {
@@ -558,27 +558,27 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
   } test_data[] = {
       // First and third encodings are valid. First is used.
       {{"windows-1251", "cp-866", "UTF-8"},
-       base::UTF8ToUTF16("\xD1\x8F"),
+       u"я",
        "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%FFwindows-1251"},
       // Second and third encodings are valid, second is used.
       {{"cp-866", "GB2312", "UTF-8"},
-       base::UTF8ToUTF16("\xE7\x8B\x97"),
+       u"狗",
        "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%B9%B7GB2312"},
       // Second and third encodings are valid in another order, second is used.
       {{"cp-866", "UTF-8", "GB2312"},
-       base::UTF8ToUTF16("\xE7\x8B\x97"),
+       u"狗",
        "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%E7%8B%97UTF-8"},
       // Both encodings are invalid, fallback to UTF-8.
       {{"cp-866", "windows-1251"},
-       base::UTF8ToUTF16("\xE7\x8B\x97"),
+       u"狗",
        "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%E7%8B%97UTF-8"},
       // No encodings are given, fallback to UTF-8.
       {{},
-       base::UTF8ToUTF16("\xE7\x8B\x97"),
+       u"狗",
        "http://foo/?{searchTerms}{inputEncoding}",
        "http://foo/?%E7%8B%97UTF-8"},
   };
@@ -1854,9 +1854,7 @@ TEST_F(TemplateURLTest, GenerateKeyword) {
   ASSERT_EQ(u"blah", TemplateURL::GenerateKeyword(GURL("http://blah/")));
   // Don't generate the empty string.
   ASSERT_EQ(u"www.", TemplateURL::GenerateKeyword(GURL("http://www.")));
-  ASSERT_EQ(
-      base::UTF8ToUTF16("\xd0\xb0\xd0\xb1\xd0\xb2"),
-      TemplateURL::GenerateKeyword(GURL("http://xn--80acd")));
+  ASSERT_EQ(u"абв", TemplateURL::GenerateKeyword(GURL("http://xn--80acd")));
 
   // Generated keywords must always be in lowercase, because TemplateURLs always
   // converts keywords to lowercase in its constructor and TemplateURLService

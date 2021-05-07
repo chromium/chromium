@@ -215,9 +215,8 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url;
-    web_app_info->title = base::UTF8ToUTF16("Test app \xF0\x9F\x90\x90");
-    web_app_info->description =
-        base::UTF8ToUTF16("Test description \xF0\x9F\x90\x90");
+    web_app_info->title = u"Test app 🐐";
+    web_app_info->description = u"Test description 🐐";
     web_app_info->open_as_window = open_as_window;
 
     return web_app::test::InstallWebApp(browser()->profile(),

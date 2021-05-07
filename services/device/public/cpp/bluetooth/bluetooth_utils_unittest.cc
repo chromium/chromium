@@ -21,7 +21,9 @@ using mojom::BluetoothDeviceInfoPtr;
 constexpr std::array<uint8_t, 6> kAddress = {0x00, 0x00, 0x00,
                                              0x00, 0x00, 0x00};
 constexpr char kName[] = "Foo Bar";
+constexpr char16_t kName16[] = u"Foo Bar";
 constexpr char kUnicodeName[] = "❤❤❤❤";
+constexpr char16_t kUnicodeName16[] = u"❤❤❤❤";
 constexpr char kEmptyName[] = "";
 constexpr char kWhitespaceName[] = "    ";
 constexpr char kUnicodeWhitespaceName[] = "　　　　";
@@ -62,7 +64,7 @@ TEST(BluetoothUtilsTest,
   info->address = kAddress;
   info->name = kName;
   info->device_type = BluetoothDeviceInfo::DeviceType::kUnknown;
-  EXPECT_EQ(base::UTF8ToUTF16(kName), GetBluetoothDeviceNameForDisplay(info));
+  EXPECT_EQ(kName16, GetBluetoothDeviceNameForDisplay(info));
 }
 
 TEST(BluetoothUtilsTest,
@@ -71,7 +73,7 @@ TEST(BluetoothUtilsTest,
   info->address = kAddress;
   info->name = kName;
   info->device_type = BluetoothDeviceInfo::DeviceType::kComputer;
-  EXPECT_EQ(base::UTF8ToUTF16(kName), GetBluetoothDeviceNameForDisplay(info));
+  EXPECT_EQ(kName16, GetBluetoothDeviceNameForDisplay(info));
 }
 
 TEST(BluetoothUtilsTest, GetBluetoothDeviceNameForDisplay_UnicodeName) {
@@ -79,8 +81,7 @@ TEST(BluetoothUtilsTest, GetBluetoothDeviceNameForDisplay_UnicodeName) {
   info->address = kAddress;
   info->name = kUnicodeName;
   info->device_type = BluetoothDeviceInfo::DeviceType::kComputer;
-  EXPECT_EQ(base::UTF8ToUTF16(kUnicodeName),
-            GetBluetoothDeviceNameForDisplay(info));
+  EXPECT_EQ(kUnicodeName16, GetBluetoothDeviceNameForDisplay(info));
 }
 
 TEST(BluetoothUtilsTest, GetBluetoothDeviceNameForDisplay_EmptyName) {
@@ -129,15 +130,14 @@ static std::u16string LabelFromTypeWithName(
 TEST(BluetoothUtilsTest, GetBluetoothDeviceLabelForAccessibility) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER,
-          base::UTF8ToUTF16(kName)),
+          IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER, kName16),
       LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kComputer, kName));
 
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_CAR_AUDIO,
-                base::UTF8ToUTF16(kUnicodeName)),
-            LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kCarAudio,
-                                  kUnicodeName));
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_CAR_AUDIO, kUnicodeName16),
+      LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kCarAudio,
+                            kUnicodeName));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD,
                 u"00:00:00:00:00:00"),

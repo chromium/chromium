@@ -82,10 +82,10 @@ namespace {
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
 const char16_t kTestNumber16[] = u"4234567890123456";
-const char kTestCvc[] = "123";
 const char16_t kTestCvc16[] = u"123";
 
 #if !defined(OS_IOS)
+const char kTestCvc[] = "123";
 // Base64 encoding of "This is a test challenge".
 constexpr char kTestChallenge[] = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
 // Base64 encoding of "This is a test Credential ID".
@@ -1844,8 +1844,8 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false);
   CreditCard* unmasked_card =
       credit_card_access_manager_->GetCreditCard(kTestGUID);
-  credit_card_access_manager_->CacheUnmaskedCardInfo(
-      *unmasked_card, base::UTF8ToUTF16(kTestCvc));
+  credit_card_access_manager_->CacheUnmaskedCardInfo(*unmasked_card,
+                                                     kTestCvc16);
 
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true);
   CreditCard* masked_card =

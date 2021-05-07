@@ -65,8 +65,8 @@ WebAuthnBubbleView::~WebAuthnBubbleView() = default;
 
 std::u16string WebAuthnBubbleView::GetWindowTitle() const {
   // TODO(crbug.com/1179014): go through ux review and i18n this string.
-  return base::UTF8ToUTF16(users_.empty() ? "Sign in with your security key"
-                                          : "Choose an account to sign in");
+  return users_.empty() ? u"Sign in with your security key"
+                        : u"Choose an account to sign in";
 }
 
 void WebAuthnBubbleView::Init() {
@@ -75,8 +75,7 @@ void WebAuthnBubbleView::Init() {
   if (users_.empty()) {
     // TODO(crbug.com/1179014): go through ux review and i18n this string.
     std::u16string label_text = base::ReplaceStringPlaceholders(
-        base::UTF8ToUTF16(
-            "To sign in to $1 with your security key, insert it and tap it"),
+        u"To sign in to $1 with your security key, insert it and tap it",
         webauthn_ui_helpers::RpIdToElidedHost(relying_party_id_, fixed_width()),
         /*offset=*/nullptr);
     auto label = std::make_unique<views::Label>(

@@ -36,7 +36,7 @@ const char kTestPolicyName7[] = "policy.test.7";
 const char kTestPolicyName8[] = "policy.test.8";
 
 // Dummy error message.
-const char kTestError[] = "Test error message";
+const char16_t kTestError[] = u"Test error message";
 
 // Utility functions for the tests.
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
@@ -83,20 +83,19 @@ TEST_F(PolicyMapTest, SetAndGet) {
   EXPECT_TRUE(expected_b.Equals(map.GetValue(kTestPolicyName1)));
   SetPolicy(&map, kTestPolicyName1, CreateExternalDataFetcher("dummy"));
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError,
-                 IDS_POLICY_STORE_STATUS_VALIDATION_ERROR,
-                 {base::UTF8ToUTF16(kTestError)});
+                 IDS_POLICY_STORE_STATUS_VALIDATION_ERROR, {kTestError});
   EXPECT_FALSE(map.GetValue(kTestPolicyName1));
   const PolicyMap::Entry* entry = map.Get(kTestPolicyName1);
   ASSERT_TRUE(entry != nullptr);
   EXPECT_EQ(POLICY_LEVEL_MANDATORY, entry->level);
   EXPECT_EQ(POLICY_SCOPE_USER, entry->scope);
   EXPECT_EQ(POLICY_SOURCE_CLOUD, entry->source);
-  std::string error_string = base::StrCat({"Validation error: ", kTestError});
+  std::u16string error_string =
+      base::StrCat({u"Validation error: ", kTestError});
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
       static_cast<std::u16string (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(
-      base::UTF8ToUTF16(error_string),
-      entry->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
+  EXPECT_EQ(error_string, entry->GetLocalizedMessages(
+                              PolicyMap::MessageType::kError, lookup));
   EXPECT_TRUE(
       ExternalDataFetcher::Equals(entry->external_data_fetcher.get(),
                                   CreateExternalDataFetcher("dummy").get()));
@@ -137,28 +136,27 @@ TEST_F(PolicyMapTest, AddMessage_Error) {
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kError, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("This policy is deprecated. You should use the "
-                        "SomeNewPolicy policy instead."),
+      u"This policy is deprecated. You should use the "
+      u"SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
   map.AddMessage(kTestPolicyName2, PolicyMap::MessageType::kError, 1357);
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kError, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
   // Test adding Error message with placeholder replacement (two args)
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError,
                  IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
                  {u"SomeSource", u"SomeDestination"});
   EXPECT_EQ(
-      base::UTF8ToUTF16(
-          "1234\n5678\nSharing from SomeSource to SomeDestination has "
-          "been blocked by administrator policy"),
+      u"1234\n5678\nSharing from SomeSource to SomeDestination has "
+      u"been blocked by administrator policy",
       entry1->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
 
   // Ensure other message types are empty
@@ -192,28 +190,27 @@ TEST_F(PolicyMapTest, AddMessage_Warning) {
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kWarning, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("This policy is deprecated. You should use the "
-                        "SomeNewPolicy policy instead."),
+      u"This policy is deprecated. You should use the "
+      u"SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
   entry2->AddMessage(PolicyMap::MessageType::kWarning, 1357);
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kWarning, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
   // Test adding Warning message with placeholder replacement (two args)
   entry1->AddMessage(PolicyMap::MessageType::kWarning,
                      IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
                      {u"SomeSource", u"SomeDestination"});
   EXPECT_EQ(
-      base::UTF8ToUTF16(
-          "1234\n5678\nSharing from SomeSource to SomeDestination has "
-          "been blocked by administrator policy"),
+      u"1234\n5678\nSharing from SomeSource to SomeDestination has "
+      u"been blocked by administrator policy",
       entry1->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
 
   // Ensure other message types are empty
@@ -247,28 +244,27 @@ TEST_F(PolicyMapTest, AddMessage_Info) {
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kInfo, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("This policy is deprecated. You should use the "
-                        "SomeNewPolicy policy instead."),
+      u"This policy is deprecated. You should use the "
+      u"SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
   entry2->AddMessage(PolicyMap::MessageType::kInfo, 1357);
   EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
                                PolicyMap::MessageType::kInfo, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
   // Test adding Info message with placeholder replacement (two args)
   entry1->AddMessage(PolicyMap::MessageType::kInfo,
                      IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
                      {u"SomeSource", u"SomeDestination"});
   EXPECT_EQ(
-      base::UTF8ToUTF16(
-          "1234\n5678\nSharing from SomeSource to SomeDestination has "
-          "been blocked by administrator policy"),
+      u"1234\n5678\nSharing from SomeSource to SomeDestination has "
+      u"been blocked by administrator policy",
       entry1->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
   EXPECT_EQ(
-      base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
-                        "the SomeNewPolicy policy instead."),
+      u"1357\nThis policy is deprecated. You should use "
+      u"the SomeNewPolicy policy instead.",
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
 
   // Ensure other message types are empty

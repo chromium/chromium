@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 static const char kTestEmail[] = "testuser@test.com";
+static const char16_t kTestEmail16[] = u"testuser@test.com";
 
 class SigninGlobalErrorTest : public testing::Test {
  public:
@@ -64,7 +65,7 @@ class SigninGlobalErrorTest : public testing::Test {
             ->GetProfileAttributesWithPath(profile()->GetPath());
     ASSERT_NE(entry, nullptr);
 
-    entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(kTestEmail),
+    entry->SetAuthInfo(account_info.gaia, kTestEmail16,
                        /*is_consented_primary_account=*/true);
 
     global_error_ = SigninGlobalErrorFactory::GetForProfile(profile());

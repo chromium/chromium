@@ -34,14 +34,15 @@ using UserVerificationAvailability =
     device::AuthenticatorSupportedOptions::UserVerificationAvailability;
 
 constexpr char kTestPIN[] = "1234";
-constexpr char kNewPIN[] = "5678";
+constexpr char16_t kTestPIN16[] = u"1234";
+constexpr char16_t kNewPIN[] = u"5678";
 
 struct TestExpectation {
   pin::PINEntryReason reason;
   pin::PINEntryError error = pin::PINEntryError::kNoError;
   uint32_t min_pin_length = kMinPinLength;
   int attempts = 8;
-  std::u16string pin = base::UTF8ToUTF16(kTestPIN);
+  std::u16string pin = kTestPIN16;
 };
 
 struct TestCase {
@@ -471,7 +472,7 @@ TEST_F(AuthTokenRequesterTest, ForcePINChange) {
                         {
                             .reason = pin::PINEntryReason::kChange,
                             .attempts = 0,
-                            .pin = base::UTF8ToUTF16(kNewPIN),
+                            .pin = kNewPIN,
                         }}});
 
   EXPECT_EQ(*delegate_->result(), AuthTokenRequester::Result::kSuccess);
@@ -500,7 +501,7 @@ TEST_F(AuthTokenRequesterTest, ForcePINChangeSameAsCurrent) {
                             .reason = pin::PINEntryReason::kChange,
                             .error = pin::PINEntryError::kSameAsCurrentPIN,
                             .attempts = 0,
-                            .pin = base::UTF8ToUTF16(kNewPIN),
+                            .pin = kNewPIN,
                         }}});
 
   EXPECT_EQ(*delegate_->result(), AuthTokenRequester::Result::kSuccess);
