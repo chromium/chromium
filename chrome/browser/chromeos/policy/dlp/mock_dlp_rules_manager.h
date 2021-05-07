@@ -42,6 +42,19 @@ class MockDlpRulesManager : public DlpRulesManager {
                      std::string(const GURL& source_url,
                                  Restriction restriction,
                                  Level level));
+
+  MOCK_CONST_METHOD4(GetSourceUrlPattern,
+                     std::string(const GURL& source_url,
+                                 const Component& destination,
+                                 Restriction restriction,
+                                 Level level));
+
+  MOCK_CONST_METHOD4(
+      GetSrcAndDstUrlPatterns,
+      std::pair<std::string, std::string>(const GURL& source_url,
+                                          const GURL& destination_url,
+                                          Restriction restriction,
+                                          Level level));
 };
 
 }  // namespace policy

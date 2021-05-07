@@ -322,7 +322,7 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
       .Times(1)
       .WillOnce(::testing::Return(src_pattern));
 

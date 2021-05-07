@@ -103,6 +103,25 @@ class DlpRulesManager : public KeyedService {
   virtual std::string GetSourceUrlPattern(const GURL& source_url,
                                           Restriction restriction,
                                           Level level) const = 0;
+
+  // Returns the URL pattern that `source_url` is matched against. The returned
+  // URL pattern should be configured in a policy rule against `destination`
+  // with the same `restriction` and `level`.
+  virtual std::string GetSourceUrlPattern(const GURL& source_url,
+                                          const Component& destination,
+                                          Restriction restriction,
+                                          Level level) const = 0;
+
+  // Returns the URL patterns that `source_url` and `destination_url` are
+  // matched against. The returned URL pattern should be configured in a policy
+  // rule with the same `restriction` and `level`.
+  // The first string in the returned pair is the source url pattern, and the
+  // second is the destination url pattern.
+  virtual std::pair<std::string, std::string> GetSrcAndDstUrlPatterns(
+      const GURL& source_url,
+      const GURL& destination_url,
+      Restriction restriction,
+      Level level) const = 0;
 };
 
 }  // namespace policy

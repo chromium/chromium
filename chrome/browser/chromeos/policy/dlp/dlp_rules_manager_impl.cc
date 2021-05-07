@@ -271,6 +271,95 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
   return std::string();
 }
 
+std::string DlpRulesManagerImpl::GetSourceUrlPattern(
+    const GURL& source_url,
+    const Component& destination,
+    Restriction restriction,
+    Level level) const {
+  const std::set<UrlConditionId> url_conditions_ids =
+      src_url_matcher_->MatchURL(source_url);
+
+  std::map<RuleId, UrlConditionId> rules_conditions_map;
+  for (const auto& condition_id : url_conditions_ids) {
+    rules_conditions_map.insert(
+        std::make_pair(src_url_rules_mapping_.at(condition_id), condition_id));
+  }
+
+  auto it = components_rules_.find(destination);
+  if (it == components_rules_.end())
+    return std::string();
+
+  const std::set<RuleId>& components_rules_ids = it->second;
+
+  auto restriction_itr = restrictions_map_.find(restriction);
+  if (restriction_itr == restrictions_map_.end())
+    return std::string();
+
+  const auto rules_levels_map = restriction_itr->second;
+  for (const auto& rule_level_entry : rules_levels_map) {
+    auto rule_id = rule_level_entry.first;
+    auto lvl = rule_level_entry.second;
+    auto rule_condition_itr = rules_conditions_map.find(rule_id);
+    auto component_rule_itr = components_rules_ids.find(rule_id);
+    if (lvl == level && rule_condition_itr != rules_conditions_map.end() &&
+        component_rule_itr != components_rules_ids.end()) {
+      auto condition_id = rule_condition_itr->second;
+      auto condition_pattern_itr = src_pattterns_mapping_.find(condition_id);
+      if (condition_pattern_itr != src_pattterns_mapping_.end())
+        return condition_pattern_itr->second;
+    }
+  }
+  return std::string();
+}
+
+std::pair<std::string, std::string>
+DlpRulesManagerImpl::GetSrcAndDstUrlPatterns(const GURL& source_url,
+                                             const GURL& destination_url,
+                                             Restriction restriction,
+                                             Level level) const {
+  const std::set<UrlConditionId> url_conditions_ids =
+      src_url_matcher_->MatchURL(source_url);
+
+  std::map<RuleId, UrlConditionId> src_rules_conditions_map;
+  for (const auto& condition_id : url_conditions_ids) {
+    src_rules_conditions_map.insert(
+        std::make_pair(src_url_rules_mapping_.at(condition_id), condition_id));
+  }
+
+  std::map<RuleId, UrlConditionId> dst_rules_conditions_map;
+  for (const auto& condition_id : url_conditions_ids) {
+    dst_rules_conditions_map.insert(
+        std::make_pair(dst_url_rules_mapping_.at(condition_id), condition_id));
+  }
+
+  auto restriction_itr = restrictions_map_.find(restriction);
+  if (restriction_itr == restrictions_map_.end())
+    return std::make_pair(std::string(), std::string());
+
+  const auto rules_levels_map = restriction_itr->second;
+  for (const auto& rule_level_entry : rules_levels_map) {
+    auto rule_id = rule_level_entry.first;
+    auto lvl = rule_level_entry.second;
+    auto src_rule_condition_itr = src_rules_conditions_map.find(rule_id);
+    auto dst_rule_condition_itr = dst_rules_conditions_map.find(rule_id);
+    if (lvl == level &&
+        src_rule_condition_itr != src_rules_conditions_map.end() &&
+        dst_rule_condition_itr != dst_rules_conditions_map.end()) {
+      auto src_condition_id = src_rule_condition_itr->second;
+      auto src_condition_pattern_itr =
+          src_pattterns_mapping_.find(src_condition_id);
+      auto dst_condition_id = dst_rule_condition_itr->second;
+      auto dst_condition_pattern_itr =
+          dst_pattterns_mapping_.find(dst_condition_id);
+      if (src_condition_pattern_itr != src_pattterns_mapping_.end() &&
+          dst_condition_pattern_itr != dst_pattterns_mapping_.end())
+        return std::make_pair(src_condition_pattern_itr->second,
+                              dst_condition_pattern_itr->second);
+    }
+  }
+  return std::make_pair(std::string(), std::string());
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();

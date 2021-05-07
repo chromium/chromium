@@ -45,6 +45,15 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   std::string GetSourceUrlPattern(const GURL& source_url,
                                   Restriction restriction,
                                   Level level) const override;
+  std::string GetSourceUrlPattern(const GURL& source_url,
+                                  const Component& destination,
+                                  Restriction restriction,
+                                  Level level) const override;
+  std::pair<std::string, std::string> GetSrcAndDstUrlPatterns(
+      const GURL& source_url,
+      const GURL& destination_url,
+      Restriction restriction,
+      Level level) const override;
 
  protected:
   friend class DlpRulesManagerFactory;

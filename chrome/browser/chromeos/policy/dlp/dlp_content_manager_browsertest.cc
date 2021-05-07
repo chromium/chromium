@@ -42,6 +42,8 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
+using testing::_;
+
 namespace policy {
 
 namespace {
@@ -380,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
   DlpContentManager* manager = helper_.GetContentManager();
 
   SetupDlpRulesManager();
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
       .Times(2)
       .WillRepeatedly(testing::Return(src_pattern));
 
@@ -422,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   SetupDlpRulesManager();
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern).Times(0);
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _)).Times(0);
 
   std::vector<DlpPolicyEvent> events;
   SetReportQueueForReportingManager(helper_.GetReportingManager(), events);
