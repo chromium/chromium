@@ -49,7 +49,7 @@ class PermissionRequestChipBrowserTest : public UiBrowserTest {
   bool VerifyUi() override {
     LocationBarView* lbv = GetLocationBarView();
     PermissionChip* chip = lbv->chip();
-    if (!chip || !chip->GetVisible())
+    if (!chip)
       return false;
 
 // TODO(olesiamrukhno): VerifyPixelUi works only for these platforms, revise

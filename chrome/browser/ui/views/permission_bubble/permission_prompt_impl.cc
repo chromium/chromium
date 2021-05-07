@@ -72,8 +72,7 @@ PermissionPromptImpl::~PermissionPromptImpl() {
     case PermissionPromptStyle::kChip:
       DCHECK(!prompt_bubble_);
       DCHECK(chip_);
-      chip_->FinalizeRequest();
-      chip_ = nullptr;
+      FinalizeChip();
       break;
     case PermissionPromptStyle::kQuiet:
       DCHECK(!prompt_bubble_);
@@ -125,15 +124,14 @@ void PermissionPromptImpl::UpdateAnchor() {
       break;
     case PermissionPromptStyle::kChip:
       DCHECK(!prompt_bubble_);
-      DCHECK(chip_);
-      chip_ = lbv->chip();
-      if (!chip_->GetActiveRequest())
-        chip_->DisplayRequest(delegate_);
+
+      if (!lbv->chip()) {
+        chip_ = lbv->DisplayChip(delegate_);
+      }
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
       if (!chip_->is_fully_collapsed() && !is_location_bar_drawn) {
-        chip_->FinalizeRequest();
-        chip_ = nullptr;
+        FinalizeChip();
         ShowBubble();
       }
       break;
@@ -151,8 +149,7 @@ void PermissionPromptImpl::ShowChipUI() {
   LocationBarView* lbv = GetLocationBarView();
   DCHECK(lbv);
 
-  chip_ = lbv->chip();
-  chip_->DisplayRequest(delegate_);
+  chip_ = lbv->DisplayChip(delegate_);
   prompt_style_ = PermissionPromptStyle::kChip;
 }
 
@@ -172,6 +169,11 @@ bool PermissionPromptImpl::ShouldCurrentRequestUseChipUI() {
   return std::all_of(requests.begin(), requests.end(), [](auto* request) {
     return request->GetChipText().has_value();
   });
+}
+
+void PermissionPromptImpl::FinalizeChip() {
+  GetLocationBarView()->FinalizeChip();
+  chip_ = nullptr;
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior

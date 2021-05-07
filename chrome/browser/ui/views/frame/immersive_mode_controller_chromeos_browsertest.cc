@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // on the chip to trigger showing the prompt.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   PermissionChip* chip = browser_view->toolbar()->location_bar()->chip();
-  if (chip->GetVisible()) {
+  if (chip) {
     views::test::ButtonTestApi(chip->button())
         .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),

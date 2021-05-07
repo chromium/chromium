@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -21,13 +20,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/widget/widget.h"
-
-namespace {
-bool IsCameraOrMicPermission(permissions::RequestType type) {
-  return type == permissions::RequestType::kCameraStream ||
-         type == permissions::RequestType::kMicStream;
-}
-}  // namespace
 
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
@@ -60,13 +52,19 @@ class BubbleButtonController : public views::ButtonController {
   BubbleOwnerDelegate* bubble_owner_ = nullptr;
 };
 
-PermissionChip::PermissionChip() {
+PermissionChip::PermissionChip(
+    permissions::PermissionPrompt::Delegate* delegate,
+    const gfx::VectorIcon& icon,
+    std::u16string message,
+    bool should_start_open)
+    : delegate_(delegate), should_start_open_(should_start_open) {
+  DCHECK(delegate);
   SetUseDefaultFillLayout(true);
-  SetVisible(false);
 
-  chip_button_ =
-      AddChildView(std::make_unique<OmniboxChipButton>(base::BindRepeating(
-          &PermissionChip::ChipButtonPressed, base::Unretained(this))));
+  chip_button_ = AddChildView(std::make_unique<OmniboxChipButton>(
+      base::BindRepeating(&PermissionChip::ChipButtonPressed,
+                          base::Unretained(this)),
+      icon, message, true));
 
   chip_button_->SetButtonController(std::make_unique<BubbleButtonController>(
       chip_button_, this,
@@ -77,48 +75,14 @@ PermissionChip::PermissionChip() {
       &PermissionChip::ExpandAnimationEnded, base::Unretained(this)));
 
   chip_button_->SetTheme(OmniboxChipButton::Theme::kBlue);
-  chip_button_->SetProminent(true);
+
+  Show(should_start_open_);
 }
 
 PermissionChip::~PermissionChip() {
   CHECK(!IsInObserverList());
-}
-
-void PermissionChip::DisplayRequest(
-    permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(delegate);
-  delegate_ = delegate;
-
-  const std::vector<permissions::PermissionRequest*>& requests =
-      delegate_->Requests();
-
-  // TODO(olesiamarukhno): Add combined camera & microphone permission and
-  // update delegate to contain only one request at a time.
-  DCHECK(requests.size() == 1u || requests.size() == 2u);
-  if (requests.size() == 2) {
-    DCHECK(IsCameraOrMicPermission(requests[0]->GetRequestType()));
-    DCHECK(IsCameraOrMicPermission(requests[1]->GetRequestType()));
-    DCHECK_NE(requests[0]->GetRequestType(), requests[1]->GetRequestType());
-  }
-
-  chip_button_->SetText(GetPermissionMessage());
-  chip_button_->SetIcon(&GetPermissionIconId());
-
-  Show(ShouldBubbleStartOpen());
-
-  if (!ShouldBubbleStartOpen()) {
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
-  }
-}
-
-void PermissionChip::FinalizeRequest() {
-  SetVisible(false);
-  chip_button_->ResetAnimation();
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
-  delegate_ = nullptr;
-  PreferredSizeChanged();
 }
 
 void PermissionChip::Hide() {
@@ -128,11 +92,8 @@ void PermissionChip::Hide() {
 void PermissionChip::Reshow() {
   if (GetVisible())
     return;
+  SetVisible(true);
   Show(/*always_open_bubble=*/false);
-}
-
-bool PermissionChip::GetActiveRequest() const {
-  return !!delegate_;
 }
 
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -140,50 +101,27 @@ void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
     RestartTimersOnInteraction();
 }
 
-void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
+void PermissionChip::AddedToWidget() {
+  views::AccessiblePaneView::AddedToWidget();
+
+  if (!should_start_open_) {
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
+  }
+}
+
+void PermissionChip::OnWidgetClosing(views::Widget* widget) {
   widget->RemoveObserver(this);
   // If permission request is still active after the prompt was closed,
   // collapse the chip.
-  if (delegate_)
-    Collapse(/*allow_restart=*/false);
+  Collapse(/*allow_restart=*/false);
 }
 
 bool PermissionChip::IsBubbleShowing() const {
   return false;
 }
 
-bool PermissionChip::ShouldBubbleStartOpen() const {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipGestureSensitive)) {
-    auto requests = delegate_->Requests();
-    const bool has_gesture =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          return request->GetGestureType() ==
-                 permissions::PermissionRequestGestureType::GESTURE;
-        });
-    if (has_gesture)
-      return true;
-  }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipRequestTypeSensitive)) {
-    // Notifications and geolocation are targeted here because they are usually
-    // not necessary for the website to function correctly, so they can safely
-    // be given less prominence.
-    auto requests = delegate_->Requests();
-    const bool is_geolocation_or_notifications =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          auto request_type = request->GetRequestType();
-          return request_type == permissions::RequestType::kNotifications ||
-                 request_type == permissions::RequestType::kGeolocation;
-        });
-    if (!is_geolocation_or_notifications)
-      return true;
-  }
-  return false;
-}
-
 void PermissionChip::Show(bool always_open_bubble) {
-  SetVisible(true);
   // TODO(olesiamarukhno): Add tests for animation logic.
   chip_button_->ResetAnimation();
   if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble) {
@@ -196,7 +134,7 @@ void PermissionChip::Show(bool always_open_bubble) {
 
 void PermissionChip::ExpandAnimationEnded() {
   StartCollapseTimer();
-  if (ShouldBubbleStartOpen())
+  if (should_start_open_)
     OpenBubble();
 }
 
@@ -238,14 +176,13 @@ void PermissionChip::StartDismissTimer() {
 }
 
 void PermissionChip::Dismiss() {
-  if (delegate_) {
-    delegate_->Closing();
-  }
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
+
+  // `delegate_->Closing()` will destroy `this`. It's not safe to run any code
+  // afterwards.
+  delegate_->Closing();
 }
 
 BEGIN_METADATA(PermissionChip, views::View)
-ADD_READONLY_PROPERTY_METADATA(bool, ActiveRequest)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, PermissionMessage)
 END_METADATA

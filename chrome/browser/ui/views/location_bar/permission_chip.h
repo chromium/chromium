@@ -30,33 +30,29 @@ class PermissionChip : public views::AccessiblePaneView,
                        public BubbleOwnerDelegate {
  public:
   METADATA_HEADER(PermissionChip);
-  PermissionChip();
+  PermissionChip(permissions::PermissionPrompt::Delegate* delegate,
+                 const gfx::VectorIcon& icon,
+                 std::u16string message,
+                 bool should_start_open);
   PermissionChip(const PermissionChip& chip) = delete;
   PermissionChip& operator=(const PermissionChip& chip) = delete;
   ~PermissionChip() override;
-
-  // Displays a request as a chip.
-  virtual void DisplayRequest(
-      permissions::PermissionPrompt::Delegate* delegate);
-
-  // Stops displaying the current request.
-  virtual void FinalizeRequest();
 
   // Opens the permission prompt bubble.
   virtual void OpenBubble() = 0;
 
   void Hide();
   void Reshow();
-  bool GetActiveRequest() const;
 
   views::Button* button() { return chip_button_; }
   bool is_fully_collapsed() const { return chip_button_->is_fully_collapsed(); }
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
+  void AddedToWidget() override;
 
   // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetClosing(views::Widget* widget) override;
 
   // BubbleOwnerDelegate:
   bool IsBubbleShowing() const override;
@@ -70,14 +66,6 @@ class PermissionChip : public views::AccessiblePaneView,
   }
 
  private:
-  // Returns the chip's label.
-  virtual std::u16string GetPermissionMessage() const = 0;
-
-  // Returns the chip's icon.
-  virtual const gfx::VectorIcon& GetPermissionIconId() const = 0;
-
-  virtual bool ShouldBubbleStartOpen() const;
-
   void Show(bool always_open_bubble);
   void ExpandAnimationEnded();
   void ChipButtonPressed();
@@ -86,11 +74,10 @@ class PermissionChip : public views::AccessiblePaneView,
   void Collapse(bool allow_restart);
   void StartDismissTimer();
   void Dismiss();
-
   void AnimateCollapse();
   void AnimateExpand();
 
-  permissions::PermissionPrompt::Delegate* delegate_ = nullptr;
+  permissions::PermissionPrompt::Delegate* const delegate_;
 
   // A timer used to collapse the chip after a delay.
   base::OneShotTimer collapse_timer_;
@@ -101,6 +88,8 @@ class PermissionChip : public views::AccessiblePaneView,
 
   // The button that displays the icon and text.
   OmniboxChipButton* chip_button_ = nullptr;
+
+  bool should_start_open_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
