@@ -501,14 +501,11 @@ VulkanSwapChain::GetOrCreateFenceAndSemaphores() {
   FenceAndSemaphores fence_and_semaphores;
   do {
 #if !defined(OS_FUCHSIA)
-    // On Linux, some drivers may never release an image acquire fence,
-    // It should be a driver bug. When it happens, return {}, and then
-    // it will cause context lost instead of creating new fences and
-    // semaphores and causing OOM.
-    // https://crbug.com/1189069
-    constexpr size_t kQueueSizeLimit = 64;
-    if (UNLIKELY(fence_and_semaphores_queue_.size() >= kQueueSizeLimit))
-      break;
+    // This crash key is for diagnosing OOM crash.
+    // TODO(penghuang): remove it when OOM crash is fixed, or find out it is not
+    // related.
+    SCOPED_CRASH_KEY_NUMBER("VulkanSwapChian", "queue_.size()",
+                            fence_and_semaphores_queue_.size());
 
     if (LIKELY(!fence_and_semaphores_queue_.empty())) {
       fence_and_semaphores = fence_and_semaphores_queue_.front();
