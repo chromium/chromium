@@ -20,19 +20,13 @@ class CastCdmOriginProvider;
 }  // namespace chromecast
 
 namespace content {
-class AndroidOverlaySyncHelper;
 class DesktopCapturerLacros;
-class StreamTextureFactory;
+class AndroidOverlaySyncHelper;
 }  // namespace content
 
 namespace crosapi {
 class ScopedAllowSyncCall;
 }  // namespace crosapi
-
-namespace gpu {
-class CommandBufferProxyImpl;
-class GpuChannelHost;
-}  // namespace gpu
 
 namespace ui {
 class Compositor;
@@ -105,10 +99,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // Android requires synchronous processing when overlay surfaces are
   // destroyed, else behavior is undefined.
   friend class content::AndroidOverlaySyncHelper;
-  // GPU client code uses a few sync IPCs, grandfathered in from legacy IPC.
+  // GpuChannelHost uses a few sync IPCs, grandfathered in from legacy IPC.
   friend class gpu::GpuChannelHost;
-  friend class gpu::CommandBufferProxyImpl;
-  friend class content::StreamTextureFactory;
   // END ALLOWED USAGE.
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS

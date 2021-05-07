@@ -100,7 +100,7 @@ DevToolsChannelData::CreateForChannel(GpuChannel* channel) {
 
 CommandBufferStub::CommandBufferStub(
     GpuChannel* channel,
-    const mojom::CreateCommandBufferParams& init_params,
+    const GPUCreateCommandBufferConfig& init_params,
     CommandBufferId command_buffer_id,
     SequenceId sequence_id,
     int32_t stream_id,

@@ -51,7 +51,7 @@ namespace gpu {
 
 WebGPUCommandBufferStub::WebGPUCommandBufferStub(
     GpuChannel* channel,
-    const mojom::CreateCommandBufferParams& init_params,
+    const GPUCreateCommandBufferConfig& init_params,
     CommandBufferId command_buffer_id,
     SequenceId sequence_id,
     int32_t stream_id,
@@ -72,7 +72,7 @@ WebGPUCommandBufferStub::~WebGPUCommandBufferStub() {
 
 gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     CommandBufferStub* share_command_buffer_stub,
-    const mojom::CreateCommandBufferParams& init_params,
+    const GPUCreateCommandBufferConfig& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
 #if defined(OS_FUCHSIA)
   // TODO(crbug.com/707031): Implement this.

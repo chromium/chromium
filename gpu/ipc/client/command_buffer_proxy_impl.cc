@@ -32,7 +32,6 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/gpu_param_traits.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -78,14 +77,14 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // prevent cleanup on destruction.
   auto channel = std::move(channel_);
 
-  auto params = mojom::CreateCommandBufferParams::New();
-  params->surface_handle = surface_handle;
-  params->share_group_id =
+  GPUCreateCommandBufferConfig init_params;
+  init_params.surface_handle = surface_handle;
+  init_params.share_group_id =
       share_group ? share_group->route_id_ : MSG_ROUTING_NONE;
-  params->stream_id = stream_id_;
-  params->stream_priority = stream_priority;
-  params->attribs = attribs;
-  params->active_url = active_url;
+  init_params.stream_id = stream_id_;
+  init_params.stream_priority = stream_priority;
+  init_params.attribs = attribs;
+  init_params.active_url = active_url;
 
   TRACE_EVENT0("gpu", "CommandBufferProxyImpl::Initialize");
   std::tie(shared_state_shm_, shared_state_mapping_) =
@@ -118,17 +117,16 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // so it won't cause additional jank.
   // TODO(piman): Make this asynchronous (http://crbug.com/125248).
   ContextResult result = ContextResult::kSuccess;
-  mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
-  bool sent = channel->GetGpuChannel().CreateCommandBuffer(
-      std::move(params), route_id_, std::move(region), &result, &capabilities_);
+  bool sent = channel->Send(new GpuChannelMsg_CreateCommandBuffer(
+      init_params, route_id_, std::move(region), &result, &capabilities_));
   if (!sent) {
     channel->RemoveRoute(route_id_);
     LOG(ERROR) << "ContextResult::kTransientFailure: "
-                  "Failed to send GpuControl.CreateCommandBuffer.";
+                  "Failed to send GpuChannelMsg_CreateCommandBuffer.";
     return ContextResult::kTransientFailure;
   }
   if (result != ContextResult::kSuccess) {
-    DLOG(ERROR) << "Failure processing GpuControl.CreateCommandBuffer.";
+    DLOG(ERROR) << "Failure processing GpuChannelMsg_CreateCommandBuffer.";
     channel->RemoveRoute(route_id_);
     return result;
   }
@@ -921,10 +919,7 @@ void CommandBufferProxyImpl::DisconnectChannel() {
     return;
   disconnected_ = true;
   channel_->VerifyFlush(UINT32_MAX);
-
-  mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
-  channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
-
+  channel_->Send(new GpuChannelMsg_DestroyCommandBuffer(route_id_));
   channel_->RemoveRoute(route_id_);
   if (gpu_control_client_)
     gpu_control_client_->OnGpuControlLostContext();
