@@ -30,6 +30,9 @@ enum class FeatureStatus {
 
   // The feature is enabled, and there is an active connection with the phone.
   kConnected = 4,
+
+  // A dependent feature is in an incompatible state.
+  kDependentFeature = 5,
 };
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);

@@ -24,6 +24,9 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
     case FeatureStatus::kConnected:
       stream << "[Enabled; connected]";
       break;
+    case FeatureStatus::kDependentFeature:
+      stream << "[Dependent feature not in a compatible state]";
+      break;
   }
 
   return stream;

@@ -149,7 +149,7 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
     case phonehub::FeatureStatus::kEnabledAndConnecting:
       FALLTHROUGH;
     case phonehub::FeatureStatus::kEnabledButDisconnected:
-      return FeatureStatus::kIneligible;
+      return FeatureStatus::kDependentFeature;
     case phonehub::FeatureStatus::kEnabledAndConnected:
       break;
   }
