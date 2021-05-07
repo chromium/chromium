@@ -284,14 +284,16 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  if (syncSetupService->IsSyncEnabled() &&
-      syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
-      queryResultsInfo.sync_timed_out) {
-    [self showHistoryMatchingQuery:_currentQuery];
-    return;
+  if (self.browser) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    if (syncSetupService->IsSyncEnabled() &&
+        syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
+        queryResultsInfo.sync_timed_out) {
+      [self showHistoryMatchingQuery:_currentQuery];
+      return;
+    }
   }
 
   // At this point there has been a response, stop the loading indicator.
@@ -556,13 +558,15 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.historyService->RemoveVisits(entries);
 
   // Delete items from |self.tableView| using performBatchUpdates.
-  [self.tableView performBatchUpdates:^{
-    [self deleteItemsFromTableViewModelWithIndex:toDeleteIndexPaths
-                        deleteItemsFromTableView:YES];
-  }
+  __weak __typeof(self) weakSelf = self;
+  [self.tableView
+      performBatchUpdates:^{
+        [weakSelf deleteItemsFromTableViewModelWithIndex:toDeleteIndexPaths
+                                deleteItemsFromTableView:YES];
+      }
       completion:^(BOOL) {
-        [self updateTableViewAfterDeletingEntries];
-        [self configureViewsForNonEditModeWithAnimation:YES];
+        [weakSelf updateTableViewAfterDeletingEntries];
+        [weakSelf configureViewsForNonEditModeWithAnimation:YES];
       }];
   base::RecordAction(base::UserMetricsAction("HistoryPage_RemoveSelected"));
 }
@@ -1022,10 +1026,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     AddSameConstraints(self.scrimView, self.view.superview);
     self.tableView.accessibilityElementsHidden = YES;
     self.tableView.scrollEnabled = NO;
+    __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                      animations:^{
-                       self.scrimView.alpha = 1.0f;
-                       [self.view layoutIfNeeded];
+                       weakSelf.scrimView.alpha = 1.0f;
+                       [weakSelf.view layoutIfNeeded];
                      }];
   }
 }
@@ -1034,14 +1039,15 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)hideScrim {
   if (self.scrimView.alpha > 0.0f) {
     self.navigationController.toolbarHidden = NO;
+    __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
         animations:^{
-          self.scrimView.alpha = 0.0f;
+          weakSelf.scrimView.alpha = 0.0f;
         }
         completion:^(BOOL finished) {
-          [self.scrimView removeFromSuperview];
-          self.tableView.accessibilityElementsHidden = NO;
-          self.tableView.scrollEnabled = YES;
+          [weakSelf.scrimView removeFromSuperview];
+          weakSelf.tableView.accessibilityElementsHidden = NO;
+          weakSelf.tableView.scrollEnabled = YES;
         }];
   }
 }
@@ -1193,9 +1199,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   base::RecordAction(
       base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-    [self.presentationDelegate showActiveRegularTabFromHistory];
+    if (weakSelf.browser) {
+      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
+      [weakSelf.presentationDelegate showActiveRegularTabFromHistory];
+    }
   }];
 }
 
@@ -1215,9 +1224,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
+  __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-    [self.presentationDelegate showActiveIncognitoTabFromHistory];
+    if (weakSelf.browser) {
+      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
+      [weakSelf.presentationDelegate showActiveIncognitoTabFromHistory];
+    }
   }];
 }
 
@@ -1277,9 +1289,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   params.load_strategy = self.loadStrategy;
+  __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-    [self.presentationDelegate showActiveRegularTabFromHistory];
+    if (weakSelf.browser) {
+      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
+      [weakSelf.presentationDelegate showActiveRegularTabFromHistory];
+    }
   }];
 }
 

@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
@@ -34,11 +35,16 @@
 #error "This file requires ARC support."
 #endif
 
-@interface HistoryCoordinator () <HistoryMenuProvider, HistoryUIDelegate> {
+@interface HistoryCoordinator () <BrowserObserving,
+                                  HistoryMenuProvider,
+                                  HistoryUIDelegate> {
   // Provides dependencies and funnels callbacks from BrowsingHistoryService.
   std::unique_ptr<IOSBrowsingHistoryDriver> _browsingHistoryDriver;
   // Abstraction to communicate with HistoryService and WebHistoryService.
   std::unique_ptr<history::BrowsingHistoryService> _browsingHistoryService;
+  // Observe BrowserObserver to prevent any access to Browser before its
+  // destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
 }
 // ViewController being managed by this Coordinator.
 @property(nonatomic, strong)
@@ -73,6 +79,9 @@
   if (@available(iOS 13.0, *)) {
     self.historyTableViewController.menuProvider = self;
   }
+
+  _browserObserver = std::make_unique<BrowserObserverBridge>(self);
+  self.browser->AddObserver(_browserObserver.get());
 
   // Initialize and set HistoryMediator
   self.mediator = [[HistoryMediator alloc]
@@ -132,6 +141,9 @@
 - (void)stopWithCompletion:(ProceduralBlock)completionHandler {
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+
+  self.browser->RemoveObserver(_browserObserver.get());
+  _browserObserver.reset();
 
   if (self.historyNavigationController) {
     if (self.historyClearBrowsingDataCoordinator) {
@@ -250,6 +262,12 @@
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  self.historyTableViewController.browser = nil;
 }
 
 #pragma mark - Private
