@@ -653,6 +653,7 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool HasKey(StringPiece key) const;
 
   // Returns the number of Values in this dictionary.
+  // DEPRECATED, use `Value::DictSize()` instead.
   size_t size() const { return dict().size(); }
 
   // Returns whether the dictionary is empty.
