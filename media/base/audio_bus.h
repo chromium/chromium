@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "media/base/audio_sample_types.h"
@@ -75,6 +76,13 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // these methods when using a factory method other than CreateWrapper().
   void SetChannelData(int channel, float* data);
   void set_frames(int frames);
+
+  // Method optionally called after AudioBus::CreateWrapper().
+  // Runs |deleter| when on |this|' destruction, freeing external data
+  // referenced by SetChannelData().
+  // Note: It is illegal to call this method when using a factory method other
+  // than CreateWrapper().
+  void SetWrappedDataDeleter(base::OnceClosure deleter);
 
   // Methods for compressed bitstream formats. The data size may not be equal to
   // the capacity of the AudioBus. Also, the frame count may not be equal to the
@@ -220,8 +228,13 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   std::vector<float*> channel_data_;
   int frames_;
 
-  // Protect SetChannelData() and set_frames() for use by CreateWrapper().
-  bool can_set_channel_data_;
+  // Protect SetChannelData(), set_frames() and SetWrappedDataDeleter() for use
+  // by CreateWrapper().
+  bool is_wrapper_;
+
+  // Run on destruction. Frees memory to the data set via SetChannelData().
+  // Only used with CreateWrapper().
+  base::OnceClosure wrapped_data_deleter_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioBus);
 };

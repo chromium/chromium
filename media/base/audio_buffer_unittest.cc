@@ -494,6 +494,38 @@ TEST(AudioBufferTest, ReadF32Planar) {
   VerifyBus(bus.get(), frames, 1, 1, ValueType::kFloat);
 }
 
+TEST(AudioBufferTest, WrapOrCopyToAudioBus) {
+  const ChannelLayout channel_layout = CHANNEL_LAYOUT_4_0;
+  const int channels = ChannelLayoutToChannelCount(channel_layout);
+  const int frames = 100;
+  const base::TimeDelta start_time;
+  scoped_refptr<AudioBuffer> buffer =
+      MakeAudioBuffer<float>(kSampleFormatPlanarF32, channel_layout, channels,
+                             kSampleRate, 1.0f, 1.0f, frames, start_time);
+
+  // With kSampleFormatPlanarF32, the memory layout should allow |bus| to
+  // directly wrap |buffer|'s data.
+  std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
+  for (int ch = 0; ch < channels; ++ch) {
+    EXPECT_EQ(bus->channel(ch),
+              reinterpret_cast<float*>(buffer->channel_data()[ch]));
+  }
+
+  // |bus| should have its own reference on |buffer|, so clearing it here should
+  // not free the underlying data.
+  buffer.reset();
+  VerifyBus(bus.get(), frames, 1, 1, ValueType::kFloat);
+
+  // Interleaved samples cannot be wrapped, and samples will be copied out.
+  buffer = MakeAudioBuffer<float>(kSampleFormatF32, channel_layout, channels,
+                                  kSampleRate, 1.0f, 1.0f, frames, start_time);
+
+  bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
+  buffer.reset();
+
+  VerifyBus(bus.get(), frames, 1, 1, ValueType::kFloat);
+}
+
 TEST(AudioBufferTest, EmptyBuffer) {
   const ChannelLayout channel_layout = CHANNEL_LAYOUT_4_0;
   const int channels = ChannelLayoutToChannelCount(channel_layout);

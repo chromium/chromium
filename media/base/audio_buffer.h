@@ -119,6 +119,13 @@ class MEDIA_EXPORT AudioBuffer
       int frame_count,
       const base::TimeDelta timestamp);
 
+  // Helper function that creates a new AudioBus which wraps |audio_buffer| and
+  // takes a reference on it, if the memory layout (e.g. |sample_format_|) is
+  // compatible with wrapping. Otherwise, this copies |audio_buffer| to a new
+  // AudioBus, using ReadFrames().
+  static std::unique_ptr<AudioBus> WrapOrCopyToAudioBus(
+      scoped_refptr<AudioBuffer> audio_buffer);
+
   // Create a AudioBuffer indicating we've reached end of stream.
   // Calling any method other than end_of_stream() on the resulting buffer
   // is disallowed.

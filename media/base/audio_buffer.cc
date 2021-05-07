@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/audio_bus.h"
@@ -273,6 +274,44 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(
       new AudioBuffer(kUnknownSampleFormat, CHANNEL_LAYOUT_NONE, 0, 0, 0, false,
                       nullptr, 0, kNoTimestamp, nullptr));
+}
+
+// static
+std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
+    scoped_refptr<AudioBuffer> buffer) {
+  DCHECK(buffer);
+
+  const int channels = buffer->channel_count();
+  const int frames = buffer->frame_count();
+
+  DCHECK(channels);
+  DCHECK(frames);
+
+  // |buffer| might already have the right memory layout. Prevent a data copy
+  // by wrapping it instead.
+  if (buffer->sample_format() == SampleFormat::kSampleFormatPlanarF32) {
+    auto audio_bus = AudioBus::CreateWrapper(channels);
+
+    for (int ch = 0; ch < channels; ++ch) {
+      audio_bus->SetChannelData(
+          ch, reinterpret_cast<float*>(buffer->channel_data()[ch]));
+    }
+
+    audio_bus->set_frames(frames);
+
+    // Keep |buffer| alive as long as |audio_bus|.
+    audio_bus->SetWrappedDataDeleter(
+        base::BindOnce(base::DoNothing::Once<scoped_refptr<AudioBuffer>>(),
+                       std::move(buffer)));
+
+    return audio_bus;
+  }
+
+  // |buffer|'s memory can't be wrapped directly. Convert and copy it instead.
+  auto audio_bus = AudioBus::Create(channels, frames);
+  buffer->ReadFrames(frames, 0, 0, audio_bus.get());
+
+  return audio_bus;
 }
 
 void AudioBuffer::AdjustSampleRate(int sample_rate) {

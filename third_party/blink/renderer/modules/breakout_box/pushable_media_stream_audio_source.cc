@@ -80,22 +80,11 @@ void PushableMediaStreamAudioSource::DeliverData(
     last_frames_ = frame_count;
   }
 
-  std::unique_ptr<media::AudioBus> audio_bus;
-
-  if (data->sample_format() == media::SampleFormat::kSampleFormatPlanarF32) {
-    // |data| already has the right format for media::AudioBus, and we can
-    // simply wrap the memory without copying it.
-    audio_bus = media::AudioBus::CreateWrapper(channel_count);
-    for (int ch = 0; ch < channel_count; ch++) {
-      audio_bus->SetChannelData(
-          ch, reinterpret_cast<float*>(data->channel_data()[ch]));
-    }
-    audio_bus->set_frames(frame_count);
-  } else {
-    // |data| must be converted into the proper media::AudioBus format.
-    audio_bus = media::AudioBus::Create(channel_count, frame_count);
-    data->ReadFrames(frame_count, 0, 0, audio_bus.get());
-  }
+  // If |data|'s sample format has the same memory layout as a media::AudioBus,
+  // |audio_bus| will simply wrap it. Otherwise, |data| will be copied and
+  // converted into |audio_bus|.
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBuffer::WrapOrCopyToAudioBus(data);
 
   DeliverDataToTracks(*audio_bus, base::TimeTicks() + data->timestamp());
 }
