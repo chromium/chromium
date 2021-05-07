@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/bind.h"
@@ -43,7 +42,11 @@
 //   The drawback of the threadsafe observer list is that notifications are not
 //   as real-time as the non-threadsafe version of this class. Notifications
 //   will always be done via PostTask() to another sequence, whereas with the
-//   non-thread-safe observer_list, notifications happen synchronously.
+//   non-thread-safe ObserverList, notifications happen synchronously.
+//
+//   Note: this class previously supported synchronous notifications for
+//   same-sequence observers, but it was error-prone and removed in
+//   crbug.com/1193750, think twice before re-considering this paradigm.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -196,49 +199,6 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
                    observer.first,
                    NotificationData(this, observer.second.observer_id,
                                     from_here, method)));
-    }
-  }
-
-  // Like Notify() but attempts to synchronously invoke callbacks if they are
-  // associated with this thread.
-  template <typename Method, typename... Params>
-  void NotifySynchronously(const Location& from_here,
-                           Method m,
-                           Params&&... params) {
-    RepeatingCallback<void(ObserverType*)> method =
-        BindRepeating(&Dispatcher<ObserverType, Method>::Run, m,
-                      std::forward<Params>(params)...);
-
-    // The observers may make reentrant calls (which can be a problem due to the
-    // lock), so we extract a list to call synchronously.
-    struct PendingNotificationData {
-      ObserverType* observer;
-      size_t observer_id;
-    };
-    std::vector<PendingNotificationData> current_sequence_observers;
-
-    {
-      AutoLock lock(lock_);
-      current_sequence_observers.reserve(observers_.size());
-      for (const auto& observer : observers_) {
-        if (observer.second.task_runner->RunsTasksInCurrentSequence()) {
-          current_sequence_observers.emplace_back(PendingNotificationData{
-              observer.first, observer.second.observer_id});
-        } else {
-          observer.second.task_runner->PostTask(
-              from_here,
-              BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper,
-                       this, observer.first,
-                       NotificationData(this, observer.second.observer_id,
-                                        from_here, method)));
-        }
-      }
-    }
-
-    for (const auto& pending_notification : current_sequence_observers) {
-      NotifyWrapper(pending_notification.observer,
-                    NotificationData(this, pending_notification.observer_id,
-                                     from_here, method));
     }
   }
 
