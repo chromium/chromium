@@ -6,23 +6,38 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/metrics/metrics_log_uploader.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-IOSChromeDefaultBrowserMetricsProvider::
-    IOSChromeDefaultBrowserMetricsProvider() {}
+IOSChromeDefaultBrowserMetricsProvider::IOSChromeDefaultBrowserMetricsProvider(
+    metrics::MetricsLogUploader::MetricServiceType metrics_service_type)
+    : metrics_service_type_(metrics_service_type) {}
 
 IOSChromeDefaultBrowserMetricsProvider::
     ~IOSChromeDefaultBrowserMetricsProvider() {}
 
 void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  base::UmaHistogramBoolean("IOS.IsDefaultBrowser",
-                            IsChromeLikelyDefaultBrowser());
-  base::UmaHistogramBoolean(
-      "IOS.IsEligibleDefaultBrowserPromoUser",
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
+  bool is_default = IsChromeLikelyDefaultBrowser();
+
+  switch (metrics_service_type_) {
+    case metrics::MetricsLogUploader::MetricServiceType::UMA:
+      base::UmaHistogramBoolean("IOS.IsDefaultBrowser", is_default);
+      base::UmaHistogramBoolean(
+          "IOS.IsEligibleDefaultBrowserPromoUser",
+          IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
+      return;
+    case metrics::MetricsLogUploader::MetricServiceType::UKM:
+      ukm::builders::IOS_IsDefaultBrowser(ukm::NoURLSourceId())
+          .SetIsDefaultBrowser(is_default)
+          .Record(ukm::UkmRecorder::Get());
+      return;
+  }
+  NOTREACHED();
 }

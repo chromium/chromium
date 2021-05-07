@@ -7402,6 +7402,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.IsDefaultBrowser">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    As of iOS14, users will be able to set a default browser other than Safari.
+    When Chrome is the default browser, it will open all URL links, which is
+    likely to change certain stability metrics. Thus, it will be good to filter
+    those metrics by default browser status. This metrics records whether the
+    user was deemed to have set Chrome as the device's default browser. This
+    metric will be logged once per metrics log upload, and if the metric changes
+    mid-report, this just records the state at the very end of the report. Note:
+    this is tied to a source_id that is not going to be emitted.
+  </summary>
+  <metric name="IsDefaultBrowser" enum="Boolean">
+    <summary>
+      True if Chrome is set as default browser.
+    </summary>
+  </metric>
+</event>
+
 <event name="IOS.PageAddedToReadingList">
   <owner>thegreenfrog@chromium.org</owner>
   <summary>

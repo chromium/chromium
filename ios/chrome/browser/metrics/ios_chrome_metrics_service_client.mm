@@ -285,7 +285,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::move(stability_metrics_provider));
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSChromeDefaultBrowserMetricsProvider>());
+      std::make_unique<IOSChromeDefaultBrowserMetricsProvider>(
+          metrics::MetricsLogUploader::MetricServiceType::UMA));
 
   // NOTE: metrics_state_manager_->IsMetricsReportingEnabled() returns false
   // during local testing. To test locally, modify
@@ -337,6 +338,10 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<variations::FieldTrialsProvider>(nullptr,
                                                         kUKMFieldTrialSuffix));
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<IOSChromeDefaultBrowserMetricsProvider>(
+          metrics::MetricsLogUploader::MetricServiceType::UKM));
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
