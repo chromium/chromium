@@ -15,7 +15,6 @@ class StubLayerTreeHostSingleThreadClient
   ~StubLayerTreeHostSingleThreadClient() override;
 
   // LayerTreeHostSingleThreadClient implementation.
-  void RequestScheduleComposite() override {}
   void DidSubmitCompositorFrame() override {}
   void DidLoseLayerTreeFrameSink() override {}
 };

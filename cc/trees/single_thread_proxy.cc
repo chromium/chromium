@@ -248,7 +248,6 @@ void SingleThreadProxy::CommitComplete() {
 
 void SingleThreadProxy::SetNeedsCommit() {
   DCHECK(task_runner_provider_->IsMainThread());
-  single_thread_client_->RequestScheduleComposite();
   if (commit_requested_)
     return;
   commit_requested_ = true;
@@ -396,7 +395,6 @@ void SingleThreadProxy::NotifyReadyToDraw() {
 }
 
 void SingleThreadProxy::SetNeedsRedrawOnImplThread() {
-  single_thread_client_->RequestScheduleComposite();
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsRedraw();
 }
@@ -404,7 +402,6 @@ void SingleThreadProxy::SetNeedsRedrawOnImplThread() {
 void SingleThreadProxy::SetNeedsOneBeginImplFrameOnImplThread() {
   TRACE_EVENT0("cc",
                "SingleThreadProxy::SetNeedsOneBeginImplFrameOnImplThread");
-  single_thread_client_->RequestScheduleComposite();
   single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsOneBeginImplFrame();
@@ -418,7 +415,6 @@ void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
 }
 
 void SingleThreadProxy::SetNeedsCommitOnImplThread() {
-  single_thread_client_->RequestScheduleComposite();
   single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsBeginMainFrame();

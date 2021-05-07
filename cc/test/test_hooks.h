@@ -118,7 +118,6 @@ class TestHooks : public AnimationDelegate {
   virtual void DidCommit() {}
   virtual void DidCommitAndDrawFrame() {}
   virtual void DidReceiveCompositorFrameAck() {}
-  virtual void ScheduleComposite() {}
   virtual void DidActivateSyncTree() {}
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
 
