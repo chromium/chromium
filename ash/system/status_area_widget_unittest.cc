@@ -33,9 +33,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -264,11 +265,12 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    chromeos::shill_clients::InitializeFakes();
-    chromeos::hermes_clients::InitializeFakes();
     // Initializing NetworkHandler before ash is more like production.
-    chromeos::NetworkHandler::Initialize();
     AshTestBase::SetUp();
+    chromeos::CellularMetricsLogger::RegisterLocalStatePrefs(
+        local_state_.registry());
+    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
+        local_state_.registry());
     chromeos::NetworkMetadataStore::RegisterPrefs(profile_prefs_.registry());
     chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
                                                             &local_state_);
@@ -280,12 +282,10 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
     // This roughly matches production shutdown order.
     chromeos::NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::hermes_clients::Shutdown();
-    chromeos::shill_clients::Shutdown();
   }
 
  private:
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 

@@ -13,11 +13,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "dbus/object_path.h"
@@ -44,8 +44,8 @@ class AutoConnectNotifierTest : public AshTestBase {
     chromeos::SystemTokenCertDbStorage::Initialize();
     chromeos::NetworkCertLoader::Initialize();
     chromeos::NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
-    chromeos::shill_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
+    network_handler_test_helper_ =
+        std::make_unique<chromeos::NetworkHandlerTestHelper>();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
@@ -68,8 +68,7 @@ class AutoConnectNotifierTest : public AshTestBase {
   void TearDown() override {
     AshTestBase::TearDown();
     network_config_helper_.reset();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::shill_clients::Shutdown();
+    network_handler_test_helper_.reset();
     chromeos::NetworkCertLoader::Shutdown();
     chromeos::SystemTokenCertDbStorage::Shutdown();
   }
@@ -96,6 +95,8 @@ class AutoConnectNotifierTest : public AshTestBase {
   base::MockOneShotTimer* mock_notification_timer_;
 
  private:
+  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
+      network_handler_test_helper_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
 
