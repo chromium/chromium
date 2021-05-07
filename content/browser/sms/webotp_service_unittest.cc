@@ -1069,4 +1069,57 @@ TEST_F(WebOTPServiceTest, NotRecordUnhandledRequestWhenRequestIsHandled) {
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
 }
 
+TEST_F(WebOTPServiceTest, RecordWebContentsVisibilityForUserConsentAPI) {
+  NavigateAndCommit(GURL(kTestUrl));
+  base::HistogramTester histogram_tester;
+
+  // Sets the WebContents to visible
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  Service service1(web_contents_impl);
+
+  base::RunLoop loop1;
+
+  EXPECT_CALL(*service1.provider(), Retrieve(_, _))
+      .WillOnce(Invoke([&service1]() {
+        service1.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
+      }));
+
+  service1.MakeRequest(BindLambdaForTesting(
+      [&loop1](SmsStatus status, const Optional<string>& otp) {
+        loop1.Quit();
+      }));
+
+  loop1.Run();
+
+  histogram_tester.ExpectBucketCount("Blink.Sms.WebContentsVisibleOnReceive", 1,
+                                     1);
+  histogram_tester.ExpectTotalCount("Blink.Sms.WebContentsVisibleOnReceive", 1);
+
+  // Sets the WebContents to invisible
+  web_contents_impl->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  ASSERT_NE(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+
+  Service service2(web_contents_impl);
+
+  base::RunLoop loop2;
+  EXPECT_CALL(*service2.provider(), Retrieve(_, _))
+      .WillOnce(Invoke([&service2]() {
+        service2.NotifyReceive(GURL(kTestUrl), "ABC", UserConsent::kObtained);
+      }));
+
+  service2.MakeRequest(BindLambdaForTesting(
+      [&loop2](SmsStatus status, const Optional<string>& otp) {
+        loop2.Quit();
+      }));
+
+  loop2.Run();
+
+  histogram_tester.ExpectBucketCount("Blink.Sms.WebContentsVisibleOnReceive", 0,
+                                     1);
+  histogram_tester.ExpectTotalCount("Blink.Sms.WebContentsVisibleOnReceive", 2);
+}
+
 }  // namespace content

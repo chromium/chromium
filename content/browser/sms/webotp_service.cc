@@ -186,6 +186,18 @@ void WebOTPService::OnReceive(const OriginList& origin_list,
 
   one_time_code_ = one_time_code;
 
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host());
+  // With UserConsent API, users can see and interact with the permission prompt
+  // when they are on the different page other than the one that calls WebOTP.
+  // This is considered as a bad UX and we should measure how many successful
+  // verifications are exercising the UserConsent backend which is implied by
+  // UserConsent::kObtained.
+  if (consent_requirement == UserConsent::kObtained) {
+    RecordWebContentsVisibilityOnReceive(web_contents->GetVisibility() ==
+                                         Visibility::VISIBLE);
+  }
+
   // Create a new consent handler for each OTP request. While we could
   // potentially cache these across request but they are lightweight enought to
   // not be worth the complexity associate with caching them.

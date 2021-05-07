@@ -61,6 +61,10 @@ void RecordSmsCancelTime(base::TimeDelta duration);
 void RecordSmsUserCancelTime(base::TimeDelta duration,
                              ukm::SourceId source_id,
                              ukm::UkmRecorder* ukm_recorder);
+
+// Records whether the web contents that receives the OTP is visible or not.
+void RecordWebContentsVisibilityOnReceive(bool is_visible);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_SMS_SMS_METRICS_H_

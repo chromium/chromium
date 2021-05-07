@@ -2559,6 +2559,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Sms.WebContentsVisibleOnReceive" enum="Boolean"
+    expires_after="2021-10-10">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    Records whether the web contents that receives the OTP is visible or not for
+    the UserConsent backend. Recorded at most once per API call when Chrome sees
+    the OTP from the expected origin.
+  </summary>
+</histogram>
+
 <histogram name="Blink.SpatialNavigation.Advance" units="microseconds"
     expires_after="M85">
   <obsolete>

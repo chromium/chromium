@@ -89,4 +89,9 @@ void RecordSmsUserCancelTime(base::TimeDelta duration,
   builder.Record(ukm_recorder);
 }
 
+void RecordWebContentsVisibilityOnReceive(bool is_visible) {
+  base::UmaHistogramBoolean("Blink.Sms.WebContentsVisibleOnReceive",
+                            is_visible);
+}
+
 }  // namespace content
