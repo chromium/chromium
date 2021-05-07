@@ -92,9 +92,9 @@ void DlpReportingManager::SetReportQueue(
   report_queue_ = std::move(report_queue);
 }
 
-void DlpReportingManager::ReportPrintingEvent(
-    const std::string& src_pattern,
-    DlpRulesManager::Level level) const {
+void DlpReportingManager::ReportEvent(const std::string& src_pattern,
+                                      DlpRulesManager::Restriction restriction,
+                                      DlpRulesManager::Level level) const {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
   if (!report_queue_.get()) {
@@ -104,10 +104,8 @@ void DlpReportingManager::ReportPrintingEvent(
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
-  report_queue_->Enqueue(
-      CreateDlpPolicyEvent(src_pattern, level,
-                           DlpRulesManager::Restriction::kPrinting),
-      reporting::Priority::IMMEDIATE, std::move(callback));
+  report_queue_->Enqueue(CreateDlpPolicyEvent(src_pattern, level, restriction),
+                         reporting::Priority::IMMEDIATE, std::move(callback));
 }
 
 void DlpReportingManager::OnEventEnqueued(reporting::Status status) const {

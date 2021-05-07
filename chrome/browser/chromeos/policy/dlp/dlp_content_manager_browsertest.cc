@@ -518,7 +518,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
 
   DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
   screenshot_and_videocapture.SetRestriction(
-      DlpContentRestriction::kVideoCapture, DlpRulesManager::Level::kBlock);
+      DlpContentRestriction::kVideoCapture, DlpRulesManager::Level::kBlock,
+      GURL());
   EXPECT_EQ(screenshot_and_videocapture,
             helper_.GetRestrictionSetForURL(GURL(kUrl1)));
   EXPECT_EQ(kPrivacyScreenEnforced,

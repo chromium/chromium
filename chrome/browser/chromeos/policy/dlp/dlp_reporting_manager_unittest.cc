@@ -50,7 +50,8 @@ class DlpReportingManagerTest : public testing::Test {
 TEST_F(DlpReportingManagerTest, IsPrintingRestricted) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto src_pattern = web_contents->GetLastCommittedURL().spec();
-  manager_.ReportPrintingEvent(src_pattern, DlpRulesManager::Level::kBlock);
+  manager_.ReportEvent(src_pattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
 
   EXPECT_EQ(events_.size(), 1);
   EXPECT_THAT(events_[0],

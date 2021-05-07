@@ -9,14 +9,14 @@
 namespace policy {
 
 DlpContentRestrictionSet::DlpContentRestrictionSet() {
-  restrictions_.fill(DlpRulesManager::Level::kNotSet);
+  restrictions_.fill(RestrictionLevelAndUrl());
 }
 
 DlpContentRestrictionSet::DlpContentRestrictionSet(
     DlpContentRestriction restriction,
     DlpRulesManager::Level level) {
-  restrictions_.fill(DlpRulesManager::Level::kNotSet);
-  restrictions_[restriction] = level;
+  restrictions_.fill(RestrictionLevelAndUrl());
+  restrictions_[restriction].level = level;
 }
 
 DlpContentRestrictionSet::DlpContentRestrictionSet(
@@ -38,18 +38,26 @@ bool DlpContentRestrictionSet::operator!=(
 }
 
 void DlpContentRestrictionSet::SetRestriction(DlpContentRestriction restriction,
-                                              DlpRulesManager::Level level) {
-  restrictions_[restriction] = std::max(restrictions_[restriction], level);
+                                              DlpRulesManager::Level level,
+                                              const GURL& url) {
+  if (level > restrictions_[restriction].level) {
+    restrictions_[restriction] = RestrictionLevelAndUrl(level, url);
+  }
 }
 
-DlpRulesManager::Level DlpContentRestrictionSet::GetRestriction(
+DlpRulesManager::Level DlpContentRestrictionSet::GetRestrictionLevel(
+    DlpContentRestriction restriction) const {
+  return restrictions_[restriction].level;
+}
+
+RestrictionLevelAndUrl DlpContentRestrictionSet::GetRestrictionLevelAndUrl(
     DlpContentRestriction restriction) const {
   return restrictions_[restriction];
 }
 
 bool DlpContentRestrictionSet::IsEmpty() const {
   for (int i = 0; i < restrictions_.size(); ++i) {
-    if (restrictions_[i] != DlpRulesManager::Level::kNotSet)
+    if (restrictions_[i].level != DlpRulesManager::Level::kNotSet)
       return false;
   }
   return true;
@@ -58,7 +66,9 @@ bool DlpContentRestrictionSet::IsEmpty() const {
 void DlpContentRestrictionSet::UnionWith(
     const DlpContentRestrictionSet& other) {
   for (int i = 0; i < restrictions_.size(); ++i) {
-    restrictions_[i] = std::max(restrictions_[i], other.restrictions_[i]);
+    if (other.restrictions_[i].level > restrictions_[i].level) {
+      restrictions_[i] = other.restrictions_[i];
+    }
   }
 }
 
@@ -67,7 +77,7 @@ DlpContentRestrictionSet DlpContentRestrictionSet::DifferenceWith(
   // Leave only the restrictions that are present in |this|, but not in |other|.
   DlpContentRestrictionSet result;
   for (int i = 0; i < restrictions_.size(); ++i) {
-    if (restrictions_[i] > other.restrictions_[i]) {
+    if (restrictions_[i].level > other.restrictions_[i].level) {
       result.restrictions_[i] = restrictions_[i];
     }
   }

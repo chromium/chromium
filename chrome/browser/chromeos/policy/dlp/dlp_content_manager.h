@@ -169,9 +169,16 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   // Removes PrivacyScreen enforcement after delay if it's still not enforced.
   void MaybeRemovePrivacyScreenEnforcement() const;
 
-  // Returns whether |restriction| is currently enforced for |area|.
-  bool IsAreaRestricted(const ScreenshotArea& area,
-                        DlpContentRestriction restriction) const;
+  // Returns which level and url of |restriction| that is currently enforced for
+  // |area|.
+  RestrictionLevelAndUrl GetAreaRestrictionInfo(
+      const ScreenshotArea& area,
+      DlpContentRestriction restriction) const;
+
+  // Returns which level and url of screen capture restriction that is currently
+  // enforced for |media_id|.
+  RestrictionLevelAndUrl GetScreenCaptureRestrictionInfo(
+      const content::DesktopMediaID& media_id) const;
 
   // Checks and stops the running video capture if restricted content appeared
   // in the corresponding areas.

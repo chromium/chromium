@@ -37,8 +37,9 @@ class DlpReportingManager {
 
   // The different methods that cause report events from the specific
   // restrictions.
-  void ReportPrintingEvent(const std::string& src_pattern,
-                           DlpRulesManager::Level level) const;
+  void ReportEvent(const std::string& src_pattern,
+                   DlpRulesManager::Restriction restriction,
+                   DlpRulesManager::Level level) const;
 
   ReportQueueSetterCallback GetReportQueueSetter();
 

@@ -9,6 +9,8 @@
 
 #include <array>
 
+#include "url/gurl.h"
+
 namespace policy {
 
 // Enum representing the possible restrictions applied to on-screen content.
@@ -29,6 +31,26 @@ enum DlpContentRestriction {
   kMaxValue = kScreenShare,
 };
 
+// Represents result of evaluating restriction - both the level at which it
+// should be enforced and the url that caused it.
+struct RestrictionLevelAndUrl {
+  RestrictionLevelAndUrl() = default;
+  RestrictionLevelAndUrl(DlpRulesManager::Level level, GURL url)
+      : level(level), url(url) {}
+  RestrictionLevelAndUrl(const RestrictionLevelAndUrl&) = default;
+  RestrictionLevelAndUrl& operator=(const RestrictionLevelAndUrl&) = default;
+  ~RestrictionLevelAndUrl() = default;
+
+  // Restrictions with the same level, but different URLs are considered the
+  // same as they don't affect the current restriction enforcement.
+  bool operator==(const RestrictionLevelAndUrl& other) const {
+    return level == other.level;
+  }
+
+  DlpRulesManager::Level level = DlpRulesManager::Level::kNotSet;
+  GURL url;
+};
+
 // Represents set of levels of all restrictions applied to on-screen content.
 // Allowed to be copied and assigned.
 class DlpContentRestrictionSet {
@@ -45,12 +67,18 @@ class DlpContentRestrictionSet {
   bool operator==(const DlpContentRestrictionSet& other) const;
   bool operator!=(const DlpContentRestrictionSet& other) const;
 
-  // Sets the |restriction| to the |level| if not set to a higher one yet.
+  // Sets the |restriction| to the |level| if not set to a higher one yet and
+  // remembers the |url| in this case.
   void SetRestriction(DlpContentRestriction restriction,
-                      DlpRulesManager::Level level);
+                      DlpRulesManager::Level level,
+                      const GURL& gurl);
 
   // Returns the level for the |restriction|.
-  DlpRulesManager::Level GetRestriction(
+  DlpRulesManager::Level GetRestrictionLevel(
+      DlpContentRestriction restriction) const;
+
+  // Returns the level and url for the |restriction|.
+  RestrictionLevelAndUrl GetRestrictionLevelAndUrl(
       DlpContentRestriction restriction) const;
 
   // Returns whether no restrictions should be applied.
@@ -65,8 +93,8 @@ class DlpContentRestrictionSet {
       const DlpContentRestrictionSet& other) const;
 
  private:
-  // The current level of each of the restrictions.
-  std::array<DlpRulesManager::Level, DlpContentRestriction::kMaxValue + 1>
+  // The current level and url of each of the restrictions.
+  std::array<RestrictionLevelAndUrl, DlpContentRestriction::kMaxValue + 1>
       restrictions_;
 };
 
