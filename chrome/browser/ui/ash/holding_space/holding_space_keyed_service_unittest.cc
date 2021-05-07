@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
+#include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -296,6 +297,21 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(false);
   }
 
+  // BrowserWithTestWindowTest:
+  void SetUp() override {
+    // Needed by `file_manager::VolumeManager`.
+    chromeos::disks::DiskMountManager::InitializeForTesting(
+        new file_manager::FakeDiskMountManager);
+    SetUpDownloadManager();
+    BrowserWithTestWindowTest::SetUp();
+    holding_space_util::SetNowForTesting(base::nullopt);
+  }
+
+  void TearDown() override {
+    BrowserWithTestWindowTest::TearDown();
+    chromeos::disks::DiskMountManager::Shutdown();
+  }
+
   TestingProfile* CreateProfile() override {
     const std::string kPrimaryProfileName = "primary_profile";
     const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
@@ -428,21 +444,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   MockDownloadManager* download_manager() { return &download_manager_; }
 
  private:
-  // BrowserWithTestWindowTest:
-  void SetUp() override {
-    // Needed by `file_manager::VolumeManager`.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
-    SetUpDownloadManager();
-    BrowserWithTestWindowTest::SetUp();
-    holding_space_util::SetNowForTesting(base::nullopt);
-  }
-
-  void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
-    chromeos::disks::DiskMountManager::Shutdown();
-  }
-
   void SetUpDownloadManager() {
     // The `content::DownloadManager` needs to be set prior to initialization
     // of the `HoldingSpaceDownloadsDelegate`. This must happen before the
@@ -1819,97 +1820,64 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->text());
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
-  // Create a test downloads mount point.
-  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+// Base class for tests of print-to-PDF integration.
+class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
+    : public HoldingSpaceKeyedServiceTest {
+ public:
+  // Starts a job to print an empty PDF to the specified `file_path`.
+  // NOTE: This method will not return until the print job completes.
+  void StartPrintToPdfAndWaitForSave(const std::u16string& job_title,
+                                     const base::FilePath& file_path) {
+    base::RunLoop run_loop;
+    pdf_printer_handler_->SetPdfSavedClosureForTesting(run_loop.QuitClosure());
+    pdf_printer_handler_->SetPrintToPdfPathForTesting(file_path);
+
+    std::string data;
+    pdf_printer_handler_->StartPrint(job_title, /*settings=*/base::Value(),
+                                     base::RefCountedString::TakeString(&data),
+                                     /*callback=*/base::DoNothing());
+
+    run_loop.Run();
+  }
+
+ private:
+  // HoldingSpaceKeyedServiceTest:
+  void SetUp() override {
+    HoldingSpaceKeyedServiceTest::SetUp();
+
+    // Create the PDF printer handler.
+    pdf_printer_handler_ = std::make_unique<printing::PdfPrinterHandler>(
+        profile(), browser()->tab_strip_model()->GetActiveWebContents(),
+        /*sticky_settings=*/nullptr);
+  }
+
+  std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
+};
+
+// Verifies that print-to-PDF adds an associated item to holding space.
+TEST_F(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
+  // Create a file system mount point.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
-  ASSERT_TRUE(downloads_mount->IsValid());
+  ASSERT_TRUE(mount_point->IsValid());
 
-  // Wait for the holding space model.
-  HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
+  // Cache a pointer to the holding space model.
+  const HoldingSpaceModel* model =
+      HoldingSpaceKeyedServiceFactory::GetInstance()
+          ->GetService(GetProfile())
+          ->model_for_testing();
 
-  // Verify that the holding space model gets set even if the holding space
-  // keyed service is not explicitly created.
-  HoldingSpaceModel* const initial_model =
-      HoldingSpaceController::Get()->model();
-  EXPECT_TRUE(initial_model);
+  // Verify that the holding space is initially empty.
+  EXPECT_EQ(model->items().size(), 0u);
 
-  HoldingSpaceKeyedService* const holding_space_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
-  const base::FilePath item_1_virtual_path("Screen Recording 1.mpg");
-  // Create some fake screen recording file on the local file system - later
-  // parts of the test will try to resolve the file's file system URL, which
-  // fails if the file does not exist.
-  const base::FilePath item_1_full_path =
-      downloads_mount->CreateFile(item_1_virtual_path, "recording 1");
-  ASSERT_FALSE(item_1_full_path.empty());
+  // Start a job to print an empty PDF to `file_path`.
+  base::FilePath file_path = mount_point->GetRootPath().Append("foo.pdf");
+  StartPrintToPdfAndWaitForSave(u"job_title", file_path);
 
-  holding_space_service->AddScreenRecording(item_1_full_path);
-
-  const base::FilePath item_2_virtual_path =
-      base::FilePath("Alt/Screen Recording 2.mpg");
-  const base::FilePath item_2_full_path =
-      downloads_mount->CreateFile(item_2_virtual_path, "recording 2");
-  ASSERT_FALSE(item_2_full_path.empty());
-  holding_space_service->AddScreenRecording(item_2_full_path);
-
-  EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
-  EXPECT_EQ(HoldingSpaceController::Get()->model(),
-            holding_space_service->model_for_testing());
-
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(2u, model->items().size());
-
-  const HoldingSpaceItem* item_1 = model->items()[0].get();
-  EXPECT_EQ(item_1_full_path, item_1->file_path());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *holding_space_util::ResolveImage(
-           holding_space_service->thumbnail_loader_for_testing(),
-           HoldingSpaceItem::Type::kScreenRecording, item_1_full_path)
-           ->GetImageSkia()
-           .bitmap(),
-      *item_1->image().GetImageSkia().bitmap()));
-  // Verify the item file system URL resolves to the correct file in the file
-  // manager's context.
-  EXPECT_EQ(item_1_virtual_path,
-            GetVirtualPathFromUrl(item_1->file_system_url(),
-                                  downloads_mount->name()));
-  EXPECT_EQ(u"Screen Recording 1.mpg", item_1->text());
-
-  const HoldingSpaceItem* item_2 = model->items()[1].get();
-  EXPECT_EQ(item_2_full_path, item_2->file_path());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *holding_space_util::ResolveImage(
-           holding_space_service->thumbnail_loader_for_testing(),
-           HoldingSpaceItem::Type::kScreenRecording, item_2_full_path)
-           ->GetImageSkia()
-           .bitmap(),
-      *item_2->image().GetImageSkia().bitmap()));
-  // Verify the item file system URL resolves to the correct file in the file
-  // manager's context.
-  EXPECT_EQ(item_2_virtual_path,
-            GetVirtualPathFromUrl(item_2->file_system_url(),
-                                  downloads_mount->name()));
-  EXPECT_EQ(u"Screen Recording 2.mpg", item_2->text());
-
-  // Attempt to add an item with an empty file. Verify nothing gets added to the
-  // model.
-  const base::FilePath item_3_virtual_path = base::FilePath("");
-  const base::FilePath item_3_full_path =
-      downloads_mount->CreateFile(item_3_virtual_path, "");
-  ASSERT_TRUE(item_3_full_path.empty());
-  holding_space_service->AddScreenRecording(item_3_full_path);
-
-  ASSERT_EQ(2u, model->items().size());
-
-  // Attempt to add an already added screen capture to the model.
-  EXPECT_EQ(model->items()[1]->file_path(), item_2_full_path);
-  holding_space_service->AddScreenRecording(item_2_full_path);
-
-  // Attempts to add already added screen capture should be ignored.
-  ASSERT_EQ(model->items().size(), 2u);
-  EXPECT_EQ(model->items()[0].get(), item_1);
-  EXPECT_EQ(model->items()[1].get(), item_2);
+  // Verify that the holding space is now populated with the expected item.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kPrintedPdf);
+  EXPECT_EQ(model->items()[0]->file_path(), file_path);
 }
 
 }  // namespace ash

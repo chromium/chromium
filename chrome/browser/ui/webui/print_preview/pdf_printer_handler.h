@@ -60,6 +60,9 @@ class PdfPrinterHandler : public PrinterHandler,
   // Sets |pdf_file_saved_closure_| to |closure|.
   void SetPdfSavedClosureForTesting(base::OnceClosure closure);
 
+  // Sets |print_to_pdf_path_| to |path|.
+  void SetPrintToPdfPathForTesting(const base::FilePath& path);
+
   // Exposed for testing.
   static base::FilePath GetFileNameForPrintJobTitle(
       const std::u16string& job_title);
