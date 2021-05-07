@@ -26,7 +26,7 @@ constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
 // static
 const char WeeklyTime::kDayOfWeek[] = "day_of_week";
 const char WeeklyTime::kTime[] = "time";
-const char WeeklyTime::kTimezoneOffset[] = "timezon_offset";
+const char WeeklyTime::kTimezoneOffset[] = "timezone_offset";
 
 const std::vector<std::string> WeeklyTime::kWeekDays = {
     "UNSPECIFIED", "MONDAY", "TUESDAY",  "WEDNESDAY",
