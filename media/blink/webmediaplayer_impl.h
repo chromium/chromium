@@ -372,10 +372,10 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
                               ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Creates a Renderer via the |renderer_factory_selector_|. If the
-  // |factory_type| is base::nullopt, create the base Renderer. Otherwise, set
-  // the base type to be |factory_type| and create a Renderer of that type.
+  // |renderer_type| is base::nullopt, create the base Renderer. Otherwise, set
+  // the base type to be |renderer_type| and create a Renderer of that type.
   std::unique_ptr<Renderer> CreateRenderer(
-      base::Optional<RendererFactoryType> factory_type);
+      base::Optional<RendererType> renderer_type);
 
   // Finishes starting the pipeline due to a call to load().
   void StartPipeline();
@@ -1015,7 +1015,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 
   // State for simplified watch time reporting.
-  RendererFactoryType reported_renderer_type_ = RendererFactoryType::kDefault;
+  RendererType reported_renderer_type_ = RendererType::kDefault;
   SimpleWatchTimer simple_watch_timer_;
 
   LearningExperimentHelper will_play_helper_;

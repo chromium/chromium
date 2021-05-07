@@ -25,13 +25,13 @@ namespace media {
 
 class MediaLog;
 
-// Callbacks used for Renderer creation. When the FactoryType is nullopt, the
+// Callbacks used for Renderer creation. When the RendererType is nullopt, the
 // current base one will be created.
 using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-    base::Optional<RendererFactoryType>)>;
+    base::Optional<RendererType>)>;
 using RendererCreatedCB = base::OnceCallback<void(std::unique_ptr<Renderer>)>;
 using AsyncCreateRendererCB =
-    base::RepeatingCallback<void(base::Optional<RendererFactoryType>,
+    base::RepeatingCallback<void(base::Optional<RendererType>,
                                  RendererCreatedCB)>;
 
 // Pipeline runs the media pipeline.  Filters are created and called on the
@@ -146,7 +146,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.
-  void AsyncCreateRenderer(base::Optional<RendererFactoryType> factory_type,
+  void AsyncCreateRenderer(base::Optional<RendererType> renderer_type,
                            RendererCreatedCB renderer_created_cb);
 
   // Notifications from RendererWrapper.

@@ -580,16 +580,16 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
   DCHECK(cdm_context_ || !HasEncryptedStream())
       << "CDM should be available now if has encrypted stream";
 
-  base::Optional<RendererFactoryType> factory_type;
+  base::Optional<RendererType> renderer_type;
 
 #if defined(OS_WIN)
   if (cdm_context_ && cdm_context_->RequiresMediaFoundationRenderer())
-    factory_type = RendererFactoryType::kMediaFoundation;
+    renderer_type = RendererType::kMediaFoundation;
 #endif  // defined(OS_WIN)
 
   // TODO(xhwang): During Resume(), the |default_renderer_| might already match
-  // the |factory_type|, in which case we shouldn't need to create a new one.
-  if (!default_renderer_ || factory_type) {
+  // the |renderer_type|, in which case we shouldn't need to create a new one.
+  if (!default_renderer_ || renderer_type) {
     // Create the Renderer asynchronously on the main task runner. Use
     // BindToCurrentLoop to call OnRendererCreated() on the media task runner.
     auto renderer_created_cb = BindToCurrentLoop(
@@ -598,7 +598,7 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&PipelineImpl::AsyncCreateRenderer, weak_pipeline_,
-                       factory_type, std::move(renderer_created_cb)));
+                       renderer_type, std::move(renderer_created_cb)));
     return;
   }
 
@@ -1507,12 +1507,12 @@ const char* PipelineImpl::GetStateString(State state) {
 #undef RETURN_STRING
 
 void PipelineImpl::AsyncCreateRenderer(
-    base::Optional<RendererFactoryType> factory_type,
+    base::Optional<RendererType> renderer_type,
     RendererCreatedCB renderer_created_cb) {
   DVLOG(2) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::move(renderer_created_cb).Run(create_renderer_cb_.Run(factory_type));
+  std::move(renderer_created_cb).Run(create_renderer_cb_.Run(renderer_type));
 }
 
 void PipelineImpl::OnError(PipelineStatus error) {

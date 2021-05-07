@@ -105,7 +105,7 @@ namespace {
 
 const char kWatchTimeHistogram[] = "Media.WebMediaPlayerImpl.WatchTime";
 
-void RecordSimpleWatchTimeUMA(RendererFactoryType type) {
+void RecordSimpleWatchTimeUMA(RendererType type) {
   UMA_HISTOGRAM_ENUMERATION(kWatchTimeHistogram, type);
 }
 
@@ -1799,8 +1799,7 @@ void WebMediaPlayerImpl::OnError(PipelineStatus status) {
         "Media.WebMediaPlayerImpl.HLS.IsMixedContent",
         frame_url_is_cryptographic && !manifest_url_is_cryptographic);
 
-    renderer_factory_selector_->SetBaseFactoryType(
-        RendererFactoryType::kMediaPlayer);
+    renderer_factory_selector_->SetBaseRendererType(RendererType::kMediaPlayer);
 
     loaded_url_ = mb_data_source_->GetUrlAfterRedirects();
     DCHECK(data_source_);
@@ -2725,7 +2724,7 @@ void WebMediaPlayerImpl::MaybeSendOverlayInfoToDecoder() {
 }
 
 std::unique_ptr<Renderer> WebMediaPlayerImpl::CreateRenderer(
-    base::Optional<RendererFactoryType> factory_type) {
+    base::Optional<RendererType> renderer_type) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // Make sure that overlays are enabled if they're always allowed.
@@ -2738,13 +2737,14 @@ std::unique_ptr<Renderer> WebMediaPlayerImpl::CreateRenderer(
       &WebMediaPlayerImpl::OnOverlayInfoRequested, weak_this_));
 #endif
 
-  if (factory_type) {
+  if (renderer_type) {
     DVLOG(1) << __func__
-             << ": factory_type=" << static_cast<int>(factory_type.value());
-    renderer_factory_selector_->SetBaseFactoryType(factory_type.value());
+             << ": renderer_type=" << static_cast<int>(renderer_type.value());
+    renderer_factory_selector_->SetBaseRendererType(renderer_type.value());
   }
 
-  reported_renderer_type_ = renderer_factory_selector_->GetCurrentFactoryType();
+  reported_renderer_type_ =
+      renderer_factory_selector_->GetCurrentRendererType();
 
   return renderer_factory_selector_->GetCurrentFactory()->CreateRenderer(
       media_task_runner_, worker_task_runner_, audio_source_provider_.get(),

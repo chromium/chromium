@@ -463,17 +463,17 @@ void PipelineIntegrationTestBase::CreateDemuxer(
 }
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
-    base::Optional<RendererFactoryType> factory_type) {
+    base::Optional<RendererType> renderer_type) {
   if (create_renderer_cb_)
-    return create_renderer_cb_.Run(factory_type);
+    return create_renderer_cb_.Run(renderer_type);
 
-  return CreateDefaultRenderer(factory_type);
+  return CreateDefaultRenderer(renderer_type);
 }
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
-    base::Optional<RendererFactoryType> factory_type) {
-  if (factory_type && *factory_type != RendererFactoryType::kDefault) {
-    DVLOG(1) << __func__ << ": factory_type not supported";
+    base::Optional<RendererType> renderer_type) {
+  if (renderer_type && *renderer_type != RendererType::kDefault) {
+    DVLOG(1) << __func__ << ": renderer_type not supported";
     return nullptr;
   }
 

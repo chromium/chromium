@@ -14,11 +14,9 @@ namespace media {
 
 class RendererFactorySelectorTest : public testing::Test {
  public:
-  using FactoryType = RendererFactoryType;
-
   class FakeFactory : public RendererFactory {
    public:
-    explicit FakeFactory(FactoryType type) : type_(type) {}
+    explicit FakeFactory(RendererType type) : type_(type) {}
 
     std::unique_ptr<Renderer> CreateRenderer(
         const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
@@ -30,23 +28,23 @@ class RendererFactorySelectorTest : public testing::Test {
       return nullptr;
     }
 
-    FactoryType factory_type() { return type_; }
+    RendererType factory_type() { return type_; }
 
    private:
-    FactoryType type_;
+    RendererType type_;
   };
 
   RendererFactorySelectorTest() = default;
 
-  void AddBaseFactory(FactoryType type) {
+  void AddBaseFactory(RendererType type) {
     selector_.AddBaseFactory(type, std::make_unique<FakeFactory>(type));
   }
 
-  void AddFactory(FactoryType type) {
+  void AddFactory(RendererType type) {
     selector_.AddFactory(type, std::make_unique<FakeFactory>(type));
   }
 
-  void AddConditionalFactory(FactoryType type) {
+  void AddConditionalFactory(RendererType type) {
     condition_met_map_[type] = false;
     selector_.AddConditionalFactory(
         type, std::make_unique<FakeFactory>(type),
@@ -54,75 +52,75 @@ class RendererFactorySelectorTest : public testing::Test {
                             base::Unretained(this), type));
   }
 
-  FactoryType GetCurrentlySelectedFactoryType() {
+  RendererType GetCurrentlySelectedRendererType() {
     return reinterpret_cast<FakeFactory*>(selector_.GetCurrentFactory())
         ->factory_type();
   }
 
-  bool IsConditionMet(FactoryType type) {
+  bool IsConditionMet(RendererType type) {
     DCHECK(condition_met_map_.count(type));
     return condition_met_map_[type];
   }
 
  protected:
   RendererFactorySelector selector_;
-  std::map<FactoryType, bool> condition_met_map_;
+  std::map<RendererType, bool> condition_met_map_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererFactorySelectorTest);
 };
 
 TEST_F(RendererFactorySelectorTest, SingleFactory) {
-  AddBaseFactory(FactoryType::kDefault);
-  EXPECT_EQ(FactoryType::kDefault, GetCurrentlySelectedFactoryType());
+  AddBaseFactory(RendererType::kDefault);
+  EXPECT_EQ(RendererType::kDefault, GetCurrentlySelectedRendererType());
 }
 
 TEST_F(RendererFactorySelectorTest, MultipleFactory) {
-  AddBaseFactory(FactoryType::kDefault);
-  AddFactory(FactoryType::kMojo);
+  AddBaseFactory(RendererType::kDefault);
+  AddFactory(RendererType::kMojo);
 
-  EXPECT_EQ(FactoryType::kDefault, GetCurrentlySelectedFactoryType());
+  EXPECT_EQ(RendererType::kDefault, GetCurrentlySelectedRendererType());
 
-  selector_.SetBaseFactoryType(FactoryType::kMojo);
-  EXPECT_EQ(FactoryType::kMojo, GetCurrentlySelectedFactoryType());
+  selector_.SetBaseRendererType(RendererType::kMojo);
+  EXPECT_EQ(RendererType::kMojo, GetCurrentlySelectedRendererType());
 }
 
 TEST_F(RendererFactorySelectorTest, ConditionalFactory) {
-  AddBaseFactory(FactoryType::kDefault);
-  AddFactory(FactoryType::kMojo);
-  AddConditionalFactory(FactoryType::kCourier);
+  AddBaseFactory(RendererType::kDefault);
+  AddFactory(RendererType::kMojo);
+  AddConditionalFactory(RendererType::kCourier);
 
-  EXPECT_EQ(FactoryType::kDefault, GetCurrentlySelectedFactoryType());
+  EXPECT_EQ(RendererType::kDefault, GetCurrentlySelectedRendererType());
 
-  condition_met_map_[FactoryType::kCourier] = true;
-  EXPECT_EQ(FactoryType::kCourier, GetCurrentlySelectedFactoryType());
+  condition_met_map_[RendererType::kCourier] = true;
+  EXPECT_EQ(RendererType::kCourier, GetCurrentlySelectedRendererType());
 
-  selector_.SetBaseFactoryType(FactoryType::kMojo);
-  EXPECT_EQ(FactoryType::kCourier, GetCurrentlySelectedFactoryType());
+  selector_.SetBaseRendererType(RendererType::kMojo);
+  EXPECT_EQ(RendererType::kCourier, GetCurrentlySelectedRendererType());
 
-  condition_met_map_[FactoryType::kCourier] = false;
-  EXPECT_EQ(FactoryType::kMojo, GetCurrentlySelectedFactoryType());
+  condition_met_map_[RendererType::kCourier] = false;
+  EXPECT_EQ(RendererType::kMojo, GetCurrentlySelectedRendererType());
 }
 
 TEST_F(RendererFactorySelectorTest, MultipleConditionalFactories) {
-  AddBaseFactory(FactoryType::kDefault);
-  AddConditionalFactory(FactoryType::kFlinging);
-  AddConditionalFactory(FactoryType::kCourier);
+  AddBaseFactory(RendererType::kDefault);
+  AddConditionalFactory(RendererType::kFlinging);
+  AddConditionalFactory(RendererType::kCourier);
 
-  EXPECT_EQ(FactoryType::kDefault, GetCurrentlySelectedFactoryType());
+  EXPECT_EQ(RendererType::kDefault, GetCurrentlySelectedRendererType());
 
-  condition_met_map_[FactoryType::kFlinging] = false;
-  condition_met_map_[FactoryType::kCourier] = true;
-  EXPECT_EQ(FactoryType::kCourier, GetCurrentlySelectedFactoryType());
+  condition_met_map_[RendererType::kFlinging] = false;
+  condition_met_map_[RendererType::kCourier] = true;
+  EXPECT_EQ(RendererType::kCourier, GetCurrentlySelectedRendererType());
 
-  condition_met_map_[FactoryType::kFlinging] = true;
-  condition_met_map_[FactoryType::kCourier] = false;
-  EXPECT_EQ(FactoryType::kFlinging, GetCurrentlySelectedFactoryType());
+  condition_met_map_[RendererType::kFlinging] = true;
+  condition_met_map_[RendererType::kCourier] = false;
+  EXPECT_EQ(RendererType::kFlinging, GetCurrentlySelectedRendererType());
 
   // It's up to the implementation detail to decide which one to use.
-  condition_met_map_[FactoryType::kFlinging] = true;
-  condition_met_map_[FactoryType::kCourier] = true;
-  EXPECT_TRUE(GetCurrentlySelectedFactoryType() == FactoryType::kFlinging ||
-              GetCurrentlySelectedFactoryType() == FactoryType::kCourier);
+  condition_met_map_[RendererType::kFlinging] = true;
+  condition_met_map_[RendererType::kCourier] = true;
+  EXPECT_TRUE(GetCurrentlySelectedRendererType() == RendererType::kFlinging ||
+              GetCurrentlySelectedRendererType() == RendererType::kCourier);
 }
 
 }  // namespace media

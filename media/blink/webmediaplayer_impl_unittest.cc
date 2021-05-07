@@ -389,14 +389,14 @@ class WebMediaPlayerImplTest
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
 #if defined(OS_ANDROID)
     factory_selector->AddBaseFactory(
-        RendererFactoryType::kDefault,
+        RendererType::kDefault,
         std::make_unique<DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
             DefaultRendererFactory::GetGpuFactoriesCB()));
     factory_selector->StartRequestRemotePlayStateCB(base::DoNothing());
 #else
     factory_selector->AddBaseFactory(
-        RendererFactoryType::kDefault,
+        RendererType::kDefault,
         std::make_unique<DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
             DefaultRendererFactory::GetGpuFactoriesCB(), nullptr));
@@ -1755,7 +1755,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
         return mock_renderer;
       })));
 
-  renderer_factory_selector_->AddFactory(RendererFactoryType::kMediaFoundation,
+  renderer_factory_selector_->AddFactory(RendererType::kMediaFoundation,
                                          std::move(mock_renderer_factory));
 
   // Create and set CDM. The CDM doesn't support a Decryptor and requires Media

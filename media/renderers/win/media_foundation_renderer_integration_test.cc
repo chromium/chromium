@@ -61,7 +61,7 @@ class MediaFoundationRendererIntegrationTest
 
  private:
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
-      base::Optional<RendererFactoryType> factory_type) {
+      base::Optional<RendererType> /*renderer_type*/) {
     auto renderer = std::make_unique<MediaFoundationRenderer>(
         /*muted=*/false, task_environment_.GetMainThreadTaskRunner(),
         /*force_dcomp_mode_for_testing=*/true);

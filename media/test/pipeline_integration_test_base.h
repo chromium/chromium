@@ -138,7 +138,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   }
 
   std::unique_ptr<Renderer> CreateRenderer(
-      base::Optional<RendererFactoryType> factory_type);
+      base::Optional<RendererType> renderer_type);
 
  protected:
   NiceMock<MockMediaLog> media_log_;
@@ -173,11 +173,11 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // if |create_renderer_cb_| is set, it'll be used to create the Renderer
   // instead.
   using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-      base::Optional<RendererFactoryType> factory_type)>;
+      base::Optional<RendererType> renderer_type)>;
   CreateRendererCB create_renderer_cb_;
 
   std::unique_ptr<Renderer> CreateDefaultRenderer(
-      base::Optional<RendererFactoryType> factory_type);
+      base::Optional<RendererType> renderer_type);
 
   // Sets |create_renderer_cb_| which will be used to wrap the Renderer created
   // by CreateDefaultRenderer().

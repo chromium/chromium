@@ -13,30 +13,30 @@ RendererFactorySelector::RendererFactorySelector() = default;
 RendererFactorySelector::~RendererFactorySelector() = default;
 
 void RendererFactorySelector::AddBaseFactory(
-    RendererFactoryType type,
+    RendererType type,
     std::unique_ptr<RendererFactory> factory) {
   DVLOG(1) << __func__ << ": type=" << static_cast<int>(type);
-  DCHECK(!base_factory_type_) << "At most one base factory!";
+  DCHECK(!base_renderer_type_) << "At most one base factory!";
 
   AddFactory(type, std::move(factory));
-  SetBaseFactoryType(type);
+  SetBaseRendererType(type);
 }
 
 void RendererFactorySelector::AddConditionalFactory(
-    RendererFactoryType type,
+    RendererType type,
     std::unique_ptr<RendererFactory> factory,
     ConditionalFactoryCB callback) {
   DCHECK(factory);
   DCHECK(callback);
-  DCHECK(!conditional_factory_types_.count(type))
+  DCHECK(!conditional_factories_.count(type))
       << "At most one conditional factory for a given type!";
 
-  conditional_factory_types_.emplace(type, callback);
+  conditional_factories_.emplace(type, callback);
   AddFactory(type, std::move(factory));
 }
 
 void RendererFactorySelector::AddFactory(
-    RendererFactoryType type,
+    RendererType type,
     std::unique_ptr<RendererFactory> factory) {
   DCHECK(factory);
   DCHECK(!factories_.count(type));
@@ -44,26 +44,26 @@ void RendererFactorySelector::AddFactory(
   factories_[type] = std::move(factory);
 }
 
-void RendererFactorySelector::SetBaseFactoryType(RendererFactoryType type) {
+void RendererFactorySelector::SetBaseRendererType(RendererType type) {
   DCHECK(factories_.count(type));
-  base_factory_type_ = type;
+  base_renderer_type_ = type;
 }
 
-RendererFactoryType RendererFactorySelector::GetCurrentFactoryType() {
-  for (const auto& entry : conditional_factory_types_) {
+RendererType RendererFactorySelector::GetCurrentRendererType() {
+  for (const auto& entry : conditional_factories_) {
     if (entry.second.Run())
       return entry.first;
   }
 
-  return base_factory_type_.value();
+  return base_renderer_type_.value();
 }
 
 RendererFactory* RendererFactorySelector::GetCurrentFactory() {
-  RendererFactoryType current_factory_type = GetCurrentFactoryType();
+  RendererType current_renderer_type = GetCurrentRendererType();
 
   DVLOG(1) << __func__ << " Selecting factory type: "
-           << static_cast<int>(current_factory_type);
-  auto* current_factory = factories_[current_factory_type].get();
+           << static_cast<int>(current_renderer_type);
+  auto* current_factory = factories_[current_renderer_type].get();
   DCHECK(current_factory);
 
   return current_factory;
