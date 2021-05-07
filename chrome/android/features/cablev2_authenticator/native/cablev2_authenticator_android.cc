@@ -188,7 +188,8 @@ void ResetGlobalData() {
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
   global_data.usb_callback.reset();
-  global_data.pending_event.reset();
+  // pending_event is not reset because a notification might still exist that
+  // depends on it.
 }
 
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
