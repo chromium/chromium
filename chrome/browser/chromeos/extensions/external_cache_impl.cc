@@ -288,7 +288,7 @@ void ExternalCacheImpl::CheckCache() {
     downloader_->StartAllPending(nullptr);
 
   VLOG(1) << "Updated ExternalCacheImpl, there are "
-          << cached_extensions_->size() << " extensions cached";
+          << cached_extensions_->DictSize() << " extensions cached";
 
   UpdateExtensionLoader();
 }

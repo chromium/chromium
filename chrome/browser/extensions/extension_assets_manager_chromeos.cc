@@ -216,7 +216,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
 
   DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
   std::vector<std::string> extensions;
-  extensions.reserve(shared_extensions->size());
+  extensions.reserve(shared_extensions->DictSize());
   for (base::DictionaryValue::Iterator it(*shared_extensions);
        !it.IsAtEnd(); it.Advance()) {
     extensions.push_back(it.key());
@@ -440,7 +440,7 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
   }
 
   std::vector<std::string> versions;
-  versions.reserve(extension_info->size());
+  versions.reserve(extension_info->DictSize());
   for (base::DictionaryValue::Iterator it(*extension_info);
        !it.IsAtEnd();
        it.Advance()) {
@@ -501,7 +501,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
   }
 
   std::vector<std::string> versions;
-  versions.reserve(extension_info->size());
+  versions.reserve(extension_info->DictSize());
   for (base::DictionaryValue::Iterator it(*extension_info);
        !it.IsAtEnd(); it.Advance()) {
     versions.push_back(it.key());

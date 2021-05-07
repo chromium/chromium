@@ -97,7 +97,8 @@ void VerifyPendingList(
     Profile* profile) {
   const base::DictionaryValue* actual_pending_requests =
       profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests->size());
+  ASSERT_EQ(expected_pending_requests.size(),
+            actual_pending_requests->DictSize());
   for (const auto& expected_request : expected_pending_requests) {
     EXPECT_EQ(::util::TimeToValue(expected_request.second),
               *actual_pending_requests->FindKey(expected_request.first)

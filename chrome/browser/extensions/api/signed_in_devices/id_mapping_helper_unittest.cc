@@ -87,6 +87,6 @@ TEST(IdMappingHelperTest, SetIdsForDevices) {
   EXPECT_TRUE(VerifyDictionary(public_id2, devices[1]->guid(), dictionary));
   EXPECT_TRUE(VerifyDictionary(public_id3, devices[2]->guid(), dictionary));
 
-  EXPECT_EQ(dictionary.size(), 3U);
+  EXPECT_EQ(dictionary.DictSize(), 3U);
 }
 }  // namespace extensions

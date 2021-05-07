@@ -685,10 +685,10 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
         // Try to read as dictionary.
         const base::DictionaryValue *dict_value;
         if (entry.GetAsDictionary(&dict_value)) {
-          if (dict_value->size() != 1) {
+          if (dict_value->DictSize() != 1) {
             LOG(ERROR) << extension->id()
                        << " has dict in permission list with size "
-                       << dict_value->size() << ".";
+                       << dict_value->DictSize() << ".";
             safe = false;
             continue;
           }

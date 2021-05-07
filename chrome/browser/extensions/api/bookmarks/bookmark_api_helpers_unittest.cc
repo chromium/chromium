@@ -175,7 +175,7 @@ TEST_F(ExtensionBookmarksTest, RemoveNodeRecursive) {
 TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   base::DictionaryValue id_to_meta_info_map;
   GetMetaInfo(*model_->other_node(), &id_to_meta_info_map);
-  EXPECT_EQ(8u, id_to_meta_info_map.size());
+  EXPECT_EQ(8u, id_to_meta_info_map.DictSize());
 
   // Verify top level node.
   const base::Value* value = NULL;
@@ -184,8 +184,8 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   ASSERT_TRUE(NULL != value);
   const base::DictionaryValue* dictionary_value = NULL;
   EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(NULL != dictionary_value);
-  EXPECT_EQ(0u, dictionary_value->size());
+  ASSERT_TRUE(nullptr != dictionary_value);
+  EXPECT_EQ(0u, dictionary_value->DictSize());
 
   // Verify bookmark with two meta info key/value pairs.
   value = NULL;
@@ -194,8 +194,8 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   ASSERT_TRUE(NULL != value);
   dictionary_value = NULL;
   EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(NULL != dictionary_value);
-  EXPECT_EQ(2u, dictionary_value->size());
+  ASSERT_TRUE(nullptr != dictionary_value);
+  EXPECT_EQ(2u, dictionary_value->DictSize());
   std::string string_value;
   EXPECT_TRUE(dictionary_value->GetString("some_key1", &string_value));
   EXPECT_EQ("some_value1", string_value);
@@ -209,8 +209,8 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   ASSERT_TRUE(NULL != value);
   dictionary_value = NULL;
   EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(NULL != dictionary_value);
-  EXPECT_EQ(1u, dictionary_value->size());
+  ASSERT_TRUE(nullptr != dictionary_value);
+  EXPECT_EQ(1u, dictionary_value->DictSize());
   EXPECT_TRUE(dictionary_value->GetString("some_key1", &string_value));
   EXPECT_EQ("some_value1", string_value);
 
@@ -221,8 +221,8 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   ASSERT_TRUE(NULL != value);
   dictionary_value = NULL;
   EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(NULL != dictionary_value);
-  EXPECT_EQ(1u, dictionary_value->size());
+  ASSERT_TRUE(nullptr != dictionary_value);
+  EXPECT_EQ(1u, dictionary_value->DictSize());
   string_value.clear();
   EXPECT_FALSE(dictionary_value->GetString("some_key1", &string_value));
   EXPECT_EQ("", string_value);

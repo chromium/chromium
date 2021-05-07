@@ -150,7 +150,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   // An extension may override at most one page.
-  if (overrides->size() > 1) {
+  if (overrides->DictSize() > 1) {
     *error = base::ASCIIToUTF16(errors::kMultipleOverrides);
     return false;
   }

@@ -352,7 +352,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
       // current shortcut in web_app.shortcuts_menu_item_infos. A shortcut in
       // the WebAppManifest can have different icons for different sizes.
       auto shortcut_icons = std::make_unique<base::DictionaryValue>();
-      std::string curr_icon = base::NumberToString(shortcuts_icons->size());
+      std::string curr_icon = base::NumberToString(shortcuts_icons->DictSize());
       for (const auto& icon : shortcut_icon_bitmaps.any) {
         std::string size = base::NumberToString(icon.first);
         std::string icon_path =

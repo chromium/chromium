@@ -68,7 +68,7 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
   EXPECT_EQ("http://www.foo.bar/", url);
 
   // Extras are filtered out (+1 for url).
-  EXPECT_EQ(base::size(safe_attributes) + 1, copy->dict_.size());
+  EXPECT_EQ(base::size(safe_attributes) + 1, copy->dict_.DictSize());
 }
 
 TEST(WebRequestEventDetailsTest, SetResponseHeaders) {

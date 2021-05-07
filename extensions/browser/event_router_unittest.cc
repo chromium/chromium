@@ -455,7 +455,7 @@ TEST_P(EventRouterFilterTest, Basic) {
   const base::DictionaryValue* filtered_events =
       GetFilteredEvents(kExtensionId);
   ASSERT_TRUE(filtered_events);
-  ASSERT_EQ(1u, filtered_events->size());
+  ASSERT_EQ(1u, filtered_events->DictSize());
 
   DictionaryValue::Iterator iter(*filtered_events);
   ASSERT_EQ(kEventName, iter.key());

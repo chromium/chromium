@@ -68,7 +68,7 @@ bool ManifestPermissionSet::ParseFromJSON(
     if (!permissions->GetString(i, &permission_name)) {
       const base::DictionaryValue* dict = NULL;
       // permission should be a string or a single key dict.
-      if (!permissions->GetDictionary(i, &dict) || dict->size() != 1) {
+      if (!permissions->GetDictionary(i, &dict) || dict->DictSize() != 1) {
         if (error) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidPermission, base::NumberToString(i));

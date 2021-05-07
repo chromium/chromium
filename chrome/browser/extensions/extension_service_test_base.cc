@@ -248,7 +248,7 @@ size_t ExtensionServiceTestBase::GetPrefKeyCount() {
     ADD_FAILURE();
     return 0;
   }
-  return dict->size();
+  return dict->DictSize();
 }
 
 void ExtensionServiceTestBase::ValidatePrefKeyCount(size_t count) {

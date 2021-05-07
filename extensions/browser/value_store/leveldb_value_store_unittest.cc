@@ -186,5 +186,5 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   ASSERT_EQ(ValueStore::DB_RESTORE_REPAIR_SUCCESS,
             result.status().restore_status);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_EQ(0u, result.settings().size());
+  EXPECT_EQ(0u, result.settings().DictSize());
 }
