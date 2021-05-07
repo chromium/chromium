@@ -5,8 +5,11 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
-import {Route, Router, MinimumRoutes} from '../router.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {MinimumRoutes, Route, Router} from '../router.js';
 // clang-format on
 
   /**
@@ -27,6 +30,9 @@ import {Route, Router, MinimumRoutes} from '../router.js';
     // The top level Settings page, '/'.
     TOP_LEVEL: 'top-level',
   };
+
+  /** @type {!Route} */
+  const TOP_LEVEL_EQUIVALENT_ROUTE = routes.PEOPLE;
 
   /**
    * @param {?Route} route
@@ -67,6 +73,7 @@ import {Route, Router, MinimumRoutes} from '../router.js';
         type: Boolean,
         value: false,
         observer: 'inSearchModeChanged_',
+        reflectToAttribute: true,
       },
     },
 
@@ -247,6 +254,24 @@ import {Route, Router, MinimumRoutes} from '../router.js';
     },
 
     /**
+     * Shows the section corresponding to |newRoute| and hides the previously
+     * |active| section (if any).
+     * @param {!Route} newRoute
+     */
+    switchToSection_(newRoute) {
+      this.ensureSectionForRoute_(newRoute).then(section => {
+        // Clear any previously |active| section.
+        const oldSection = this.$$(`settings-section[active]`);
+        if (oldSection) {
+          oldSection.toggleAttribute('active', false);
+        }
+
+        section.toggleAttribute('active', true);
+        this.fire('show-container');
+      });
+    },
+
+    /**
      * Detects which state transition is appropriate for the given new/old
      * routes.
      * @param {!Route} newRoute
@@ -297,6 +322,20 @@ import {Route, Router, MinimumRoutes} from '../router.js';
       const newState = transition[1];
       assert(this.validTransitions_.get(oldState).has(newState));
 
+      loadTimeData.getBoolean('enableLandingPageRedesign') ?
+          this.processTransitionRedesign_(
+              oldRoute, newRoute, oldState, newState) :
+          this.processTransition_(oldRoute, newRoute, oldState, newState);
+    },
+
+    /**
+     * @param {Route} oldRoute
+     * @param {!Route} newRoute
+     * @param {!RouteState} oldState
+     * @param {!RouteState} newState
+     * @private
+     */
+    processTransition_(oldRoute, newRoute, oldState, newState) {
       if (oldState === RouteState.TOP_LEVEL) {
         if (newState === RouteState.SECTION) {
           this.scrollToSection_(newRoute);
@@ -323,7 +362,7 @@ import {Route, Router, MinimumRoutes} from '../router.js';
 
       if (oldState === RouteState.SUBPAGE) {
         if (newState === RouteState.SECTION) {
-          this.enterMainPage_(oldRoute);
+          this.enterMainPage_(/** @type {!Route} */ (oldRoute));
 
           // Scroll to the corresponding section, only if the user explicitly
           // navigated to a section (via the menu).
@@ -350,7 +389,7 @@ import {Route, Router, MinimumRoutes} from '../router.js';
           // position is automatically restored, because we focus the
           // sub-subpage entry point.
         } else if (newState === RouteState.TOP_LEVEL) {
-          this.enterMainPage_(oldRoute);
+          this.enterMainPage_(/** @type {!Route} */ (oldRoute));
         }
         return;
       }
@@ -362,6 +401,86 @@ import {Route, Router, MinimumRoutes} from '../router.js';
           this.enterSubpage_(newRoute);
         }
         // Nothing to do here for the case of RouteState.DIALOG and TOP_LEVEL.
+        return;
+      }
+
+      // Nothing to do for when oldState === RouteState.DIALOG.
+    },
+
+    /**
+     * @param {Route} oldRoute
+     * @param {!Route} newRoute
+     * @param {!RouteState} oldState
+     * @param {!RouteState} newState
+     * @private
+     */
+    processTransitionRedesign_(oldRoute, newRoute, oldState, newState) {
+      if (oldState === RouteState.TOP_LEVEL) {
+        if (newState === RouteState.SECTION) {
+          this.switchToSection_(newRoute);
+        } else if (newState === RouteState.SUBPAGE) {
+          this.enterSubpage_(newRoute);
+        } else if (newState === RouteState.TOP_LEVEL) {
+          // Case when navigating from '/?search=foo' to '/' (clearing search
+          // results).
+          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+        }
+        // Nothing to do here for the case of RouteState.DIALOG.
+        return;
+      }
+
+      if (oldState === RouteState.SECTION) {
+        if (newState === RouteState.SECTION) {
+          this.switchToSection_(newRoute);
+        } else if (newState === RouteState.SUBPAGE) {
+          this.switchToSection_(newRoute);
+          this.enterSubpage_(newRoute);
+        } else if (newState === RouteState.TOP_LEVEL) {
+          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+          this.scroller.scrollTop = 0;
+        }
+        // Nothing to do here for the case of RouteState.DIALOG.
+        return;
+      }
+
+      if (oldState === RouteState.SUBPAGE) {
+        if (newState === RouteState.SECTION) {
+          this.enterMainPage_(/** @type {!Route} */ (oldRoute));
+          this.switchToSection_(newRoute);
+        } else if (newState === RouteState.SUBPAGE) {
+          // Handle case where the two subpages belong to
+          // different sections, but are linked to each other. For example
+          // /storage and /accounts (in ChromeOS).
+          if (!oldRoute.contains(newRoute) && !newRoute.contains(oldRoute)) {
+            this.enterMainPage_(oldRoute).then(() => {
+              this.enterSubpage_(newRoute);
+            });
+            return;
+          }
+
+          // Handle case of subpage to sub-subpage navigation.
+          if (oldRoute.contains(newRoute)) {
+            this.scroller.scrollTop = 0;
+            return;
+          }
+          // When going from a sub-subpage to its parent subpage, scroll
+          // position is automatically restored, because we focus the
+          // sub-subpage entry point.
+        } else if (newState === RouteState.TOP_LEVEL) {
+          this.enterMainPage_(/** @type {!Route} */ (oldRoute));
+        }
+        return;
+      }
+
+      if (oldState === RouteState.INITIAL) {
+        if ([RouteState.SECTION, RouteState.DIALOG].includes(newState)) {
+          this.switchToSection_(newRoute);
+        } else if (newState === RouteState.SUBPAGE) {
+          this.switchToSection_(newRoute);
+          this.enterSubpage_(newRoute);
+        } else if (newState === RouteState.TOP_LEVEL) {
+          this.switchToSection_(TOP_LEVEL_EQUIVALENT_ROUTE);
+        }
         return;
       }
 

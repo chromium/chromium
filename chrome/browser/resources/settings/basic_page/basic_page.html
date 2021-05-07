@@ -54,6 +54,10 @@
       iron-icon {
         margin-inline-start: 16px;
       }
+
+      :host-context([enable-landing-page-redesign]):host(:not([in-search-mode])) settings-section:not([active]) {
+        display: none;
+      }
     </style>
     <template is="dom-if" if="[[showBasicPage_(
         currentRoute_, inSearchMode, hasExpandedSection_)]]">

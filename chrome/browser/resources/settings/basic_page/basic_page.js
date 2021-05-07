@@ -348,7 +348,8 @@ Polymer({
    * @private
    */
   showAdvancedToggle_(inSearchMode, hasExpandedSection) {
-    return !inSearchMode && !hasExpandedSection;
+    return !inSearchMode && !hasExpandedSection &&
+        !loadTimeData.getBoolean('enableLandingPageRedesign');
   },
 
   /**

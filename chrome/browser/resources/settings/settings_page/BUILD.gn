@@ -20,6 +20,7 @@ js_type_check("closure_compile_module") {
 js_library("main_page_behavior") {
   deps = [
     ":settings_section",
+    "..:route",
     "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

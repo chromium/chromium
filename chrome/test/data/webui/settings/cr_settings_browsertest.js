@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/password_manager/core/common/password_manager_features.h"');
@@ -69,6 +70,44 @@ var CrSettingsAvatarIconV3Test = class extends CrSettingsV3BrowserTest {
 
 TEST_F('CrSettingsAvatarIconV3Test', 'All', function() {
   mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var CrSettingsBasicPageV3Test = class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      disabled: ['features::kSettingsLandingPageRedesign'],
+    };
+  }
+};
+
+TEST_F('CrSettingsBasicPageV3Test', 'All', function() {
+  runMochaSuite('SettingsBasicPage');
+});
+
+// eslint-disable-next-line no-var
+var CrSettingsBasicPageRedesignV3Test = class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: ['features::kSettingsLandingPageRedesign'],
+    };
+  }
+};
+
+TEST_F('CrSettingsBasicPageRedesignV3Test', 'All', function() {
+  runMochaSuite('SettingsBasicPageRedesign');
 });
 
 // eslint-disable-next-line no-var
@@ -545,7 +584,6 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
 [['AllSites', 'all_sites_tests.js'],
  ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  ['AppearancePage', 'appearance_page_test.js'],
- ['BasicPage', 'basic_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
    'settings_category_default_radio_group_tests.js'
