@@ -70,7 +70,7 @@ const newCredentiallessWindow = (origin) => {
   const main_document_token = token();
   const url = origin + executor_path + coep_credentialless +
     `&uuid=${main_document_token}`;
-  const w = window.open(url);
+  const context = window.open(url);
   add_completion_callback(() => w.close());
   return main_document_token;
 };
@@ -88,4 +88,40 @@ const newCredentiallessIframe = (parent_token, child_origin) => {
   `)
   return sub_document_token;
 };
+
+const environments = {
+  document: headers => {
+    const tok = token();
+    const url = window.origin + executor_path + headers + `&uuid=${tok}`;
+    const context = window.open(url);
+    add_completion_callback(() => context.close());
+    return tok;
+  },
+
+  dedicated_worker: headers => {
+    const tok = token();
+    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const context = new Worker(url);
+    return tok;
+  },
+
+  shared_worker: headers => {
+    const tok = token();
+    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const context = new SharedWorker(url);
+    return tok;
+  },
+
+  service_worker: headers => {
+    const tok = token();
+    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const scope = url; // Generate a one-time scope for service worker.
+    navigator.serviceWorker.register(url, {scope: scope})
+    .then(registration => {
+      add_completion_callback(() => registration.unregister());
+    });
+    return tok;
+  },
+};
+
 
