@@ -24,6 +24,7 @@ clipboard-read
 clipboard-write
 conversion-measurement
 cross-origin-isolated
+direct-sockets
 display-capture
 document-domain
 encrypted-media

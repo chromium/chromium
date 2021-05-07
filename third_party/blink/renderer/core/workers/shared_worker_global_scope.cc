@@ -287,4 +287,8 @@ bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
 
+bool SharedWorkerGlobalScope::DirectSocketCapability() const {
+  return Agent::IsDirectSocketEnabled();
+}
+
 }  // namespace blink

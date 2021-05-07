@@ -32511,6 +32511,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="81" label="DisplayCapture"/>
   <int value="82" label="InterestCohort"/>
   <int value="83" label="SharedAutofill"/>
+  <int value="84" label="DirectSockets"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

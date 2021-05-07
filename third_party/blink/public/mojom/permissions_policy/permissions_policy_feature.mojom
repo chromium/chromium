@@ -133,6 +133,9 @@ enum PermissionsPolicyFeature {
   // a field with the main frame's origin.
   kSharedAutofill = 83,
 
+  // Controls access to Direct Sockets.
+  kDirectSockets = 84,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

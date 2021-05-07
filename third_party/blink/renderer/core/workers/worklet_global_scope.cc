@@ -103,7 +103,9 @@ WorkletGlobalScope::WorkletGlobalScope(
       frame_token_(
           creation_params->parent_context_token->GetAs<LocalFrameToken>()),
       parent_cross_origin_isolated_capability_(
-          creation_params->parent_cross_origin_isolated_capability) {
+          creation_params->parent_cross_origin_isolated_capability),
+      parent_direct_socket_capability_(
+          creation_params->parent_direct_socket_capability) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
 
@@ -293,6 +295,10 @@ KURL WorkletGlobalScope::CompleteURL(const String& url) const {
 
 bool WorkletGlobalScope::CrossOriginIsolatedCapability() const {
   return parent_cross_origin_isolated_capability_;
+}
+
+bool WorkletGlobalScope::DirectSocketCapability() const {
+  return parent_direct_socket_capability_;
 }
 
 ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {

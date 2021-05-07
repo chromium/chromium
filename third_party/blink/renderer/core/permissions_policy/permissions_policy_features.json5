@@ -147,6 +147,11 @@
       depends_on: ["CrossOriginIsolation"],
     },
     {
+      name: "DirectSockets",
+      permissions_policy_name: "direct-sockets",
+      depends_on: ["DirectSockets"],
+    },
+    {
       name: "DisplayCapture",
       permissions_policy_name: "display-capture",
       depends_on: ["GetCurrentBrowsingContextMedia"],

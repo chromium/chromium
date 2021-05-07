@@ -824,6 +824,11 @@ bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return false;
 }
 
+bool ServiceWorkerGlobalScope::DirectSocketCapability() const {
+  // TODO(mkwst): Make a decision here, and spec it.
+  return false;
+}
+
 void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls) {
   for (const String& string_url : urls) {
     KURL completed_url = CompleteURL(string_url);

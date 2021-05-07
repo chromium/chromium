@@ -53,7 +53,8 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       window->GetAgentClusterID(), ukm::kInvalidSourceId,
       window->GetExecutionContextToken(),
-      window->CrossOriginIsolatedCapability());
+      window->CrossOriginIsolatedCapability(),
+      window->DirectSocketCapability());
   global_scope_ = PaintWorkletGlobalScope::Create(
       frame, std::move(creation_params), *reporting_proxy_);
 }

@@ -79,11 +79,13 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       creation_params->response_address_space;
   const bool parent_cross_origin_isolated_capability =
       creation_params->parent_cross_origin_isolated_capability;
+  const bool parent_direct_socket_capability =
+      creation_params->parent_direct_socket_capability;
 
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
-      parent_cross_origin_isolated_capability,
+      parent_cross_origin_isolated_capability, parent_direct_socket_capability,
       std::move(dedicated_worker_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -130,6 +132,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
+    bool parent_direct_socket_capability,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host)
     : DedicatedWorkerGlobalScope(
@@ -139,6 +142,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           std::move(outside_origin_trial_tokens),
           begin_frame_provider_params,
           parent_cross_origin_isolated_capability,
+          parent_direct_socket_capability,
           std::move(dedicated_worker_host)) {}
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
@@ -148,6 +152,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
+    bool parent_direct_socket_capability,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
@@ -156,6 +161,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
       cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),
+      direct_socket_capability_(Agent::IsDirectSocketEnabled()),
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
@@ -167,6 +173,12 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
   if (!parent_cross_origin_isolated_capability) {
     cross_origin_isolated_capability_ = false;
   }
+
+  // TODO(mkwst): This needs a specification.
+  if (!parent_direct_socket_capability) {
+    direct_socket_capability_ = false;
+  }
+
   // Dedicated workers don't need to pause after script fetch.
   ReadyToRunWorkerScript();
   // Inherit the outside's origin trial tokens.
@@ -228,6 +240,9 @@ void DedicatedWorkerGlobalScope::Initialize(
   // then set worker global scope's cross-origin isolated capability to false."
   if (response_url.ProtocolIsData()) {
     cross_origin_isolated_capability_ = false;
+
+    // TODO(mkwst): This needs a spec.
+    direct_socket_capability_ = false;
   }
 }
 

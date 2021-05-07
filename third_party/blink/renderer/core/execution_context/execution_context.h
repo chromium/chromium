@@ -362,6 +362,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // https://html.spec.whatwg.org/C/webappapis.html#concept-settings-object-cross-origin-isolated-capability
   virtual bool CrossOriginIsolatedCapability() const = 0;
 
+  // Reflects the context's potential ability to use Direct Socket APIs.
+  //
+  // TODO(mkwst): We need a specification for the necessary restrictions.
+  virtual bool DirectSocketCapability() const = 0;
+
   // Returns true if SharedArrayBuffers can be transferred via PostMessage,
   // false otherwise. SharedArrayBuffer allows pages to craft high-precision
   // timers useful for Spectre-style side channel attacks, so are restricted

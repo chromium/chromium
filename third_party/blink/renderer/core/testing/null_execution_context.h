@@ -49,6 +49,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
 
   ResourceFetcher* Fetcher() const override { return nullptr; }
   bool CrossOriginIsolatedCapability() const override { return false; }
+  bool DirectSocketCapability() const override { return false; }
   FrameOrWorkerScheduler* GetScheduler() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 

@@ -66,6 +66,7 @@ class CORE_EXPORT WorkletGlobalScope
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;
   bool CrossOriginIsolatedCapability() const final;
+  bool DirectSocketCapability() const final;
   ukm::UkmRecorder* UkmRecorder() final;
 
   // WorkerOrWorkletGlobalScope
@@ -190,6 +191,12 @@ class CORE_EXPORT WorkletGlobalScope
   // restricted API between the document and the worklet (e.g.
   // SharedArrayBuffer passing via postMessage).
   const bool parent_cross_origin_isolated_capability_;
+
+  // This is inherited at construction to ensure it's possible to use APIs
+  // like Direct Sockets if they're made available in Worklets.
+  //
+  // TODO(mkwst): We need a spec for this capability.
+  const bool parent_direct_socket_capability_;
 };
 
 template <>

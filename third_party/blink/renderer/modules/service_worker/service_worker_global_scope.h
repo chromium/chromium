@@ -316,6 +316,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   const ServiceWorkerToken& GetServiceWorkerToken() const { return token_; }
   WorkerToken GetWorkerToken() const final { return token_; }
   bool CrossOriginIsolatedCapability() const final;
+  bool DirectSocketCapability() const final;
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }

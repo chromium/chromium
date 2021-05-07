@@ -2095,6 +2095,12 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
              mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated);
 }
 
+bool LocalDOMWindow::DirectSocketCapability() const {
+  return Agent::IsDirectSocketEnabled() &&
+         IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::kDirectSockets);
+}
+
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {
   DCHECK(document_);
   return document_->UkmRecorder();
