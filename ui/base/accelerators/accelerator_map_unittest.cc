@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ui {
@@ -204,6 +205,27 @@ TEST(AcceleratorMapTest, PositionalLookupVkeyMatchOnlyRegisteredDomCodeIsNone) {
 
   Accelerator pressed(VKEY_Z, DomCode::US_Y, EF_SHIFT_DOWN);
   EXPECT_TRUE(IsValidMatch(&m, pressed, expected));
+}
+
+// When an accelerator is inserted to the map, if it contains a DomCode it
+// should be stripped out.
+TEST(AcceleratorMapTest, DomCodesStrippedWhenInserted) {
+  AcceleratorMap<int> m;
+  m.set_use_positional_lookup(true);
+
+  // Verify the accelerator has a DomCode and insert it.
+  Accelerator accelerator(ui::VKEY_F, DomCode::US_F,
+                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(accelerator.code(), DomCode::US_F);
+  const int expected = 77;
+  m.InsertNew(std::make_pair(accelerator, expected));
+
+  // Reset the DomCode on the accelerator and perform a lookup and verify
+  // that it can still be found.
+  accelerator.reset_code();
+  auto* value = m.Find(accelerator);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, expected);
 }
 
 #endif  // defined(OS_CHROMEOS)

@@ -93,6 +93,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
 #if defined(OS_CHROMEOS)
   DomCode code() const { return code_; }
+  void reset_code() { code_ = DomCode::NONE; }
 #endif
 
   // Sets the key state that triggers the accelerator. Default is PRESSED.

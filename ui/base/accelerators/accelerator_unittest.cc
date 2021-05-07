@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -73,5 +75,36 @@ TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
   const Accelerator accelerator(VKEY_UNKNOWN, EF_NONE);
   EXPECT_EQ(std::u16string(), accelerator.GetShortcutText());
 }
+
+TEST(AcceleratorTest, ConversionFromKeyEvent) {
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
+                         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  Accelerator accelerator(key_event);
+
+  EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
+  EXPECT_EQ(accelerator.modifiers(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
+                         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  Accelerator accelerator(key_event);
+
+  EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
+  EXPECT_EQ(accelerator.modifiers(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+
+  // Code is set when converting from a KeyEvent.
+  EXPECT_EQ(accelerator.code(), DomCode::US_F);
+
+  // Test resetting code.
+  accelerator.reset_code();
+  EXPECT_EQ(accelerator.code(), DomCode::NONE);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace ui

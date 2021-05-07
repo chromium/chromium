@@ -79,8 +79,13 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
 
   V& GetOrInsertDefault(const Accelerator& accelerator) {
 #if defined(OS_CHROMEOS)
-    // Cannot explicitly register an accelerator with a DomCode.
-    DCHECK_EQ(DomCode::NONE, accelerator.code());
+    // Ensure the DomCode is NONE before registering. The DomCode is only
+    // used during lookup to select the correct VKEY.
+    if (accelerator.code() != DomCode::NONE) {
+      Accelerator accelerator_copy = accelerator;
+      accelerator_copy.reset_code();
+      return map_[accelerator_copy];
+    }
 #endif
     return map_[accelerator];
   }
@@ -94,8 +99,16 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   // accelerator was already in the map.
   void InsertNew(const std::pair<const Accelerator, V>& value) {
 #if defined(OS_CHROMEOS)
-    // Cannot explicitly register an accelerator with a DomCode.
-    DCHECK_EQ(DomCode::NONE, value.first.code());
+    // Ensure the DomCode is NONE before registering. The DomCode is only
+    // used during lookup to select the correct VKEY.
+    if (value.first.code() != DomCode::NONE) {
+      Accelerator accelerator_copy = value.first;
+      accelerator_copy.reset_code();
+      auto value_copy = std::make_pair(accelerator_copy, value.second);
+      auto result = map_.insert(value_copy);
+      DCHECK(result.second);
+      return;
+    }
 #endif
     auto result = map_.insert(value);
     DCHECK(result.second);
@@ -154,12 +167,15 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
     return Accelerator(lookup_key_code, DomCode::NONE, accelerator.modifiers(),
                        accelerator.key_state());
   }
-#endif
+#endif  // defined(OS_CHROMEOS)
 
   const_iterator FindImpl(const Accelerator& accelerator) const {
 #if defined(OS_CHROMEOS)
-    return map_.find(RemapAcceleratorForLookup(accelerator));
-#endif
+    auto iter = map_.find(RemapAcceleratorForLookup(accelerator));
+    // Sanity check that a DomCode was never inserted into the map.
+    DCHECK(iter == map_.end() || iter->first.code() == DomCode::NONE);
+    return iter;
+#endif  // defined(OS_CHROMEOS)
 
     return map_.find(accelerator);
   }
