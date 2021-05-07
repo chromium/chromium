@@ -79,6 +79,9 @@ void CrasAudioHandler::AudioObserver::OnOutputMuteChanged(bool /* mute_on */) {}
 
 void CrasAudioHandler::AudioObserver::OnInputMuteChanged(bool /* mute_on */) {}
 
+void CrasAudioHandler::AudioObserver::OnInputMutedByMicrophoneMuteSwitchChanged(
+    bool /* muted */) {}
+
 void CrasAudioHandler::AudioObserver::OnAudioNodesChanged() {}
 
 void CrasAudioHandler::AudioObserver::OnActiveOutputNodeChanged() {}

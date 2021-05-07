@@ -72,6 +72,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // Called when input mute state changed.
     virtual void OnInputMuteChanged(bool mute_on);
 
+    // Called when the state of input mute hw switch state changes.
+    virtual void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted);
+
     // Called when audio nodes changed.
     virtual void OnAudioNodesChanged();
 
@@ -336,6 +339,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Switches to either front or rear microphone depending on the
   // the use case. It should be called from a user initiated action.
   void SwitchToFrontOrRearMic();
+
+  bool input_muted_by_microphone_mute_switch() const {
+    return input_muted_by_microphone_mute_switch_;
+  }
 
   // Returns if system AEC is supported in CRAS.
   bool system_aec_supported() const;
@@ -669,6 +676,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // stabilized, CRAS may report to deprioritze the BT WBS mic's node
   // priority.
   bool deprioritize_bt_wbs_mic_ = false;
+
+  // Whether the audio input is muted because the microphone mute switch is on.
+  // In this case, input mute changes will be disabled.
+  bool input_muted_by_microphone_mute_switch_ = false;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.

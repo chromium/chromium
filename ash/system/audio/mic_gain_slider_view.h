@@ -27,10 +27,12 @@ class MicGainSliderView : public UnifiedSliderView,
   // CrasAudioHandler::AudioObserver:
   void OnInputNodeGainChanged(uint64_t node_id, int gain) override;
   void OnInputMuteChanged(bool mute_on) override;
+  void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnActiveInputNodeChanged() override;
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   void Update(bool by_user);

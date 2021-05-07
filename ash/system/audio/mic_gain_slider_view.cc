@@ -7,6 +7,7 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -15,6 +16,21 @@
 #include "ui/views/style/typography.h"
 
 namespace ash {
+
+namespace {
+
+// Gets resource ID for the string that should be used for mute state portion of
+// the microphone toggle button tooltip.
+int GetMuteStateTooltipTextResourceId(bool is_muted,
+                                      bool is_muted_by_mute_switch) {
+  if (is_muted_by_mute_switch)
+    return IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED_BY_HW_SWITCH;
+  if (is_muted)
+    return IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED;
+  return IDS_ASH_STATUS_TRAY_MIC_STATE_ON;
+}
+
+}  // namespace
 
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller)
     : UnifiedSliderView(
@@ -81,6 +97,8 @@ void MicGainSliderView::Update(bool by_user) {
 
   SetVisible(true);
   bool is_muted = audio_handler->IsInputMuted();
+  bool is_muted_by_mute_switch =
+      audio_handler->input_muted_by_microphone_mute_switch();
   float level = audio_handler->GetInputGainPercent() / 100.f;
 
   if (toast_label_) {
@@ -96,11 +114,11 @@ void MicGainSliderView::Update(bool by_user) {
 
   // The button should be gray when muted and colored otherwise.
   button()->SetToggled(!is_muted);
+  button()->SetEnabled(!is_muted_by_mute_switch);
   button()->SetVectorIcon(is_muted ? kMutedMicrophoneIcon
                                    : kImeMenuMicrophoneIcon);
-  std::u16string state_tooltip_text =
-      l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED
-                                         : IDS_ASH_STATUS_TRAY_MIC_STATE_ON);
+  std::u16string state_tooltip_text = l10n_util::GetStringUTF16(
+      GetMuteStateTooltipTextResourceId(is_muted, is_muted_by_mute_switch));
   button()->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_MIC_GAIN, state_tooltip_text));
 
@@ -121,6 +139,10 @@ void MicGainSliderView::OnInputNodeGainChanged(uint64_t node_id, int gain) {
   Update(true /* by_user */);
 }
 
+void MicGainSliderView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
+  Update(true /* by_user */);
+}
+
 void MicGainSliderView::OnInputMuteChanged(bool mute_on) {
   Update(true /* by_user */);
 }
@@ -131,6 +153,13 @@ void MicGainSliderView::OnActiveInputNodeChanged() {
 
 const char* MicGainSliderView::GetClassName() const {
   return "MicGainSliderView";
+}
+
+void MicGainSliderView::OnThemeChanged() {
+  if (toast_label_) {
+    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
 }
 
 }  // namespace ash
