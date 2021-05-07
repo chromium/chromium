@@ -86,7 +86,7 @@ class MergedInputStream(object):
 
     read_pipe, write_pipe = os.pipe()
 
-    self._output_stream = os.fdopen(write_pipe, 'w', 1)
+    self._output_stream = os.fdopen(write_pipe, 'wb', 1)
     self._thread = threading.Thread(target=self._Run)
     self._thread.start()
 
@@ -117,9 +117,7 @@ class MergedInputStream(object):
           primary_fd = None
 
       for fileno in rlist:
-        # TODO(chonggu): Encode streams with 'utf-8' instead of decoding each
-        # line read once we drop Python 2 support.
-        line = streams_by_fd[fileno].readline().decode('utf-8')
+        line = streams_by_fd[fileno].readline()
         if line:
           self._output_stream.write(line)
         else:
@@ -137,9 +135,7 @@ class MergedInputStream(object):
         break
 
       for fileno in rlist:
-        # TODO(chonggu): Switch to encoding='utf-8' once we drop Python 2
-        # support.
-        line = streams_by_fd[fileno].readline().decode('utf-8')
+        line = streams_by_fd[fileno].readline()
         if line:
           self._output_stream.write(line)
         else:
