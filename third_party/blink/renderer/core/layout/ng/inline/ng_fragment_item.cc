@@ -343,13 +343,15 @@ void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
   rect_ = unscaled_rect;
 }
 
-FloatRect NGFragmentItem::FloatRectInContainerFragment() const {
+FloatRect NGFragmentItem::ObjectBoundingBox() const {
   if (Type() != kSVGText)
     return FloatRect(rect_);
   const float scaling_factor =
       To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
   DCHECK_GT(scaling_factor, 0.0f);
   FloatRect item_rect = SVGFragmentData()->rect;
+  if (HasSVGTransformForBoundingBox())
+    item_rect = BuildSVGTransformForBoundingBox().MapRect(item_rect);
   item_rect.Scale(1 / scaling_factor);
   return item_rect;
 }

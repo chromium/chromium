@@ -4525,7 +4525,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1-SE/filters-image-03
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1-SE/pservers-pattern-03-f.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1-SE/struct-use-14-f.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1-SE/svgdom-over-01-f.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1-SE/text-tspan-02-b.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/page/zoom-zoom-coords.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/text/lowdpi-zoom-text.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/zoomed-text-in-clippath.html [ Failure ]

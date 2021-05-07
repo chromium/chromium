@@ -191,10 +191,11 @@ class CORE_EXPORT NGFragmentItem final {
   void SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const;
 
   const PhysicalRect& RectInContainerFragment() const { return rect_; }
-  // This function returns a FloatRect with higher precision for kSVGText
+  // This function returns a transformed unscaled FloatRect for kSVGText
   // type, and returns a FloatRect just converted from
-  // RectInContainerFragment() otherwise.
-  FloatRect FloatRectInContainerFragment() const;
+  // RectInContainerFragment() for other types.
+  FloatRect ObjectBoundingBox() const;
+
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
   }

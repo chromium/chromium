@@ -128,10 +128,7 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
           continue;
         // Do not use item.RectInContainerFragment() in order to avoid
         // precision loss.
-        FloatRect item_rect = item.FloatRectInContainerFragment();
-        if (item.HasSVGTransformForBoundingBox())
-          item_rect = item.BuildSVGTransformForBoundingBox().MapRect(item_rect);
-        bbox.Unite(item_rect);
+        bbox.Unite(item.ObjectBoundingBox());
       }
     }
     bounding_box_ = bbox;

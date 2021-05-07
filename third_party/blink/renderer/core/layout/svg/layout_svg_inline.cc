@@ -82,12 +82,8 @@ FloatRect LayoutSVGInline::ObjectBoundingBox() const {
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() != NGFragmentItem::kSVGText)
-        continue;
-      FloatRect item_rect = item.FloatRectInContainerFragment();
-      if (item.HasSVGTransformForBoundingBox())
-        item_rect = item.BuildSVGTransformForBoundingBox().MapRect(item_rect);
-      bounds.Unite(item_rect);
+      if (item.Type() == NGFragmentItem::kSVGText)
+        bounds.Unite(item.ObjectBoundingBox());
     }
     return bounds;
   }
@@ -134,7 +130,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
       if (item.Type() == NGFragmentItem::kSVGText) {
         quads.push_back(
             LocalToAbsoluteQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(
-                                    *this, item.FloatRectInContainerFragment()),
+                                    *this, item.ObjectBoundingBox()),
                                 mode));
       }
     }
