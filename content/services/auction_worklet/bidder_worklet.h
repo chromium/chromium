@@ -47,11 +47,16 @@ class BidderWorklet {
 
     // Constructor when a bid is made. `bid` must be > 0, and the URL must be
     // valid.
-    BidResult(std::string ad, double bid, GURL render_url);
+    BidResult(std::string ad,
+              double bid,
+              GURL render_url,
+              base::TimeDelta bid_duration,
+              base::Optional<std::string> trusted_bidding_signals_error_msg);
 
     // Constructor when there is no bid due to an error and an error message
     // may be available.
-    explicit BidResult(base::Optional<std::string> error_msg);
+    BidResult(base::Optional<std::string> error_msg,
+              base::Optional<std::string> trusted_bidding_signals_error_msg);
 
     BidResult(const BidResult& other);
     BidResult(BidResult&& other);
@@ -76,9 +81,16 @@ class BidderWorklet {
     // Render URL, if any bid was made.
     GURL render_url;
 
-    // Error message for debugging. This isn't guaranteed to be produced for all
-    // failures, so don't check this instead of `success`.
-    base::Optional<std::string> error_msg;
+    // How long it took to run the script that generated the bid, if a bid was
+    // made.
+    base::TimeDelta bid_duration;
+
+    // Error messages for debugging. This isn't guaranteed to be produced for
+    // all failures, so don't check this instead of `success`. It's possible for
+    // there to be an error message on success, in the case the trusted bidding
+    // signals failed to load - auctions will still be run without it, but
+    // `error_msgs` will be populated with information about the load failure.
+    std::vector<std::string> error_msgs;
   };
 
   struct ReportWinResult {
@@ -113,31 +125,29 @@ class BidderWorklet {
     base::Optional<std::string> error_msg;
   };
 
-  using LoadWorkletCallback =
-      base::OnceCallback<void(bool success,
-                              base::Optional<std::string> error_msg)>;
+  using LoadScriptAndGenerateBidCallback =
+      base::OnceCallback<void(BidResult bid_result)>;
 
-  // Starts loading the worklet script on construction. Callback will be invoked
-  // asynchronously once the data has been fetched or an error has occurred.
-  // Must be destroyed before `v8_helper`.
+  // Starts loading the worklet script on construction, as well as the trusted
+  // bidding data, if necessary. Will then call the script's generateBid()
+  // function and invoke the callback with the results. Callback will always be
+  // invoked asynchronously, once a bid has been generated or a fatal error has
+  // occurred. Must be destroyed before `v8_helper`.
   //
-  // Data is cached and reused in GenerateBid() and ReportWin().
-  BidderWorklet(network::mojom::URLLoaderFactory* url_loader_factory,
-                mojom::BiddingInterestGroupPtr bidding_interest_group,
-                const base::Optional<std::string>& auction_signals_json,
-                const base::Optional<std::string>& per_buyer_signals_json,
-                const url::Origin& browser_signal_top_window_origin,
-                const std::string& browser_signal_seller,
-                base::Time auction_start_time,
-                AuctionV8Helper* v8_helper,
-                LoadWorkletCallback load_worklet_callback);
+  // Data is cached and will be reused ReportWin().
+  BidderWorklet(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojom::BiddingInterestGroupPtr bidding_interest_group,
+      const base::Optional<std::string>& auction_signals_json,
+      const base::Optional<std::string>& per_buyer_signals_json,
+      const url::Origin& browser_signal_top_window_origin,
+      const std::string& browser_signal_seller,
+      base::Time auction_start_time,
+      AuctionV8Helper* v8_helper,
+      LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
   ~BidderWorklet();
-
-  // Calls generateBid(), and returns resulting bid, if any. May only be called
-  // once BidderWorklet has successfully loaded.
-  BidResult GenerateBid(TrustedBiddingSignals* trusted_bidding_signals);
 
   // Calls reportWin(), and returns reporting information. May only be called
   // once the worklet has successfully loaded.
@@ -148,14 +158,30 @@ class BidderWorklet {
       double browser_signal_bid);
 
  private:
-  void OnDownloadComplete(
-      LoadWorkletCallback load_worklet_callback,
+  void OnScriptDownloaded(
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
       base::Optional<std::string> error_msg);
+
+  void OnTrustedBiddingSignalsDownloaded(bool load_result,
+                                         base::Optional<std::string> error_msg);
+
+  // Checks if the script has been loaded successfully, and the
+  // TrustedBiddingSignals load has finished (successfully or not). If so, calls
+  // generateBid(), and invokes `load_script_and_generate_bid_callback_` with
+  // the resulting bid, if any. May only be called once BidderWorklet has
+  // successfully loaded.
+  void GenerateBidIfReady();
+
+  // Utility function to invoke `load_script_and_generate_bid_callback_` with
+  // `error_msg` and `trusted_bidding_signals_error_msg_`.
+  void InvokeBidCallbackOnError(
+      base::Optional<std::string> error_msg = base::nullopt);
 
   const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;
   const mojom::BiddingInterestGroupPtr bidding_interest_group_;
+
+  LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback_;
 
   const base::Optional<std::string> auction_signals_json_;
   const base::Optional<std::string> per_buyer_signals_json_;
@@ -164,6 +190,13 @@ class BidderWorklet {
   const base::Time auction_start_time_;
 
   std::unique_ptr<WorkletLoader> worklet_loader_;
+
+  bool trusted_bidding_signals_loading_ = false;
+  std::unique_ptr<TrustedBiddingSignals> trusted_bidding_signals_;
+  // Error message returned by attempt to load `trusted_bidding_signals_`.
+  // Errors loading it are not fatal, so such errors are cached here and only
+  // reported on bid completion.
+  base::Optional<std::string> trusted_bidding_signals_error_msg_;
 
   // Compiled script, not bound to any context. Can be repeatedly bound to
   // different context and executed, without persisting any state.

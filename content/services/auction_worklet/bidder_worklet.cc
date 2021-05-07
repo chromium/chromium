@@ -51,17 +51,31 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
 
 BidderWorklet::BidResult::BidResult() = default;
 
-BidderWorklet::BidResult::BidResult(std::string ad, double bid, GURL render_url)
+BidderWorklet::BidResult::BidResult(
+    std::string ad,
+    double bid,
+    GURL render_url,
+    base::TimeDelta bid_duration,
+    base::Optional<std::string> trusted_bidding_signals_error_msg)
     : success(true),
       ad(std::move(ad)),
       bid(bid),
-      render_url(std::move(render_url)) {
+      render_url(std::move(render_url)),
+      bid_duration(bid_duration) {
   DCHECK_GT(this->bid, 0);
   DCHECK(this->render_url.is_valid());
+  if (trusted_bidding_signals_error_msg)
+    error_msgs.push_back(std::move(trusted_bidding_signals_error_msg).value());
 }
 
-BidderWorklet::BidResult::BidResult(base::Optional<std::string> error_msg)
-    : error_msg(std::move(error_msg)) {}
+BidderWorklet::BidResult::BidResult(
+    base::Optional<std::string> error_msg,
+    base::Optional<std::string> trusted_bidding_signals_error_msg) {
+  if (error_msg)
+    error_msgs.push_back(std::move(error_msg).value());
+  if (trusted_bidding_signals_error_msg)
+    error_msgs.push_back(std::move(trusted_bidding_signals_error_msg).value());
+}
 
 BidderWorklet::BidResult::BidResult(const BidResult& other) = default;
 BidderWorklet::BidResult::BidResult(BidResult&& other) = default;
@@ -101,183 +115,44 @@ BidderWorklet::BidderWorklet(
     const std::string& browser_signal_seller,
     base::Time auction_start_time,
     AuctionV8Helper* v8_helper,
-    LoadWorkletCallback load_worklet_callback)
+    LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback)
     : script_source_url_(
           bidding_interest_group->group->bidding_url.value_or(GURL())),
       v8_helper_(v8_helper),
       bidding_interest_group_(std::move(bidding_interest_group)),
+      load_script_and_generate_bid_callback_(
+          std::move(load_script_and_generate_bid_callback)),
       auction_signals_json_(auction_signals_json),
       per_buyer_signals_json_(per_buyer_signals_json),
       browser_signal_top_window_hostname_(
           browser_signal_top_window_origin.host()),
       browser_signal_seller_(browser_signal_seller),
       auction_start_time_(auction_start_time) {
-  DCHECK(load_worklet_callback);
+  DCHECK(load_script_and_generate_bid_callback_);
+
   // TODO(mmenke): Remove up the value_or() for script_source_url_- auction
   // worklets shouldn't be created when there's no bidding URL.
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory, script_source_url_, v8_helper,
-      base::BindOnce(&BidderWorklet::OnDownloadComplete, base::Unretained(this),
-                     std::move(load_worklet_callback)));
+      base::BindOnce(&BidderWorklet::OnScriptDownloaded,
+                     base::Unretained(this)));
+
+  if (bidding_interest_group_->group->trusted_bidding_signals_url.has_value() &&
+      bidding_interest_group_->group->trusted_bidding_signals_keys
+          .has_value() &&
+      !bidding_interest_group_->group->trusted_bidding_signals_keys->empty()) {
+    trusted_bidding_signals_loading_ = true;
+    trusted_bidding_signals_ = std::make_unique<TrustedBiddingSignals>(
+        url_loader_factory,
+        *bidding_interest_group_->group->trusted_bidding_signals_keys,
+        browser_signal_top_window_origin.host(),
+        *bidding_interest_group_->group->trusted_bidding_signals_url, v8_helper,
+        base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                       base::Unretained(this)));
+  }
 }
 
 BidderWorklet::~BidderWorklet() = default;
-
-BidderWorklet::BidResult BidderWorklet::GenerateBid(
-    TrustedBiddingSignals* trusted_bidding_signals) {
-  const blink::mojom::InterestGroup& interest_group =
-      *bidding_interest_group_->group;
-  // Can't make a bid without any ads.
-  if (!interest_group.ads)
-    return BidResult();
-
-  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
-  v8::Isolate* isolate = v8_helper_->isolate();
-  // Short lived context, to avoid leaking data at global scope between either
-  // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8_helper_->CreateContext();
-  v8::Context::Scope context_scope(context);
-
-  std::vector<v8::Local<v8::Value>> args;
-  v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
-  gin::Dictionary interest_group_dict(isolate, interest_group_object);
-  if (!interest_group_dict.Set("owner", interest_group.owner.Serialize()) ||
-      !interest_group_dict.Set("name", interest_group.name) ||
-      (interest_group.user_bidding_signals &&
-       !v8_helper_->InsertJsonValue(context, "userBiddingSignals",
-                                    *interest_group.user_bidding_signals,
-                                    interest_group_object))) {
-    return BidResult();
-  }
-
-  if (interest_group.ads) {
-    std::vector<v8::Local<v8::Value>> ads_vector;
-    for (const auto& ad : *interest_group.ads) {
-      v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
-      gin::Dictionary ad_dict(isolate, ad_object);
-      if (!ad_dict.Set("renderUrl", ad->render_url.spec()) ||
-          (ad->metadata &&
-           !v8_helper_->InsertJsonValue(context, "metadata", *ad->metadata,
-                                        ad_object))) {
-        return BidResult();
-      }
-      ads_vector.emplace_back(std::move(ad_object));
-    }
-    if (!v8_helper_->InsertValue(
-            "ads",
-            v8::Array::New(isolate, ads_vector.data(), ads_vector.size()),
-            interest_group_object)) {
-      return BidResult();
-    }
-  }
-
-  args.push_back(std::move(interest_group_object));
-
-  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json_,
-                             &args) ||
-      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
-                             &args)) {
-    return BidResult();
-  }
-
-  v8::Local<v8::Value> trusted_signals;
-  if (!trusted_bidding_signals ||
-      !interest_group.trusted_bidding_signals_keys ||
-      interest_group.trusted_bidding_signals_keys->empty()) {
-    trusted_signals = v8::Null(isolate);
-  } else {
-    trusted_signals = trusted_bidding_signals->GetSignals(
-        context, *interest_group.trusted_bidding_signals_keys);
-  }
-  args.push_back(trusted_signals);
-
-  v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
-  gin::Dictionary browser_signals_dict(isolate, browser_signals);
-  if (!browser_signals_dict.Set("topWindowHostname",
-                                browser_signal_top_window_hostname_) ||
-      !browser_signals_dict.Set("seller", browser_signal_seller_) ||
-      !browser_signals_dict.Set("joinCount",
-                                bidding_interest_group_->signals->join_count) ||
-      !browser_signals_dict.Set("bidCount",
-                                bidding_interest_group_->signals->bid_count)) {
-    return BidResult();
-  }
-
-  std::vector<v8::Local<v8::Value>> prev_wins_v8;
-  for (const auto& prev_win : bidding_interest_group_->signals->prev_wins) {
-    int64_t time_delta = (auction_start_time_ - prev_win->time).InSeconds();
-    // Don't give negative times if clock has changed since last auction win.
-    // Clock changes do mean times can be out of numerical order, despite being
-    // in chronological order.
-    if (time_delta < 0)
-      time_delta = 0;
-    v8::Local<v8::Value> win_values[2];
-    win_values[0] = v8::Number::New(isolate, time_delta);
-    if (!v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
-             .ToLocal(&win_values[1])) {
-      return BidResult();
-    }
-    prev_wins_v8.push_back(
-        v8::Array::New(isolate, win_values, base::size(win_values)));
-  }
-  v8::Maybe<bool> result = browser_signals->Set(
-      context, gin::StringToV8(isolate, "prevWins"),
-      v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size()));
-  if (result.IsNothing() || !result.FromJust())
-    return BidResult();
-
-  args.push_back(browser_signals);
-
-  v8::Local<v8::Value> generate_bid_result;
-  base::Optional<std::string> error_msg_out;
-  if (!v8_helper_
-           ->RunScript(context, worklet_script_->Get(isolate), "generateBid",
-                       args, error_msg_out)
-           .ToLocal(&generate_bid_result)) {
-    return BidResult(std::move(error_msg_out));
-  }
-
-  if (!generate_bid_result->IsObject()) {
-    return BidResult(
-        base::StrCat({script_source_url_.spec(),
-                      " generateBid() return value not an object."}));
-  }
-
-  gin::Dictionary result_dict(isolate, generate_bid_result.As<v8::Object>());
-
-  v8::Local<v8::Value> ad_object;
-  std::string ad_json;
-  double bid;
-  std::string render_url_string;
-  // Parse and validate values.
-  if (!result_dict.Get("ad", &ad_object) ||
-      !v8_helper_->ExtractJson(context, ad_object, &ad_json) ||
-      !result_dict.Get("bid", &bid) ||
-      !result_dict.Get("render", &render_url_string)) {
-    return BidResult(
-        base::StrCat({script_source_url_.spec(),
-                      " generateBid() return value has incorrect structure."}));
-  }
-
-  if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid))
-    return BidResult();
-
-  GURL render_url(render_url_string);
-  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme)) {
-    return BidResult(base::StrCat(
-        {script_source_url_.spec(),
-         " generateBid() returned render_url isn't a valid https:// URL."}));
-  }
-
-  // `render_url` must be in `ad_render_urls`.
-  for (const auto& ad : *interest_group.ads) {
-    if (render_url == ad->render_url)
-      return BidResult(std::move(ad_json), bid, std::move(render_url));
-  }
-  return BidResult(base::StrCat({script_source_url_.spec(),
-                                 " generateBid() returned render_url isn't one "
-                                 "of the registered creative URLs."}));
-}
 
 BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
@@ -339,14 +214,220 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
   return ReportWinResult(report_bindings.report_url());
 }
 
-void BidderWorklet::OnDownloadComplete(
-    LoadWorkletCallback load_worklet_callback,
+void BidderWorklet::OnScriptDownloaded(
     std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
     base::Optional<std::string> error_msg) {
+  DCHECK(load_script_and_generate_bid_callback_);
+
+  if (worklet_script == nullptr) {
+    // Abort loading trusted bidding signals, if it hasn't completed already.
+    trusted_bidding_signals_.reset();
+    InvokeBidCallbackOnError(std::move(error_msg));
+    return;
+  }
+
   worklet_loader_.reset();
   worklet_script_ = std::move(worklet_script);
-  std::move(load_worklet_callback)
-      .Run(worklet_script_ != nullptr, std::move(error_msg));
+  GenerateBidIfReady();
+}
+
+void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
+    bool load_result,
+    base::Optional<std::string> error_msg) {
+  // Worklet results should still be pending.
+  DCHECK(load_script_and_generate_bid_callback_);
+  DCHECK(trusted_bidding_signals_loading_);
+
+  trusted_bidding_signals_error_msg_ = std::move(error_msg);
+  if (load_result == false)
+    trusted_bidding_signals_.reset();
+  trusted_bidding_signals_loading_ = false;
+
+  GenerateBidIfReady();
+}
+
+void BidderWorklet::GenerateBidIfReady() {
+  DCHECK(load_script_and_generate_bid_callback_);
+  if (trusted_bidding_signals_loading_ || !worklet_script_)
+    return;
+
+  const blink::mojom::InterestGroup& interest_group =
+      *bidding_interest_group_->group;
+  // Can't make a bid without any ads.
+  if (!interest_group.ads) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  base::TimeTicks start = base::TimeTicks::Now();
+
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
+  v8::Isolate* isolate = v8_helper_->isolate();
+  // Short lived context, to avoid leaking data at global scope between either
+  // repeated calls to this worklet, or to calls to any other worklet.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  std::vector<v8::Local<v8::Value>> args;
+  v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
+  gin::Dictionary interest_group_dict(isolate, interest_group_object);
+  if (!interest_group_dict.Set("owner", interest_group.owner.Serialize()) ||
+      !interest_group_dict.Set("name", interest_group.name) ||
+      (interest_group.user_bidding_signals &&
+       !v8_helper_->InsertJsonValue(context, "userBiddingSignals",
+                                    *interest_group.user_bidding_signals,
+                                    interest_group_object))) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  std::vector<v8::Local<v8::Value>> ads_vector;
+  for (const auto& ad : *interest_group.ads) {
+    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
+    gin::Dictionary ad_dict(isolate, ad_object);
+    if (!ad_dict.Set("renderUrl", ad->render_url.spec()) ||
+        (ad->metadata && !v8_helper_->InsertJsonValue(
+                             context, "metadata", *ad->metadata, ad_object))) {
+      InvokeBidCallbackOnError();
+      return;
+    }
+    ads_vector.emplace_back(std::move(ad_object));
+  }
+  if (!v8_helper_->InsertValue(
+          "ads", v8::Array::New(isolate, ads_vector.data(), ads_vector.size()),
+          interest_group_object)) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  args.push_back(std::move(interest_group_object));
+
+  if (!AppendJsonValueOrNull(v8_helper_, context, auction_signals_json_,
+                             &args) ||
+      !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
+                             &args)) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  v8::Local<v8::Value> trusted_signals;
+  if (!trusted_bidding_signals_) {
+    trusted_signals = v8::Null(isolate);
+  } else {
+    trusted_signals = trusted_bidding_signals_->GetSignals(
+        context, *interest_group.trusted_bidding_signals_keys);
+  }
+  args.push_back(trusted_signals);
+
+  v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
+  gin::Dictionary browser_signals_dict(isolate, browser_signals);
+  if (!browser_signals_dict.Set("topWindowHostname",
+                                browser_signal_top_window_hostname_) ||
+      !browser_signals_dict.Set("seller", browser_signal_seller_) ||
+      !browser_signals_dict.Set("joinCount",
+                                bidding_interest_group_->signals->join_count) ||
+      !browser_signals_dict.Set("bidCount",
+                                bidding_interest_group_->signals->bid_count)) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  std::vector<v8::Local<v8::Value>> prev_wins_v8;
+  for (const auto& prev_win : bidding_interest_group_->signals->prev_wins) {
+    int64_t time_delta = (auction_start_time_ - prev_win->time).InSeconds();
+    // Don't give negative times if clock has changed since last auction win.
+    // Clock changes do mean times can be out of numerical order, despite being
+    // in chronological order.
+    if (time_delta < 0)
+      time_delta = 0;
+    v8::Local<v8::Value> win_values[2];
+    win_values[0] = v8::Number::New(isolate, time_delta);
+    if (!v8_helper_->CreateValueFromJson(context, prev_win->ad_json)
+             .ToLocal(&win_values[1])) {
+      InvokeBidCallbackOnError();
+      return;
+    }
+    prev_wins_v8.push_back(
+        v8::Array::New(isolate, win_values, base::size(win_values)));
+  }
+  v8::Maybe<bool> result = browser_signals->Set(
+      context, gin::StringToV8(isolate, "prevWins"),
+      v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size()));
+  if (result.IsNothing() || !result.FromJust()) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  args.push_back(browser_signals);
+
+  v8::Local<v8::Value> generate_bid_result;
+  base::Optional<std::string> error_msg_out;
+  if (!v8_helper_
+           ->RunScript(context, worklet_script_->Get(isolate), "generateBid",
+                       args, error_msg_out)
+           .ToLocal(&generate_bid_result)) {
+    InvokeBidCallbackOnError(std::move(error_msg_out));
+    return;
+  }
+
+  if (!generate_bid_result->IsObject()) {
+    InvokeBidCallbackOnError(
+        base::StrCat({script_source_url_.spec(),
+                      " generateBid() return value not an object."}));
+    return;
+  }
+
+  gin::Dictionary result_dict(isolate, generate_bid_result.As<v8::Object>());
+
+  v8::Local<v8::Value> ad_object;
+  std::string ad_json;
+  double bid;
+  std::string render_url_string;
+  // Parse and validate values.
+  if (!result_dict.Get("ad", &ad_object) ||
+      !v8_helper_->ExtractJson(context, ad_object, &ad_json) ||
+      !result_dict.Get("bid", &bid) ||
+      !result_dict.Get("render", &render_url_string)) {
+    InvokeBidCallbackOnError(
+        base::StrCat({script_source_url_.spec(),
+                      " generateBid() return value has incorrect structure."}));
+    return;
+  }
+
+  if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid)) {
+    InvokeBidCallbackOnError();
+    return;
+  }
+
+  GURL render_url(render_url_string);
+  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme)) {
+    return InvokeBidCallbackOnError(base::StrCat(
+        {script_source_url_.spec(),
+         " generateBid() returned render_url isn't a valid https:// URL."}));
+    return;
+  }
+
+  // `render_url` must be in `ad_render_urls`.
+  for (const auto& ad : *interest_group.ads) {
+    if (render_url == ad->render_url) {
+      std::move(load_script_and_generate_bid_callback_)
+          .Run(BidResult(std::move(ad_json), bid, std::move(render_url),
+                         base::TimeTicks::Now() - start /* bid_duration */,
+                         std::move(trusted_bidding_signals_error_msg_)));
+      return;
+    }
+  }
+  InvokeBidCallbackOnError(
+      base::StrCat({script_source_url_.spec(),
+                    " generateBid() returned render_url isn't one "
+                    "of the registered creative URLs."}));
+}
+
+void BidderWorklet::InvokeBidCallbackOnError(
+    base::Optional<std::string> error_msg) {
+  std::move(load_script_and_generate_bid_callback_)
+      .Run(BidResult(std::move(error_msg),
+                     std::move(trusted_bidding_signals_error_msg_)));
 }
 
 }  // namespace auction_worklet

@@ -16,14 +16,11 @@
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/seller_worklet.h"
-#include "content/services/auction_worklet/trusted_bidding_signals.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 
 namespace auction_worklet {
-
-class TrustedBiddingSignals;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
@@ -57,23 +54,13 @@ class AuctionRunner {
 
     mojom::BiddingInterestGroup* bidder = nullptr;
 
-    // true if loading of the bidder script failed, meaning that no bidding
-    // will actually be done.
-    bool failed = false;
+    // true if the generateBid() callback passed to the BidderWorklet's
+    // constructor has been invoked. This may indicated either successful
+    // generation of a bid, or failure to load or run the script.
+    bool bid_generate_complete = false;
 
-    // true if there is no outstanding load of trusted bidding signals pending
-    // for this bidder (including if none were configured or it failed; in such
-    // cases `trusted_bidding_signals` will be null).
-    bool trusted_signals_loaded = false;
-
-    // true if there is no outstanding load of the bidder script pending
-    // (including if the load failed).
-    bool bidder_script_loaded = false;
-
-    std::unique_ptr<TrustedBiddingSignals> trusted_bidding_signals;
     std::unique_ptr<BidderWorklet> bidder_worklet;
     BidderWorklet::BidResult bid_result;
-    base::TimeDelta bid_duration;
     SellerWorklet::ScoreResult score_result;
   };
 
@@ -86,14 +73,8 @@ class AuctionRunner {
   ~AuctionRunner();
 
   void StartBidding();
-  void OnBidderScriptLoaded(BidState* state,
-                            bool load_result,
-                            base::Optional<std::string> error_msg);
-  void OnTrustedSignalsLoaded(BidState* state,
-                              bool load_result,
-                              base::Optional<std::string> error_msg);
-  void MaybeRunBid(BidState* state);
-  void RunBid(BidState* state);
+  void OnGenerateBidComplete(BidState* state,
+                             BidderWorklet::BidResult bid_result);
 
   // True if all bid results and the seller script load are complete.
   bool ReadyToScore() const { return outstanding_bids_ == 0 && seller_loaded_; }
