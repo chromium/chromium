@@ -64,6 +64,21 @@
     },
     'identifier': 'iPhone 6S 12.3.1'
   },
+  'LACROS_VERSION_SKEW_CANARY': {
+    'args': [
+      '--ash-chrome-path=../../lacros_version_skew_tests_M92/chrome',
+    ],
+    'identifier': 'Lacros version skew testing ash 92.0.4499.0',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_M92',
+          'revision': 'version:92.0.4499.0',
+        },
+      ],
+    },
+  },
   'SIM_IPAD_AIR_2_12_4': {
     'args': [
       '--platform',

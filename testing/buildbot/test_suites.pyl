@@ -4313,6 +4313,10 @@
       'sandbox_linux_unittests': {},
     },
 
+    'linux_lacros_chrome_browsertests_version_skew': {
+      'lacros_chrome_browsertests': { },
+    },
+
     'linux_lacros_cq_gtests': {
       'browser_tests': {
         'swarming': {
@@ -7269,6 +7273,14 @@
       'lacros_smoke_tast_tests': {
         'variants': [
           'LACROS_EVE',
+        ]
+      },
+    },
+
+    'linux-lacros-version-skew-tests': {
+      'linux_lacros_chrome_browsertests_version_skew': {
+        'variants': [
+          'LACROS_VERSION_SKEW_CANARY',
         ]
       },
     },

@@ -3332,9 +3332,11 @@
       },
       'linux-lacros-version-skew-fyi': {
         'additional_compile_targets': [
-          'chrome',
-          'chrome_sandbox',
+          'chromiumos_preflight',
         ],
+        'test_suites': {
+          'gtest_tests': 'linux-lacros-version-skew-tests',
+        },
       },
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
