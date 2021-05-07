@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -87,7 +85,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                    SignOutDialogFragment.SignOutDialogListener,
                    SyncErrorCardPreference.SyncErrorCardPreferenceListener {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
-    private static final String FRAGMENT_CANCEL_SYNC = "cancel_sync_dialog";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
 
@@ -291,12 +288,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                && item.getItemId() == android.R.id.home) {
-            if (!mIsFromSigninScreen) return false; // Let Settings activity handle it.
-            showCancelSyncDialog();
-            return true;
-        } else if (item.getItemId() == R.id.menu_id_targeted_help) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
             HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
                     getString(R.string.help_context_sync_and_services),
                     Profile.getLastUsedRegularProfile(), null);
@@ -667,12 +659,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onBackPressed() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                || !mIsFromSigninScreen) {
-            return false; // Let parent activity handle it.
+        if (mIsFromSigninScreen) {
+            RecordUserAction.record("Signin_Signin_BackOnAdvancedSyncSettings");
         }
-        showCancelSyncDialog();
-        return true;
+        return false;
     }
 
     // SyncErrorCardPreferenceListener implementation:
@@ -742,13 +732,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         getActivity().finish();
     }
 
-    private void showCancelSyncDialog() {
-        RecordUserAction.record("Signin_Signin_BackOnAdvancedSyncSettings");
-        CancelSyncDialog dialog = new CancelSyncDialog();
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), FRAGMENT_CANCEL_SYNC);
-    }
-
     private void confirmSettings() {
         RecordUserAction.record("Signin_Signin_ConfirmAdvancedSyncSettings");
         ProfileSyncService.get().setFirstSetupComplete(
@@ -766,39 +749,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 .signOut(org.chromium.components.signin.metrics.SignoutReason
                                  .USER_CLICKED_SIGNOUT_SETTINGS);
         getActivity().finish();
-    }
-
-    /**
-     * The dialog that offers the user to cancel sync. Only shown when
-     * {@link ManageSyncSettings} is opened from the sign-in screen. Shown when the user
-     * tries to close the settings page without confirming settings.
-     */
-    public static class CancelSyncDialog extends DialogFragment {
-        public CancelSyncDialog() {
-            // Fragment must have an empty public constructor
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                    .setTitle(R.string.cancel_sync_dialog_title)
-                    .setMessage(R.string.cancel_sync_dialog_message)
-                    .setNegativeButton(R.string.back, (dialog, which) -> onBackPressed())
-                    .setPositiveButton(
-                            R.string.cancel_sync_button, (dialog, which) -> onCancelSyncPressed())
-                    .create();
-        }
-
-        private void onBackPressed() {
-            RecordUserAction.record("Signin_Signin_CancelCancelAdvancedSyncSettings");
-            dismiss();
-        }
-
-        public void onCancelSyncPressed() {
-            RecordUserAction.record("Signin_Signin_ConfirmCancelAdvancedSyncSettings");
-            ManageSyncSettings fragment = (ManageSyncSettings) getTargetFragment();
-            fragment.cancelSync();
-        }
     }
 
     // SignOutDialogListener implementation:

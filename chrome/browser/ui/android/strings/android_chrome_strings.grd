@@ -375,15 +375,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_USAGE_AND_CRASH_REPORTS_SUMMARY" desc="Description for 'Help improve Chrome's features and performance' preference.">
         Automatically sends usage statistics and crash reports to Google
       </message>
-      <message name="IDS_CANCEL_SYNC_DIALOG_TITLE" desc="The title of a dialog that is shown when users tries closing 'Sync and Google services' preferences without confirming the changes.">
-        Cancel sync?
-      </message>
-      <message name="IDS_CANCEL_SYNC_DIALOG_MESSAGE" desc="The text of a dialog that is shown when users tries closing 'Sync and Google services' preferences without confirming the changes.">
-        You can turn on sync anytime in settings
-      </message>
-      <message name="IDS_CANCEL_SYNC_BUTTON" desc="The text of a button in a dialog that is shown when users tries closing 'Sync and Google services' preferences without confirming the changes.">
-        Cancel sync
-      </message>
 
       <!-- Metrics settings -->
       <message name="IDS_PREFS_METRICS_SETTINGS" desc="Title for the page that allows the user to control how much usage data Chrome uploads. [CHAR_LIMIT=32]">
