@@ -32,6 +32,7 @@ pausable. Some internal task queues are not.
 | Sensor                            | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | PerformanceTimeline               | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WebGL                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
+| WebGPU                            | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | IdleTask                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | MiscPlatformAPI                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WorkerAnimation                   | No          | No                      |  No        | Yes       | Yes      | Yes          |

@@ -149,6 +149,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "MainThreadTaskQueueIPCTracking";
     case TaskType::kWakeLock:
       return "WakeLock";
+    case TaskType::kWebGPU:
+      return "WebGPU";
     case TaskType::kCount:
       return "Count";
   }

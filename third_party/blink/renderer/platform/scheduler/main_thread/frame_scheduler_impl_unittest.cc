@@ -148,10 +148,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalNavigationAssociatedUnfreezable,
     TaskType::kInternalHighPriorityLocalFrame,
     TaskType::kInternalInputBlocking,
-    TaskType::kWakeLock};
+    TaskType::kWakeLock,
+    TaskType::kWebGPU};
 
 static_assert(
-    static_cast<int>(TaskType::kCount) == 78,
+    static_cast<int>(TaskType::kCount) == 79,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {

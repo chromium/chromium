@@ -580,6 +580,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kUserInteraction,
       TaskType::kWakeLock,
       TaskType::kWebGL,
+      TaskType::kWebGPU,
       TaskType::kWebLocks,
       TaskType::kWebSocket,
       TaskType::kWorkerAnimation};
