@@ -1546,7 +1546,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Overridden from ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnLayerTransformed(const gfx::Transform& old_transform,
-                          ui::PropertyChangeReason reason) override;
+                          ui::PropertyChangeReason reason) final;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 

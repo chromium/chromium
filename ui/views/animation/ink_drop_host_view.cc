@@ -45,8 +45,27 @@ bool InkDropHostView::InkDropHostViewEventHandlerDelegate::
   return host_view_->ink_drop_mode_ == InkDropMode::ON;
 }
 
+InkDropHostView::ViewLayerTransformObserver::ViewLayerTransformObserver(
+    InkDropHostView* host)
+    : host_(host) {
+  observation_.Observe(host);
+}
+
+InkDropHostView::ViewLayerTransformObserver::~ViewLayerTransformObserver() =
+    default;
+
+void InkDropHostView::ViewLayerTransformObserver::OnViewLayerTransformed(
+    View* observed_view) {
+  DCHECK_EQ(observed_view, host_);
+  // Notify the ink drop that we have transformed so it can adapt
+  // accordingly.
+  if (host_->HasInkDrop())
+    host_->GetInkDrop()->HostTransformChanged(host_->GetTransform());
+}
+
 InkDropHostView::InkDropHostView()
-    : ink_drop_event_handler_delegate_(this),
+    : host_view_transform_observer_(this),
+      ink_drop_event_handler_delegate_(this),
       ink_drop_event_handler_(this, &ink_drop_event_handler_delegate_) {}
 
 InkDropHostView::~InkDropHostView() {
@@ -314,15 +333,6 @@ gfx::Size InkDropHostView::CalculateLargeInkDropSize(
   // SquareInkDropRipple.
   constexpr float kLargeInkDropScale = 1.333f;
   return gfx::ScaleToCeiledSize(gfx::Size(small_size), kLargeInkDropScale);
-}
-
-void InkDropHostView::OnLayerTransformed(const gfx::Transform& old_transform,
-                                         ui::PropertyChangeReason reason) {
-  View::OnLayerTransformed(old_transform, reason);
-
-  // Notify the ink drop that we have transformed so it can adapt accordingly.
-  if (HasInkDrop())
-    GetInkDrop()->HostTransformChanged(GetTransform());
 }
 
 const InkDropEventHandler* InkDropHostView::GetEventHandler() const {

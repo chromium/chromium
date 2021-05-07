@@ -225,12 +225,20 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // with the SquareInkDropRipple animation durations.
   static gfx::Size CalculateLargeInkDropSize(const gfx::Size& small_size);
 
-  // View:
-  void OnLayerTransformed(const gfx::Transform& old_transform,
-                          ui::PropertyChangeReason reason) override;
-
  private:
   friend class test::InkDropHostViewTestApi;
+
+  class ViewLayerTransformObserver : public ViewObserver {
+   public:
+    explicit ViewLayerTransformObserver(InkDropHostView* host);
+    ~ViewLayerTransformObserver() override;
+
+    void OnViewLayerTransformed(View* observed_view) override;
+
+   private:
+    base::ScopedObservation<View, ViewObserver> observation_{this};
+    InkDropHostView* const host_;
+  };
 
   class InkDropHostViewEventHandlerDelegate
       : public InkDropEventHandler::Delegate {
@@ -266,6 +274,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Defines what type of |ink_drop_| to create.
   InkDropMode ink_drop_mode_ = InkDropMode::OFF;
+
+  // Used to observe View and inform the InkDrop of host-transform changes.
+  ViewLayerTransformObserver host_view_transform_observer_;
 
   // Should not be accessed directly. Use GetInkDrop() instead.
   std::unique_ptr<InkDrop> ink_drop_;

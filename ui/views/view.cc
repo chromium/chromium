@@ -2073,6 +2073,9 @@ void View::OnPaintLayer(const ui::PaintContext& context) {
 void View::OnLayerTransformed(const gfx::Transform& old_transform,
                               ui::PropertyChangeReason reason) {
   NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged, false);
+
+  for (ViewObserver& observer : observers_)
+    observer.OnViewLayerTransformed(this);
 }
 
 void View::OnDeviceScaleFactorChanged(float old_device_scale_factor,
