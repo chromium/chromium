@@ -262,7 +262,7 @@ source, at high privilege, and in an unsafe language. These types are
 fundamental for passing data between processes using IPC, tend to have simpler
 grammar or structure, and/or have been audited or fuzzed heavily.
 
-* `GURL`
+* `GURL` and `url::Origin`
 * `SkBitmap`
 * `SkPixmap`
 * Protocol buffers (see above; this is not a preferred option and should be
