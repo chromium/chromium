@@ -214,6 +214,24 @@ void ManualFillingControllerImpl::OnToggleChanged(
   controller->OnToggleChanged(toggled_action, enabled);
 }
 
+void ManualFillingControllerImpl::RequestAccessorySheet(
+    autofill::AccessoryTabType tab_type,
+    base::OnceCallback<void(const autofill::AccessorySheetData&)> callback) {
+  // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
+  base::Optional<AccessorySheetData> sheet =
+      GetControllerForTabType(tab_type)->GetSheetData();
+  // After they were loaded, all currently existing sheet types always return a
+  // value and will always result in a called callback.
+  // The only case where they are not available is before their first load (so
+  // if a user entered a tab but didn't focus any fields yet). In that case, the
+  // update is unnecessary since the first focus will push the correct sheet.
+  // TODO(crbug.com/1169167): Consider sending a null or default sheet to cover
+  // future cases where we can't rely on a sheet always being available.
+  if (sheet.has_value()) {
+    std::move(callback).Run(sheet.value());
+  }
+}
+
 gfx::NativeView ManualFillingControllerImpl::container_view() const {
   return web_contents_->GetNativeView();
 }

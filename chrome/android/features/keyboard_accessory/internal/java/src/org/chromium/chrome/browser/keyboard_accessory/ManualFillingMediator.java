@@ -212,6 +212,12 @@ class ManualFillingMediator extends EmptyTabObserver
                 || mWindowAndroid.getDisplay().getRotation() == Surface.ROTATION_180;
     }
 
+    public void registerSheetUpdateDelegate(
+            WebContents webContents, ManualFillingComponent.UpdateAccessorySheetDelegate delegate) {
+        // TODO(crbug.com/1169167): Associate the delegate with the ManualFillingState to allow
+        // requesting sheets if tabs change.
+    }
+
     void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int tabType,
             PropertyProvider<KeyboardAccessoryData.AccessorySheetData> dataProvider) {
         if (!isInitialized()) return;

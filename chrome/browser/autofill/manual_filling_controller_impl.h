@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,11 @@ class ManualFillingControllerImpl
       autofill::AccessoryAction selected_action) const override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) const override;
+  void RequestAccessorySheet(
+      autofill::AccessoryTabType tab_type,
+      base::OnceCallback<void(const autofill::AccessorySheetData&)> callback)
+      override;
+
   gfx::NativeView container_view() const override;
 
   // Returns a weak pointer for this object.

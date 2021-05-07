@@ -32,6 +32,10 @@ class MockManualFillingController
   MOCK_CONST_METHOD2(OnToggleChanged,
                      void(autofill::AccessoryAction toggled_action,
                           bool enabled));
+  MOCK_METHOD2(
+      RequestAccessorySheet,
+      void(autofill::AccessoryTabType,
+           base::OnceCallback<void(const autofill::AccessorySheetData&)>));
   MOCK_CONST_METHOD0(container_view, gfx::NativeView());
 
  private:

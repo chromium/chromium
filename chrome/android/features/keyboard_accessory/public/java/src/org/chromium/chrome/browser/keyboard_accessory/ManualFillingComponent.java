@@ -73,6 +73,16 @@ public interface ManualFillingComponent {
         int calculateSoftKeyboardHeight(View rootView);
     }
 
+    /** A delegate that can be used to request updates for accessory sheets. */
+    interface UpdateAccessorySheetDelegate {
+        /**
+         * Requests a timely update to the accessory sheet of the given {@param sheetType}. If any
+         * sheet can be constructed, the native side will push it, even if it was pushed before.
+         * @param sheetType The {@link AccessoryTabType} of the sheet that should be updated.
+         */
+        void requestSheet(@AccessoryTabType int sheetType);
+    }
+
     /**
      * Initializes the manual filling component. Calls to this class are NoOps until this method
      * is called.
@@ -118,6 +128,14 @@ public interface ManualFillingComponent {
      */
     void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int sheetType,
             PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
+
+    /**
+     * Registers an updater delegate which requests new accessory sheets for a given `webContents`.
+     * @param webContents The {@link WebContents} the given `delegate` maintains sheets for.
+     * @param delegate A {@link UpdateAccessorySheetDelegate} to issue requests for recent sheets.
+     */
+    void registerSheetUpdateDelegate(
+            WebContents webContents, UpdateAccessorySheetDelegate delegate);
 
     /**
      * Registers a provider, to provide actions for the keyboard accessory bar. Call

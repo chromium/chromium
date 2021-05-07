@@ -43,6 +43,10 @@ class ManualFillingComponentBridge {
         PropertyProvider<AccessorySheetData> provider = mProviders.get(tabType);
         if (provider != null) return provider;
         if (getManualFillingComponent() == null) return null;
+        if (mProviders.size() == 0) { // True iff the component is available for the first time.
+            getManualFillingComponent().registerSheetUpdateDelegate(
+                    mWebContents, this::requestSheet);
+        }
         provider = new PropertyProvider<>();
         mProviders.put(tabType, provider);
         getManualFillingComponent().registerSheetDataProvider(mWebContents, tabType, provider);
@@ -236,6 +240,13 @@ class ManualFillingComponentBridge {
         }
     }
 
+    private void requestSheet(int sheetType) {
+        if (mNativeView != 0) {
+            ManualFillingComponentBridgeJni.get().requestAccessorySheet(
+                    mNativeView, ManualFillingComponentBridge.this, sheetType);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onFillingTriggered(long nativeManualFillingViewAndroid,
@@ -246,6 +257,8 @@ class ManualFillingComponentBridge {
                 ManualFillingComponentBridge caller, int accessoryAction, boolean enabled);
         void onViewDestroyed(
                 long nativeManualFillingViewAndroid, ManualFillingComponentBridge caller);
+        void requestAccessorySheet(long nativeManualFillingViewAndroid,
+                ManualFillingComponentBridge caller, int sheetType);
         void cachePasswordSheetDataForTesting(WebContents webContents, String[] userNames,
                 String[] passwords, boolean originDenylisted);
         void notifyFocusedFieldTypeForTesting(

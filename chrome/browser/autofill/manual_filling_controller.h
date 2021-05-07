@@ -119,6 +119,12 @@ class ManualFillingController {
   virtual void OnToggleChanged(autofill::AccessoryAction toggled_action,
                                bool enabled) const = 0;
 
+  // Called by the UI to explicitly request a new sheet of the given type.
+  virtual void RequestAccessorySheet(
+      autofill::AccessoryTabType tab_type,
+      base::OnceCallback<void(const autofill::AccessorySheetData&)>
+          callback) = 0;
+
   // -----------------
   // Member accessors:
   // -----------------

@@ -15,6 +15,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/keyboard_accessory/jni_headers/ManualFillingComponentBridge_jni.h"
@@ -128,6 +129,18 @@ void ManualFillingViewAndroid::OnToggleChanged(
     jboolean enabled) {
   controller_->OnToggleChanged(
       static_cast<autofill::AccessoryAction>(selected_action), enabled);
+}
+
+void ManualFillingViewAndroid::RequestAccessorySheet(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jint tab_type) {
+  // controller_ owns this class. Therefore, the callback can't outlive the view
+  // and base::Unretained is always a valid reference.
+  controller_->RequestAccessorySheet(
+      static_cast<autofill::AccessoryTabType>(tab_type),
+      base::BindOnce(&ManualFillingViewAndroid::OnItemsAvailable,
+                     base::Unretained(this)));
 }
 
 void ManualFillingViewAndroid::OnViewDestroyed(

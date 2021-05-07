@@ -104,6 +104,12 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
+    public void registerSheetUpdateDelegate(
+            WebContents webContents, UpdateAccessorySheetDelegate delegate) {
+        mMediator.registerSheetUpdateDelegate(webContents, delegate);
+    }
+
+    @Override
     public void registerAutofillProvider(
             PropertyProvider<AutofillSuggestion[]> autofillProvider, AutofillDelegate delegate) {
         mMediator.registerAutofillProvider(autofillProvider, delegate);
