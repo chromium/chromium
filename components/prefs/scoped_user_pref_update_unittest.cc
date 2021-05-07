@@ -102,9 +102,9 @@ TEST_F(ScopedUserPrefUpdateTest, UpdatingDictionaryPrefWithDefaults) {
 
   std::string pref_name = "mypref";
   prefs_.registry()->RegisterDictionaryPref(pref_name, std::move(defaults));
-  EXPECT_EQ(2u, prefs_.GetDictionary(pref_name)->size());
+  EXPECT_EQ(2u, prefs_.GetDictionary(pref_name)->DictSize());
 
   DictionaryPrefUpdate update(&prefs_, pref_name);
   update->SetKey("thirdkey", base::Value("value"));
-  EXPECT_EQ(3u, prefs_.GetDictionary(pref_name)->size());
+  EXPECT_EQ(3u, prefs_.GetDictionary(pref_name)->DictSize());
 }
