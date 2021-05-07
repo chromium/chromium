@@ -10,8 +10,6 @@ assert(enable_extensions)
 # TODO(crbug.com/1065748): Delete web_applications/extensions/ directory.
 source_set("extensions") {
   sources = [
-    # TODO(crbug.com/1199918): Delete WebAppMigrationManager class.
-    "../web_app_migration_manager.cc",
     "bookmark_app_file_handler_manager.cc",
     "bookmark_app_file_handler_manager.h",
     "bookmark_app_finalizer_utils.cc",

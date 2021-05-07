@@ -54,8 +54,8 @@ class InstallFinalizerUnitTest : public WebAppTest {
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
                                                         std::move(file_utils));
     ui_manager_ = std::make_unique<TestWebAppUiManager>();
-    finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-        profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
+    finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile(),
+                                                          icon_manager_.get());
 
     finalizer_->SetSubsystems(
         &registrar(), ui_manager_.get(),

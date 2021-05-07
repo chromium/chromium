@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
-#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -68,8 +67,6 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
       return result;
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::Get(profile);
-      web_app_provider->install_finalizer()
-          .RemoveLegacyInstallFinalizerForTesting();
       base::RunLoop loop;
       web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
       loop.Run();

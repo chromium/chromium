@@ -30,10 +30,7 @@ class WebAppRegistrar;
 
 class WebAppInstallFinalizer final : public InstallFinalizer {
  public:
-  // |legacy_finalizer| can be nullptr (optional argument).
-  WebAppInstallFinalizer(Profile* profile,
-                         WebAppIconManager* icon_manager,
-                         std::unique_ptr<InstallFinalizer> legacy_finalizer);
+  WebAppInstallFinalizer(Profile* profile, WebAppIconManager* icon_manager);
   WebAppInstallFinalizer(const WebAppInstallFinalizer&) = delete;
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
   ~WebAppInstallFinalizer() override;
@@ -58,7 +55,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                        UninstallWebAppCallback callback) override;
   bool CanUserUninstallWebApp(const AppId& app_id) const override;
   bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
-  void RemoveLegacyInstallFinalizerForTesting() override;
   void Start() override;
   void Shutdown() override;
 
@@ -128,9 +124,6 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                           OsHooksResults os_hooks_info);
 
   WebAppRegistrar& GetWebAppRegistrar() const;
-
-  // Used for legacy Bookmark Apps.
-  std::unique_ptr<InstallFinalizer> legacy_finalizer_;
 
   Profile* const profile_;
   WebAppIconManager* const icon_manager_;

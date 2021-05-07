@@ -1338,8 +1338,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   // Install web app set to open as a tab.
   {
-    web_app_finalizer.RemoveLegacyInstallFinalizerForTesting();
-
     base::RunLoop run_loop;
     WebApplicationInfo info;
     info.start_url = GURL(kStartUrl);

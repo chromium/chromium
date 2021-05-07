@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/extensions/bookmark_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -42,9 +43,10 @@ void WebAppProvider::CreateBookmarkAppsSubsystems(Profile* profile) {
   registry_controller_ = std::move(registry_controller);
 }
 
-std::unique_ptr<InstallFinalizer>
-WebAppProvider::CreateBookmarkAppInstallFinalizer(Profile* profile) {
-  return std::make_unique<extensions::BookmarkAppInstallFinalizer>(profile);
+void WebAppProvider::WaitForExtensionSystemReady() {
+  extensions::ExtensionSystem::Get(profile_)->ready().Post(
+      FROM_HERE, base::BindOnce(&WebAppProvider::OnExtensionSystemReady,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppProviderFactory::DependsOnExtensionsSystem() {

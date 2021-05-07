@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_migration_manager.h"
 #include "chrome/browser/web_applications/web_app_mover.h"
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -170,16 +169,18 @@ void WebAppProvider::Shutdown() {
 }
 
 void WebAppProvider::StartImpl() {
-  if (migration_manager_) {
-    migration_manager_->StartDatabaseMigration(
-        base::BindOnce(&WebAppProvider::OnDatabaseMigrationCompleted,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (!skip_awaiting_extension_system_) {
+    // Basically the WebAppUiManagerImpl is dependent on ExtensionSystem
+    // initialization.
+    // TODO(crbug.com/1201878): Make WebAppUiManagerImpl lazily check
+    // ExtensionSystem readiness.
+    WaitForExtensionSystemReady();
   } else {
-    OnDatabaseMigrationCompleted(/*success=*/true);
+    OnExtensionSystemReady();
   }
 }
 
-void WebAppProvider::OnDatabaseMigrationCompleted(bool success) {
+void WebAppProvider::OnExtensionSystemReady() {
   StartRegistryController();
 }
 
@@ -214,16 +215,10 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
     registrar = std::move(mutable_registrar);
   }
 
-  auto legacy_finalizer = CreateBookmarkAppInstallFinalizer(profile);
-  legacy_finalizer->SetSubsystems(/*registrar=*/nullptr,
-                                  /*ui_manager=*/nullptr,
-                                  /*registry_controller=*/nullptr,
-                                  /*os_integration_manager=*/nullptr);
-
   auto icon_manager = std::make_unique<WebAppIconManager>(
       profile, *registrar, std::make_unique<FileUtilsWrapper>());
-  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-      profile, icon_manager.get(), std::move(legacy_finalizer));
+  install_finalizer_ =
+      std::make_unique<WebAppInstallFinalizer>(profile, icon_manager.get());
 
   if (g_os_integration_manager_factory_for_testing) {
     os_integration_manager_ =
@@ -248,9 +243,6 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), std::move(url_handler_manager));
   }
 
-  migration_manager_ = std::make_unique<WebAppMigrationManager>(
-      profile, database_factory_.get(), icon_manager.get(),
-      os_integration_manager_.get());
   web_app_mover_ = WebAppMover::CreateIfNeeded(
       profile, registrar.get(), install_finalizer_.get(),
       install_manager_.get(), sync_bridge.get());

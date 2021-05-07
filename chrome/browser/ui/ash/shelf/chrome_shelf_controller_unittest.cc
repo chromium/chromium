@@ -1292,9 +1292,6 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
         profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
     EXPECT_TRUE(profile);
 
-    // We don't have Extensions set up in these profiles so migration will wait
-    // forever for it to start. Disable it to avoid waiting forever.
-    web_app::TestWebAppProvider::Get(profile)->DisableMigrationManager();
     StartWebAppProvider(profile);
 
     // Remember the profile name so that we can destroy it upon destruction.

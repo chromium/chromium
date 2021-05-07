@@ -57,7 +57,6 @@ source_set("web_applications") {
     "web_app_install_task.h",
     "web_app_installation_utils.cc",
     "web_app_installation_utils.h",
-    "web_app_migration_manager.h",
     "web_app_mover.cc",
     "web_app_mover.h",
     "web_app_proto_utils.cc",
@@ -300,7 +299,6 @@ source_set("web_applications_browser_tests") {
     "system_web_apps/test/system_web_app_manager_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
-    "web_app_migration_manager_browsertest.cc",
     "web_app_mover_browsertest.cc",
   ]
 

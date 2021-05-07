@@ -132,8 +132,8 @@ class SystemWebAppManagerTest : public WebAppTest {
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     icon_manager_ = std::make_unique<WebAppIconManager>(
         profile(), controller().registrar(), std::make_unique<TestFileUtils>());
-    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-        profile(), &icon_manager(), /*legacy_finalizer=*/nullptr);
+    install_finalizer_ =
+        std::make_unique<WebAppInstallFinalizer>(profile(), &icon_manager());
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_externally_managed_app_manager_impl_ =
         std::make_unique<TestExternallyManagedAppManagerImpl>(profile());

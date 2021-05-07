@@ -15,7 +15,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_migration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,9 +85,9 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
 
     auto* provider = web_app::TestWebAppProvider::Get(profile());
 
-    // Migration manager won't complete initialization due to using a test
-    // extensions system that is never started. Not needed so just disable it.
-    provider->SetMigrationManager(nullptr);
+    // TestWebAppProvider should not wait for a test extension system, that is
+    // never started, to be ready.
+    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // Install a dummy app

@@ -42,7 +42,6 @@ class OsIntegrationManager;
 
 // Forward declarations for new extension-independent subsystems.
 class WebAppDatabaseFactory;
-class WebAppMigrationManager;
 class WebAppMover;
 
 // Connects Web App features, such as the installation of default and
@@ -103,7 +102,8 @@ class WebAppProvider : public WebAppProviderBase {
 
  protected:
   virtual void StartImpl();
-  void OnDatabaseMigrationCompleted(bool success);
+  void WaitForExtensionSystemReady();
+  void OnExtensionSystemReady();
 
   // Create subsystems that work with either BMO and Extension backends.
   void CreateCommonSubsystems(Profile* profile);
@@ -126,8 +126,6 @@ class WebAppProvider : public WebAppProviderBase {
 
   // New extension-independent subsystems:
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
-  // migration_manager_ can be nullptr if no migration needed.
-  std::unique_ptr<WebAppMigrationManager> migration_manager_;
   std::unique_ptr<WebAppMover> web_app_mover_;
 
   // Generalized subsystems:
@@ -152,6 +150,8 @@ class WebAppProvider : public WebAppProviderBase {
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;
   bool connected_ = false;
+
+  bool skip_awaiting_extension_system_ = false;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
 

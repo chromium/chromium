@@ -139,13 +139,9 @@ webapps::WebappUninstallSource ConvertSourceTypeToWebAppUninstallSource(
 
 }  // namespace
 
-WebAppInstallFinalizer::WebAppInstallFinalizer(
-    Profile* profile,
-    WebAppIconManager* icon_manager,
-    std::unique_ptr<InstallFinalizer> legacy_finalizer)
-    : legacy_finalizer_(std::move(legacy_finalizer)),
-      profile_(profile),
-      icon_manager_(icon_manager) {}
+WebAppInstallFinalizer::WebAppInstallFinalizer(Profile* profile,
+                                               WebAppIconManager* icon_manager)
+    : profile_(profile), icon_manager_(icon_manager) {}
 
 WebAppInstallFinalizer::~WebAppInstallFinalizer() = default;
 
@@ -313,7 +309,6 @@ void WebAppInstallFinalizer::UninstallWebApp(
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   DCHECK(app);
   DCHECK(app->CanUserUninstallWebApp());
-  const bool is_synced = app->IsSynced();
 
   if (app->IsPreinstalledApp()) {
     UpdateBoolWebAppPref(profile_->GetPrefs(), app_id,
@@ -328,11 +323,6 @@ void WebAppInstallFinalizer::UninstallWebApp(
   // should separate UninstallWebAppFromSyncByUser from
   // UninstallWebApp.
   UninstallWebAppInternal(app_id, webapp_uninstall_source, std::move(callback));
-
-  // Uninstall shadow bookmark app from this device and from the sync server.
-  if (legacy_finalizer_ && is_synced)
-    legacy_finalizer_->UninstallWebApp(app_id, webapp_uninstall_source,
-                                       base::DoNothing());
 }
 
 bool WebAppInstallFinalizer::WasPreinstalledWebAppUninstalled(
@@ -369,10 +359,6 @@ void WebAppInstallFinalizer::FinalizeUpdate(
                      weak_ptr_factory_.GetWeakPtr(), should_update_os_hooks,
                      file_handlers_need_os_update, std::move(callback), app_id,
                      web_app_info));
-}
-
-void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
-  legacy_finalizer_ = nullptr;
 }
 
 void WebAppInstallFinalizer::Start() {
