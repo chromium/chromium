@@ -42,7 +42,8 @@ class ResizeConfirmationDialogDelegate : public views::DialogDelegate {
 };
 
 std::unique_ptr<views::DialogDelegate> MakeDialogDelegate(
-    ResizeConfirmationCallback callback) {
+    ResizeConfirmationCallback callback,
+    int parent_width) {
   // Setup contents.
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   auto contents = std::make_unique<views::BoxLayoutView>();
@@ -74,8 +75,13 @@ std::unique_ptr<views::DialogDelegate> MakeDialogDelegate(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT));
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
-  delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  int width =
+      provider->GetDistanceMetric(views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  if (parent_width < width)
+    width = provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+
+  delegate->set_fixed_width(width);
 
   // Safe to set "Unretained" as |delegate| is owned by widget, so keeps
   // alive within the life-time of the widget.
@@ -96,7 +102,8 @@ views::Widget* ShowResizeConfirmationDialog(
     ResizeConfirmationCallback callback) {
   // TOOD(b/183664767): Switch dialog to use exo's overlay.
   auto* widget = views::DialogDelegate::CreateDialogWidget(
-      MakeDialogDelegate(std::move(callback)),
+      MakeDialogDelegate(std::move(callback),
+                         parent ? parent->bounds().width() : 0),
       exo::WMHelper::GetInstance()->GetRootWindowForNewWindows(), parent);
   widget->Show();
   return widget;
