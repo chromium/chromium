@@ -162,7 +162,8 @@ class ClearKeyProperties : public KeySystemProperties {
 
   EmeConfigRule GetRobustnessConfigRule(
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* /*hw_secure_requirement*/) const override {
     return requested_robustness.empty() ? EmeConfigRule::SUPPORTED
                                         : EmeConfigRule::NOT_SUPPORTED;
   }
@@ -264,7 +265,8 @@ class KeySystemsImpl : public KeySystems {
   EmeConfigRule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override;
+      const std::string& requested_robustness,
+      const bool* hw_secure_requirement) const override;
 
   EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override;
@@ -711,7 +713,8 @@ EmeConfigRule KeySystemsImpl::GetContentTypeConfigRule(
 EmeConfigRule KeySystemsImpl::GetRobustnessConfigRule(
     const std::string& key_system,
     EmeMediaType media_type,
-    const std::string& requested_robustness) const {
+    const std::string& requested_robustness,
+    const bool* hw_secure_requirement) const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   auto key_system_iter = key_system_properties_map_.find(key_system);
@@ -719,8 +722,8 @@ EmeConfigRule KeySystemsImpl::GetRobustnessConfigRule(
     NOTREACHED();
     return EmeConfigRule::NOT_SUPPORTED;
   }
-  return key_system_iter->second->GetRobustnessConfigRule(media_type,
-                                                          requested_robustness);
+  return key_system_iter->second->GetRobustnessConfigRule(
+      media_type, requested_robustness, hw_secure_requirement);
 }
 
 EmeSessionTypeSupport KeySystemsImpl::GetPersistentLicenseSessionSupport(

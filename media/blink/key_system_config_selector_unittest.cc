@@ -285,7 +285,15 @@ class FakeKeySystems : public KeySystems {
   EmeConfigRule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* hw_secure_requirement) const override {
+    // TODO(crbug.com/1204284): Remove the `hw_secure_requirement` parameter.
+    // This only exists as a temporary solution until a larger refactoring is
+    // done. We are only testing the explicit thing it is fixing here.
+    if (hw_secure_requirement && *hw_secure_requirement &&
+        distinctive_identifier == EmeFeatureSupport::NOT_SUPPORTED) {
+      return EmeConfigRule::NOT_SUPPORTED;
+    }
     if (requested_robustness.empty())
       return EmeConfigRule::SUPPORTED;
     if (requested_robustness == kSupportedRobustness)
@@ -1568,6 +1576,24 @@ TEST_F(KeySystemConfigSelectorTest,
   EXPECT_EQ("require_hw_secure_codec",
             config_.video_capabilities[0].content_type);
   EXPECT_TRUE(cdm_config_.use_hw_secure_codecs);
+}
+
+TEST_F(KeySystemConfigSelectorTest,
+       HwSecureCodecAndIdentifier_IdentifierAndHwSecureCodecsDisjoint) {
+  media_permission_->is_granted = false;
+  key_systems_->distinctive_identifier = EmeFeatureSupport::NOT_SUPPORTED;
+
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(2);
+  video_capabilities[0].content_type = "require_hw_secure_codec";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kRequireHwSecureCodec;
+  video_capabilities[0].robustness = "";
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  SelectConfigReturnsError();
 }
 
 // --- Identifier, Persistence and HW Secure Robustness ---

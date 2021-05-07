@@ -243,6 +243,10 @@ class KeySystemConfigSelector::ConfigState {
     return are_hw_secure_codecs_required_;
   }
 
+  bool AreHwSecureCodesNotAllowed() const {
+    return are_hw_secure_codecs_not_allowed_;
+  }
+
   // Checks whether a rule is compatible with all previously added rules.
   bool IsRuleSupported(EmeConfigRule rule) const {
     switch (rule) {
@@ -511,8 +515,20 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
         continue;
       requested_robustness_ascii = capability.robustness.Ascii();
     }
+    // Both of these should not be true.
+    DCHECK(!(proposed_config_state.AreHwSecureCodecsRequired() &&
+             proposed_config_state.AreHwSecureCodesNotAllowed()));
+    bool hw_secure_requirement;
+    bool* hw_secure_requirement_ptr = &hw_secure_requirement;
+    if (proposed_config_state.AreHwSecureCodecsRequired())
+      hw_secure_requirement = true;
+    else if (proposed_config_state.AreHwSecureCodesNotAllowed())
+      hw_secure_requirement = false;
+    else
+      hw_secure_requirement_ptr = nullptr;
     EmeConfigRule robustness_rule = key_systems_->GetRobustnessConfigRule(
-        key_system, media_type, requested_robustness_ascii);
+        key_system, media_type, requested_robustness_ascii,
+        hw_secure_requirement_ptr);
 
     // 3.13. If the user agent and implementation definitely support playback of
     //       encrypted media data for the combination of container, media types,

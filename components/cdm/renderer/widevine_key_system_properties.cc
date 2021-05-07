@@ -4,6 +4,7 @@
 
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -111,7 +112,8 @@ SupportedCodecs WidevineKeySystemProperties::GetSupportedHwSecureCodecs()
 
 EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
     EmeMediaType media_type,
-    const std::string& requested_robustness) const {
+    const std::string& requested_robustness,
+    const bool* hw_secure_requirement) const {
   Robustness robustness = ConvertRobustness(requested_robustness);
   if (robustness == Robustness::INVALID)
     return EmeConfigRule::NOT_SUPPORTED;
@@ -137,10 +139,12 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
+  bool hw_secure_codecs_required =
+      hw_secure_requirement && *hw_secure_requirement;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Hardware security requires HWDRM or remote attestation, both of these
   // require an identifier.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO)
+  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required)
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
     return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
 #else
@@ -158,19 +162,20 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   }
 #elif defined(OS_ANDROID)
   // On Android, require hardware secure codecs for SW_SECURE_DECODE and above.
-  if (robustness >= Robustness::SW_SECURE_DECODE) {
+  if (robustness >= Robustness::SW_SECURE_DECODE || hw_secure_codecs_required)
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
-  }
 #elif defined(OS_WIN)
   // On Windows, hardware security uses MediaFoundation-based CDM which requires
   // identifier and persistent state.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO)
+  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required)
     return EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED;
 #else
   // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
   // above.
   if (robustness >= Robustness::HW_SECURE_CRYPTO)
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+
+  ALLOW_UNUSED_LOCAL(hw_secure_codecs_required);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return EmeConfigRule::SUPPORTED;

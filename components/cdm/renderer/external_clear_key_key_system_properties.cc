@@ -53,7 +53,8 @@ media::SupportedCodecs ExternalClearKeyProperties::GetSupportedCodecs() const {
 
 media::EmeConfigRule ExternalClearKeyProperties::GetRobustnessConfigRule(
     media::EmeMediaType media_type,
-    const std::string& requested_robustness) const {
+    const std::string& requested_robustness,
+    const bool* /*hw_secure_requirement*/) const {
   return requested_robustness.empty() ? media::EmeConfigRule::SUPPORTED
                                       : media::EmeConfigRule::NOT_SUPPORTED;
 }

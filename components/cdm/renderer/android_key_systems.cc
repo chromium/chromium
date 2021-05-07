@@ -73,7 +73,13 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
 
   EmeConfigRule GetRobustnessConfigRule(
       media::EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* /*hw_secure_requirement*/) const override {
+    // `hw_secure_requirement` is ignored here because it's a temporary solution
+    // until a larger refactoring of the key system logic is done. It also does
+    // not need to account for it here because if it does introduce an
+    // incompatibility at this point, it will still be caught by the rule logic
+    // in KeySystemConfigSelector: crbug.com/1204284
     return requested_robustness.empty() ? EmeConfigRule::SUPPORTED
                                         : EmeConfigRule::NOT_SUPPORTED;
   }

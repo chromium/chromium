@@ -76,7 +76,8 @@ class TestKeySystemPropertiesBase : public KeySystemProperties {
 
   EmeConfigRule GetRobustnessConfigRule(
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* /*hw_secure_requirement*/) const override {
     return requested_robustness.empty() ? EmeConfigRule::SUPPORTED
                                         : EmeConfigRule::NOT_SUPPORTED;
   }
@@ -140,7 +141,8 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
 
   EmeConfigRule GetRobustnessConfigRule(
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* /*hw_secure_requirement*/) const override {
     if (requested_robustness == kRobustnessSupported)
       return EmeConfigRule::SUPPORTED;
     else if (requested_robustness == kRobustnessSecureCodecsRequired)
@@ -206,7 +208,7 @@ bool IsSupportedKeySystem(const std::string& key_system) {
 
 EmeConfigRule GetRobustnessConfigRule(const std::string& requested_robustness) {
   return KeySystems::GetInstance()->GetRobustnessConfigRule(
-      kExternal, EmeMediaType::VIDEO, requested_robustness);
+      kExternal, EmeMediaType::VIDEO, requested_robustness, nullptr);
 }
 
 // Adds test container and codec masks.

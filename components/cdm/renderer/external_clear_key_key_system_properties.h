@@ -27,7 +27,8 @@ class ExternalClearKeyProperties : public media::KeySystemProperties {
   media::SupportedCodecs GetSupportedCodecs() const override;
   media::EmeConfigRule GetRobustnessConfigRule(
       media::EmeMediaType media_type,
-      const std::string& requested_robustness) const override;
+      const std::string& requested_robustness,
+      const bool* hw_secure_requirement) const override;
   media::EmeSessionTypeSupport GetPersistentLicenseSessionSupport()
       const override;
   media::EmeFeatureSupport GetPersistentStateSupport() const override;

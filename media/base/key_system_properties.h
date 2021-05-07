@@ -40,9 +40,17 @@ class MEDIA_EXPORT KeySystemProperties {
   virtual SupportedCodecs GetSupportedHwSecureCodecs() const;
 
   // Returns the configuration rule for supporting a robustness requirement.
+  // If `hw_secure_requirement` is true, then the key system already has a HW
+  // secure requirement, if false then it already has a requirement to disallow
+  // HW secure; if null then there is no HW secure requirement to apply. This
+  // does not imply that `requested_robustness` should be ignored, both rules
+  // must be applied.
+  // TODO(crbug.com/1204284): Refactor this and remove the
+  // `hw_secure_requirement` argument.
   virtual EmeConfigRule GetRobustnessConfigRule(
       EmeMediaType media_type,
-      const std::string& requested_robustness) const = 0;
+      const std::string& requested_robustness,
+      const bool* hw_secure_requirement) const = 0;
 
   // Returns the support this key system provides for persistent-license
   // sessions.

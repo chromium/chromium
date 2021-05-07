@@ -65,7 +65,13 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
 
   EmeConfigRule GetRobustnessConfigRule(
       EmeMediaType media_type,
-      const std::string& requested_robustness) const override {
+      const std::string& requested_robustness,
+      const bool* /*hw_secure_requirement*/) const override {
+    // `hw_secure_requirement` is ignored here because it's a temporary solution
+    // until a larger refactoring of the key system logic is done. It also does
+    // not need to account for it here because if it does introduce an
+    // incompatibility at this point, it will still be caught by the rule logic
+    // in KeySystemConfigSelector: crbug.com/1204284
     if (requested_robustness.empty()) {
 #if defined(OS_ANDROID)
       return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
