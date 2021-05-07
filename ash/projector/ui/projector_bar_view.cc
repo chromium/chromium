@@ -131,11 +131,6 @@ void ProjectorBarView::OnMarkerStateChanged(bool enabled) {
     projector_controller_->OnClearAllMarkersPressed();
 }
 
-void ProjectorBarView::OnMagnifierStateChanged(bool enabled) {
-  magnifier_start_button_->SetVisible(!enabled);
-  magnifier_stop_button_->SetVisible(enabled);
-}
-
 void ProjectorBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
@@ -291,7 +286,7 @@ void ProjectorBarView::CreateTrailingButtonsBar() {
   magnifier_start_button_ =
       box_layout->AddChildView(std::make_unique<ProjectorImageButton>(
           base::BindRepeating(&ProjectorBarView::OnMagnifierButtonPressed,
-                              base::Unretained(this), /* enabled =*/true),
+                              base::Unretained(this), /* enabled =*/false),
           kZoomInIcon));
   magnifier_start_button_->SetVisible(true);
   magnifier_stop_button_ =
@@ -379,7 +374,7 @@ void ProjectorBarView::OnSelfieCamPressed(bool enabled) {
 }
 
 void ProjectorBarView::OnMagnifierButtonPressed(bool enabled) {
-  projector_controller_->OnMagnifierButtonPressed(enabled);
+  // TODO(crbug/1203444) Implement the magnifier button functionality.
 }
 
 void ProjectorBarView::OnChangeBarLocationButtonPressed() {

@@ -211,9 +211,4 @@ TEST_F(ProjectorControllerTest, SetCaptionBubbleState) {
   controller_->SetCaptionBubbleState(true);
 }
 
-TEST_F(ProjectorControllerTest, MagnifierButtonPressed) {
-  EXPECT_CALL(*mock_ui_controller_, OnMagnifierButtonPressed(true));
-  controller_->OnMagnifierButtonPressed(true);
-}
-
 }  // namespace ash

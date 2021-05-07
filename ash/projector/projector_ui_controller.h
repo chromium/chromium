@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
 #include "ash/ash_export.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/marker/marker_controller.h"
@@ -24,11 +23,9 @@ class ProjectorControllerImpl;
 class ProjectorBarView;
 
 // The controller in charge of UI.
-class ASH_EXPORT ProjectorUiController
-    : public LaserPointerObserver,
-      public MarkerObserver,
-      public ProjectorSessionObserver,
-      public PartialMagnificationController::Observer {
+class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
+                                         public MarkerObserver,
+                                         public ProjectorSessionObserver {
  public:
   explicit ProjectorUiController(ProjectorControllerImpl* projector_controller);
   ProjectorUiController(const ProjectorUiController&) = delete;
@@ -53,14 +50,11 @@ class ASH_EXPORT ProjectorUiController
   virtual void OnTranscription(const std::string& transcription, bool is_final);
   // Invoked when the selfie cam button is pressed. Virtual for testing.
   virtual void OnSelfieCamPressed(bool enabled);
-  // Invoked when the recording started or stopped. Virtual for testing.
+  // Called when the recording started or stopped. Virtual for testing.
   virtual void OnRecordingStateChanged(bool started);
   // Notifies the ProjectorControllerImpl and ProjectorBarView when the caption
   // bubble model's state changes.
   void OnCaptionBubbleModelStateChanged(bool visible);
-  // Invoked when  magnification is set to be enabled or not. Virtual for
-  // testing.
-  virtual void OnMagnifierButtonPressed(bool enabled);
 
   bool IsToolbarVisible() const;
 
@@ -86,9 +80,6 @@ class ASH_EXPORT ProjectorUiController
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
 
-  // PartialMagnificationController::OnPartialMagnificationStateChanged:
-  void OnPartialMagnificationStateChanged(bool enabled) override;
-
   ProjectorUiModel model_;
   views::UniqueWidgetPtr projector_bar_widget_;
   ProjectorBarView* projector_bar_view_ = nullptr;
@@ -105,10 +96,6 @@ class ASH_EXPORT ProjectorUiController
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};
-
-  base::ScopedObservation<PartialMagnificationController,
-                          PartialMagnificationController::Observer>
-      partial_magnification_observation_{this};
 };
 
 }  // namespace ash
