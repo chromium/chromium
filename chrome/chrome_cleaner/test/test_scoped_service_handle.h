@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "chrome/chrome_cleaner/os/scoped_service_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

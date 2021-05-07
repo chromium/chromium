@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/files/file_path.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/cros_disks_client.h"
 

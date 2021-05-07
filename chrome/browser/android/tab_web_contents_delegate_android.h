@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"

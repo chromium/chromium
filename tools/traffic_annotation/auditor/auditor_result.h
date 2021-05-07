@@ -5,7 +5,8 @@
 #ifndef TOOLS_TRAFFIC_ANNOTATION_AUDITOR_AUDITOR_RESULT_H_
 #define TOOLS_TRAFFIC_ANNOTATION_AUDITOR_AUDITOR_RESULT_H_
 
-#include "base/files/file_path.h"
+#include <string>
+#include <vector>
 
 // Holds the auditor processing results on one unit of annotation or function.
 class AuditorResult {

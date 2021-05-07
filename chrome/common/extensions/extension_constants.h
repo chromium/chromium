@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "url/gurl.h"

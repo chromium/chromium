@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"

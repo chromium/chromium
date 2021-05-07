@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

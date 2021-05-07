@@ -6,6 +6,7 @@
 
 #include "tools/traffic_annotation/auditor/auditor_result.h"
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 

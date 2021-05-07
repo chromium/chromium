@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_AGENT_UTIL_H_
 #define COMPONENTS_UI_DEVTOOLS_AGENT_UTIL_H_
 
-#include "base/files/file_path.h"
+#include <string>
+
 #include "components/ui_devtools/devtools_export.h"
 
 namespace ui_devtools {

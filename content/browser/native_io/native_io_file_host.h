@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"

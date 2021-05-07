@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"

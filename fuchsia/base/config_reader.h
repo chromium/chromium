@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_BASE_CONFIG_READER_H_
 #define FUCHSIA_BASE_CONFIG_READER_H_
 
-#include "base/files/file_path.h"
 #include "base/values.h"
 
 namespace cr_fuchsia {

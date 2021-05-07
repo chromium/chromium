@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "content/public/browser/url_data_source.h"

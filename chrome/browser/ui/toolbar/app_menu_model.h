@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"

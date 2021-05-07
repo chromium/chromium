@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/clients.h"

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "chromeos/chromeos_export.h"

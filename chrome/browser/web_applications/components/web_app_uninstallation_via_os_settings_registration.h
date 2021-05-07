@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"

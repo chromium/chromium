@@ -25,6 +25,10 @@ namespace ash {
 class ChromeScreenshotGrabberTest;
 }  // namespace ash
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace policy {
 class PolicyTest;
 }  // namespace policy

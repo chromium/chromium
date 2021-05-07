@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/client.h"

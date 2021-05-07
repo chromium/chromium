@@ -6,7 +6,6 @@
 #define CHROME_TEST_BASE_CHROME_UNIT_TEST_SUITE_H_
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_test_suite.h"

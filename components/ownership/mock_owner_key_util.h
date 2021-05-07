@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/assist_ranker/predictor_config.h"
 #include "components/assist_ranker/ranker_model_loader.h"

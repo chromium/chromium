@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "components/omnibox/browser/autocomplete_provider.h"

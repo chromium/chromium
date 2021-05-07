@@ -6,7 +6,6 @@
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_STREAM_READER_TEST_H_
 
 #include "base/callback_helpers.h"
-#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"

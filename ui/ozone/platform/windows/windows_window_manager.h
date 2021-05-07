@@ -7,9 +7,7 @@
 
 #include <stdint.h>
 
-
 #include "base/containers/id_map.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"

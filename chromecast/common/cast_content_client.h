@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"
 

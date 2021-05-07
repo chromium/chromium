@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_PATHS_H_
 #define COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_PATHS_H_
 
-#include "base/files/file_path.h"
-
 namespace component_updater {
 
 enum {

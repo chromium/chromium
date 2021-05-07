@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 
-#include "base/files/file_path.h"
 #include "components/zucchini/zucchini.h"
 
 // Utilities to run Zucchini command based on command-line input, and to print

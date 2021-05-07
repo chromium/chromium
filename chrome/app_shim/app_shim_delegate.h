@@ -7,8 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/files/file_path.h"
-
 class AppShimController;
 
 // An application delegate to catch user interactions and send the appropriate
