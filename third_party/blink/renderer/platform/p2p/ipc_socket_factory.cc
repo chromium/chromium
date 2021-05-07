@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <list>
-#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -724,10 +723,8 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port) {
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
   auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
+      socket_dispatcher_, traffic_annotation_);
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
   if (!socket->Init(network::P2P_SOCKET_UDP, std::move(socket_client),
                     local_address, min_port, max_port, rtc::SocketAddress())) {
@@ -748,10 +745,8 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
   network::P2PSocketType type = (opts & rtc::PacketSocketFactory::OPT_STUN)
                                     ? network::P2P_SOCKET_STUN_TCP_SERVER
                                     : network::P2P_SOCKET_TCP_SERVER;
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
   auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
+      socket_dispatcher_, traffic_annotation_);
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
   if (!socket->Init(type, std::move(socket_client), local_address, min_port,
                     max_port, rtc::SocketAddress())) {
@@ -784,10 +779,8 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
                ? network::P2P_SOCKET_STUN_TCP_CLIENT
                : network::P2P_SOCKET_TCP_CLIENT;
   }
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
   auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
+      socket_dispatcher_, traffic_annotation_);
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
   if (!socket->Init(type, std::move(socket_client), local_address, 0, 0,
                     remote_address))
@@ -796,9 +789,9 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
 }
 
 rtc::AsyncResolverInterface* IpcPacketSocketFactory::CreateAsyncResolver() {
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
-  return new AsyncAddressResolverImpl(socket_dispatcher);
+  std::unique_ptr<AsyncAddressResolverImpl> resolver(
+      new AsyncAddressResolverImpl(socket_dispatcher_));
+  return resolver.release();
 }
 
 }  // namespace blink

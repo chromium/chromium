@@ -9,7 +9,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_NETWORK_LIST_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_NETWORK_LIST_MANAGER_H_
 
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -18,7 +17,7 @@ class NetworkListObserver;
 
 // TODO(crbug.com/787254): Verify whether this abstract class is still
 // needed now that its Clients have all switched to Blink.
-class PLATFORM_EXPORT NetworkListManager : public GarbageCollectedMixin {
+class PLATFORM_EXPORT NetworkListManager {
  public:
   // Add a new network list observer. Each observer is called
   // immidiately after it is registered and then later whenever
@@ -31,6 +30,11 @@ class PLATFORM_EXPORT NetworkListManager : public GarbageCollectedMixin {
   // which the observer was added.
   virtual void RemoveNetworkListObserver(
       NetworkListObserver* network_list_observer) = 0;
+
+ protected:
+  // Marked as protected to prevent explicit deletion, as
+  // P2PSocketDispatcher is not owned by IpcNetworkManager.
+  virtual ~NetworkListManager() {}
 };
 
 }  // namespace blink

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/testing_platform_support_with_mock_audio_capture_source.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -77,14 +76,13 @@ class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
 
 }  // namespace
 
-class ProcessedLocalAudioSourceTest : public SimTest {
+class ProcessedLocalAudioSourceTest : public testing::Test {
  protected:
-  ProcessedLocalAudioSourceTest() = default;
+  ProcessedLocalAudioSourceTest() {}
 
-  ~ProcessedLocalAudioSourceTest() override = default;
+  ~ProcessedLocalAudioSourceTest() override {}
 
   void SetUp() override {
-    SimTest::SetUp();
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("audio_track"), false /* remote */);
@@ -93,7 +91,6 @@ class ProcessedLocalAudioSourceTest : public SimTest {
   }
 
   void TearDown() override {
-    SimTest::TearDown();
     audio_source_ = nullptr;
     audio_component_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
@@ -104,7 +101,7 @@ class ProcessedLocalAudioSourceTest : public SimTest {
       int num_requested_channels) {
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
-            *MainFrame().GetFrame(),
+            nullptr /* consumer_web_frame is N/A for non-browser tests */,
             MediaStreamDevice(mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
                               "mock_audio_device_id", "Mock audio device",
                               kSampleRate, kChannelLayout,

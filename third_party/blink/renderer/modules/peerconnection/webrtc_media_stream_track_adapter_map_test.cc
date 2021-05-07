@@ -27,10 +27,10 @@ class WebRtcMediaStreamTrackAdapterMapTest : public ::testing::Test {
  public:
   void SetUp() override {
     dependency_factory_ =
-        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
-        dependency_factory_.Get(), main_thread_);
+        dependency_factory_.get(), main_thread_);
   }
 
   void TearDown() override { blink::WebHeap::CollectAllGarbageForTesting(); }
@@ -110,7 +110,7 @@ class WebRtcMediaStreamTrackAdapterMapTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
-  CrossThreadPersistent<MockPeerConnectionDependencyFactory>
+  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> map_;

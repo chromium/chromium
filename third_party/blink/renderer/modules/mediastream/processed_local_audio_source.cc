@@ -25,7 +25,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
@@ -104,7 +103,7 @@ std::string GetAudioProcesingPropertiesLogString(
 }  // namespace
 
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
-    LocalFrame& frame,
+    LocalFrame* frame,
     const blink::MediaStreamDevice& device,
     bool disable_local_echo,
     const blink::AudioProcessingProperties& audio_processing_properties,
@@ -114,15 +113,12 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     : blink::MediaStreamAudioSource(std::move(task_runner),
                                     true /* is_local_source */,
                                     disable_local_echo),
-      consumer_frame_(&frame),
-      dependency_factory_(
-          PeerConnectionDependencyFactory::From(*frame.DomWindow())),
+      consumer_frame_(frame),
       audio_processing_properties_(audio_processing_properties),
       num_requested_channels_(num_requested_channels),
       started_callback_(std::move(started_callback)),
       volume_(0),
       allow_invalid_render_frame_id_for_testing_(false) {
-  DCHECK(frame.DomWindow());
   SetDevice(device);
   SendLogMessage(
       base::StringPrintf("ProcessedLocalAudioSource({session_id=%s})",
@@ -218,9 +214,8 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
   // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
   // module.
-  DCHECK(dependency_factory_);
   WebRtcAudioDeviceImpl* const rtc_audio_device =
-      dependency_factory_->GetWebRtcAudioDevice();
+      PeerConnectionDependencyFactory::GetInstance()->GetWebRtcAudioDevice();
   if (!rtc_audio_device) {
     SendLogMessageWithSessionId(
         "EnsureSourceIsStarted() => (ERROR: no WebRTC ADM instance)");
@@ -323,8 +318,10 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
 
   scoped_refptr<media::AudioCapturerSource> source_to_stop(std::move(source_));
 
-  if (dependency_factory_) {
-    dependency_factory_->GetWebRtcAudioDevice()->RemoveAudioCapturer(this);
+  if (WebRtcAudioDeviceImpl* rtc_audio_device =
+          PeerConnectionDependencyFactory::GetInstance()
+              ->GetWebRtcAudioDevice()) {
+    rtc_audio_device->RemoveAudioCapturer(this);
   }
 
   source_to_stop->Stop();

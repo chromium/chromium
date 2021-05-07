@@ -16,8 +16,6 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-class ExecutionContext;
-
 using RTCCertificateCallback =
     base::OnceCallback<void(rtc::scoped_refptr<rtc::RTCCertificate>)>;
 
@@ -35,13 +33,11 @@ class MODULES_EXPORT RTCCertificateGenerator {
   void GenerateCertificate(
       const rtc::KeyParams& key_params,
       blink::RTCCertificateCallback completion_callback,
-      ExecutionContext& context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void GenerateCertificateWithExpiration(
       const rtc::KeyParams& key_params,
       uint64_t expires_ms,
       blink::RTCCertificateCallback completion_callback,
-      ExecutionContext& context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Determines if the parameters are supported by |GenerateCertificate|.

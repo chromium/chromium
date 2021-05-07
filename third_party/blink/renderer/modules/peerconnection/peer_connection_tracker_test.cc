@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
@@ -124,23 +123,17 @@ namespace {
 class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
  public:
   MockPeerConnectionHandler()
-      : MockPeerConnectionHandler(
-            MakeGarbageCollected<MockPeerConnectionDependencyFactory>()) {}
+      : RTCPeerConnectionHandler(
+            &client_,
+            &dependency_factory_,
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            /*force_encoded_audio_insertable_streams=*/false,
+            /*force_encoded_video_insertable_streams=*/false) {}
   MOCK_METHOD0(CloseClientPeerConnection, void());
   MOCK_METHOD1(OnThermalStateChange, void(mojom::blink::DeviceThermalState));
 
  private:
-  explicit MockPeerConnectionHandler(
-      MockPeerConnectionDependencyFactory* factory)
-      : RTCPeerConnectionHandler(
-            &client_,
-            factory,
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-            /*force_encoded_audio_insertable_streams=*/false,
-            /*force_encoded_video_insertable_streams=*/false),
-        factory_(factory) {}
-
-  Persistent<MockPeerConnectionDependencyFactory> factory_;
+  blink::MockPeerConnectionDependencyFactory dependency_factory_;
   MockRTCPeerConnectionHandlerClient client_;
 };
 

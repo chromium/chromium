@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -79,7 +78,7 @@ static bool Contains(const std::vector<T>& vector, T value) {
 
 }  // namespace
 
-class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
+class MediaStreamConstraintsUtilAudioTestBase {
  protected:
   void MakeSystemEchoCancellerDeviceExperimental() {
     media::AudioParameters experimental_system_echo_canceller_parameters(
@@ -128,7 +127,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     device.input.set_effects(effects);
 
     return std::make_unique<ProcessedLocalAudioSource>(
-        *MainFrame().GetFrame(), device, disable_local_echo, properties,
+        nullptr /*web_frame*/, device, disable_local_echo, properties,
         num_requested_channels, base::NullCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -495,10 +494,9 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
 class MediaStreamConstraintsUtilAudioTest
     : public MediaStreamConstraintsUtilAudioTestBase,
-      public testing::WithParamInterface<std::string> {
+      public testing::TestWithParam<std::string> {
  public:
   void SetUp() override {
-    MediaStreamConstraintsUtilAudioTestBase::SetUp();
     ResetFactory();
     if (IsDeviceCapture()) {
       capabilities_.emplace_back(

@@ -1417,7 +1417,7 @@ UserMediaProcessor::CreateAudioSource(
   SendLogMessage(
       base::StringPrintf("%s => (audiprocessing is required)", __func__));
   return std::make_unique<blink::ProcessedLocalAudioSource>(
-      *frame_, device, stream_controls->disable_local_echo,
+      frame_, device, stream_controls->disable_local_echo,
       audio_processing_properties,
       current_request_info_->audio_capture_settings().num_channels(),
       std::move(source_ready), task_runner_);

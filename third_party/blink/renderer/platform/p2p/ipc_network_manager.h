@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_manager.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -23,12 +22,6 @@ namespace blink {
 
 // IpcNetworkManager is a NetworkManager for libjingle that gets a
 // list of network interfaces from the browser.
-//
-// Threading note:
-// The IpcNetworkManager is constructed on the network thread, and after that
-// may only be accessed from the signaling thread. The one exception to that is
-// access to slots (e.g., `NetworkManager::SignalNetworksChanged`) that are safe
-// to access from any thread.
 class IpcNetworkManager : public rtc::NetworkManagerBase,
                           public blink::NetworkListObserver {
  public:
@@ -37,10 +30,6 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
       blink::NetworkListManager* network_list_manager,
       std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder);
   ~IpcNetworkManager() override;
-
-  // Weak pointers may only be dereferenced on the signaling thread.
-  base::WeakPtr<IpcNetworkManager> PLATFORM_EXPORT
-  AsWeakPtrForSignalingThread();
 
   // rtc:::NetworkManager:
   void StartUpdating() override;
@@ -56,16 +45,12 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
  private:
   void SendNetworksChangedSignal();
 
-  // 'this' is created on the network thread, whereas the `NetworkListManager`
-  // is owned by the main thread, so it needs to be accessed in a thread-safe
-  // manner. `this` is indirectly owned by `PeerConnectionDependencyFactory`,
-  // which also owns the network list manager, so this should be never be null.
-  CrossThreadWeakPersistent<NetworkListManager> network_list_manager_;
+  // TODO(crbug.com/787254): Consider moving NetworkListManager to Oilpan and
+  // avoid using a raw pointer.
+  blink::NetworkListManager* network_list_manager_;
   std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder_;
   int start_count_ = 0;
   bool network_list_received_ = false;
-
-  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<IpcNetworkManager> weak_factory_{this};
 };

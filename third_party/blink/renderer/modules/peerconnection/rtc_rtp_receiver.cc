@@ -291,8 +291,8 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
       HeapVector<Member<RTCRtpHeaderExtensionCapability>>());
 
   std::unique_ptr<webrtc::RtpCapabilities> rtc_capabilities =
-      PeerConnectionDependencyFactory::From(*ExecutionContext::From(state))
-          .GetReceiverCapabilities(kind);
+      PeerConnectionDependencyFactory::GetInstance()->GetReceiverCapabilities(
+          kind);
 
   HeapVector<Member<RTCRtpCodecCapability>> codecs;
   codecs.ReserveInitialCapacity(

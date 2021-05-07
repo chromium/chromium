@@ -1088,11 +1088,9 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
 media::DecoderFactory* RenderThreadImpl::GetMediaDecoderFactory() {
   DCHECK(IsMainThread());
-
-  // Note that we don't reset this, ever. We instantiate it once and never reset
-  // it, even if the gpu process restarts.
-  if (media_decoder_factory_)
-    return media_decoder_factory_.get();
+  // Note that we don't reset this, ever.  We hand it out to WebRTC once, and it
+  // never asks for another one, even if the gpu process restarts.
+  DCHECK(!media_decoder_factory_);
 
   // MediaInterfaceFactory guarantees that the media::InterfaceFactory is
   // accessed from the current (main) thread.
