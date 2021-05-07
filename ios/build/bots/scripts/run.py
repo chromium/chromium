@@ -70,6 +70,9 @@ class Runner():
       if not os.path.exists(xcode_app_path):
         raise test_runner.XcodePathNotFoundError(xcode_app_path)
 
+      # TODO(crbug.com/1191260): Pass in runtime args and handle moving runtime
+      # back to cache after runtime cache is set up in swarming, if Xcode
+      # installed is a new version (without runtime bundled)
       xcode.install(mac_toolchain_cmd, xcode_build_version, xcode_app_path)
       xcode.select(xcode_app_path)
     except subprocess.CalledProcessError as e:
@@ -81,7 +84,6 @@ class Runner():
       return False
 
     return True
-
 
   def run(self, args):
     """
