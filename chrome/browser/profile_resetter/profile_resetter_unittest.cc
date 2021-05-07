@@ -795,9 +795,9 @@ TEST_F(ConfigParserTest, ParseConfig) {
       settings->GetUrlsToRestoreOnStartup());
   EXPECT_TRUE(startup_list);
   std::vector<std::string> startup_pages;
-  for (auto i = startup_list->begin(); i != startup_list->end(); ++i) {
+  for (const auto& entry : startup_list->GetList()) {
     std::string url;
-    EXPECT_TRUE(i->GetAsString(&url));
+    EXPECT_TRUE(entry.GetAsString(&url));
     startup_pages.push_back(url);
   }
   ASSERT_EQ(2u, startup_pages.size());
