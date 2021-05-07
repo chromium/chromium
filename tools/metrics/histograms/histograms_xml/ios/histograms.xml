@@ -301,6 +301,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-02-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    The action taken by the user in response to the &quot;All tabs&quot; default
+    browser tailored promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-02-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    The action taken by the user in response to the &quot;Made for iOS&quot;
+    default browser tailored promo.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-02-01">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
+  <summary>
+    The action taken by the user in response to the &quot;Stay Safe&quot;
+    default browser tailored promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
     enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-04-20">
   <owner>javierrobles@chromium.org</owner>

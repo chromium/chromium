@@ -131,7 +131,8 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
                           DefaultPromoTypeForUMA(_promoType));
-
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::CANCEL];
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithTailoredFullscreenPromo();
 }
@@ -148,8 +149,10 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted",
                           DefaultPromoTypeForUMA(_promoType));
-
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::ACTION_BUTTON];
   LogUserInteractionWithTailoredFullscreenPromo();
+
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -163,8 +166,10 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
                           DefaultPromoTypeForUMA(_promoType));
-
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::CANCEL];
   LogUserInteractionWithTailoredFullscreenPromo();
+
   [self.handler hidePromo];
 }
 
@@ -183,6 +188,29 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       presentViewController:self.learnMoreViewController
                    animated:YES
                  completion:nil];
+}
+
+#pragma mark - Metrics Helpers
+
+- (void)logDefaultBrowserFullscreenPromoHistogramForAction:
+    (IOSDefaultBrowserFullscreenPromoAction)action {
+  switch (self.promoType) {
+    case DefaultPromoTypeAllTabs:
+      UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoAllTabs", action);
+      break;
+    case DefaultPromoTypeMadeForIOS:
+      UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS", action);
+      break;
+    case DefaultPromoTypeStaySafe:
+      UmaHistogramEnumeration(
+          "IOS.DefaultBrowserFullscreenTailoredPromoStaySafe", action);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 @end
