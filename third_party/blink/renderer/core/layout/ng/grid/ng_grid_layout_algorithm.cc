@@ -2084,18 +2084,20 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
       spanned_tracks_size +=
           AffectedSizeForContribution(current_set, contribution_type);
 
-      if (is_group_spanning_flex_track) {
+      if (is_group_spanning_flex_track &&
+          !current_set.TrackSize().HasFlexMaxTrackBreadth()) {
         // From https://drafts.csswg.org/css-grid-2/#algo-spanning-flex-items:
         //   Distributing space only to flexible tracks (i.e. treating all other
         //   tracks as having a fixed sizing function).
-        if (!current_set.TrackSize().HasFlexMaxTrackBreadth())
-          continue;
-        flex_factor_sum += current_set.FlexFactor();
+        continue;
       }
 
       if (IsContributionAppliedToSet(current_set, contribution_type)) {
         if (current_set.PlannedIncrease() == kIndefiniteSize)
           current_set.SetPlannedIncrease(LayoutUnit());
+
+        if (is_group_spanning_flex_track)
+          flex_factor_sum += current_set.FlexFactor();
 
         sets_to_grow.push_back(&current_set);
         if (ShouldUsedSizeGrowBeyondLimit(current_set, contribution_type))

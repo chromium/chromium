@@ -4023,7 +4023,9 @@ crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-001.h
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/flex-sizing-rows-indefinite-height.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-content-distribution-must-account-for-track-sizing-002.html [ Failure ]
+crbug.com/935102 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Failure ]
 crbug.com/935102 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
+crbug.com/935102 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Failure ]
 crbug.com/707359 [ Mac ] external/wpt/css/css-grid/alignment/self-baseline/grid-self-baseline-003.html [ Failure ]
 crbug.com/1102918 external/wpt/css/css-grid/grid-definition/grid-auto-fill-columns-001.html [ Failure ]
 crbug.com/1102918 external/wpt/css/css-grid/grid-definition/grid-auto-fill-rows-001.html [ Failure ]
@@ -4139,7 +4141,9 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-paddin
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/flex-sizing-rows-indefinite-height.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-content-distribution-must-account-for-track-sizing-002.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Pass ]
 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
@@ -4165,8 +4169,6 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/gri
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-002.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-as-flex-item-should-not-shrink-to-fit-007.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-minimum-contribution-baseline-shim-vertical-lr.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-minimum-contribution-baseline-shim-vertical-rl.html [ Failure ]
