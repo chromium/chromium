@@ -98,7 +98,7 @@ suite('bookmarks.StoreClient', function() {
     document.body.innerHTML = '';
 
     // Reset store instance:
-    Store.instance_ = new Store();
+    Store.setInstance(new Store());
     store = Store.getInstance();
     store.init({
       items: ['apple', 'banana', 'cantaloupe'],

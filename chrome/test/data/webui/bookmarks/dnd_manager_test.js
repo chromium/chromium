@@ -124,7 +124,7 @@ suite('drag and drop', function() {
     };
 
     const testBrowserProxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.instance_ = testBrowserProxy;
+    BrowserProxy.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
     list = app.$$('bookmarks-list');

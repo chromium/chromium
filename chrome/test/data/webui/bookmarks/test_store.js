@@ -9,4 +9,9 @@ export class TestStore extends CrUiTestStore {
   constructor(data) {
     super(data, Store, createEmptyState(), reduceAction);
   }
+
+  /** @override */
+  replaceSingleton() {
+    Store.setInstance(this);
+  }
 }

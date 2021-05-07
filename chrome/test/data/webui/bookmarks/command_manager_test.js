@@ -87,7 +87,7 @@ suite('<bookmarks-command-manager>', function() {
     commandManager = testCommandManager.getCommandManager();
     replaceBody(commandManager);
     document.body.appendChild(document.createElement('cr-toast-manager'));
-    DialogFocusManager.instance_ = null;
+    DialogFocusManager.setInstance(null);
   });
 
   test('Copy URL is only active for single URL items', function() {

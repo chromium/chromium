@@ -29,7 +29,7 @@ suite('Bookmarks policies', function() {
     store.replaceSingleton();
 
     testBrowserProxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.instance_ = testBrowserProxy;
+    BrowserProxy.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
   });

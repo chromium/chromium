@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {IncognitoAvailability} from './constants.js';
 
@@ -33,6 +33,17 @@ export class BrowserProxy {
     chrome.send(
         'metricsHandler:recordInHistogram', [histogram, bucket, maxBucket]);
   }
+
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  /** @param {!BrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserProxy);
+/** @type {?BrowserProxy} */
+let instance = null;

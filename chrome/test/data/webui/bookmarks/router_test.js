@@ -86,7 +86,7 @@ suite('URL preload', function() {
    */
   function setupWithUrl(url) {
     document.body.innerHTML = '';
-    Store.instance_ = undefined;
+    Store.setInstance(undefined);
     window.history.replaceState({}, '', url);
 
     chrome.bookmarks.getTree = function(callback) {

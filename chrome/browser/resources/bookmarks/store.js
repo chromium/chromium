@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {Store as CrUiStore} from 'chrome://resources/js/cr/ui/store.m.js';
 import {reduceAction} from './reducers.js';
 import {BookmarksPageState} from './types.js';
@@ -19,6 +18,17 @@ export class Store extends CrUiStore {
   constructor() {
     super(createEmptyState(), reduceAction);
   }
+
+  /** @return {!Store} */
+  static getInstance() {
+    return instance || (instance = new Store());
+  }
+
+  /** @param {Store} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(Store);
+/** @type {?Store} */
+let instance = null;

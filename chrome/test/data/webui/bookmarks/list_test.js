@@ -183,7 +183,7 @@ suite('<bookmarks-list> command manager integration test', function() {
     store.setReducersEnabled(true);
 
     proxy = new TestBookmarksBrowserProxy();
-    BrowserProxy.instance_ = proxy;
+    BrowserProxy.setInstance(proxy);
 
     app = document.createElement('bookmarks-app');
     app.style.height = '100%';

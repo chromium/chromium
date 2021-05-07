@@ -50,7 +50,7 @@ suite('DialogFocusManager', function() {
     document.body.appendChild(commandManager);
 
     dialogFocusManager = new DialogFocusManager();
-    DialogFocusManager.instance_ = dialogFocusManager;
+    DialogFocusManager.setInstance(dialogFocusManager);
   });
 
   test('restores focus on dialog dismissal', async function() {

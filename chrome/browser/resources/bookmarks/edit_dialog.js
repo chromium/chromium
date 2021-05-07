@@ -66,7 +66,8 @@ export class BookmarksEditDialogElement extends PolymerElement {
     this.isFolder_ = isFolder;
     this.parentId_ = parentId;
 
-    DialogFocusManager.getInstance().showDialog(this.$.dialog);
+    DialogFocusManager.getInstance().showDialog(
+        /** @type {!HTMLDialogElement} */ (this.$.dialog));
   }
 
   /**
@@ -84,7 +85,8 @@ export class BookmarksEditDialogElement extends PolymerElement {
       this.urlValue_ = assert(editItem.url);
     }
 
-    DialogFocusManager.getInstance().showDialog(this.$.dialog);
+    DialogFocusManager.getInstance().showDialog(
+        /** @type {!HTMLDialogElement} */ (this.$.dialog));
   }
 
   /**

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
  * Manages focus restoration for modal dialogs. After the final dialog in a
@@ -102,6 +101,17 @@ export class DialogFocusManager {
 
     return closeListener;
   }
+
+  /** @return {!DialogFocusManager} */
+  static getInstance() {
+    return instance || (instance = new DialogFocusManager());
+  }
+
+  /** @param {?DialogFocusManager} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(DialogFocusManager);
+/** @type {?DialogFocusManager} */
+let instance = null;
