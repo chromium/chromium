@@ -267,6 +267,9 @@ TEST_P(DlpControllerTest, Block) {
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
+  EXPECT_CALL(rules_manager_, GetReportingManager)
+      .WillRepeatedly(::testing::Return(nullptr));
+
   // IsClipboardReadAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
@@ -399,6 +402,9 @@ TEST_P(DlpControllerVMsTest, Block) {
   std::tie(endpoint_type, do_notify) = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
   ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
+
+  EXPECT_CALL(rules_manager_, GetReportingManager)
+      .WillRepeatedly(::testing::Return(nullptr));
 
   // IsClipboardReadAllowed
   EXPECT_CALL(rules_manager_, IsRestrictedComponent)
