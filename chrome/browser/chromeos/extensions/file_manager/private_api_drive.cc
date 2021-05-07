@@ -734,7 +734,7 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
   }
 
   auto results_list = std::make_unique<base::ListValue>();
-  for (auto& entry : *results) {
+  for (auto& entry : results->GetList()) {
     base::DictionaryValue dict;
     std::string highlight;
     base::Value* value = entry.FindKey("fileFullPath");
