@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -118,7 +117,6 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = 23) // see: https://crbug.com/1202724
     public void testBottomSheetHasRestrictedFixedHeight() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
