@@ -34,8 +34,7 @@ RENDERING_BENCHMARK_UMA = [
 
 class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   options = {
-      'capture_screen_video': True,
-      'periodic_screenshot_frequency_ms': 1000
+      'capture_screen_video': True
   }
 
   @classmethod
