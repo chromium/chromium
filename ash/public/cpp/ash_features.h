@@ -33,6 +33,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kAutoNightLight;
 // capture user experience.
 ASH_PUBLIC_EXPORT extern const base::Feature kCaptureMode;
 
+// Enables compositing-based throttling to throttle appropriate frame sinks that
+// do not need to be refreshed at high fps.
+ASH_PUBLIC_EXPORT extern const base::Feature kCompositingBasedThrottling;
+
 // Enables contextual nudges for gesture education.
 ASH_PUBLIC_EXPORT extern const base::Feature kContextualNudges;
 
@@ -199,6 +203,8 @@ ASH_PUBLIC_EXPORT bool IsArcResizeLockEnabled();
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
+
+ASH_PUBLIC_EXPORT bool IsCompositingBasedThrottlingEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
 

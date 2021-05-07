@@ -118,10 +118,6 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 // Enables Shelf Dimming for ChromeOS.
 const char kEnableDimShelf[] = "enable-dim-shelf";
 
-// Enables compositing-based throttling
-const char kEnableCompositingBasedThrottling[] =
-    "enable-compositing-based-throttling";
-
 // If set, tablet-like power button behavior (i.e. tapping the button turns the
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";
@@ -177,11 +173,6 @@ bool ContextualNudgesResetShownCount() {
 
 bool IsUsingShelfAutoDim() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableDimShelf);
-}
-
-bool IsCompositingBasedThrottlingEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kEnableCompositingBasedThrottling);
 }
 
 bool ShouldClearFastInkBuffer() {

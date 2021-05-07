@@ -275,6 +275,9 @@ extern const char kChromeTipsInMainMenuName[];
 extern const char kChromeTipsInMainMenuDescription[];
 #endif
 
+extern const char kCompositingBasedThrottling[];
+extern const char kCompositingBasedThrottlingDescription[];
+
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 

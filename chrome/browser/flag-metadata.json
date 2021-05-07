@@ -1471,6 +1471,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "enable-compositing-based-throttling",
+    "owners": [ "yjliu", "chromeos-perf@google.com"],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-conditional-tabstrip",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90

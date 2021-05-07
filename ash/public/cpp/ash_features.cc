@@ -27,6 +27,9 @@ const base::Feature kAutoNightLight{"AutoNightLight",
 const base::Feature kCaptureMode{"CaptureMode",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kCompositingBasedThrottling{
+    "CompositingBasedThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kContextualNudges{"ContextualNudges",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -169,6 +172,10 @@ bool IsAutoNightLightEnabled() {
 
 bool IsCaptureModeEnabled() {
   return base::FeatureList::IsEnabled(kCaptureMode);
+}
+
+bool IsCompositingBasedThrottlingEnabled() {
+  return base::FeatureList::IsEnabled(kCompositingBasedThrottling);
 }
 
 bool IsDarkLightModeEnabled() {

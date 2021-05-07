@@ -3,6 +3,7 @@ include_rules = [
   "+ash/host",
   "+ash/ash_export.h",
   "+ash/public/cpp/ash_switches.h",
+  "+ash/public/cpp/ash_features.h",
 ]
 
 specific_include_rules = {

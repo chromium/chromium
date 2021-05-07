@@ -41,7 +41,6 @@ ASH_PUBLIC_EXPORT extern const char kAshSideVolumeButtonPosition[];
 ASH_PUBLIC_EXPORT extern const char kAshTouchHud[];
 ASH_PUBLIC_EXPORT extern const char kAuraLegacyPowerButton[];
 ASH_PUBLIC_EXPORT extern const char kEnableDimShelf[];
-ASH_PUBLIC_EXPORT extern const char kEnableCompositingBasedThrottling[];
 ASH_PUBLIC_EXPORT extern const char kForceTabletPowerButton[];
 ASH_PUBLIC_EXPORT extern const char kFrameThrottleFps[];
 ASH_PUBLIC_EXPORT extern const char kHasInternalStylus[];

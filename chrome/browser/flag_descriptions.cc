@@ -463,6 +463,11 @@ const char kChromeTipsInMainMenuDescription[] =
     "popular Chrome features.";
 #endif
 
+const char kCompositingBasedThrottling[] = "Compositing-based Throttling";
+const char kCompositingBasedThrottlingDescription[] =
+    "Enables compositing-based throttling to throttle appropriate frame sinks "
+    "that do not need to be refreshed at high fps.";
+
 const char kDarkLightTestName[] = "Dark/light mode of system UI";
 const char kDarkLightTestDescription[] =
     "Enables the dark/light mode of system UI, which includes shelf, launcher, "
