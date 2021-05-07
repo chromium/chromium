@@ -76,7 +76,7 @@ public class AccountUtils {
     /**
      * Canonicalizes the account name.
      */
-    private static String canonicalizeName(String name) {
+    static String canonicalizeName(String name) {
         String[] parts = AT_SYMBOL.split(name);
         if (parts.length != 2) return name;
 

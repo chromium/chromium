@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -25,7 +27,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,6 +66,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private int mUpdateTasksCounter;
     private final Queue<Callback<List<Account>>> mCallbacksWaitingForAccountsFetch =
             new ArrayDeque<>();
+    // The map stores the boolean for whether an account is subject to minor mode restrictions
+    private final Map<String, Boolean> mSubjectToMinorModeRestrictions = new HashMap<>();
 
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
@@ -207,6 +213,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 listener.onStatusReady(status);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account) {
+        return Optional.fromNullable(
+                mSubjectToMinorModeRestrictions.get(AccountUtils.canonicalizeName(account.name)));
     }
 
     /**

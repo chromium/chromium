@@ -12,6 +12,8 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
@@ -117,6 +119,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {}
+
+    @Override
+    public Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account) {
+        return Optional.absent();
+    }
 
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {}

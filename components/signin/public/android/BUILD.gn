@@ -9,6 +9,7 @@ android_library("java") {
     "//net/android:net_java",
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
@@ -80,6 +81,7 @@ android_library("signin_java_test_support") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:jni_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/mockito:mockito_java",
   ]

@@ -14,6 +14,8 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 
 import java.util.List;
@@ -99,6 +101,12 @@ public interface AccountManagerFacade {
      */
     @MainThread
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
+
+    /**
+     * Gets the boolean for whether the account is subject to minor mode restrictions.
+     * If the result is not yet fetched, the optional will be empty.
+     */
+    Optional<Boolean> isAccountSubjectToMinorModeRestrictions(Account account);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See

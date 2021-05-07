@@ -17,4 +17,9 @@ public interface AccountsChangeObserver {
      */
     @MainThread
     void onAccountsChanged();
+
+    /**
+     * Called every time the MinorModeRestrictions gets updated.
+     */
+    default void onMinorModeRestrictionsUpdated() {}
 }
