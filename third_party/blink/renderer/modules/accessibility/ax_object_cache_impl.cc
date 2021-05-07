@@ -1725,7 +1725,7 @@ void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Element* element) {
   }
 
   // Refresh the focusable state and State::kIgnored on the exposed object.
-  MarkAXObjectDirty(obj, false);
+  MarkAXObjectDirtyWithCleanLayout(obj, false);
 }
 
 void AXObjectCacheImpl::DocumentTitleChanged() {
