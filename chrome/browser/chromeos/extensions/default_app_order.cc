@@ -49,6 +49,8 @@ const char* const kDefaultAppOrder[] = {
     extension_misc::kGmailAppId,
     web_app::kGmailAppId,
 
+    web_app::kGoogleMeetAppId,
+
     web_app::kGoogleChatAppId,
 
     extension_misc::kGoogleDocAppId,

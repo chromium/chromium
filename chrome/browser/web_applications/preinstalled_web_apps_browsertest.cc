@@ -97,6 +97,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     {
         "https://mail.google.com/chat/download?usp=chrome_default",
     },
+    {
+        "https://meet.google.com/download/webapp?usp=chrome_default",
+    },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };

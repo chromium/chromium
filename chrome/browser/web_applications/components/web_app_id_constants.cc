@@ -53,6 +53,10 @@ const char kGoogleKeepAppId[] = "eilembjdkfgodjkcjnpgpaenohkicgjd";
 const char kGoogleMapsAppId[] = "mnhkaebcjjhencmpkapnbdaogjamfbcj";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://meet.google.com/landing"))
+const char kGoogleMeetAppId[] = "bajlehempfanmhccpdneohefomicoklp";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://news.google.com/?lfhs=2"))
 const char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
 

@@ -41,6 +41,8 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
 
       web_app::kMessagesAppId,
 
+      web_app::kGoogleMeetAppId,
+
       arc::kPlayStoreAppId,
 
       extension_misc::kYoutubeAppId,

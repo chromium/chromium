@@ -24,6 +24,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -69,6 +70,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
+      GetConfigForGoogleMeet(),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // clang-format on
   };

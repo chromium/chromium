@@ -46,6 +46,8 @@ source_set("preinstalled_web_apps") {
         "google_calendar.h",
         "google_chat.cc",
         "google_chat.h",
+        "google_meet.cc",
+        "google_meet.h",
       ]
     }
 
