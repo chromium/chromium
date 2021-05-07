@@ -277,7 +277,8 @@ public class RootUiCoordinator
             }
         };
         mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabSupplier,
-                mActivity::getActivityThemeColor, mActivity::isTablet);
+                mActivity::getActivityThemeColor, mActivity::isTablet,
+                shouldAllowThemingInNightMode());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -886,6 +887,14 @@ public class RootUiCoordinator
      * context of this coordinator's UI.
      **/
     protected boolean shouldShowMenuUpdateBadge() {
+        return false;
+    }
+
+    /**
+     * Whether the top toolbar theme color provider should allow using the web pages theme if the
+     * device is in night mode.
+     */
+    protected boolean shouldAllowThemingInNightMode() {
         return false;
     }
 
