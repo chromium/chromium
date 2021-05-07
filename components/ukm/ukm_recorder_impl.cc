@@ -48,11 +48,11 @@ std::string GetWhitelistEntries() {
 }
 
 bool IsWhitelistedSourceId(SourceId source_id) {
-  return GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID ||
-         GetSourceIdType(source_id) == SourceIdType::APP_ID ||
-         GetSourceIdType(source_id) == SourceIdType::HISTORY_ID ||
-         GetSourceIdType(source_id) == SourceIdType::WEBAPK_ID ||
-         GetSourceIdType(source_id) == SourceIdType::PAYMENT_APP_ID;
+  SourceIdType type = GetSourceIdType(source_id);
+  return type == SourceIdType::NAVIGATION_ID || type == SourceIdType::APP_ID ||
+         type == SourceIdType::HISTORY_ID || type == SourceIdType::WEBAPK_ID ||
+         type == SourceIdType::PAYMENT_APP_ID ||
+         type == SourceIdType::NO_URL_ID;
 }
 
 // Returns whether |url| has one of the schemes supported for logging to UKM.
@@ -337,10 +337,12 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   for (const auto& kv : recordings_.sources) {
     // Don't keep sources of these types after current report because their
     // entries are logged only at source creation time.
-    if (GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::APP_ID ||
-        GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::HISTORY_ID ||
-        GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::WEBAPK_ID ||
-        GetSourceIdType(kv.first) == SourceIdType::PAYMENT_APP_ID) {
+    SourceIdType type = GetSourceIdType(kv.first);
+    if (type == ukm::SourceIdObj::Type::APP_ID ||
+        type == ukm::SourceIdObj::Type::HISTORY_ID ||
+        type == ukm::SourceIdObj::Type::WEBAPK_ID ||
+        type == SourceIdType::PAYMENT_APP_ID ||
+        type == SourceIdType::NO_URL_ID) {
       MarkSourceForDeletion(kv.first);
     }
     // If the source id is not whitelisted, don't send it unless it has
@@ -579,6 +581,7 @@ int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources) {
 void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
                                       const GURL& unsanitized_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(GetSourceIdType(source_id) != SourceIdType::NO_URL_ID);
 
   if (base::Contains(recordings_.sources, source_id))
     return;

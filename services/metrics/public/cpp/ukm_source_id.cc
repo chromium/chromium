@@ -82,4 +82,11 @@ SourceIdType GetSourceIdType(SourceId source_id) {
   return ukm::SourceIdObj::FromInt64(source_id).GetType();
 }
 
+SourceId NoURLSourceId() {
+  static const SourceId source_id =
+      SourceIdObj::FromOtherId(AssignNewSourceId(), SourceIdType::NO_URL_ID)
+          .ToInt64();
+  return source_id;
+}
+
 }  // namespace ukm
