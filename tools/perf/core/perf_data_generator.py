@@ -1460,7 +1460,7 @@ def generate_performance_test(tester_config, test, builder_name):
   }
 
   # TODO(crbug.com/1104244) Enable Result DB on all platforms when verified.
-  if builder_name == 'linux-perf-fyi':
+  if builder_name in FYI_BUILDERS:
     result['resultdb'] = {'enable': True}
 
   # For now we either get shards from the number of devices specified
