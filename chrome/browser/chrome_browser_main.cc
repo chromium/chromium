@@ -55,6 +55,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
@@ -314,6 +315,10 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
+#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
+#include "chrome/browser/resources_integrity.h"
+#endif
 
 namespace {
 
@@ -918,6 +923,9 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
       *base::CommandLine::ForCurrentProcess());
 
   browser_process_->browser_policy_connector()->OnResourceBundleCreated();
+#if BUILDFLAG(ENABLE_PAK_FILE_INTEGRITY_CHECKS)
+  CheckPakFileIntegrity();
+#endif
 
 // Android does first run in Java instead of native.
 // Chrome OS has its own out-of-box-experience code.

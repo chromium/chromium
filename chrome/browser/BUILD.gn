@@ -96,6 +96,7 @@ buildflag_header("buildflags") {
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
     "ENABLE_APP_SESSION_SERVICE=$enable_app_session_service",
     "USE_THIN_LTO=$use_thin_lto",
+    "ENABLE_PAK_FILE_INTEGRITY_CHECKS=$enable_pak_file_integrity_checks",
   ]
   if (is_win) {
     flags += [ "ENABLE_SEGMENT_HEAP=$enable_segment_heap" ]
@@ -3897,6 +3898,8 @@ static_library("browser") {
       "resource_coordinator/tab_metrics_logger.h",
       "resource_coordinator/usage_clock.cc",
       "resource_coordinator/usage_clock.h",
+      "resources_integrity.cc",
+      "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
       "safe_browsing/generated_safe_browsing_pref.h",
       "search/background/ntp_background_data.cc",
@@ -4253,6 +4256,10 @@ static_library("browser") {
         "//extensions/browser/api:api_implementations",
         "//extensions/common:mojom",
       ]
+    }
+
+    if (enable_pak_file_integrity_checks) {
+      deps += [ "//chrome:packed_resources_integrity" ]
     }
 
     if (is_posix || is_fuchsia) {

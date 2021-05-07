@@ -4135,6 +4135,7 @@ test("unit_tests") {
       "../browser/policy/serial_allow_usb_devices_for_urls_policy_handler_unittest.cc",
       "../browser/profiles/profile_avatar_icon_util_unittest.cc",
       "../browser/profiles/profile_destroyer_unittest.cc",
+      "../browser/resources_integrity_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
       "../browser/speech/speech_recognition_service_factory_unittest.cc",
       "../browser/tab_contents/form_interaction_tab_helper_unittest.cc",
