@@ -3177,12 +3177,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
   if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-    EXPECT_EQ(
-        IsServiceWorkerCrossOriginIsolated(),
-        process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+    EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
+              process_lock.web_exposed_isolation_info().is_isolated());
   } else {
-    EXPECT_FALSE(
-        process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+    EXPECT_FALSE(process_lock.web_exposed_isolation_info().is_isolated());
   }
 }
 
@@ -3238,7 +3236,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
   EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-            process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+            process_lock.web_exposed_isolation_info().is_isolated());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

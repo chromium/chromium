@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include "base/observer_list.h"
-#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
@@ -141,9 +141,9 @@ struct CONTENT_EXPORT UrlInfo {
 class CONTENT_EXPORT SiteInfo {
  public:
   static SiteInfo CreateForErrorPage(
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
   static SiteInfo CreateForDefaultSiteInstance(
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
   static SiteInfo CreateForGuest(const GURL& guest_site_url);
 
   // This function returns a SiteInfo with the appropriate site_url and
@@ -152,7 +152,7 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo Create(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // Similar to the function above, but this method can only be called on the
   // IO thread. All fields except for the site_url should be the same as
@@ -168,11 +168,11 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateOnIOThread(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // Method to make creating SiteInfo objects for tests easier. It is a thin
   // wrapper around Create() that uses UrlInfo::CreateForTesting(),
-  // and CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated() to generate the
+  // and WebExposedIsolationInfo::CreateNonIsolated() to generate the
   // information that is not provided.
   static SiteInfo CreateForTesting(const IsolationContext& isolation_context,
                                    const GURL& url);
@@ -207,7 +207,7 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
            bool is_origin_keyed,
-           const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+           const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest = false,
            bool does_site_request_dedicated_process_for_coop = false);
   SiteInfo();
@@ -258,13 +258,13 @@ class CONTENT_EXPORT SiteInfo {
   // in their site urls.
   bool is_origin_keyed() const { return is_origin_keyed_; }
 
-  // Returns the cross-origin isolation status of pages hosted by the
-  // SiteInstance. This is deduced from the COOP and COEP headers and has
-  // implications for which pages can live in this SiteInstance as well as
-  // process allocation decisions.
-  const CoopCoepCrossOriginIsolatedInfo& coop_coep_cross_origin_isolated_info()
-      const {
-    return coop_coep_cross_origin_isolated_info_;
+  // Returns the web-exposed isolation status of pages hosted by the
+  // SiteInstance. The level of isolation which a page opts-into has
+  // implications for the set of other pages which can live in this
+  // SiteInstance, process allocation decisions, and API exposure in the page's
+  // JavaScript context.
+  const WebExposedIsolationInfo& web_exposed_isolation_info() const {
+    return web_exposed_isolation_info_;
   }
 
   bool is_guest() const { return is_guest_; }
@@ -360,7 +360,7 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateInternal(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool compute_site_url);
 
   // Returns the URL to which a process should be locked for the given UrlInfo.
@@ -389,12 +389,13 @@ class CONTENT_EXPORT SiteInfo {
   // isolation. In contrast, the site-level URLs that are typically used in
   // SiteInfo include subdomains, as do command-line isolated origins.
   bool is_origin_keyed_ = false;
-  // Indicates the cross-origin isolation status of pages hosted by the
-  // SiteInstance. This is deduced from the COOP and COEP headers and has
-  // implications for which pages can live in this SiteInstance as well as
-  // process allocation decisions.
-  CoopCoepCrossOriginIsolatedInfo coop_coep_cross_origin_isolated_info_ =
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+  // Indicates the web-exposed isolation status of pages hosted by the
+  // SiteInstance. The level of isolation which a page opts-into has
+  // implications for the set of other pages which can live in this
+  // SiteInstance, process allocation decisions, and API exposure in the page's
+  // JavaScript context.
+  WebExposedIsolationInfo web_exposed_isolation_info_ =
+      WebExposedIsolationInfo::CreateNonIsolated();
 
   // Indicates this SiteInfo is for a <webview> guest.
   bool is_guest_ = false;
@@ -435,15 +436,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       BrowserContext* browser_context);
   // |url_info| contains the GURL for which we want to create a SiteInstance,
   // along with other state relevant to making process allocation decisions.
-  // |cross_origin_isolated_info| is not exposed in content/public. It
-  // sets the BrowsingInstance coop_coep_cross_origin_isolated_info_ property.
+  // |web_exposed_isolation_info| is not exposed in content/public. It
+  // sets the BrowsingInstance web_exposed_isolation_info_ property.
   // Once this property is set it cannot be changed and is used in process
   // allocation decisions.
-  // TODO(wjmaclean): absorb |coop_coep_cross_origin_info| into UrlInfo.
+  // TODO(wjmaclean): absorb |web_exposed_isolation_info| into UrlInfo.
   static scoped_refptr<SiteInstanceImpl> CreateForUrlInfo(
       BrowserContext* browser_context,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       content::BrowserContext* browser_context,
       const GURL& guest_site_url);
@@ -453,17 +454,16 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   //         The <webview> guest site URL if |is_guest| is true.
   // |can_reuse_process| - Set to true if the new SiteInstance can use the
   //                       same process as the renderer for |url|.
-  // |cross_origin_isolated_info| - Indicates the cross-origin isolation state
-  //                                of the main script. ServiceWorkers are
-  //                                considered cross-origin Isolated if their
-  //                                Cross-Origin-Embedder-Policy header is set
-  //                                to "same-origin".
+  // |web_exposed_isolation_info| - Indicates the web-exposed isolation state
+  //                                of the main script (note that ServiceWorker
+  //                                "cross-origin isolation" does not require
+  //                                Cross-Origin-Opener-Policy to be set).
   // |is_guest| - Set to true if the new SiteInstance is for a <webview>
   // guest.
   static scoped_refptr<SiteInstanceImpl> CreateForServiceWorker(
       BrowserContext* browser_context,
       const GURL& url,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool can_reuse_process = false,
       bool is_guest = false);
 
@@ -769,14 +769,13 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // RenderProcessHost (with a new ID).
   AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
-  // Returns the cross-origin isolation status of the BrowsingInstance this
+  // Returns the web-exposed isolation status of the BrowsingInstance this
   // SiteInstance is part of.
-  const CoopCoepCrossOriginIsolatedInfo& GetCoopCoepCrossOriginIsolatedInfo()
-      const;
+  const WebExposedIsolationInfo& GetWebExposedIsolationInfo() const;
 
   // Simple helper function that returns the is_isolated property of the
-  // CoopCoepCrossOriginIsolatedInfo of this BrowsingInstance.
-  bool IsCoopCoepCrossOriginIsolated() const;
+  // WebExposedIsolationInfo of this BrowsingInstance.
+  bool IsCrossOriginIsolated() const;
 
  private:
   friend class BrowsingInstance;

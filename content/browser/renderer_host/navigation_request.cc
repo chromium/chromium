@@ -1726,7 +1726,7 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
   starting_site_instance_ =
       frame_tree_node->current_frame_host()->GetSiteInstance();
   site_info_ = GetSiteInfoForCommonParamsURL(
-      starting_site_instance_->GetCoopCoepCrossOriginIsolatedInfo());
+      starting_site_instance_->GetWebExposedIsolationInfo());
 
   // Compute the redirect chain.
   // TODO(clamy): Try to simplify this and have the redirects be part of
@@ -2357,10 +2357,9 @@ void NavigationRequest::OnRequestRedirected(
   RenderProcessHost* expected_process =
       site_instance->HasProcess() ? site_instance->GetProcess() : nullptr;
 
-  CoopCoepCrossOriginIsolatedInfo cross_origin_isolated_info =
-      frame_tree_node_->render_manager()->GetCoopCoepCrossOriginIsolationInfo(
-          this);
-  WillRedirectRequest(common_params_->referrer->url, cross_origin_isolated_info,
+  WebExposedIsolationInfo web_exposed_isolation_info =
+      frame_tree_node_->render_manager()->GetWebExposedIsolationInfo(this);
+  WillRedirectRequest(common_params_->referrer->url, web_exposed_isolation_info,
                       expected_process);
 }
 
@@ -2990,9 +2989,8 @@ void NavigationRequest::OnResponseStarted(
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-    auto site_info =
-        SiteInfo::Create(isolation_context, GetUrlInfo(),
-                         instance->GetCoopCoepCrossOriginIsolatedInfo());
+    auto site_info = SiteInfo::Create(isolation_context, GetUrlInfo(),
+                                      instance->GetWebExposedIsolationInfo());
     if (!instance->HasSite() &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
@@ -4221,14 +4219,14 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
 }
 
 void NavigationRequest::UpdateSiteInfo(
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
     RenderProcessHost* post_redirect_process) {
   int post_redirect_process_id = post_redirect_process
                                      ? post_redirect_process->GetID()
                                      : ChildProcessHost::kInvalidUniqueID;
 
   SiteInfo new_site_info =
-      GetSiteInfoForCommonParamsURL(cross_origin_isolated_info);
+      GetSiteInfoForCommonParamsURL(web_exposed_isolation_info);
   if (new_site_info == site_info_ &&
       post_redirect_process_id == expected_render_process_host_id_) {
     return;
@@ -4996,12 +4994,12 @@ void NavigationRequest::WillStartRequest() {
 
 void NavigationRequest::WillRedirectRequest(
     const GURL& new_referrer_url,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
     RenderProcessHost* post_redirect_process) {
   EnterChildTraceEvent("WillRedirectRequest", this, "url",
                        common_params_->url.possibly_invalid_spec());
   UpdateStateFollowingRedirect(new_referrer_url);
-  UpdateSiteInfo(cross_origin_isolated_info, post_redirect_process);
+  UpdateSiteInfo(web_exposed_isolation_info, post_redirect_process);
 
   if (IsSelfReferentialURL()) {
     SetState(CANCELING);
@@ -5166,11 +5164,11 @@ void NavigationRequest::DidCommitNavigation(
 }
 
 SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
   return SiteInfo::Create(starting_site_instance_->GetIsolationContext(),
-                          GetUrlInfo(), cross_origin_isolated_info);
+                          GetUrlInfo(), web_exposed_isolation_info);
 }
 
 // TODO(zetamoo): Try to merge this function inside its callers.

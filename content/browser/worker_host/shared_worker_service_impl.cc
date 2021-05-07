@@ -296,7 +296,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // script is loaded so that the process allocation can take COEP header into
   // account.
   scoped_refptr<SiteInstanceImpl> site_instance = creator.GetSiteInstance();
-  if (site_instance->IsCoopCoepCrossOriginIsolated()) {
+  if (site_instance->IsCrossOriginIsolated()) {
     if (is_guest) {
       site_instance = SiteInstanceImpl::CreateForGuest(
           partition->browser_context(),
@@ -305,7 +305,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       site_instance = SiteInstanceImpl::CreateForUrlInfo(
           partition->browser_context(),
           UrlInfo(instance.url(), UrlInfo::OriginIsolationRequest::kNone),
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
     }
   }
 

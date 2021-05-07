@@ -174,19 +174,19 @@ void LogCanAccessDataForOriginCrashKeys(
 
 // static
 ProcessLock ProcessLock::CreateAllowAnySite(
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
   return ProcessLock(
-      SiteInfo(GURL(), GURL(), false, cross_origin_isolated_info));
+      SiteInfo(GURL(), GURL(), false, web_exposed_isolation_info));
 }
 
 // static
 ProcessLock ProcessLock::Create(
     const IsolationContext& isolation_context,
     const UrlInfo& url_info,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI))
     return ProcessLock(SiteInfo::Create(isolation_context, url_info,
-                                        cross_origin_isolated_info));
+                                        web_exposed_isolation_info));
 
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -195,7 +195,7 @@ ProcessLock ProcessLock::Create(
   // ProcessLocks must always match no matter which thread they were created on,
   // but the SiteInfo objects used to create them may not always match.
   return ProcessLock(SiteInfo::CreateOnIOThread(isolation_context, url_info,
-                                                cross_origin_isolated_info));
+                                                web_exposed_isolation_info));
 }
 
 ProcessLock::ProcessLock(const SiteInfo& site_info) : site_info_(site_info) {}
@@ -223,11 +223,10 @@ bool ProcessLock::MatchesOrigin(const url::Origin& origin) const {
   return origin == process_lock_origin;
 }
 
-bool ProcessLock::IsCompatibleWithCoopCoepCrossOriginIsolation(
+bool ProcessLock::IsCompatibleWithWebExposedIsolation(
     const SiteInfo& site_info) const {
-  return site_info_.has_value() &&
-         site_info_->coop_coep_cross_origin_isolated_info() ==
-             site_info.coop_coep_cross_origin_isolated_info();
+  return site_info_.has_value() && site_info_->web_exposed_isolation_info() ==
+                                       site_info.web_exposed_isolation_info();
 }
 
 bool ProcessLock::operator==(const ProcessLock& rhs) const {
@@ -242,8 +241,8 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
     is_equal =
         site_info_->process_lock_url() == rhs.site_info_->process_lock_url() &&
         site_info_->is_origin_keyed() == rhs.site_info_->is_origin_keyed() &&
-        (site_info_->coop_coep_cross_origin_isolated_info() ==
-         rhs.site_info_->coop_coep_cross_origin_isolated_info());
+        (site_info_->web_exposed_isolation_info() ==
+         rhs.site_info_->web_exposed_isolation_info());
   }
 
   return is_equal;
@@ -255,15 +254,13 @@ bool ProcessLock::operator!=(const ProcessLock& rhs) const {
 
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
   const auto this_is_origin_keyed = is_origin_keyed();
-  const auto this_coop_coep_cross_origin_isolated_info =
-      coop_coep_cross_origin_isolated_info();
+  const auto this_web_exposed_isolation_info = web_exposed_isolation_info();
   const auto rhs_is_origin_keyed = is_origin_keyed();
-  const auto rhs_coop_coep_cross_origin_isolated_info =
-      coop_coep_cross_origin_isolated_info();
+  const auto rhs_web_exposed_isolation_info = web_exposed_isolation_info();
   return std::tie(lock_url(), this_is_origin_keyed,
-                  this_coop_coep_cross_origin_isolated_info) <
+                  this_web_exposed_isolation_info) <
          std::tie(rhs.lock_url(), rhs_is_origin_keyed,
-                  rhs_coop_coep_cross_origin_isolated_info);
+                  rhs_web_exposed_isolation_info);
 }
 
 std::string ProcessLock::ToString() const {
@@ -275,11 +272,12 @@ std::string ProcessLock::ToString() const {
     if (is_origin_keyed())
       ret += " origin-keyed";
 
-    if (coop_coep_cross_origin_isolated_info().is_isolated()) {
+    if (web_exposed_isolation_info().is_isolated()) {
       ret += " cross-origin-isolated";
+      if (web_exposed_isolation_info().is_isolated_application())
+        ret += "-application";
       ret += " coi-origin='" +
-             coop_coep_cross_origin_isolated_info().origin().GetDebugString() +
-             "'";
+             web_exposed_isolation_info().origin().GetDebugString() + "'";
     }
   } else {
     ret += " no-site-info";
@@ -576,8 +574,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     } else {
       // Verify that we are not trying to update the lock with different
       // COOP/COEP information.
-      CHECK(process_lock_.coop_coep_cross_origin_isolated_info() ==
-            lock.coop_coep_cross_origin_isolated_info());
+      CHECK(process_lock_.web_exposed_isolation_info() ==
+            lock.web_exposed_isolation_info());
 
       if (process_lock_.allows_any_site()) {
         // TODO(acolwell): Remove ability to lock to an allows_any_site
@@ -858,7 +856,7 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
   LockProcess(IsolationContext(BrowsingInstanceId(1), browser_context),
               child_id,
               ProcessLock::CreateAllowAnySite(
-                  CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
+                  WebExposedIsolationInfo::CreateNonIsolated()));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(int child_id) {
@@ -1536,14 +1534,14 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
     const UrlInfo& url_info,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
   const url::Origin url_origin = url::Origin::Resolve(url_info.url, origin);
   if (!CanAccessDataForOrigin(child_id, url_origin)) {
     // Check for special cases, like blob:null/ and data: URLs, where the
     // origin does not contain information to match against the process lock,
     // but using the whole URL can result in a process lock match.
     const auto expected_process_lock = ProcessLock::Create(
-        isolation_context, url_info, cross_origin_isolated_info);
+        isolation_context, url_info, web_exposed_isolation_info);
     const ProcessLock& actual_process_lock = GetProcessLock(child_id);
     if (actual_process_lock == expected_process_lock)
       return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
@@ -1698,7 +1696,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         expected_process_lock = ProcessLock::Create(
             isolation_context,
             UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-            actual_process_lock.coop_coep_cross_origin_isolated_info());
+            actual_process_lock.web_exposed_isolation_info());
 
         if (actual_process_lock.is_locked_to_site()) {
           // Jail-style enforcement - a process with a lock can only access
@@ -1783,7 +1781,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
           SiteInfo site_info = SiteInfo::Create(
               isolation_context,
               UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-              actual_process_lock.coop_coep_cross_origin_isolated_info());
+              actual_process_lock.web_exposed_isolation_info());
 
           // A process that's not locked to any site can only access data from
           // origins that do not require a locked process.

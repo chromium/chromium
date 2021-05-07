@@ -3084,7 +3084,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
     return;
 
   GetRendererInterface()->SetIsCrossOriginIsolated(
-      process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+      process_lock.web_exposed_isolation_info().is_isolated());
 
   if (!process_lock.IsASiteOrOrigin())
     return;
@@ -4026,11 +4026,10 @@ bool RenderProcessHostImpl::IsSuitableHost(
         return false;
     } else {
       // Even when this process is not locked to a site, it is still associated
-      // with a particular COOP/COEP configuration.  Ensure that it cannot be
-      // reused for destinations with incompatible COOP/COEP requirements.
+      // with a particular isolation configuration.  Ensure that it cannot be
+      // reused for destinations with incompatible isolation requirements.
       if (process_lock.allows_any_site() &&
-          !process_lock.IsCompatibleWithCoopCoepCrossOriginIsolation(
-              site_info)) {
+          !process_lock.IsCompatibleWithWebExposedIsolation(site_info)) {
         return false;
       }
 

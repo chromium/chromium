@@ -468,11 +468,10 @@ class CONTENT_EXPORT NavigationRequest
   // redirects. |post_redirect_process| is the renderer process that should
   // handle the navigation following the redirect if it can be handled by an
   // existing RenderProcessHost. Otherwise, it should be null.
-  // |cross_origin_isolated_info| is the new COOP/COEP info extracted from the
+  // |web_exposed_isolation_info| is the new isolation info extracted from the
   // redirect response.
-  void UpdateSiteInfo(
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
-      RenderProcessHost* post_redirect_process);
+  void UpdateSiteInfo(const WebExposedIsolationInfo& web_exposed_isolation_info,
+                      RenderProcessHost* post_redirect_process);
 
   int nav_entry_id() const { return nav_entry_id_; }
 
@@ -1154,11 +1153,11 @@ class CONTENT_EXPORT NavigationRequest
   // no live process that can be used. In that case, a suitable renderer process
   // will be created at commit time.
   //
-  // |cross_origin_isolated_info| is the new COOP/COEP info extracted from the
+  // |web_exposed_isolation_info| is the new isolation info extracted from the
   // redirect response.
   void WillRedirectRequest(
       const GURL& new_referrer_url,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
       RenderProcessHost* post_redirect_process);
 
   // Called when the URLRequest will fail.
@@ -1189,8 +1188,7 @@ class CONTENT_EXPORT NavigationRequest
   // Helper function that computes the SiteInfo for |common_params_.url|.
   // Note: |site_info_| should only be updated with the result of this function.
   SiteInfo GetSiteInfoForCommonParamsURL(
-      const CoopCoepCrossOriginIsolatedInfo&
-          cross_origin_isolated_origin_status);
+      const WebExposedIsolationInfo& cross_origin_isolated_origin_status);
 
   // Updates the state of the navigation handle after encountering a server
   // redirect.

@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
   RenderFrameHostImpl* page_rfh = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetMainFrame());
   auto page_lock = page_rfh->GetSiteInstance()->GetProcessLock();
-  EXPECT_TRUE(page_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_TRUE(page_lock.web_exposed_isolation_info().is_isolated());
   EXPECT_NE(page_rfh->GetCrossOriginIsolationStatus(),
             RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated);
 
@@ -355,8 +355,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
   RenderProcessHost* worker_rph = host->GetProcessHost();
   EXPECT_NE(worker_rph, page_rfh->GetProcess());
   auto worker_lock = host->site_instance()->GetProcessLock();
-  EXPECT_FALSE(
-      worker_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_FALSE(worker_lock.web_exposed_isolation_info().is_isolated());
 }
 
 // http://crbug.com/96435

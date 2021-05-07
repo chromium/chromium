@@ -56,7 +56,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
-#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/audits.h"
@@ -131,6 +130,7 @@
 #include "content/browser/speech/speech_synthesis_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_handle.h"
@@ -1879,7 +1879,7 @@ RenderFrameHost::CrossOriginIsolationStatus
 RenderFrameHostImpl::GetCrossOriginIsolationStatus() {
   ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
   if (process_lock.is_invalid() ||
-      !process_lock.coop_coep_cross_origin_isolated_info().is_isolated()) {
+      !process_lock.web_exposed_isolation_info().is_isolated()) {
     // Cross-origin isolated frames must be hosted in cross-origin isolated
     // processes.
     return RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated;
@@ -6337,7 +6337,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
       UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
-      GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
+      GetSiteInstance()->GetWebExposedIsolationInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
     return can_commit_status;
@@ -6720,8 +6720,7 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
     return false;
   }
   if (!old_frame_host->IsNavigationSameSite(
-          dest_url_info,
-          GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo())) {
+          dest_url_info, GetSiteInstance()->GetWebExposedIsolationInfo())) {
     return false;
   }
   DCHECK(frame_tree_node_->IsMainFrame());
@@ -8904,12 +8903,11 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   // Since |url| has already committed, |origin_isolation_request| below should
   // be set to kNone.
   SiteInfo site_info =
-      url.is_empty()
-          ? SiteInfo()
-          : SiteInfo::Create(
-                GetSiteInstance()->GetIsolationContext(),
-                UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-                GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
+      url.is_empty() ? SiteInfo()
+                     : SiteInfo::Create(
+                           GetSiteInstance()->GetIsolationContext(),
+                           UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
+                           GetSiteInstance()->GetWebExposedIsolationInfo());
 
   if (last_committed_site_info_ == site_info)
     return;
@@ -9074,9 +9072,9 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
 
 bool RenderFrameHostImpl::IsNavigationSameSite(
     const UrlInfo& dest_url_info,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
-  if (GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo() !=
-      cross_origin_isolated_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+  if (GetSiteInstance()->GetWebExposedIsolationInfo() !=
+      web_exposed_isolation_info) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(

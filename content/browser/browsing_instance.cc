@@ -24,13 +24,13 @@ int BrowsingInstance::next_browsing_instance_id_ = 1;
 
 BrowsingInstance::BrowsingInstance(
     BrowserContext* browser_context,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info)
+    const WebExposedIsolationInfo& web_exposed_isolation_info)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context)),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
-      cross_origin_isolated_info_(cross_origin_isolated_info) {
+      web_exposed_isolation_info_(web_exposed_isolation_info) {
   DCHECK(browser_context);
 }
 
@@ -171,7 +171,7 @@ BrowsingInstance::~BrowsingInstance() {
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
     const UrlInfo& url_info) const {
   return SiteInfo::Create(isolation_context_, url_info,
-                          cross_origin_isolated_info_);
+                          web_exposed_isolation_info_);
 }
 
 }  // namespace content

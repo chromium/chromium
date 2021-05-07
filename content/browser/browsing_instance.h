@@ -14,9 +14,9 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_instance_group_manager.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -84,14 +84,14 @@ class CONTENT_EXPORT BrowsingInstance final
   static BrowsingInstanceId NextBrowsingInstanceId();
 
   // Create a new BrowsingInstance.
-  // |cross_origin_isolated_info| indicates whether the BrowsingInstance
+  // |web_exposed_isolation_info| indicates whether the BrowsingInstance
   // should contain only cross-origin isolated pages, i.e. pages with
   // cross-origin-opener-policy set to same-origin and
   // cross-origin-embedder-policy set to require-corp, and if so, from which
   // top level origin.
   explicit BrowsingInstance(
       BrowserContext* context,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   ~BrowsingInstance();
 
@@ -187,9 +187,8 @@ class CONTENT_EXPORT BrowsingInstance final
   typedef std::map<SiteInfo, SiteInstanceImpl*> SiteInstanceMap;
 
   // Returns the cross-origin isolation status of the BrowsingInstance.
-  const CoopCoepCrossOriginIsolatedInfo& coop_coep_cross_origin_isolated_info()
-      const {
-    return cross_origin_isolated_info_;
+  const WebExposedIsolationInfo& web_exposed_isolation_info() const {
+    return web_exposed_isolation_info_;
   }
 
   // The next available browser-global BrowsingInstance ID.
@@ -231,7 +230,7 @@ class CONTENT_EXPORT BrowsingInstance final
   // The cross-origin isolation status of the BrowsingInstance. This indicates
   // whether this BrowsingInstance is hosting only cross-origin isolated pages
   // and if so, from which top level origin.
-  const CoopCoepCrossOriginIsolatedInfo cross_origin_isolated_info_;
+  const WebExposedIsolationInfo web_exposed_isolation_info_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingInstance);
 };

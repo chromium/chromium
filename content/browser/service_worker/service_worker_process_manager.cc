@@ -131,9 +131,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context_, service_worker_url,
           is_coop_coep_cross_origin_isolated
-              ? CoopCoepCrossOriginIsolatedInfo::CreateIsolated(
+              ? WebExposedIsolationInfo::CreateIsolated(
                     url::Origin::Create(service_worker_url))
-              : CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+              : WebExposedIsolationInfo::CreateNonIsolated(),
           can_use_existing_process, is_guest);
 
   // Get the process from the SiteInstance.

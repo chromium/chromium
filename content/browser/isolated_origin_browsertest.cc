@@ -95,9 +95,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   }
 
   ProcessLock ProcessLockFromUrl(const std::string& url) {
-    return ProcessLock(
-        SiteInfo(GURL(url), GURL(url), false /* is_origin_keyed */,
-                 CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
+    return ProcessLock(SiteInfo(GURL(url), GURL(url),
+                                false /* is_origin_keyed */,
+                                WebExposedIsolationInfo::CreateNonIsolated()));
   }
 
   WebContentsImpl* web_contents() const {
@@ -113,9 +113,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   // is_origin_keyed to true.
   ProcessLock GetStrictProcessLock(const GURL& url) {
     GURL origin_url = url::Origin::Create(url).GetURL();
-    return ProcessLock(
-        SiteInfo(origin_url, origin_url, false /* is_origin_keyed */,
-                 CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
+    return ProcessLock(SiteInfo(origin_url, origin_url,
+                                false /* is_origin_keyed */,
+                                WebExposedIsolationInfo::CreateNonIsolated()));
   }
 
  private:
@@ -482,9 +482,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   GURL isolated_suborigin_url(
       https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
-  auto expected_isolated_suborigin_lock = ProcessLock(
-      SiteInfo(origin_url, origin_url, true /* is_origin_keyed */,
-               CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
+  auto expected_isolated_suborigin_lock =
+      ProcessLock(SiteInfo(origin_url, origin_url, true /* is_origin_keyed */,
+                           WebExposedIsolationInfo::CreateNonIsolated()));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
 
@@ -2890,7 +2890,7 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
           web_contents()->GetBrowserContext(), hung_isolated_url,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          WebExposedIsolationInfo::CreateNonIsolated(),
           /* can_reuse_process= */ true);
   RenderProcessHost* sw_host = sw_site_instance->GetProcess();
   EXPECT_NE(new_shell->web_contents()->GetMainFrame()->GetProcess(), sw_host);
@@ -5127,7 +5127,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndCOEP) {
   EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   auto lock = policy->GetProcessLock(coop_instance->GetProcess()->GetID());
-  EXPECT_TRUE(lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_TRUE(lock.web_exposed_isolation_info().is_isolated());
   EXPECT_TRUE(lock.is_locked_to_site());
   EXPECT_TRUE(
       lock.MatchesOrigin(url::Origin::Create(GURL("https://coop.com"))));

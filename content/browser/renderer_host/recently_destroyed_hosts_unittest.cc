@@ -10,9 +10,9 @@
 #include "base/time/time.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -54,7 +54,7 @@ TEST_F(RecentlyDestroyedHostsTest,
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
       UrlInfo::CreateForTesting(GURL("https://www.google.com")),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+      WebExposedIsolationInfo::CreateNonIsolated());
 
   constexpr char kHistogramName[] =
       "SiteIsolation.ReusePendingOrCommittedSite."

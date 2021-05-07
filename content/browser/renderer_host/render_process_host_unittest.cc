@@ -207,7 +207,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseUnmatchedServiceWorkerProcess) {
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -218,7 +218,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseUnmatchedServiceWorkerProcess) {
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
@@ -271,7 +271,7 @@ TEST_F(RenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host = sw_site_instance->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance->GetLastProcessAssignmentOutcome());
@@ -306,8 +306,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // Gets a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
       SiteInstanceImpl::CreateForServiceWorker(
-          browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          browser_context(), kUrl, WebExposedIsolationInfo::CreateNonIsolated(),
           /* can_reuse_process */ true);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
@@ -321,7 +320,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
@@ -332,8 +331,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // unmatched service worker's process (i.e., sw_host2).
   scoped_refptr<SiteInstanceImpl> sw_site_instance3 =
       SiteInstanceImpl::CreateForServiceWorker(
-          browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          browser_context(), kUrl, WebExposedIsolationInfo::CreateNonIsolated(),
           /* can_reuse_process */ true);
   RenderProcessHost* sw_host3 = sw_site_instance3->GetProcess();
   EXPECT_EQ(sw_host2, sw_host3);
@@ -347,8 +345,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // workers in that process.
   scoped_refptr<SiteInstanceImpl> sw_site_instance4 =
       SiteInstanceImpl::CreateForServiceWorker(
-          browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          browser_context(), kUrl, WebExposedIsolationInfo::CreateNonIsolated(),
           /* can_reuse_process */ true);
   RenderProcessHost* sw_host4 = sw_site_instance4->GetProcess();
   EXPECT_EQ(sw_host2, sw_host4);
@@ -382,7 +379,7 @@ TEST_F(RenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -392,7 +389,7 @@ TEST_F(RenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_EQ(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
@@ -423,7 +420,7 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseOtherSiteServiceWorkerProcess) {
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl1,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -896,7 +893,7 @@ TEST_F(RenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(), kUrl,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+          WebExposedIsolationInfo::CreateNonIsolated());
   RenderProcessHost* sw_process = sw_site_instance->GetProcess();
 
   // Change foo.com SiteInstances to use a different StoragePartition.

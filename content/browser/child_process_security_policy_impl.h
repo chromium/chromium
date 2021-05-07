@@ -24,6 +24,7 @@
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
@@ -75,12 +76,13 @@ class CONTENT_EXPORT ProcessLock {
  public:
   // Create a lock that that represents a process that is associated with at
   // least one SiteInstance, but is not locked to a specific site. Any request
-  // that wants to commit in this process must have COOP/COEP information that
-  // matches the values used to create this lock.
+  // that wants to commit in this process must have web-exposed isolation
+  // information (COOP/COEP, for example) that matches the values used to create
+  // this lock.
   static ProcessLock CreateAllowAnySite(
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
-  // Create a lock for a specific UrlInfo and COOP/COEP information. This
+  // Create a lock for a specific UrlInfo and WebExposedIsolationInfo. This
   // method can be called from both the UI and IO threads. Locks created with
   // the same parameters must always be considered equal independent of what
   // thread they are called on. Special care must be taken since SiteInfos
@@ -89,7 +91,7 @@ class CONTENT_EXPORT ProcessLock {
   static ProcessLock Create(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
@@ -139,10 +141,10 @@ class CONTENT_EXPORT ProcessLock {
   // This property is renderer process global because we ensure that a
   // renderer process host only cross-origin isolated agents or only
   // non-cross-origin isolated agents, not both.
-  CoopCoepCrossOriginIsolatedInfo coop_coep_cross_origin_isolated_info() const {
+  WebExposedIsolationInfo web_exposed_isolation_info() const {
     return site_info_.has_value()
-               ? site_info_->coop_coep_cross_origin_isolated_info()
-               : CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+               ? site_info_->web_exposed_isolation_info()
+               : WebExposedIsolationInfo::CreateNonIsolated();
   }
 
   bool is_error_page() const {
@@ -167,8 +169,9 @@ class CONTENT_EXPORT ProcessLock {
 
   // Returns true if the COOP/COEP origin isolation information in this lock
   // is set and matches the information in |site_info|.
-  bool IsCompatibleWithCoopCoepCrossOriginIsolation(
-      const SiteInfo& site_info) const;
+  // Returns true if the web-exposed isolation level in this lock is set and
+  // matches (or exceeds) the level set in |site_info|.|.
+  bool IsCompatibleWithWebExposedIsolation(const SiteInfo& site_info) const;
 
   bool operator==(const ProcessLock& rhs) const;
   bool operator!=(const ProcessLock& rhs) const;
@@ -327,9 +330,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
 
-  // Determines if the combination of |origin|, |url|,
-  // |is_coop_coep_cross_origin_isolated|, and
-  // |coop_coep_cross_origin_isolated_origin| is safe to commit to the process
+  // Determines if the combination of |origin|, |url|, and
+  // |web_exposed_isolation_info| is safe to commit to the process
   // associated with |child_id|.
   //
   // Returns CAN_COMMIT_ORIGIN_AND_URL if it is safe to commit the |origin| and
@@ -341,7 +343,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const IsolationContext& isolation_context,
       const url::Origin& origin,
       const UrlInfo& url_info,
-      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the
