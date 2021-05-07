@@ -157,6 +157,8 @@ void WaylandCursorFactory::OnThemeLoaded(const std::string& loaded_theme_name,
     // wl_cursor_theme_load() can return nullptr.  We don't check that here but
     // have to be cautious when we actually load the shape.
     current_theme_->theme.reset(loaded_theme);
+    current_theme_->cache.clear();
+    NotifyObserversOnThemeLoaded();
   }
 }
 

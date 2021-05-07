@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/display/display.h"
@@ -20,15 +21,18 @@ class Point;
 }
 
 namespace ui {
-class CursorFactory;
 class PlatformCursor;
 
-class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader
+    : public CursorFactoryObserver {
  public:
   explicit CursorLoader(bool use_platform_cursors = true);
   CursorLoader(const CursorLoader&) = delete;
   CursorLoader& operator=(const CursorLoader&) = delete;
-  ~CursorLoader();
+  ~CursorLoader() override;
+
+  // CursorFactoryObserver:
+  void OnThemeLoaded() override;
 
   // Returns the rotation and scale of the currently loaded cursor.
   display::Display::Rotation rotation() const { return rotation_; }

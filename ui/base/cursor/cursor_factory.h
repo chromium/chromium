@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
@@ -28,6 +29,14 @@ class Point;
 namespace ui {
 class PlatformCursor;
 
+class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactoryObserver {
+ public:
+  // Called by the factory after it has loaded the cursor theme.
+  virtual void OnThemeLoaded() = 0;
+
+  virtual ~CursorFactoryObserver();
+};
+
 class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
  public:
   CursorFactory();
@@ -35,6 +44,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
 
   // Returns the thread-local instance.
   static CursorFactory* GetInstance();
+
+  void AddObserver(CursorFactoryObserver* observer);
+  void RemoveObserver(CursorFactoryObserver* observer);
+  void NotifyObserversOnThemeLoaded();
 
   // Return the default cursor of the specified type. When a default cursor is
   // not available, nullptr is returned.
@@ -63,6 +76,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // Sets the device scale factor that CursorFactory may use when creating
   // cursors.
   virtual void SetDeviceScaleFactor(float scale);
+
+ private:
+  base::ObserverList<CursorFactoryObserver>::Unchecked observers_;
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

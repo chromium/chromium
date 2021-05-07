@@ -21,6 +21,8 @@ CursorFactory* g_instance = nullptr;
 
 }  // namespace
 
+CursorFactoryObserver::~CursorFactoryObserver() = default;
+
 CursorFactory::CursorFactory() {
   DCHECK(!g_instance) << "There should only be a single CursorFactory.";
   g_instance = this;
@@ -34,6 +36,19 @@ CursorFactory::~CursorFactory() {
 CursorFactory* CursorFactory::GetInstance() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+void CursorFactory::AddObserver(CursorFactoryObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CursorFactory::RemoveObserver(CursorFactoryObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void CursorFactory::NotifyObserversOnThemeLoaded() {
+  for (auto& observer : observers_)
+    observer.OnThemeLoaded();
 }
 
 scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(

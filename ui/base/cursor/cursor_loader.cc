@@ -33,9 +33,16 @@ constexpr base::TimeDelta kAnimatedCursorFrameDelay =
 
 CursorLoader::CursorLoader(bool use_platform_cursors)
     : use_platform_cursors_(use_platform_cursors),
-      factory_(CursorFactory::GetInstance()) {}
+      factory_(CursorFactory::GetInstance()) {
+  factory_->AddObserver(this);
+}
 
 CursorLoader::~CursorLoader() {
+  factory_->RemoveObserver(this);
+  UnloadCursors();
+}
+
+void CursorLoader::OnThemeLoaded() {
   UnloadCursors();
 }
 
