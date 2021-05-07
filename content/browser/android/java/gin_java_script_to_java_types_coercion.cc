@@ -251,9 +251,7 @@ jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeString: {
-      std::string string_result;
-      value->GetAsString(&string_result);
-      result.l = ConvertUTF8ToJavaString(env, string_result).Release();
+      result.l = ConvertUTF8ToJavaString(env, value->GetString()).Release();
       break;
     }
     case JavaType::TypeObject:
@@ -521,8 +519,7 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
       length = static_cast<jsize>(length_value->GetInt());
     }
   } else if (length_value->is_double()) {
-    double double_length;
-    length_value->GetAsDouble(&double_length);
+    double double_length = length_value->GetDouble();
     if (double_length >= 0.0 &&
         double_length <= std::numeric_limits<int32_t>::max()) {
       length = static_cast<jsize>(double_length);
@@ -709,10 +706,8 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
       return CoerceJavaScriptIntegerToJavaValue(
           env, value->GetInt(), target_type, coerce_to_string, error);
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      value->GetAsDouble(&double_value);
       return CoerceJavaScriptDoubleToJavaValue(
-          env, double_value, target_type, coerce_to_string, error);
+          env, value->GetDouble(), target_type, coerce_to_string, error);
     }
     case base::Value::Type::BOOLEAN:
       return CoerceJavaScriptBooleanToJavaValue(
