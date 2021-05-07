@@ -15,6 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -189,9 +190,13 @@ public class ContextualSearchBarControl {
         if (percentage == FULL_OPACITY) onUpdateFromPeekToExpand(TRANSPARENT_OPACITY);
 
         // When the panel is completely closed the caption and custom image should be hidden.
+        // TODO(donnd): Do we really need to do any of this?
+        // The space will be freed when the panel closes.
         if (percentage == TRANSPARENT_OPACITY) {
             mQuickActionControl.reset();
-            mCaptionControl.hide();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
+                mCaptionControl.hide();
+            }
             getImageControl().hideCustomImage(false);
         }
     }
