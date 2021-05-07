@@ -189,6 +189,11 @@ class AutofillClient : public RiskDataLoader {
     bool show_prompt = false;
   };
 
+  // Used for options of save (and update) address profile prompt.
+  struct SaveAddressProfilePromptOptions {
+    bool show_prompt = true;
+  };
+
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     using AutoselectFirstSuggestion =
@@ -463,9 +468,11 @@ class AutofillClient : public RiskDataLoader {
   // renders an update prompt where `original_profile` is the address profile
   // that will be updated if the user accepts the update prompt. Runs `callback`
   // once the user makes a decision with respect to the offer-to-save prompt.
+  // `options` carries extra configuration options for the prompt.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      AutofillClient::SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) = 0;
 
   // Returns true if both the platform and the device support scanning credit
@@ -554,7 +561,7 @@ class AutofillClient : public RiskDataLoader {
   virtual LogManager* GetLogManager() const;
 
 #if defined(OS_IOS)
-  // Checks whether the qurrent query is the most recent one.
+  // Checks whether the current query is the most recent one.
   virtual bool IsQueryIDRelevant(int query_id) = 0;
 #endif
 };

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
@@ -33,9 +34,11 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContents(web_contents);
-    autofill_client->ConfirmSaveAddressProfile(test::GetFullProfile(),
-                                               /*original_profile=*/nullptr,
-                                               base::DoNothing());
+    autofill_client->ConfirmSaveAddressProfile(
+        test::GetFullProfile(),
+        /*original_profile=*/nullptr,
+        AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+        base::DoNothing());
     controller_ = SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
         web_contents);
     DCHECK(controller_);

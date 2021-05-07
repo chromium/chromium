@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -82,11 +83,19 @@ void AddressProfileSaveManager::OfferSavePrompt() {
   // The prompt should not have been shown yet.
   DCHECK(!pending_import_->prompt_shown());
 
+  // TODO(crbug.com/1175693): Pass the correct SaveAddressProfilePromptOptions
+  // below.
+
+  // TODO(crbug.com/1175693): Check pending_import_->set_prompt_was_shown() is
+  // always correct even in cases where it conflicts with
+  // SaveAddressProfilePromptOptions
+
   // Initiate the prompt and mark it as shown.
   pending_import_->set_prompt_was_shown();
   client_->ConfirmSaveAddressProfile(
       pending_import_->import_candidate().value(),
       base::OptionalOrNullptr(pending_import_->merge_candidate()),
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr()));
 }

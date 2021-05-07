@@ -177,6 +177,7 @@ void AwAutofillClient::ConfirmCreditCardFillAssist(
 void AwAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }

@@ -224,6 +224,7 @@ void AutofillClientImpl::ConfirmCreditCardFillAssist(
 void AutofillClientImpl::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   NOTREACHED();
 }

@@ -324,10 +324,12 @@ void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
   if (IsInfobarOverlayUIEnabled()) {
+    // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
     auto delegate =
         std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
             profile, original_profile, std::move(callback));
