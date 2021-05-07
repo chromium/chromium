@@ -668,16 +668,34 @@ void LayoutText::AbsoluteQuadsForRange(Vector<FloatQuad>& quads,
     if (UNLIKELY(HasFlippedBlocksWritingMode()))
       block_for_flipping = ContainingBlock();
     NGInlineCursor cursor;
+    bool is_last_end_included = false;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      const NGTextOffset offset = cursor.Current().TextOffset();
-      if (start > offset.end || end < offset.start)
+      const NGFragmentItem& item = *cursor.Current();
+      DCHECK(item.IsText());
+      bool is_collapsed = false;
+      PhysicalRect rect;
+      if (!item.IsGeneratedText()) {
+        const NGTextOffset& offset = item.TextOffset();
+        if (start > offset.end || end < offset.start) {
+          is_last_end_included = false;
+          continue;
+        }
+        is_last_end_included = offset.end <= end;
+        const unsigned clamped_start = std::max(start, offset.start);
+        const unsigned clamped_end = std::min(end, offset.end);
+        rect = cursor.CurrentLocalRect(clamped_start, clamped_end);
+        is_collapsed = clamped_start >= clamped_end;
+      } else if (item.IsEllipsis()) {
         continue;
-      const unsigned clamped_start = std::max(start, offset.start);
-      const unsigned clamped_end = std::min(end, offset.end);
-      PhysicalRect rect = cursor.CurrentLocalRect(clamped_start, clamped_end);
+      } else {
+        // Hyphens. Include if the last end was included.
+        if (!is_last_end_included)
+          continue;
+        rect = item.LocalRect();
+      }
       rect.Move(cursor.CurrentOffsetInBlockFlow());
       const FloatQuad quad = LocalRectToAbsoluteQuad(rect);
-      if (clamped_start < clamped_end) {
+      if (!is_collapsed) {
         quads.push_back(quad);
         found_non_collapsed_quad = true;
       } else {

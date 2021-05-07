@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS Range 0-5 should not include the hyphen.
+PASS Range 1-5 should not include the hyphen.
+PASS Range 0-6 should not include the hyphen.
+PASS Range 1-6 should not include the hyphen.
+PASS Range 0-7 should include the hyphen.
+FAIL Range 1-7 should include the hyphen. assert_equals: expected 60 but got 50
+PASS Range 0-8 should include the hyphen.
+PASS Range 0-8 should include only the first hyphen.
+PASS Collapsed soft-hyphen should be 0 width.
+FAIL Rendered soft-hyphen should have a width. assert_equals: expected 10 but got 0
+PASS Collapsed soft-hyphen in a span should be 0 width.
+FAIL Rendered soft-hyphen in a span should have a width. assert_equals: expected 10 but got 0
+Harness: the test ran to completion.
+
