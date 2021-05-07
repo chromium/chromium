@@ -87,7 +87,8 @@ bool PolicyCertServiceFactory::UsedPolicyCertificates(
     NOTREACHED();
     return false;
   }
-  return list->Find(value) != list->GetList().end();
+  // TODO(crbug.com/1187106): Use base::Contains once |list| is not a ListValue.
+  return std::find(list->begin(), list->end(), value) != list->end();
 }
 
 // static
