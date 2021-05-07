@@ -1902,6 +1902,13 @@ class SiteIsolationForPasswordSitesBrowserTest
         {features::kSitePerProcess});
   }
 
+  void StartIsolatingSite(Profile* profile, const GURL& url) {
+    content::SiteInstance::StartIsolatingSite(
+        profile, url,
+        content::ChildProcessSecurityPolicy::IsolatedOriginSource::
+            USER_TRIGGERED);
+  }
+
   std::vector<std::string> GetSavedIsolatedSites() {
     return GetSavedIsolatedSites(browser()->profile());
   }
@@ -2095,9 +2102,9 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
 
   // Isolate saved.com and saved2.com persistently.
   GURL saved_url(embedded_test_server()->GetURL("saved.com", "/title1.html"));
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
   GURL saved2_url(embedded_test_server()->GetURL("saved2.com", "/title1.html"));
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved2_url);
+  StartIsolatingSite(browser()->profile(), saved2_url);
 
   // Check that saved.com utilizes a dedicated process in future navigations.
   // Open a new tab to force creation of a new BrowsingInstance.
@@ -2146,9 +2153,9 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
 IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
                        IsolatedSiteIsSavedOnlyOnce) {
   GURL saved_url(embedded_test_server()->GetURL("saved.com", "/title1.html"));
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("http://saved.com"));
 }
@@ -2160,7 +2167,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
                        IncognitoWithIsolatedSites) {
   // Isolate saved.com and verify it's been saved to disk.
   GURL saved_url(embedded_test_server()->GetURL("saved.com", "/title1.html"));
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("http://saved.com"));
 
@@ -2183,7 +2190,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
   // process, and the site is not persisted for either the main or incognito
   // profiles.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-  content::SiteInstance::StartIsolatingSite(incognito->profile(), foo_url);
+  StartIsolatingSite(incognito->profile(), foo_url);
 
   AddBlankTabAndShow(incognito);
   ui_test_utils::NavigateToURL(incognito, foo_url);
@@ -2215,7 +2222,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
 
   // Isolate saved.com and verify it's been saved to disk.
   GURL saved_url(https_server.GetURL("saved.com", "/clear_site_data.html"));
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), saved_url);
+  StartIsolatingSite(browser()->profile(), saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("https://saved.com"));
 

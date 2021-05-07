@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "url/gurl.h"
 
@@ -216,7 +217,8 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // in via OAuth on that site).  The site will be determined from |url|'s
   // scheme and eTLD+1. If |context| is non-null, the site will be isolated
   // only within that BrowserContext; if |context| is null, the site will be
-  // isolated globally for all BrowserContexts.
+  // isolated globally for all BrowserContexts. |source| specifies why the new
+  // site is being isolated.
   //
   // Note that this has no effect if site isolation is turned off, such as via
   // the kDisableSiteIsolation cmdline flag or enterprise policy -- see also
@@ -230,9 +232,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // until the end of the current browsing session.  This is appropriate if the
   // site's persistence is not desired or is managed separately (e.g., sites
   // isolated due to OAuth logins are saved and in another component).
-  static void StartIsolatingSite(BrowserContext* context,
-                                 const GURL& url,
-                                 bool should_persist = true);
+  static void StartIsolatingSite(
+      BrowserContext* context,
+      const GURL& url,
+      ChildProcessSecurityPolicy::IsolatedOriginSource source,
+      bool should_persist = true);
 
  protected:
   friend class base::RefCounted<SiteInstance>;

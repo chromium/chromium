@@ -182,8 +182,14 @@ void SiteIsolationPolicy::IsolateNewOAuthURL(
   if (!IsIsolationForOAuthSitesEnabled())
     return;
 
-  content::SiteInstance::StartIsolatingSite(browser_context, signed_in_url,
-                                            false /* should_persist */);
+  // OAuth information is currently persisted and restored by other layers. See
+  // login_detection::prefs::SaveSiteToOAuthSignedInList().
+  constexpr bool kShouldPersist = false;
+
+  content::SiteInstance::StartIsolatingSite(
+      browser_context, signed_in_url,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource::USER_TRIGGERED,
+      kShouldPersist);
 }
 
 // static

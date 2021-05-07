@@ -1773,9 +1773,11 @@ bool SiteInstanceImpl::IsCrossOriginIsolated() const {
 }
 
 // static
-void SiteInstance::StartIsolatingSite(BrowserContext* context,
-                                      const GURL& url,
-                                      bool should_persist) {
+void SiteInstance::StartIsolatingSite(
+    BrowserContext* context,
+    const GURL& url,
+    ChildProcessSecurityPolicy::IsolatedOriginSource source,
+    bool should_persist) {
   if (!SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
     return;
 
@@ -1794,10 +1796,7 @@ void SiteInstance::StartIsolatingSite(BrowserContext* context,
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin site_origin(url::Origin::Create(site));
-  policy->AddFutureIsolatedOrigins(
-      {site_origin},
-      ChildProcessSecurityPolicy::IsolatedOriginSource::USER_TRIGGERED,
-      context);
+  policy->AddFutureIsolatedOrigins({site_origin}, source, context);
 
   // This function currently assumes the new isolated site should persist
   // across restarts, so ask the embedder to save it, excluding off-the-record

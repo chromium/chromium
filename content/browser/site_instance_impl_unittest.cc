@@ -1584,20 +1584,28 @@ TEST_F(SiteInstanceTest, StartIsolatingSite) {
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
 
   // StartIsolatingSite() should convert the URL to a site before isolating it.
-  SiteInstance::StartIsolatingSite(context(),
-                                   GURL("http://bar.foo.com/foo/bar.html"));
+  SiteInstance::StartIsolatingSite(
+      context(), GURL("http://bar.foo.com/foo/html.bar"),
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
   EXPECT_TRUE(IsIsolatedOrigin(GURL("http://foo.com")));
-  SiteInstance::StartIsolatingSite(context(), GURL("https://a.b.c.com:8000/"));
+  SiteInstance::StartIsolatingSite(
+      context(), GURL("https://a.b.c.com:8000/"),
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
   EXPECT_TRUE(IsIsolatedOrigin(GURL("https://c.com")));
-  SiteInstance::StartIsolatingSite(context(),
-                                   GURL("http://bar.com/foo/bar.html"));
+  SiteInstance::StartIsolatingSite(
+      context(), GURL("http://bar.com/foo/bar.html"),
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
   EXPECT_TRUE(IsIsolatedOrigin(GURL("http://bar.com")));
 
   // Attempts to isolate an unsupported isolated origin should be ignored.
   GURL data_url("data:,");
   GURL blank_url(url::kAboutBlankURL);
-  SiteInstance::StartIsolatingSite(context(), data_url);
-  SiteInstance::StartIsolatingSite(context(), blank_url);
+  SiteInstance::StartIsolatingSite(
+      context(), data_url,
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+  SiteInstance::StartIsolatingSite(
+      context(), blank_url,
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
   EXPECT_FALSE(IsIsolatedOrigin(data_url));
   EXPECT_FALSE(IsIsolatedOrigin(blank_url));
 

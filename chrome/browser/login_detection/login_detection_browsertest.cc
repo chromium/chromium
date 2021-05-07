@@ -75,8 +75,11 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
   ui_test_utils::NavigateToURL(browser(), test_url);
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
 
-  // Use site-isolaiton to save the site to manual passworded list.
-  content::SiteInstance::StartIsolatingSite(browser()->profile(), test_url);
+  // Use site isolation to save the site to manual passworded list.
+  content::SiteInstance::StartIsolatingSite(
+      browser()->profile(), test_url,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource::
+          USER_TRIGGERED);
 
   // Subsequent navigation be detected as login.
   ResetHistogramTester();

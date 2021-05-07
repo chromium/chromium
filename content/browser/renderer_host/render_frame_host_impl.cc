@@ -5294,9 +5294,11 @@ void RenderFrameHostImpl::MaybeIsolateForUserActivation() {
                           GetLastCommittedOrigin())
                     : true;
     if (is_same_origin_activation) {
-      SiteInstance::StartIsolatingSite(GetSiteInstance()->GetBrowserContext(),
-                                       GetMainFrame()->GetLastCommittedURL(),
-                                       false /* should_persist */);
+      SiteInstance::StartIsolatingSite(
+          GetSiteInstance()->GetBrowserContext(),
+          GetMainFrame()->GetLastCommittedURL(),
+          ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED,
+          false /* should_persist */);
     }
   }
 }

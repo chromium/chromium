@@ -18,5 +18,7 @@ void JNI_SiteIsolator_StartIsolatingSite(JNIEnv* env,
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   content::SiteInstance::StartIsolatingSite(
-      browser_context::BrowserContextFromJavaHandle(j_profile), *gurl);
+      browser_context::BrowserContextFromJavaHandle(j_profile), *gurl,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource::
+          USER_TRIGGERED);
 }

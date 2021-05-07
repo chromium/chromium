@@ -84,6 +84,13 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
     return static_cast<TabImpl*>(shell()->tab())->web_contents();
   }
 
+  void StartIsolatingSite(const GURL& url) {
+    content::SiteInstance::StartIsolatingSite(
+        GetProfile()->GetBrowserContext(), url,
+        content::ChildProcessSecurityPolicy::IsolatedOriginSource::
+            USER_TRIGGERED);
+  }
+
  private:
   // A browser client which forces off strict site isolation, so the test can
   // assume password isolation is enabled.
@@ -151,12 +158,10 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
   // Isolate saved.com and saved2.com persistently.
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
+  StartIsolatingSite(saved_url);
   GURL saved2_url =
       embedded_test_server()->GetURL("saved2.com", "/simple_page.html");
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved2_url);
+  StartIsolatingSite(saved2_url);
 
   NavigateAndWaitForCompletion(saved_url, shell());
   EXPECT_TRUE(GetWebContents()
@@ -199,12 +204,9 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest, IsolatedSiteIsSavedOnlyOnce) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
+  StartIsolatingSite(saved_url);
+  StartIsolatingSite(saved_url);
+  StartIsolatingSite(saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("http://saved.com"));
 }
@@ -221,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 
   // Isolate saved.com and verify it's been saved to disk.
   GURL saved_url = https_server.GetURL("saved.com", "/clear_site_data.html");
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
+  StartIsolatingSite(saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("https://saved.com"));
 
@@ -238,8 +239,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
                        ExplicitClearBrowsingDataClearsSavedIsolatedSites) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
-  content::SiteInstance::StartIsolatingSite(GetProfile()->GetBrowserContext(),
-                                            saved_url);
+  StartIsolatingSite(saved_url);
   EXPECT_THAT(GetSavedIsolatedSites(),
               UnorderedElementsAre("http://saved.com"));
 
