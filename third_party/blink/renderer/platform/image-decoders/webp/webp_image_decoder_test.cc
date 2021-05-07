@@ -514,6 +514,9 @@ TEST(StaticWebPTests, incrementalDecode) {
   TestByteByByteDecode(&CreateWEBPDecoder,
                        "/images/resources/crbug.364830.webp", 1u,
                        kAnimationNone);
+  TestByteByByteDecode(&CreateWEBPDecoder,
+                       "/images/resources/size-failure.b186640109.webp", 1u,
+                       kAnimationNone);
 }
 
 TEST(StaticWebPTests, isSizeAvailable) {
@@ -522,6 +525,9 @@ TEST(StaticWebPTests, isSizeAvailable) {
                               520u, true, kAnimationNone);
   TestByteByByteSizeAvailable(&CreateWEBPDecoder, "/images/resources/test.webp",
                               30u, false, kAnimationNone);
+  TestByteByByteSizeAvailable(&CreateWEBPDecoder,
+                              "/images/resources/size-failure.b186640109.webp",
+                              25u, false, kAnimationNone);
 }
 
 TEST(StaticWebPTests, notAnimated) {

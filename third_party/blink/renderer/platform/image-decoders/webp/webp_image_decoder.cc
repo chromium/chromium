@@ -295,7 +295,11 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (Failed())
     return false;
 
-  const unsigned kWebpHeaderSize = 30;
+  // RIFF header (12 bytes) + data chunk header (8 bytes).
+  const unsigned kWebpHeaderSize = 20;
+  // The number of bytes needed to retrieve the size will vary based on the
+  // type of chunk (VP8/VP8L/VP8X). This check just serves as an early out
+  // before bitstream validation can occur.
   if (data_->size() < kWebpHeaderSize)
     return IsAllDataReceived() ? SetFailed() : false;
 
@@ -329,10 +333,18 @@ bool WEBPImageDecoder::UpdateDemuxer() {
       reinterpret_cast<const uint8_t*>(consolidated_data_->data()),
       consolidated_data_->size()};
   demux_ = WebPDemuxPartial(&input_data, &demux_state_);
-  if (!demux_ || (IsAllDataReceived() && demux_state_ != WEBP_DEMUX_DONE)) {
-    if (!demux_)
+  const bool truncated_file =
+      IsAllDataReceived() && demux_state_ != WEBP_DEMUX_DONE;
+  if (!demux_ || demux_state_ < WEBP_DEMUX_PARSED_HEADER || truncated_file) {
+    if (!demux_) {
       consolidated_data_.reset();
-    return SetFailed();
+    } else {
+      // We delete the demuxer early to avoid breaking the expectation that
+      // frame count == 0 when IsSizeAvailable() is false.
+      WebPDemuxDelete(demux_);
+      demux_ = nullptr;
+    }
+    return truncated_file ? SetFailed() : false;
   }
 
   DCHECK_GT(demux_state_, WEBP_DEMUX_PARSING_HEADER);
