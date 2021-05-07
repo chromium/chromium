@@ -37,7 +37,7 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   base::ListValue* value = static_cast<base::ListValue*>(result.get());
   ASSERT_TRUE(value->GetSize() > 0);
 
-  for (const auto& network_interface_value : *value) {
+  for (const auto& network_interface_value : value->GetList()) {
     NetworkInterface network_interface;
     ASSERT_TRUE(NetworkInterface::Populate(network_interface_value,
                                            &network_interface));
