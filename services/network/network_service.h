@@ -132,7 +132,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       bool insecure_dns_client_enabled,
       net::SecureDnsMode secure_dns_mode,
       base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-          dns_over_https_servers) override;
+          dns_over_https_servers,
+      bool additional_dns_types_enabled) override;
   void DisableQuic() override;
   void SetUpHttpAuth(
       mojom::HttpAuthStaticParamsPtr http_auth_static_params) override;

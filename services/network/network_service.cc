@@ -476,15 +476,14 @@ void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
     net::SecureDnsMode secure_dns_mode,
     base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-        dns_over_https_servers) {
+        dns_over_https_servers,
+    bool additional_dns_types_enabled) {
   DCHECK(!dns_over_https_servers || !dns_over_https_servers->empty());
 
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
-  // TODO(crbug.com/1203427): Pass the additional query types param through Mojo
-  // from the browser code.
   host_resolver_manager_->SetInsecureDnsClientEnabled(
-      insecure_dns_client_enabled, true);
+      insecure_dns_client_enabled, additional_dns_types_enabled);
 
   // Configure DNS over HTTPS.
   net::DnsConfigOverrides overrides;

@@ -180,13 +180,13 @@ interface NetworkService {
   // https://tools.ietf.org/html/rfc1034#section-5.3.1 for definition of a stub
   // resolver.
   //
-  // |dns_over_https_servers| is an optional list of DNS over HTTPS servers.
-  // DnsTransactions will by default follow the behavior of |secure_dns_mode|.
+  // `dns_over_https_servers` is an optional list of DNS over HTTPS servers.
+  // DnsTransactions will by default follow the behavior of `secure_dns_mode`.
   // In SECURE mode, only DoH lookups will be performed. In AUTOMATIC mode,
   // DoH lookups to available servers will be performed first, and insecure
   // lookups will be used as a fallback. In OFF mode, only insecure lookups will
   // be performed. When insecure lookups are performed, they will be sent by
-  // the async resolver first if |insecure_dns_client_enabled| is true and
+  // the async resolver first if `insecure_dns_client_enabled` is true and
   // then by the system resolver as a fallback.
   //
   // DNS over HTTPS will use the primary NetworkContext, so can only be enabled
@@ -194,9 +194,15 @@ interface NetworkService {
   // limitation, this method can be called at any time to change DNS
   // configuration, though calling it will fail any DNS lookups that have
   // already been started.
+  //
+  // `additional_dns_types_enabled` controls whether additional DNS query types,
+  // e.g. HTTPS (DNS type 65) will be allowed besides the traditional A and AAAA
+  // queries when a request is being made via insecure DNS. Has no effect on
+  // Secure DNS which always allows additional types.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             SecureDnsMode secure_dns_mode,
-                            array<DnsOverHttpsServer>? dns_over_https_servers);
+                            array<DnsOverHttpsServer>? dns_over_https_servers,
+                            bool additional_dns_types_enabled);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.
