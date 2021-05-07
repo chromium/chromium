@@ -46,9 +46,24 @@ PartialMagnificationController::~PartialMagnificationController() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
+void PartialMagnificationController::AddObserver(
+    PartialMagnificationController::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PartialMagnificationController::RemoveObserver(
+    PartialMagnificationController::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void PartialMagnificationController::SetEnabled(bool enabled) {
+  if (is_enabled_ == enabled)
+    return;
+
   is_enabled_ = enabled;
   SetActive(false);
+  for (auto& observer : observers_)
+    observer.OnPartialMagnificationStateChanged(enabled);
 }
 
 void PartialMagnificationController::SwitchTargetRootWindowIfNeeded(
@@ -64,6 +79,10 @@ void PartialMagnificationController::SwitchTargetRootWindowIfNeeded(
 }
 
 void PartialMagnificationController::OnTouchEvent(ui::TouchEvent* event) {
+  OnLocatedEvent(event, event->pointer_details());
+}
+
+void PartialMagnificationController::OnMouseEvent(ui::MouseEvent* event) {
   OnLocatedEvent(event, event->pointer_details());
 }
 
@@ -87,6 +106,12 @@ void PartialMagnificationController::OnLocatedEvent(
     const ui::PointerDetails& pointer_details) {
   if (!is_enabled_)
     return;
+
+  if (allow_mouse_following_ &&
+      pointer_details.pointer_type == ui::EventPointerType::kMouse) {
+    SetActive(true);
+    return;
+  }
 
   if (pointer_details.pointer_type != ui::EventPointerType::kPen)
     return;
