@@ -73,6 +73,18 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowEditAddressProfileDialog(
   return edit_address_profile_bubble_view_.get();
 }
 
+AutofillBubbleBase*
+TestAutofillBubbleHandler::ShowVirtualCardManualFallbackBubble(
+    content::WebContents* web_contents,
+    VirtualCardManualFallbackBubbleController* controller,
+    bool is_user_gesture) {
+  if (!virtual_card_manual_fallback_bubble_view_) {
+    virtual_card_manual_fallback_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return virtual_card_manual_fallback_bubble_view_.get();
+}
+
 void TestAutofillBubbleHandler::OnPasswordSaved() {}
 
 }  // namespace autofill

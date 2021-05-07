@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -204,6 +206,30 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowEditAddressProfileDialog(
   dialog->ShowForWebContents(web_contents);
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
   return dialog;
+}
+
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
+    content::WebContents* web_contents,
+    VirtualCardManualFallbackBubbleController* controller,
+    bool is_user_gesture) {
+  VirtualCardManualFallbackBubbleViews* bubble =
+      new VirtualCardManualFallbackBubbleViews(
+          toolbar_button_provider_->GetAnchorView(
+              PageActionIconType::kVirtualCardManualFallback),
+          web_contents, controller);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(is_user_gesture
+                            ? VirtualCardManualFallbackBubbleViews::USER_GESTURE
+                            : VirtualCardManualFallbackBubbleViews::AUTOMATIC);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kVirtualCardManualFallback);
+  if (icon_view)
+    bubble->SetHighlightedButton(icon_view);
+
+  return bubble;
 }
 
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {

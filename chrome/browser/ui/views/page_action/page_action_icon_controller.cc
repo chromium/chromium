@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
@@ -213,6 +214,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         DCHECK(base::FeatureList::IsEnabled(features::kWebAuthConditionalUI));
         add_page_action_icon(
             type, std::make_unique<WebAuthnIconView>(
+                      params.command_updater, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kVirtualCardManualFallback:
+        add_page_action_icon(
+            type, std::make_unique<autofill::VirtualCardManualFallbackIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;

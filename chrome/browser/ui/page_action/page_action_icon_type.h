@@ -25,6 +25,7 @@ enum class PageActionIconType {
   kSharingHub,
   kSmsRemoteFetcher,
   kTranslate,
+  kVirtualCardManualFallback,
   kWebAuthn,
   kZoom,
 };

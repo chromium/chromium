@@ -40,6 +40,7 @@ ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
       PageActionIconType::kManagePasswords,
       PageActionIconType::kLocalCardMigration,
       PageActionIconType::kSaveCard,
+      PageActionIconType::kVirtualCardManualFallback,
   };
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAddressProfileSavePrompt)) {

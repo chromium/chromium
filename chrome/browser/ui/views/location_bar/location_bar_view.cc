@@ -300,6 +300,8 @@ void LocationBarView::Init() {
           autofill::features::kAutofillEnableToolbarStatusChip)) {
     params.types_enabled.push_back(PageActionIconType::kSaveCard);
     params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
+    params.types_enabled.push_back(
+        PageActionIconType::kVirtualCardManualFallback);
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillAddressProfileSavePrompt)) {
       // TODO(crbug.com/1167060): Place this in the proper order upon having

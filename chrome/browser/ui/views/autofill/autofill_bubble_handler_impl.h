@@ -60,6 +60,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* web_contents,
       EditAddressProfileDialogController* controller) override;
+  AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+      content::WebContents* web_contents,
+      VirtualCardManualFallbackBubbleController* controller,
+      bool is_user_gesture) override;
 
   void OnPasswordSaved() override;
 

@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -1207,6 +1208,16 @@ void SaveAutofillAddress(Browser* browser) {
       autofill::SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents);
   controller->OnPageActionIconClicked();
+}
+
+void ShowVirtualCardManualFallbackBubble(Browser* browser) {
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  auto* controller =
+      autofill::VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
+          web_contents);
+  if (controller)
+    controller->ReshowBubble();
 }
 
 void Translate(Browser* browser) {
