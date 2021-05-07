@@ -309,21 +309,28 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (configuration->hasSdpSemantics()) {
     if (configuration->sdpSemantics() == "plan-b") {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-      if (!RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
-              context)) {
-        // TODO(https://crbug.com/857004): In M93, replace this deprecation
-        // warning with the throwing of an exception (Reverse Origin Trial is
-        // required to continue to use Plan B).
-        Deprecation::CountDeprecation(
-            context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
-      } else {
-        // TODO(https://crbug.com/857004): In M96, replace this deprecation
+      // Extend the Plan B deprecation deadline if
+      // RTCExtendDeadlineForPlanBRemoval is enabled, i.e. if the page has opted
+      // in to the 'RTCPeerConnection Plan B SDP Semantics' Deprecation Trial or
+      // if --enable-blink-features=RTCExtendDeadlineForPlanBRemoval was used.
+      // Local files also get the extended deadline beecause "file://" URLs
+      // cannot sign up for Origin Trials.
+      if (RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
+              context) ||
+          context->Url().IsLocalFile()) {
+        // TODO(https://crbug.com/857004): In M97, replace this deprecation
         // warning with the throwing of an exception (Reverse Origin Trial has
         // ended).
         Deprecation::CountDeprecation(
             context,
             WebFeature::
                 kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial);
+      } else {
+        // The deadline is not being extended.
+        // TODO(https://crbug.com/857004): In M93, replace this deprecation
+        // warning with the throwing of an exception.
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
       }
     } else {
       DCHECK_EQ(configuration->sdpSemantics(), "unified-plan");
