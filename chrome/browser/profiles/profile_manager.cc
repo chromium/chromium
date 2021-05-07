@@ -569,10 +569,9 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
     // Make a copy because the list might change in the calls to GetProfile.
     std::unique_ptr<base::ListValue> profile_list(
         local_state->GetList(prefs::kProfilesLastActive)->DeepCopy());
-    base::ListValue::const_iterator it;
-    for (it = profile_list->begin(); it != profile_list->end(); ++it) {
+    for (const auto& entry : profile_list->GetList()) {
       std::string profile_base_name;
-      if (!it->GetAsString(&profile_base_name) || profile_base_name.empty() ||
+      if (!entry.GetAsString(&profile_base_name) || profile_base_name.empty() ||
           profile_base_name ==
               base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
         LOG(WARNING) << "Invalid entry in " << prefs::kProfilesLastActive;
@@ -1107,7 +1106,7 @@ void ProfileManager::CleanUpDeletedProfiles() {
       local_state->GetList(prefs::kProfilesDeleted);
   DCHECK(deleted_profiles);
 
-  for (const base::Value& value : *deleted_profiles) {
+  for (const base::Value& value : deleted_profiles->GetList()) {
     base::Optional<base::FilePath> profile_path = util::ValueToFilePath(value);
     // Although it should never happen, make sure this is a valid path in the
     // user_data_dir, so we don't accidentally delete something else.
