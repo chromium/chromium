@@ -20,6 +20,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace autofill {
 
@@ -43,23 +44,13 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
   }
 }
 
-std::unique_ptr<views::ImageView> CreateIconViewForType(ServerFieldType type,
-                                                        bool for_new_value) {
-  auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      GetVectorIconForType(type),
-      for_new_value ? ui::NativeTheme::kColorId_ProminentButtonColor
-                    : ui::NativeTheme::kColorId_DefaultIconColor,
-      kIconSize));
-  return icon_view;
-}
-
 // Creates a view that displays all values in `diff_map`. `are_new_values`
 // decides which set of values from `diff_map` are displayed.
 std::unique_ptr<views::View> CreateValuesView(
     const base::flat_map<ServerFieldType,
                          std::pair<std::u16string, std::u16string>>& diff_map,
-    bool are_new_values) {
+    bool are_new_values,
+    ui::NativeTheme::ColorId icon_color) {
   auto view = std::make_unique<views::View>();
   view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -87,15 +78,20 @@ std::unique_ptr<views::View> CreateValuesView(
     value_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets(
                 /*vertical=*/0,
                 /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                    views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+                    views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
-    value_row->AddChildView(CreateIconViewForType(type, are_new_values));
+    auto icon_view = std::make_unique<views::ImageView>();
+    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+        GetVectorIconForType(type), icon_color, kIconSize));
+
+    value_row->AddChildView(std::move(icon_view));
     value_row->AddChildView(
         std::make_unique<views::Label>(value, views::style::CONTEXT_LABEL));
   }
@@ -118,12 +114,16 @@ void AddValuesRow(
   if (show_row_label) {
     std::unique_ptr<views::Label> label(new views::Label(
         are_new_values ? u"New" : u"Old", views::style::CONTEXT_LABEL,
-        views::style::STYLE_PRIMARY));
+        views::style::STYLE_SECONDARY));
     layout->AddView(std::move(label), /*col_span=*/1, /*row_span=*/1,
                     /*h_align=*/views::GridLayout::LEADING,
                     /*v_align=*/views::GridLayout::LEADING);
   }
-  layout->AddView(CreateValuesView(diff_map, are_new_values),
+  ui::NativeTheme::ColorId icon_color =
+      show_row_label && are_new_values
+          ? ui::NativeTheme::kColorId_ProminentButtonColor
+          : ui::NativeTheme::kColorId_SecondaryIconColor;
+  layout->AddView(CreateValuesView(diff_map, are_new_values, icon_color),
                   /*col_span=*/1,
                   /*row_span=*/1,
                   /*h_align=*/views::GridLayout::FILL,
