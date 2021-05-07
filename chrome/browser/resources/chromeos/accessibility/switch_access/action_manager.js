@@ -93,16 +93,30 @@ export class ActionManager {
    */
   static performAction(action) {
     switch (action) {
+      // Global actions:
+      case SwitchAccessMenuAction.SETTINGS:
+        chrome.accessibilityPrivate.openSettingsSubpage(
+            'manageAccessibility/switchAccess');
+        ActionManager.exitCurrentMenu();
+        break;
+      case SwitchAccessMenuAction.POINT_SCAN:
+        ActionManager.exitCurrentMenu();
+        Navigator.byPoint.start();
+        break;
+      case SwitchAccessMenuAction.ITEM_SCAN:
+        Navigator.byItem.restart();
+        break;
+      // Point scan actions:
       case SwitchAccessMenuAction.LEFT_CLICK:
       case SwitchAccessMenuAction.RIGHT_CLICK:
         // Exit menu, then click (so the action will hit the desired target,
         // instead of the menu).
         ActionManager.exitCurrentMenu();
         Navigator.byPoint.performMouseAction(action);
-        return;
+        break;
+      // Item scan actions:
       default:
-        ActionManager.instance.handleGlobalActions_(action) ||
-            ActionManager.instance.performActionOnCurrentNode_(action);
+        ActionManager.instance.performActionOnCurrentNode_(action);
         ActionManager.exitCurrentMenu();
     }
   }
@@ -242,31 +256,6 @@ export class ActionManager {
     }
 
     return undefined;
-  }
-
-  /**
-   * If the action is a global action, perform the action and return true.
-   * Otherwise return false.
-   * @param {!SwitchAccessMenuAction} action
-   * @return {boolean}
-   * @private
-   */
-  handleGlobalActions_(action) {
-    switch (action) {
-      case SwitchAccessMenuAction.SETTINGS:
-        chrome.accessibilityPrivate.openSettingsSubpage(
-            'manageAccessibility/switchAccess');
-        return true;
-      case SwitchAccessMenuAction.POINT_SCAN:
-        ActionManager.exitCurrentMenu();
-        Navigator.byPoint.start();
-        return true;
-      case SwitchAccessMenuAction.ITEM_SCAN:
-        Navigator.byItem.restart();
-        return true;
-      default:
-        return false;
-    }
   }
 
   /** @private */
