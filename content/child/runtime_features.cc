@@ -361,6 +361,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FeaturePolicyForClientHints",
            features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
+          {"FileHandling", blink::features::kFileHandlingAPI},
           {"FontAccess", blink::features::kFontAccess},
           {"FontAccessPersistent", blink::features::kFontAccessPersistent},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},
@@ -550,10 +551,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
-
-  if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI)) {
-    WebRuntimeFeatures::EnableFeatureFromString("FileHandling", true);
-  }
 
   // TODO(rodneyding): This is a rare case for a stable feature
   // Need to investigate more to determine whether to refactor it.
