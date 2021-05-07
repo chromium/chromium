@@ -55,8 +55,8 @@ class CreditCardCVCAuthenticator
     bool did_succeed = false;
     const CreditCard* card = nullptr;
     std::u16string cvc = std::u16string();
-    base::Optional<base::Value> creation_options = base::nullopt;
-    base::Optional<base::Value> request_options = base::nullopt;
+    base::Optional<base::Value> creation_options;
+    base::Optional<base::Value> request_options;
     std::string card_authorization_token = std::string();
   };
   class Requester {

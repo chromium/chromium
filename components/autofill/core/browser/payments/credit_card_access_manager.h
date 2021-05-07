@@ -269,7 +269,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 
   // Timestamp used for user-perceived latency metrics.
   base::Optional<base::TimeTicks>
-      card_selected_without_unmask_details_timestamp_ = base::nullopt;
+      card_selected_without_unmask_details_timestamp_;
 
   // Meant for histograms recorded in FullCardRequest.
   base::TimeTicks form_parsed_timestamp_;

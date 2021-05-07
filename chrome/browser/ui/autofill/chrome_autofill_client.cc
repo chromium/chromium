@@ -465,7 +465,7 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       GetPersonalDataManager()->GetSyncSigninState() ==
       autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
 
-  base::Optional<AccountInfo> account_info = base::nullopt;
+  base::Optional<AccountInfo> account_info;
   // AccountInfo data should be passed down only if the following conditions are
   // satisfied:
   // 1) Sync is off or the

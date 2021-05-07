@@ -43,11 +43,11 @@ struct FieldDataDescription {
   bool is_focusable = true;
   const base::StringPiece16 label = kLabelText;
   const base::StringPiece16 name = kNameText;
-  base::Optional<const char16_t*> value = base::nullopt;
+  base::Optional<const char16_t*> value;
   const base::StringPiece autocomplete_attribute;
   const base::StringPiece form_control_type = "text";
   bool should_autocomplete = true;
-  base::Optional<bool> is_autofilled = base::nullopt;
+  base::Optional<bool> is_autofilled;
 };
 
 // Attributes provided to the test form.
@@ -55,11 +55,11 @@ template <typename = void>
 struct TestFormAttributes {
   const base::StringPiece description_for_logging;
   std::vector<FieldDataDescription<>> fields;
-  base::Optional<FormRendererId> unique_renderer_id = base::nullopt;
+  base::Optional<FormRendererId> unique_renderer_id;
   const base::StringPiece16 name = u"TestForm";
   const base::StringPiece url = kFormUrl;
   const base::StringPiece action = kFormActionUrl;
-  base::Optional<url::Origin> main_frame_origin = base::nullopt;
+  base::Optional<url::Origin> main_frame_origin;
   bool is_form_tag = true;
 };
 
@@ -80,11 +80,11 @@ struct TestFormFlags {
   // first value denotes whether the comparison is to be done while second
   // denotes EXPECT_TRUE for true and EXPECT_FALSE for false.
   std::pair<bool, bool> is_complete_credit_card_form = {false, false};
-  // base::nullopt means no checking.
-  base::Optional<int> field_count = base::nullopt;
-  base::Optional<int> autofill_count = base::nullopt;
-  base::Optional<int> section_count = base::nullopt;
-  base::Optional<int> response_field_count = base::nullopt;
+  // The implicit default value `base::nullopt` means no checking.
+  base::Optional<int> field_count;
+  base::Optional<int> autofill_count;
+  base::Optional<int> section_count;
+  base::Optional<int> response_field_count;
 };
 
 // Expected field type values to be verified with the test form.

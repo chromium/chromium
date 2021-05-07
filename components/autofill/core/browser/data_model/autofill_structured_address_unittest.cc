@@ -25,12 +25,12 @@ namespace structured_address {
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
 struct AddressLineParsingTestCase {
-  std::string country_code = "";
-  std::string street_address = "";
-  std::string street_name = "";
-  std::string house_number = "";
-  std::string floor = "";
-  std::string apartment = "";
+  std::string country_code;
+  std::string street_address;
+  std::string street_name;
+  std::string house_number;
+  std::string floor;
+  std::string apartment;
 };
 
 std::ostream& operator<<(std::ostream& out,
