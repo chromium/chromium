@@ -240,7 +240,6 @@ source_set("unit_tests") {
     "main_thread/frame_task_queue_controller_unittest.cc",
     "main_thread/idle_time_estimator_unittest.cc",
     "main_thread/main_thread_metrics_helper_unittest.cc",
-    "main_thread/main_thread_perftest.cc",
     "main_thread/main_thread_scheduler_impl_unittest.cc",
     "main_thread/main_thread_unittest.cc",
     "main_thread/memory_purge_manager_unittest.cc",
