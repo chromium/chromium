@@ -235,7 +235,7 @@ void BluetoothClassicMedium::DeviceAdded(
   // TODO(crbug.com/1191815): Remove these logs. They are temporary logs used
   // to debug this issue.
   VLOG(1) << "Device added or changed. Address: " << device->address
-          << ", Name: '" << (device->name ? "<None>" : device->name_for_display)
+          << ", Name: '" << (device->name ? device->name_for_display : "<None>")
           << "'";
 
   // Best-effort attempt to filter out BLE advertisements. BLE advertisements
