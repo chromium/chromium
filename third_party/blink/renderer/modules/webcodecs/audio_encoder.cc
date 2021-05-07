@@ -204,10 +204,10 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   auto* frame = request->frame.Release();
 
-  // TODO(crbug.com/1201986): calling buffer() might incur a copy internally,
-  // and we copy the data right back into a media::AudioBus below. We should
-  // replace buffer() with data().
-  auto* buffer = frame->buffer();
+  auto data = frame->data();
+
+  // The frame shouldn't be closed at this point.
+  DCHECK(data);
 
   auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
                           media::Status status) {
@@ -221,11 +221,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
     self->ProcessRequests();
   };
 
-  if (buffer->numberOfChannels() != uint8_t{active_config_->options.channels} ||
-      buffer->sampleRate() != active_config_->options.sample_rate) {
+  if (data->channel_count() != active_config_->options.channels ||
+      data->sample_rate() != active_config_->options.sample_rate) {
     media::Status error(media::StatusCode::kEncoderFailedEncode);
-    error.WithData("channels", int{buffer->numberOfChannels()});
-    error.WithData("sampleRate", buffer->sampleRate());
+    error.WithData("channels", data->channel_count());
+    error.WithData("sampleRate", data->sample_rate());
 
     HandleError(logger_->MakeException(
         "Input audio buffer is incompatible with codec parameters", error));
@@ -233,28 +233,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
     return;
   }
 
-  DCHECK(buffer);
+  // If |data|'s memory layout allows it, |audio_bus| will be a simple wrapper
+  // around it. Otherwise, |audio_bus| will contain a converted copy of |data|.
+  auto audio_bus = media::AudioBuffer::WrapOrCopyToAudioBus(data);
 
-  // TODO(crbug.com/1168418): There are two reasons we need to copy |buffer|
-  // data here:
-  // 1. AudioBus data needs to be 16 bytes aligned and |buffer| data might not
-  // be aligned like that.
-  // 2. The encoder might need to access this data on a different thread, which
-  // is not allowed from blink point of view.
-  //
-  // If we could transfer AudioBuffer's data to another thread, we wouldn't need
-  // to copy it, if alignment happens to be right.
-  auto audio_bus =
-      media::AudioBus::Create(buffer->numberOfChannels(), buffer->length());
-  for (int channel = 0; channel < audio_bus->channels(); channel++) {
-    auto array = buffer->getChannelData(channel);
-    size_t byte_length = array->byteLength();
-    DCHECK_EQ(byte_length, audio_bus->frames() * sizeof(float));
-    memcpy(audio_bus->channel(channel), array->Data(), byte_length);
-  }
-
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(frame->timestamp());
+  base::TimeTicks timestamp = base::TimeTicks() + data->timestamp();
   media_encoder_->Encode(
       std::move(audio_bus), timestamp,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
