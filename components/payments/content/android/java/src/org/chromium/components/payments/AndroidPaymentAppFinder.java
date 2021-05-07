@@ -64,7 +64,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     public static final String META_DATA_NAME_OF_SUPPORTED_DELEGATIONS =
             "org.chromium.payment_supported_delegations";
 
-    private final Set<String> mNonUriPaymentMethods = new HashSet<>();
     private final Set<GURL> mUrlPaymentMethods = new HashSet<>();
     private final PaymentManifestDownloader mDownloader;
     private final PaymentManifestWebDataService mWebDataService;
@@ -242,23 +241,12 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      */
     public void findAndroidPaymentApps() {
         if (mFactoryDelegate.getParams().hasClosed()) return;
-        // For non-URL payment method names, only names published by W3C should be supported. Keep
-        // this in sync with manifest_verifier.cc.
-        Set<String> supportedNonUriPaymentMethods = new HashSet<>();
-        supportedNonUriPaymentMethods.add(MethodStrings.BASIC_CARD);
-        supportedNonUriPaymentMethods.add(MethodStrings.INTERLEDGER);
-        supportedNonUriPaymentMethods.add(MethodStrings.PAYEE_CREDIT_TRANSFER);
-        supportedNonUriPaymentMethods.add(MethodStrings.PAYER_CREDIT_TRANSFER);
-        supportedNonUriPaymentMethods.add(MethodStrings.TOKENIZED_CARD);
-
         for (String method : mFactoryDelegate.getParams().getMethodData().keySet()) {
             assert !TextUtils.isEmpty(method);
-            if (mAppStores.containsValue(new GURL(method))) continue;
-            if (supportedNonUriPaymentMethods.contains(method)) {
-                mNonUriPaymentMethods.add(method);
-            } else {
-                GURL url = new GURL(method);
-                if (UrlUtil.isURLValid(url)) mUrlPaymentMethods.add(url);
+            GURL url = new GURL(method); // Only URL payment method names are supported.
+            if (mAppStores.containsValue(url)) continue;
+            if (UrlUtil.isValidUrlBasedPaymentMethodIdentifier(url)) {
+                mUrlPaymentMethods.add(url);
             }
         }
 
@@ -430,16 +418,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             if (manifestVerifiers.size() == MAX_NUMBER_OF_MANIFESTS) {
                 Log.e(TAG, "Reached maximum number of allowed payment app manifests.");
                 break;
-            }
-        }
-
-        for (String nonUriMethodName : mNonUriPaymentMethods) {
-            if (methodToAppsMapping.containsKey(nonUriMethodName)) {
-                Set<ResolveInfo> supportedApps = methodToAppsMapping.get(nonUriMethodName);
-                for (ResolveInfo supportedApp : supportedApps) {
-                    // Chrome does not verify app manifests for non-URL payment method support.
-                    onValidPaymentAppForPaymentMethodName(supportedApp, nonUriMethodName);
-                }
             }
         }
 

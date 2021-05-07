@@ -310,67 +310,6 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
     @SmallTest
     @Test
     @UiThreadTest
-    public void testQueryBasicCardsWithTwoApps() {
-        List<ResolveInfo> activities = new ArrayList<>();
-        ResolveInfo alicePay = new ResolveInfo();
-        alicePay.activityInfo = new ActivityInfo();
-        alicePay.activityInfo.packageName = "com.alicepay.app";
-        alicePay.activityInfo.name = "com.alicepay.app.WebPaymentActivity";
-        alicePay.activityInfo.applicationInfo = new ApplicationInfo();
-        Bundle alicePayMetaData = new Bundle();
-        alicePayMetaData.putString(
-                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "basic-card");
-        alicePayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
-        alicePay.activityInfo.metaData = alicePayMetaData;
-        activities.add(alicePay);
-
-        ResolveInfo bobPay = new ResolveInfo();
-        bobPay.activityInfo = new ActivityInfo();
-        bobPay.activityInfo.packageName = "com.bobpay.app";
-        bobPay.activityInfo.name = "com.bobpay.app.WebPaymentActivity";
-        bobPay.activityInfo.applicationInfo = new ApplicationInfo();
-        Bundle bobPayMetaData = new Bundle();
-        bobPayMetaData.putString(
-                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "basic-card");
-        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 2);
-        bobPay.activityInfo.metaData = bobPayMetaData;
-        activities.add(bobPay);
-
-        Mockito.when(mPackageManagerDelegate.getAppLabel(Mockito.any(ResolveInfo.class)))
-                .thenReturn("A non-empty label");
-        Mockito.when(mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
-                             ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
-                .thenReturn(activities);
-        Mockito.when(mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                             ArgumentMatchers.argThat(new IntentArgumentMatcher(
-                                     new Intent(AndroidPaymentAppFinder.ACTION_IS_READY_TO_PAY)))))
-                .thenReturn(new ArrayList<ResolveInfo>());
-
-        Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
-                             ArgumentMatchers.eq(alicePay.activityInfo.applicationInfo),
-                             ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://alicepay.com"});
-        Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
-                             ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
-                             ArgumentMatchers.eq(2)))
-                .thenReturn(new String[] {"https://bobpay.com"});
-
-        PaymentAppFactoryDelegate delegate = findApps(new String[] {"basic-card"},
-                mPaymentManifestDownloader, mPaymentManifestParser, mPackageManagerDelegate);
-
-        Mockito.verify(delegate).onCanMakePaymentCalculated(true);
-        Mockito.verify(delegate).onPaymentAppCreated(
-                ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.alicepay.app")));
-        Mockito.verify(delegate).onPaymentAppCreated(
-                ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.bobpay.app")));
-        Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
     public void testQueryBobPayWithOneAppThatHasIsReadyToPayService() {
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo bobPay = new ResolveInfo();

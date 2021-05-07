@@ -7,11 +7,18 @@
 /**
  * Launch PaymentRequest with a show promise that resolves with an empty
  * dictionary.
+ * @param {boolean} useUrlPaymentMethod - Whether URL payment method should be
+ * used. Useful for payment handlers, which cannot use basic-card payment
+ * method. By default, basic-card payment method is used.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy(useUrlPaymentMethod) { // eslint-disable-line no-unused-vars
   try {
+    let supportedMethods = 'basic-card';
+    if (useUrlPaymentMethod) {
+      supportedMethods = window.location.href;
+    }
     var request = new PaymentRequest(
-        [{supportedMethods: 'basic-card'}], {
+        [{supportedMethods}], {
           total: {
             label: 'Total',
             amount: {currency: 'USD', value: '3.00'},
@@ -21,7 +28,7 @@ function buy() { // eslint-disable-line no-unused-vars
             amount: {currency: 'USD', value: '1.00'},
           }],
           modifiers: [{
-            supportedMethods: 'basic-card',
+            supportedMethods,
             additionalDisplayItems: [{
               label: 'Modifier',
               pending: true,

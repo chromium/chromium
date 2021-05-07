@@ -34,6 +34,15 @@ public class UrlUtil {
     }
 
     /**
+     * Checks whether the given URL is a valid payment method identifier.
+     * @param url The URL to check.
+     * @return Whether the given URL is a valid payment method identifier.
+     */
+    public static boolean isValidUrlBasedPaymentMethodIdentifier(GURL url) {
+        return UrlUtilJni.get().isValidUrlBasedPaymentMethodIdentifier(url);
+    }
+
+    /**
      * Checks whether the page at the given URL would typically be used for local development, e.g.,
      * localhost.
      * @param url The URL to check.
@@ -47,6 +56,7 @@ public class UrlUtil {
     @NativeMethods
     /* package */ interface Natives {
         boolean isOriginAllowedToUseWebPaymentApis(GURL url);
+        boolean isValidUrlBasedPaymentMethodIdentifier(GURL url);
         boolean isLocalDevelopmentUrl(GURL url);
     }
 }

@@ -38,30 +38,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUninstallTest, URLBasedPaymentMethod) {
   WaitForObservedEvent();
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerUninstallTest, BasicCard) {
-  EXPECT_EQ("success",
-            content::EvalJs(GetActiveWebContents(), "install('basic-card')"));
-
-  // Launch the payment request and validate that one app is available.
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       "launchWithoutWaitForResponse()"));
-  WaitForObservedEvent();
-  EXPECT_EQ(1u, test_controller()->app_descriptions().size());
-
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "abort()"));
-
-  // Uninstall the payment app and verify that there is no payment app
-  // available. A new request.show() will not get rejected though since the user
-  // will still have the option to add a credit card.
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), "uninstall()"));
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       "launchWithoutWaitForResponse()"));
-  WaitForObservedEvent();
-  EXPECT_EQ(0u, test_controller()->app_descriptions().size());
-}
-
 }  // namespace
 
 }  // namespace payments

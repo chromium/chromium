@@ -442,65 +442,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, CanNotPayWithBobPay) {
   }
 }
 
-// Test can pay with 'basic-card' payment method from alicepay.
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithBasicCard) {
-  InstallAlicePayForMethod("basic-card");
-
-  {
-    NavigateTo(
-        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-
-    ResetEventWaiterForSequence(
-        {DialogEvent::PROCESSING_SPINNER_SHOWN,
-         DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-         DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-    ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "buy()"));
-    WaitForObservedEvent();
-    ExpectBodyContains({"basic-card"});
-  }
-
-  // Repeat should have identical results.
-  {
-    NavigateTo(
-        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-
-    ResetEventWaiterForSequence(
-        {DialogEvent::PROCESSING_SPINNER_SHOWN,
-         DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-         DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-    ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "buy()"));
-    WaitForObservedEvent();
-    ExpectBodyContains({"basic-card"});
-  }
-}
-
-// Test can cancel payment with 'basic-card' payment method from alicepay.
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithBasicCardCancel) {
-  // Install both alicepay and bobpay to force showing payment sheet.
-  InstallAlicePayForMethod("basic-card");
-  InstallBobPayForMethod("https://bobpay.com");
-
-  {
-    NavigateTo(
-        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-    InvokePaymentRequestUI();
-    ClickOnCancel();
-    ExpectBodyContains({"User closed the Payment Request UI."});
-  }
-  // Repeat should have identical results.
-  {
-    NavigateTo(
-        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
-    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-    InvokePaymentRequestUI();
-    ClickOnCancel();
-    ExpectBodyContains({"User closed the Payment Request UI."});
-  }
-}
-
 class PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip
     : public PaymentRequestPaymentAppTest {
  public:

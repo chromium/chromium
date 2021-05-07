@@ -30,44 +30,24 @@ std::string ClearPortNumber(const std::string& may_contain_method_url) {
              : may_contain_method_url;
 }
 
-enum class MethodIdentifier { kUrlBased, kBasicCard };
-
 struct TestCase {
   TestCase(const std::string& init_test_code,
-           const std::string& expected_output,
-           MethodIdentifier method_identifier = MethodIdentifier::kUrlBased)
-      : init_test_code(init_test_code),
-        expected_output(expected_output),
-        method_identifier(method_identifier) {}
+           const std::string& expected_output)
+      : init_test_code(init_test_code), expected_output(expected_output) {}
 
-  ~TestCase() {}
+  ~TestCase() = default;
 
   const std::string init_test_code;
   const std::string expected_output;
-  const MethodIdentifier method_identifier;
 };
 
 class PaymentHandlerChangePaymentMethodTest
     : public PaymentRequestBrowserTestBase,
-      public testing::WithParamInterface<TestCase> {
- protected:
-  PaymentHandlerChangePaymentMethodTest() {}
-  ~PaymentHandlerChangePaymentMethodTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerChangePaymentMethodTest);
-};
+      public testing::WithParamInterface<TestCase> {};
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerChangePaymentMethodTest, Test) {
-  if (GetParam().method_identifier == MethodIdentifier::kBasicCard)
-    SetSkipUiForForBasicCard();
-
   NavigateTo("/change_payment_method.html");
 
-  if (GetParam().method_identifier == MethodIdentifier::kBasicCard) {
-    ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
-                                       "basicCardMethodName();"));
-  }
   std::string actual_output;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       GetActiveWebContents(), "install();", &actual_output));
@@ -87,34 +67,15 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerChangePaymentMethodTest, Test) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    NoMerchantResponse,
+    All,
     PaymentHandlerChangePaymentMethodTest,
     testing::Values(
         TestCase("initTestNoHandler();",
                  "PaymentRequest.show(): changePaymentMethod() returned: null"),
-        TestCase("initTestNoHandler();",
-                 "PaymentRequest.show(): changePaymentMethod() returned: null",
-                 MethodIdentifier::kBasicCard)));
-
-INSTANTIATE_TEST_SUITE_P(
-    ErrorCases,
-    PaymentHandlerChangePaymentMethodTest,
-    testing::Values(
         TestCase("initTestReject()",
                  "PaymentRequest.show() rejected with: Error for test"),
-        TestCase("initTestReject()",
-                 "PaymentRequest.show() rejected with: Error for test",
-                 MethodIdentifier::kBasicCard),
         TestCase("initTestThrow()",
                  "PaymentRequest.show() rejected with: Error: Error for test"),
-        TestCase("initTestThrow()",
-                 "PaymentRequest.show() rejected with: Error: Error for test",
-                 MethodIdentifier::kBasicCard)));
-
-INSTANTIATE_TEST_SUITE_P(
-    MerchantResponse,
-    PaymentHandlerChangePaymentMethodTest,
-    testing::Values(
         TestCase(
             "initTestDetails()",
             "PaymentRequest.show(): changePaymentMethod() returned: "
@@ -124,18 +85,7 @@ INSTANTIATE_TEST_SUITE_P(
             "\"total\":{\"amount\":{\"currency\":\"EUR\",\"value\":\"0.03\"},"
             "\"label\":\"\",\"pending\":false}}],"
             "\"paymentMethodErrors\":{\"country\":\"Unsupported country\"},"
-            "\"total\":{\"currency\":\"GBP\",\"value\":\"0.02\"}}"),
-        TestCase(
-            "initTestDetails()",
-            "PaymentRequest.show(): changePaymentMethod() returned: "
-            "{\"error\":\"Error for test\","
-            "\"modifiers\":[{\"data\":{\"soup\":\"potato\"},"
-            "\"supportedMethods\":\"basic-card\","
-            "\"total\":{\"amount\":{\"currency\":\"EUR\",\"value\":\"0.03\"},"
-            "\"label\":\"\",\"pending\":false}}],"
-            "\"paymentMethodErrors\":{\"country\":\"Unsupported country\"},"
-            "\"total\":{\"currency\":\"GBP\",\"value\":\"0.02\"}}",
-            MethodIdentifier::kBasicCard)));
+            "\"total\":{\"currency\":\"GBP\",\"value\":\"0.02\"}}")));
 
 }  // namespace
 }  // namespace payments

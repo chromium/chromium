@@ -410,32 +410,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
   }
 }
 
-// A payment app can use "basic-card" payment method.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest, BasicCard) {
-  InstallPaymentAppForMethod("basic-card");
-
-  {
-    GetAllPaymentAppsForMethods({"basic-card", "https://alicepay.com/webpay",
-                                 "https://bobpay.com/webpay"});
-
-    EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("basic-card");
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-
-  // Repeat lookups should have identical results.
-  {
-    GetAllPaymentAppsForMethods({"basic-card", "https://alicepay.com/webpay",
-                                 "https://bobpay.com/webpay"});
-
-    EXPECT_TRUE(installable_apps().empty());
-    ASSERT_EQ(1U, apps().size());
-    ExpectPaymentAppWithMethod("basic-card");
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-}
-
 // A payment app can use any payment method name from its own origin.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest, OwnOrigin) {
   InstallPaymentAppForMethod("https://alicepay.com/webpay");

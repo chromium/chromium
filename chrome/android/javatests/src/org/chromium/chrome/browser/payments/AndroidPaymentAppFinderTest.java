@@ -264,39 +264,6 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
-     * Payment apps without default payment method name in metadata should still be able to use
-     * non-URL payment method names.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testNoDefaultPaymentMethodNameWithNonUrlPaymentMethodName() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
-                "" /* no default payment method name in metadata */, /*signature=*/"AA");
-        mPackageManager.setStringArrayMetaData("com.alicepay", new String[] {"basic-card"});
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertEquals(
-                "basic-card", mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
-
-        mPaymentApps.clear();
-        mAllPaymentAppsCreated = false;
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertEquals(
-                "basic-card", mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
-    }
-
-    /**
      * Payment apps cannot use a payment method without explicit authorization.
      */
     @Test
@@ -368,27 +335,6 @@ public class AndroidPaymentAppFinderTest
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
-    }
-
-    /**
-     * Test "basic-card" payment method with a payment app that supports IS_READY_TO_PAY service.
-     * Another non-payment app also supports IS_READY_TO_PAY service, but it should be filtered
-     * out, because it's not a payment app.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testOneBasicCardAppWithAFewIsReadyToPayServices() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "basic-card", /*signature=*/"01020304050607080900");
-        mPackageManager.addIsReadyToPayService("com.bobpay");
-        mPackageManager.addIsReadyToPayService("com.alicepay");
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -468,30 +414,6 @@ public class AndroidPaymentAppFinderTest
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
-    }
-
-    /**
-     * If two payment apps both support "basic-card" payment method name, then they both should be
-     * found.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testTwoBasicCardApps() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "basic-card", /*signature=*/"01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "basic-card", /*signature=*/"ABCDEFABCDEFABCDEFAB");
-
-        findApps(methods);
-
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
     }
 
     /**
@@ -1426,12 +1348,10 @@ public class AndroidPaymentAppFinderTest
         assertPaymentAppsCreated("com.alicepay", "com.bobpay");
     }
 
-    /**
-     * All known payment method names are valid.
-     */
+    /** Non-URL payment methods are not supported. */
     @Test
     @Feature({"Payments"})
-    public void testAllKnownPaymentMethodNames() throws Throwable {
+    public void testNonUrlPaymentMethodNames() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("basic-card");
         methods.add("interledger");
@@ -1447,33 +1367,7 @@ public class AndroidPaymentAppFinderTest
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getIdentifier());
-        Assert.assertEquals(5, mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertTrue(mPaymentApps.get(0).getInstrumentMethodNames().contains("basic-card"));
-        Assert.assertTrue(mPaymentApps.get(0).getInstrumentMethodNames().contains("interledger"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("payee-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("payer-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("tokenized-card"));
-
-        mPaymentApps.clear();
-        mAllPaymentAppsCreated = false;
-
-        findApps(methods);
-
-        assertPaymentAppsCreated("com.alicepay");
-        Assert.assertEquals(5, mPaymentApps.get(0).getInstrumentMethodNames().size());
-        Assert.assertTrue(mPaymentApps.get(0).getInstrumentMethodNames().contains("basic-card"));
-        Assert.assertTrue(mPaymentApps.get(0).getInstrumentMethodNames().contains("interledger"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("payee-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("payer-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getInstrumentMethodNames().contains("tokenized-card"));
+        Assert.assertTrue(mPaymentApps.isEmpty());
     }
 
     /**

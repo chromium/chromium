@@ -4,6 +4,11 @@
  * found in the LICENSE file.
  */
 
+self.addEventListener('canmakepayment', (evt) => {
+  evt.respondWith(true);
+});
+
 self.addEventListener('paymentrequest', (evt) => {
-  evt.respondWith({methodName: 'basic-card', details: evt.total});
+  evt.respondWith(
+      {methodName: evt.methodData[0].supportedMethods, details: evt.total});
 });

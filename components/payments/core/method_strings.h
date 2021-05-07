@@ -28,25 +28,9 @@ extern const char kGooglePay[];
 // Google Play Billing method name.
 extern const char kGooglePlayBilling[];
 
-// Interledger method name.
-// https://w3c.github.io/webpayments/proposals/interledger/
-extern const char kInterledger[];
-
-// Credit Transfer method name.
-// https://w3c.github.io/payment-method-credit-transfer/
-extern const char kPayeeCreditTransfer[];
-
-// Credit Transfer method name.
-// https://w3c.github.io/payment-method-credit-transfer/
-extern const char kPayerCreditTransfer[];
-
 // Secure Payment Confirmation method name.
 // https://github.com/rsolomakhin/secure-payment-confirmation/
 extern const char kSecurePaymentConfirmation[];
-
-// Tokenized Card method name.
-// https://w3c.github.io/webpayments-methods-tokenization/
-extern const char kTokenizedCard[];
 
 }  // namespace methods
 }  // namespace payments

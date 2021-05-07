@@ -84,16 +84,6 @@ void ManifestVerifier::Verify(
   for (auto& app : apps_) {
     std::vector<std::string> verified_method_names;
     for (const auto& method : app.second->enabled_methods) {
-      // For non-URL payment method names, only names published by W3C should be
-      // supported. Keep this in sync with AndroidPaymentAppFinder.java.
-      if (method == methods::kBasicCard || method == methods::kInterledger ||
-          method == methods::kPayeeCreditTransfer ||
-          method == methods::kPayerCreditTransfer ||
-          method == methods::kTokenizedCard) {
-        verified_method_names.emplace_back(method);
-        continue;
-      }
-
       // GURL constructor may crash with some invalid unicode strings.
       if (!base::IsStringUTF8(method)) {
         log_.Warn("Payment method name \"" + method +
@@ -102,6 +92,7 @@ void ManifestVerifier::Verify(
         continue;
       }
 
+      // Only URL payment method names are supported.
       GURL method_manifest_url = GURL(method);
       if (!UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(
               method_manifest_url)) {

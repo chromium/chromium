@@ -8,8 +8,15 @@
  * Launch PaymentRequest with a show promise and a single pre-selected option
  * for shipping worldwide and a handler for shipping address change events that
  * does not change anything.
+ * @param {DOMString} useUrlPaymentMethod - Whether window.location.href should
+ * be used as the payment method. Useful for testing service workers, which do
+ * not support basic-card payment method.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy(useUrlPaymentMethod) { // eslint-disable-line no-unused-vars
+  let paymentMethod = 'basic-card';
+  if (useUrlPaymentMethod) {
+    paymentMethod = window.location.href;
+  }
   var finalizedDetails = {
     total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}},
     shippingOptions: [{
@@ -22,7 +29,7 @@ function buy() { // eslint-disable-line no-unused-vars
 
   try {
     var request = new PaymentRequest(
-        [{supportedMethods: 'basic-card'}], {
+        [{supportedMethods: paymentMethod}], {
           total: {
             label: 'PENDING TOTAL',
             amount: {currency: 'USD', value: '99.99'},

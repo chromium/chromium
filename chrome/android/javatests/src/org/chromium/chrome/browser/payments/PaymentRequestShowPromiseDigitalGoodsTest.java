@@ -54,7 +54,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testDigitalGoodsFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create();");
+        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
         mRule.triggerUIAndWait(mRule.getReadyToPay());
 
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
@@ -77,7 +77,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.addPaymentAppFactory(
                 "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create();");
+        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
         mRule.triggerUIAndWait(mRule.getReadyToPay());
 
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
@@ -99,7 +99,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     public void testSkipUIFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create();");
+        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
         mRule.enableSkipUIForBasicCard();
 
         mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
@@ -114,7 +114,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
         mRule.addPaymentAppFactory(
                 "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create();");
+        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
         mRule.enableSkipUIForBasicCard();
 
         mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());

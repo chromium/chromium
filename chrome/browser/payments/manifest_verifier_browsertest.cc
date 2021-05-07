@@ -194,110 +194,6 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
   }
 }
 
-// A payment handler with "basic-card" payment method name is valid.
-IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, KnownPaymentMethodName) {
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-
-    Verify(std::move(apps));
-
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-
-  // Repeat verifications should have identical results.
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-
-    Verify(std::move(apps));
-
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-}
-
-// A payment handler with both "basic-card" and "interledger" payment method
-// names is valid.
-IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
-                       TwoKnownPaymentMethodNames) {
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-    apps[0]->enabled_methods.push_back("interledger");
-
-    Verify(std::move(apps));
-
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card", "interledger"},
-              false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-
-  // Repeat verifications should have identical results.
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-    apps[0]->enabled_methods.push_back("interledger");
-
-    Verify(std::move(apps));
-
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card", "interledger"},
-              false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-}
-
-// Two payment handlers with "basic-card" payment method names are both valid.
-IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
-                       TwoAppsWithKnownPaymentMethodNames) {
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-    apps[1] = std::make_unique<content::StoredPaymentApp>();
-    apps[1]->scope = GURL("https://alicepay.com/webpay");
-    apps[1]->enabled_methods.push_back("basic-card");
-
-    Verify(std::move(apps));
-
-    EXPECT_EQ(2U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
-    ExpectApp(1, "https://alicepay.com/webpay", {"basic-card"}, false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-
-  // Repeat verifications should have identical results.
-  {
-    content::InstalledPaymentAppsFinder::PaymentApps apps;
-    apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("basic-card");
-    apps[1] = std::make_unique<content::StoredPaymentApp>();
-    apps[1]->scope = GURL("https://alicepay.com/webpay");
-    apps[1]->enabled_methods.push_back("basic-card");
-    Verify(std::move(apps));
-
-    EXPECT_EQ(2U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
-    ExpectApp(1, "https://alicepay.com/webpay", {"basic-card"}, false);
-    EXPECT_TRUE(error_message().empty()) << error_message();
-  }
-}
-
 // Verify that a payment handler from https://bobpay.com/webpay can not use the
 // payment method name https://frankpay.com/webpay, because
 // https://frankpay.com/payment-manifest.json does not explicitly authorize
@@ -481,9 +377,9 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, OneSupportedOrigin) {
   }
 }
 
-// Verify that a payment handler from https://alicepay.com/webpay can use all
-// three of non-URL payment method name, same-origin URL payment method name,
-// and different-origin URL payment method name.
+// Verify that a payment handler from https://alicepay.com/webpay can use both
+// same-origin URL payment method name and different-origin URL payment method
+// name.
 IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, ThreeTypesOfMethods) {
   {
     content::InstalledPaymentAppsFinder::PaymentApps apps;
@@ -497,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, ThreeTypesOfMethods) {
 
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://alicepay.com/webpay",
-              {"basic-card", "https://alicepay.com/webpay2",
-               "https://ikepay.com/webpay"},
+              {"https://alicepay.com/webpay2", "https://ikepay.com/webpay"},
               true);
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
@@ -516,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, ThreeTypesOfMethods) {
 
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://alicepay.com/webpay",
-              {"basic-card", "https://alicepay.com/webpay2",
-               "https://ikepay.com/webpay"},
+              {"https://alicepay.com/webpay2", "https://ikepay.com/webpay"},
               true);
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
@@ -602,9 +496,9 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
   }
 }
 
-// All known payment method names are valid.
+// Non-URL payment method names are not valid.
 IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
-                       AllKnownPaymentMethodNames) {
+                       NonUrlPaymentMethodNamesAreNotValid) {
   {
     content::InstalledPaymentAppsFinder::PaymentApps apps;
     apps[0] = std::make_unique<content::StoredPaymentApp>();
@@ -618,11 +512,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
 
     Verify(std::move(apps));
 
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay",
-              {"basic-card", "interledger", "payee-credit-transfer",
-               "payer-credit-transfer", "tokenized-card"},
-              false);
+    EXPECT_TRUE(verified_apps().empty());
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
@@ -640,11 +530,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
 
     Verify(std::move(apps));
 
-    EXPECT_EQ(1U, verified_apps().size());
-    ExpectApp(0, "https://bobpay.com/webpay",
-              {"basic-card", "interledger", "payee-credit-transfer",
-               "payer-credit-transfer", "tokenized-card"},
-              false);
+    EXPECT_TRUE(verified_apps().empty());
     EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
