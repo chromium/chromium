@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
 namespace network {

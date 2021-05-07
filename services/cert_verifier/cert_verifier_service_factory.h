@@ -15,7 +15,6 @@
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace cert_verifier {
 

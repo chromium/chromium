@@ -16,7 +16,6 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -25,6 +24,8 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+class GURL;
 
 namespace blink {
 namespace scheduler {

@@ -19,8 +19,6 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
