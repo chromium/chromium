@@ -139,9 +139,9 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     return;
 
   std::vector<url::Origin> origins;
-  for (const auto& value :
-       *user_prefs::UserPrefs::Get(browser_context)
-            ->GetList(prefs::kUserTriggeredIsolatedOrigins)) {
+  for (const auto& value : user_prefs::UserPrefs::Get(browser_context)
+                               ->GetList(prefs::kUserTriggeredIsolatedOrigins)
+                               ->GetList()) {
     origins.push_back(url::Origin::Create(GURL(value.GetString())));
   }
 
