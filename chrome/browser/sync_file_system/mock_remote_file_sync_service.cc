@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 

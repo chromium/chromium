@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 
 #include "base/files/file_path.h"
-#include "base/values.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"

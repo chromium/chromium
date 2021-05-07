@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 

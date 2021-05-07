@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
-#include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 

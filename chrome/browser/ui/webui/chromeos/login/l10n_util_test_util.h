@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/values.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 

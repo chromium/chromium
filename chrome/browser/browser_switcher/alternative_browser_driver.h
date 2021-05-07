@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/values.h"
 #include "build/build_config.h"
 
 class GURL;

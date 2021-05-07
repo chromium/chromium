@@ -13,7 +13,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"

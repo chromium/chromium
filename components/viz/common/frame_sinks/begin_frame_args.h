@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace perfetto {

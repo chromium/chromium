@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/values.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/policy_low_level.h"

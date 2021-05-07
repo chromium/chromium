@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "net/base/backoff_entry.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/chromoting_event_log_writer.h"

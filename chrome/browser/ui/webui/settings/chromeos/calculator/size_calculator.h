@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/values.h"
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"

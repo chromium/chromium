@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_site_list.h"

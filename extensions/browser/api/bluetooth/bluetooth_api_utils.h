@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_API_UTILS_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_API_UTILS_H_
 
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"

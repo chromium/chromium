@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/infobars/android/confirm_infobar.h"
 #include "components/signin/public/identity_manager/account_info.h"

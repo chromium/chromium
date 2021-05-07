@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "chromecast/browser/accessibility/accessibility_sound_player.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"

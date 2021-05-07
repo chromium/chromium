@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/values.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 
 namespace chromeos {

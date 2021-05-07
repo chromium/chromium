@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/values.h"
 
 namespace net {
 class SchemefulSite;

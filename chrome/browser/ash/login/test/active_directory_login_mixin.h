@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/values.h"
 #include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"

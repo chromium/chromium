@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_EXTENSION_API_CONSTANTS_H_
 #define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_EXTENSION_API_CONSTANTS_H_
 
-#include "base/values.h"
 
 namespace tts_extension_api_constants {
 

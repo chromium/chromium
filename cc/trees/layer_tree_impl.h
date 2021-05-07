@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "cc/base/synced_property.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/event_listener_properties.h"

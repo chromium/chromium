@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace headless {

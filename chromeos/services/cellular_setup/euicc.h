@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_CELLULAR_SETUP_EUICC_H_
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_EUICC_H_
 
-#include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_inhibitor.h"

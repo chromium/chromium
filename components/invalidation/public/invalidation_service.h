@@ -9,6 +9,10 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
+namespace base {
+class DictionaryValue;
+}
+
 namespace invalidation {
 
 class InvalidationHandler;

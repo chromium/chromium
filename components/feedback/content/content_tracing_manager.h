@@ -13,7 +13,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 
 // This class is used to manage performance metrics that can be attached to
 // feedback reports.  This class is a Singleton that is owned by the preference

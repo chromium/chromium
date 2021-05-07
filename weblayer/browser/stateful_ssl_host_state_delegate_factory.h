@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/values.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 

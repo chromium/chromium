@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "cc/raster/raster_buffer_provider.h"
 
 namespace base {

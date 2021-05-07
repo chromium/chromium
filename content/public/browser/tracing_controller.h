@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_delegate.h"
 

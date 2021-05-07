@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/values.h"
 #include "components/invalidation/public/invalidation_export.h"
 
 namespace invalidation {

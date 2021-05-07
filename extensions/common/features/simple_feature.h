@@ -18,7 +18,6 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"

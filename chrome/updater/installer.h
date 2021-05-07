@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"

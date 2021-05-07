@@ -14,7 +14,6 @@
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/detailed_info_sampler.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/proto/reporter_logs.pb.h"

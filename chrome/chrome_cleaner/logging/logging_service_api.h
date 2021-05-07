@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/utils.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"
 #include "chrome/chrome_cleaner/os/process.h"

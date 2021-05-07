@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/cast_config.h"
 

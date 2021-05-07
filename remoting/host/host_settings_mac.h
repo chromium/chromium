@@ -9,6 +9,10 @@
 
 #include "remoting/host/host_settings.h"
 
+namespace base {
+class Value;
+}
+
 namespace remoting {
 
 class HostSettingsMac final : public HostSettings {

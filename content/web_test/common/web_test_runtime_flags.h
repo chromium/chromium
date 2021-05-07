@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/values.h"
 #include "content/web_test/common/tracked_dictionary.h"
 
 namespace content {

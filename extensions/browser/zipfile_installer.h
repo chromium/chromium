@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {

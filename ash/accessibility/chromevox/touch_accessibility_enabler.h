@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gesture_detection/gesture_detector.h"

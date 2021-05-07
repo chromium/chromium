@@ -14,7 +14,6 @@
 #include "base/synchronization/lock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "chromecast/common/cast_url_loader_throttle.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

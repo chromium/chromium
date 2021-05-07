@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/values.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "media/base/ipc/media_param_traits_macros.h"

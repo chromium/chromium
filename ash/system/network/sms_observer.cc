@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "ui/gfx/paint_vector_icon.h"

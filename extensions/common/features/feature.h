@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "base/values.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"

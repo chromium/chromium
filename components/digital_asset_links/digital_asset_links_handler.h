@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

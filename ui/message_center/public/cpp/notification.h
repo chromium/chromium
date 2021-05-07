@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"

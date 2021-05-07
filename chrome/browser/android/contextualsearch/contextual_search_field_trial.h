@@ -7,12 +7,15 @@
 
 #include <stddef.h>
 
-#include "base/values.h"
+#include <string>
 
 // Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
  public:
   ContextualSearchFieldTrial();
+  ContextualSearchFieldTrial(const ContextualSearchFieldTrial&) = delete;
+  ContextualSearchFieldTrial& operator=(const ContextualSearchFieldTrial&) =
+      delete;
   virtual ~ContextualSearchFieldTrial();
 
   // Returns a partial URL to use for a Contextual Search Resolve request, or
@@ -83,8 +86,6 @@ class ContextualSearchFieldTrial {
 
   bool is_contextual_cards_version_cached_;
   int contextual_cards_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchFieldTrial);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_PAGE_UI_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace settings {

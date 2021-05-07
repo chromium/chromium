@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/logging/utils.h"

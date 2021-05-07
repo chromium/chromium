@@ -14,7 +14,6 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/values.h"
 #include "ios/web/common/user_agent.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "ui/base/layout.h"

@@ -8,6 +8,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/mac/constants_mac.h"
 

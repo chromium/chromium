@@ -15,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"

@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/values.h"
 #include "components/prefs/value_map_pref_store.h"
 
 // Base class for a PrefStore that maps command line switches to preferences.

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "components/history/core/browser/history_service.h"

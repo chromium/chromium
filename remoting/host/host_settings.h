@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/values.h"
-
 namespace remoting {
 
 using HostSettingKey = char[];

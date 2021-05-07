@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_JS_FEATURES_SCROLL_HELPER_SCROLL_HELPER_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_JS_FEATURES_SCROLL_HELPER_SCROLL_HELPER_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 @class WKScriptMessage;

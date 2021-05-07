@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/threading/sequence_bound.h"
-#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 
 namespace enterprise_connectors {

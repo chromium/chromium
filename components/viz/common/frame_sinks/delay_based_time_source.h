@@ -11,7 +11,6 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace base {

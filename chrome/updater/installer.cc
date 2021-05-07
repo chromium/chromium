@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"

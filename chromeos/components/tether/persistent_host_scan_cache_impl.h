@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/values.h"
 #include "chromeos/components/tether/persistent_host_scan_cache.h"
 
 class PrefRegistrySimple;

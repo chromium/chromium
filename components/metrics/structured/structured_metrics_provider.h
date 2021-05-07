@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/key_data.h"

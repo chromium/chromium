@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/paint_holding_commit_trigger.h"

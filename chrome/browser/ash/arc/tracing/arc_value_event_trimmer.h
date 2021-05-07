@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_TRACING_ARC_VALUE_EVENT_TRIMMER_H_
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_VALUE_EVENT_TRIMMER_H_
 
-#include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event.h"
 
 namespace arc {

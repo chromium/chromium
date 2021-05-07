@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
