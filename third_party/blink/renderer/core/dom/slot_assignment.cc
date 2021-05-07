@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
@@ -266,6 +267,16 @@ void SlotAssignment::RecalcAssignment() {
       display_lock_map.Set(
           slot, DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
                     *slot, kIncludeSelf));
+    }
+
+    // The accessibility cache must be invalidated before flat tree traversal
+    // is forbidden, because the process of invalidation accesses the old flat
+    // tree children in order to clean up soon to be stale relationships.
+    // Any <slot> within this shadow root may lose or gain flat tree children
+    // during slot reassignment, so call ChildrenChanged() on all of them.
+    if (AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache()) {
+      for (Member<HTMLSlotElement> slot : Slots())
+        cache->ChildrenChanged(slot);
     }
 
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
