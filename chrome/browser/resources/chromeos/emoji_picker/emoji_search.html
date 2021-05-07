@@ -20,7 +20,7 @@
     align-items: center;
     background-color: var(--google-grey-100);
     border: 2px solid transparent;
-    border-radius: 41px;
+    border-radius: 40px;
     height: 40px;
     line-height: 40px;
     margin-bottom: 8px;
@@ -32,15 +32,19 @@
 
   .result {
     border: 2px solid transparent;
+    border-radius: 40px;
     display: flex;
   }
   .result:focus,
   .result:active {
     border-color: var(--cr-focus-outline-color);
-    border-radius: 4px;
     border-style: solid;
     border-width: 2px;
     outline-style: none;
+  }
+
+  .result:hover {
+    background-color: var(--cr-hover-background-color);
   }
 
   emoji-button {
