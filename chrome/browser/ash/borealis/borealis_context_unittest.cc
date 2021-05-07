@@ -20,6 +20,7 @@
 #include "chromeos/dbus/fake_chunneld_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,7 @@ class BorealisContextTest : public testing::Test {
  public:
   BorealisContextTest() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
     borealis_shutdown_monitor_ =
@@ -55,6 +57,7 @@ class BorealisContextTest : public testing::Test {
 
   ~BorealisContextTest() override {
     borealis_context_.reset();  // must destroy before DBusThreadManager
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -110,8 +113,7 @@ TEST_F(BorealisContextTest, CiceroneFailure) {
 }
 
 TEST_F(BorealisContextTest, SeneschalFailure) {
-  auto* seneschal_client = static_cast<chromeos::FakeSeneschalClient*>(
-      chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+  auto* seneschal_client = chromeos::FakeSeneschalClient::Get();
 
   seneschal_client->NotifySeneschalStopped();
   histogram_tester_.ExpectUniqueSample(

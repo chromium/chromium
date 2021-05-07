@@ -27,6 +27,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -172,11 +173,11 @@ class CrostiniPackageServiceTest : public testing::Test {
 
   void SetUp() override {
     DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     fake_cicerone_client_ = static_cast<FakeCiceroneClient*>(
         DBusThreadManager::Get()->GetCiceroneClient());
     ASSERT_TRUE(fake_cicerone_client_);
-    fake_seneschal_client_ = static_cast<FakeSeneschalClient*>(
-        DBusThreadManager::Get()->GetSeneschalClient());
+    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
 
     task_environment_ = std::make_unique<content::BrowserTaskEnvironment>(
@@ -228,6 +229,7 @@ class CrostiniPackageServiceTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
     task_environment_.reset();
+    chromeos::SeneschalClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

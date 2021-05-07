@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,7 @@ class CrostiniPackageNotificationTest : public testing::Test {
 
   void SetUp() override {
     DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     task_environment_ = std::make_unique<content::BrowserTaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::UI,
         base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
@@ -48,6 +50,7 @@ class CrostiniPackageNotificationTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
     task_environment_.reset();
+    chromeos::SeneschalClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

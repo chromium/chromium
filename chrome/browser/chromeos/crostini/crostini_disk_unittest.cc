@@ -16,6 +16,7 @@
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,6 +53,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
  public:
   CrostiniDiskTestDbus() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
   }
@@ -66,6 +68,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   void TearDown() override {
     test_helper_.reset();
     profile_.reset();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -38,6 +38,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
@@ -111,6 +112,7 @@ void InitializeDBus() {
   InitializeDBusClient<PermissionBrokerClient>(bus);
   InitializeDBusClient<PowerManagerClient>(bus);
   InitializeDBusClient<ResourcedClient>(bus);
+  InitializeDBusClient<SeneschalClient>(bus);
   InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -161,6 +163,7 @@ void ShutdownDBus() {
   SystemProxyClient::Shutdown();
   SystemClockClient::Shutdown();
   SessionManagerClient::Shutdown();
+  SeneschalClient::Shutdown();
   ResourcedClient::Shutdown();
   if (ash::features::IsShimlessRMAFlowEnabled()) {
     RmadClient::Shutdown();

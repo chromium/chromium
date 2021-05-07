@@ -41,6 +41,7 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_anomaly_detector_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -188,6 +189,7 @@ class CrostiniManagerTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     fake_cicerone_client_ = static_cast<chromeos::FakeCiceroneClient*>(
         chromeos::DBusThreadManager::Get()->GetCiceroneClient());
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
@@ -197,7 +199,10 @@ class CrostiniManagerTest : public testing::Test {
             chromeos::DBusThreadManager::Get()->GetAnomalyDetectorClient());
   }
 
-  ~CrostiniManagerTest() override { chromeos::DBusThreadManager::Shutdown(); }
+  ~CrostiniManagerTest() override {
+    chromeos::SeneschalClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+  }
 
   void SetUp() override {
     component_manager_ =

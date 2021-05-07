@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/disks/disk.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_service_manager.h"
@@ -321,6 +322,8 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   // Initialize DBUS and running container.
   chromeos::DBusThreadManager::Initialize();
+  chromeos::SeneschalClient::InitializeFake();
+
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(profile_.get());
   crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
@@ -763,6 +766,8 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   chromeos::DBusThreadManager::Initialize();
+  chromeos::SeneschalClient::InitializeFake();
+
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm"});
   EXPECT_TRUE(arc::IsArcVmEnabled());

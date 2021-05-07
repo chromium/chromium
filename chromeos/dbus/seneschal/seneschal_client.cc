@@ -7,19 +7,27 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/seneschal/dbus-constants.h"
 
 namespace chromeos {
 
+namespace {
+
+SeneschalClient* g_instance = nullptr;
+
+}  // namespace
+
 class SeneschalClientImpl : public SeneschalClient {
  public:
-  SeneschalClientImpl() {}
+  SeneschalClientImpl() = default;
 
   ~SeneschalClientImpl() override = default;
 
@@ -79,7 +87,6 @@ class SeneschalClientImpl : public SeneschalClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     seneschal_proxy_ = bus->GetObjectProxy(
         vm_tools::seneschal::kSeneschalServiceName,
@@ -132,12 +139,38 @@ class SeneschalClientImpl : public SeneschalClient {
   DISALLOW_COPY_AND_ASSIGN(SeneschalClientImpl);
 };
 
-SeneschalClient::SeneschalClient() = default;
+SeneschalClient::SeneschalClient() {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
 
-SeneschalClient::~SeneschalClient() = default;
+SeneschalClient::~SeneschalClient() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
-std::unique_ptr<SeneschalClient> SeneschalClient::Create() {
-  return std::make_unique<SeneschalClientImpl>();
+// static
+void SeneschalClient::Initialize(dbus::Bus* bus) {
+  DCHECK(bus);
+  (new SeneschalClientImpl())->Init(bus);
+}
+
+// static
+void SeneschalClient::InitializeFake() {
+  // Do not create a new fake if it was initialized early in a browser test to
+  // allow the test to set its own client.
+  if (!FakeSeneschalClient::Get())
+    new FakeSeneschalClient();
+}
+
+// static
+void SeneschalClient::Shutdown() {
+  delete g_instance;
+}
+
+// static
+SeneschalClient* SeneschalClient::Get() {
+  return g_instance;
 }
 
 }  // namespace chromeos

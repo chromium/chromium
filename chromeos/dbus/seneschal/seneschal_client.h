@@ -59,8 +59,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) SeneschalClient : public DBusClient {
       DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
           callback) = 0;
 
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance if not already created.
+  static void InitializeFake();
+
+  // Destroys the global instance which must have been initialized.
+  static void Shutdown();
+
+  // Returns the global instance if initialized. May return null.
+  static SeneschalClient* Get();
+
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   SeneschalClient();
 
  private:

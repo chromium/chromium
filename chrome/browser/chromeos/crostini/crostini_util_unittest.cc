@@ -16,6 +16,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,11 +43,15 @@ class CrostiniUtilTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
 
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
   }
-  ~CrostiniUtilTest() override { chromeos::DBusThreadManager::Shutdown(); }
+  ~CrostiniUtilTest() override {
+    chromeos::SeneschalClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+  }
   CrostiniUtilTest(const CrostiniUtilTest&) = delete;
   CrostiniUtilTest& operator=(const CrostiniUtilTest&) = delete;
 

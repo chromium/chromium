@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -39,6 +40,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // DBusThreadManager::Get().
     auto dbus_thread_manager_setter =
         chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::SeneschalClient::InitializeFake();
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
@@ -72,6 +74,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_.reset();
     BrowserWithTestWindowTest::TearDown();
     chromeos::CryptohomeMiscClient::Shutdown();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,9 +35,15 @@ class CallbackFactory
 
 class ScopedCiceroneFake {
  public:
-  ScopedCiceroneFake() { chromeos::DBusThreadManager::Initialize(); }
+  ScopedCiceroneFake() {
+    chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
+  }
 
-  ~ScopedCiceroneFake() { chromeos::DBusThreadManager::Shutdown(); }
+  ~ScopedCiceroneFake() {
+    chromeos::SeneschalClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+  }
 
   chromeos::FakeCiceroneClient* Get() {
     return reinterpret_cast<chromeos::FakeCiceroneClient*>(

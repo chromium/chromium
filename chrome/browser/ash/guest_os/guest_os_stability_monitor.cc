@@ -29,8 +29,7 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
       base::BindOnce(&GuestOsStabilityMonitor::CiceroneStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  auto* seneschal_client =
-      chromeos::DBusThreadManager::Get()->GetSeneschalClient();
+  auto* seneschal_client = chromeos::SeneschalClient::Get();
   DCHECK(seneschal_client);
   seneschal_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::SeneschalStarted,
@@ -67,8 +66,7 @@ void GuestOsStabilityMonitor::CiceroneStarted(bool is_available) {
 void GuestOsStabilityMonitor::SeneschalStarted(bool is_available) {
   DCHECK(is_available);
 
-  auto* seneschal_client =
-      chromeos::DBusThreadManager::Get()->GetSeneschalClient();
+  auto* seneschal_client = chromeos::SeneschalClient::Get();
   DCHECK(seneschal_client);
   seneschal_observer_.Observe(seneschal_client);
 }

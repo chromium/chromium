@@ -19,6 +19,7 @@
 #include "chromeos/dbus/fake_chunneld_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +29,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
  public:
   GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
 
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
     profile_ = std::make_unique<TestingProfile>();
@@ -49,6 +51,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     crostini::CrostiniTestHelper::DisableCrostini(profile_.get());
     crostini_manager_.reset();
     profile_.reset();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -108,8 +111,7 @@ TEST_F(GuestOsStabilityMonitorTest, CiceroneFailure) {
 }
 
 TEST_F(GuestOsStabilityMonitorTest, SeneschalFailure) {
-  auto* seneschal_client = static_cast<chromeos::FakeSeneschalClient*>(
-      chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+  auto* seneschal_client = chromeos::FakeSeneschalClient::Get();
 
   seneschal_client->NotifySeneschalStopped();
   histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,

@@ -27,6 +27,7 @@
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -60,6 +61,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
  public:
   CrostiniSshfsHelperTest() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     crostini_test_helper_ =
         std::make_unique<CrostiniTestHelper>(profile_.get());
@@ -91,6 +93,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     crostini_sshfs_.reset();
     crostini_test_helper_.reset();
     profile_.reset();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

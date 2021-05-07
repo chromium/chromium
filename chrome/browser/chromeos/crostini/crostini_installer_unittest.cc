@@ -26,6 +26,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -104,6 +105,7 @@ class CrostiniInstallerTest : public testing::Test {
     waiting_fake_concierge_client_ = new WaitingFakeConciergeClient;
     chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
         base::WrapUnique(waiting_fake_concierge_client_));
+    chromeos::SeneschalClient::InitializeFake();
 
     disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
     chromeos::disks::DiskMountManager::InitializeForTesting(
@@ -130,6 +132,7 @@ class CrostiniInstallerTest : public testing::Test {
     profile_.reset();
 
     chromeos::disks::MockDiskMountManager::Shutdown();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
 

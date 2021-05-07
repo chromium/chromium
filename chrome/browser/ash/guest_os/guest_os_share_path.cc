@@ -68,7 +68,7 @@ void OnVmRestartedForSeneschal(
     return;
   }
   request.set_handle(vm_info->info.seneschal_server_handle());
-  chromeos::DBusThreadManager::Get()->GetSeneschalClient()->SharePath(
+  chromeos::SeneschalClient::Get()->SharePath(
       request,
       base::BindOnce(&OnSeneschalSharePathResponse, std::move(callback)));
 }
@@ -387,7 +387,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     request.set_handle(vm_info->info.seneschal_server_handle());
   }
 
-  chromeos::DBusThreadManager::Get()->GetSeneschalClient()->SharePath(
+  chromeos::SeneschalClient::Get()->SharePath(
       request,
       base::BindOnce(&OnSeneschalSharePathResponse, std::move(callback)));
 }
@@ -451,7 +451,7 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
   }
 
   request.set_path(unshare_path.value());
-  chromeos::DBusThreadManager::Get()->GetSeneschalClient()->UnsharePath(
+  chromeos::SeneschalClient::Get()->UnsharePath(
       request,
       base::BindOnce(&OnSeneschalUnsharePathResponse, std::move(callback)));
 }

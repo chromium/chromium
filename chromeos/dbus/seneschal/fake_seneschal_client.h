@@ -15,8 +15,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
     : public SeneschalClient {
  public:
-  FakeSeneschalClient();
-  ~FakeSeneschalClient() override;
+  // Returns the fake global instance if initialized. May return null.
+  static FakeSeneschalClient* Get();
 
   // SeneschalClient:
   void AddObserver(Observer* observer) override;
@@ -56,6 +56,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSeneschalClient
   void NotifySeneschalStarted();
 
  protected:
+  friend class SeneschalClient;
+
+  FakeSeneschalClient();
+  ~FakeSeneschalClient() override;
+
   void Init(dbus::Bus* bus) override {}
 
  private:

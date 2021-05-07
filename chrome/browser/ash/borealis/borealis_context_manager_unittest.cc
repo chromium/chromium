@@ -21,6 +21,7 @@
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,10 +103,12 @@ class BorealisContextManagerTest : public testing::Test {
   void SetUp() override {
     CreateProfile();
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     profile_.reset();
     histogram_tester_.reset();

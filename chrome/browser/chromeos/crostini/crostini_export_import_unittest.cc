@@ -18,6 +18,7 @@
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -120,13 +121,14 @@ class CrostiniExportImportTest : public testing::Test {
   CrostiniExportImportTest()
       : container_id_(kCrostiniDefaultVmName, kCrostiniDefaultContainerName) {
     chromeos::DBusThreadManager::Initialize();
-    fake_seneschal_client_ = static_cast<chromeos::FakeSeneschalClient*>(
-        chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+    chromeos::SeneschalClient::InitializeFake();
+    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
     fake_cicerone_client_ = static_cast<chromeos::FakeCiceroneClient*>(
         chromeos::DBusThreadManager::Get()->GetCiceroneClient());
   }
 
   ~CrostiniExportImportTest() override {
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

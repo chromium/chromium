@@ -32,6 +32,7 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
@@ -214,13 +215,16 @@ class GuestOsSharePathTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
-    fake_seneschal_client_ = static_cast<chromeos::FakeSeneschalClient*>(
-        chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
   }
 
-  ~GuestOsSharePathTest() override { chromeos::DBusThreadManager::Shutdown(); }
+  ~GuestOsSharePathTest() override {
+    chromeos::SeneschalClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+  }
 
   void SetUpVolume() {
     // Setup Downloads and path to share, which depend on MyFilesVolume flag,

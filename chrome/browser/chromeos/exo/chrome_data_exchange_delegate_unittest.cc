@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -63,6 +64,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
@@ -95,8 +97,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
         storage::FileSystemMountOption(), crostini_dir_);
 
     // DBus seneschal client.
-    fake_seneschal_client_ = static_cast<chromeos::FakeSeneschalClient*>(
-        chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+    fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
   }
 
@@ -104,6 +105,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_.reset();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

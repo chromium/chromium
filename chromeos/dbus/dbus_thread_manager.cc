@@ -33,7 +33,6 @@
 #include "chromeos/dbus/image_loader_client.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/runtime_probe_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -229,10 +228,6 @@ RuntimeProbeClient* DBusThreadManager::GetRuntimeProbeClient() {
                           : nullptr;
 }
 
-SeneschalClient* DBusThreadManager::GetSeneschalClient() {
-  return clients_browser_ ? clients_browser_->seneschal_client_.get() : nullptr;
-}
-
 SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
   return clients_browser_ ? clients_browser_->smb_provider_client_.get()
                           : nullptr;
@@ -391,12 +386,6 @@ void DBusThreadManagerSetter::SetGnubbyClient(
 void DBusThreadManagerSetter::SetRuntimeProbeClient(
     std::unique_ptr<RuntimeProbeClient> client) {
   DBusThreadManager::Get()->clients_browser_->runtime_probe_client_ =
-      std::move(client);
-}
-
-void DBusThreadManagerSetter::SetSeneschalClient(
-    std::unique_ptr<SeneschalClient> client) {
-  DBusThreadManager::Get()->clients_browser_->seneschal_client_ =
       std::move(client);
 }
 

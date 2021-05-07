@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
+#include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +38,7 @@ class CrostiniPortForwarderTest : public testing::Test {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::SeneschalClient::InitializeFake();
     chromeos::PermissionBrokerClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     CrostiniManager::GetForProfile(profile())->AddRunningVmForTesting(
@@ -57,6 +59,7 @@ class CrostiniPortForwarderTest : public testing::Test {
     crostini_port_forwarder_.reset();
     test_helper_.reset();
     profile_.reset();
+    chromeos::SeneschalClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
