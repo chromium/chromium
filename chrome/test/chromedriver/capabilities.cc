@@ -142,7 +142,7 @@ Status ParseMobileEmulation(const base::Value& option,
 
   if (mobile_emulation->HasKey("deviceName")) {
     // Cannot use any other options with deviceName.
-    if (mobile_emulation->size() > 1)
+    if (mobile_emulation->DictSize() > 1)
       return Status(kInvalidArgument, "'deviceName' must be used alone");
 
     std::string device_name;

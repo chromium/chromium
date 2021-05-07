@@ -151,7 +151,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
   params.SetString("capabilities.alwaysMatch.browserName", "chrome");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   std::string result_string;
   ASSERT_TRUE(result.GetString("browserName", &result_string));
   ASSERT_EQ(result_string, "chrome");
@@ -203,7 +203,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   entry_ptr->SetString("pageLoadStrategy", "eager");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   std::string result_string;
   ASSERT_TRUE(result.GetString("pageLoadStrategy", &result_string));
   ASSERT_EQ(result_string, "eager");
@@ -215,7 +215,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   entry_ptr->SetString("browserName", "chrome");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 1u);
+  ASSERT_EQ(result.DictSize(), 1u);
   ASSERT_TRUE(result.GetString("pageLoadStrategy", &result_string));
   ASSERT_EQ(result_string, "eager");
 }
@@ -266,7 +266,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       })",
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 2u);
+  ASSERT_EQ(result.DictSize(), 2u);
   ASSERT_TRUE(result.HasKey("timeouts"));
   ASSERT_TRUE(result.HasKey("unhandledPromptBehavior"));
   ASSERT_FALSE(result.HasKey("pageLoadStrategy"));
@@ -304,7 +304,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Merge) {
       })",
       &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_EQ(result.size(), 3u);
+  ASSERT_EQ(result.DictSize(), 3u);
   ASSERT_TRUE(result.HasKey("timeouts"));
   ASSERT_EQ(result.FindKey("browserName")->GetString(), "chrome");
   ASSERT_FALSE(result.HasKey("unhandledPromptBehavior"));
