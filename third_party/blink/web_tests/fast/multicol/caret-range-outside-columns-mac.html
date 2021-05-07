@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<style>
+    body {
+	margin:0;
+    }
+
+    #mc {
+	-webkit-columns: 3;
+	-webkit-column-gap: 20px;
+	width: 280px;
+	margin:20px 100px;
+	font: 20px/1 Ahem;
+    }
+
+    #log {
+	position: absolute;
+	top: 101px;
+    }
+</style>
+<div id="log">
+    <p id="description"></p>
+    <div id="console"></div>
+</div>
+<div id="mc">xxx xxx xxx xxx xxx xxx xxx xxx xxx</div>
+<script src="../../resources/js-test.js"></script>
+<script>
+    if (window.internals)
+        internals.settings.setEditingBehavior('mac');
+
+    description("Test that hitting areas outside columns takes us to the right text content inside columns.");
+
+    debug("Above first column:");
+    shouldBe("document.caretRangeFromPoint(50,0).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(150,0).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(189,0).startOffset", "0");
+
+    debug("Above second column:");
+    shouldBe("document.caretRangeFromPoint(190,0).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(250,0).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(289,0).startOffset", "12");
+
+    debug("Above third column:");
+    shouldBe("document.caretRangeFromPoint(290,0).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(350,0).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(450,0).startOffset", "24");
+
+    debug("Below first column:");
+    shouldBe("document.caretRangeFromPoint(50,100).startOffset", "11");
+    shouldBe("document.caretRangeFromPoint(150,100).startOffset", "11");
+    shouldBe("document.caretRangeFromPoint(189,100).startOffset", "11");
+
+    debug("Below second column:");
+    shouldBe("document.caretRangeFromPoint(190,100).startOffset", "23");
+    shouldBe("document.caretRangeFromPoint(250,100).startOffset", "23");
+    shouldBe("document.caretRangeFromPoint(289,100).startOffset", "23");
+
+    debug("Below third column:");
+    shouldBe("document.caretRangeFromPoint(290,100).startOffset", "35");
+    shouldBe("document.caretRangeFromPoint(350,100).startOffset", "35");
+    shouldBe("document.caretRangeFromPoint(389,100).startOffset", "35");
+
+    debug("To the left of the first column:");
+    shouldBe("document.caretRangeFromPoint(0,10).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(0,30).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(0,50).startOffset", "4");
+    shouldBe("document.caretRangeFromPoint(0,70).startOffset", "8");
+    shouldBe("document.caretRangeFromPoint(0,90).startOffset", "11");
+
+    debug("To the right of the third column:");
+    shouldBe("document.caretRangeFromPoint(400,10).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(400,30).startOffset", "27");
+    shouldBe("document.caretRangeFromPoint(400,50).startOffset", "31");
+    shouldBe("document.caretRangeFromPoint(400,70).startOffset", "35");
+
+    debug("In the gap between the first and second columns:");
+    shouldBe("document.caretRangeFromPoint(180,20).startOffset", "3");
+    shouldBe("document.caretRangeFromPoint(180,40).startOffset", "7");
+    shouldBe("document.caretRangeFromPoint(180,60).startOffset", "11");
+    shouldBe("document.caretRangeFromPoint(180,69).startOffset", "11");
+
+    debug("In the gap between the second and third columns:");
+    shouldBe("document.caretRangeFromPoint(280,20).startOffset", "15");
+    shouldBe("document.caretRangeFromPoint(280,40).startOffset", "19");
+    shouldBe("document.caretRangeFromPoint(280,60).startOffset", "23");
+    shouldBe("document.caretRangeFromPoint(280,69).startOffset", "23");
+</script>

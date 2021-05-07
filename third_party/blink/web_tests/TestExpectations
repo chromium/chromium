@@ -1102,7 +1102,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-margin-at-row-
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/float-margin-at-row-boundary-fixed-multicol-height.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/forced-break-in-nested-columns.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/forced-break-too-short-column.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/hit-test-above-or-below.html [ Failure ]
 crbug.com/1066629 virtual/layout_ng_block_frag/fast/multicol/hit-test-translate-z.html [ Failure ]
 crbug.com/829181 virtual/layout_ng_block_frag/fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/insane-column-count-and-padding-nested-crash.html [ Skip ]
