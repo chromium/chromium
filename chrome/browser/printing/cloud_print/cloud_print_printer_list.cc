@@ -31,7 +31,7 @@ void CloudPrintPrinterList::OnGCDApiFlowComplete(
   }
 
   DeviceList devices;
-  for (const auto& printer : *printers) {
+  for (const auto& printer : printers->GetList()) {
     const base::DictionaryValue* printer_dict;
     if (!printer.GetAsDictionary(&printer_dict))
       continue;
