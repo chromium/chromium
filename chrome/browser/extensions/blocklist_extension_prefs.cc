@@ -21,13 +21,42 @@ constexpr const char kPrefAcknowledgedBlocklistState[] =
 constexpr BitMapBlocklistState kDefaultBitMapBlocklistState =
     BitMapBlocklistState::NOT_BLOCKLISTED;
 
+// Extensions in these states should be put into the extension greylist.
+const BitMapBlocklistState kGreylistStates[] = {
+    BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY,
+    BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+    BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED};
+const int kAllGreylistStates =
+    static_cast<int>(BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY) |
+    static_cast<int>(BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION) |
+    static_cast<int>(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
+
 }  // namespace
 
 namespace blocklist_prefs {
 
+BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
+    BlocklistState blocklist_state) {
+  switch (blocklist_state) {
+    case NOT_BLOCKLISTED:
+      return BitMapBlocklistState::NOT_BLOCKLISTED;
+    case BLOCKLISTED_MALWARE:
+      return BitMapBlocklistState::BLOCKLISTED_MALWARE;
+    case BLOCKLISTED_SECURITY_VULNERABILITY:
+      return BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY;
+    case BLOCKLISTED_CWS_POLICY_VIOLATION:
+      return BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION;
+    case BLOCKLISTED_POTENTIALLY_UNWANTED:
+      return BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
+    case BLOCKLISTED_UNKNOWN:
+      NOTREACHED() << "The unknown state should not be added into prefs.";
+      return BitMapBlocklistState::NOT_BLOCKLISTED;
+  }
+}
+
 void AddOmahaBlocklistState(const std::string& extension_id,
                             BitMapBlocklistState state,
-                            extensions::ExtensionPrefs* extension_prefs) {
+                            ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, static_cast<int>(state), ExtensionPrefs::BIT_MAP_PREF_ADD,
       kPrefOmahaBlocklistState, static_cast<int>(kDefaultBitMapBlocklistState));
@@ -35,7 +64,7 @@ void AddOmahaBlocklistState(const std::string& extension_id,
 
 void RemoveOmahaBlocklistState(const std::string& extension_id,
                                BitMapBlocklistState state,
-                               extensions::ExtensionPrefs* extension_prefs) {
+                               ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, static_cast<int>(state),
       ExtensionPrefs::BIT_MAP_PREF_REMOVE, kPrefOmahaBlocklistState,
@@ -44,40 +73,73 @@ void RemoveOmahaBlocklistState(const std::string& extension_id,
 
 bool HasOmahaBlocklistState(const std::string& extension_id,
                             BitMapBlocklistState state,
-                            extensions::ExtensionPrefs* extension_prefs) {
+                            ExtensionPrefs* extension_prefs) {
   int current_states = extension_prefs->GetBitMapPrefBits(
       extension_id, kPrefOmahaBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
   return (current_states & static_cast<int>(state)) != 0;
 }
 
-void AddAcknowledgedBlocklistState(
-    const std::string& extension_id,
-    BitMapBlocklistState state,
-    extensions::ExtensionPrefs* extension_prefs) {
+bool HasAnyOmahaGreylistState(const std::string& extension_id,
+                              ExtensionPrefs* extension_prefs) {
+  int current_states = extension_prefs->GetBitMapPrefBits(
+      extension_id, kPrefOmahaBlocklistState,
+      static_cast<int>(kDefaultBitMapBlocklistState));
+  return (current_states & kAllGreylistStates) != 0;
+}
+
+void AddAcknowledgedBlocklistState(const std::string& extension_id,
+                                   BitMapBlocklistState state,
+                                   ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, static_cast<int>(state), ExtensionPrefs::BIT_MAP_PREF_ADD,
       kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
-void ClearAcknowledgedBlocklistState(
+void RemoveAcknowledgedBlocklistState(
     const std::string& extension_id,
+    BitMapBlocklistState state,
     extensions::ExtensionPrefs* extension_prefs) {
+  extension_prefs->ModifyBitMapPrefBits(
+      extension_id, static_cast<int>(state),
+      ExtensionPrefs::BIT_MAP_PREF_REMOVE, kPrefAcknowledgedBlocklistState,
+      static_cast<int>(kDefaultBitMapBlocklistState));
+}
+
+void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
+                                      ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, 0, ExtensionPrefs::BIT_MAP_PREF_CLEAR,
       kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
-bool HasAcknowledgedBlocklistState(
-    const std::string& extension_id,
-    BitMapBlocklistState state,
-    extensions::ExtensionPrefs* extension_prefs) {
+bool HasAcknowledgedBlocklistState(const std::string& extension_id,
+                                   BitMapBlocklistState state,
+                                   ExtensionPrefs* extension_prefs) {
   int current_states = extension_prefs->GetBitMapPrefBits(
       extension_id, kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
   return (current_states & static_cast<int>(state)) != 0;
+}
+
+void UpdateCurrentGreylistStatesAsAcknowledged(
+    const std::string& extension_id,
+    ExtensionPrefs* extension_prefs) {
+  for (auto state : kGreylistStates) {
+    bool is_on_sb_list =
+        (BlocklistStateToBitMapBlocklistState(
+             extension_prefs->GetExtensionBlocklistState(extension_id)) ==
+         state);
+    bool is_on_omaha_list =
+        HasOmahaBlocklistState(extension_id, state, extension_prefs);
+    if (is_on_sb_list || is_on_omaha_list) {
+      AddAcknowledgedBlocklistState(extension_id, state, extension_prefs);
+    } else {
+      RemoveAcknowledgedBlocklistState(extension_id, state, extension_prefs);
+    }
+  }
 }
 
 }  // namespace blocklist_prefs

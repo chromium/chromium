@@ -898,16 +898,17 @@ void ExtensionService::MaybeEnableRemotelyDisabledExtension(
 
 void ExtensionService::ClearGreylistedAcknowledgedStateAndMaybeReenable(
     const std::string& extension_id) {
-  // TODO(crbug.com/1180996): Check Omaha blocklist state too.
   bool is_on_sb_list = (extension_prefs_->GetExtensionBlocklistState(
                             extension_id) != NOT_BLOCKLISTED);
-  if (is_on_sb_list) {
+  bool is_on_omaha_list =
+      blocklist_prefs::HasAnyOmahaGreylistState(extension_id, extension_prefs_);
+  if (is_on_sb_list || is_on_omaha_list) {
     return;
   }
   // Clear all acknowledged states so the extension will still get disabled if
   // it is added to the greylist again.
-  blocklist_prefs::ClearAcknowledgedBlocklistState(extension_id,
-                                                   extension_prefs_);
+  blocklist_prefs::ClearAcknowledgedBlocklistStates(extension_id,
+                                                    extension_prefs_);
   RemoveDisableReasonAndMaybeEnable(extension_id,
                                     disable_reason::DISABLE_GREYLIST);
 }
@@ -915,9 +916,15 @@ void ExtensionService::ClearGreylistedAcknowledgedStateAndMaybeReenable(
 void ExtensionService::MaybeDisableGreylistedExtension(
     const std::string& extension_id,
     BitMapBlocklistState new_state) {
-  DCHECK_EQ(SafeBrowsingVerdictHandler::BlocklistStateToBitMapBlocklistState(
-                extension_prefs_->GetExtensionBlocklistState(extension_id)),
-            new_state);
+#if DCHECK_IS_ON()
+  bool has_new_state_on_sb_list =
+      (blocklist_prefs::BlocklistStateToBitMapBlocklistState(
+           extension_prefs_->GetExtensionBlocklistState(extension_id)) ==
+       new_state);
+  bool has_new_state_on_omaha_list = blocklist_prefs::HasOmahaBlocklistState(
+      extension_id, new_state, extension_prefs_);
+  DCHECK(has_new_state_on_sb_list || has_new_state_on_omaha_list);
+#endif
   if (blocklist_prefs::HasAcknowledgedBlocklistState(extension_id, new_state,
                                                      extension_prefs_)) {
     // If the extension is already acknowledged, don't disable it again
@@ -928,19 +935,12 @@ void ExtensionService::MaybeDisableGreylistedExtension(
     return;
   }
 
-  // Set the new state to acknowledge immediately because the extension is
-  // disabled silently. Clear the other acknowledged state because when the
-  // state changes to another greylist state in the future, we'd like to disable
-  // the extension again.
-  // TODO(crbug.com/1180996): Clearing all acknowledged state is safe for now,
-  // because there can be only one blocklist state for Safe Browsing blocklist.
-  // Once we start to consume Omaha attributes for greylist, we need to check
-  // both Safe Browsing and Omaha blocklist states before we clear the
-  // acknowledged bit.
-  blocklist_prefs::ClearAcknowledgedBlocklistState(extension_id,
-                                                   extension_prefs_);
-  blocklist_prefs::AddAcknowledgedBlocklistState(extension_id, new_state,
-                                                 extension_prefs_);
+  // Set the current greylist states to acknowledge immediately because the
+  // extension is disabled silently. Clear the other acknowledged state because
+  // when the state changes to another greylist state in the future, we'd like
+  // to disable the extension again.
+  blocklist_prefs::UpdateCurrentGreylistStatesAsAcknowledged(extension_id,
+                                                             extension_prefs_);
   DisableExtension(extension_id, disable_reason::DISABLE_GREYLIST);
 }
 

@@ -36,7 +36,8 @@ void SafeBrowsingVerdictHandler::Init() {
       // possible that the acknowledged state is not set. Backfill the
       // acknowledged state if that's the case.
       blocklist_prefs::AddAcknowledgedBlocklistState(
-          extension->id(), BlocklistStateToBitMapBlocklistState(state),
+          extension->id(),
+          blocklist_prefs::BlocklistStateToBitMapBlocklistState(state),
           extension_prefs_);
       greylist_.Insert(extension);
     }
@@ -65,27 +66,6 @@ void SafeBrowsingVerdictHandler::ManageBlocklist(
   }
 
   UpdateGreylistedExtensions(greylist, unchanged, state_map);
-}
-
-// static
-BitMapBlocklistState
-SafeBrowsingVerdictHandler::BlocklistStateToBitMapBlocklistState(
-    BlocklistState blocklist_state) {
-  switch (blocklist_state) {
-    case NOT_BLOCKLISTED:
-      return BitMapBlocklistState::NOT_BLOCKLISTED;
-    case BLOCKLISTED_MALWARE:
-      return BitMapBlocklistState::BLOCKLISTED_MALWARE;
-    case BLOCKLISTED_SECURITY_VULNERABILITY:
-      return BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY;
-    case BLOCKLISTED_CWS_POLICY_VIOLATION:
-      return BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION;
-    case BLOCKLISTED_POTENTIALLY_UNWANTED:
-      return BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
-    case BLOCKLISTED_UNKNOWN:
-      NOTREACHED() << "The unknown state should not be added into prefs.";
-      return BitMapBlocklistState::NOT_BLOCKLISTED;
-  }
 }
 
 // static
@@ -140,7 +120,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
     BlocklistState greylist_state = state_map.find(id)->second;
     extension_prefs_->SetExtensionBlocklistState(id, greylist_state);
     extension_service_->MaybeDisableGreylistedExtension(
-        id, BlocklistStateToBitMapBlocklistState(greylist_state));
+        id,
+        blocklist_prefs::BlocklistStateToBitMapBlocklistState(greylist_state));
   }
 }
 

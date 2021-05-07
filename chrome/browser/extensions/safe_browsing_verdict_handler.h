@@ -33,10 +33,6 @@ class SafeBrowsingVerdictHandler {
                         ExtensionIdSet* no_longer,
                         ExtensionIdSet* not_yet);
 
-  // Converts BlocklistState to BitMapBlocklistState.
-  static BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
-      BlocklistState blocklist_state);
-
   // Initializes and load greylist from prefs.
   void Init();
 

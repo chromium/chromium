@@ -241,6 +241,8 @@ class ExtensionPrefs : public KeyedService {
   void SetExtensionDisabled(const std::string& extension_id,
                             int disable_reasons);
 
+  // TODO(crbug.com/1180996): Move SetExtensionBlocklistState and
+  // GetExtensionBlocklistState to the blocklist_extension_prefs file.
   void SetExtensionBlocklistState(const std::string& extension_id,
                                   BlocklistState state);
 

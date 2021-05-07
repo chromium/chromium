@@ -459,7 +459,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
   EXPECT_FALSE(disabled_extensions.Contains(kGood0));
 
   // To simulate an old Chrome version, the acknowledged state is cleared.
-  blocklist_prefs::ClearAcknowledgedBlocklistState(
+  blocklist_prefs::ClearAcknowledgedBlocklistStates(
       kGood0, ExtensionPrefs::Get(profile()));
   // The browser is restarted.
   service()->safe_browsing_verdict_handler_.Init();
