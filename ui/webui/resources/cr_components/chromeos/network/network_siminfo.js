@@ -127,6 +127,29 @@ Polymer({
     }
 
     this.delayUpdateLockEnabled_();
+    this.updateFocus_();
+  },
+
+  /**
+   * Sets default focus when dialog is closed.
+   * @private
+   */
+  updateFocus_() {
+    const state = this.computeState_();
+    // State.SIM_MISSING state is not needed here because it does not have a
+    // click event to open the sim lock dialogs
+    switch (state) {
+      case State.SIM_LOCKED:
+        if (this.$$('#unlockPinButton')) {
+          this.$$('#unlockPinButton').focus();
+        }
+        break;
+      case State.SIM_UNLOCKED:
+        if (this.$$('#simLockButton')) {
+          this.$$('#simLockButton').focus();
+        }
+        break;
+    }
   },
 
   /** @private */

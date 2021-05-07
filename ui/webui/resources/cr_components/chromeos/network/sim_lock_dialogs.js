@@ -391,6 +391,13 @@ Polymer({
   },
 
   /**
+   * Used by test to simulate dialog cancel click.
+   */
+  closeDialogsForTest() {
+    this.closeDialogs_();
+  },
+
+  /**
    * @param {!Event} event
    * @private
    */

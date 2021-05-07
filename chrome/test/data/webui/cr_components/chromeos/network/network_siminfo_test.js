@@ -8,6 +8,7 @@
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 suite('NetworkSiminfoTest', function() {
@@ -25,9 +26,6 @@ suite('NetworkSiminfoTest', function() {
     cellularNetwork.typeState.cellular.iccid = TEST_ICCID;
 
     simInfo.networkState = cellularNetwork;
-    updateDeviceState(
-        /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
-
     document.body.appendChild(simInfo);
     await flushAsync();
   });
@@ -89,6 +87,44 @@ suite('NetworkSiminfoTest', function() {
     await flushAsync();
     assertTrue(!!getSimLockDialogElement());
   }
+
+  test('Set focus after dialog close', async function() {
+    const getSimLockDialogs = () => simInfo.$$('sim-lock-dialogs');
+    const getSimLockButton = () => simInfo.$$('#simLockButton');
+    const getUnlockPinButton = () => simInfo.$$('#unlockPinButton');
+
+    // SIM lock dialog toggle.
+    updateDeviceState(
+        /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
+    assertTrue(!!getSimLockButton());
+    assertFalse(!!getSimLockDialogs());
+    getSimLockButton().click();
+    await flushAsync();
+
+    assertTrue(!!getSimLockDialogs());
+
+    // Simulate dialog close.
+    getSimLockDialogs().closeDialogsForTest();
+    await flushAsync();
+    assertFalse(!!getSimLockDialogs());
+    assertEquals(getSimLockButton(), getDeepActiveElement());
+
+    // SIM unlock pin button.
+    updateDeviceState(
+        /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);
+    await flushAsync();
+    assertTrue(!!getUnlockPinButton());
+    assertFalse(!!getSimLockDialogs());
+    getUnlockPinButton().click();
+    await flushAsync();
+    assertTrue(!!getSimLockDialogs());
+
+    // Simulate dialog close.
+    getSimLockDialogs().closeDialogsForTest();
+    await flushAsync();
+    assertFalse(!!getSimLockDialogs());
+    assertEquals(getUnlockPinButton(), getDeepActiveElement());
+  });
 
   test('SIM missing UI shown ', function() {
     const isSimMissingShown = (updatedUiEnabled) => {
