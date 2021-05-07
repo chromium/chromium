@@ -598,12 +598,6 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
                                     : views::LabelButton::GetTooltipText(p);
 }
 
-views::InkDrop* ToolbarButton::GetInkDrop() {
-  if (installable_ink_drop_)
-    return installable_ink_drop_.get();
-  return views::LabelButton::GetInkDrop();
-}
-
 void ToolbarButton::ShowContextMenuForViewImpl(View* source,
                                                const gfx::Point& point,
                                                ui::MenuSourceType source_type) {

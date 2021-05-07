@@ -116,7 +116,6 @@ class ToolbarButton : public views::LabelButton,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  views::InkDrop* GetInkDrop() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -302,6 +301,10 @@ class ToolbarButton : public views::LabelButton,
 
   // Used instead of the standard InkDrop implementation when
   // |views::kInstallableInkDropFeature| is enabled.
+  // TODO(crbug.com/931964): When InkDrops can be externally installed, connect
+  // this InkDrop when the experiment is enabled. This is currently not working
+  // as a virtual GetInkDrop() override was removed to finish InkDropHostView
+  // migration from the View hierarchy.
   std::unique_ptr<views::InstallableInkDrop> installable_ink_drop_;
 
   // Class responsible for animating highlight color (calling a callback on
