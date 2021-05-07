@@ -24380,6 +24380,7 @@ Called by update_document_policy_enum.py.-->
   <int value="856" label="DataLeakPreventionReportingEnabled"/>
   <int value="857" label="AdditionalDnsQueryTypesEnabled"/>
   <int value="858" label="TripleDESEnabled"/>
+  <int value="859" label="CloudUserPolicyMerge"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

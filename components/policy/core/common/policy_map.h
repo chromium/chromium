@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -263,6 +264,22 @@ class POLICY_EXPORT PolicyMap {
                 PolicyScope scope,
                 PolicySource source);
 
+  // Returns True if at least one shared ID is found in the user and device
+  // affiliation ID sets.
+  bool IsUserAffiliated() const;
+
+  // Populates the set containing user affiliation ID strings.
+  void SetUserAffiliationIds(const base::flat_set<std::string>& user_ids);
+
+  // Returns the set containing user affiliation ID strings.
+  const base::flat_set<std::string>& GetUserAffiliationIds() const;
+
+  // Populates the set containing device affiliation ID strings.
+  void SetDeviceAffiliationIds(const base::flat_set<std::string>& device_ids);
+
+  // Returns the set containing device affiliation ID strings.
+  const base::flat_set<std::string>& GetDeviceAffiliationIds() const;
+
   bool Equals(const PolicyMap& other) const;
   bool empty() const;
   size_t size() const;
@@ -293,8 +310,12 @@ class POLICY_EXPORT PolicyMap {
       bool deletion_value);
 
   PolicyMapType map_;
-};
 
+  // Affiliation
+  bool is_user_affiliated_ = false;
+  base::flat_set<std::string> user_affiliation_ids_;
+  base::flat_set<std::string> device_affiliation_ids_;
+};
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_POLICY_MAP_H_

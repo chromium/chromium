@@ -408,6 +408,16 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   PolicyDictionaryMerger policy_dictionary_merger(
       std::move(policy_dictionaries_to_merge));
 
+  // Pass affiliation and CloudUserPolicyMerge values to both mergers.
+  const bool is_affiliated = chrome_policies.IsUserAffiliated();
+  const bool is_user_cloud_merging_enabled =
+      chrome_policies.GetValue(key::kCloudUserPolicyMerge) &&
+      chrome_policies.GetValue(key::kCloudUserPolicyMerge)->GetBool();
+  policy_list_merger.SetAllowUserCloudPolicyMerging(
+      is_affiliated && is_user_cloud_merging_enabled);
+  policy_dictionary_merger.SetAllowUserCloudPolicyMerging(
+      is_affiliated && is_user_cloud_merging_enabled);
+
   std::vector<PolicyMerger*> mergers{&policy_list_merger,
                                      &policy_dictionary_merger};
 

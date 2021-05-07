@@ -62,6 +62,17 @@ void UserCloudPolicyStoreBase::InstallPolicy(
 #endif
   DecodeProtoFieldsPerProfile(*payload, external_data_manager(), policy_source_,
                               policy_scope_, &policy_map_, filter);
+
+  if (policy_data->user_affiliation_ids_size() > 0) {
+    policy_map_.SetUserAffiliationIds(
+        {policy_data->user_affiliation_ids().begin(),
+         policy_data->user_affiliation_ids().end()});
+  }
+  if (policy_data->device_affiliation_ids_size() > 0) {
+    policy_map_.SetDeviceAffiliationIds(
+        {policy_data->device_affiliation_ids().begin(),
+         policy_data->device_affiliation_ids().end()});
+  }
   policy_ = std::move(policy_data);
   policy_signature_public_key_ = policy_signature_public_key;
 }

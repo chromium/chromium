@@ -22,8 +22,13 @@ namespace policy {
 class POLICY_EXPORT PolicyMerger {
  public:
   PolicyMerger();
+
+  // Determines if a policy value is eligible for merging depending on several
+  // factors including its scope, source, and level.
   static bool ConflictCanBeMerged(const PolicyMap::Entry& conflict,
-                                  const PolicyMap::Entry& policy);
+                                  const PolicyMap::Entry& policy,
+                                  const bool is_user_cloud_merging_enabled);
+
   virtual ~PolicyMerger();
   virtual void Merge(PolicyMap::PolicyMapType* policies) const = 0;
 };
@@ -39,17 +44,25 @@ class POLICY_EXPORT PolicyListMerger : public PolicyMerger {
   // Merges the list policies from |policies| that have multiple sources.
   void Merge(PolicyMap::PolicyMapType* policies) const override;
 
+  // Sets the variable used for determining if user cloud merging is enabled.
+  void SetAllowUserCloudPolicyMerging(bool allowed);
+
  private:
   // Returns True if |policy_name| is in the list of policies to merge and if
   // |policy| has values from different sources that share the same level,
   // target and scope.
   bool CanMerge(const std::string& policy_name, PolicyMap::Entry& policy) const;
 
+  // Returns True if user cloud policy merging is enabled through the
+  // CloudUserPolicyMerge policy and the current user is affiliated.
+  bool AllowUserCloudPolicyMerging() const;
+
   // Merges the values of |policy| if they come from multiple sources. Keeps
   // track of the original values by leaving them as conflicts. |policy| must
   // remain unchanged if there is nothing to merge.
   void DoMerge(PolicyMap::Entry* policy) const;
 
+  bool allow_user_cloud_policy_merging_ = false;
   const base::flat_set<std::string> policies_to_merge_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyListMerger);
@@ -70,17 +83,25 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
   void SetAllowedPoliciesForTesting(
       base::flat_set<std::string> allowed_policies);
 
+  // Sets the variable used for determining if user cloud merging is enabled.
+  void SetAllowUserCloudPolicyMerging(bool allowed);
+
  private:
   // Returns True if |policy_name| is in the list of policies to merge and if
   // |policy| has values from different sources that share the same level,
   // target and scope.
   bool CanMerge(const std::string& policy_name, PolicyMap::Entry& policy) const;
 
+  // Returns True if user cloud policy merging is enabled through the
+  // CloudUserPolicyMerge policy and the current user is affiliated.
+  bool AllowUserCloudPolicyMerging() const;
+
   // Merges the values of |policy| if they come from multiple sources. Keeps
   // track of the original values by leaving them as conflicts. |policy| stays
   // intact if there is nothing to merge.
   void DoMerge(PolicyMap::Entry* policy) const;
 
+  bool allow_user_cloud_policy_merging_ = false;
   const base::flat_set<std::string> policies_to_merge_;
   base::flat_set<std::string> allowed_policies_;
 

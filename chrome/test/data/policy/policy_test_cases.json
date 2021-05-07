@@ -8847,5 +8847,8 @@
         }}
       }
     ]
+  },
+  "CloudUserPolicyMerge": {
+    "note": "This policy has no pref as it is only directly read by the policy system."
   }
 }

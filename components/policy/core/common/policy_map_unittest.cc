@@ -1172,4 +1172,28 @@ TEST_F(PolicyMapTest, InvalidEntry) {
   EXPECT_TRUE(policies.GetUntrusted("b")->ignored());
 }
 
+TEST_F(PolicyMapTest, Affiliation) {
+  PolicyMap policies;
+  EXPECT_FALSE(policies.IsUserAffiliated());
+
+  base::flat_set<std::string> user_ids;
+  user_ids.insert("a");
+  base::flat_set<std::string> device_ids;
+  device_ids.insert("b");
+  policies.SetUserAffiliationIds(user_ids);
+  policies.SetUserAffiliationIds(device_ids);
+
+  // Affiliation check fails because user and device IDs don't have at least one
+  // ID in common.
+  EXPECT_FALSE(policies.IsUserAffiliated());
+
+  user_ids.insert("b");
+  device_ids.insert("c");
+  policies.SetUserAffiliationIds(user_ids);
+  policies.SetDeviceAffiliationIds(device_ids);
+
+  // Affiliation check succeeds now that 'a' is present in user and device IDs.
+  EXPECT_TRUE(policies.IsUserAffiliated());
+}
+
 }  // namespace policy

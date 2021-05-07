@@ -27,18 +27,43 @@ constexpr std::array<const char*, 6> kDictionaryPoliciesToMerge{
 }  // namespace
 
 // static
-bool PolicyMerger::ConflictCanBeMerged(const PolicyMap::Entry& conflict,
-                                       const PolicyMap::Entry& policy) {
+bool PolicyMerger::ConflictCanBeMerged(
+    const PolicyMap::Entry& conflict,
+    const PolicyMap::Entry& policy,
+    const bool is_user_cloud_merging_enabled) {
+  if (conflict.ignored() ||
+      conflict.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
+      conflict.level != policy.level)
+    return false;
+
+  // If the policies have matching scope and are non-user, they can be merged.
+  if (conflict.scope == policy.scope && conflict.scope != POLICY_SCOPE_USER)
+    return true;
+
   // On desktop, the user cloud policy potentially comes from a different
-  // domain than e.g. GPO policy or machine-level cloud policy, so prevent
-  // merging user cloud policy with other policy sources.
+  // domain than e.g. GPO policy or machine-level cloud policy. Merging a user
+  // cloud policy with policies from other sources is only permitted if both of
+  // the following conditions are met:
+  //   1. The CloudUserPolicyMerge is set to True.
+  //   2. The user is affiliated with the machine-level cloud policy provider.
   const bool is_conflict_user_cloud_policy =
       conflict.scope == POLICY_SCOPE_USER &&
       (conflict.source == POLICY_SOURCE_CLOUD ||
        conflict.source == POLICY_SOURCE_PRIORITY_CLOUD);
-  return !is_conflict_user_cloud_policy && !conflict.ignored() &&
-         conflict.source != POLICY_SOURCE_ENTERPRISE_DEFAULT &&
-         conflict.level == policy.level && conflict.scope == policy.scope;
+
+  // Merging of user-level GPO policies is not permitted to prevent unexpected
+  // behavior. If such merging is desired, it will be implemented in a similar
+  // way as user cloud merging.
+  const bool is_conflict_user_platform_policy =
+      conflict.scope == POLICY_SCOPE_USER &&
+      conflict.source == POLICY_SOURCE_PLATFORM;
+
+  const bool is_scope_overriden =
+      is_conflict_user_cloud_policy && is_user_cloud_merging_enabled;
+
+  return !is_conflict_user_platform_policy &&
+         (!is_conflict_user_cloud_policy || is_user_cloud_merging_enabled) &&
+         (conflict.scope == policy.scope || is_scope_overriden);
 }
 
 PolicyMerger::PolicyMerger() = default;
@@ -58,6 +83,10 @@ void PolicyListMerger::Merge(PolicyMap::PolicyMapType* policies) const {
     if (CanMerge(it.first, it.second))
       DoMerge(&it.second);
   }
+}
+
+void PolicyListMerger::SetAllowUserCloudPolicyMerging(bool allowed) {
+  allow_user_cloud_policy_merging_ = allowed;
 }
 
 bool PolicyListMerger::CanMerge(const std::string& policy_name,
@@ -80,6 +109,10 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
   return true;
 }
 
+bool PolicyListMerger::AllowUserCloudPolicyMerging() const {
+  return allow_user_cloud_policy_merging_;
+}
+
 void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
   std::vector<const base::Value*> merged_values;
   auto compare_value_ptr = [](const base::Value* a, const base::Value* b) {
@@ -99,7 +132,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
   // Concatenates the values from accepted conflicting sources to the policy
   // value while avoiding duplicates.
   for (const auto& it : policy->conflicts) {
-    if (!PolicyMerger::ConflictCanBeMerged(it.entry(), *policy)) {
+    if (!PolicyMerger::ConflictCanBeMerged(it.entry(), *policy,
+                                           AllowUserCloudPolicyMerging())) {
       continue;
     }
 
@@ -146,6 +180,10 @@ void PolicyDictionaryMerger::SetAllowedPoliciesForTesting(
   allowed_policies_ = std::move(allowed_policies);
 }
 
+void PolicyDictionaryMerger::SetAllowUserCloudPolicyMerging(bool allowed) {
+  allow_user_cloud_policy_merging_ = allowed;
+}
+
 bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
                                       PolicyMap::Entry& policy) const {
   if (policy.source == POLICY_SOURCE_MERGED)
@@ -176,6 +214,10 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
   return true;
 }
 
+bool PolicyDictionaryMerger::AllowUserCloudPolicyMerging() const {
+  return allow_user_cloud_policy_merging_;
+}
+
 void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
   // Keep priority sorted list of potential merge targets.
   std::vector<const PolicyMap::Entry*> policies;
@@ -193,7 +235,8 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
 
   // Merges all the keys from the policies from different sources.
   for (const auto* it : policies) {
-    if (it != policy && !PolicyMerger::ConflictCanBeMerged(*it, *policy))
+    if (it != policy && !PolicyMerger::ConflictCanBeMerged(
+                            *it, *policy, AllowUserCloudPolicyMerging()))
       continue;
 
     const base::DictionaryValue* dict = nullptr;

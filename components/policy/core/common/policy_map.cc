@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,6 +40,16 @@ const std::u16string GetLocalizedString(
   if (!result.empty() && result[result.length() - 1] == line_feed[0])
     result.pop_back();
   return result;
+}
+
+// Inserts additional user affiliation IDs to the existing set.
+base::flat_set<std::string> CombineIds(
+    const base::flat_set<std::string>& ids_first,
+    const base::flat_set<std::string>& ids_second) {
+  base::flat_set<std::string> combined_ids;
+  combined_ids.insert(ids_first.begin(), ids_first.end());
+  combined_ids.insert(ids_second.begin(), ids_second.end());
+  return combined_ids;
 }
 
 }  // namespace
@@ -337,6 +348,9 @@ PolicyMap PolicyMap::Clone() const {
   for (const auto& it : map_)
     clone.Set(it.first, it.second.DeepCopy());
 
+  clone.SetUserAffiliationIds(user_affiliation_ids_);
+  clone.SetDeviceAffiliationIds(device_affiliation_ids_);
+
   return clone;
 }
 
@@ -376,6 +390,11 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
     if (other_is_higher_priority)
       *current_policy = std::move(other_policy);
   }
+
+  SetUserAffiliationIds(
+      CombineIds(GetUserAffiliationIds(), other.GetUserAffiliationIds()));
+  SetDeviceAffiliationIds(
+      CombineIds(GetDeviceAffiliationIds(), other.GetDeviceAffiliationIds()));
 }
 
 void PolicyMap::MergeValues(const std::vector<PolicyMerger*>& mergers) {
@@ -444,6 +463,28 @@ void PolicyMap::FilterErase(
       ++iter;
     }
   }
+}
+
+bool PolicyMap::IsUserAffiliated() const {
+  return IsAffiliated(user_affiliation_ids_, device_affiliation_ids_);
+}
+
+void PolicyMap::SetUserAffiliationIds(
+    const base::flat_set<std::string>& user_ids) {
+  user_affiliation_ids_ = {user_ids.begin(), user_ids.end()};
+}
+
+const base::flat_set<std::string>& PolicyMap::GetUserAffiliationIds() const {
+  return user_affiliation_ids_;
+}
+
+void PolicyMap::SetDeviceAffiliationIds(
+    const base::flat_set<std::string>& device_ids) {
+  device_affiliation_ids_ = {device_ids.begin(), device_ids.end()};
+}
+
+const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
+  return device_affiliation_ids_;
 }
 
 }  // namespace policy

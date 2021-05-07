@@ -8704,6 +8704,39 @@
       'label': '''Allow merging dictionary policies from different sources''',
     },
     {
+      'name': 'CloudUserPolicyMerge',
+      'owners': ['igorruvinov@google.com', 'pastarmovj@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:92-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable merging of user-level cloud policies.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable merging of user-level cloud policies.',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 859,
+      'caption': '''Enables merging of user cloud policies into machine-level policies''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled allows policies associated with a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph> account to be merged into machine-level policies.
+
+      Only policies originating from secure users can be merged. A secure user is affiliated with the organization that manages their browser using <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. All other user-level policies will always be ignored.
+
+      Policies that need to be merged also need to be set in either <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST">PolicyListMultipleSourceMergeList</ph> or <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST">PolicyDictionaryMultipleSourceMergeList</ph>. This policy will be ignored if neither of the two aforementioned policies is configured.
+
+      Leaving the policy unset or setting it to Disabled prevents user-level cloud policies from being merged with policies from any other sources.''',
+    },
+    {
       'name': 'EnableExperimentalPolicies',
       'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
@@ -26804,6 +26837,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 858,
+  'highest_id_currently_used': 859,
   'highest_atomic_group_id_currently_used': 40
 }
