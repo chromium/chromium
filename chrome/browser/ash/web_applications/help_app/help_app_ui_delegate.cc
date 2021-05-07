@@ -62,6 +62,7 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
                          accessibility_manager->IsSwitchAccessEnabled());
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+  source->AddBoolean("isLowEndDevice", base::SysInfo::IsLowEndDevice());
   // Add strings that can be pulled in.
   source->AddString("boardName", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("chromeOSVersion", base::SysInfo::OperatingSystemVersion());
