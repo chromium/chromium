@@ -216,7 +216,7 @@ void ContentPasswordManagerDriver::GeneratePassword(
 void ContentPasswordManagerDriver::PasswordFormsParsed(
     const std::vector<autofill::FormData>& forms_data) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, forms_data,
+          render_frame_host_, base::make_span(forms_data),
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_PARSED))
     return;
   GetPasswordManager()->OnPasswordFormsParsed(this, forms_data);
@@ -226,7 +226,7 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
     const std::vector<autofill::FormData>& visible_forms_data,
     bool did_stop_loading) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, visible_forms_data,
+          render_frame_host_, base::make_span(visible_forms_data),
           BadMessageReason::CPMD_BAD_ORIGIN_FORMS_RENDERED))
     return;
   GetPasswordManager()->OnPasswordFormsRendered(this, visible_forms_data,
@@ -235,8 +235,8 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(
     const autofill::FormData& form_data) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-          render_frame_host_, form_data.url,
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
+          render_frame_host_, base::make_span(&form_data, 1),
           BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED))
     return;
   GetPasswordManager()->OnPasswordFormSubmitted(this, form_data);
@@ -246,8 +246,8 @@ void ContentPasswordManagerDriver::PasswordFormSubmitted(
 
 void ContentPasswordManagerDriver::InformAboutUserInput(
     const autofill::FormData& form_data) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-          render_frame_host_, form_data.url,
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
+          render_frame_host_, base::make_span(&form_data, 1),
           BadMessageReason::CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE))
     return;
   GetPasswordManager()->OnInformAboutUserInput(this, form_data);
@@ -274,6 +274,10 @@ void ContentPasswordManagerDriver::DynamicFormSubmission(
 
 void ContentPasswordManagerDriver::PasswordFormCleared(
     const autofill::FormData& form_data) {
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
+          render_frame_host_, base::make_span(&form_data, 1),
+          BadMessageReason::CPMD_BAD_ORIGIN_PASSWORD_FORM_CLEARED))
+    return;
   GetPasswordManager()->OnPasswordFormCleared(this, form_data);
 }
 
@@ -311,6 +315,10 @@ void ContentPasswordManagerDriver::ShowTouchToFill() {
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+          render_frame_host_, frame_url,
+          BadMessageReason::CPMD_BAD_ORIGIN_CHECK_SAFE_BROWSING_REPUTATION))
+    return;
   // Despite the name, this method is only called on password fields.
   // (See PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation())
   if (client_->GetMetricsRecorder()) {

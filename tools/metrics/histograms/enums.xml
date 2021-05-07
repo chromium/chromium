@@ -7362,6 +7362,8 @@ Called by update_bad_message_reasons.py.-->
       label="CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP"/>
   <int value="12" label="CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP"/>
   <int value="13" label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM"/>
+  <int value="14" label="CPMD_BAD_ORIGIN_PASSWORD_FORM_CLEARED"/>
+  <int value="15" label="CPMD_BAD_ORIGIN_CHECK_SAFE_BROWSING_REPUTATION"/>
 </enum>
 
 <enum name="BadSyncDataReason">
