@@ -48,14 +48,10 @@
     font-size: 12px;
     margin: auto 0 auto auto;
     outline: none;
-    padding: 4px 8px 4px 8px;
+    padding: 0;
     position: absolute;
     right: var(--emoji-picker-side-padding);
     width: fit-content;
-  }
-
-  #clear-recents:hover {
-    background-color: rgba(var(--google-blue-refresh-500-rgb), .04);
   }
 
   #clear-recents:focus,
@@ -67,6 +63,15 @@
     position: absolute;
   }
 
+  #clear-recents-hover {
+    border: 2px solid transparent;
+    margin: -2px;
+    padding: 6px 10px 6px 10px;
+  }
+  #clear-recents-hover:hover {
+    background-color: rgba(var(--google-blue-refresh-500-rgb), .04);
+    border: 2px solid rgba(var(--google-blue-refresh-500-rgb), .04);
+  }
 </style>
 
 <div id="heading" role="heading" aria-level="2" tabindex="0">
@@ -79,7 +84,9 @@
 </div>
   <template is = "dom-if" if="[[showClearRecents]]">
   <button id="clear-recents" on-click="onClearRecentsClick">
+    <div id="clear-recents-hover">
     Clear recently used emojis
+    </div>
   </button>
   </template>
 <div id="emoji">
