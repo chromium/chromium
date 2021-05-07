@@ -65,7 +65,7 @@ void AddressEditorController::UpdateEditorFields() {
   editor_fields_.emplace_back(
       autofill::ADDRESS_HOME_COUNTRY,
       l10n_util::GetStringUTF16(IDS_LIBADDRESSINPUT_COUNTRY_OR_REGION_LABEL),
-      EditorField::LengthHint::HINT_SHORT, EditorField::ControlType::COMBOBOX);
+      EditorField::LengthHint::HINT_LONG, EditorField::ControlType::COMBOBOX);
 
   for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
        components) {

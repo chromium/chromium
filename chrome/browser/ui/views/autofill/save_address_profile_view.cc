@@ -18,10 +18,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -30,6 +28,15 @@
 namespace autofill {
 
 namespace {
+
+constexpr int kIconSize = 16;
+
+int AddressDetailsIconSize() {
+  // Use the line height of the body small text. This allows the icons to adapt
+  // if the user changes the font size.
+  return views::style::GetLineHeight(views::style::CONTEXT_LABEL,
+                                     views::style::STYLE_PRIMARY);
+}
 
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
@@ -55,10 +62,12 @@ void AddAddressSection(views::View* parent_view,
               /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
 
-  auto icon_view =
-      std::make_unique<views::ColorTrackingIconView>(icon, gfx::kFaviconSize);
-  row->AddChildView(std::move(icon_view));
+  auto icon_view = std::make_unique<views::ImageView>();
+  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      icon, ui::NativeTheme::kColorId_SecondaryIconColor,
+      AddressDetailsIconSize()));
 
+  row->AddChildView(std::move(icon_view));
   row->AddChildView(std::move(view));
 }
 
@@ -224,7 +233,7 @@ SaveAddressProfileView::SaveAddressProfileView(
           base::BindRepeating(
               &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
               base::Unretained(controller_)),
-          vector_icons::kEditIcon, gfx::kFaviconSize);
+          vector_icons::kEditIcon, kIconSize);
   // TODO(crbug.com/1167060): Use internationalized string.
   edit_button->SetAccessibleName(u"Edit Address");
   AddChildView(std::move(edit_button));

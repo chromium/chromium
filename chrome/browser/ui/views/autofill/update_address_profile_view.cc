@@ -29,6 +29,13 @@ namespace {
 constexpr int kColumnSetId = 0;
 constexpr int kIconSize = 16;
 
+int AddressDetailsIconSize() {
+  // Use the line height of the body small text. This allows the icons to adapt
+  // if the user changes the font size.
+  return views::style::GetLineHeight(views::style::CONTEXT_LABEL,
+                                     views::style::STYLE_PRIMARY);
+}
+
 const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
   // TODO(crbug.com/1167060): Update icons upon having final mocks.
   switch (type) {
@@ -89,7 +96,7 @@ std::unique_ptr<views::View> CreateValuesView(
 
     auto icon_view = std::make_unique<views::ImageView>();
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GetVectorIconForType(type), icon_color, kIconSize));
+        GetVectorIconForType(type), icon_color, AddressDetailsIconSize()));
 
     value_row->AddChildView(std::move(icon_view));
     value_row->AddChildView(
@@ -252,7 +259,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   if (has_non_empty_original_values) {
     layout->AddPaddingRow(views::GridLayout::kFixedSize,
                           ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL));
+                              DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
     AddValuesRow(layout, profile_diff_map, /*show_row_label=*/true,
                  /*edit_button_callback=*/{});
   }

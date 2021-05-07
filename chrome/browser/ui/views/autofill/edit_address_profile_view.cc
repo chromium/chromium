@@ -34,6 +34,8 @@ EditAddressProfileView::EditAddressProfileView(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
+      views::InsetsMetric::INSETS_DIALOG));
 }
 
 EditAddressProfileView::~EditAddressProfileView() = default;
