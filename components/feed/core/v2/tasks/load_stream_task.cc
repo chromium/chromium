@@ -40,8 +40,11 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
       return stream_type.IsForYou() ? feedwire::FeedQuery::MANUAL_REFRESH
                                     : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
     case LoadType::kBackgroundRefresh:
-      return stream_type.IsForYou() ? feedwire::FeedQuery::SCHEDULED_REFRESH
-                                    : feedwire::FeedQuery::PREFETCHED_WEB_FEED;
+      return stream_type.IsForYou()
+                 ? feedwire::FeedQuery::SCHEDULED_REFRESH
+                 // TODO(b/185848601): Switch back to PREFETCHED_WEB_FEED when
+                 // the server supports it.
+                 : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
   }
 }
 
