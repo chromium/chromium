@@ -36,8 +36,8 @@ namespace {
 
 const char kCurrentURL[] = "http://example.com/current";
 const char kClipboardURL[] = "http://example.com/clipboard";
-const char16_t kClipboardText[] = u"Search for me";
-const char16_t kClipboardTitleText[] = u"\"Search for me\"";
+const char kClipboardText[] = "Search for me";
+const char kClipboardTitleText[] = "\"Search for me\"";
 
 class CreateMatchWithContentCallbackWaiter {
  public:
@@ -185,11 +185,13 @@ TEST_F(ClipboardProviderTest, MatchesText) {
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
   client_->set_template_url_service(std::move(template_url_service));
-  SetClipboardText(kClipboardText);
+  SetClipboardText(base::UTF8ToUTF16(kClipboardText));
   provider_->Start(CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS), false);
   ASSERT_GE(provider_->matches().size(), 1U);
-  EXPECT_EQ(kClipboardTitleText, provider_->matches().back().contents);
-  EXPECT_EQ(kClipboardText, provider_->matches().back().fill_into_edit);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardTitleText),
+            provider_->matches().back().contents);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText),
+            provider_->matches().back().fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT,
             provider_->matches().back().type);
 }
@@ -216,7 +218,7 @@ TEST_F(ClipboardProviderTest, DeleteMatch) {
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
   client_->set_template_url_service(std::move(template_url_service));
-  SetClipboardText(kClipboardText);
+  SetClipboardText(base::UTF8ToUTF16(kClipboardText));
   provider_->Start(CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS), false);
   ASSERT_EQ(provider_->matches().size(), 1U);
 
@@ -251,7 +253,7 @@ TEST_F(ClipboardProviderTest, CreateBlankTextMatchOnStart) {
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
   client_->set_template_url_service(std::move(template_url_service));
-  SetClipboardText(kClipboardText);
+  SetClipboardText(base::UTF8ToUTF16(kClipboardText));
   provider_->Start(CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS), false);
   ASSERT_GE(provider_->matches().size(), 1U);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT,
@@ -297,7 +299,7 @@ TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
 }
 
 TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
-  SetClipboardText(kClipboardText);
+  SetClipboardText(base::UTF8ToUTF16(kClipboardText));
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
   client_->set_template_url_service(std::move(template_url_service));
@@ -305,8 +307,8 @@ TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
   CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
   waiter.WaitForMatchUpdated();
 
-  EXPECT_EQ(kClipboardTitleText, match.contents);
-  EXPECT_EQ(kClipboardText, match.fill_into_edit);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardTitleText), match.contents);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText), match.fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
 }
 

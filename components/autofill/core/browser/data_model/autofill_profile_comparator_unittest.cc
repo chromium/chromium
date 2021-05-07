@@ -56,6 +56,7 @@ using autofill::EmailInfo;
 using autofill::NameInfo;
 using autofill::PhoneNumber;
 using autofill::ServerFieldType;
+using base::UTF8ToUTF16;
 
 namespace autofill {
 
@@ -101,22 +102,22 @@ class AutofillProfileComparatorTest
     autofill::CountryNames::SetLocaleString(kLocale);
   }
 
-  NameInfo CreateNameInfo(const char16_t* first,
-                          const char16_t* middle,
-                          const char16_t* last,
-                          const char16_t* full) {
+  NameInfo CreateNameInfo(const char* first,
+                          const char* middle,
+                          const char* last,
+                          const char* full) {
     NameInfo name;
     name.SetRawInfoWithVerificationStatus(
-        NAME_FIRST, first,
+        NAME_FIRST, base::UTF8ToUTF16(first),
         autofill::structured_address::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_MIDDLE, middle,
+        NAME_MIDDLE, base::UTF8ToUTF16(middle),
         autofill::structured_address::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_LAST, last,
+        NAME_LAST, base::UTF8ToUTF16(last),
         autofill::structured_address::VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(
-        NAME_FULL, full,
+        NAME_FULL, base::UTF8ToUTF16(full),
         autofill::structured_address::VerificationStatus::kObserved);
     return name;
   }
@@ -189,10 +190,10 @@ class AutofillProfileComparatorTest
 
   AutofillProfile CopyAndModify(
       const AutofillProfile& profile,
-      const std::vector<std::pair<ServerFieldType, const char16_t*>>& updates) {
+      const std::vector<std::pair<ServerFieldType, const char*>>& updates) {
     AutofillProfile new_profile = profile;
     for (const auto& update : updates) {
-      new_profile.SetRawInfo(update.first, update.second);
+      new_profile.SetRawInfo(update.first, UTF8ToUTF16(update.second));
     }
     new_profile.FinalizeAfterImport();
     return new_profile;
@@ -241,7 +242,7 @@ class AutofillProfileComparatorTest
 
   void MergePhoneNumbersAndExpect(const AutofillProfile& a,
                                   const AutofillProfile& b,
-                                  const std::u16string& expected_str) {
+                                  const std::string& expected_str) {
     AutofillProfile dummy;
 
     // Merge the phone numbers.
@@ -250,7 +251,7 @@ class AutofillProfileComparatorTest
 
     // Construct the expected value.
     PhoneNumber expected(&dummy);
-    expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, expected_str);
+    expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, UTF8ToUTF16(expected_str));
 
     // Validate that we get what we expect.
     EXPECT_EQ(expected.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
@@ -711,20 +712,20 @@ TEST_P(AutofillProfileComparatorTest, HaveMergeableAddresses) {
                                                 "Carver City", "ca", "", "us");
 
   AutofillProfile differentCountry =
-      CopyAndModify(p1, {{ADDRESS_HOME_COUNTRY, u"CA"}});
+      CopyAndModify(p1, {{ADDRESS_HOME_COUNTRY, "CA"}});
   AutofillProfile differentZip =
-      CopyAndModify(p1, {{ADDRESS_HOME_ZIP, u"32145"}});
+      CopyAndModify(p1, {{ADDRESS_HOME_ZIP, "32145"}});
   AutofillProfile differentState = CopyAndModify(
-      p1, {{ADDRESS_HOME_ZIP, u""}, {ADDRESS_HOME_STATE, u"Florida"}});
+      p1, {{ADDRESS_HOME_ZIP, ""}, {ADDRESS_HOME_STATE, "Florida"}});
   AutofillProfile differentCity = CopyAndModify(
-      p1, {{ADDRESS_HOME_ZIP, u""}, {ADDRESS_HOME_CITY, u"Metropolis"}});
+      p1, {{ADDRESS_HOME_ZIP, ""}, {ADDRESS_HOME_CITY, "Metropolis"}});
   AutofillProfile differentAddress =
-      CopyAndModify(p1, {{ADDRESS_HOME_LINE1, u"17 Park Lane"},
-                         {ADDRESS_HOME_LINE2, u"Suite 150"}});
+      CopyAndModify(p1, {{ADDRESS_HOME_LINE1, "17 Park Lane"},
+                         {ADDRESS_HOME_LINE2, "Suite 150"}});
   AutofillProfile differentLocality =
-      CopyAndModify(p1, {{ADDRESS_HOME_DEPENDENT_LOCALITY, u"Funky Chicken"}});
+      CopyAndModify(p1, {{ADDRESS_HOME_DEPENDENT_LOCALITY, "Funky Chicken"}});
   AutofillProfile differentSortingCode =
-      CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
+      CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, "98000 Monaco"}});
 
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(empty, p2));
@@ -757,26 +758,26 @@ TEST_P(AutofillProfileComparatorTest, AreMergeable) {
                                  "+1 (234) 567-8910", /*finalize=*/false);
 
   AutofillProfile mergeable =
-      CopyAndModify(p, {{NAME_FIRST, u"MÁRÍÕÑ"},
-                        {NAME_MIDDLE, u"M."},
-                        {EMAIL_ADDRESS, u"MARION@ME.XYZ"},
-                        {COMPANY_NAME, u"Fox Industries Inc."},
-                        {ADDRESS_HOME_LINE1, u"123 zoo st. w., #5"},
-                        {ADDRESS_HOME_LINE1, u""},
-                        {ADDRESS_HOME_STATE, u"california"},
-                        {PHONE_HOME_WHOLE_NUMBER, u"5678910 ext. 77"}});
+      CopyAndModify(p, {{NAME_FIRST, "MÁRÍÕÑ"},
+                        {NAME_MIDDLE, "M."},
+                        {EMAIL_ADDRESS, "MARION@ME.XYZ"},
+                        {COMPANY_NAME, "Fox Industries Inc."},
+                        {ADDRESS_HOME_LINE1, "123 zoo st. w., #5"},
+                        {ADDRESS_HOME_LINE1, ""},
+                        {ADDRESS_HOME_STATE, "california"},
+                        {PHONE_HOME_WHOLE_NUMBER, "5678910 ext. 77"}});
   AutofillProfile not_mergeable_by_name =
-      CopyAndModify(p, {{NAME_FIRST, u"Steven"},
-                        {NAME_FULL, u""},
-                        {autofill::NAME_LAST_SECOND, u""}});
+      CopyAndModify(p, {{NAME_FIRST, "Steven"},
+                        {NAME_FULL, ""},
+                        {autofill::NAME_LAST_SECOND, ""}});
   AutofillProfile not_mergeable_by_email_address =
-      CopyAndModify(p, {{EMAIL_ADDRESS, u"marion.morrision@me.xyz"}});
+      CopyAndModify(p, {{EMAIL_ADDRESS, "marion.morrision@me.xyz"}});
   AutofillProfile not_mergeable_by_company_name =
-      CopyAndModify(p, {{COMPANY_NAME, u"Hound Corp"}});
+      CopyAndModify(p, {{COMPANY_NAME, "Hound Corp"}});
   AutofillProfile not_mergeable_by_address =
-      CopyAndModify(p, {{ADDRESS_HOME_LINE2, u"Unit 7"}});
+      CopyAndModify(p, {{ADDRESS_HOME_LINE2, "Unit 7"}});
   AutofillProfile not_mergeable_by_phone_number =
-      CopyAndModify(p, {{PHONE_HOME_WHOLE_NUMBER, u"555-1234"}});
+      CopyAndModify(p, {{PHONE_HOME_WHOLE_NUMBER, "555-1234"}});
 
   // Finalize the initial profile.
   // Note, all other profiles are already finalized.
@@ -920,15 +921,15 @@ TEST_P(AutofillProfileComparatorTest, MergeNames) {
 
 TEST_P(AutofillProfileComparatorTest, MergeCJKNames) {
   // Korean names that are all mergeable, but constructed differently.
-  NameInfo name1 = CreateNameInfo(u"호", u"", u"이영", u"이영 호");
-  NameInfo name2 = CreateNameInfo(u"이영호", u"", u"", u"이영호");
-  NameInfo name3 = CreateNameInfo(u"영호", u"", u"이", u"이영호");
-  NameInfo name4 = CreateNameInfo(u"영호", u"", u"이", u"");
-  NameInfo name5 = CreateNameInfo(u"영호", u"", u"이", u"이 영호");
+  NameInfo name1 = CreateNameInfo("호", "", "이영", "이영 호");
+  NameInfo name2 = CreateNameInfo("이영호", "", "", "이영호");
+  NameInfo name3 = CreateNameInfo("영호", "", "이", "이영호");
+  NameInfo name4 = CreateNameInfo("영호", "", "이", "");
+  NameInfo name5 = CreateNameInfo("영호", "", "이", "이 영호");
 
   // Mergeable foreign name in Japanese with a 'KATAKANA MIDDLE DOT'.
-  NameInfo name6 = CreateNameInfo(u"", u"", u"", u"ゲイツ・ビル");
-  NameInfo name7 = CreateNameInfo(u"ビル", u"", u"ゲイツ", u"");
+  NameInfo name6 = CreateNameInfo("", "", "", "ゲイツ・ビル");
+  NameInfo name7 = CreateNameInfo("ビル", "", "ゲイツ", "");
 
   // Set the use dates for the profiles, because |MergeCJKNames()| tries to use
   // the most recent profile if there is a conflict. The ordering is
@@ -948,10 +949,10 @@ TEST_P(AutofillProfileComparatorTest, MergeCJKNames) {
   AutofillProfile p7 = CreateProfileWithName(name7);
 
   // Because |p1| is the most recent, it always wins over others.
-  MergeNamesAndExpect(p1, p2, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p3, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p4, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
-  MergeNamesAndExpect(p1, p5, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
+  MergeNamesAndExpect(p1, p2, CreateNameInfo("호", "", "이영", "이영 호"));
+  MergeNamesAndExpect(p1, p3, CreateNameInfo("호", "", "이영", "이영 호"));
+  MergeNamesAndExpect(p1, p4, CreateNameInfo("호", "", "이영", "이영 호"));
+  MergeNamesAndExpect(p1, p5, CreateNameInfo("호", "", "이영", "이영 호"));
 
   // The following tests are not applicable to the logic of the new structured
   // name. Because we consider not having a surname a valid option for the user.
@@ -962,36 +963,34 @@ TEST_P(AutofillProfileComparatorTest, MergeCJKNames) {
     // |p2| is more recent than |p3|, |p4|, and |p5|. However, it does not
     // have a surname entry (it was probably parsed with the old logic), so
     // the other profiles are used as the source for given/surname.
-    MergeNamesAndExpect(p2, p3, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
-    MergeNamesAndExpect(p2, p4, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
-    MergeNamesAndExpect(p2, p5, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
+    MergeNamesAndExpect(p2, p3, CreateNameInfo("영호", "", "이", "이영호"));
+    MergeNamesAndExpect(p2, p4, CreateNameInfo("영호", "", "이", "이영호"));
+    MergeNamesAndExpect(p2, p5, CreateNameInfo("영호", "", "이", "이영호"));
   }
   // |p3| is more recent than |p4| and |p5|.
-  MergeNamesAndExpect(p3, p4, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
-  MergeNamesAndExpect(p3, p5, CreateNameInfo(u"영호", u"", u"이", u"이영호"));
+  MergeNamesAndExpect(p3, p4, CreateNameInfo("영호", "", "이", "이영호"));
+  MergeNamesAndExpect(p3, p5, CreateNameInfo("영호", "", "이", "이영호"));
 
   // |p4| is more recent than |p5|. However, it does not have an explicit
   // full name, so use the one from |p5|.
-  MergeNamesAndExpect(p4, p5, CreateNameInfo(u"영호", u"", u"이", u"이 영호"));
+  MergeNamesAndExpect(p4, p5, CreateNameInfo("영호", "", "이", "이 영호"));
 
   // There is no conflict between |p6| and |p7|, so use the parts from both.
   MergeNamesAndExpect(p6, p7,
-                      CreateNameInfo(u"ビル", u"", u"ゲイツ", u"ゲイツ・ビル"));
+                      CreateNameInfo("ビル", "", "ゲイツ", "ゲイツ・ビル"));
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeEmailAddresses) {
   static const char kEmailA[] = "testaccount@domain.net";
-  static const char16_t kEmailA16[] = u"testaccount@domain.net";
   static const char kEmailB[] = "TestAccount@Domain.Net";
-  static const char16_t kEmailB16[] = u"TestAccount@Domain.Net";
 
   EmailInfo email_a;
-  email_a.SetRawInfo(EMAIL_ADDRESS, kEmailA16);
+  email_a.SetRawInfo(EMAIL_ADDRESS, UTF8ToUTF16(kEmailA));
   AutofillProfile profile_a = CreateProfileWithEmail(kEmailA);
   profile_a.set_use_date(AutofillClock::Now());
 
   EmailInfo email_b;
-  email_b.SetRawInfo(EMAIL_ADDRESS, kEmailB16);
+  email_b.SetRawInfo(EMAIL_ADDRESS, UTF8ToUTF16(kEmailB));
   AutofillProfile profile_b = CreateProfileWithEmail(kEmailB);
   profile_b.set_use_date(profile_a.use_date() + base::TimeDelta::FromDays(1));
 
@@ -1003,36 +1002,32 @@ TEST_P(AutofillProfileComparatorTest, MergeEmailAddresses) {
 
 TEST_P(AutofillProfileComparatorTest, MergeCompanyNames) {
   static const char kCompanyA[] = "Some Company";
-  static const char16_t kCompanyA16[] = u"Some Company";
   static const char kCompanyB[] = "SÔMÈ ÇÖMPÁÑÝ";
-  static const char16_t kCompanyB16[] = u"SÔMÈ ÇÖMPÁÑÝ";
   static const char kCompanyC[] = "SÔMÈ ÇÖMPÁÑÝ A.G.";
-  static const char16_t kCompanyC16[] = u"SÔMÈ ÇÖMPÁÑÝ A.G.";
   static const char kCompanyD[] = "1987";
-  static const char16_t kCompanyD16[] = u"1987";
 
   CompanyInfo company_a;
-  company_a.SetRawInfo(COMPANY_NAME, kCompanyA16);
+  company_a.SetRawInfo(COMPANY_NAME, UTF8ToUTF16(kCompanyA));
   AutofillProfile profile_a = CreateProfileWithCompanyName(kCompanyA);
   profile_a.set_use_date(AutofillClock::Now());
 
   // Company Name B is post_normalization identical to Company Name A. The use
   // date will be used to choose between them.
   CompanyInfo company_b;
-  company_b.SetRawInfo(COMPANY_NAME, kCompanyB16);
+  company_b.SetRawInfo(COMPANY_NAME, UTF8ToUTF16(kCompanyB));
   AutofillProfile profile_b = CreateProfileWithCompanyName(kCompanyB);
   profile_b.set_use_date(profile_a.use_date() + base::TimeDelta::FromDays(1));
 
   // Company Name C is the most complete. Even though it has the earliest use
   // date, it will be preferred to the other two.
   CompanyInfo company_c;
-  company_c.SetRawInfo(COMPANY_NAME, kCompanyC16);
+  company_c.SetRawInfo(COMPANY_NAME, UTF8ToUTF16(kCompanyC));
   AutofillProfile profile_c = CreateProfileWithCompanyName(kCompanyC);
   profile_c.set_use_date(profile_a.use_date() - base::TimeDelta::FromDays(1));
 
   // Company Name D is in the format of a birthyear, invalid and non-verified.
   CompanyInfo company_d;
-  company_d.SetRawInfo(COMPANY_NAME, kCompanyD16);
+  company_d.SetRawInfo(COMPANY_NAME, UTF8ToUTF16(kCompanyD));
   AutofillProfile profile_d = CreateProfileWithCompanyName(kCompanyD);
   profile_a.set_use_date(AutofillClock::Now());
 
@@ -1059,23 +1054,16 @@ TEST_P(AutofillProfileComparatorTest, MergeCompanyNames) {
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   static const char kPhoneA[] = "5550199";
-  static const char16_t kPhoneA16[] = u"5550199";
   static const char kPhoneB[] = "555.0199";
-  static const char16_t kPhoneB16[] = u"555.0199";
   static const char kPhoneC[] = "555-0199 ext321";
-  static const char16_t kPhoneC16[] = u"555-0199 ext321";
   static const char kPhoneD[] = "8005550199";
-  static const char16_t kPhoneD16[] = u"8005550199";
   static const char kPhoneE[] = "800-555-0199 #321";
-  static const char16_t kPhoneE16[] = u"800-555-0199 #321";
   static const char kPhoneF[] = "1-800-555-0199 #321";
-  static const char16_t kPhoneF16[] = u"1-800-555-0199 #321";
   static const char kPhoneG[] = "+1 (800) 555.0199;ext=321";
-  static const char16_t kPhoneG16[] = u"+1 (800) 555.0199;ext=321";
-  static const char16_t kMergedShortNumber[] = u"5550199";
-  static const char16_t kMergedShortNumberExt[] = u"5550199 ext. 321";
-  static const char16_t kMergedFullNumber[] = u"+1 800-555-0199";
-  static const char16_t kMergedFullNumberExt[] = u"+1 800-555-0199 ext. 321";
+  static const char kMergedShortNumber[] = "5550199";
+  static const char kMergedShortNumberExt[] = "5550199 ext. 321";
+  static const char kMergedFullNumber[] = "+1 800-555-0199";
+  static const char kMergedFullNumberExt[] = "+1 800-555-0199 ext. 321";
 
   AutofillProfile profile_a = CreateProfileWithPhoneNumber(kPhoneA);
   AutofillProfile profile_b = CreateProfileWithPhoneNumber(kPhoneB);
@@ -1086,7 +1074,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   AutofillProfile profile_g = CreateProfileWithPhoneNumber(kPhoneG);
 
   // Profile A
-  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA16);
+  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA);
   MergePhoneNumbersAndExpect(profile_a, profile_b, kMergedShortNumber);
   MergePhoneNumbersAndExpect(profile_a, profile_c, kMergedShortNumberExt);
   MergePhoneNumbersAndExpect(profile_a, profile_d, kMergedFullNumber);
@@ -1096,7 +1084,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
 
   // Profile B
   MergePhoneNumbersAndExpect(profile_b, profile_a, kMergedShortNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB16);
+  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB);
   MergePhoneNumbersAndExpect(profile_b, profile_c, kMergedShortNumberExt);
   MergePhoneNumbersAndExpect(profile_b, profile_d, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_b, profile_e, kMergedFullNumberExt);
@@ -1106,7 +1094,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   // Profile C
   MergePhoneNumbersAndExpect(profile_c, profile_a, kMergedShortNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_b, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC16);
+  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC);
   MergePhoneNumbersAndExpect(profile_c, profile_d, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_e, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_f, kMergedFullNumberExt);
@@ -1116,7 +1104,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD16);
+  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD);
   MergePhoneNumbersAndExpect(profile_d, profile_e, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_d, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_d, profile_g, kMergedFullNumberExt);
@@ -1126,7 +1114,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_e, profile_b, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_e, profile_c, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_e, profile_d, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_e, kPhoneE16);
+  MergePhoneNumbersAndExpect(profile_e, profile_e, kPhoneE);
   MergePhoneNumbersAndExpect(profile_e, profile_f, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_e, profile_g, kMergedFullNumberExt);
 
@@ -1136,7 +1124,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_f, profile_c, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_f, profile_d, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_f, profile_e, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_f, kPhoneF16);
+  MergePhoneNumbersAndExpect(profile_f, profile_f, kPhoneF);
   MergePhoneNumbersAndExpect(profile_f, profile_g, kMergedFullNumberExt);
 
   // Profile G
@@ -1146,7 +1134,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
   MergePhoneNumbersAndExpect(profile_g, profile_d, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_g, profile_e, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_g, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_g, kPhoneG16);
+  MergePhoneNumbersAndExpect(profile_g, profile_g, kPhoneG);
 }
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
@@ -1154,15 +1142,11 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
   const AutofillType kCountry(ADDRESS_HOME_COUNTRY);
 
   static const char kPhoneA[] = "+49492180185611";
-  static const char16_t kPhoneA16[] = u"+49492180185611";
   static const char kPhoneB[] = "+49 4921 801 856-11";
-  static const char16_t kPhoneB16[] = u"+49 4921 801 856-11";
   static const char kPhoneC[] = "+49 4921 8018 5611;ext=22";
-  static const char16_t kPhoneC16[] = u"+49 4921 8018 5611;ext=22";
   static const char kPhoneD[] = "04921 80185611";  // National Format.
-  static const char16_t kPhoneD16[] = u"04921 80185611";  // National Format.
-  static const char16_t kMergedFullNumber[] = u"+49 4921 80185611";
-  static const char16_t kMergedFullNumberExt[] = u"+49 4921 80185611 ext. 22";
+  static const char kMergedFullNumber[] = "+49 4921 80185611";
+  static const char kMergedFullNumberExt[] = "+49 4921 80185611 ext. 22";
 
   AutofillProfile profile_a = CreateProfileWithPhoneNumber(kPhoneA);
   AutofillProfile profile_b = CreateProfileWithPhoneNumber(kPhoneB);
@@ -1175,25 +1159,25 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
   profile_d.SetInfo(kCountry, kGermany, kLocale);
 
   // Profile A
-  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA16);
+  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA);
   MergePhoneNumbersAndExpect(profile_a, profile_b, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_a, profile_c, kMergedFullNumberExt);
 
   // Profile B
   MergePhoneNumbersAndExpect(profile_b, profile_a, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB16);
+  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB);
   MergePhoneNumbersAndExpect(profile_b, profile_c, kMergedFullNumberExt);
 
   // Profile C
   MergePhoneNumbersAndExpect(profile_c, profile_a, kMergedFullNumberExt);
   MergePhoneNumbersAndExpect(profile_c, profile_b, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC16);
+  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC);
 
   // Profile D
   MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedFullNumber);
   MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD16);
+  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD);
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeAddresses) {

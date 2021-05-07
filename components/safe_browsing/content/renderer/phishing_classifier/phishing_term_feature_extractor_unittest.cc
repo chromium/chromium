@@ -263,15 +263,19 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
 
   // Chinese translation of the phrase "hello goodbye hello goodbye". This tests
   // that we can correctly separate terms in languages that don't use spaces.
-  page_text = u"你好再见你好再见";
+  page_text = base::UTF8ToUTF16(
+      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81"
+      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81");
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("你好"));
+                                      std::string("\xe4\xbd\xa0\xe5\xa5\xbd"));
   expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("再见"));
+                                      std::string("\xe5\x86\x8d\xe8\xa7\x81"));
   expected_shingle_hashes.clear();
   expected_shingle_hashes.insert(
-      MurmurHash3String("你好 再见 你好 再见 ", kMurmurHash3Seed));
+      MurmurHash3String("\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 "
+                        "\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 ",
+                        kMurmurHash3Seed));
 
   features.Clear();
   shingle_hashes.clear();

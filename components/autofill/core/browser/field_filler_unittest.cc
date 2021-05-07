@@ -36,7 +36,9 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 #include "third_party/libaddressinput/src/cpp/test/testdata_source.h"
 
+using base::ASCIIToUTF16;
 using base::StringToInt;
+using base::UTF8ToUTF16;
 
 namespace autofill {
 
@@ -134,10 +136,10 @@ void TestFillingInvalidFields(const std::u16string& state,
 }
 
 struct CreditCardTestCase {
-  std::u16string card_number_;
+  std::string card_number_;
   size_t total_splits_;
   std::vector<int> splits_;
-  std::vector<std::u16string> expected_results_;
+  std::vector<std::string> expected_results_;
 };
 
 // Returns the offset to be set within the credit card number field.
@@ -537,23 +539,23 @@ TEST_F(AutofillFieldFillerTest, FillFormField_Validity_CountryEmpty) {
 struct AutofillFieldFillerTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
-  std::u16string expected_value;
+  std::string expected_value;
 
   AutofillFieldFillerTestCase(HtmlFieldType field_type,
                               size_t field_max_length,
-                              std::u16string expected_value)
+                              std::string expected_value)
       : field_type(field_type),
         field_max_length(field_max_length),
         expected_value(expected_value) {}
 };
 
 struct AutofillPhoneFieldFillerTestCase : public AutofillFieldFillerTestCase {
-  std::u16string phone_home_whole_number_value;
+  std::string phone_home_whole_number_value;
 
   AutofillPhoneFieldFillerTestCase(HtmlFieldType field_type,
                                    size_t field_max_length,
-                                   std::u16string expected_value,
-                                   std::u16string phone_home_whole_number_value)
+                                   std::string expected_value,
+                                   std::string phone_home_whole_number_value)
       : AutofillFieldFillerTestCase(field_type,
                                     field_max_length,
                                     expected_value),
@@ -574,10 +576,10 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
 
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     test_case.phone_home_whole_number_value);
+                     ASCIIToUTF16(test_case.phone_home_whole_number_value));
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(test_case.expected_value, field.value);
+  EXPECT_EQ(ASCIIToUTF16(test_case.expected_value), field.value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -586,43 +588,43 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Filling a prefix type field should just fill the prefix.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_PREFIX,
-                                         /*field_max_length=*/0, u"555",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/0, "555",
+                                         "+15145554578"},
         // Filling a suffix type field with a phone number of 7 digits should
         // just fill the suffix.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_SUFFIX,
-                                         /*field_max_length=*/0, u"4578",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/0, "4578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 3 should fill only
         // the prefix.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL,
-                                         /*field_max_length=*/3, u"555",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/3, "555",
+                                         "+15145554578"},
         // TODO(crbug.com/581485): There should be a test case where the full
         // number is requested (HTML_TYPE_TEL) but a field_max_length of 3 would
         // fill the prefix.
         // Filling a phone type field with a max length of 4 should fill only
         // the suffix.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
-                                         /*field_max_length=*/4, u"4578",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/4, "4578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 10 with a phone
         // number including the country code should fill the phone number
         // without the country code.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
-                                         /*field_max_length=*/10, u"5145554578",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/10, "5145554578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 5 with a phone number
         // should fill with the last 5 digits of that phone number.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
-                                         /*field_max_length=*/5, u"54578",
-                                         u"+15145554578"},
+                                         /*field_max_length=*/5, "54578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 10 with a phone
         // number including the country code should fill the phone number
         // without the country code.
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
-                                         /*field_max_length=*/10, u"123456789",
-                                         u"+886123456789"}));
+                                         /*field_max_length=*/10, "123456789",
+                                         "+886123456789"}));
 
 class ExpirationYearTest
     : public testing::TestWithParam<AutofillFieldFillerTestCase> {
@@ -641,7 +643,7 @@ TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   card.SetExpirationDateFromString(u"12/2023");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(test_case.expected_value, field.value);
+  EXPECT_EQ(ASCIIToUTF16(test_case.expected_value), field.value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -652,37 +654,37 @@ INSTANTIATE_TEST_SUITE_P(
         // 2 digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 1.
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR,
-                                    /* default value */ 0, u"23"},
+                                    /* default value */ 0, "23"},
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 2,
-                                    u"23"},
+                                    "23"},
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 12,
-                                    u"23"},
+                                    "23"},
         // A field predicted as a 2 digit expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 1,
-                                    u"3"},
+                                    "3"},
         // A field predicted as a 4 digit expiration year should fill the 4
         // digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 3 .
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR,
-                                    /* default value */ 0, u"2023"},
+                                    /* default value */ 0, "2023"},
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 4,
-                                    u"2023"},
+                                    "2023"},
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 12,
-                                    u"2023"},
+                                    "2023"},
         // A field predicted as a 4 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has a max length of 2.
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 2,
-                                    u"23"},
+                                    "23"},
         // A field predicted as a 4 digits expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
         AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 1,
-                                    u"3"}));
+                                    "3"}));
 
 struct FillUtilExpirationDateTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
-  std::u16string expected_value;
+  std::string expected_value;
   bool expected_response;
 };
 
@@ -704,7 +706,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   bool response =
       filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(test_case.expected_value, field.value);
+  EXPECT_EQ(ASCIIToUTF16(test_case.expected_value), field.value);
   EXPECT_EQ(response, test_case.expected_response);
 }
 
@@ -719,30 +721,30 @@ INSTANTIATE_TEST_SUITE_P(
         // 7: Use format MM/YYYY
         FillUtilExpirationDateTestCase{
             HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-            /* default value */ 0, u"03/22", true},
+            /* default value */ 0, "03/22", true},
         // Unsupported max lengths of 1-3, fail
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 1, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 1, "", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 2, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 2, "", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 3, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 3, "", false},
         // A max length of 4 indicates a format of MMYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 4, u"0322", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 4, "0322", true},
         // A max length of 6 indicates a format of MMYYYY, the 21st century is
         // assumed.
         // Desired case of proper max length >= 5
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, u"03/22", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, "03/22", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 6, u"032022", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 6, "032022", true},
         // A max length of 7 indicates a format of MM/YYYY, the 21st century is
         // assumed.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 7, u"03/2022", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 7, "03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 12, u"03/22", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 12, "03/22", true},
 
         // A field predicted as a expiration date w/ 4 digit year should fill
         // with a format of MM/YYYY unless it has max-length of:
@@ -751,29 +753,28 @@ INSTANTIATE_TEST_SUITE_P(
         // 6: Use format MMYYYY
         FillUtilExpirationDateTestCase{
             HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-            /* default value */ 0, u"03/2022", true},
+            /* default value */ 0, "03/2022", true},
         // Unsupported max lengths of 1-3, fail
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 1, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 1, "", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 2, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 2, "", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 3, u"", false},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 3, "", false},
         // A max length of 4 indicates a format of MMYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 4, u"0322", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 4, "0322", true},
         // A max length of 5 indicates a format of MM/YY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, "03/22", true},
         // A max length of 6 indicates a format of MMYYYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 6, u"032022", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 6, "032022", true},
         // Desired case of proper max length >= 7
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 7, u"03/2022", true},
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 7, "03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022",
-            true}));
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, "03/2022", true}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
   std::vector<const char*> kOptions = {
@@ -822,9 +823,9 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
 
 struct FillSelectTestCase {
   std::vector<const char*> select_values;
-  const char16_t* input_value;
-  const char16_t* expected_value_without_normalization;
-  const char16_t* expected_value_with_normalization = nullptr;
+  const char* input_value;
+  const char* expected_value_without_normalization;
+  const char* expected_value_with_normalization = nullptr;
 };
 
 class AutofillSelectWithStatesTest
@@ -879,17 +880,19 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
 
   // Without a normalizer.
   AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
+  address.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16(test_case.input_value));
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string());
   // nullptr means we expect them not to match without normalization.
   if (test_case.expected_value_without_normalization != nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
+    EXPECT_EQ(UTF8ToUTF16(test_case.expected_value_without_normalization),
+              field.value);
   }
 
   // With a normalizer.
   AutofillProfile canadian_address = test::GetFullCanadianProfile();
-  canadian_address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
+  canadian_address.SetRawInfo(ADDRESS_HOME_STATE,
+                              UTF8ToUTF16(test_case.input_value));
   // Fill a first time without loading the rules for the region.
   FieldFiller canadian_filler(/*app_locale=*/"en-US", normalizer());
   canadian_filler.FillFormField(field, &canadian_address, &field,
@@ -897,17 +900,20 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   // If the expectation with normalization is nullptr, this means that the same
   // result than without a normalizer is expected.
   if (test_case.expected_value_with_normalization == nullptr) {
-    EXPECT_EQ(test_case.expected_value_without_normalization, field.value);
+    EXPECT_EQ(UTF8ToUTF16(test_case.expected_value_without_normalization),
+              field.value);
   } else {
     // We needed a normalizer with loaded rules. The first fill should have
     // failed.
-    EXPECT_NE(test_case.expected_value_with_normalization, field.value);
+    EXPECT_NE(UTF8ToUTF16(test_case.expected_value_with_normalization),
+              field.value);
 
     // Load the rules and try again.
     normalizer()->LoadRulesForRegion("CA");
     canadian_filler.FillFormField(field, &canadian_address, &field,
                                   /*cvc=*/std::u16string());
-    EXPECT_EQ(test_case.expected_value_with_normalization, field.value);
+    EXPECT_EQ(UTF8ToUTF16(test_case.expected_value_with_normalization),
+              field.value);
   }
 }
 
@@ -916,54 +922,54 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillSelectWithStatesTest,
     testing::Values(
         // Filling the abbreviation.
-        FillSelectTestCase{{"Alabama", "California"}, u"CA", u"California"},
+        FillSelectTestCase{{"Alabama", "California"}, "CA", "California"},
         // Attempting to fill the full name in a select full of abbreviations.
-        FillSelectTestCase{{"AL", "CA"}, u"California", u"CA"},
+        FillSelectTestCase{{"AL", "CA"}, "California", "CA"},
         // Different case and diacritics.
-        FillSelectTestCase{{"QUÉBEC", "ALBERTA"}, u"Quebec", u"QUÉBEC"},
+        FillSelectTestCase{{"QUÉBEC", "ALBERTA"}, "Quebec", "QUÉBEC"},
         // The value and the field options are different but normalize to the
         // same (NB).
         FillSelectTestCase{{"Nouveau-Brunswick", "Alberta"},
-                           u"New Brunswick",
+                           "New Brunswick",
                            nullptr,
-                           u"Nouveau-Brunswick"},
-        FillSelectTestCase{{"NB", "AB"}, u"New Brunswick", nullptr, u"NB"},
-        FillSelectTestCase{{"NB", "AB"}, u"Nouveau-Brunswick", nullptr, u"NB"},
+                           "Nouveau-Brunswick"},
+        FillSelectTestCase{{"NB", "AB"}, "New Brunswick", nullptr, "NB"},
+        FillSelectTestCase{{"NB", "AB"}, "Nouveau-Brunswick", nullptr, "NB"},
         FillSelectTestCase{{"Nouveau-Brunswick", "Alberta"},
-                           u"NB",
+                           "NB",
                            nullptr,
-                           u"Nouveau-Brunswick"},
+                           "Nouveau-Brunswick"},
         FillSelectTestCase{{"New Brunswick", "Alberta"},
-                           u"NB",
+                           "NB",
                            nullptr,
-                           u"New Brunswick"},
+                           "New Brunswick"},
         // Inexact state names.
         FillSelectTestCase{
             {"SC - South Carolina", "CA - California", "NC - North Carolina"},
-            u"California",
-            u"CA - California"},
+            "California",
+            "CA - California"},
         // Don't accidentally match "Virginia" to "West Virginia".
         FillSelectTestCase{
             {"WV - West Virginia", "VA - Virginia", "NV - North Virginia"},
-            u"Virginia",
-            u"VA - Virginia"},
+            "Virginia",
+            "VA - Virginia"},
         // Do accidentally match "Virginia" to "West Virginia".
         // TODO(crbug.com/624770): This test should not pass, but it does
         // because "Virginia" is a substring of "West Virginia".
         FillSelectTestCase{{"WV - West Virginia", "TX - Texas"},
-                           u"Virginia",
-                           u"WV - West Virginia"},
+                           "Virginia",
+                           "WV - West Virginia"},
         // Tests that substring matches work for full state names (a full token
         // match isn't required). Also tests that matches work for states with
         // whitespace in the middle.
         FillSelectTestCase{{"California.", "North Carolina."},
-                           u"North Carolina",
-                           u"North Carolina."},
+                           "North Carolina",
+                           "North Carolina."},
         FillSelectTestCase{{"NC - North Carolina", "CA - California"},
-                           u"CA",
-                           u"CA - California"},
+                           "CA",
+                           "CA - California"},
         // These are not states.
-        FillSelectTestCase{{"NCNCA", "SCNCA"}, u"NC", u""}));
+        FillSelectTestCase{{"NCNCA", "SCNCA"}, "NC", ""}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
   AutofillField field;
@@ -1272,12 +1278,16 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextArea) {
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   field.set_heuristic_type(ADDRESS_HOME_STREET_ADDRESS);
 
-  std::u16string value = u"123 Fake St.\nApt. 42";
+  std::u16string value =
+      u"123 Fake St.\n"
+      u"Apt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
   EXPECT_EQ(value, field.value);
 
-  std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
+  std::u16string ja_value = UTF8ToUTF16(
+      "桜丘町26-1\n"
+      "セルリアンタワー6階");
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
                      "ja-JP");
   address()->set_language_code("ja-JP");
@@ -1291,12 +1301,16 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
   field.set_server_type(ADDRESS_HOME_STREET_ADDRESS);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
-  std::u16string value = u"123 Fake St.\nApt. 42";
+  std::u16string value =
+      u"123 Fake St.\n"
+      u"Apt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
   EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);
 
-  std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
+  std::u16string ja_value = UTF8ToUTF16(
+      "桜丘町26-1\n"
+      "セルリアンタワー6階");
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
                      "ja-JP");
   address()->set_language_code("ja-JP");
@@ -1322,11 +1336,13 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithoutSplits) {
 TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
   // Case 2: card number broken up into four equal groups, of length 4.
   CreditCardTestCase test;
-  test.card_number_ = u"5187654321098765";
+  test.card_number_ = "5187654321098765";
   test.total_splits_ = 4;
   int splits[] = {4, 4, 4, 4};
   test.splits_ = std::vector<int>(splits, splits + base::size(splits));
-  test.expected_results_ = {u"5187", u"6543", u"2109", u"8765"};
+  std::string results[] = {"5187", "6543", "2109", "8765"};
+  test.expected_results_ =
+      std::vector<std::string>(results, results + base::size(results));
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   for (size_t i = 0; i < test.total_splits_; ++i) {
@@ -1336,12 +1352,12 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
     cc_number_part.set_credit_card_number_offset(4 * i);
 
     // Fill with a card-number; should fill just the card_number_part.
-    credit_card()->SetNumber(test.card_number_);
+    credit_card()->SetNumber(ASCIIToUTF16(test.card_number_));
     filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
                          /*cvc=*/std::u16string());
 
     // Verify for expected results.
-    EXPECT_EQ(test.expected_results_[i],
+    EXPECT_EQ(ASCIIToUTF16(test.expected_results_[i]),
               cc_number_part.value.substr(0, cc_number_part.max_length));
     EXPECT_EQ(4 * i, cc_number_part.credit_card_number_offset());
   }
@@ -1350,23 +1366,25 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
   AutofillField cc_number_full;
   cc_number_full.set_heuristic_type(CREDIT_CARD_NUMBER);
 
-  credit_card()->SetNumber(test.card_number_);
+  credit_card()->SetNumber(ASCIIToUTF16(test.card_number_));
   filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
                        /*cvc=*/std::u16string());
 
   // Verify for expected results.
-  EXPECT_EQ(test.card_number_, cc_number_full.value);
+  EXPECT_EQ(ASCIIToUTF16(test.card_number_), cc_number_full.value);
 }
 
 TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
   // Case 3: card with 15 digits number, broken up into three unequal groups, of
   // lengths 4, 6, and 5.
   CreditCardTestCase test;
-  test.card_number_ = u"423456789012345";
+  test.card_number_ = "423456789012345";
   test.total_splits_ = 3;
   int splits[] = {4, 6, 5};
   test.splits_ = std::vector<int>(splits, splits + base::size(splits));
-  test.expected_results_ = {u"4234", u"567890", u"12345"};
+  std::string results[] = {"4234", "567890", "12345"};
+  test.expected_results_ =
+      std::vector<std::string>(results, results + base::size(results));
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   // Start executing test cases to verify parts and full credit card number.
@@ -1377,12 +1395,12 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
     cc_number_part.set_credit_card_number_offset(GetNumberOffset(i, test));
 
     // Fill with a card-number; should fill just the card_number_part.
-    credit_card()->SetNumber(test.card_number_);
+    credit_card()->SetNumber(ASCIIToUTF16(test.card_number_));
     filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
                          /*cvc=*/std::u16string());
 
     // Verify for expected results.
-    EXPECT_EQ(test.expected_results_[i],
+    EXPECT_EQ(ASCIIToUTF16(test.expected_results_[i]),
               cc_number_part.value.substr(0, cc_number_part.max_length));
     EXPECT_EQ(GetNumberOffset(i, test),
               cc_number_part.credit_card_number_offset());
@@ -1391,12 +1409,12 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
   // Verify that full card-number shall get fill properly as well.
   AutofillField cc_number_full;
   cc_number_full.set_heuristic_type(CREDIT_CARD_NUMBER);
-  credit_card()->SetNumber(test.card_number_);
+  credit_card()->SetNumber(ASCIIToUTF16(test.card_number_));
   filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
                        /*cvc=*/std::u16string());
 
   // Verify for expected results.
-  EXPECT_EQ(test.card_number_, cc_number_full.value);
+  EXPECT_EQ(ASCIIToUTF16(test.card_number_), cc_number_full.value);
 }
 
 TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
@@ -1446,8 +1464,8 @@ TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
 struct FillStateTextTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
-  std::u16string value_to_fill;
-  std::u16string expected_value;
+  std::string value_to_fill;
+  std::string expected_value;
   bool should_fill;
 };
 
@@ -1465,12 +1483,12 @@ TEST_P(AutofillStateTextTest, FillStateText) {
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
+  address.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16(test_case.value_to_fill));
   bool has_filled =
       filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string());
 
   EXPECT_EQ(test_case.should_fill, has_filled);
-  EXPECT_EQ(test_case.expected_value, field.value);
+  EXPECT_EQ(ASCIIToUTF16(test_case.expected_value), field.value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1481,28 +1499,28 @@ INSTANTIATE_TEST_SUITE_P(
         // should
         // fill the state value as is.
         FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, /* default value */ 0,
-                              u"New York", u"New York", true},
+                              "New York", "New York", true},
         FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, /* default value */ 0,
-                              u"NY", u"NY", true},
+                              "NY", "NY", true},
         // Filling a state to a text field with a maxlength value equal to the
         // value's length should fill the state value as is.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 8, u"New York",
-                              u"New York", true},
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 8, "New York",
+                              "New York", true},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length but higher than the value's abbreviation should fill
         // the state abbreviation.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, u"New York", u"NY",
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, "New York", "NY",
                               true},
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, u"NY", u"NY", true},
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, "NY", "NY", true},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length and the value's abbreviation should not fill at all.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, u"New York", u"",
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, "New York", "",
                               false},
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, u"NY", u"", false},
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, "NY", "", false},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length and that has no associated abbreviation should not
         // fill at all.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 3, u"Quebec", u"",
+        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 3, "Quebec", "",
                               false}));
 
 // Tests that the correct option is chosen in the selection box when one of the

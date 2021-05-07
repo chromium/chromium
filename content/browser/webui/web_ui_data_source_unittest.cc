@@ -20,7 +20,7 @@ const int kDummyDefaultResourceId = 456;
 const int kDummyResourceId = 789;
 const int kDummyJSResourceId = 790;
 
-const char16_t kDummyString[] = u"foo";
+const char kDummyString[] = "foo";
 const char kDummyDefaultResource[] = "<html>foo</html>";
 const char kDummyResource[] = "<html>blah</html>";
 const char kDummyJSResource[] = "export const bar = 5;";
@@ -31,7 +31,7 @@ class TestClient : public TestContentClient {
 
   std::u16string GetLocalizedString(int message_id) override {
     if (message_id == kDummyStringId)
-      return kDummyString;
+      return base::UTF8ToUTF16(kDummyString);
     return std::u16string();
   }
 

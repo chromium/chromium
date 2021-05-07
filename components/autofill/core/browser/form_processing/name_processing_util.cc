@@ -28,7 +28,7 @@ constexpr int kMinCommonNameAffixLength = 3;
 constexpr int kMinCommonNameLongPrefixLength = 16;
 // Regular expression for checking if |parseable_name| is valid after stripping
 // affixes.
-constexpr char16_t kParseableNameValidationRe[] = u"\\D";
+constexpr char kParseableNameValidationRe[] = "\\D";
 
 using NamePieces = std::vector<base::StringPiece16>;
 using OptionalNamePieces = base::Optional<NamePieces>;
@@ -85,7 +85,7 @@ size_t FindLongestCommonPrefixLengthInStringsWithMinimalLength(
 // is the |autofill::kParseableNameValidationRe| regex.
 bool IsValidParseableName(const base::StringPiece16 parseable_name) {
   static const std::u16string kParseableNameValidationPattern =
-      kParseableNameValidationRe;
+      base::UTF8ToUTF16(kParseableNameValidationRe);
   return MatchesPattern(parseable_name, kParseableNameValidationPattern);
 }
 

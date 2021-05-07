@@ -290,14 +290,14 @@ TEST(AXTextUtils, GetWordStartOffsetsMalformedInputTest) {
 }
 
 TEST(AXTextUtils, GetSentenceStartOffsetsBasicTest) {
-  const std::u16string text =
-      u"This is the first sentence. This is the second sentence";
+  const std::u16string text = base::UTF8ToUTF16(
+      "This is the first sentence. This is the second sentence");
   EXPECT_THAT(GetSentenceStartOffsets(text), testing::ElementsAre(0, 28));
 }
 
 TEST(AXTextUtils, GetSentenceEndOffsetsBasicTest) {
-  const std::u16string text =
-      u"This is the first sentence. This is the second sentence";
+  const std::u16string text = base::UTF8ToUTF16(
+      "This is the first sentence. This is the second sentence");
   EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(28, 55));
 }
 

@@ -29,7 +29,7 @@
 
 namespace {
 
-const char16_t kProfileTestName[] = u"profile_test_name";
+const char kProfileTestName[] = "profile_test_name";
 
 std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
                                                     Profile::Delegate* delegate,
@@ -165,11 +165,12 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
+  std::u16string kProfileTestName16 = base::UTF8ToUTF16(kProfileTestName);
 
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, kProfileTestName, kTestIcon,
+          profile(), account_info.account_id, kProfileTestName16, kTestIcon,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), loop.QuitClosure()));
@@ -200,7 +201,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   ASSERT_TRUE(entry);
   ASSERT_EQ(entry->IsGuest(), use_guest_profile());
   if (!use_guest_profile()) {
-    EXPECT_EQ(kProfileTestName, entry->GetLocalProfileName());
+    EXPECT_EQ(kProfileTestName16, entry->GetLocalProfileName());
     EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
   }
 }

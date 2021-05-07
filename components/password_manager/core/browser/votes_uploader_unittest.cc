@@ -374,8 +374,8 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_AllAsciiCharacters) {
   FormStructure form_structure(form);
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.GeneratePasswordAttributesVote(
-      u"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
-      u"stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+      base::UTF8ToUTF16("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
+                        "stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"),
       &form_structure);
   base::Optional<std::pair<PasswordAttribute, bool>> vote =
       form_structure.get_password_attributes_vote();
@@ -386,13 +386,14 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
   // Checks that password attributes vote is not generated if the password has
   // non-ascii characters.
   for (const auto* password :
-       {u"пароль1", u"パスワード", u"münchen", u"סיסמה-A", u"Σ-12345",
-        u"գաղտնաբառըTTT", u"Slaptažodis", u"密碼", u"كلمهالسر", u"mậtkhẩu!",
-        u"ລະຫັດຜ່ານ-l", u"စကားဝှက်ကို3", u"პაროლი", u"पारण शब्द"}) {
+       {"пароль1", "パスワード", "münchen", "סיסמה-A", "Σ-12345",
+        "գաղտնաբառըTTT", "Slaptažodis", "密碼", "كلمهالسر", "mậtkhẩu!",
+        "ລະຫັດຜ່ານ-l", "စကားဝှက်ကို3", "პაროლი", "पारण शब्द"}) {
     FormData form;
     FormStructure form_structure(form);
     VotesUploader votes_uploader(&client_, true);
-    votes_uploader.GeneratePasswordAttributesVote(password, &form_structure);
+    votes_uploader.GeneratePasswordAttributesVote(base::UTF8ToUTF16(password),
+                                                  &form_structure);
     base::Optional<std::pair<PasswordAttribute, bool>> vote =
         form_structure.get_password_attributes_vote();
 

@@ -40,9 +40,7 @@ namespace {
 const int kDefaultCardExpMonth = 8;
 const int kDefaultCardExpYear = 2087;
 const char kDefaultCardLastFour[] = "1234";
-const char16_t kDefaultCardLastFour16[] = u"1234";
 const char kDefaultCardName[] = "Patrick Valenzuela";
-const char16_t kDefaultCardName16[] = u"Patrick Valenzuela";
 const sync_pb::WalletMaskedCreditCard_WalletCardType kDefaultCardType =
     sync_pb::WalletMaskedCreditCard::AMEX;
 
@@ -407,11 +405,17 @@ sync_pb::SyncEntity CreateDefaultSyncPaymentsCustomerData() {
 }
 
 CreditCard GetDefaultCreditCard() {
-  CreditCard card(CreditCard::MASKED_SERVER_CARD, kDefaultCardID);
+  return GetCreditCard(kDefaultCardID, kDefaultCardLastFour);
+}
+
+autofill::CreditCard GetCreditCard(const std::string& name,
+                                   const std::string& last_four) {
+  CreditCard card(CreditCard::MASKED_SERVER_CARD, name);
   card.SetExpirationMonth(kDefaultCardExpMonth);
   card.SetExpirationYear(kDefaultCardExpYear);
-  card.SetNumber(kDefaultCardLastFour16);
-  card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL, kDefaultCardName16);
+  card.SetNumber(base::UTF8ToUTF16(last_four));
+  card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
+                  base::UTF8ToUTF16(kDefaultCardName));
   card.SetServerStatus(CreditCard::OK);
   card.SetNetworkForMaskedCard(autofill::kAmericanExpressCard);
   card.set_billing_address_id(kDefaultBillingAddressID);
@@ -485,11 +489,11 @@ sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData() {
 void ExpectDefaultCreditCardValues(const CreditCard& card) {
   EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
   EXPECT_EQ(kDefaultCardID, card.server_id());
-  EXPECT_EQ(kDefaultCardLastFour16, card.LastFourDigits());
+  EXPECT_EQ(base::UTF8ToUTF16(kDefaultCardLastFour), card.LastFourDigits());
   EXPECT_EQ(autofill::kAmericanExpressCard, card.network());
   EXPECT_EQ(kDefaultCardExpMonth, card.expiration_month());
   EXPECT_EQ(kDefaultCardExpYear, card.expiration_year());
-  EXPECT_EQ(kDefaultCardName16,
+  EXPECT_EQ(base::UTF8ToUTF16(kDefaultCardName),
             card.GetRawInfo(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(kDefaultBillingAddressID, card.billing_address_id());
 }

@@ -175,8 +175,9 @@ TEST(AddressFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
       LabelFormatter::Create(profiles, "pt-BR", NAME_FIRST, GetFieldTypes());
 
   EXPECT_THAT(formatter->GetLabels(),
-              ElementsAre(u"Av. Pedro Álvares Cabral, 1301, Vila Mariana, São "
-                          u"Paulo-SP, 04094-050"));
+              ElementsAre(base::UTF8ToUTF16(
+                  "Av. Pedro Álvares Cabral, 1301, Vila Mariana, São "
+                  "Paulo-SP, 04094-050")));
 }
 
 TEST(AddressFormLabelFormatterTest, GetLabelsForFormWithoutName) {

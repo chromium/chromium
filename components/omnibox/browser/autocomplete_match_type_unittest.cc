@@ -74,6 +74,7 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
   ASSERT_TRUE(ParseAnswer(answer_json, &answer));
   match.answer = answer;
 
-  EXPECT_EQ(kSearch + u", answer, sunny with a chance of hail, 4 of 6",
+  EXPECT_EQ(kSearch + base::UTF8ToUTF16(
+                          ", answer, sunny with a chance of hail, 4 of 6"),
             AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
 }

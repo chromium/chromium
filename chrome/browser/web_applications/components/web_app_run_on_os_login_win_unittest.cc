@@ -25,7 +25,7 @@ namespace web_app {
 
 namespace {
 
-constexpr char16_t kAppTitle[] = u"app";
+constexpr char kAppTitle[] = {"app"};
 }  // namespace
 
 class WebAppRunOnOsLoginWinTest : public WebAppTest {
@@ -42,7 +42,7 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
     shortcut_info->extension_id = "app-id";
-    shortcut_info->title = kAppTitle;
+    shortcut_info->title = base::UTF8ToUTF16(kAppTitle);
     shortcut_info->profile_path = profile()->GetPath();
 
     gfx::ImageFamily image_family;
@@ -64,7 +64,7 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 
   std::vector<base::FilePath> GetShortcuts() {
     return internals::FindAppShortcutsByProfileAndTitle(
-        GetStartupFolder(), profile()->GetPath(), kAppTitle);
+        GetStartupFolder(), profile()->GetPath(), base::UTF8ToUTF16(kAppTitle));
   }
 
   void VerifyShortcutCreated() {
@@ -116,7 +116,8 @@ TEST_F(WebAppRunOnOsLoginWinTest, Unregister) {
   VerifyShortcutCreated();
 
   internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
-                                    profile()->GetPath(), kAppTitle);
+                                    profile()->GetPath(),
+                                    base::UTF8ToUTF16(kAppTitle));
   VerifyShortcutDeleted();
 }
 

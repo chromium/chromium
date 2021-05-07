@@ -3783,7 +3783,6 @@ TEST_F(AuthenticatorImplTest, CredBlob) {
 }
 
 static constexpr char kTestPIN[] = "1234";
-static constexpr char16_t kTestPIN16[] = u"1234";
 
 class UVTestAuthenticatorClientDelegate
     : public AuthenticatorRequestClientDelegate {
@@ -3808,7 +3807,8 @@ class UVTestAuthenticatorClientDelegate
     *collected_pin_ = true;
     *min_pin_length_ = options.min_pin_length;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(provide_pin_cb), kTestPIN16));
+        FROM_HERE,
+        base::BindOnce(std::move(provide_pin_cb), base::UTF8ToUTF16(kTestPIN)));
   }
 
   void StartBioEnrollment(base::OnceClosure next_callback) override {
@@ -3933,7 +3933,7 @@ using PINError = device::pin::PINEntryError;
 // the PIN to answer with.
 struct PINExpectation {
   PINReason reason;
-  std::u16string pin;
+  std::string pin;
   int attempts;
   uint32_t min_pin_length = device::kMinPinLength;
   PINError error = PINError::kNoError;
@@ -3969,11 +3969,12 @@ class PINTestAuthenticatorRequestDelegate
     DCHECK_EQ(expected_.front().min_pin_length, options.min_pin_length);
     DCHECK_EQ(expected_.front().reason, options.reason);
     DCHECK_EQ(expected_.front().error, options.error);
-    std::u16string pin = std::move(expected_.front().pin);
+    std::string pin = std::move(expected_.front().pin);
     expected_.pop_front();
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(provide_pin_cb), std::move(pin)));
+        FROM_HERE, base::BindOnce(std::move(provide_pin_cb),
+                                  base::UTF8ToUTF16(std::move(pin))));
   }
 
   void FinishCollectToken() override {}
@@ -4159,13 +4160,12 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
 
               case kSetPIN:
                 // A single PIN prompt to set a PIN is expected.
-                test_client_.expected = {{PINReason::kSet, kTestPIN16}};
+                test_client_.expected = {{PINReason::kSet, kTestPIN}};
                 break;
 
               case kUsePIN:
                 // A single PIN prompt to get the PIN is expected.
-                test_client_.expected = {
-                    {PINReason::kChallenge, kTestPIN16, 8}};
+                test_client_.expected = {{PINReason::kChallenge, kTestPIN, 8}};
                 break;
 
               default:
@@ -4210,10 +4210,10 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialSoftLock) {
   virtual_device_factory_->mutable_state()->pin_retries =
       device::kMaxPinRetries;
 
-  test_client_.expected = {{PINReason::kChallenge, u"wrong", 8},
-                           {PINReason::kChallenge, u"wrong", 7,
+  test_client_.expected = {{PINReason::kChallenge, "wrong", 8},
+                           {PINReason::kChallenge, "wrong", 7,
                             device::kMinPinLength, PINError::kWrongPIN},
-                           {PINReason::kChallenge, u"wrong", 6,
+                           {PINReason::kChallenge, "wrong", 6,
                             device::kMinPinLength, PINError::kWrongPIN}};
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
@@ -4228,7 +4228,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHardLock) {
   virtual_device_factory_->mutable_state()->pin = kTestPIN;
   virtual_device_factory_->mutable_state()->pin_retries = 1;
 
-  test_client_.expected = {{PINReason::kChallenge, u"wrong", 1}};
+  test_client_.expected = {{PINReason::kChallenge, "wrong", 1}};
   EXPECT_EQ(AuthenticatorMakeCredential().status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_EQ(0, virtual_device_factory_->mutable_state()->pin_retries);
@@ -4243,8 +4243,8 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialWrongPINFirst) {
       device::kMaxPinRetries;
 
   // Test that we can successfully get a PIN token after a failure.
-  test_client_.expected = {{PINReason::kChallenge, u"wrong", 8},
-                           {PINReason::kChallenge, kTestPIN16, 7,
+  test_client_.expected = {{PINReason::kChallenge, "wrong", 8},
+                           {PINReason::kChallenge, kTestPIN, 7,
                             device::kMinPinLength, PINError::kWrongPIN}};
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(static_cast<int>(device::kMaxPinRetries),
@@ -4262,7 +4262,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialSkipPINTouch) {
   virtual_device_factory_->mutable_state()->pin_retries =
       device::kMaxPinRetries;
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(taps, 1);
 }
@@ -4293,7 +4293,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialDontSkipPINTouch) {
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(taps, 2);
 }
@@ -4312,7 +4312,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
   virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->mutable_state()->pin = kTestPIN;
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
 
   MakeCredentialResult result =
       AuthenticatorMakeCredential(make_credential_options(
@@ -4365,7 +4365,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialMinPINLengthNewPIN) {
   config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
   virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->mutable_state()->min_pin_length = 6;
-  test_client_.expected = {{PINReason::kSet, u"123456", 0, 6}};
+  test_client_.expected = {{PINReason::kSet, "123456", 0, 6}};
 
   MakeCredentialResult result =
       AuthenticatorMakeCredential(make_credential_options());
@@ -4385,7 +4385,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialMinPINLengthExistingPIN) {
   virtual_device_factory_->mutable_state()->min_pin_length = 6;
   virtual_device_factory_->mutable_state()->pin = "123456";
   test_client_.expected = {
-      {PINReason::kChallenge, u"123456", device::kMaxPinRetries, 6}};
+      {PINReason::kChallenge, "123456", device::kMaxPinRetries, 6}};
 
   MakeCredentialResult result =
       AuthenticatorMakeCredential(make_credential_options());
@@ -4408,9 +4408,9 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialForcePINChange) {
   virtual_device_factory_->mutable_state()->pin_retries =
       device::kMaxPinRetries;
   virtual_device_factory_->mutable_state()->min_pin_length = 6;
-  test_client_.expected = {{PINReason::kChallenge, kTestPIN16,
+  test_client_.expected = {{PINReason::kChallenge, kTestPIN,
                             device::kMaxPinRetries, device::kMinPinLength},
-                           {PINReason::kChange, u"567890", 0, 6}};
+                           {PINReason::kChange, "567890", 0, 6}};
 
   MakeCredentialResult result =
       AuthenticatorMakeCredential(make_credential_options());
@@ -4440,7 +4440,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredUvNotRqd) {
       // PIN is still required for discoverable credentials, or if the caller
       // requests it.
       if (discoverable || request_uv) {
-        test_client_.expected = {{PINReason::kChallenge, kTestPIN16,
+        test_client_.expected = {{PINReason::kChallenge, kTestPIN,
                                   device::kMaxPinRetries,
                                   device::kMinPinLength}};
       } else {
@@ -4485,10 +4485,10 @@ TEST_F(PINAuthenticatorImplTest, MakeCredUvNotRqdAndAlwaysUv) {
     virtual_device_factory_->SetCtap2Config(config);
     if (pin_set) {
       virtual_device_factory_->mutable_state()->pin = kTestPIN;
-      test_client_.expected = {{PINReason::kChallenge, kTestPIN16,
+      test_client_.expected = {{PINReason::kChallenge, kTestPIN,
                                 device::kMaxPinRetries, device::kMinPinLength}};
     } else {
-      test_client_.expected = {{PINReason::kSet, kTestPIN16,
+      test_client_.expected = {{PINReason::kSet, kTestPIN,
                                 device::kMaxPinRetries, device::kMinPinLength}};
     }
 
@@ -4556,8 +4556,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
 
               case kUsePIN:
                 // A single prompt to get the PIN is expected.
-                test_client_.expected = {
-                    {PINReason::kChallenge, kTestPIN16, 8}};
+                test_client_.expected = {{PINReason::kChallenge, kTestPIN, 8}};
                 break;
 
               default:
@@ -4604,10 +4603,10 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionSoftLock) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
       options->allow_credentials[0].id(), kTestRelyingPartyId));
 
-  test_client_.expected = {{PINReason::kChallenge, u"wrong", 8},
-                           {PINReason::kChallenge, u"wrong", 7,
+  test_client_.expected = {{PINReason::kChallenge, "wrong", 8},
+                           {PINReason::kChallenge, "wrong", 7,
                             device::kMinPinLength, PINError::kWrongPIN},
-                           {PINReason::kChallenge, u"wrong", 6,
+                           {PINReason::kChallenge, "wrong", 6,
                             device::kMinPinLength, PINError::kWrongPIN}};
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
@@ -4626,7 +4625,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionHardLock) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
       options->allow_credentials[0].id(), kTestRelyingPartyId));
 
-  test_client_.expected = {{PINReason::kChallenge, u"wrong", 1}};
+  test_client_.expected = {{PINReason::kChallenge, "wrong", 1}};
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_EQ(0, virtual_device_factory_->mutable_state()->pin_retries);
@@ -4647,7 +4646,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionSkipPINTouch) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
       options->allow_credentials[0].id(), kTestRelyingPartyId));
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(taps, 1);
@@ -4682,7 +4681,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionDontSkipPINTouch) {
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(taps, 2);
@@ -4702,7 +4701,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUv) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
       options->allow_credentials[0].id(), kTestRelyingPartyId));
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
 
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
@@ -4773,7 +4772,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialNoSupportedAlgorithm) {
           device::kMaxPinRetries;
       virtual_device_factory_->SetCtap2Config(config);
       test_client_.expected = {
-          {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+          {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
       // Since converting to U2F isn't possible, this will trigger a PIN prompt
       // and succeed because the device does actually support the algorithm.
       expected_to_succeed = true;
@@ -4833,7 +4832,7 @@ TEST_F(PINAuthenticatorImplTest, PRFCreatedOnCTAP2) {
       // test infrastructure will CHECK if |expected| is set and not used.)
       options->prf_enable = true;
       test_client_.expected = {
-          {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+          {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
     } else {
       // If PRF is requested, but the authenticator doesn't support it, then we
       // should still use U2F.
@@ -4871,7 +4870,7 @@ TEST_F(PINAuthenticatorImplTest, ExcludeListBatchesIncludePinToken) {
       device::kMaxPinRetries;
 
   test_client_.expected = {
-      {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
 
   // Craft an exclude list that is large enough to trigger batched probing and
   // includes one match for a credProtect=uvRequired credential.
@@ -5480,7 +5479,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(provide_pin_cb), kTestPIN16));
+        FROM_HERE,
+        base::BindOnce(std::move(provide_pin_cb), base::UTF8ToUTF16(kTestPIN)));
   }
 
   void FinishCollectToken() override {}

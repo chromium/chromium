@@ -1220,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
   // Insert text: ﾀﾞ. This is two, 3-byte UTF-8 characters:
   // U+FF80 "HALFWIDTH KATAKANA LETTER TA" and
   // U+FF9E "HALFWIDTH KATAKANA VOICED SOUND MARK".
-  omnibox_view->SetUserText(u"\uFF80\uFF9E");
+  omnibox_view->SetUserText(base::UTF8ToUTF16("\357\276\200\357\276\236"));
   EXPECT_FALSE(omnibox_view->GetText().empty());
 
   // Move the cursor to the end.
@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
   EXPECT_TRUE(omnibox_view->GetText().empty());
 #else
   // Toolkit-views text fields delete just the sound mark.
-  EXPECT_EQ(u"\uFF80", omnibox_view->GetText());
+  EXPECT_EQ(base::UTF8ToUTF16("\357\276\200"), omnibox_view->GetText());
 #endif
 }
 

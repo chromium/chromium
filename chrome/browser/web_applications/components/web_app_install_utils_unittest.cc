@@ -28,8 +28,8 @@ namespace {
 
 const char16_t kAppShortName[] = u"Test short name";
 const char16_t kAppTitle[] = u"Test title";
-const char16_t kAlternativeAppTitle[] = u"Different test title";
-const char16_t kShortcutItemName[] = u"shortcut item ";
+const char kAlternativeAppTitle[] = "Different test title";
+const char kShortcutItemName[] = "shortcut item ";
 
 constexpr SquareSizePx kIconSize = 64;
 
@@ -51,7 +51,7 @@ class WebAppInstallUtilsWithShortcutsMenu : public testing::Test {
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   WebApplicationInfo web_app_info;
-  web_app_info.title = kAlternativeAppTitle;
+  web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
   web_app_info.start_url = GURL("http://www.notchromium.org");
   WebApplicationIconInfo info;
   const GURL kAppIcon1("fav1.png");
@@ -289,7 +289,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
 TEST_F(WebAppInstallUtilsWithShortcutsMenu,
        UpdateWebAppInfoFromManifestWithShortcuts) {
   WebApplicationInfo web_app_info;
-  web_app_info.title = kAlternativeAppTitle;
+  web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
   web_app_info.start_url = GURL("http://www.notchromium.org");
   WebApplicationIconInfo info;
   const GURL kAppIcon1("fav1.png");
@@ -300,8 +300,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   for (int i = 0; i < 3; ++i) {
     WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
     WebApplicationShortcutsMenuItemInfo::Icon icon;
-    shortcuts_menu_item_info.name =
-        kShortcutItemName + base::NumberToString16(i + 1);
+    std::string shortcut_name = kShortcutItemName;
+    shortcut_name += base::NumberToString(i + 1);
+    shortcuts_menu_item_info.name = base::UTF8ToUTF16(shortcut_name);
     shortcuts_menu_item_info.url = kShortcutItemUrl;
 
     icon.url = GURL("http://www.chromium.org/shortcuts/icon1.png");
@@ -385,7 +386,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   // Test that shortcuts in the manifest replace those in |web_app_info|.
   blink::Manifest::ShortcutItem shortcut_item;
-  shortcut_item.name = std::u16string(kShortcutItemName) + u"4";
+  std::string shortcut_name = kShortcutItemName;
+  shortcut_name += base::NumberToString(4);
+  shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
   shortcut_item.url = kShortcutItemUrl;
 
   const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
@@ -396,7 +399,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   manifest.shortcuts.push_back(shortcut_item);
 
-  shortcut_item.name = std::u16string(kShortcutItemName) + u"5";
+  shortcut_name = kShortcutItemName;
+  shortcut_name += base::NumberToString(5);
+  shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
 
   const GURL kIconUrl3("http://www.chromium.org/shortcuts/icon3.png");
   icon.src = kIconUrl3;
@@ -475,7 +480,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   blink::Manifest manifest;
   for (unsigned int i = 0; i < kNumTestIcons; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = kShortcutItemName + base::NumberToString16(i);
+    std::string shortcut_name = kShortcutItemName;
+    shortcut_name += base::NumberToString(i);
+    shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
@@ -529,7 +536,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   blink::Manifest manifest;
   for (int i = 1; i <= 20; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
-    shortcut_item.name = kShortcutItemName + base::NumberToString16(i);
+    std::string shortcut_name = kShortcutItemName;
+    shortcut_name += base::NumberToString(i);
+    shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
@@ -565,7 +574,9 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
-    shortcut_item.name = std::u16string(kShortcutItemName) + u"1";
+    std::string shortcut_name = kShortcutItemName;
+    shortcut_name += base::NumberToString(1);
+    shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
@@ -579,7 +590,9 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
-    shortcut_item.name = std::u16string(kShortcutItemName) + u"2";
+    std::string shortcut_name = kShortcutItemName;
+    shortcut_name += base::NumberToString(2);
+    shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
     shortcut_icon_infos.push_back(icon);
@@ -760,7 +773,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   // Construct |shortcuts_menu_item_info| to add to
   // |web_app_info.shortcuts_menu_item_infos|.
   WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
-  shortcuts_menu_item_info.name = kShortcutItemName;
+  shortcuts_menu_item_info.name = base::UTF8ToUTF16(kShortcutItemName);
   shortcuts_menu_item_info.url =
       GURL("http://www.chromium.org/shortcuts/action");
   // Construct |icon| to add to |shortcuts_menu_item_info.shortcut_icon_infos|.

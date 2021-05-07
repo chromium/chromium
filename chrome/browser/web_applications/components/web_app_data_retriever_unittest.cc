@@ -37,7 +37,7 @@ namespace web_app {
 
 namespace {
 
-const char16_t kFooTitle[] = u"Foo Title";
+const char kFooTitle[] = "Foo Title";
 
 }  // namespace
 
@@ -130,6 +130,23 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     std::move(quit_closure).Run();
   }
 
+  std::unique_ptr<WebApplicationInfo> CreateWebApplicationInfo(
+      const GURL& url,
+      const std::string name,
+      const std::string description,
+      const GURL& scope,
+      base::Optional<SkColor> theme_color) {
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+
+    web_app_info->start_url = url;
+    web_app_info->title = base::UTF8ToUTF16(name);
+    web_app_info->description = base::UTF8ToUTF16(description);
+    web_app_info->scope = scope;
+    web_app_info->theme_color = theme_color;
+
+    return web_app_info;
+  }
+
  protected:
   content::WebContentsTester* web_contents_tester() {
     return content::WebContentsTester::For(web_contents());
@@ -211,7 +228,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  web_contents_tester()->SetTitle(kFooTitle);
+  const auto web_contents_title = base::UTF8ToUTF16(kFooTitle);
+  web_contents_tester()->SetTitle(web_contents_title);
 
   WebApplicationInfo original_web_app_info;
   original_web_app_info.title = u"";
@@ -228,7 +246,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
 
   // If the WebApplicationInfo has no title, we fallback to the WebContents
   // title.
-  EXPECT_EQ(kFooTitle, web_app_info()->title);
+  EXPECT_EQ(web_contents_title, web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest,
@@ -344,7 +362,8 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->SetTitle(kFooTitle);
+  const auto web_contents_title = base::UTF8ToUTF16(kFooTitle);
+  web_contents_tester()->SetTitle(web_contents_title);
 
   const GURL kFooUrl("https://foo.example/bar");
   web_contents_tester()->NavigateAndCommit(kFooUrl.GetOrigin());
@@ -359,7 +378,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   run_loop.Run();
 
   EXPECT_EQ(kFooUrl.GetOrigin(), web_app_info()->start_url);
-  EXPECT_EQ(kFooTitle, web_app_info()->title);
+  EXPECT_EQ(web_contents_title, web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {

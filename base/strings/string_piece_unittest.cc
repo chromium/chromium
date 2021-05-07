@@ -633,11 +633,12 @@ TEST(StringPiece16Test, CheckSTL) {
   ASSERT_EQ(f.size(), 6U);
 }
 
+
+
 TEST(StringPiece16Test, CheckConversion) {
-  // Make sure that we can convert from UTF8 to UTF16 and back. We use a
-  // character (G clef) outside the BMP to test this.
-  const char kTest[] = "\U0001D11E";
-  ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16(kTest)), kTest);
+  // Make sure that we can convert from UTF8 to UTF16 and back. We use a two
+  // byte character (G clef) to test this.
+  ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16("\xf0\x9d\x84\x9e")), "\xf0\x9d\x84\x9e");
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckConstructors) {

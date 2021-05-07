@@ -2375,7 +2375,8 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
       0, base::DoNothing());
 
   // Non surrogate pair unicode character.
-  const std::u16string unicode_composition = u"あいうえお";
+  const std::u16string unicode_composition = base::UTF8ToUTF16(
+      "\xE3\x81\x82\xE3\x81\x84\xE3\x81\x86\xE3\x81\x88\xE3\x81\x8A");
   widget_input_handler->ImeSetComposition(unicode_composition,
                                           empty_ime_text_span,
                                           gfx::Range::InvalidRange(), 0, 0);
@@ -2388,7 +2389,8 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
                                       base::DoNothing());
 
   // Surrogate pair character.
-  const std::u16string surrogate_pair_char = u"𠮟";
+  const std::u16string surrogate_pair_char =
+      base::UTF8ToUTF16("\xF0\xA0\xAE\x9F");
   widget_input_handler->ImeSetComposition(surrogate_pair_char,
                                           empty_ime_text_span,
                                           gfx::Range::InvalidRange(), 0, 0);
@@ -2402,8 +2404,8 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
 
   // Mixed string.
   const std::u16string surrogate_pair_mixed_composition =
-      surrogate_pair_char + u"あ" + surrogate_pair_char + u"b" +
-      surrogate_pair_char;
+      surrogate_pair_char + base::UTF8ToUTF16("\xE3\x81\x82") +
+      surrogate_pair_char + u"b" + surrogate_pair_char;
   const size_t utf16_length = 8UL;
   const bool is_surrogate_pair_empty_rect[8] = {false, true,  false, false,
                                                 true,  false, false, true};

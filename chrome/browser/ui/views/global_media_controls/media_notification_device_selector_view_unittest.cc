@@ -34,12 +34,11 @@ namespace {
 
 constexpr char kSinkId[] = "sink_id";
 constexpr char kSinkFriendlyName[] = "Nest Hub";
-constexpr char16_t kSinkFriendlyName16[] = u"Nest Hub";
 
 UIMediaSink CreateMediaSink(
     UIMediaSinkState state = UIMediaSinkState::AVAILABLE) {
   UIMediaSink sink;
-  sink.friendly_name = kSinkFriendlyName16;
+  sink.friendly_name = base::UTF8ToUTF16(kSinkFriendlyName);
   sink.id = kSinkId;
   sink.state = state;
   sink.cast_modes = {media_router::MediaCastMode::PRESENTATION};

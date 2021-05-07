@@ -568,13 +568,13 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
       const SimulateNotificationCallback& callback);
 
   static const KeywordID kTestKeywordId;
-  static const char16_t kTestSearchTerm1[];
-  static const char16_t kTestSearchTerm2[];
+  static const char kTestSearchTerm1[];
+  static const char kTestSearchTerm2[];
 };
 
 const KeywordID InMemoryHistoryBackendTest::kTestKeywordId = 42;
-const char16_t InMemoryHistoryBackendTest::kTestSearchTerm1[] = u"banana";
-const char16_t InMemoryHistoryBackendTest::kTestSearchTerm2[] = u"orange";
+const char InMemoryHistoryBackendTest::kTestSearchTerm1[] = "banana";
+const char InMemoryHistoryBackendTest::kTestSearchTerm2[] = "orange";
 
 // http://crbug.com/114287
 #if defined(OS_WIN)
@@ -1168,7 +1168,7 @@ TEST_F(HistoryBackendTest, UpdateURLs) {
 // This verifies that a notification is fired. In-depth testing of logic should
 // be done in HistoryTest.SetTitle.
 TEST_F(HistoryBackendTest, SetPageTitleFiresNotificationWithCorrectDetails) {
-  const char16_t kTestUrlTitle[] = u"Google Search";
+  const char kTestUrlTitle[] = "Google Search";
 
   ASSERT_TRUE(backend_.get());
 
@@ -1186,7 +1186,7 @@ TEST_F(HistoryBackendTest, SetPageTitleFiresNotificationWithCorrectDetails) {
   backend_->AddPagesWithDetails(rows, history::SOURCE_BROWSED);
 
   ClearBroadcastedNotifications();
-  backend_->SetPageTitle(row2.url(), kTestUrlTitle);
+  backend_->SetPageTitle(row2.url(), base::UTF8ToUTF16(kTestUrlTitle));
 
   // Ensure that a notification was fired, and further verify that the IDs in
   // the notification are set to those that are in effect in the main database.
@@ -1197,7 +1197,7 @@ TEST_F(HistoryBackendTest, SetPageTitleFiresNotificationWithCorrectDetails) {
 
   const URLRows& changed_urls = urls_modified_notifications()[0];
   ASSERT_EQ(1u, changed_urls.size());
-  EXPECT_EQ(kTestUrlTitle, changed_urls[0].title());
+  EXPECT_EQ(base::UTF8ToUTF16(kTestUrlTitle), changed_urls[0].title());
   EXPECT_EQ(stored_row2.id(), changed_urls[0].id());
 }
 
@@ -2901,8 +2901,8 @@ TEST_F(HistoryBackendTest, ClientRedirectScoring) {
 // between them is the type of the notification sent out.
 void InMemoryHistoryBackendTest::TestAddingAndChangingURLRows(
     const SimulateNotificationCallback& callback) {
-  const char16_t kTestTypedURLAlternativeTitle[] = u"Google Search Again";
-  const char16_t kTestNonTypedURLAlternativeTitle[] = u"Google News Again";
+  const char kTestTypedURLAlternativeTitle[] = "Google Search Again";
+  const char kTestNonTypedURLAlternativeTitle[] = "Google News Again";
 
   // Notify the in-memory database that a typed and non-typed URLRow (which were
   // never before seen by the cache) have been modified.
@@ -2919,14 +2919,15 @@ void InMemoryHistoryBackendTest::TestAddingAndChangingURLRows(
   EXPECT_EQ(row1.id(), cached_row1.id());
 
   // Try changing attributes (other than typed_count) for existing URLRows.
-  row1.set_title(kTestTypedURLAlternativeTitle);
-  row2.set_title(kTestNonTypedURLAlternativeTitle);
+  row1.set_title(base::UTF8ToUTF16(kTestTypedURLAlternativeTitle));
+  row2.set_title(base::UTF8ToUTF16(kTestNonTypedURLAlternativeTitle));
   callback.Run(&row1, &row2, nullptr);
 
   // URLRows that are cached by the in-memory database should be updated.
   EXPECT_NE(0, mem_backend_->db()->GetRowForURL(row1.url(), &cached_row1));
   EXPECT_EQ(0, mem_backend_->db()->GetRowForURL(row2.url(), &cached_row2));
-  EXPECT_EQ(kTestTypedURLAlternativeTitle, cached_row1.title());
+  EXPECT_EQ(base::UTF8ToUTF16(kTestTypedURLAlternativeTitle),
+            cached_row1.title());
 
   // Now decrease the typed count for the typed URLRow, and increase it for the
   // previously non-typed URLRow.
@@ -2939,7 +2940,8 @@ void InMemoryHistoryBackendTest::TestAddingAndChangingURLRows(
   EXPECT_EQ(0, mem_backend_->db()->GetRowForURL(row1.url(), &cached_row1));
   EXPECT_NE(0, mem_backend_->db()->GetRowForURL(row2.url(), &cached_row2));
   EXPECT_EQ(row2.id(), cached_row2.id());
-  EXPECT_EQ(kTestNonTypedURLAlternativeTitle, cached_row2.title());
+  EXPECT_EQ(base::UTF8ToUTF16(kTestNonTypedURLAlternativeTitle),
+            cached_row2.title());
 }
 
 TEST_F(InMemoryHistoryBackendTest, OnURLsModified) {
@@ -3012,8 +3014,8 @@ void InMemoryHistoryBackendTest::PopulateTestURLsAndSearchTerms(
 TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  std::u16string term1(kTestSearchTerm1);
-  std::u16string term2(kTestSearchTerm2);
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Both URLs now have associated search terms, so the in-memory database
@@ -3035,8 +3037,8 @@ TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
 TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  std::u16string term1(kTestSearchTerm1);
-  std::u16string term2(kTestSearchTerm2);
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Delete both search terms. This should be reflected in the in-memory DB.
@@ -3060,8 +3062,8 @@ TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
 TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  std::u16string term1(kTestSearchTerm1);
-  std::u16string term2(kTestSearchTerm2);
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Delete all corresponding search terms from the in-memory database.
@@ -3085,8 +3087,8 @@ TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
 TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedWithSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  std::u16string term1(kTestSearchTerm1);
-  std::u16string term2(kTestSearchTerm2);
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Notify the in-memory database that the second typed URL has been deleted.

@@ -91,9 +91,10 @@ namespace printing {
 namespace {
 
 #if defined(OS_MAC)
-const char16_t kBasicPrintShortcut[] = u"\u0028\u21e7\u2318\u0050\u0029";
+// U+0028 U+21E7 U+2318 U+0050 U+0029 in UTF8
+const char kBasicPrintShortcut[] = "\x28\xE2\x8c\xA5\xE2\x8C\x98\x50\x29";
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
-const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
+const char kBasicPrintShortcut[] = "(Ctrl+Shift+P)";
 #endif
 
 constexpr char kInvalidArgsForDidStartPreview[] =
@@ -379,7 +380,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                     chrome::kCloudPrintCertificateErrorLearnMoreURL);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::u16string shortcut_text(kBasicPrintShortcut);
+  const std::u16string shortcut_text(base::UTF8ToUTF16(kBasicPrintShortcut));
   source->AddString("systemDialogOption",
                     l10n_util::GetStringFUTF16(
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));

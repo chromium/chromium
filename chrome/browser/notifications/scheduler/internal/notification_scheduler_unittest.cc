@@ -38,7 +38,7 @@ namespace notifications {
 namespace {
 
 const char kGuid[] = "guid";
-const char16_t kTitle[] = u"title";
+const char kTitle[] = "title";
 
 class NotificationSchedulerTest : public testing::Test {
  public:
@@ -293,8 +293,8 @@ TEST_F(NotificationSchedulerTest, BackgroundTaskStartShowNothing) {
   OnStartTask();
 }
 
-MATCHER_P(NotificationDataEq, title, "Verify notification data.") {
-  EXPECT_EQ(arg->title, title);
+MATCHER_P(NotifcationDataEq, title, "Verify notification data.") {
+  EXPECT_EQ(arg->title, base::UTF8ToUTF16(title));
   return true;
 }
 
@@ -313,7 +313,7 @@ TEST_F(NotificationSchedulerTest, BackgroundTaskStartShowNotification) {
       std::make_unique<NotificationEntry>(SchedulerClientType::kTest1, kGuid);
   EXPECT_CALL(
       *display_agent(),
-      ShowNotification(NotificationDataEq(kTitle),
+      ShowNotification(NotifcationDataEq(kTitle),
                        SystemDataEq(SchedulerClientType::kTest1, kGuid)));
   DisplayDecider::Results result({kGuid});
   EXPECT_CALL(*display_decider(), FindNotificationsToShow(_, _, _))
@@ -333,7 +333,7 @@ TEST_F(NotificationSchedulerTest, BackgroundTaskStartShowNotification) {
           [&](std::unique_ptr<NotificationData> notification_data,
               NotificationSchedulerClient::NotificationDataCallback callback) {
             // The client updates the notification data here.
-            notification_data->title = kTitle;
+            notification_data->title = base::UTF8ToUTF16(kTitle);
             std::move(callback).Run(std::move(notification_data));
           }));
 

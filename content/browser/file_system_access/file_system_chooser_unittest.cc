@@ -237,19 +237,19 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      u"Description        with \t      a  \r   lot   of  \n "
-      u"                                 spaces",
+      base::UTF8ToUTF16("Description        with \t      a  \r   lot   of  \n "
+                        "                                 spaces"),
       std::vector<std::string>({}), std::vector<std::string>({"txt"})));
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      u"Description that is very long and should be "
-      u"truncated to 64 code points if it works",
+      base::UTF8ToUTF16("Description that is very long and should be "
+                        "truncated to 64 code points if it works"),
       std::vector<std::string>({}), std::vector<std::string>({"js"})));
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      u"Unbalanced RTL \u202e section", std::vector<std::string>({}),
-      std::vector<std::string>({"js"})));
+      base::UTF8ToUTF16("Unbalanced RTL \xe2\x80\xae section"),
+      std::vector<std::string>({}), std::vector<std::string>({"js"})));
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      u"Unbalanced RTL \u202e section in a otherwise "
-      u"very long description that will be truncated",
+      base::UTF8ToUTF16("Unbalanced RTL \xe2\x80\xae section in a otherwise "
+                        "very long description that will be truncated"),
       std::vector<std::string>({}), std::vector<std::string>({"js"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
 
@@ -258,14 +258,16 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
             dialog_params.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"Description with a lot of spaces",
             dialog_params.file_types->extension_description_overrides[0]);
-  EXPECT_EQ(u"Description that is very long and should be truncated to 64 cod…",
-            dialog_params.file_types->extension_description_overrides[1]);
-  EXPECT_EQ(u"Unbalanced RTL \u202e section\u202c",
-            dialog_params.file_types->extension_description_overrides[2]);
   EXPECT_EQ(
-      u"Unbalanced RTL \u202e section in a "
-      u"otherwise very long description t…\u202c",
-      dialog_params.file_types->extension_description_overrides[3]);
+      base::UTF8ToUTF16(
+          "Description that is very long and should be truncated to 64 cod…"),
+      dialog_params.file_types->extension_description_overrides[1]);
+  EXPECT_EQ(
+      base::UTF8ToUTF16("Unbalanced RTL \xe2\x80\xae section\xe2\x80\xac"),
+      dialog_params.file_types->extension_description_overrides[2]);
+  EXPECT_EQ(base::UTF8ToUTF16("Unbalanced RTL \xe2\x80\xae section in a "
+                              "otherwise very long description t…\xe2\x80\xac"),
+            dialog_params.file_types->extension_description_overrides[3]);
 }
 
 }  // namespace content

@@ -42,7 +42,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
 
   ui::ClipboardBuffer GetAndResetCopiedToClipboard();
   std::u16string GetClipboardText(ui::ClipboardBuffer type);
-  void SetClipboardText(ui::ClipboardBuffer type, const std::u16string& text);
+  void SetClipboardText(ui::ClipboardBuffer type, const std::string& text);
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,

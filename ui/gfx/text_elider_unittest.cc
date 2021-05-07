@@ -27,26 +27,44 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/text_utils.h"
 
+using base::ASCIIToUTF16;
+using base::UTF16ToUTF8;
+using base::UTF16ToWide;
+using base::UTF8ToUTF16;
+
 namespace gfx {
 
 namespace {
 
-struct FileTestcase {
-  const base::FilePath::StringType input;
-  const std::u16string output;
-  // If this value is specified, we will try to cut the path down to the render
-  // width of this string; if not specified, output will be used.
-  const std::u16string using_width_of = std::u16string();
+struct Testcase {
+  const std::string input;
+  const std::string output;
 };
 
-struct Testcase {
+struct FileTestcase {
+  const base::FilePath::StringType input;
+  const std::string output;
+  // If this value is specified, we will try to cut the path down to the render
+  // width of this string; if not specified, output will be used.
+  const std::string using_width_of = std::string();
+};
+
+struct UTF16Testcase {
   const std::u16string input;
   const std::u16string output;
+};
+
+struct TestData {
+  const std::string a;
+  const std::string b;
+  const int compare_result;
 };
 
 }  // namespace
 
 TEST(TextEliderTest, ElideEmail) {
+  const std::string kEllipsisStr(kEllipsis);
+
   // Test emails and their expected elided forms (from which the available
   // widths will be derived).
   // For elided forms in which both the username and domain must be elided:
@@ -54,43 +72,48 @@ TEST(TextEliderTest, ElideEmail) {
   // dependent. To avoid this, the username is prefixed with the characters
   // expected to remain in the domain.
   Testcase testcases[] = {
-      {u"g@g.c", u"g@g.c"},
-      {u"g@g.c", u"…"},
-      {u"ga@co.ca", u"ga@c…a"},
-      {u"short@small.com", u"s…@s…"},
-      {u"short@small.com", u"s…@small.com"},
-      {u"short@longbutlotsofspace.com", u"short@longbutlotsofspace.com"},
-      {u"short@longbutnotverymuchspace.com", u"short@long….com"},
-      {u"la_short@longbutverytightspace.ca", u"la…@l…a"},
-      {u"longusername@gmail.com", u"long…@gmail.com"},
-      {u"elidetothemax@justfits.com", u"e…@justfits.com"},
-      {u"thatom_somelongemail@thatdoesntfit.com", u"thatom…@tha…om"},
-      {u"namefits@butthedomaindoesnt.com", u"namefits@butthedo…snt.com"},
-      {u"widthtootight@nospace.com", u"…"},
-      {u"nospaceforusername@l", u"…"},
-      {u"little@littlespace.com", u"l…@l…"},
-      {u"l@llllllllllllllllllllllll.com", u"l@lllll….com"},
-      {u"messed\"up@whyanat\"++@notgoogley.com",
-       u"messed\"up@whyanat\"++@notgoogley.com"},
-      {u"messed\"up@whyanat\"++@notgoogley.com",
-       u"messed\"up@why…@notgoogley.com"},
-      {u"noca_messed\"up@whyanat\"++@notgoogley.ca", u"noca…@no…ca"},
-      {u"at\"@@@@@@@@@...@@.@.@.@@@\"@madness.com",
-       u"at\"@@@@@@@@@...@@.@.…@madness.com"},
+      {"g@g.c", "g@g.c"},
+      {"g@g.c", kEllipsisStr},
+      {"ga@co.ca", "ga@c" + kEllipsisStr + "a"},
+      {"short@small.com", "s" + kEllipsisStr + "@s" + kEllipsisStr},
+      {"short@small.com", "s" + kEllipsisStr + "@small.com"},
+      {"short@longbutlotsofspace.com", "short@longbutlotsofspace.com"},
+      {"short@longbutnotverymuchspace.com",
+       "short@long" + kEllipsisStr + ".com"},
+      {"la_short@longbutverytightspace.ca",
+       "la" + kEllipsisStr + "@l" + kEllipsisStr + "a"},
+      {"longusername@gmail.com", "long" + kEllipsisStr + "@gmail.com"},
+      {"elidetothemax@justfits.com", "e" + kEllipsisStr + "@justfits.com"},
+      {"thatom_somelongemail@thatdoesntfit.com",
+       "thatom" + kEllipsisStr + "@tha" + kEllipsisStr + "om"},
+      {"namefits@butthedomaindoesnt.com",
+       "namefits@butthedo" + kEllipsisStr + "snt.com"},
+      {"widthtootight@nospace.com", kEllipsisStr},
+      {"nospaceforusername@l", kEllipsisStr},
+      {"little@littlespace.com", "l" + kEllipsisStr + "@l" + kEllipsisStr},
+      {"l@llllllllllllllllllllllll.com", "l@lllll" + kEllipsisStr + ".com"},
+      {"messed\"up@whyanat\"++@notgoogley.com",
+       "messed\"up@whyanat\"++@notgoogley.com"},
+      {"messed\"up@whyanat\"++@notgoogley.com",
+       "messed\"up@why" + kEllipsisStr + "@notgoogley.com"},
+      {"noca_messed\"up@whyanat\"++@notgoogley.ca",
+       "noca" + kEllipsisStr + "@no" + kEllipsisStr + "ca"},
+      {"at\"@@@@@@@@@...@@.@.@.@@@\"@madness.com",
+       "at\"@@@@@@@@@...@@.@." + kEllipsisStr + "@madness.com"},
       // Special case: "m..." takes more than half of the available width; thus
       // the domain must elide to "l..." and not "l...l" as it must allow enough
       // space for the minimal username elision although its half of the
       // available width would normally allow it to elide to "l...l".
-      {u"mmmmm@llllllllll", u"m…@l…"},
+      {"mmmmm@llllllllll", "m" + kEllipsisStr + "@l" + kEllipsisStr},
   };
 
   const FontList font_list;
   for (size_t i = 0; i < base::size(testcases); ++i) {
-    const std::u16string expected_output = testcases[i].output;
-    EXPECT_EQ(
-        expected_output,
-        ElideText(testcases[i].input, font_list,
-                  GetStringWidthF(expected_output, font_list), ELIDE_EMAIL));
+    const std::u16string expected_output = UTF8ToUTF16(testcases[i].output);
+    EXPECT_EQ(expected_output,
+              ElideText(UTF8ToUTF16(testcases[i].input), font_list,
+                        GetStringWidthF(expected_output, font_list),
+                        ELIDE_EMAIL));
   }
 }
 
@@ -98,69 +121,74 @@ TEST(TextEliderTest, ElideEmailMoreSpace) {
   const int test_widths_extra_spaces[] = {
       10,
       1000,
-      100'000,
+      100000,
   };
-  const char16_t* const test_emails[] = {
-      u"a@c",
-      u"test@email.com",
-      u"short@verysuperdupperlongdomain.com",
-      u"supermegalongusername@withasuperlonnnggggdomain.gouv.qc.ca",
+  const char* test_emails[] = {
+      "a@c",
+      "test@email.com",
+      "short@verysuperdupperlongdomain.com",
+      "supermegalongusername@withasuperlonnnggggdomain.gouv.qc.ca",
   };
 
   const FontList font_list;
   for (const auto* test_email : test_emails) {
-    const int mimimum_width = GetStringWidth(test_email, font_list);
+    const std::u16string test_email16 = UTF8ToUTF16(test_email);
+    const int mimimum_width = GetStringWidth(test_email16, font_list);
     for (int extra_space : test_widths_extra_spaces) {
       // Extra space is available: the email should not be elided.
-      EXPECT_EQ(test_email,
-                ElideText(test_email, font_list, mimimum_width + extra_space,
+      EXPECT_EQ(test_email16,
+                ElideText(test_email16, font_list, mimimum_width + extra_space,
                           ELIDE_EMAIL));
     }
   }
 }
 
 TEST(TextEliderTest, TestFilenameEliding) {
+  const std::string kEllipsisStr(kEllipsis);
   const base::FilePath::StringType kPathSeparator =
       base::FilePath::StringType().append(1, base::FilePath::kSeparators[0]);
 
   FileTestcase testcases[] = {
-      {FILE_PATH_LITERAL(""), u""},
-      {FILE_PATH_LITERAL("."), u"."},
-      {FILE_PATH_LITERAL("filename.exe"), u"filename.exe"},
-      {FILE_PATH_LITERAL(".longext"), u".longext"},
-      {FILE_PATH_LITERAL("pie"), u"pie"},
+      {FILE_PATH_LITERAL(""), ""},
+      {FILE_PATH_LITERAL("."), "."},
+      {FILE_PATH_LITERAL("filename.exe"), "filename.exe"},
+      {FILE_PATH_LITERAL(".longext"), ".longext"},
+      {FILE_PATH_LITERAL("pie"), "pie"},
       {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
            kPathSeparator + FILE_PATH_LITERAL("filename.pie"),
-       u"filename.pie"},
+       "filename.pie"},
       {FILE_PATH_LITERAL("c:") + kPathSeparator + FILE_PATH_LITERAL("path") +
            kPathSeparator + FILE_PATH_LITERAL("longfilename.pie"),
-       u"long….pie"},
-      {FILE_PATH_LITERAL("http://path.com/filename.pie"), u"filename.pie"},
-      {FILE_PATH_LITERAL("http://path.com/longfilename.pie"), u"long….pie"},
-      {FILE_PATH_LITERAL("piesmashingtacularpants"), u"pie…"},
-      {FILE_PATH_LITERAL(".piesmashingtacularpants"), u".pie…"},
-      {FILE_PATH_LITERAL("cheese."), u"cheese."},
-      {FILE_PATH_LITERAL("file name.longext"), u"file….longext"},
-      {FILE_PATH_LITERAL("fil ename.longext"), u"fil….longext",
-       u"fil ….longext"},
-      {FILE_PATH_LITERAL("filename.longext"), u"file….longext"},
+       "long" + kEllipsisStr + ".pie"},
+      {FILE_PATH_LITERAL("http://path.com/filename.pie"), "filename.pie"},
+      {FILE_PATH_LITERAL("http://path.com/longfilename.pie"),
+       "long" + kEllipsisStr + ".pie"},
+      {FILE_PATH_LITERAL("piesmashingtacularpants"), "pie" + kEllipsisStr},
+      {FILE_PATH_LITERAL(".piesmashingtacularpants"), ".pie" + kEllipsisStr},
+      {FILE_PATH_LITERAL("cheese."), "cheese."},
+      {FILE_PATH_LITERAL("file name.longext"),
+       "file" + kEllipsisStr + ".longext"},
+      {FILE_PATH_LITERAL("fil ename.longext"),
+       "fil" + kEllipsisStr + ".longext", "fil " + kEllipsisStr + ".longext"},
+      {FILE_PATH_LITERAL("filename.longext"),
+       "file" + kEllipsisStr + ".longext"},
       {FILE_PATH_LITERAL("filename.middleext.longext"),
-       u"filename.mid….longext"},
+       "filename.mid" + kEllipsisStr + ".longext"},
       {FILE_PATH_LITERAL("filename.superduperextremelylongext"),
-       u"filename.sup…emelylongext"},
+       "filename.sup" + kEllipsisStr + "emelylongext"},
       {FILE_PATH_LITERAL("filenamereallylongtext.superdeduperextremelylongext"),
-       u"filenamereall…emelylongext"},
+       "filenamereall" + kEllipsisStr + "emelylongext"},
       {FILE_PATH_LITERAL(
            "file.name.really.long.text.superduperextremelylongext"),
-       u"file.name.re…emelylongext"}};
+       "file.name.re" + kEllipsisStr + "emelylongext"}};
 
   static const FontList font_list;
   for (size_t i = 0; i < base::size(testcases); ++i) {
     base::FilePath filepath(testcases[i].input);
-    std::u16string expected = testcases[i].output;
-    std::u16string using_width_of = testcases[i].using_width_of.empty()
-                                        ? testcases[i].output
-                                        : testcases[i].using_width_of;
+    std::u16string expected = UTF8ToUTF16(testcases[i].output);
+    std::u16string using_width_of = UTF8ToUTF16(
+        testcases[i].using_width_of.empty() ? testcases[i].output
+                                            : testcases[i].using_width_of);
     expected = base::i18n::GetDisplayStringInLTRDirectionality(expected);
     EXPECT_EQ(expected,
               ElideFilename(filepath, font_list,
@@ -172,71 +200,76 @@ TEST(TextEliderTest, ElideTextTruncate) {
   const FontList font_list;
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float width;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"", 0, u""},
-      {u"Test", 0, u""},
-      {u"", kTestWidth, u""},
-      {u"Tes", kTestWidth, u"Tes"},
-      {u"Test", kTestWidth, u"Test"},
-      {u"Tests", kTestWidth, u"Test"},
+    { "", 0, "" },
+    { "Test", 0, "" },
+    { "", kTestWidth, "" },
+    { "Tes", kTestWidth, "Tes" },
+    { "Test", kTestWidth, "Test" },
+    { "Tests", kTestWidth, "Test" },
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, TRUNCATE);
-    EXPECT_EQ(cases[i].output, result);
+    std::u16string result = ElideText(UTF8ToUTF16(cases[i].input), font_list,
+                                      cases[i].width, TRUNCATE);
+    EXPECT_EQ(cases[i].output, UTF16ToUTF8(result));
   }
 }
 
 TEST(TextEliderTest, ElideTextEllipsis) {
   const FontList font_list;
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
-  const float kEllipsisWidth = GetStringWidthF(u"…", font_list);
+  const char* kEllipsis = "\xE2\x80\xA6";
+  const float kEllipsisWidth =
+      GetStringWidthF(UTF8ToUTF16(kEllipsis), font_list);
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float width;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"", 0, u""},
-      {u"Test", 0, u""},
-      {u"Test", kEllipsisWidth, u"…"},
-      {u"", kTestWidth, u""},
-      {u"Tes", kTestWidth, u"Tes"},
-      {u"Test", kTestWidth, u"Test"},
+    { "", 0, "" },
+    { "Test", 0, "" },
+    { "Test", kEllipsisWidth, kEllipsis },
+    { "", kTestWidth, "" },
+    { "Tes", kTestWidth, "Tes" },
+    { "Test", kTestWidth, "Test" },
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, ELIDE_TAIL);
-    EXPECT_EQ(cases[i].output, result);
+    std::u16string result = ElideText(UTF8ToUTF16(cases[i].input), font_list,
+                                      cases[i].width, ELIDE_TAIL);
+    EXPECT_EQ(cases[i].output, UTF16ToUTF8(result));
   }
 }
 
 TEST(TextEliderTest, ElideTextEllipsisFront) {
   const FontList font_list;
   const float kTestWidth = GetStringWidthF(u"Test", font_list);
-  const float kEllipsisWidth = GetStringWidthF(u"…", font_list);
-  const float kEllipsis23Width = GetStringWidthF(u"…23", font_list);
+  const std::string kEllipsisStr(kEllipsis);
+  const float kEllipsisWidth =
+      GetStringWidthF(UTF8ToUTF16(kEllipsis), font_list);
+  const float kEllipsis23Width =
+      GetStringWidthF(UTF8ToUTF16(kEllipsisStr + "23"), font_list);
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float width;
     const std::u16string output;
   } cases[] = {
-      {u"", 0, std::u16string()},
-      {u"Test", 0, std::u16string()},
-      {u"Test", kEllipsisWidth, u"…"},
-      {u"", kTestWidth, std::u16string()},
-      {u"Tes", kTestWidth, u"Tes"},
-      {u"Test", kTestWidth, u"Test"},
-      {u"Test123", kEllipsis23Width, u"…23"},
+      {"", 0, std::u16string()},
+      {"Test", 0, std::u16string()},
+      {"Test", kEllipsisWidth, UTF8ToUTF16(kEllipsisStr)},
+      {"", kTestWidth, std::u16string()},
+      {"Tes", kTestWidth, u"Tes"},
+      {"Test", kTestWidth, u"Test"},
+      {"Test123", kEllipsis23Width, UTF8ToUTF16(kEllipsisStr + "23")},
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
-    std::u16string result =
-        ElideText(cases[i].input, font_list, cases[i].width, ELIDE_HEAD);
+    std::u16string result = ElideText(UTF8ToUTF16(cases[i].input), font_list,
+                                      cases[i].width, ELIDE_HEAD);
     EXPECT_EQ(cases[i].output, result);
   }
 }
@@ -265,13 +298,15 @@ TEST(TextEliderTest, ElideTextAtomicSequences) {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
 #endif
   const FontList font_list;
-  std::vector<std::u16string> pairs;
   // The below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in
   // UTF-16 as two code units forming a surrogate pair: 0xD834 0xDD1E.
-  pairs.push_back(u"\U0001d11e");
+  const char16_t kSurrogate[] = {0xD834, 0xDD1E, 0};
   // The below is a Devanagari two-character combining sequence U+0921 U+093F.
   // The sequence forms a single display character and should not be separated.
-  pairs.push_back(u"\u0921\u093f");
+  const char16_t kCombiningSequence[] = {0x921, 0x93F, 0};
+  std::vector<std::u16string> pairs;
+  pairs.push_back(kSurrogate);
+  pairs.push_back(kCombiningSequence);
 
   for (const std::u16string& pair : pairs) {
     char16_t first_char = pair[0];
@@ -300,33 +335,34 @@ TEST(TextEliderTest, ElideTextAtomicSequences) {
 }
 
 TEST(TextEliderTest, ElideTextLongStrings) {
+  const std::u16string kEllipsisStr = UTF8ToUTF16(kEllipsis);
   std::u16string data_scheme(u"data:text/plain,");
   size_t data_scheme_length = data_scheme.length();
 
   std::u16string ten_a(10, 'a');
   std::u16string hundred_a(100, 'a');
   std::u16string thousand_a(1000, 'a');
-  std::u16string ten_thousand_a(10'000, 'a');
-  std::u16string hundred_thousand_a(100'000, 'a');
-  std::u16string million_a(1'000'000, 'a');
+  std::u16string ten_thousand_a(10000, 'a');
+  std::u16string hundred_thousand_a(100000, 'a');
+  std::u16string million_a(1000000, 'a');
 
   // TODO(gbillock): Improve these tests by adding more string diversity and
   // doing string compares instead of length compares. See bug 338836.
 
   size_t number_of_as = 156;
-  std::u16string long_string_end(data_scheme +
-                                 std::u16string(number_of_as, 'a') + u"…");
-  Testcase testcases_end[] = {
-      {data_scheme + ten_a, data_scheme + ten_a},
-      {data_scheme + hundred_a, data_scheme + hundred_a},
-      {data_scheme + thousand_a, long_string_end},
-      {data_scheme + ten_thousand_a, long_string_end},
-      {data_scheme + hundred_thousand_a, long_string_end},
-      {data_scheme + million_a, long_string_end},
+  std::u16string long_string_end(
+      data_scheme + std::u16string(number_of_as, 'a') + kEllipsisStr);
+  UTF16Testcase testcases_end[] = {
+     { data_scheme + ten_a,              data_scheme + ten_a },
+     { data_scheme + hundred_a,          data_scheme + hundred_a },
+     { data_scheme + thousand_a,         long_string_end },
+     { data_scheme + ten_thousand_a,     long_string_end },
+     { data_scheme + hundred_thousand_a, long_string_end },
+     { data_scheme + million_a,          long_string_end },
   };
 
   const FontList font_list;
-  float ellipsis_width = GetStringWidthF(u"…", font_list);
+  float ellipsis_width = GetStringWidthF(kEllipsisStr, font_list);
   for (size_t i = 0; i < base::size(testcases_end); ++i) {
     // Compare sizes rather than actual contents because if the test fails,
     // output is rather long.
@@ -334,19 +370,20 @@ TEST(TextEliderTest, ElideTextLongStrings) {
               ElideText(testcases_end[i].input, font_list,
                         GetStringWidthF(testcases_end[i].output, font_list),
                         ELIDE_TAIL).size());
-    EXPECT_EQ(u"…", ElideText(testcases_end[i].input, font_list, ellipsis_width,
-                              ELIDE_TAIL));
+    EXPECT_EQ(kEllipsisStr,
+              ElideText(testcases_end[i].input, font_list, ellipsis_width,
+                        ELIDE_TAIL));
   }
 
   size_t number_of_trailing_as = (data_scheme_length + number_of_as) / 2;
   std::u16string long_string_middle(
       data_scheme + std::u16string(number_of_as - number_of_trailing_as, 'a') +
-      u"…" + std::u16string(number_of_trailing_as, 'a'));
+      kEllipsisStr + std::u16string(number_of_trailing_as, 'a'));
 #if !defined(OS_IOS)
-  long_string_middle += u"…";
+  long_string_middle += kEllipsisStr;
 #endif
 
-  Testcase testcases_middle[] = {
+  UTF16Testcase testcases_middle[] = {
       {data_scheme + ten_a, data_scheme + ten_a},
       {data_scheme + hundred_a, data_scheme + hundred_a},
       {data_scheme + thousand_a, long_string_middle},
@@ -363,17 +400,17 @@ TEST(TextEliderTest, ElideTextLongStrings) {
                         GetStringWidthF(testcases_middle[i].output, font_list),
                         ELIDE_MIDDLE)
                   .size());
-    EXPECT_EQ(u"…", ElideText(testcases_middle[i].input, font_list,
-                              ellipsis_width, ELIDE_MIDDLE));
+    EXPECT_EQ(kEllipsisStr, ElideText(testcases_middle[i].input, font_list,
+                                      ellipsis_width, ELIDE_MIDDLE));
   }
 
-  std::u16string long_string_beginning(u"…" +
+  std::u16string long_string_beginning(kEllipsisStr +
                                        std::u16string(number_of_as, 'a'));
 #if !defined(OS_IOS)
-  long_string_beginning += u"…";
+  long_string_beginning += kEllipsisStr;
 #endif
 
-  Testcase testcases_beginning[] = {
+  UTF16Testcase testcases_beginning[] = {
       {data_scheme + ten_a, data_scheme + ten_a},
       {data_scheme + hundred_a, data_scheme + hundred_a},
       {data_scheme + thousand_a, long_string_beginning},
@@ -387,8 +424,8 @@ TEST(TextEliderTest, ElideTextLongStrings) {
                   testcases_beginning[i].input, font_list,
                   GetStringWidthF(testcases_beginning[i].output, font_list),
                   ELIDE_HEAD).size());
-    EXPECT_EQ(u"…", ElideText(testcases_beginning[i].input, font_list,
-                              ellipsis_width, ELIDE_HEAD));
+    EXPECT_EQ(kEllipsisStr, ElideText(testcases_beginning[i].input, font_list,
+                                      ellipsis_width, ELIDE_HEAD));
   }
 }
 
@@ -398,11 +435,11 @@ TEST(TextEliderTest, ElideTextLongStrings) {
 TEST(TextEliderTest, StringSlicerBasicTest) {
   // Must store strings in variables (StringSlicer retains a reference to them).
   std::u16string text(u"Hello, world!");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
 
   EXPECT_EQ(u"", slicer.CutString(0, false));
-  EXPECT_EQ(u"…", slicer.CutString(0, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(0, true));
 
   EXPECT_EQ(u"Hell", slicer.CutString(4, false));
   EXPECT_EQ(u"Hell…", slicer.CutString(4, true));
@@ -422,7 +459,7 @@ TEST(TextEliderTest, StringSlicerBasicTest) {
 TEST(TextEliderTest, StringSlicerWhitespace_UseDefault) {
   // Must store strings in variables (StringSlicer retains a reference to them).
   std::u16string text(u"Hello, world!");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
 
   // Eliding the end of a string should result in whitespace being removed
   // before the ellipsis by default.
@@ -450,7 +487,7 @@ TEST(TextEliderTest, StringSlicerWhitespace_UseDefault) {
 TEST(TextEliderTest, StringSlicerWhitespace_NoTrim) {
   // Must store strings in variables (StringSlicer retains a reference to them).
   std::u16string text(u"Hello, world!");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
 
   // Eliding the end of a string should not result in whitespace being removed
   // before the ellipsis in no-trim mode.
@@ -478,7 +515,7 @@ TEST(TextEliderTest, StringSlicerWhitespace_NoTrim) {
 TEST(TextEliderTest, StringSlicerWhitespace_Trim) {
   // Must store strings in variables (StringSlicer retains a reference to them).
   std::u16string text(u"Hello, world!");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
 
   // Eliding the end of a string should result in whitespace being removed
   // before the ellipsis in trim mode.
@@ -506,7 +543,7 @@ TEST(TextEliderTest, StringSlicerWhitespace_Trim) {
 TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
   // Must store strings in variables (StringSlicer retains a reference to them).
   std::u16string text(u"Hello  world!");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
 
   // Eliding the middle of a string should not result in whitespace being
   // removed around the ellipsis in default whitespace mode.
@@ -542,23 +579,24 @@ TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
 TEST(TextEliderTest, StringSlicerSurrogate) {
   // The below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in
   // UTF-16 as two code units forming a surrogate pair: 0xD834 0xDD1E.
-  const std::u16string kSurrogate = u"\U0001d11e";
+  const std::u16string kSurrogate = u"𝄞";
   ASSERT_EQ(2u, kSurrogate.size());
   ASSERT_EQ(u'\xD834', kSurrogate[0]);
   ASSERT_EQ(u'\xDD1E', kSurrogate[1]);
 
   std::u16string text(u"abc" + kSurrogate + u"xyz");
-  std::u16string ellipsis(u"…");
+  std::u16string ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
 
   // Cut surrogate on the right. Should round left and exclude the surrogate.
-  EXPECT_EQ(u"…", slicer.CutString(0, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(0, true));
   EXPECT_EQ(u"abc…", slicer.CutString(4, true));
-  EXPECT_EQ(text + u"…", slicer.CutString(text.length(), true));
+  EXPECT_EQ(text + kEllipsisUTF16, slicer.CutString(text.length(), true));
 
   // Cut surrogate on the left. Should round right and exclude the surrogate.
   StringSlicer slicer_begin(text, ellipsis, false, true);
-  EXPECT_EQ(u"…xyz", slicer_begin.CutString(4, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16) + u"xyz",
+            slicer_begin.CutString(4, true));
 
   // Cut surrogate in the middle. Should round right and exclude the surrogate.
   std::u16string short_text(u"abc" + kSurrogate);
@@ -569,8 +607,9 @@ TEST(TextEliderTest, StringSlicerSurrogate) {
   std::u16string dangling_trailing_text = kSurrogate.substr(1);
   StringSlicer slicer_dangling_trailing(dangling_trailing_text, ellipsis, false,
                                         false);
-  EXPECT_EQ(u"…", slicer_dangling_trailing.CutString(0, true));
-  EXPECT_EQ(dangling_trailing_text + u"…",
+  EXPECT_EQ(std::u16string(kEllipsisUTF16),
+            slicer_dangling_trailing.CutString(0, true));
+  EXPECT_EQ(dangling_trailing_text + kEllipsisUTF16,
             slicer_dangling_trailing.CutString(1, true));
 }
 
@@ -580,8 +619,10 @@ TEST(TextEliderTest, StringSlicerCombining) {
   // LATIN SMALL LETTER E + COMBINING ACUTE ACCENT + COMBINING CEDILLA
   // LATIN SMALL LETTER X + COMBINING ENCLOSING KEYCAP
   // DEVANAGARI LETTER DDA + DEVANAGARI VOWEL SIGN I
-  std::u16string text(u"e\u0301\u0327 x\u20e3 \u0921\u093f");
-  std::u16string ellipsis(u"…");
+  const char16_t kText[] = {'e',    0x301, 0x327, ' ',   'x',
+                            0x20E3, ' ',   0x921, 0x93F, 0};
+  std::u16string text(kText);
+  std::u16string ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
 
   // Attempt to cut the string for all lengths. When a combining sequence is
@@ -589,31 +630,33 @@ TEST(TextEliderTest, StringSlicerCombining) {
   // Whitespace is also cut adjacent to the ellipsis.
 
   // First sequence:
-  EXPECT_EQ(u"…", slicer.CutString(0, true));
-  EXPECT_EQ(u"…", slicer.CutString(1, true));
-  EXPECT_EQ(u"…", slicer.CutString(2, true));
-  EXPECT_EQ(text.substr(0, 3) + u"…", slicer.CutString(3, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(0, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(1, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(2, true));
+  EXPECT_EQ(text.substr(0, 3) + kEllipsisUTF16, slicer.CutString(3, true));
   // Second sequence:
-  EXPECT_EQ(text.substr(0, 3) + u"…", slicer.CutString(4, true));
-  EXPECT_EQ(text.substr(0, 3) + u"…", slicer.CutString(5, true));
-  EXPECT_EQ(text.substr(0, 6) + u"…", slicer.CutString(6, true));
+  EXPECT_EQ(text.substr(0, 3) + kEllipsisUTF16, slicer.CutString(4, true));
+  EXPECT_EQ(text.substr(0, 3) + kEllipsisUTF16, slicer.CutString(5, true));
+  EXPECT_EQ(text.substr(0, 6) + kEllipsisUTF16, slicer.CutString(6, true));
   // Third sequence:
-  EXPECT_EQ(text.substr(0, 6) + u"…", slicer.CutString(7, true));
-  EXPECT_EQ(text.substr(0, 6) + u"…", slicer.CutString(8, true));
-  EXPECT_EQ(text + u"…", slicer.CutString(9, true));
+  EXPECT_EQ(text.substr(0, 6) + kEllipsisUTF16, slicer.CutString(7, true));
+  EXPECT_EQ(text.substr(0, 6) + kEllipsisUTF16, slicer.CutString(8, true));
+  EXPECT_EQ(text + kEllipsisUTF16, slicer.CutString(9, true));
 
   // Cut string in the middle, splitting the second sequence in half. Should
   // round both left and right, excluding the second sequence.
   StringSlicer slicer_mid(text, ellipsis, true, false);
-  EXPECT_EQ(text.substr(0, 4) + u"…" + text.substr(6),
+  EXPECT_EQ(text.substr(0, 4) + kEllipsisUTF16 + text.substr(6),
             slicer_mid.CutString(9, true));
 
   // String that starts with a dangling combining mark.
   char16_t dangling_mark_chars[] = {text[1], 0};
   std::u16string dangling_mark_text(dangling_mark_chars);
   StringSlicer slicer_dangling_mark(dangling_mark_text, ellipsis, false, false);
-  EXPECT_EQ(u"…", slicer_dangling_mark.CutString(0, true));
-  EXPECT_EQ(dangling_mark_text + u"…", slicer_dangling_mark.CutString(1, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16),
+            slicer_dangling_mark.CutString(0, true));
+  EXPECT_EQ(dangling_mark_text + kEllipsisUTF16,
+            slicer_dangling_mark.CutString(1, true));
 }
 
 TEST(TextEliderTest, StringSlicerCombiningSurrogate) {
@@ -621,46 +664,49 @@ TEST(TextEliderTest, StringSlicerCombiningSurrogate) {
   // The following string contains a single combining character sequence:
   // MUSICAL SYMBOL G CLEF (U+1D11E) + MUSICAL SYMBOL COMBINING FLAG-1 (U+1D16E)
   // Represented as four UTF-16 code units.
-  std::u16string text(u"\U0001d11e\U0001d16e");
-  std::u16string ellipsis(u"…");
+  const char16_t kText[] = {0xD834, 0xDD1E, 0xD834, 0xDD6E, 0};
+  std::u16string text(kText);
+  std::u16string ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
 
   // Attempt to cut the string for all lengths. Should always round left and
   // exclude the combining sequence.
-  EXPECT_EQ(u"…", slicer.CutString(0, true));
-  EXPECT_EQ(u"…", slicer.CutString(1, true));
-  EXPECT_EQ(u"…", slicer.CutString(2, true));
-  EXPECT_EQ(u"…", slicer.CutString(3, true));
-  EXPECT_EQ(text + u"…", slicer.CutString(4, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(0, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(1, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(2, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer.CutString(3, true));
+  EXPECT_EQ(text + kEllipsisUTF16, slicer.CutString(4, true));
 
   // Cut string in the middle. Should exclude the sequence.
   StringSlicer slicer_mid(text, ellipsis, true, false);
-  EXPECT_EQ(u"…", slicer_mid.CutString(4, true));
+  EXPECT_EQ(std::u16string(kEllipsisUTF16), slicer_mid.CutString(4, true));
 }
 
 TEST(TextEliderTest, ElideString) {
   struct TestData {
-    const char16_t* input;
+    const char* input;
     size_t max_len;
     bool result;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"Hello", 0, true, u""},
-      {u"", 0, false, u""},
-      {u"Hello, my name is Tom", 1, true, u"H"},
-      {u"Hello, my name is Tom", 2, true, u"He"},
-      {u"Hello, my name is Tom", 3, true, u"H.m"},
-      {u"Hello, my name is Tom", 4, true, u"H..m"},
-      {u"Hello, my name is Tom", 5, true, u"H...m"},
-      {u"Hello, my name is Tom", 6, true, u"He...m"},
-      {u"Hello, my name is Tom", 7, true, u"He...om"},
-      {u"Hello, my name is Tom", 10, true, u"Hell...Tom"},
-      {u"Hello, my name is Tom", 100, false, u"Hello, my name is Tom"}};
+    { "Hello", 0, true, "" },
+    { "", 0, false, "" },
+    { "Hello, my name is Tom", 1, true, "H" },
+    { "Hello, my name is Tom", 2, true, "He" },
+    { "Hello, my name is Tom", 3, true, "H.m" },
+    { "Hello, my name is Tom", 4, true, "H..m" },
+    { "Hello, my name is Tom", 5, true, "H...m" },
+    { "Hello, my name is Tom", 6, true, "He...m" },
+    { "Hello, my name is Tom", 7, true, "He...om" },
+    { "Hello, my name is Tom", 10, true, "Hell...Tom" },
+    { "Hello, my name is Tom", 100, false, "Hello, my name is Tom" }
+  };
   for (size_t i = 0; i < base::size(cases); ++i) {
     std::u16string output;
     EXPECT_EQ(cases[i].result,
-              ElideString(cases[i].input, cases[i].max_len, &output));
-    EXPECT_EQ(cases[i].output, output);
+              ElideString(UTF8ToUTF16(cases[i].input),
+                          cases[i].max_len, &output));
+    EXPECT_EQ(cases[i].output, UTF16ToUTF8(output));
   }
 }
 
@@ -670,51 +716,50 @@ TEST(TextEliderTest, ElideRectangleText) {
   const float test_width = GetStringWidthF(u"Test", font_list);
 
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float available_pixel_width;
     int available_pixel_height;
     bool truncated_y;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"", 0, 0, false, nullptr},
-      {u"", 1, 1, false, nullptr},
-      {u"Test", test_width, 0, true, nullptr},
-      {u"Test", test_width, 1, false, u"Test"},
-      {u"Test", test_width, line_height, false, u"Test"},
-      {u"Test Test", test_width, line_height, true, u"Test"},
-      {u"Test Test", test_width, line_height + 1, false, u"Test|Test"},
-      {u"Test Test", test_width, line_height * 2, false, u"Test|Test"},
-      {u"Test Test", test_width, line_height * 3, false, u"Test|Test"},
-      {u"Test Test", test_width * 2, line_height * 2, false, u"Test|Test"},
-      {u"Test Test", test_width * 3, line_height, false, u"Test Test"},
-      {u"Test\nTest", test_width * 3, line_height * 2, false, u"Test|Test"},
-      {u"Te\nst Te", test_width, line_height * 3, false, u"Te|st|Te"},
-      {u"\nTest", test_width, line_height * 2, false, u"|Test"},
-      {u"\nTest", test_width, line_height, true, u""},
-      {u"\n\nTest", test_width, line_height * 3, false, u"||Test"},
-      {u"\n\nTest", test_width, line_height * 2, true, u"|"},
-      {u"Test\n", 2 * test_width, line_height * 5, false, u"Test|"},
-      {u"Test\n\n", 2 * test_width, line_height * 5, false, u"Test||"},
-      {u"Test\n\n\n", 2 * test_width, line_height * 5, false, u"Test|||"},
-      {u"Test\nTest\n\n", 2 * test_width, line_height * 5, false,
-       u"Test|Test||"},
-      {u"Test\n\nTest\n", 2 * test_width, line_height * 5, false,
-       u"Test||Test|"},
-      {u"Test\n\n\nTest", 2 * test_width, line_height * 5, false,
-       u"Test|||Test"},
-      {u"Te ", test_width, line_height, false, u"Te"},
-      {u"Te  Te Test", test_width, 3 * line_height, false, u"Te|Te|Test"},
+      {"", 0, 0, false, nullptr},
+      {"", 1, 1, false, nullptr},
+      {"Test", test_width, 0, true, nullptr},
+      {"Test", test_width, 1, false, "Test"},
+      {"Test", test_width, line_height, false, "Test"},
+      {"Test Test", test_width, line_height, true, "Test"},
+      {"Test Test", test_width, line_height + 1, false, "Test|Test"},
+      {"Test Test", test_width, line_height * 2, false, "Test|Test"},
+      {"Test Test", test_width, line_height * 3, false, "Test|Test"},
+      {"Test Test", test_width * 2, line_height * 2, false, "Test|Test"},
+      {"Test Test", test_width * 3, line_height, false, "Test Test"},
+      {"Test\nTest", test_width * 3, line_height * 2, false, "Test|Test"},
+      {"Te\nst Te", test_width, line_height * 3, false, "Te|st|Te"},
+      {"\nTest", test_width, line_height * 2, false, "|Test"},
+      {"\nTest", test_width, line_height, true, ""},
+      {"\n\nTest", test_width, line_height * 3, false, "||Test"},
+      {"\n\nTest", test_width, line_height * 2, true, "|"},
+      {"Test\n", 2 * test_width, line_height * 5, false, "Test|"},
+      {"Test\n\n", 2 * test_width, line_height * 5, false, "Test||"},
+      {"Test\n\n\n", 2 * test_width, line_height * 5, false, "Test|||"},
+      {"Test\nTest\n\n", 2 * test_width, line_height * 5, false, "Test|Test||"},
+      {"Test\n\nTest\n", 2 * test_width, line_height * 5, false, "Test||Test|"},
+      {"Test\n\n\nTest", 2 * test_width, line_height * 5, false, "Test|||Test"},
+      {"Te ", test_width, line_height, false, "Te"},
+      {"Te  Te Test", test_width, 3 * line_height, false, "Te|Te|Test"},
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     std::vector<std::u16string> lines;
     EXPECT_EQ(cases[i].truncated_y ? INSUFFICIENT_SPACE_VERTICAL : 0,
-              ElideRectangleText(cases[i].input, font_list,
+              ElideRectangleText(UTF8ToUTF16(cases[i].input),
+                                 font_list,
                                  cases[i].available_pixel_width,
                                  cases[i].available_pixel_height,
-                                 TRUNCATE_LONG_WORDS, &lines));
+                                 TRUNCATE_LONG_WORDS,
+                                 &lines));
     if (cases[i].output) {
-      const std::u16string result = base::JoinString(lines, u"|");
+      const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
       EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
     } else {
       EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
@@ -731,27 +776,27 @@ TEST(TextEliderTest, ElideRectangleTextFirstWordTruncated) {
 
   std::vector<std::u16string> lines;
 
-  auto result_for_width = [&](const char16_t* input, float width) {
+  auto result_for_width = [&](const char* input, float width) {
     lines.clear();
-    return ElideRectangleText(input, font_list, width, line_height * 4,
-                              WRAP_LONG_WORDS, &lines);
+    return ElideRectangleText(ASCIIToUTF16(input), font_list, width,
+                              line_height * 4, WRAP_LONG_WORDS, &lines);
   };
 
   // Test base case.
-  EXPECT_EQ(0, result_for_width(u"Test", test_width));
+  EXPECT_EQ(0, result_for_width("Test", test_width));
   EXPECT_EQ(1u, lines.size());
   EXPECT_EQ(u"Test", lines[0]);
 
   // First word truncated.
   EXPECT_EQ(INSUFFICIENT_SPACE_FOR_FIRST_WORD,
-            result_for_width(u"Test", tes_width));
+            result_for_width("Test", tes_width));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ(u"Tes", lines[0]);
   EXPECT_EQ(u"t", lines[1]);
 
   // Two words truncated.
   EXPECT_EQ(INSUFFICIENT_SPACE_FOR_FIRST_WORD,
-            result_for_width(u"Test\nTest", tes_width));
+            result_for_width("Test\nTest", tes_width));
   EXPECT_EQ(4u, lines.size());
   EXPECT_EQ(u"Tes", lines[0]);
   EXPECT_EQ(u"t", lines[1]);
@@ -759,14 +804,14 @@ TEST(TextEliderTest, ElideRectangleTextFirstWordTruncated) {
   EXPECT_EQ(u"t", lines[3]);
 
   // Word truncated, but not the first.
-  EXPECT_EQ(0, result_for_width(u"T Test", tes_width));
+  EXPECT_EQ(0, result_for_width("T Test", tes_width));
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ(u"T", lines[0]);
   EXPECT_EQ(u"Tes", lines[1]);
   EXPECT_EQ(u"t", lines[2]);
 
   // Leading \n.
-  EXPECT_EQ(0, result_for_width(u"\nTest", tes_width));
+  EXPECT_EQ(0, result_for_width("\nTest", tes_width));
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ(u"", lines[0]);
   EXPECT_EQ(u"Tes", lines[1]);
@@ -782,17 +827,17 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float available_pixel_width;
     int available_pixel_height;
     bool wrap_words;
     bool truncated_x;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"Test T.", test_t_width, line_height * 2, false, false, u"Test|T."},
-      {u"Test T ?", test_t_width, line_height * 2, false, false, u"Test|T ?"},
-      {u"Test. Test", test_width, line_height * 3, false, true, u"Test|Test"},
-      {u"Test. Test", test_width, line_height * 3, true, false, u"Test|.|Test"},
+    { "Test T.", test_t_width, line_height * 2, false, false, "Test|T." },
+    { "Test T ?", test_t_width, line_height * 2, false, false, "Test|T ?" },
+    { "Test. Test", test_width, line_height * 3, false, true, "Test|Test" },
+    { "Test. Test", test_width, line_height * 3, true, false, "Test|.|Test" },
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
@@ -800,12 +845,13 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
     const WordWrapBehavior wrap_behavior =
         (cases[i].wrap_words ? WRAP_LONG_WORDS : TRUNCATE_LONG_WORDS);
     EXPECT_EQ(cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
-              ElideRectangleText(
-                  cases[i].input, font_list, cases[i].available_pixel_width,
-                  cases[i].available_pixel_height, wrap_behavior, &lines) &
+              ElideRectangleText(UTF8ToUTF16(cases[i].input), font_list,
+                                 cases[i].available_pixel_width,
+                                 cases[i].available_pixel_height, wrap_behavior,
+                                 &lines) &
                   kResultMask);
     if (cases[i].output) {
-      const std::u16string result = base::JoinString(lines, u"|");
+      const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
       EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
     } else {
       EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
@@ -816,58 +862,60 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
 TEST(TextEliderTest, ElideRectangleTextLongWords) {
   const FontList font_list;
   const int kAvailableHeight = 1000;
-  const std::u16string kElidedTesting = u"Tes…";
+  const std::u16string kElidedTesting =
+      UTF8ToUTF16(std::string("Tes") + kEllipsis);
   const float elided_width = GetStringWidthF(kElidedTesting, font_list);
   const float test_width = GetStringWidthF(u"Test", font_list);
   constexpr int kResultMask =
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
   struct TestData {
-    const char16_t* input;
+    const char* input;
     float available_pixel_width;
     WordWrapBehavior wrap_behavior;
     bool truncated_x;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"Testing", test_width, IGNORE_LONG_WORDS, false, u"Testing"},
-      {u"X Testing", test_width, IGNORE_LONG_WORDS, false, u"X|Testing"},
-      {u"Test Testing", test_width, IGNORE_LONG_WORDS, false, u"Test|Testing"},
-      {u"Test\nTesting", test_width, IGNORE_LONG_WORDS, false, u"Test|Testing"},
-      {u"Test Tests ", test_width, IGNORE_LONG_WORDS, false, u"Test|Tests"},
-      {u"Test Tests T", test_width, IGNORE_LONG_WORDS, false, u"Test|Tests|T"},
+    { "Testing", test_width, IGNORE_LONG_WORDS, false, "Testing" },
+    { "X Testing", test_width, IGNORE_LONG_WORDS, false, "X|Testing" },
+    { "Test Testing", test_width, IGNORE_LONG_WORDS, false, "Test|Testing" },
+    { "Test\nTesting", test_width, IGNORE_LONG_WORDS, false, "Test|Testing" },
+    { "Test Tests ", test_width, IGNORE_LONG_WORDS, false, "Test|Tests" },
+    { "Test Tests T", test_width, IGNORE_LONG_WORDS, false, "Test|Tests|T" },
 
-      {u"Testing", elided_width, ELIDE_LONG_WORDS, true, u"Tes…"},
-      {u"X Testing", elided_width, ELIDE_LONG_WORDS, true, u"X|Tes…"},
-      {u"Test Testing", elided_width, ELIDE_LONG_WORDS, true, u"Test|Tes…"},
-      {u"Test\nTesting", elided_width, ELIDE_LONG_WORDS, true, u"Test|Tes…"},
+    { "Testing", elided_width, ELIDE_LONG_WORDS, true, "Tes..." },
+    { "X Testing", elided_width, ELIDE_LONG_WORDS, true, "X|Tes..." },
+    { "Test Testing", elided_width, ELIDE_LONG_WORDS, true, "Test|Tes..." },
+    { "Test\nTesting", elided_width, ELIDE_LONG_WORDS, true, "Test|Tes..." },
 
-      {u"Testing", test_width, TRUNCATE_LONG_WORDS, true, u"Test"},
-      {u"X Testing", test_width, TRUNCATE_LONG_WORDS, true, u"X|Test"},
-      {u"Test Testing", test_width, TRUNCATE_LONG_WORDS, true, u"Test|Test"},
-      {u"Test\nTesting", test_width, TRUNCATE_LONG_WORDS, true, u"Test|Test"},
-      {u"Test Tests ", test_width, TRUNCATE_LONG_WORDS, true, u"Test|Test"},
-      {u"Test Tests T", test_width, TRUNCATE_LONG_WORDS, true, u"Test|Test|T"},
+    { "Testing", test_width, TRUNCATE_LONG_WORDS, true, "Test" },
+    { "X Testing", test_width, TRUNCATE_LONG_WORDS, true, "X|Test" },
+    { "Test Testing", test_width, TRUNCATE_LONG_WORDS, true, "Test|Test" },
+    { "Test\nTesting", test_width, TRUNCATE_LONG_WORDS, true, "Test|Test" },
+    { "Test Tests ", test_width, TRUNCATE_LONG_WORDS, true, "Test|Test" },
+    { "Test Tests T", test_width, TRUNCATE_LONG_WORDS, true, "Test|Test|T" },
 
-      {u"Testing", test_width, WRAP_LONG_WORDS, false, u"Test|ing"},
-      {u"X Testing", test_width, WRAP_LONG_WORDS, false, u"X|Test|ing"},
-      {u"Test Testing", test_width, WRAP_LONG_WORDS, false, u"Test|Test|ing"},
-      {u"Test\nTesting", test_width, WRAP_LONG_WORDS, false, u"Test|Test|ing"},
-      {u"Test Tests ", test_width, WRAP_LONG_WORDS, false, u"Test|Test|s"},
-      {u"Test Tests T", test_width, WRAP_LONG_WORDS, false, u"Test|Test|s T"},
-      {u"TestTestTest", test_width, WRAP_LONG_WORDS, false, u"Test|Test|Test"},
-      {u"TestTestTestT", test_width, WRAP_LONG_WORDS, false,
-       u"Test|Test|Test|T"},
+    { "Testing", test_width, WRAP_LONG_WORDS, false, "Test|ing" },
+    { "X Testing", test_width, WRAP_LONG_WORDS, false, "X|Test|ing" },
+    { "Test Testing", test_width, WRAP_LONG_WORDS, false, "Test|Test|ing" },
+    { "Test\nTesting", test_width, WRAP_LONG_WORDS, false, "Test|Test|ing" },
+    { "Test Tests ", test_width, WRAP_LONG_WORDS, false, "Test|Test|s" },
+    { "Test Tests T", test_width, WRAP_LONG_WORDS, false, "Test|Test|s T" },
+    { "TestTestTest", test_width, WRAP_LONG_WORDS, false, "Test|Test|Test" },
+    { "TestTestTestT", test_width, WRAP_LONG_WORDS, false, "Test|Test|Test|T" },
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     std::vector<std::u16string> lines;
-    EXPECT_EQ(cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
-              ElideRectangleText(
-                  cases[i].input, font_list, cases[i].available_pixel_width,
-                  kAvailableHeight, cases[i].wrap_behavior, &lines) &
-                  kResultMask);
-    std::u16string expected_output(cases[i].output);
-    const std::u16string result = base::JoinString(lines, u"|");
+    EXPECT_EQ(
+        cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
+        ElideRectangleText(UTF8ToUTF16(cases[i].input), font_list,
+                           cases[i].available_pixel_width, kAvailableHeight,
+                           cases[i].wrap_behavior, &lines) &
+            kResultMask);
+    std::string expected_output(cases[i].output);
+    base::ReplaceSubstringsAfterOffset(&expected_output, 0, "...", kEllipsis);
+    const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
     EXPECT_EQ(expected_output, result) << "Case " << i << " failed!";
   }
 }
@@ -885,10 +933,14 @@ TEST(TextEliderTest, ElideRectangleTextCheckLineWidth) {
 #endif
   const float kAvailableWidth = 235;
   const int kAvailableHeight = 1000;
-  const char16_t text[] = u"that Russian place we used to go to after fencing";
+  const char text[] = "that Russian place we used to go to after fencing";
   std::vector<std::u16string> lines;
-  EXPECT_EQ(0, ElideRectangleText(text, font_list, kAvailableWidth,
-                                  kAvailableHeight, WRAP_LONG_WORDS, &lines));
+  EXPECT_EQ(0, ElideRectangleText(UTF8ToUTF16(text),
+                                  font_list,
+                                  kAvailableWidth,
+                                  kAvailableHeight,
+                                  WRAP_LONG_WORDS,
+                                  &lines));
   ASSERT_EQ(2u, lines.size());
   EXPECT_LE(GetStringWidthF(lines[0], font_list), kAvailableWidth);
   EXPECT_LE(GetStringWidthF(lines[1], font_list), kAvailableWidth);
@@ -902,10 +954,10 @@ TEST(TextEliderTest, ElideRectangleTextCheckConcatWidthEqualsSumOfWidths) {
   FontList font_list;
   font_list = FontList("Noto Sans UI,ui-sans, 12px");
   SetFontRenderParamsDeviceScaleFactor(1.25f);
-#define WIDTH(x) GetStringWidthF((x), font_list)
-  EXPECT_EQ(WIDTH(u"The administrator for this account has"),
-            WIDTH(u"The ") + WIDTH(u"administrator ") + WIDTH(u"for ") +
-                WIDTH(u"this ") + WIDTH(u"account ") + WIDTH(u"has"));
+#define WIDTH(x) GetStringWidthF(UTF8ToUTF16(x), font_list)
+  EXPECT_EQ(WIDTH("The administrator for this account has"),
+            WIDTH("The ") + WIDTH("administrator ") + WIDTH("for ") +
+                WIDTH("this ") + WIDTH("account ") + WIDTH("has"));
 #undef WIDTH
   SetFontRenderParamsDeviceScaleFactor(1.0f);
 }
@@ -913,172 +965,181 @@ TEST(TextEliderTest, ElideRectangleTextCheckConcatWidthEqualsSumOfWidths) {
 
 TEST(TextEliderTest, ElideRectangleString) {
   struct TestData {
-    const char16_t* input;
+    const char* input;
     int max_rows;
     int max_cols;
     bool result;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"", 0, 0, false, u""},
-      {u"", 1, 1, false, u""},
-      {u"Hi, my name is\nTom", 0, 0, true, u"..."},
-      {u"Hi, my name is\nTom", 1, 0, true, u"\n..."},
-      {u"Hi, my name is\nTom", 0, 1, true, u"..."},
-      {u"Hi, my name is\nTom", 1, 1, true, u"H\n..."},
-      {u"Hi, my name is\nTom", 2, 1, true, u"H\ni\n..."},
-      {u"Hi, my name is\nTom", 3, 1, true, u"H\ni\n,\n..."},
-      {u"Hi, my name is\nTom", 4, 1, true, u"H\ni\n,\n \n..."},
-      {u"Hi, my name is\nTom", 5, 1, true, u"H\ni\n,\n \nm\n..."},
-      {u"Hi, my name is\nTom", 0, 2, true, u"..."},
-      {u"Hi, my name is\nTom", 1, 2, true, u"Hi\n..."},
-      {u"Hi, my name is\nTom", 2, 2, true, u"Hi\n, \n..."},
-      {u"Hi, my name is\nTom", 3, 2, true, u"Hi\n, \nmy\n..."},
-      {u"Hi, my name is\nTom", 4, 2, true, u"Hi\n, \nmy\n n\n..."},
-      {u"Hi, my name is\nTom", 5, 2, true, u"Hi\n, \nmy\n n\nam\n..."},
-      {u"Hi, my name is\nTom", 0, 3, true, u"..."},
-      {u"Hi, my name is\nTom", 1, 3, true, u"Hi,\n..."},
-      {u"Hi, my name is\nTom", 2, 3, true, u"Hi,\n my\n..."},
-      {u"Hi, my name is\nTom", 3, 3, true, u"Hi,\n my\n na\n..."},
-      {u"Hi, my name is\nTom", 4, 3, true, u"Hi,\n my\n na\nme \n..."},
-      {u"Hi, my name is\nTom", 5, 3, true, u"Hi,\n my\n na\nme \nis\n..."},
-      {u"Hi, my name is\nTom", 1, 4, true, u"Hi, \n..."},
-      {u"Hi, my name is\nTom", 2, 4, true, u"Hi, \nmy n\n..."},
-      {u"Hi, my name is\nTom", 3, 4, true, u"Hi, \nmy n\name \n..."},
-      {u"Hi, my name is\nTom", 4, 4, true, u"Hi, \nmy n\name \nis\n..."},
-      {u"Hi, my name is\nTom", 5, 4, false, u"Hi, \nmy n\name \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 5, true, u"Hi, \n..."},
-      {u"Hi, my name is\nTom", 2, 5, true, u"Hi, \nmy na\n..."},
-      {u"Hi, my name is\nTom", 3, 5, true, u"Hi, \nmy na\nme \n..."},
-      {u"Hi, my name is\nTom", 4, 5, true, u"Hi, \nmy na\nme \nis\n..."},
-      {u"Hi, my name is\nTom", 5, 5, false, u"Hi, \nmy na\nme \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 6, true, u"Hi, \n..."},
-      {u"Hi, my name is\nTom", 2, 6, true, u"Hi, \nmy \n..."},
-      {u"Hi, my name is\nTom", 3, 6, true, u"Hi, \nmy \nname \n..."},
-      {u"Hi, my name is\nTom", 4, 6, true, u"Hi, \nmy \nname \nis\n..."},
-      {u"Hi, my name is\nTom", 5, 6, false, u"Hi, \nmy \nname \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 7, true, u"Hi, \n..."},
-      {u"Hi, my name is\nTom", 2, 7, true, u"Hi, \nmy \n..."},
-      {u"Hi, my name is\nTom", 3, 7, true, u"Hi, \nmy \nname \n..."},
-      {u"Hi, my name is\nTom", 4, 7, true, u"Hi, \nmy \nname \nis\n..."},
-      {u"Hi, my name is\nTom", 5, 7, false, u"Hi, \nmy \nname \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 8, true, u"Hi, my \n..."},
-      {u"Hi, my name is\nTom", 2, 8, true, u"Hi, my \nname \n..."},
-      {u"Hi, my name is\nTom", 3, 8, true, u"Hi, my \nname \nis\n..."},
-      {u"Hi, my name is\nTom", 4, 8, false, u"Hi, my \nname \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 9, true, u"Hi, my \n..."},
-      {u"Hi, my name is\nTom", 2, 9, true, u"Hi, my \nname is\n..."},
-      {u"Hi, my name is\nTom", 3, 9, false, u"Hi, my \nname is\nTom"},
-      {u"Hi, my name is\nTom", 1, 10, true, u"Hi, my \n..."},
-      {u"Hi, my name is\nTom", 2, 10, true, u"Hi, my \nname is\n..."},
-      {u"Hi, my name is\nTom", 3, 10, false, u"Hi, my \nname is\nTom"},
-      {u"Hi, my name is\nTom", 1, 11, true, u"Hi, my \n..."},
-      {u"Hi, my name is\nTom", 2, 11, true, u"Hi, my \nname is\n..."},
-      {u"Hi, my name is\nTom", 3, 11, false, u"Hi, my \nname is\nTom"},
-      {u"Hi, my name is\nTom", 1, 12, true, u"Hi, my \n..."},
-      {u"Hi, my name is\nTom", 2, 12, true, u"Hi, my \nname is\n..."},
-      {u"Hi, my name is\nTom", 3, 12, false, u"Hi, my \nname is\nTom"},
-      {u"Hi, my name is\nTom", 1, 13, true, u"Hi, my name \n..."},
-      {u"Hi, my name is\nTom", 2, 13, true, u"Hi, my name \nis\n..."},
-      {u"Hi, my name is\nTom", 3, 13, false, u"Hi, my name \nis\nTom"},
-      {u"Hi, my name is\nTom", 1, 20, true, u"Hi, my name is\n..."},
-      {u"Hi, my name is\nTom", 2, 20, false, u"Hi, my name is\nTom"},
-      {u"Hi, my name is Tom", 1, 40, false, u"Hi, my name is Tom"},
+    { "", 0, 0, false, "" },
+    { "", 1, 1, false, "" },
+    { "Hi, my name is\nTom", 0, 0,  true,  "..." },
+    { "Hi, my name is\nTom", 1, 0,  true,  "\n..." },
+    { "Hi, my name is\nTom", 0, 1,  true,  "..." },
+    { "Hi, my name is\nTom", 1, 1,  true,  "H\n..." },
+    { "Hi, my name is\nTom", 2, 1,  true,  "H\ni\n..." },
+    { "Hi, my name is\nTom", 3, 1,  true,  "H\ni\n,\n..." },
+    { "Hi, my name is\nTom", 4, 1,  true,  "H\ni\n,\n \n..." },
+    { "Hi, my name is\nTom", 5, 1,  true,  "H\ni\n,\n \nm\n..." },
+    { "Hi, my name is\nTom", 0, 2,  true,  "..." },
+    { "Hi, my name is\nTom", 1, 2,  true,  "Hi\n..." },
+    { "Hi, my name is\nTom", 2, 2,  true,  "Hi\n, \n..." },
+    { "Hi, my name is\nTom", 3, 2,  true,  "Hi\n, \nmy\n..." },
+    { "Hi, my name is\nTom", 4, 2,  true,  "Hi\n, \nmy\n n\n..." },
+    { "Hi, my name is\nTom", 5, 2,  true,  "Hi\n, \nmy\n n\nam\n..." },
+    { "Hi, my name is\nTom", 0, 3,  true,  "..." },
+    { "Hi, my name is\nTom", 1, 3,  true,  "Hi,\n..." },
+    { "Hi, my name is\nTom", 2, 3,  true,  "Hi,\n my\n..." },
+    { "Hi, my name is\nTom", 3, 3,  true,  "Hi,\n my\n na\n..." },
+    { "Hi, my name is\nTom", 4, 3,  true,  "Hi,\n my\n na\nme \n..." },
+    { "Hi, my name is\nTom", 5, 3,  true,  "Hi,\n my\n na\nme \nis\n..." },
+    { "Hi, my name is\nTom", 1, 4,  true,  "Hi, \n..." },
+    { "Hi, my name is\nTom", 2, 4,  true,  "Hi, \nmy n\n..." },
+    { "Hi, my name is\nTom", 3, 4,  true,  "Hi, \nmy n\name \n..." },
+    { "Hi, my name is\nTom", 4, 4,  true,  "Hi, \nmy n\name \nis\n..." },
+    { "Hi, my name is\nTom", 5, 4,  false, "Hi, \nmy n\name \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 5,  true,  "Hi, \n..." },
+    { "Hi, my name is\nTom", 2, 5,  true,  "Hi, \nmy na\n..." },
+    { "Hi, my name is\nTom", 3, 5,  true,  "Hi, \nmy na\nme \n..." },
+    { "Hi, my name is\nTom", 4, 5,  true,  "Hi, \nmy na\nme \nis\n..." },
+    { "Hi, my name is\nTom", 5, 5,  false, "Hi, \nmy na\nme \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 6,  true,  "Hi, \n..." },
+    { "Hi, my name is\nTom", 2, 6,  true,  "Hi, \nmy \n..." },
+    { "Hi, my name is\nTom", 3, 6,  true,  "Hi, \nmy \nname \n..." },
+    { "Hi, my name is\nTom", 4, 6,  true,  "Hi, \nmy \nname \nis\n..." },
+    { "Hi, my name is\nTom", 5, 6,  false, "Hi, \nmy \nname \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 7,  true,  "Hi, \n..." },
+    { "Hi, my name is\nTom", 2, 7,  true,  "Hi, \nmy \n..." },
+    { "Hi, my name is\nTom", 3, 7,  true,  "Hi, \nmy \nname \n..." },
+    { "Hi, my name is\nTom", 4, 7,  true,  "Hi, \nmy \nname \nis\n..." },
+    { "Hi, my name is\nTom", 5, 7,  false, "Hi, \nmy \nname \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 8,  true,  "Hi, my \n..." },
+    { "Hi, my name is\nTom", 2, 8,  true,  "Hi, my \nname \n..." },
+    { "Hi, my name is\nTom", 3, 8,  true,  "Hi, my \nname \nis\n..." },
+    { "Hi, my name is\nTom", 4, 8,  false, "Hi, my \nname \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 9,  true,  "Hi, my \n..." },
+    { "Hi, my name is\nTom", 2, 9,  true,  "Hi, my \nname is\n..." },
+    { "Hi, my name is\nTom", 3, 9,  false, "Hi, my \nname is\nTom" },
+    { "Hi, my name is\nTom", 1, 10, true,  "Hi, my \n..." },
+    { "Hi, my name is\nTom", 2, 10, true,  "Hi, my \nname is\n..." },
+    { "Hi, my name is\nTom", 3, 10, false, "Hi, my \nname is\nTom" },
+    { "Hi, my name is\nTom", 1, 11, true,  "Hi, my \n..." },
+    { "Hi, my name is\nTom", 2, 11, true,  "Hi, my \nname is\n..." },
+    { "Hi, my name is\nTom", 3, 11, false, "Hi, my \nname is\nTom" },
+    { "Hi, my name is\nTom", 1, 12, true,  "Hi, my \n..." },
+    { "Hi, my name is\nTom", 2, 12, true,  "Hi, my \nname is\n..." },
+    { "Hi, my name is\nTom", 3, 12, false, "Hi, my \nname is\nTom" },
+    { "Hi, my name is\nTom", 1, 13, true,  "Hi, my name \n..." },
+    { "Hi, my name is\nTom", 2, 13, true,  "Hi, my name \nis\n..." },
+    { "Hi, my name is\nTom", 3, 13, false, "Hi, my name \nis\nTom" },
+    { "Hi, my name is\nTom", 1, 20, true,  "Hi, my name is\n..." },
+    { "Hi, my name is\nTom", 2, 20, false, "Hi, my name is\nTom" },
+    { "Hi, my name is Tom",  1, 40, false, "Hi, my name is Tom" },
   };
   std::u16string output;
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(cases[i].result,
-              ElideRectangleString(cases[i].input, cases[i].max_rows,
-                                   cases[i].max_cols, true, &output));
-    EXPECT_EQ(cases[i].output, output);
+              ElideRectangleString(UTF8ToUTF16(cases[i].input),
+                                   cases[i].max_rows, cases[i].max_cols,
+                                   true, &output));
+    EXPECT_EQ(cases[i].output, UTF16ToUTF8(output));
   }
 }
 
 TEST(TextEliderTest, ElideRectangleStringNotStrict) {
   struct TestData {
-    const char16_t* input;
+    const char* input;
     int max_rows;
     int max_cols;
     bool result;
-    const char16_t* output;
+    const char* output;
   } cases[] = {
-      {u"", 0, 0, false, u""},
-      {u"", 1, 1, false, u""},
-      {u"Hi, my name_is\nDick", 0, 0, true, u"..."},
-      {u"Hi, my name_is\nDick", 1, 0, true, u"\n..."},
-      {u"Hi, my name_is\nDick", 0, 1, true, u"..."},
-      {u"Hi, my name_is\nDick", 1, 1, true, u"H\n..."},
-      {u"Hi, my name_is\nDick", 2, 1, true, u"H\ni\n..."},
-      {u"Hi, my name_is\nDick", 3, 1, true, u"H\ni\n,\n..."},
-      {u"Hi, my name_is\nDick", 4, 1, true, u"H\ni\n,\n \n..."},
-      {u"Hi, my name_is\nDick", 5, 1, true, u"H\ni\n,\n \nm\n..."},
-      {u"Hi, my name_is\nDick", 0, 2, true, u"..."},
-      {u"Hi, my name_is\nDick", 1, 2, true, u"Hi\n..."},
-      {u"Hi, my name_is\nDick", 2, 2, true, u"Hi\n, \n..."},
-      {u"Hi, my name_is\nDick", 3, 2, true, u"Hi\n, \nmy\n..."},
-      {u"Hi, my name_is\nDick", 4, 2, true, u"Hi\n, \nmy\n n\n..."},
-      {u"Hi, my name_is\nDick", 5, 2, true, u"Hi\n, \nmy\n n\nam\n..."},
-      {u"Hi, my name_is\nDick", 0, 3, true, u"..."},
-      {u"Hi, my name_is\nDick", 1, 3, true, u"Hi,\n..."},
-      {u"Hi, my name_is\nDick", 2, 3, true, u"Hi,\n my\n..."},
-      {u"Hi, my name_is\nDick", 3, 3, true, u"Hi,\n my\n na\n..."},
-      {u"Hi, my name_is\nDick", 4, 3, true, u"Hi,\n my\n na\nme_\n..."},
-      {u"Hi, my name_is\nDick", 5, 3, true, u"Hi,\n my\n na\nme_\nis\n..."},
-      {u"Hi, my name_is\nDick", 1, 4, true, u"Hi, ..."},
-      {u"Hi, my name_is\nDick", 2, 4, true, u"Hi, my n\n..."},
-      {u"Hi, my name_is\nDick", 3, 4, true, u"Hi, my n\name_\n..."},
-      {u"Hi, my name_is\nDick", 4, 4, true, u"Hi, my n\name_\nis\n..."},
-      {u"Hi, my name_is\nDick", 5, 4, false, u"Hi, my n\name_\nis\nDick"},
-      {u"Hi, my name_is\nDick", 1, 5, true, u"Hi, ..."},
-      {u"Hi, my name_is\nDick", 2, 5, true, u"Hi, my na\n..."},
-      {u"Hi, my name_is\nDick", 3, 5, true, u"Hi, my na\nme_is\n..."},
-      {u"Hi, my name_is\nDick", 4, 5, true, u"Hi, my na\nme_is\n\n..."},
-      {u"Hi, my name_is\nDick", 5, 5, false, u"Hi, my na\nme_is\n\nDick"},
-      {u"Hi, my name_is\nDick", 1, 6, true, u"Hi, ..."},
-      {u"Hi, my name_is\nDick", 2, 6, true, u"Hi, my nam\n..."},
-      {u"Hi, my name_is\nDick", 3, 6, true, u"Hi, my nam\ne_is\n..."},
-      {u"Hi, my name_is\nDick", 4, 6, false, u"Hi, my nam\ne_is\nDick"},
-      {u"Hi, my name_is\nDick", 5, 6, false, u"Hi, my nam\ne_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 7, true, u"Hi, ..."},
-      {u"Hi, my name_is\nDick", 2, 7, true, u"Hi, my name\n..."},
-      {u"Hi, my name_is\nDick", 3, 7, true, u"Hi, my name\n_is\n..."},
-      {u"Hi, my name_is\nDick", 4, 7, false, u"Hi, my name\n_is\nDick"},
-      {u"Hi, my name_is\nDick", 5, 7, false, u"Hi, my name\n_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 8, true, u"Hi, my n\n..."},
-      {u"Hi, my name_is\nDick", 2, 8, true, u"Hi, my n\name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 8, false, u"Hi, my n\name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 9, true, u"Hi, my ..."},
-      {u"Hi, my name_is\nDick", 2, 9, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 9, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 10, true, u"Hi, my ..."},
-      {u"Hi, my name_is\nDick", 2, 10, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 10, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 11, true, u"Hi, my ..."},
-      {u"Hi, my name_is\nDick", 2, 11, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 11, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 12, true, u"Hi, my ..."},
-      {u"Hi, my name_is\nDick", 2, 12, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 12, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 13, true, u"Hi, my ..."},
-      {u"Hi, my name_is\nDick", 2, 13, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 3, 13, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is\nDick", 1, 20, true, u"Hi, my name_is\n..."},
-      {u"Hi, my name_is\nDick", 2, 20, false, u"Hi, my name_is\nDick"},
-      {u"Hi, my name_is Dick", 1, 40, false, u"Hi, my name_is Dick"},
+    { "", 0, 0, false, "" },
+    { "", 1, 1, false, "" },
+    { "Hi, my name_is\nDick", 0, 0,  true,  "..." },
+    { "Hi, my name_is\nDick", 1, 0,  true,  "\n..." },
+    { "Hi, my name_is\nDick", 0, 1,  true,  "..." },
+    { "Hi, my name_is\nDick", 1, 1,  true,  "H\n..." },
+    { "Hi, my name_is\nDick", 2, 1,  true,  "H\ni\n..." },
+    { "Hi, my name_is\nDick", 3, 1,  true,  "H\ni\n,\n..." },
+    { "Hi, my name_is\nDick", 4, 1,  true,  "H\ni\n,\n \n..." },
+    { "Hi, my name_is\nDick", 5, 1,  true,  "H\ni\n,\n \nm\n..." },
+    { "Hi, my name_is\nDick", 0, 2,  true,  "..." },
+    { "Hi, my name_is\nDick", 1, 2,  true,  "Hi\n..." },
+    { "Hi, my name_is\nDick", 2, 2,  true,  "Hi\n, \n..." },
+    { "Hi, my name_is\nDick", 3, 2,  true,  "Hi\n, \nmy\n..." },
+    { "Hi, my name_is\nDick", 4, 2,  true,  "Hi\n, \nmy\n n\n..." },
+    { "Hi, my name_is\nDick", 5, 2,  true,  "Hi\n, \nmy\n n\nam\n..." },
+    { "Hi, my name_is\nDick", 0, 3,  true,  "..." },
+    { "Hi, my name_is\nDick", 1, 3,  true,  "Hi,\n..." },
+    { "Hi, my name_is\nDick", 2, 3,  true,  "Hi,\n my\n..." },
+    { "Hi, my name_is\nDick", 3, 3,  true,  "Hi,\n my\n na\n..." },
+    { "Hi, my name_is\nDick", 4, 3,  true,  "Hi,\n my\n na\nme_\n..." },
+    { "Hi, my name_is\nDick", 5, 3,  true,  "Hi,\n my\n na\nme_\nis\n..." },
+    { "Hi, my name_is\nDick", 1, 4,  true,  "Hi, ..." },
+    { "Hi, my name_is\nDick", 2, 4,  true,  "Hi, my n\n..." },
+    { "Hi, my name_is\nDick", 3, 4,  true,  "Hi, my n\name_\n..." },
+    { "Hi, my name_is\nDick", 4, 4,  true,  "Hi, my n\name_\nis\n..." },
+    { "Hi, my name_is\nDick", 5, 4,  false, "Hi, my n\name_\nis\nDick" },
+    { "Hi, my name_is\nDick", 1, 5,  true,  "Hi, ..." },
+    { "Hi, my name_is\nDick", 2, 5,  true,  "Hi, my na\n..." },
+    { "Hi, my name_is\nDick", 3, 5,  true,  "Hi, my na\nme_is\n..." },
+    { "Hi, my name_is\nDick", 4, 5,  true,  "Hi, my na\nme_is\n\n..." },
+    { "Hi, my name_is\nDick", 5, 5,  false, "Hi, my na\nme_is\n\nDick" },
+    { "Hi, my name_is\nDick", 1, 6,  true,  "Hi, ..." },
+    { "Hi, my name_is\nDick", 2, 6,  true,  "Hi, my nam\n..." },
+    { "Hi, my name_is\nDick", 3, 6,  true,  "Hi, my nam\ne_is\n..." },
+    { "Hi, my name_is\nDick", 4, 6,  false, "Hi, my nam\ne_is\nDick" },
+    { "Hi, my name_is\nDick", 5, 6,  false, "Hi, my nam\ne_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 7,  true,  "Hi, ..." },
+    { "Hi, my name_is\nDick", 2, 7,  true,  "Hi, my name\n..." },
+    { "Hi, my name_is\nDick", 3, 7,  true,  "Hi, my name\n_is\n..." },
+    { "Hi, my name_is\nDick", 4, 7,  false, "Hi, my name\n_is\nDick" },
+    { "Hi, my name_is\nDick", 5, 7,  false, "Hi, my name\n_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 8,  true,  "Hi, my n\n..." },
+    { "Hi, my name_is\nDick", 2, 8,  true,  "Hi, my n\name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 8,  false, "Hi, my n\name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 9,  true,  "Hi, my ..." },
+    { "Hi, my name_is\nDick", 2, 9,  true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 9,  false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 10, true,  "Hi, my ..." },
+    { "Hi, my name_is\nDick", 2, 10, true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 10, false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 11, true,  "Hi, my ..." },
+    { "Hi, my name_is\nDick", 2, 11, true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 11, false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 12, true,  "Hi, my ..." },
+    { "Hi, my name_is\nDick", 2, 12, true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 12, false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 13, true,  "Hi, my ..." },
+    { "Hi, my name_is\nDick", 2, 13, true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 3, 13, false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is\nDick", 1, 20, true,  "Hi, my name_is\n..." },
+    { "Hi, my name_is\nDick", 2, 20, false, "Hi, my name_is\nDick" },
+    { "Hi, my name_is Dick",  1, 40, false, "Hi, my name_is Dick" },
   };
   std::u16string output;
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(cases[i].result,
-              ElideRectangleString(cases[i].input, cases[i].max_rows,
-                                   cases[i].max_cols, false, &output));
-    EXPECT_EQ(cases[i].output, output);
+              ElideRectangleString(UTF8ToUTF16(cases[i].input),
+                                   cases[i].max_rows, cases[i].max_cols,
+                                   false, &output));
+    EXPECT_EQ(cases[i].output, UTF16ToUTF8(output));
   }
 }
 
 TEST(TextEliderTest, ElideRectangleWide16) {
   // Two greek words separated by space.
-  const std::u16string str(u"Παγκόσμιος Ιστός");
-  const std::u16string out1(u"Παγκ\nόσμι\n...");
-  const std::u16string out2(u"Παγκόσμιος \nΙστός");
+  const std::u16string str(
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+      u"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2");
+  const std::u16string out1(
+      u"\x03a0\x03b1\x03b3\x03ba\n"
+      u"\x03cc\x03c3\x03bc\x03b9\n"
+      u"...");
+  const std::u16string out2(
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9\x03bf\x03c2\x0020\n"
+      u"\x0399\x03c3\x03c4\x03cc\x03c2");
   std::u16string output;
   EXPECT_TRUE(ElideRectangleString(str, 2, 4, true, &output));
   EXPECT_EQ(out1, output);
@@ -1087,8 +1148,13 @@ TEST(TextEliderTest, ElideRectangleWide16) {
 }
 
 TEST(TextEliderTest, ElideRectangleWide32) {
-  const std::u16string str(u"𝒜𝒜𝒜𝒜 aaaaa");
-  const std::u16string out(u"𝒜𝒜𝒜\n𝒜 \naaa\n...");
+  // Four U+1D49C MATHEMATICAL SCRIPT CAPITAL A followed by space "aaaaa".
+  const std::u16string str(UTF8ToUTF16(
+      "\xF0\x9D\x92\x9C\xF0\x9D\x92\x9C\xF0\x9D\x92\x9C\xF0\x9D\x92\x9C"
+      " aaaaa"));
+  const std::u16string out(
+      UTF8ToUTF16("\xF0\x9D\x92\x9C\xF0\x9D\x92\x9C\xF0\x9D\x92\x9C\n"
+                  "\xF0\x9D\x92\x9C \naaa\n..."));
   std::u16string output;
   EXPECT_TRUE(ElideRectangleString(str, 3, 3, true, &output));
   EXPECT_EQ(out, output);
@@ -1102,31 +1168,36 @@ TEST(TextEliderTest, TruncateString) {
   EXPECT_EQ(std::u16string(), TruncateString(str, 0, CHARACTER_BREAK));
 
   // Test breaking at character 1.
-  EXPECT_EQ(u"…", TruncateString(str, 1, WORD_BREAK));
-  EXPECT_EQ(u"…", TruncateString(str, 1, CHARACTER_BREAK));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str, 1, WORD_BREAK)));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str, 1, CHARACTER_BREAK)));
 
   // Test breaking in the middle of the first word.
-  EXPECT_EQ(u"f…", TruncateString(str, 2, WORD_BREAK));
-  EXPECT_EQ(u"f…", TruncateString(str, 2, CHARACTER_BREAK));
+  EXPECT_EQ(L"f\x2026", UTF16ToWide(TruncateString(str, 2, WORD_BREAK)));
+  EXPECT_EQ(L"f\x2026", UTF16ToWide(TruncateString(str, 2, CHARACTER_BREAK)));
 
   // Test breaking in between words.
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 9, WORD_BREAK));
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 9, CHARACTER_BREAK));
+  EXPECT_EQ(L"fooooey\x2026", UTF16ToWide(TruncateString(str, 9, WORD_BREAK)));
+  EXPECT_EQ(L"fooooey\x2026",
+            UTF16ToWide(TruncateString(str, 9, CHARACTER_BREAK)));
 
   // Test breaking at the start of a later word.
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 11, WORD_BREAK));
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 11, CHARACTER_BREAK));
+  EXPECT_EQ(L"fooooey\x2026", UTF16ToWide(TruncateString(str, 11, WORD_BREAK)));
+  EXPECT_EQ(L"fooooey\x2026",
+            UTF16ToWide(TruncateString(str, 11, CHARACTER_BREAK)));
 
   // Test breaking in the middle of a word.
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 12, WORD_BREAK));
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 12, CHARACTER_BREAK));
-  EXPECT_EQ(u"fooooey…", TruncateString(str, 14, WORD_BREAK));
-  EXPECT_EQ(u"fooooey    bx…", TruncateString(str, 14, CHARACTER_BREAK));
+  EXPECT_EQ(L"fooooey\x2026", UTF16ToWide(TruncateString(str, 12, WORD_BREAK)));
+  EXPECT_EQ(L"fooooey\x2026",
+            UTF16ToWide(TruncateString(str, 12, CHARACTER_BREAK)));
+  EXPECT_EQ(L"fooooey\x2026", UTF16ToWide(TruncateString(str, 14, WORD_BREAK)));
+  EXPECT_EQ(L"fooooey    bx\x2026",
+            UTF16ToWide(TruncateString(str, 14, CHARACTER_BREAK)));
 
   // Test breaking in whitespace at the end of the string.
-  EXPECT_EQ(u"fooooey    bxxxar baz…", TruncateString(str, 22, WORD_BREAK));
-  EXPECT_EQ(u"fooooey    bxxxar baz…",
-            TruncateString(str, 22, CHARACTER_BREAK));
+  EXPECT_EQ(L"fooooey    bxxxar baz\x2026",
+            UTF16ToWide(TruncateString(str, 22, WORD_BREAK)));
+  EXPECT_EQ(L"fooooey    bxxxar baz\x2026",
+            UTF16ToWide(TruncateString(str, 22, CHARACTER_BREAK)));
 
   // Test breaking at the end of the string.
   EXPECT_EQ(str, TruncateString(str, str.length(), WORD_BREAK));
@@ -1141,18 +1212,19 @@ TEST(TextEliderTest, TruncateString) {
   std::u16string str2 = u"   foo";
 
   // Test breaking in leading whitespace.
-  EXPECT_EQ(u"…", TruncateString(str2, 2, WORD_BREAK));
-  EXPECT_EQ(u"…", TruncateString(str2, 2, CHARACTER_BREAK));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 2, WORD_BREAK)));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 2, CHARACTER_BREAK)));
 
   // Test breaking at the beginning of the first word, with leading whitespace.
-  EXPECT_EQ(u"…", TruncateString(str2, 3, WORD_BREAK));
-  EXPECT_EQ(u"…", TruncateString(str2, 3, CHARACTER_BREAK));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 3, WORD_BREAK)));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 3, CHARACTER_BREAK)));
 
   // Test breaking in the middle of the first word, with leading whitespace.
-  EXPECT_EQ(u"…", TruncateString(str2, 4, WORD_BREAK));
-  EXPECT_EQ(u"…", TruncateString(str2, 4, CHARACTER_BREAK));
-  EXPECT_EQ(u"   f…", TruncateString(str2, 5, WORD_BREAK));
-  EXPECT_EQ(u"   f…", TruncateString(str2, 5, CHARACTER_BREAK));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 4, WORD_BREAK)));
+  EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 4, CHARACTER_BREAK)));
+  EXPECT_EQ(L"   f\x2026", UTF16ToWide(TruncateString(str2, 5, WORD_BREAK)));
+  EXPECT_EQ(L"   f\x2026",
+            UTF16ToWide(TruncateString(str2, 5, CHARACTER_BREAK)));
 }
 
 }  // namespace gfx

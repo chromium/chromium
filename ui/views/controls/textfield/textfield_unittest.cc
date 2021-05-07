@@ -77,6 +77,9 @@
 #include "ui/base/cocoa/text_services_context_menu.h"
 #endif
 
+using base::ASCIIToUTF16;
+using base::UTF8ToUTF16;
+
 namespace views {
 namespace test {
 
@@ -425,8 +428,8 @@ std::u16string TextfieldTest::GetClipboardText(
 }
 
 void TextfieldTest::SetClipboardText(ui::ClipboardBuffer clipboard_buffer,
-                                     const std::u16string& text) {
-  ui::ScopedClipboardWriter(clipboard_buffer).WriteText(text);
+                                     const std::string& text) {
+  ui::ScopedClipboardWriter(clipboard_buffer).WriteText(ASCIIToUTF16(text));
 }
 
 void TextfieldTest::ContentsChanged(Textfield* sender,
@@ -1427,7 +1430,7 @@ TEST_F(TextfieldTest, PasswordTest) {
   EXPECT_EQ(u"password", textfield_->GetText());
   EXPECT_TRUE(last_contents_.empty());
   model_->SelectAll(false);
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"foo");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "foo");
 
   // Cut and copy should be disabled.
   EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kCut));
@@ -1791,7 +1794,7 @@ TEST_F(TextfieldTest, ContextMenuDisplayTest) {
   VerifyTextfieldContextMenuContents(true, true, GetContextMenuModel());
 
   // Exercise the "paste enabled?" check in the verifier.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"Test");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "Test");
   VerifyTextfieldContextMenuContents(true, true, GetContextMenuModel());
 }
 
@@ -1890,10 +1893,10 @@ TEST_F(TextfieldTest, DragToSelect) {
 TEST_F(TextfieldTest, DragUpOrDownSelectsToEnd) {
   InitTextfield();
   textfield_->SetText(u"hello world");
-  const std::u16string expected_left =
-      gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? u"hello" : u"lo";
-  const std::u16string expected_right =
-      gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? u" world" : u" w";
+  const std::u16string expected_left = base::ASCIIToUTF16(
+      gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? "hello" : "lo");
+  const std::u16string expected_right = base::ASCIIToUTF16(
+      gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? " world" : " w");
   const int right_x = GetCursorPositionX(7);
   const int left_x = GetCursorPositionX(3);
 
@@ -2163,7 +2166,7 @@ TEST_F(TextfieldTest, ReadOnlyTest) {
   EXPECT_EQ(u"read only", textfield_->GetSelectedText());
 
   // Cut should be disabled.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"Test");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "Test");
   EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kCut));
   textfield_->ExecuteCommand(Textfield::kCut, 0);
   SendKeyEvent(ui::VKEY_X, false, true);
@@ -2179,14 +2182,14 @@ TEST_F(TextfieldTest, ReadOnlyTest) {
   EXPECT_EQ(u"read only", textfield_->GetText());
 
   // Copy should work normally.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"Test");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "Test");
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kCopy));
   textfield_->ExecuteCommand(Textfield::kCopy, 0);
   EXPECT_EQ(u"read only", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"Test");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "Test");
   SendKeyEvent(ui::VKEY_C, false, true);
   EXPECT_EQ(u"read only", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"Test");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "Test");
   SendAlternateCopy();
   EXPECT_EQ(u"read only", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
 
@@ -2527,7 +2530,7 @@ TEST_F(TextfieldTest, CutCopyPaste) {
   EXPECT_EQ(ui::ClipboardBuffer::kCopyPaste, GetAndResetCopiedToClipboard());
 
   // Reset clipboard text.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "");
 
   // Ensure [Shift]+[Delete] is a no-op in case there is no selection.
   textfield_->SetText(u"123");
@@ -2565,7 +2568,7 @@ TEST_F(TextfieldTest, CutCopyPaste) {
 
   // Ensure kPaste, [Ctrl]+[V], and [Shift]+[Insert] pastes;
   // also ensure that [Ctrl]+[Alt]+[V] does nothing.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"abc");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "abc");
   textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kPaste));
   textfield_->ExecuteCommand(Textfield::kPaste, 0);
@@ -3249,7 +3252,7 @@ TEST_F(TextfieldTest, SelectionClipboard) {
   EXPECT_EQ(u"0123", GetClipboardText(ui::ClipboardBuffer::kSelection));
 
   // Middle clicking with an empty selection clipboard should still focus.
-  SetClipboardText(ui::ClipboardBuffer::kSelection, std::u16string());
+  SetClipboardText(ui::ClipboardBuffer::kSelection, std::string());
   textfield_->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(textfield_->HasFocus());
   textfield_->OnMousePressed(middle);
@@ -3261,7 +3264,7 @@ TEST_F(TextfieldTest, SelectionClipboard) {
   // Middle clicking in the selection should insert the selection clipboard
   // contents into the middle of the selection, and move the cursor to the end
   // of the pasted content.
-  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"foo");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "foo");
   textfield_->SetSelectedRange(gfx::Range(2, 6));
   textfield_->OnMousePressed(middle);
   EXPECT_EQ(u"0123foo01230123", textfield_->GetText());
@@ -3301,7 +3304,7 @@ TEST_F(TextfieldTest, SelectionClipboard) {
   EXPECT_EQ(u"ab cd ef", GetClipboardText(ui::ClipboardBuffer::kSelection));
   EXPECT_EQ(ui::ClipboardBuffer::kMaxValue, GetAndResetCopiedToClipboard());
 
-  SetClipboardText(ui::ClipboardBuffer::kSelection, u"other");
+  SetClipboardText(ui::ClipboardBuffer::kSelection, "other");
   textfield_->SelectAll(false);
   EXPECT_EQ(u"other", GetClipboardText(ui::ClipboardBuffer::kSelection));
   EXPECT_EQ(ui::ClipboardBuffer::kMaxValue, GetAndResetCopiedToClipboard());
@@ -3377,7 +3380,7 @@ TEST_F(TextfieldTest, GetTextfieldBaseline_FontFallbackTest) {
 
   // Set text which may fall back to a font which has taller baseline than
   // the default font.
-  textfield_->SetText(u"๑");
+  textfield_->SetText(UTF8ToUTF16("\xE0\xB9\x91"));
   const int new_baseline = textfield_->GetBaseline();
 
   // Regardless of the text, the baseline must be the same.
@@ -3422,7 +3425,7 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   textfield_->GetAccessibleNodeData(&data);
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-  EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
+  EXPECT_EQ(test_tooltip_text, ASCIIToUTF16(name));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3765,12 +3768,12 @@ TEST_F(TextfieldTest, SwitchFocusInKeyDown) {
 }
 
 TEST_F(TextfieldTest, FocusChangesScrollToStart) {
-  const std::u16string kText = u"abcdef";
+  const std::string& kText = "abcdef";
   InitTextfield();
-  textfield_->SetText(kText);
-  EXPECT_EQ(std::u16string(), textfield_->GetSelectedText());
+  textfield_->SetText(ASCIIToUTF16(kText));
+  EXPECT_EQ(base::ASCIIToUTF16(std::string()), textfield_->GetSelectedText());
   textfield_->AboutToRequestFocusFromTabTraversal(false);
-  EXPECT_EQ(kText, textfield_->GetSelectedText());
+  EXPECT_EQ(base::ASCIIToUTF16(kText), textfield_->GetSelectedText());
   if (PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
     EXPECT_EQ(0U, textfield_->GetCursorPosition());
   else
@@ -3926,9 +3929,9 @@ TEST_F(TextfieldTest, SecurePasswordInput) {
 #endif  // defined(OS_MAC)
 
 TEST_F(TextfieldTest, AccessibilitySelectionEvents) {
-  const std::u16string kText = u"abcdef";
+  const std::string& kText = "abcdef";
   InitTextfield();
-  textfield_->SetText(kText);
+  textfield_->SetText(ASCIIToUTF16(kText));
   EXPECT_TRUE(textfield_->HasFocus());
   int previous_selection_fired_count =
       textfield_->GetAccessibilitySelectionFiredCount();

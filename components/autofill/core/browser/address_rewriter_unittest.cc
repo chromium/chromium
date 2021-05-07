@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::UTF8ToUTF16;
 using autofill::AddressRewriter;
 
 TEST(AddressRewriterTest, InvalidCountryCode) {
@@ -40,7 +41,8 @@ TEST(AddressRewriterTest, AD) {
 
 TEST(AddressRewriterTest, AR) {
   AddressRewriter ar = AddressRewriter::ForCountryCode(u"ar");
-  EXPECT_EQ(ar.Rewrite(u"tierra del fuego antartida e islas del atlantico sur"),
+  EXPECT_EQ(ar.Rewrite(UTF8ToUTF16(
+                "tierra del fuego antartida e islas del atlantico sur")),
             ar.Rewrite(u"tierra del fuego"));
   EXPECT_EQ(ar.Rewrite(u"ciudad autonoma de buenos aires"),
             ar.Rewrite(u"capital federal"));
