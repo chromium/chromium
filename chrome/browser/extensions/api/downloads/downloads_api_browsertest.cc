@@ -1118,9 +1118,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   // Once the download item is deleted, we should return kInvalidId.
   int id = download_item->GetId();
   download_item->Remove();
-  download_item = NULL;
-  EXPECT_EQ(static_cast<DownloadItem*>(NULL),
-            GetCurrentManager()->GetDownload(id));
+  download_item = nullptr;
+  EXPECT_EQ(nullptr, GetCurrentManager()->GetDownload(id));
   error = RunFunctionAndReturnError(new DownloadsGetFileIconFunction(), args32);
   EXPECT_STREQ(errors::kInvalidId,
                error.c_str());

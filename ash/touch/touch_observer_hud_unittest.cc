@@ -490,8 +490,7 @@ TEST_F(TouchHudDebugTest, Headless) {
 // Test if the WM sets correct work area under different density.
 TEST_F(TouchHudProjectionTest, TouchMoveRelease) {
   SetupSingleDisplay();
-  EXPECT_NE(static_cast<TouchHudProjection*>(nullptr),
-            GetInternalTouchHudProjection());
+  EXPECT_NE(nullptr, GetInternalTouchHudProjection());
   EXPECT_EQ(0, GetInternalTouchPointsCount());
 
   SendTouchEventToInternalHud(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), 1);
@@ -508,8 +507,7 @@ TEST_F(TouchHudProjectionTest, TouchMoveRelease) {
 // and touch-cancelled events.
 TEST_F(TouchHudProjectionTest, TouchMoveCancel) {
   SetupSingleDisplay();
-  EXPECT_NE(static_cast<TouchHudProjection*>(NULL),
-            GetInternalTouchHudProjection());
+  EXPECT_NE(nullptr, GetInternalTouchHudProjection());
   EXPECT_EQ(0, GetInternalTouchPointsCount());
 
   SendTouchEventToInternalHud(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), 1);
@@ -525,8 +523,7 @@ TEST_F(TouchHudProjectionTest, TouchMoveCancel) {
 // Checks projection touch HUD with two simultaneous touches.
 TEST_F(TouchHudProjectionTest, DoubleTouch) {
   SetupSingleDisplay();
-  EXPECT_NE(static_cast<TouchHudProjection*>(NULL),
-            GetInternalTouchHudProjection());
+  EXPECT_NE(nullptr, GetInternalTouchHudProjection());
   EXPECT_EQ(0, GetInternalTouchPointsCount());
 
   SendTouchEventToInternalHud(ui::ET_TOUCH_PRESSED, gfx::Point(10, 10), 1);

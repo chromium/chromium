@@ -316,7 +316,7 @@ TEST_F(ImageSkiaTest, GetBitmap) {
   ImageSkia image_skia(std::make_unique<DynamicSource>(Size(100, 200)),
                        Size(100, 200));
   const SkBitmap* bitmap = image_skia.bitmap();
-  EXPECT_NE(static_cast<SkBitmap*>(NULL), bitmap);
+  ASSERT_NE(nullptr, bitmap);
   EXPECT_FALSE(bitmap->isNull());
 }
 
@@ -330,7 +330,7 @@ TEST_F(ImageSkiaTest, GetBitmapFromEmpty) {
   // Check that ImageSkia::bitmap() still returns a valid SkBitmap pointer for
   // the image and all its copies.
   const SkBitmap* bitmap = empty_image_copy.bitmap();
-  ASSERT_NE(static_cast<SkBitmap*>(NULL), bitmap);
+  ASSERT_NE(nullptr, bitmap);
   EXPECT_TRUE(bitmap->isNull());
   EXPECT_TRUE(bitmap->empty());
 }

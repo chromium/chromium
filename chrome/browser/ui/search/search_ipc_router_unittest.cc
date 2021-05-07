@@ -215,15 +215,15 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
 
   SearchTabHelper* GetSearchTabHelper(
       content::WebContents* web_contents) {
-    EXPECT_NE(static_cast<content::WebContents*>(NULL), web_contents);
+    EXPECT_NE(nullptr, web_contents);
     return SearchTabHelper::FromWebContents(web_contents);
   }
 
   void SetupMockDelegateAndPolicy() {
     content::WebContents* contents = web_contents();
-    ASSERT_NE(static_cast<content::WebContents*>(NULL), contents);
+    ASSERT_NE(nullptr, contents);
     SearchTabHelper* search_tab_helper = GetSearchTabHelper(contents);
-    ASSERT_NE(static_cast<SearchTabHelper*>(NULL), search_tab_helper);
+    ASSERT_NE(nullptr, search_tab_helper);
     search_tab_helper->ipc_router_for_testing().set_delegate_for_testing(
         mock_delegate());
     search_tab_helper->ipc_router_for_testing().set_policy_for_testing(
@@ -239,9 +239,9 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
 
   MockSearchIPCRouterPolicy* GetSearchIPCRouterPolicy() {
     content::WebContents* contents = web_contents();
-    EXPECT_NE(static_cast<content::WebContents*>(NULL), contents);
+    EXPECT_NE(nullptr, contents);
     SearchTabHelper* search_tab_helper = GetSearchTabHelper(contents);
-    EXPECT_NE(static_cast<SearchTabHelper*>(NULL), search_tab_helper);
+    EXPECT_NE(nullptr, search_tab_helper);
     return static_cast<MockSearchIPCRouterPolicy*>(
         search_tab_helper->ipc_router_for_testing().policy_for_testing());
   }
