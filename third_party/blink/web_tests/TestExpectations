@@ -6857,3 +6857,6 @@ crbug.com/1205669 [ Mac10.13 ] external/wpt/periodic-background-sync/idlharness.
 crbug.com/1205669 [ Mac10.13 ] external/wpt/storage/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/fetch-event.https.html [ Failure ]
 crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/idlharness.any.worker.html [ Failure ]
+
+# Sheriff 2021-05-07
+crbug.com/1206734 [ Mac10.13 ] external/wpt/websockets/Send-binary-blob.any.worker.html?wpt_flags=h2 [ Timeout ]
