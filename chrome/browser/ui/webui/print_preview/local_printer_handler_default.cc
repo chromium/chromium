@@ -21,6 +21,7 @@
 #include "chrome/common/printing/printer_capabilities.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 
 #if defined(OS_MAC)
@@ -148,7 +149,8 @@ base::Value LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
   VLOG(1) << "Get printer capabilities start for " << device_name;
 
   PrinterBasicInfo basic_info;
-  if (!print_backend->GetPrinterBasicInfo(device_name, &basic_info)) {
+  if (print_backend->GetPrinterBasicInfo(device_name, &basic_info) !=
+      mojom::ResultCode::kSuccess) {
     LOG(WARNING) << "Invalid printer " << device_name;
     return base::Value();
   }

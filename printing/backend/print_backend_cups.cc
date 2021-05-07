@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "printing/backend/cups_helper.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
@@ -46,7 +47,7 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
 PrintBackendCUPS::~PrintBackendCUPS() = default;
 
 // static
-bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
+mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
     const cups_dest_t& printer,
     PrinterBasicInfo* printer_info) {
   const char* type_str =
@@ -62,7 +63,7 @@ bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
       constexpr cups_ptype_t kMask =
           CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
       if (type & kMask)
-        return false;
+        return mojom::ResultCode::kFailed;
     }
   }
 
@@ -102,7 +103,7 @@ bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   if (info)
     printer_info->printer_description = info;
 #endif
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
 // static
@@ -119,7 +120,8 @@ void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
   cupsFreeDests(1, dest);
 }
 
-bool PrintBackendCUPS::EnumeratePrinters(PrinterList* printer_list) {
+mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
+    PrinterList* printer_list) {
   DCHECK(printer_list);
   printer_list->clear();
 
@@ -137,25 +139,27 @@ bool PrintBackendCUPS::EnumeratePrinters(PrinterList* printer_list) {
               << ", server: " << print_server_url_
               << ", error: " << static_cast<int>(last_error) << " - "
               << cupsLastErrorString();
-      return false;
+      return mojom::ResultCode::kFailed;
     }
     VLOG(1) << "CUPS: No printers found for CUPS server: " << print_server_url_;
-    return true;
+    return mojom::ResultCode::kSuccess;
   }
 
   for (int printer_index = 0; printer_index < num_dests; ++printer_index) {
     const cups_dest_t& printer = destinations[printer_index];
 
     PrinterBasicInfo printer_info;
-    if (PrinterBasicInfoFromCUPS(printer, &printer_info))
+    if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
+        mojom::ResultCode::kSuccess) {
       printer_list->push_back(printer_info);
+    }
   }
 
   cupsFreeDests(num_dests, destinations);
 
   VLOG(1) << "CUPS: Enumerated printers, server: " << print_server_url_
           << ", # of printers: " << printer_list->size();
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
 std::string PrintBackendCUPS::GetDefaultPrinterName() {
@@ -168,32 +172,37 @@ std::string PrintBackendCUPS::GetDefaultPrinterName() {
   return name;
 }
 
-bool PrintBackendCUPS::GetPrinterBasicInfo(const std::string& printer_name,
-                                           PrinterBasicInfo* printer_info) {
+mojom::ResultCode PrintBackendCUPS::GetPrinterBasicInfo(
+    const std::string& printer_name,
+    PrinterBasicInfo* printer_info) {
   ScopedDestination dest = GetNamedDest(printer_name);
   if (!dest)
-    return false;
+    return mojom::ResultCode::kFailed;
 
   DCHECK_EQ(printer_name, dest->name);
   return PrinterBasicInfoFromCUPS(*dest, printer_info);
 }
 
-bool PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
+mojom::ResultCode PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_info) {
   PrinterCapsAndDefaults info;
   if (!IsValidPrinter(printer_name))
-    return false;
+    return mojom::ResultCode::kFailed;
 
-  if (!GetPrinterCapsAndDefaults(printer_name, &info))
-    return false;
+  mojom::ResultCode result_code =
+      GetPrinterCapsAndDefaults(printer_name, &info);
+  if (result_code != mojom::ResultCode::kSuccess)
+    return result_code;
 
   ScopedDestination dest = GetNamedDest(printer_name);
   return ParsePpdCapabilities(dest.get(), locale(), info.printer_capabilities,
-                              printer_info);
+                              printer_info)
+             ? mojom::ResultCode::kSuccess
+             : mojom::ResultCode::kFailed;
 }
 
-bool PrintBackendCUPS::GetPrinterCapsAndDefaults(
+mojom::ResultCode PrintBackendCUPS::GetPrinterCapsAndDefaults(
     const std::string& printer_name,
     PrinterCapsAndDefaults* printer_info) {
   DCHECK(printer_info);
@@ -204,7 +213,7 @@ bool PrintBackendCUPS::GetPrinterCapsAndDefaults(
   // In some cases CUPS failed to get ppd file.
   if (ppd_path.empty()) {
     LOG(ERROR) << "CUPS: Failed to get PPD, printer name: " << printer_name;
-    return false;
+    return mojom::ResultCode::kFailed;
   }
 
   std::string content;
@@ -212,15 +221,16 @@ bool PrintBackendCUPS::GetPrinterCapsAndDefaults(
 
   base::DeleteFile(ppd_path);
 
-  if (res) {
-    printer_info->printer_capabilities.swap(content);
-    printer_info->caps_mime_type = "application/pagemaker";
-    // In CUPS, printer defaults is a part of PPD file. Nothing to upload here.
-    printer_info->printer_defaults.clear();
-    printer_info->defaults_mime_type.clear();
-  }
+  if (!res)
+    return mojom::ResultCode::kFailed;
 
-  return res;
+  printer_info->printer_capabilities.swap(content);
+  printer_info->caps_mime_type = "application/pagemaker";
+  // In CUPS, printer defaults is a part of PPD file. Nothing to upload here.
+  printer_info->printer_defaults.clear();
+  printer_info->defaults_mime_type.clear();
+
+  return mojom::ResultCode::kSuccess;
 }
 
 std::string PrintBackendCUPS::GetPrinterDriverInfo(

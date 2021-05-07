@@ -479,7 +479,8 @@ PrintSystem::PrintSystemResult PrintSystemCUPS::Init() {
 void PrintSystemCUPS::UpdatePrinters() {
   printer_enum_succeeded_ = true;
   for (auto& print_server : print_servers_) {
-    if (!print_server.backend->EnumeratePrinters(&print_server.printers))
+    if (print_server.backend->EnumeratePrinters(&print_server.printers) !=
+        printing::mojom::ResultCode::kSuccess)
       printer_enum_succeeded_ = false;
     print_server.caps_cache.clear();
     for (auto& printer : print_server.printers) {
@@ -573,8 +574,9 @@ bool PrintSystemCUPS::GetPrinterCapsAndDefaults(
   // TODO(gene): Retry multiple times in case of error.
   crash_keys::ScopedPrinterInfo crash_key(
       server_info->backend->GetPrinterDriverInfo(short_printer_name));
-  if (!server_info->backend->GetPrinterCapsAndDefaults(short_printer_name,
-                                                       printer_info) ) {
+  if (server_info->backend->GetPrinterCapsAndDefaults(short_printer_name,
+                                                      printer_info) !=
+      printing::mojom::ResultCode::kSuccess) {
     return false;
   }
 

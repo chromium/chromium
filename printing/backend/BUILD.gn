@@ -152,5 +152,6 @@ source_set("test_support") {
   deps = [
     ":backend",
     "//base",
+    "//printing/mojom",
   ]
 }

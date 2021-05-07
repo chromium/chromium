@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -33,11 +34,11 @@ bool IsDestTypeEligible(int dest_type) {
   dest->options = options;
 
   PrinterBasicInfo printer_info;
-  const bool eligible =
+  const mojom::ResultCode result_code =
       PrintBackendCUPS::PrinterBasicInfoFromCUPS(*dest, &printer_info);
 
   cupsFreeDests(num_dests, dest);
-  return eligible;
+  return result_code == mojom::ResultCode::kSuccess;
 }
 
 }  // namespace
@@ -69,8 +70,8 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   printer->options = options;
 
   PrinterBasicInfo printer_info;
-  EXPECT_TRUE(
-      PrintBackendCUPS::PrinterBasicInfoFromCUPS(*printer, &printer_info));
+  EXPECT_EQ(PrintBackendCUPS::PrinterBasicInfoFromCUPS(*printer, &printer_info),
+            mojom::ResultCode::kSuccess);
   cupsFreeDests(/*num_dests=*/1, printer);
 
   EXPECT_EQ(kName, printer_info.printer_name);

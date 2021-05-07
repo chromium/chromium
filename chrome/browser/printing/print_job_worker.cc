@@ -47,6 +47,10 @@
 #include "printing/printing_features.h"
 #endif
 
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_CUPS)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 using content::BrowserThread;
 
 namespace printing {
@@ -226,7 +230,8 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
 
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_CUPS)
     PrinterBasicInfo basic_info;
-    if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info)) {
+    if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info) ==
+        mojom::ResultCode::kSuccess) {
       base::Value advanced_settings(base::Value::Type::DICTIONARY);
       for (const auto& pair : basic_info.options)
         advanced_settings.SetStringKey(pair.first, pair.second);

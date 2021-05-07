@@ -30,6 +30,7 @@
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "printing/backend/win_helper.h"
 #include "printing/emf_win.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/printing_utils.h"
@@ -650,8 +651,10 @@ PrintSystem::PrintSystemResult PrintSystemWin::Init() {
 
 PrintSystem::PrintSystemResult PrintSystemWin::EnumeratePrinters(
     printing::PrinterList* printer_list) {
-  bool ret = print_backend_->EnumeratePrinters(printer_list);
-  return PrintSystemResult(ret, std::string());
+  printing::mojom::ResultCode result =
+      print_backend_->EnumeratePrinters(printer_list);
+  return PrintSystemResult(result == printing::mojom::ResultCode::kSuccess,
+                           std::string());
 }
 
 void PrintSystemWin::GetPrinterCapsAndDefaults(

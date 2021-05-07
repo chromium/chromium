@@ -46,6 +46,7 @@ source_set("printing") {
     "//components/printing/common",
     "//components/strings:components_strings_grit",
     "//printing",
+    "//printing/mojom",
     "//ui/base",
   ]
 

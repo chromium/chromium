@@ -14,6 +14,7 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 
 #if defined(OS_MAC)
 #include "base/threading/thread_restrictions.h"
@@ -42,7 +43,8 @@ void PrintBackendServiceImpl::EnumeratePrinters(
   }
 
   PrinterList printer_list;
-  if (!print_backend_->EnumeratePrinters(&printer_list)) {
+  if (print_backend_->EnumeratePrinters(&printer_list) !=
+      mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "EnumeratePrinters failed, last error is "
                 << logging::GetLastSystemErrorCode();
     std::move(callback).Run(base::nullopt);
@@ -74,9 +76,10 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
   }
 
   PrinterSemanticCapsAndDefaults printer_caps;
-  const bool result = print_backend_->GetPrinterSemanticCapsAndDefaults(
-      printer_name, &printer_caps);
-  if (!result) {
+  const mojom::ResultCode result =
+      print_backend_->GetPrinterSemanticCapsAndDefaults(printer_name,
+                                                        &printer_caps);
+  if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "GetPrinterSemanticCapsAndDefaults failed, last error is "
                 << logging::GetLastSystemErrorCode();
     std::move(callback).Run(base::nullopt);
@@ -114,9 +117,9 @@ void PrintBackendServiceImpl::FetchCapabilities(
 #endif
 
   PrinterBasicInfo printer_info;
-  bool result =
+  mojom::ResultCode result =
       print_backend_->GetPrinterBasicInfo(printer_name, &printer_info);
-  if (!result) {
+  if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "GetPrinterBasicInfo failed, last error is "
                 << logging::GetLastSystemErrorCode();
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
@@ -125,7 +128,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
   PrinterSemanticCapsAndDefaults caps;
   result =
       print_backend_->GetPrinterSemanticCapsAndDefaults(printer_name, &caps);
-  if (!result) {
+  if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "GetPrinterSemanticCapsAndDefaults failed, last error is "
                 << logging::GetLastSystemErrorCode();
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);

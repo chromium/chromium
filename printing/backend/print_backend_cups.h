@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -26,8 +27,9 @@ class PrintBackendCUPS : public PrintBackend {
 
   // These static functions are exposed here for use in the tests.
   COMPONENT_EXPORT(PRINT_BACKEND)
-  static bool PrinterBasicInfoFromCUPS(const cups_dest_t& printer,
-                                       PrinterBasicInfo* printer_info);
+  static mojom::ResultCode PrinterBasicInfoFromCUPS(
+      const cups_dest_t& printer,
+      PrinterBasicInfo* printer_info);
   COMPONENT_EXPORT(PRINT_BACKEND)
   static std::string PrinterDriverInfoFromCUPS(const cups_dest_t& printer);
 
@@ -40,15 +42,17 @@ class PrintBackendCUPS : public PrintBackend {
   ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
-  bool EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
   std::string GetDefaultPrinterName() override;
-  bool GetPrinterBasicInfo(const std::string& printer_name,
-                           PrinterBasicInfo* printer_info) override;
-  bool GetPrinterSemanticCapsAndDefaults(
+  mojom::ResultCode GetPrinterBasicInfo(
+      const std::string& printer_name,
+      PrinterBasicInfo* printer_info) override;
+  mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
-  bool GetPrinterCapsAndDefaults(const std::string& printer_name,
-                                 PrinterCapsAndDefaults* printer_info) override;
+  mojom::ResultCode GetPrinterCapsAndDefaults(
+      const std::string& printer_name,
+      PrinterCapsAndDefaults* printer_info) override;
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 

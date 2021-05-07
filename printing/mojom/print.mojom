@@ -126,3 +126,12 @@ enum PinModeRestriction {
   kPin = 1,
   kNoPin = 2,
 };
+
+// Result codes distilled from system error codes.
+enum ResultCode {
+  kSuccess,
+  // Generic code for uncategorized errors.
+  kFailed,
+  // Insufficient permissions to perform the operation.
+  kAccessDenied,
+};

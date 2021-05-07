@@ -5,6 +5,7 @@
 #include "printing/backend/print_backend.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -36,7 +37,8 @@ class PrintBackendTest : public testing::Test {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
   PrinterList printer_list;
 
-  EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+            mojom::ResultCode::kSuccess);
   EXPECT_FALSE(printer_list.empty());
 
   DLOG(WARNING) << "Number of printers found: " << printer_list.size();
@@ -48,7 +50,8 @@ TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
   PrinterList printer_list;
 
-  EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+            mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }
 

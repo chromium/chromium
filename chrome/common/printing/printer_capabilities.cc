@@ -23,6 +23,7 @@
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
 #if defined(OS_WIN)
@@ -197,7 +198,8 @@ base::Value GetSettingsOnBlockingTaskRunner(
       print_backend->GetPrinterDriverInfo(device_name));
 
   auto caps = base::make_optional<PrinterSemanticCapsAndDefaults>();
-  if (!print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps)) {
+  if (print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps) !=
+      mojom::ResultCode::kSuccess) {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
     LOG(WARNING) << "Failed to get capabilities for " << device_name;

@@ -23,7 +23,7 @@ class PrinterCapabilitiesProviderPrintBackend
   PrinterCapabilitiesProviderPrintBackend() = default;
 
   // PrintBackend:
-  bool GetPrinterSemanticCapsAndDefaults(
+  printing::mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       printing::PrinterSemanticCapsAndDefaults* printer_info) override {
     capabilities_requests_counter_++;

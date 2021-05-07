@@ -173,21 +173,22 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
     : public base::RefCountedThreadSafe<PrintBackend> {
  public:
   // Enumerates the list of installed local and network printers.  It will
-  // return true when the available installed printers have been enumerated
+  // return success when the available installed printers have been enumerated
   // into `printer_list`.  Note that `printer_list` must not be null and also
   // should be empty prior to this call.  If there are no printers installed
-  // then it will still return true, and `printer_list` remains empty.  It
-  // returns false when an error has occurred trying to get the list of
-  // printers.
-  virtual bool EnumeratePrinters(PrinterList* printer_list) = 0;
+  // then it will still return success, and `printer_list` remains empty.  The
+  // result code will return one of the error result codes when there is a
+  // failure in generating the list.
+  virtual mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) = 0;
 
   // Gets the default printer name. Empty string if no default printer.
   virtual std::string GetDefaultPrinterName() = 0;
 
   // Gets the basic printer info for a specific printer. Implementations must
   // check `printer_name` validity in the same way as IsValidPrinter().
-  virtual bool GetPrinterBasicInfo(const std::string& printer_name,
-                                   PrinterBasicInfo* printer_info) = 0;
+  virtual mojom::ResultCode GetPrinterBasicInfo(
+      const std::string& printer_name,
+      PrinterBasicInfo* printer_info) = 0;
 
   // Gets the semantic capabilities and defaults for a specific printer.
   // This is usually a lighter implementation than GetPrinterCapsAndDefaults().
@@ -195,12 +196,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   // IsValidPrinter().
   // NOTE: on some old platforms (WinXP without XPS pack)
   // GetPrinterCapsAndDefaults() will fail, while this function will succeed.
-  virtual bool GetPrinterSemanticCapsAndDefaults(
+  virtual mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) = 0;
 
   // Gets the capabilities and defaults for a specific printer.
-  virtual bool GetPrinterCapsAndDefaults(
+  virtual mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) = 0;
 

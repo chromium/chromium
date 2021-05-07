@@ -29,7 +29,8 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id) {
       printing::PrintBackend::CreateInstance(
           g_browser_process->GetApplicationLocale()));
   printing::PrinterSemanticCapsAndDefaults capabilities;
-  if (!backend->GetPrinterSemanticCapsAndDefaults(printer_id, &capabilities)) {
+  if (backend->GetPrinterSemanticCapsAndDefaults(printer_id, &capabilities) !=
+      printing::mojom::ResultCode::kSuccess) {
     LOG(WARNING) << "Failed to get capabilities for " << printer_id;
     return base::nullopt;
   }

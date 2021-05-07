@@ -97,7 +97,8 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& device_name,
       print_backend->GetPrinterDriverInfo(device_name));
 
   auto caps = base::make_optional<PrinterSemanticCapsAndDefaults>();
-  if (!print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps)) {
+  if (print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps) !=
+      mojom::ResultCode::kSuccess) {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
     LOG(WARNING) << "Failed to get capabilities for " << device_name;

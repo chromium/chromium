@@ -26,6 +26,7 @@ namespace {
 constexpr char kDefaultPrinterName[] = "default-test-printer";
 constexpr char kAlternatePrinterName[] = "alternate-test-printer";
 constexpr char kNullDataPrinterName[] = "null-data-test-printer";
+constexpr char kAccessDeniedPrinterName[] = "access-denied-test-printer";
 constexpr char kInvalidPrinterName[] = "invalid-test-printer";
 
 constexpr int kDefaultPrinterStatus = 0;
@@ -77,6 +78,10 @@ class TestPrintBackendTest : public testing::Test {
                                          /*info=*/nullptr);
   }
 
+  void AddAccessDeniedPrinter() {
+    test_print_backend_->AddAccessDeniedPrinter(kAccessDeniedPrinterName);
+  }
+
   // Get the test print backend.
   TestPrintBackend* GetPrintBackend() { return test_print_backend_.get(); }
 
@@ -90,7 +95,8 @@ TEST_F(TestPrintBackendTest, EnumeratePrinters) {
 
   AddPrinters();
 
-  EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+            mojom::ResultCode::kSuccess);
   EXPECT_THAT(printer_list, testing::ContainerEq(kPrinterList));
 }
 
@@ -99,7 +105,8 @@ TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
   PrinterList printer_list;
 
   // Should return true even when there are no printers in the environment.
-  EXPECT_TRUE(GetPrintBackend()->EnumeratePrinters(&printer_list));
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+            mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }
 
@@ -142,72 +149,105 @@ TEST_F(TestPrintBackendTest, PrinterBasicInfo) {
 
   AddPrinters();
 
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterBasicInfo(kDefaultPrinterName,
-                                                     &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kDefaultPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kSuccess);
   EXPECT_EQ(printer_info.printer_name, kDefaultPrinterName);
   EXPECT_EQ(printer_info.printer_status, kDefaultPrinterStatus);
   EXPECT_TRUE(printer_info.is_default);
 
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
-                                                     &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kSuccess);
   EXPECT_EQ(printer_info.printer_name, kAlternatePrinterName);
   EXPECT_EQ(printer_info.printer_status, kAlternatePrinterStatus);
   EXPECT_FALSE(printer_info.is_default);
 
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterBasicInfo(kInvalidPrinterName,
-                                                      &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kInvalidPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kFailed);
 
   // Changing default should be reflected on next query.
   GetPrintBackend()->SetDefaultPrinterName(kAlternatePrinterName);
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
-                                                     &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_info.is_default);
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterBasicInfo(kDefaultPrinterName,
-                                                     &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kDefaultPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kSuccess);
   EXPECT_FALSE(printer_info.is_default);
 
   // Printers added with null basic info fail to get data on a query.
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterBasicInfo(kNullDataPrinterName,
-                                                      &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kNullDataPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kFailed);
 
   // Verify that (re)adding a printer with null basic info results in a failure
   // the next time when trying to get the basic info.
   GetPrintBackend()->AddValidPrinter(kAlternatePrinterName, /*caps=*/nullptr,
                                      /*info=*/nullptr);
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
-                                                      &printer_info));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kAlternatePrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kFailed);
+}
+
+TEST_F(TestPrintBackendTest, PrinterBasicInfoAccessDenied) {
+  PrinterBasicInfo printer_info;
+
+  AddAccessDeniedPrinter();
+
+  EXPECT_EQ(GetPrintBackend()->GetPrinterBasicInfo(kAccessDeniedPrinterName,
+                                                   &printer_info),
+            mojom::ResultCode::kAccessDenied);
 }
 
 TEST_F(TestPrintBackendTest, GetPrinterSemanticCapsAndDefaults) {
   PrinterSemanticCapsAndDefaults caps;
 
   // Should fail when there are no printers in the environment.
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kDefaultPrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kDefaultPrinterName, &caps),
+            mojom::ResultCode::kFailed);
 
   AddPrinters();
 
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kDefaultPrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kDefaultPrinterName, &caps),
+            mojom::ResultCode::kSuccess);
   EXPECT_EQ(caps.copies_max, kDefaultCopiesMax);
 
-  EXPECT_TRUE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kAlternatePrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kAlternatePrinterName, &caps),
+            mojom::ResultCode::kSuccess);
   EXPECT_EQ(caps.copies_max, kAlternateCopiesMax);
 
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kInvalidPrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kInvalidPrinterName, &caps),
+            mojom::ResultCode::kFailed);
 
   // Printers added with null capabilities fail to get data on a query.
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kNullDataPrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kNullDataPrinterName, &caps),
+            mojom::ResultCode::kFailed);
 
   // Verify that (re)adding a printer with null capabilities results in a
   // failure the next time when trying to get capabilities.
   GetPrintBackend()->AddValidPrinter(kAlternatePrinterName, /*caps=*/nullptr,
                                      /*info=*/nullptr);
-  EXPECT_FALSE(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
-      kAlternatePrinterName, &caps));
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kAlternatePrinterName, &caps),
+            mojom::ResultCode::kFailed);
+}
+
+TEST_F(TestPrintBackendTest, GetPrinterSemanticCapsAndDefaultsAccessDenied) {
+  PrinterSemanticCapsAndDefaults caps;
+
+  AddAccessDeniedPrinter();
+
+  EXPECT_EQ(GetPrintBackend()->GetPrinterSemanticCapsAndDefaults(
+                kAccessDeniedPrinterName, &caps),
+            mojom::ResultCode::kAccessDenied);
 }
 
 TEST_F(TestPrintBackendTest, IsValidPrinter) {

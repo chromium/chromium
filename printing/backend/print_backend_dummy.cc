@@ -9,6 +9,7 @@
 #include "printing/backend/print_backend.h"
 
 #include "base/values.h"
+#include "printing/mojom/print.mojom.h"
 
 namespace printing {
 
@@ -19,25 +20,28 @@ class DummyPrintBackend : public PrintBackend {
   DummyPrintBackend(const DummyPrintBackend&) = delete;
   DummyPrintBackend& operator=(const DummyPrintBackend&) = delete;
 
-  bool EnumeratePrinters(PrinterList* printer_list) override { return false; }
+  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override {
+    return mojom::ResultCode::kFailed;
+  }
 
   std::string GetDefaultPrinterName() override { return std::string(); }
 
-  bool GetPrinterBasicInfo(const std::string& printer_name,
-                           PrinterBasicInfo* printer_info) override {
-    return false;
+  mojom::ResultCode GetPrinterBasicInfo(
+      const std::string& printer_name,
+      PrinterBasicInfo* printer_info) override {
+    return mojom::ResultCode::kFailed;
   }
 
-  bool GetPrinterSemanticCapsAndDefaults(
+  mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override {
-    return false;
+    return mojom::ResultCode::kFailed;
   }
 
-  bool GetPrinterCapsAndDefaults(
+  mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) override {
-    return false;
+    return mojom::ResultCode::kFailed;
   }
 
   std::string GetPrinterDriverInfo(const std::string& printer_name) override {
