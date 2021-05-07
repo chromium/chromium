@@ -41,12 +41,16 @@ namespace blink {
 // This class decodes the JXL image format.
 class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
  public:
-  JXLImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  JXLImageDecoder(AlphaOption,
+                  HighBitDepthDecodingOption high_bit_depth_decoding_option,
+                  const ColorBehavior&,
+                  size_t max_decoded_bytes);
 
   ~JXLImageDecoder() override;
 
   // ImageDecoder:
   String FilenameExtension() const override { return "jxl"; }
+  bool ImageIsHighBitDepth() override { return is_hdr_; }
 
   // Returns true if the data in fast_reader begins with
   static bool MatchesJXLSignature(const FastSharedBufferReader& fast_reader);
@@ -59,6 +63,7 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
     return 1;
   }
   void Decode(size_t) override { Decode(false); }
+  void InitializeNewFrame(size_t) override;
 
   // Decodes the image.  If |only_size| is true, stops decoding after
   // calculating the image size. If decoding fails but there is no more
@@ -66,6 +71,12 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   void Decode(bool only_size);
 
   JxlDecoder* dec_ = nullptr;
+
+  // The image is considered to be HDR, such as using PQ or HLG transfer
+  // function in the color space.
+  bool is_hdr_ = false;
+
+  JxlPixelFormat format_ = {4, JXL_TYPE_UINT8, JXL_NATIVE_ENDIAN, 0};
 };
 
 }  // namespace blink

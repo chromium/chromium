@@ -16,10 +16,11 @@ namespace {
 std::unique_ptr<ImageDecoder> CreateJXLDecoderWithArguments(
     const char* jxl_file,
     ImageDecoder::AlphaOption alpha_option,
-    ImageDecoder::HighBitDepthDecodingOption,
+    ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior) {
   auto decoder = std::make_unique<JXLImageDecoder>(
-      alpha_option, color_behavior, ImageDecoder::kNoDecodedImageByteLimit);
+      alpha_option, high_bit_depth_decoding_option, color_behavior,
+      ImageDecoder::kNoDecodedImageByteLimit);
   scoped_refptr<SharedBuffer> data = ReadFile(jxl_file);
   EXPECT_FALSE(data->IsEmpty());
   decoder->SetData(data.get(), true);
@@ -28,8 +29,8 @@ std::unique_ptr<ImageDecoder> CreateJXLDecoderWithArguments(
 
 std::unique_ptr<ImageDecoder> CreateJXLDecoder() {
   return std::make_unique<JXLImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::Tag(),
-      ImageDecoder::kNoDecodedImageByteLimit);
+      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 std::unique_ptr<ImageDecoder> CreateJXLDecoderWithData(const char* jxl_file) {
@@ -40,7 +41,7 @@ std::unique_ptr<ImageDecoder> CreateJXLDecoderWithData(const char* jxl_file) {
   return decoder;
 }
 
-// The expected_color must match the expected top left pixel.
+// expected_color must match the expected top left pixel
 void TestColorProfile(const char* jxl_file,
                       ColorBehavior color_behavior,
                       SkColor expected_color) {
@@ -59,6 +60,71 @@ void TestColorProfile(const char* jxl_file,
     int expected_comp = (expected_color >> (8 * i)) & 255;
     EXPECT_GE(1, abs(frame_comp - expected_comp));
   }
+}
+
+// Convert from float16 bits in a uint16_t, to 32-bit float, for testing
+static float FromFloat16(uint16_t a) {
+  // 5 bits exponent
+  int exp = (a >> 10) & 31;
+  // 10 bits fractional part
+  float frac = a & 1023;
+  // 1 bit sign
+  int sign = (a & 32768) ? 1 : 0;
+  bool subnormal = exp == 0;
+  // Infinity and NaN are not supported here.
+  exp -= 15;
+  if (subnormal)
+    exp++;
+  frac /= 1024.0;
+  if (!subnormal)
+    frac++;
+  frac *= std::pow(2, exp);
+  if (sign)
+    frac = -frac;
+  return frac;
+}
+
+// expected_color must match the expected top left pixel
+void TestHDR(const char* jxl_file,
+             ColorBehavior color_behavior,
+             bool expect_f16,
+             float expected_r,
+             float expected_g,
+             float expected_b,
+             float expected_a) {
+  auto decoder = CreateJXLDecoderWithArguments(
+      jxl_file, ImageDecoder::AlphaOption::kAlphaPremultiplied,
+      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(1u, decoder->FrameCount());
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  float r, g, b, a;
+  if (expect_f16) {
+    EXPECT_EQ(ImageFrame::kRGBA_F16, frame->GetPixelFormat());
+  } else {
+    EXPECT_EQ(ImageFrame::kN32, frame->GetPixelFormat());
+  }
+  if (ImageFrame::kRGBA_F16 == frame->GetPixelFormat()) {
+    uint64_t first_pixel = *frame->GetAddrF16(0, 0);
+    r = FromFloat16(first_pixel >> 0);
+    g = FromFloat16(first_pixel >> 16);
+    b = FromFloat16(first_pixel >> 32);
+    a = FromFloat16(first_pixel >> 48);
+  } else {
+    uint32_t first_pixel = *frame->GetAddr(0, 0);
+    a = ((first_pixel >> 24) & 255) / 255.0;
+    r = ((first_pixel >> 16) & 255) / 255.0;
+    g = ((first_pixel >> 8) & 255) / 255.0;
+    b = ((first_pixel >> 0) & 255) / 255.0;
+  }
+  constexpr float eps = 0.01;
+  EXPECT_NEAR(expected_r, r, eps);
+  EXPECT_NEAR(expected_g, g, eps);
+  EXPECT_NEAR(expected_b, b, eps);
+  EXPECT_NEAR(expected_a, a, eps);
 }
 
 void TestSize(const char* jxl_file, IntSize expected_size) {
@@ -348,6 +414,55 @@ TEST(JXLTests, ColorProfileTest) {
   TestColorProfile("/images/resources/jxl/icc-v2-gbr.jxl",
                    ColorBehavior::Ignore(),
                    SkColorSetARGB(255, 0xaf, 0xfe, 0x6b));
+}
+
+TEST(JXLTests, JXLHDRTest) {
+  // PQ tests
+  // PQ values, as expected
+  TestHDR("/images/resources/jxl/pq_gradient_lossy.jxl",
+          ColorBehavior::Ignore(), false, 0.58039218187332153,
+          0.73333334922790527, 0.43921568989753723, 1);
+  // sRGB as expected, but not an exact match
+  TestHDR("/images/resources/jxl/pq_gradient_lossy.jxl",
+          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.3433017,
+          -0.0376128, 1);
+
+  // linear sRGB as expected.
+  TestHDR("/images/resources/jxl/pq_gradient_lossy.jxl", ColorBehavior::Tag(),
+          true, 0.58039218187332153, 0.73333334922790527, 0.43921568989753723,
+          1);
+
+  // correct, original PQ values
+  TestHDR("/images/resources/jxl/pq_gradient_lossless.jxl",
+          ColorBehavior::Ignore(), false, 0.58039218187332153,
+          0.73725491762161255, 0.45098039507865906, 1);
+  TestHDR("/images/resources/jxl/pq_gradient_lossless.jxl",
+          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.3433017,
+          -0.0376128, 1);
+  // correct, original PQ values
+  TestHDR("/images/resources/jxl/pq_gradient_lossless.jxl",
+          ColorBehavior::Tag(), true, 0.58056640625, 0.7373046875,
+          0.450927734375, 1);
+
+  // with ICC
+  // clipped linear sRGB, as expected from current JXL implementation
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossy.jxl",
+          ColorBehavior::Ignore(), false, 0, 0.0930381, 0, 1);
+
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossy.jxl",
+          ColorBehavior::TransformToSRGB(), false, 0, 0.338623046875, 0, 1);
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossy.jxl",
+          ColorBehavior::Tag(), false, 0, 0.0930381, 0, 1);
+
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
+          ColorBehavior::Ignore(), false, 0.58039218187332153,
+          0.73725491762161255, 0.45098039507865906, 1);
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
+          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.34330175,
+          -0.0376128, 1);
+  TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
+          ColorBehavior::Tag(), true, 0.58039218187332153, 0.73725491762161255,
+          0.45098039507865906, 1);
 }
 
 }  // namespace

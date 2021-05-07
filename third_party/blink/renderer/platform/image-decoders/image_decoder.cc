@@ -230,8 +230,9 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
 #if BUILDFLAG(ENABLE_JXL_DECODER)
   } else if (base::FeatureList::IsEnabled(features::kJXL) &&
              mime_type == "image/jxl") {
-    decoder = std::make_unique<JXLImageDecoder>(alpha_option, color_behavior,
-                                                max_decoded_bytes);
+    decoder = std::make_unique<JXLImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior,
+        max_decoded_bytes);
 #endif
   }
 
