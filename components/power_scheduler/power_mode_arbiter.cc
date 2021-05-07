@@ -209,12 +209,14 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
   bool should_post_update_task = false;
   int sequence_number = 0;
   scoped_refptr<base::TaskRunner> task_runner;
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks scheduled_time = now + timeout;
+  // Align to the reset task's resolution.
+  scheduled_time = scheduled_time.SnappedToNextTick(base::TimeTicks(),
+                                                    kResetVoteTimeResolution);
+
   {
     base::AutoLock lock(lock_);
-    base::TimeTicks scheduled_time = base::TimeTicks::Now() + timeout;
-    // Align to the reset task's resolution.
-    scheduled_time = scheduled_time.SnappedToNextTick(base::TimeTicks(),
-                                                      kResetVoteTimeResolution);
     pending_resets_[voter] = scheduled_time;
     // Only post a new task if there isn't one scheduled to run earlier yet.
     // This reduces the number of posted callbacks in situations where the
@@ -235,7 +237,7 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
         FROM_HERE,
         base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
                        base::Unretained(this), sequence_number),
-        timeout);
+        scheduled_time - now);
   }
 }
 
