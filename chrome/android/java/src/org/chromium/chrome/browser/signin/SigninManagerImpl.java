@@ -658,7 +658,7 @@ class SigninManagerImpl
             SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
                     mNativeSigninManagerAndroid, wipeDataCallback);
         }
-        mAccountTrackerService.onAccountsChanged();
+        ThreadUtils.postOnUiThread(mAccountTrackerService::onAccountsChanged);
     }
 
     @VisibleForTesting

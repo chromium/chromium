@@ -93,7 +93,7 @@ public class SigninCheckerTest {
         final CoreAccountInfo expectedPrimaryAccount =
                 mAccountManagerTestRule.addAccount(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
@@ -112,7 +112,7 @@ public class SigninCheckerTest {
         when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
                 .thenReturn(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
@@ -130,7 +130,7 @@ public class SigninCheckerTest {
         final CoreAccountInfo oldAccount =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()

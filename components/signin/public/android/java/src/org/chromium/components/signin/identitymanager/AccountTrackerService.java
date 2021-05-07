@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin.identitymanager;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
@@ -28,6 +30,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Android wrapper of AccountTrackerService which provides access from the java layer.
@@ -63,7 +66,7 @@ public class AccountTrackerService {
     }
 
     private final long mNativeAccountTrackerService;
-    private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayDeque<>();
+    private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding;
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private AccountsChangeObserver mAccountsChangeObserver;
@@ -73,6 +76,9 @@ public class AccountTrackerService {
     AccountTrackerService(long nativeAccountTrackerService) {
         mNativeAccountTrackerService = nativeAccountTrackerService;
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
+        mRunnablesWaitingForAccountsSeeding = VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP
+                ? new ConcurrentLinkedDeque<>()
+                : new ArrayDeque<>();
     }
 
     /**
