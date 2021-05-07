@@ -328,21 +328,20 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest, ForwardBack) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/backForwardCache")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, IFrame) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/iframe")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, IFrame) {
+  ASSERT_TRUE(RunTest("webnavigation/iframe")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, SrcDoc) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/srcdoc")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, OpenTab) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/openTab")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, OpenTab) {
+  ASSERT_TRUE(RunTest("webnavigation/openTab")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ReferenceFragment) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/referenceFragment"))
-      << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ReferenceFragment) {
+  ASSERT_TRUE(RunTest("webnavigation/referenceFragment")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, SimpleLoad) {
@@ -569,10 +568,10 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
   ASSERT_TRUE(RunTest("webnavigation/crossProcessIframe")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, PendingDeletion) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, PendingDeletion) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/pendingDeletion")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/pendingDeletion")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
