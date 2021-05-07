@@ -13,17 +13,17 @@
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
     Don't ask me again for this app
   </message>
-  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Label for button to resize the window to phone size">
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
     Phone
   </message>
-  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Label for button to resize the window to tablet size">
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size.">
     Tablet
   </message>
-  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP" desc="Label for button to resize the window to desktop size">
-    Desktop
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP" desc="Item in a list of possible sizes for the app. Makes the app expand to the whole screen.">
+    Maximized
   </message>
-  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for button to open resize settings">
-    Resize Settings
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for the button to allow the user to go to resize settings.">
+    Settings
   </message>
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE" desc="A Dialog title of splash screen to advertise the app is designed for mobile.">
     This app is designed for mobile
