@@ -160,7 +160,8 @@ void PreferenceChanged(Profile* profile,
                        extensions::events::HistogramValue histogram,
                        const char* eventName) {
   auto args = std::make_unique<base::ListValue>();
-  args->Append(profile->GetPrefs()->Get(pref_name)->CreateDeepCopy());
+  args->Append(base::Value::ToUniquePtrValue(
+      profile->GetPrefs()->Get(pref_name)->Clone()));
   extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
   if (event_router) {
     auto event = std::make_unique<extensions::Event>(histogram, eventName,
