@@ -990,7 +990,7 @@ ci.android_fyi_builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_jobs = 150,
     execution_timeout = 5 * time.hour,
     main_console_view = main_console_if_on_branch(),
     reclient_instance = "rbe-chromium-trusted",
@@ -1010,6 +1010,7 @@ ci.android_fyi_builder(
     # build.
     execution_timeout = 4 * time.hour,
     reclient_instance = "rbe-chromium-trusted",
+    reclient_jobs = 150,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
