@@ -1641,7 +1641,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansion) {
   DictionaryValue* value2;
   ASSERT_TRUE(dict.GetDictionaryWithoutPathExpansion("this", &value2));
   EXPECT_EQ(value1, value2);
-  EXPECT_EQ(1U, value2->size());
+  EXPECT_EQ(1U, value2->DictSize());
 
   EXPECT_TRUE(dict.HasKey("this.isnt.expanded"));
   Value* value3;
@@ -1665,7 +1665,7 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
   DictionaryValue* value2;
   ASSERT_TRUE(dict.GetDictionaryWithoutPathExpansion("this", &value2));
   EXPECT_EQ(value1, value2);
-  EXPECT_EQ(1U, value2->size());
+  EXPECT_EQ(1U, value2->DictSize());
 
   EXPECT_TRUE(dict.HasKey("this.isnt.expanded"));
   Value* value3;
@@ -2051,18 +2051,18 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   root->Set("empty_dict", std::make_unique<DictionaryValue>());
   root->SetStringKey("empty_string", std::string());
   root = root->DeepCopyWithoutEmptyChildren();
-  EXPECT_EQ(2U, root->size());
+  EXPECT_EQ(2U, root->DictSize());
 
   // Should do nothing.
   root = root->DeepCopyWithoutEmptyChildren();
-  EXPECT_EQ(2U, root->size());
+  EXPECT_EQ(2U, root->DictSize());
 
   // Nested test cases.  These should all reduce back to the bool and string
   // set above.
   {
     root->Set("a.b.c.d.e", std::make_unique<DictionaryValue>());
     root = root->DeepCopyWithoutEmptyChildren();
-    EXPECT_EQ(2U, root->size());
+    EXPECT_EQ(2U, root->DictSize());
   }
   {
     auto inner = std::make_unique<DictionaryValue>();
@@ -2070,7 +2070,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
     inner->Set("empty_list", std::make_unique<ListValue>());
     root->Set("dict_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
-    EXPECT_EQ(2U, root->size());
+    EXPECT_EQ(2U, root->DictSize());
   }
   {
     auto inner = std::make_unique<ListValue>();
@@ -2078,7 +2078,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
     inner->Append(std::make_unique<ListValue>());
     root->Set("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
-    EXPECT_EQ(2U, root->size());
+    EXPECT_EQ(2U, root->DictSize());
   }
 
   // Nested with siblings.
@@ -2092,7 +2092,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
     inner2->Set("empty_list", std::make_unique<ListValue>());
     root->Set("dict_with_empty_children", std::move(inner2));
     root = root->DeepCopyWithoutEmptyChildren();
-    EXPECT_EQ(2U, root->size());
+    EXPECT_EQ(2U, root->DictSize());
   }
 
   // Make sure nested values don't get pruned.
@@ -2104,7 +2104,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
     inner->Append(std::move(inner2));
     root->Set("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
-    EXPECT_EQ(3U, root->size());
+    EXPECT_EQ(3U, root->DictSize());
 
     ListValue *inner_value, *inner_value2;
     EXPECT_TRUE(root->GetList("list_with_empty_children", &inner_value));
@@ -2134,7 +2134,7 @@ TEST(ValuesTest, MergeDictionary) {
 
   base->MergeDictionary(merge.get());
 
-  EXPECT_EQ(4U, base->size());
+  EXPECT_EQ(4U, base->DictSize());
   std::string base_key_value;
   EXPECT_TRUE(base->GetString("base_key", &base_key_value));
   EXPECT_EQ("base_key_value_base", base_key_value);  // Base value preserved.
@@ -2147,7 +2147,7 @@ TEST(ValuesTest, MergeDictionary) {
 
   DictionaryValue* res_sub_dict;
   EXPECT_TRUE(base->GetDictionary("sub_dict_key", &res_sub_dict));
-  EXPECT_EQ(3U, res_sub_dict->size());
+  EXPECT_EQ(3U, res_sub_dict->DictSize());
   std::string sub_base_key_value;
   EXPECT_TRUE(res_sub_dict->GetString("sub_base_key", &sub_base_key_value));
   EXPECT_EQ("sub_base_key_value_base", sub_base_key_value);  // Preserved.
@@ -2164,7 +2164,7 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   std::unique_ptr<DictionaryValue> child(new DictionaryValue);
   DictionaryValue* original_child = child.get();
   child->SetStringKey("test", "value");
-  EXPECT_EQ(1U, child->size());
+  EXPECT_EQ(1U, child->DictSize());
 
   std::string value;
   EXPECT_TRUE(child->GetString("test", &value));
@@ -2172,7 +2172,7 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
 
   std::unique_ptr<DictionaryValue> base(new DictionaryValue);
   base->Set("dict", std::move(child));
-  EXPECT_EQ(1U, base->size());
+  EXPECT_EQ(1U, base->DictSize());
 
   DictionaryValue* ptr;
   EXPECT_TRUE(base->GetDictionary("dict", &ptr));
@@ -2180,7 +2180,7 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
 
   std::unique_ptr<DictionaryValue> merged(new DictionaryValue);
   merged->MergeDictionary(base.get());
-  EXPECT_EQ(1U, merged->size());
+  EXPECT_EQ(1U, merged->DictSize());
   EXPECT_TRUE(merged->GetDictionary("dict", &ptr));
   EXPECT_NE(original_child, ptr);
   EXPECT_TRUE(ptr->GetString("test", &value));
