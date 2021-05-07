@@ -457,6 +457,9 @@ bool QueryParser::ParseQueryImpl(const std::u16string& query,
 // static
 void QueryParser::ExtractQueryWords(const std::u16string& text,
                                     QueryWordVector* words) {
+  DCHECK(text == base::i18n::ToLower(text))
+      << "The caller must have already lowercased `text`. Value = "
+      << base::UTF16ToUTF8(text);
   base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);
   // TODO(evanm): support a locale here
   if (!iter.Init())

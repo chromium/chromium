@@ -177,8 +177,10 @@ class MemoriesServiceTest : public testing::Test {
         cluster->add_visit_ids(visit_id);
     }
     if (!clustered_visit_ids.empty()) {
-      response.mutable_clusters(0)->mutable_keywords()->Add("keyword 1");
-      response.mutable_clusters(0)->mutable_keywords()->Add("keyword 2");
+      response.mutable_clusters(0)->mutable_keywords()->Add("apples");
+      // We had a bug where we couldn't match against uppercase keywords,
+      // so we therefore want to test against an uppercase keyword.
+      response.mutable_clusters(0)->mutable_keywords()->Add("Red Oranges");
     }
     test_url_loader_factory_.AddResponse(kFakeEndpoint,
                                          response.SerializeAsString());
@@ -245,8 +247,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
             EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
                       "Github title");
             ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->keywords[0], u"keyword 1");
-            EXPECT_EQ(response.clusters[0]->keywords[1], u"keyword 2");
+            EXPECT_EQ(response.clusters[0]->keywords[0], u"apples");
+            EXPECT_EQ(response.clusters[0]->keywords[1], u"Red Oranges");
             EXPECT_FALSE(response.clusters[1]->id.is_empty());
             ASSERT_EQ(response.clusters[1]->top_visits.size(), 1u);
             EXPECT_EQ(response.clusters[1]->top_visits[0]->id, 4);
@@ -267,14 +269,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, QueryMemories) {
+TEST_F(MemoriesServiceTest, QueryMemoriesMatchingNonEmptyQuery) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
   AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
 
   auto query_params = mojom::QueryParams::New();
-  query_params->query = "Keyword";
+  // Verify that we can match against the "Red Oranges" uppercase keyword.
+  query_params->query = "orang";
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -302,8 +305,39 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
                       "Github title");
             ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->keywords[0], u"keyword 1");
-            EXPECT_EQ(response.clusters[0]->keywords[1], u"keyword 2");
+            EXPECT_EQ(response.clusters[0]->keywords[0], u"apples");
+            EXPECT_EQ(response.clusters[0]->keywords[1], u"Red Oranges");
+            run_loop_quit_.Run();
+          }),
+      &task_tracker_);
+
+  VerifyHardcodedTestDataInUrlLoaderRequest();
+  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
+
+  // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(MemoriesServiceTest, QueryMemoriesNonMatchingNonEmptyQuery) {
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
+
+  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
+  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
+
+  auto query_params = mojom::QueryParams::New();
+  query_params->query = "should_not_match_anything";
+
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  memories_service_->QueryMemories(
+      std::move(query_params),
+      // This "expect" block is not run until after the fake response is sent
+      // further down in this method.
+      base::BindLambdaForTesting(
+          [&](MemoriesService::QueryMemoriesResponse response) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!response.query_params);
+            // Verify the parsed response.
+            EXPECT_TRUE(response.clusters.empty());
             run_loop_quit_.Run();
           }),
       &task_tracker_);

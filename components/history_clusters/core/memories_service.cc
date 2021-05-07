@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,27 +32,24 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
   // Extract query nodes from the query string.
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(
-      base::UTF8ToUTF16(query),
-      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
+      base::UTF8ToUTF16(query), query_parser::MatchingAlgorithm::DEFAULT,
+      &query_nodes);
 
   std::vector<history::Cluster> matching_clusters;
-  base::ranges::copy_if(
-      clusters, std::back_inserter(matching_clusters),
-      [&](const auto& cluster) {
-        // TODO(manukh): See if we can avoid concatenating keywords only to
-        //  break them up again immediately after. We currently do this to
-        //  construct a `QueryWordVector`.
-        // Combine lowercase keywords into a string to extract query word from.
-        std::u16string keywords = std::accumulate(
-            cluster.keywords.begin(), cluster.keywords.end(), std::u16string(),
-            [](std::u16string accumulated, std::u16string str) {
-              return accumulated + u" " + str;
-            });
-        query_parser::QueryWordVector query_words;
-        query_parser::QueryParser::ExtractQueryWords(keywords, &query_words);
-        return query_parser::QueryParser::DoesQueryMatch(query_words,
-                                                         query_nodes);
-      });
+  base::ranges::copy_if(clusters, std::back_inserter(matching_clusters),
+                        [&](const auto& cluster) {
+                          query_parser::QueryWordVector find_in_words;
+                          for (auto& keyword : cluster.keywords) {
+                            // Each `keyword` may itself have multiple terms
+                            // that we need to extract and append to
+                            // `find_in_words`.
+                            query_parser::QueryParser::ExtractQueryWords(
+                                base::i18n::ToLower(keyword), &find_in_words);
+                          }
+
+                          return query_parser::QueryParser::DoesQueryMatch(
+                              find_in_words, query_nodes);
+                        });
   return matching_clusters;
 }
 

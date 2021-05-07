@@ -124,6 +124,8 @@ class QueryParser {
                              const QueryNodeVector& find_nodes);
 
   // Extracts the words from |text|, placing each word into |words|.
+  // |text| must already be lowercased by the caller, as otherwise the output
+  // will NEVER match anything.
   static void ExtractQueryWords(const std::u16string& text,
                                 QueryWordVector* words);
 
