@@ -1245,13 +1245,13 @@ TEST_F(NetworkServiceTestWithService, SetsTrustTokenKeyCommitments) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 
   base::RunLoop run_loop;
   network_service_->SetTrustTokenKeyCommitments(
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV2PMB", "id": 1, "batchsize": 5 } } )",
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } )",
       run_loop.QuitClosure());
   run_loop.Run();
 

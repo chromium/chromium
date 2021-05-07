@@ -36,10 +36,10 @@ base::StringPiece TrustTokenOperationTypeToString(
 std::string ProtocolVersionToString(
     mojom::TrustTokenProtocolVersion my_version) {
   switch (my_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
-      return "TrustTokenV2PMB";
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
-      return "TrustTokenV2VOPRF";
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
+      return "TrustTokenV3PMB";
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
+      return "TrustTokenV3VOPRF";
   }
 }
 

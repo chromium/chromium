@@ -73,7 +73,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // the normative source of the domain separator's value (currently the design
   // doc).
   static constexpr uint8_t kRequestSigningDomainSeparator[] = {
-      'T', 'r', 'u', 's', 't', 'T', 'o', 'k', 'e', 'n', 'V', '2'};
+      'T', 'r', 'u', 's', 't', 'T', 'o', 'k', 'e', 'n', 'V', '3'};
 
   struct Params {
     // Refer to fields' comments for their semantics.

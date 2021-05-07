@@ -65,7 +65,7 @@ TEST(TrustTokenKeyCommitments, CanRetrieveRecordForSuitableOrigin) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 
@@ -92,7 +92,7 @@ TEST(TrustTokenKeyCommitments, CantRetrieveRecordForOriginNotPresent) {
       *SuitableTrustTokenOrigin::Create(GURL("https://an-origin.example"));
   auto an_expectation = mojom::TrustTokenKeyCommitmentResult::New();
   an_expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   an_expectation->id = 1;
   an_expectation->batch_size = 5;
 
@@ -121,11 +121,11 @@ TEST(TrustTokenKeyCommitments, MultipleOrigins) {
   };
 
   expectations[0]->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   expectations[0]->id = 1;
   expectations[0]->batch_size = 0;
   expectations[1]->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   expectations[1]->id = 1;
   expectations[1]->batch_size = 1;
 
@@ -144,7 +144,7 @@ TEST(TrustTokenKeyCommitments, MultipleOrigins) {
 TEST(TrustTokenKeyCommitments, ParseAndSet) {
   TrustTokenKeyCommitments commitments;
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV2PMB", "id": 1, "batchsize": 5 } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } )");
 
   EXPECT_TRUE(GetCommitmentForOrigin(
       commitments,
@@ -155,7 +155,7 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kAdditionalTrustTokenKeyCommitments,
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV2PMB", "id": 1, "batchsize": 5 } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } )");
 
   TrustTokenKeyCommitments commitments;
 
@@ -164,14 +164,14 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example"))));
 
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV2PMB", "id": 1, "batchsize": 10 } } )");
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 10 } } )");
 
   auto result = GetCommitmentForOrigin(
       commitments,
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example")));
   ASSERT_TRUE(result);
   EXPECT_EQ(result->protocol_version,
-            mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb);
+            mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
   EXPECT_EQ(result->id, 1);
   EXPECT_EQ(result->batch_size, 5);
 }
@@ -190,7 +190,7 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
   commitment_result->keys.push_back(std::move(expired_key));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb);
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
   for (size_t i = 0; i < max_keys; ++i) {
     auto not_expired_key = mojom::TrustTokenVerificationKey::New();
     not_expired_key->expiry =
@@ -223,7 +223,7 @@ TEST(TrustTokenKeyCommitments, GetSync) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 

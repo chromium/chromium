@@ -45,7 +45,7 @@ struct ProtocolKeys {
 };
 
 const mojom::TrustTokenProtocolVersion kProtocolVersion =
-    mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+    mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
 
 // Choose this number to be > 1 but fairly small: setting it to 10
 // led to the test running for 2.5 sec on a debug build.

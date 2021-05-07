@@ -47,11 +47,11 @@ TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitPmb) {
   // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
   ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb,
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
       /*issuer_configured_batch_size=*/10));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb);
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
   for (size_t i = 0; i < max_keys; ++i) {
     ASSERT_TRUE(
         cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)))
@@ -65,11 +65,11 @@ TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitVoprf) {
   // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
   ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf,
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
       /*issuer_configured_batch_size=*/10));
 
   size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf);
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf);
   for (size_t i = 0; i < max_keys; ++i) {
     ASSERT_TRUE(
         cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)))

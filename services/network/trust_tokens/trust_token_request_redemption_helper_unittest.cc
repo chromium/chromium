@@ -221,7 +221,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -269,7 +269,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -318,7 +318,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfKeyPairGenerationFails) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -370,7 +370,7 @@ class TrustTokenBeginRedemptionPostconditionsTest
     key_commitment_result->keys.push_back(
         mojom::TrustTokenVerificationKey::New());
     key_commitment_result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
     key_commitment_result->id = 1;
     key_commitment_result->batch_size =
         static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -454,7 +454,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RecordsEmptyRequestHistogram) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -505,7 +505,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseOmitsHeader) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -566,7 +566,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseIsUnusable) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -635,7 +635,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, Success) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -704,7 +704,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, AssociatesIssuerWithToplevel) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -763,7 +763,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   key_commitment_result->keys.push_back(mojom::TrustTokenVerificationKey::New(
       "token verification key", /*expiry=*/base::Time::Max()));
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -867,7 +867,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);

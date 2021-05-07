@@ -10,9 +10,9 @@ namespace network {
 
 size_t TrustTokenMaxKeysForVersion(mojom::TrustTokenProtocolVersion version) {
   switch (version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
       return 3;
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
       return 6;
   }
 }

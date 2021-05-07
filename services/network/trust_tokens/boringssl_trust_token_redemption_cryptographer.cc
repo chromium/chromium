@@ -31,10 +31,10 @@ bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
 
   const TRUST_TOKEN_METHOD* method = nullptr;
   switch (issuer_configured_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
       method = TRUST_TOKEN_experiment_v2_pmb();
       break;
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
       method = TRUST_TOKEN_experiment_v2_voprf();
       break;
   }
@@ -95,7 +95,7 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
   if (!base::Base64Decode(response_header, &decoded_response))
     return base::nullopt;
 
-  // In TrustTokenV2, the entire RR is stored in the body field, and the
+  // In TrustTokenV3, the entire RR is stored in the body field, and the
   // signature field is unused in finish_redemption.
   ScopedBoringsslBytes rr;
   ScopedBoringsslBytes unused;

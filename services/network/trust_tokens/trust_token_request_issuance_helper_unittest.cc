@@ -127,7 +127,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ReasonableKeyCommitmentResult() {
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
   key_commitment_result->id = 1;
   return key_commitment_result;
 }
@@ -339,7 +339,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   std::string attached_version_header;
   EXPECT_TRUE(request->extra_request_headers().GetHeader(
       kTrustTokensSecTrustTokenVersionHeader, &attached_version_header));
-  EXPECT_EQ(attached_version_header, "TrustTokenV2PMB");
+  EXPECT_EQ(attached_version_header, "TrustTokenV3PMB");
 }
 
 // Check that the issuance helper sets the LOAD_BYPASS_CACHE flag on the

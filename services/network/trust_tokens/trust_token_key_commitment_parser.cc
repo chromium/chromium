@@ -173,12 +173,12 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
       value.FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
   if (!maybe_version)
     return nullptr;
-  if (*maybe_version == "TrustTokenV2PMB") {
+  if (*maybe_version == "TrustTokenV3PMB") {
     result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
-  } else if (*maybe_version == "TrustTokenV2VOPRF") {
+        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+  } else if (*maybe_version == "TrustTokenV3VOPRF") {
     result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf;
+        mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf;
   } else {
     return nullptr;
   }
