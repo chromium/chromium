@@ -88,10 +88,10 @@ class WebRtcGetMediaDevicesBrowserTest
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (auto it = values->begin(); it != values->end(); ++it) {
+    for (const auto& entry : values->GetList()) {
       const base::DictionaryValue* dict;
       MediaDeviceInfo device;
-      ASSERT_TRUE(it->GetAsDictionary(&dict));
+      ASSERT_TRUE(entry.GetAsDictionary(&dict));
       ASSERT_TRUE(dict->GetString("deviceId", &device.device_id));
       ASSERT_TRUE(dict->GetString("kind", &device.kind));
       ASSERT_TRUE(dict->GetString("label", &device.label));
