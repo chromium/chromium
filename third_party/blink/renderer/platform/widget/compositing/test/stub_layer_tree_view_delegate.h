@@ -51,6 +51,9 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   void EndUpdateLayers() override {}
   void UpdateVisualState() override {}
   void WillBeginMainFrame() override {}
+  void RunPaintBenchmark(int repeat_count,
+                         cc::PaintBenchmarkResult& result) override {}
+  void ScheduleAnimationForWebTests() override {}
 };
 
 }  // namespace blink

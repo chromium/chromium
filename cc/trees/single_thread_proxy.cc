@@ -405,6 +405,7 @@ void SingleThreadProxy::SetNeedsOneBeginImplFrameOnImplThread() {
   TRACE_EVENT0("cc",
                "SingleThreadProxy::SetNeedsOneBeginImplFrameOnImplThread");
   single_thread_client_->RequestScheduleComposite();
+  single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsOneBeginImplFrame();
   needs_impl_frame_ = true;
@@ -418,6 +419,7 @@ void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
 
 void SingleThreadProxy::SetNeedsCommitOnImplThread() {
   single_thread_client_->RequestScheduleComposite();
+  single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
   commit_requested_ = true;

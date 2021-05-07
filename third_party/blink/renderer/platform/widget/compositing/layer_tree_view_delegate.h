@@ -106,7 +106,11 @@ class LayerTreeViewDelegate {
   virtual void WillBeginMainFrame() = 0;
 
   virtual void RunPaintBenchmark(int repeat_count,
-                                 cc::PaintBenchmarkResult& result) {}
+                                 cc::PaintBenchmarkResult& result) = 0;
+
+  // Used in web tests without threaded compositing, to indicate that a new
+  // commit needs to be scheduled. Has no effect in any other mode.
+  virtual void ScheduleAnimationForWebTests() = 0;
 
  protected:
   virtual ~LayerTreeViewDelegate() {}

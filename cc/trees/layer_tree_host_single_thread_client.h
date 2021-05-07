@@ -17,6 +17,9 @@ class LayerTreeHostSingleThreadClient {
   // without a scheduler.
   virtual void RequestScheduleComposite() {}
 
+  // Tells single-threaded web tests that a new commit needs to be scheduled.
+  virtual void ScheduleAnimationForWebTests() {}
+
   // Called whenever the begin frame interval changes. This interval can be used
   // for animations.
   virtual void FrameIntervalUpdated(base::TimeDelta interval) {}

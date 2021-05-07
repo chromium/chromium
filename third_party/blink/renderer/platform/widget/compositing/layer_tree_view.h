@@ -114,6 +114,7 @@ class PLATFORM_EXPORT LayerTreeView
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
   void DidLoseLayerTreeFrameSink() override;
+  void ScheduleAnimationForWebTests() override;
 
   // cc::LayerTreeHostSchedulingClient implementation.
   void DidScheduleBeginMainFrame() override;

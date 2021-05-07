@@ -761,6 +761,10 @@ void WidgetBase::RunPaintBenchmark(int repeat_count,
   client_->RunPaintBenchmark(repeat_count, result);
 }
 
+void WidgetBase::ScheduleAnimationForWebTests() {
+  client_->ScheduleAnimationForWebTests();
+}
+
 void WidgetBase::SetCompositorVisible(bool visible) {
   if (never_composited_)
     return;

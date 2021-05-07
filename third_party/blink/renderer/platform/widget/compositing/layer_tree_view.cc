@@ -382,6 +382,13 @@ void LayerTreeView::DidSubmitCompositorFrame() {}
 
 void LayerTreeView::DidLoseLayerTreeFrameSink() {}
 
+void LayerTreeView::ScheduleAnimationForWebTests() {
+  if (!delegate_)
+    return;
+
+  delegate_->ScheduleAnimationForWebTests();
+}
+
 void LayerTreeView::AddPresentationCallback(
     uint32_t frame_token,
     base::OnceCallback<void(base::TimeTicks)> callback) {
