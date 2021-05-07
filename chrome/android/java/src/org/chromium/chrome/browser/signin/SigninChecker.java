@@ -6,16 +6,22 @@ package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -29,17 +35,12 @@ import java.util.List;
  */
 public class SigninChecker
         implements ApplicationStatus.ApplicationStateListener, AccountTrackerService.Observer {
+    private static final String TAG = "SigninChecker";
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
-    private final SignInCallback mSigninCallback = new SignInCallback() {
-        @Override
-        public void onSignInComplete() {
-            ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
-        }
-
-        @Override
-        public void onSignInAborted() {}
-    };
+    private final AccountManagerFacade mAccountManagerFacade;
+    // Counter to record the number of child account checks done for tests.
+    private int mNumOfChildAccountChecksDone;
 
     /**
      * Please use SigninHelperProvider to get {@link SigninChecker} instance instead of creating it
@@ -48,15 +49,20 @@ public class SigninChecker
     public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        mNumOfChildAccountChecksDone = 0;
+
         ApplicationStatus.registerApplicationStateListener(this);
         mAccountTrackerService.addObserver(this);
     }
 
     private void validateAccountSettings() {
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
             mAccountTrackerService.seedAccountsIfNeeded(() -> {
-                mSigninManager.runAfterOperationInProgress(
-                        () -> { validatePrimaryAccountExists(accounts); });
+                mSigninManager.runAfterOperationInProgress(() -> {
+                    validatePrimaryAccountExists(accounts);
+                    checkChildAccount(accounts);
+                });
             });
         });
     }
@@ -66,9 +72,16 @@ public class SigninChecker
      */
     @Override
     public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
+        final List<Account> accounts = AccountUtils.toAndroidAccounts(accountInfos);
         mSigninManager.runAfterOperationInProgress(() -> {
-            validatePrimaryAccountExists(AccountUtils.toAndroidAccounts(accountInfos));
+            validatePrimaryAccountExists(accounts);
+            checkChildAccount(accounts);
         });
+    }
+
+    @VisibleForTesting
+    public int getNumOfChildAccountChecksDoneForTests() {
+        return mNumOfChildAccountChecksDone;
     }
 
     /**
@@ -92,13 +105,60 @@ public class SigninChecker
                         mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
                             mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
                                     AccountUtils.createAccountFromName(newAccountName),
-                                    mSigninCallback);
+                                    new SignInCallback() {
+                                        @Override
+                                        public void onSignInComplete() {
+                                            ProfileSyncService.get().setFirstSetupComplete(
+                                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                                        }
+
+                                        @Override
+                                        public void onSignInAborted() {}
+                                    });
                         }, false);
                     } else {
                         // Sign out if the current primary account is not renamed
                         mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                     }
                 });
+    }
+
+    private void checkChildAccount(List<Account> accounts) {
+        if (accounts.size() == 1) {
+            // Child accounts can't share a device.
+            final Account account = accounts.get(0);
+            mAccountManagerFacade.checkChildAccountStatus(
+                    account, status -> { onChildAccountStatusReady(account, status); });
+        } else {
+            ++mNumOfChildAccountChecksDone;
+        }
+    }
+
+    private void onChildAccountStatusReady(Account account, @Status int status) {
+        if (ChildAccountStatus.isChild(status)) {
+            mSigninManager.onFirstRunCheckDone();
+            if (mSigninManager.isSignInAllowed()) {
+                Log.d(TAG, "The child account sign-in starts.");
+                mSigninManager.signinAndEnableSync(
+                        SigninAccessPoint.FORCED_SIGNIN, account, new SignInCallback() {
+                            @Override
+                            public void onSignInComplete() {
+                                final ProfileSyncService profileSyncService =
+                                        ProfileSyncService.get();
+                                if (profileSyncService != null) {
+                                    profileSyncService.setFirstSetupComplete(
+                                            SyncFirstSetupCompleteSource.BASIC_FLOW);
+                                }
+                                ++mNumOfChildAccountChecksDone;
+                            }
+
+                            @Override
+                            public void onSignInAborted() {}
+                        });
+                return;
+            }
+        }
+        ++mNumOfChildAccountChecksDone;
     }
 
     /**
