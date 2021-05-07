@@ -1083,6 +1083,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)activityViewHeaderWithURLHost:(NSString*)host
                                            title:(NSString*)pageTitle {
+#if TARGET_IPHONE_SIMULATOR
   return grey_allOf(
       // The title of the activity view starts as the URL, then asynchronously
       // changes to the page title. Sometimes, the activity view fails to update
@@ -1094,6 +1095,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
           grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitHeader),
                      grey_kindOfClassName(@"LPLinkView"), nil)),
       nil);
+#else
+  // Device tests tend to fail more often if the host is allowed in the
+  // grey_anyOf as above.
+  return grey_allOf(grey_accessibilityLabel(pageTitle),
+                    grey_ancestor(grey_allOf(
+                        grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                        grey_kindOfClassName(@"LPLinkView"), nil)),
+                    nil);
+#endif
 }
 
 + (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
