@@ -204,7 +204,7 @@ class BaseVisionTaskApi
         if (normalization_options.num_values == 1) {
           float mean_value = normalization_options.mean_values[0];
           float inv_std_value = (1.0f / normalization_options.std_values[0]);
-          for (int i = 0; i < input_data_byte_size / sizeof(uint8);
+          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
                i++, input_data++, normalized_input_data++) {
             *normalized_input_data =
                 inv_std_value * (static_cast<float>(*input_data) - mean_value);
@@ -214,7 +214,7 @@ class BaseVisionTaskApi
               1.0f / normalization_options.std_values[0],
               1.0f / normalization_options.std_values[1],
               1.0f / normalization_options.std_values[2]};
-          for (int i = 0; i < input_data_byte_size / sizeof(uint8);
+          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
                i++, input_data++, normalized_input_data++) {
             *normalized_input_data = inv_std_values[i % 3] *
                                      (static_cast<float>(*input_data) -

@@ -1,0 +1,38 @@
+From b23fcde4753dbf5e4adc325e9ded16800f1d1bc5 Mon Sep 17 00:00:00 2001
+From: Daniel Rubery <drubery@chromium.org>
+Date: Thu, 6 May 2021 11:38:06 -0700
+Subject: [PATCH] Remove unused qualifiers in frame_buffer.h
+
+---
+ .../cc/task/vision/core/frame_buffer.h                      | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+index 1556b7dfabef..22f63fc34d36 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+@@ -242,7 +242,7 @@ class FrameBuffer {
+         timestamp_(timestamp) {}
+ 
+   // Returns number of planes.
+-  const int plane_count() const { return planes_.size(); }
++  int plane_count() const { return planes_.size(); }
+ 
+   // Returns plane indexed by the input `index`.
+   const Plane plane(int index) const {
+@@ -256,10 +256,10 @@ class FrameBuffer {
+   const Dimension dimension() const { return dimension_; }
+ 
+   // Returns FrameBuffer format.
+-  const Format format() const { return format_; }
++  Format format() const { return format_; }
+ 
+   // Returns FrameBuffer orientation.
+-  const Orientation orientation() const { return orientation_; }
++  Orientation orientation() const { return orientation_; }
+ 
+   // Returns FrameBuffer timestamp.
+   const absl::Time timestamp() const { return timestamp_; }
+-- 
+2.31.1.607.g51e8a6a459-goog
+

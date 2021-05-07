@@ -1,0 +1,30 @@
+From 226d36a5d12ca3080b1d0d9b450be949e418e318 Mon Sep 17 00:00:00 2001
+From: Daniel Rubery <drubery@chromium.org>
+Date: Thu, 6 May 2021 11:26:23 -0700
+Subject: [PATCH] Use third_party/libyuv
+
+---
+ .../cc/task/vision/utils/libyuv_frame_buffer_utils.cc           | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
+index f3cd0c70fe1b..b50b500bb5a4 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
+@@ -23,12 +23,12 @@ limitations under the License.
+ #include "absl/status/status.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_format.h"
+-#include "include/libyuv.h"
+ #include "tensorflow_lite_support/cc/common.h"
+ #include "tensorflow_lite_support/cc/port/integral_types.h"
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+ #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
++#include "third_party/libyuv/include/libyuv.h"
+ 
+ namespace tflite {
+ namespace task {
+-- 
+2.31.1.607.g51e8a6a459-goog
+

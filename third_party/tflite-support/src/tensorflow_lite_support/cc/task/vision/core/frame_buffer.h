@@ -27,7 +27,6 @@ limitations under the License.
 #include "absl/strings/str_cat.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
-#include "absl/types/any.h"
 #include "absl/types/optional.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -243,56 +242,30 @@ class FrameBuffer {
         timestamp_(timestamp) {}
 
   // Returns number of planes.
-  const int plane_count() const { return planes_.size(); }
+  int plane_count() const { return planes_.size(); }
 
   // Returns plane indexed by the input `index`.
   const Plane plane(int index) const {
-    if (index > -1 && index < planes_.size()) {
+    if (index > -1 && static_cast<size_t>(index) < planes_.size()) {
       return planes_[index];
     }
     return {};
-  }
-
-  // Returns the tag associated to the tag_key.
-  absl::any GetTag(const std::string& tag_key) const {
-    auto iter = tags_.find(tag_key);
-    if (iter != tags_.end()) {
-      return iter->second;
-    }
-    return absl::any();
-  }
-
-  // Inserts or updates the tags map with key value pair (tag_key, tag_value).
-  void InsertOrUpdateTag(const std::string& tag_key, absl::any tag_value) {
-    tags_[tag_key] = std::move(tag_value);
-  }
-
-  // Inserts the key value pair (tag_key, tag_value) into tags map. If the
-  // tag_key already exists, an internal error will return.
-  absl::Status InsertTag(const std::string& tag_key, absl::any tag_value) {
-    auto iter = tags_.emplace(tag_key, tag_value);
-    if (iter.second) {
-      return absl::OkStatus();
-    }
-    return absl::InternalError(absl::StrCat(
-        "tag_key already exists in tags.tag_key was not inserted: ", tag_key));
   }
 
   // Returns FrameBuffer dimension.
   const Dimension dimension() const { return dimension_; }
 
   // Returns FrameBuffer format.
-  const Format format() const { return format_; }
+  Format format() const { return format_; }
 
   // Returns FrameBuffer orientation.
-  const Orientation orientation() const { return orientation_; }
+  Orientation orientation() const { return orientation_; }
 
   // Returns FrameBuffer timestamp.
   const absl::Time timestamp() const { return timestamp_; }
 
  private:
   std::vector<Plane> planes_;
-  std::map<std::string, absl::any> tags_;
   Dimension dimension_;
   Format format_;
   Orientation orientation_;
