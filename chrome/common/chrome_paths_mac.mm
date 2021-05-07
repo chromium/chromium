@@ -13,6 +13,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
+#include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
@@ -40,9 +41,7 @@ NSBundle* OuterAppBundleInternal() {
     base::FilePath framework_path = chrome::GetFrameworkBundlePath();
     base::FilePath outer_app_dir =
         framework_path.DirName().DirName().DirName().DirName().DirName();
-    const char* outer_app_dir_c = outer_app_dir.value().c_str();
-    NSString* outer_app_dir_ns =
-        [NSString stringWithUTF8String:outer_app_dir_c];
+    NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
 
     return [[NSBundle bundleWithPath:outer_app_dir_ns] retain];
   }

@@ -31,7 +31,7 @@ NSURL* GetPlistURL(Launchd::Domain domain,
   NSArray* library_paths =
       NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, domain, YES);
   DCHECK_EQ([library_paths count], 1U);
-  NSString* library_path = [library_paths objectAtIndex:0];
+  NSString* library_path = library_paths[0];
 
   NSString *launch_dir_name = (type == Launchd::Daemon) ? @"LaunchDaemons"
                                                         : @"LaunchAgents";
