@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   PermissionChip* chip = GetPermissionRequestChipView();
   // If chip UI is used, two notifications will be announced: one that
   // permission was requested and second when bubble is opened.
-  if (chip) {
+  if (chip && !chip->should_start_open_for_testing()) {
     EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
   } else {
     EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));

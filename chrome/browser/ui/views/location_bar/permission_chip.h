@@ -60,6 +60,8 @@ class PermissionChip : public views::AccessiblePaneView,
   virtual views::BubbleDialogDelegateView*
   GetPermissionPromptBubbleForTest() = 0;
 
+  bool should_start_open_for_testing() { return should_start_open_; }
+
  protected:
   permissions::PermissionPrompt::Delegate* delegate() const {
     return delegate_;
