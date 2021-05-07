@@ -49,12 +49,6 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
   scoped_refptr<cc::ScrollbarLayerBase> CreateOrReuseLayer(
       cc::ScrollbarLayerBase* existing_layer) const;
 
-  // DisplayItem
-  bool Equals(const DisplayItem&) const override;
-#if DCHECK_IS_ON()
-  void PropertiesAsJSON(JSONObject&) const override;
-#endif
-
   // Records a scrollbar into a GraphicsContext. Must check
   // PaintController::UseCachedItem() before calling this function.
   // |rect| is the bounding box of the scrollbar in the current transform space.
@@ -67,6 +61,12 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                      CompositorElementId element_id);
 
  private:
+  friend class DisplayItem;
+  bool EqualsForUnderInvalidationImpl(const ScrollbarDisplayItem&) const;
+#if DCHECK_IS_ON()
+  void PropertiesAsJSONImpl(JSONObject&) const;
+#endif
+
   struct Data {
     scoped_refptr<cc::Scrollbar> scrollbar_;
     const TransformPaintPropertyNode* scroll_translation_;

@@ -53,7 +53,7 @@ class PLATFORM_EXPORT DisplayItemList {
   DisplayItem& ReplaceLastByMoving(DisplayItem& item) {
     SECURITY_CHECK(!item.IsTombstone());
     DisplayItem& last = back();
-    last.~DisplayItem();
+    last.Destruct();
     return MoveItem(item, &last);
   }
 
@@ -207,21 +207,13 @@ class PLATFORM_EXPORT DisplayItemList {
 
     // Created a tombstone/"dead display item" that can be safely destructed but
     // should never be used except for debugging and raster invalidation.
-    new (&item) DisplayItem;
+    item.CreateTombstone();
     DCHECK(item.IsTombstone());
-    // We need |visual_rect_| and |outset_for_raster_effects_| of the old
-    // display item for raster invalidation. Also, the fields that make up the
-    // ID (|client_|, |type_| and |fragment_|) need to match. As their values
-    // were either initialized to default values or were left uninitialized by
-    // DisplayItem's default constructor, now copy their original values back
-    // from |result|.
+    // Original values for other fields are kept for debugging and raster
+    // invalidation.
     DisplayItem& new_item = *static_cast<DisplayItem*>(new_item_space);
-    item.client_ = new_item.client_;
-    item.type_ = new_item.type_;
-    item.fragment_ = new_item.fragment_;
-    DCHECK_EQ(item.GetId(), new_item.GetId());
-    item.visual_rect_ = new_item.visual_rect_;
-    item.raster_effect_outset_ = new_item.raster_effect_outset_;
+    DCHECK_EQ(item.VisualRect(), new_item.VisualRect());
+    DCHECK_EQ(item.GetRasterEffectOutset(), new_item.GetRasterEffectOutset());
     return new_item;
   }
 

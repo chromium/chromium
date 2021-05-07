@@ -10,10 +10,8 @@
 namespace blink {
 
 DisplayItemList::~DisplayItemList() {
-  for (auto& item : *this) {
-    (void)item;  // MSVC incorrectly reports this variable as unused.
-    item.~DisplayItem();
-  }
+  for (auto& item : *this)
+    item.Destruct();
 }
 
 #if DCHECK_IS_ON()

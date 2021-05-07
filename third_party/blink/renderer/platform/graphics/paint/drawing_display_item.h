@@ -16,15 +16,6 @@ namespace blink {
 
 // DrawingDisplayItem contains recorded painting operations which can be
 // replayed to produce a rastered output.
-//
-// This class has two notions of the bounds around the content that was recorded
-// and will be produced by the item. The first is the |record_bounds| which
-// describes the bounds of all content in the |record| in the space of the
-// record. The second is the |visual_rect| which should describe the same thing,
-// but takes into account transforms and clips that would apply to the
-// PaintRecord, and is in the space of the DisplayItemList. This allows the
-// visual_rect to be compared between DrawingDisplayItems, and to give bounds
-// around what the user can actually see from the PaintRecord.
 class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
  public:
   DISABLE_CFI_PERF
@@ -34,8 +25,6 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
                      sk_sp<const PaintRecord> record);
 
   const sk_sp<const PaintRecord>& GetPaintRecord() const { return record_; }
-
-  bool Equals(const DisplayItem& other) const final;
 
   bool KnownToBeOpaque() const {
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -54,6 +43,12 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
   SkColor BackgroundColor(float& area) const;
 
  private:
+  friend class DisplayItem;
+  bool EqualsForUnderInvalidationImpl(const DrawingDisplayItem&) const;
+#if DCHECK_IS_ON()
+  void PropertiesAsJSONImpl(JSONObject&) const {}
+#endif
+
   bool CalculateKnownToBeOpaque(const PaintRecord*) const;
 
   sk_sp<const PaintRecord> record_;

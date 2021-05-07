@@ -722,7 +722,7 @@ void PaintController::CheckUnderInvalidation() {
           ? &current_paint_artifact_->GetDisplayItemList()[old_item_index]
           : nullptr;
 
-  if (!old_item || !new_item.Equals(*old_item)) {
+  if (!old_item || !new_item.EqualsForUnderInvalidation(*old_item)) {
     // If we ever skipped reporting any under-invalidations, report the earliest
     // one.
     ShowUnderInvalidationError("under-invalidation: display item changed",

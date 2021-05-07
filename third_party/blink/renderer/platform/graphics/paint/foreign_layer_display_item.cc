@@ -27,15 +27,14 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
   DCHECK(IsForeignLayerType(type));
 }
 
-bool ForeignLayerDisplayItem::Equals(const DisplayItem& other) const {
-  return DisplayItem::Equals(other) &&
-         GetLayer() ==
-             static_cast<const ForeignLayerDisplayItem&>(other).GetLayer();
+bool ForeignLayerDisplayItem::EqualsForUnderInvalidationImpl(
+    const ForeignLayerDisplayItem& other) const {
+  DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
+  return GetLayer() == other.GetLayer();
 }
 
 #if DCHECK_IS_ON()
-void ForeignLayerDisplayItem::PropertiesAsJSON(JSONObject& json) const {
-  DisplayItem::PropertiesAsJSON(json);
+void ForeignLayerDisplayItem::PropertiesAsJSONImpl(JSONObject& json) const {
   json.SetInteger("layer", GetLayer()->id());
 }
 #endif

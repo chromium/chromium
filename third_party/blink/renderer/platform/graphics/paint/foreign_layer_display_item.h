@@ -30,13 +30,13 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
 
   cc::Layer* GetLayer() const { return layer_.get(); }
 
-  // DisplayItem
-  bool Equals(const DisplayItem&) const final;
+ private:
+  friend class DisplayItem;
+  bool EqualsForUnderInvalidationImpl(const ForeignLayerDisplayItem&) const;
 #if DCHECK_IS_ON()
-  void PropertiesAsJSON(JSONObject&) const final;
+  void PropertiesAsJSONImpl(JSONObject&) const;
 #endif
 
- private:
   scoped_refptr<cc::Layer> layer_;
 };
 

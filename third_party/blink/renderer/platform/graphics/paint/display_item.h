@@ -52,6 +52,8 @@ class PLATFORM_EXPORT DisplayItem {
   // - DEFINE_PAINT_PHASE_CONVERSION_METHOD(<Category>[<Subset>]) to define
   //   paintPhaseTo<Category>[<Subset>]Type(PaintPhase) method.
   enum Type {
+    kUninitializedType,
+
     kDrawingFirst,
     kDrawingPaintPhaseFirst = kDrawingFirst,
     kDrawingPaintPhaseLast = kDrawingFirst + kPaintPhaseMax,
@@ -148,32 +150,13 @@ class PLATFORM_EXPORT DisplayItem {
     kScrollbarHorizontal,
     kScrollbarVertical,
 
-    kUninitializedType,
-    kTypeLast = kUninitializedType
+    kTypeLast = kScrollbarVertical,
   };
 
-  // Some fields are copied from |client|, because we need to access them in
-  // later paint cycles when |client| may have been destroyed.
-  DisplayItem(const DisplayItemClient& client,
-              Type type,
-              const IntRect& visual_rect,
-              bool draws_content = false)
-      : client_(&client),
-        visual_rect_(visual_rect),
-        fragment_(0),
-        type_(type),
-        raster_effect_outset_(
-            static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
-        draws_content_(draws_content),
-        is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false),
-        known_to_be_opaque_is_set_(false),
-        known_to_be_opaque_(false) {
-    DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
-              GetRasterEffectOutset());
-  }
-
-  virtual ~DisplayItem() = default;
+  DisplayItem(const DisplayItem&) = delete;
+  DisplayItem(DisplayItem&&) = delete;
+  DisplayItem& operator=(const DisplayItem&) = delete;
+  DisplayItem& operator=(DisplayItem&&) = delete;
 
   // Ids are for matching new DisplayItems with existing DisplayItems.
   struct Id {
@@ -247,36 +230,60 @@ class PLATFORM_EXPORT DisplayItem {
   bool IsCacheable() const { return is_cacheable_; }
   void SetUncacheable() { is_cacheable_ = false; }
 
-  virtual bool Equals(const DisplayItem& other) const {
-    // Failure of this DCHECK would cause bad casts in subclasses.
-    SECURITY_CHECK(!is_tombstone_);
-    return client_ == other.client_ && type_ == other.type_ &&
-           fragment_ == other.fragment_;
-  }
+  bool EqualsForUnderInvalidation(const DisplayItem& other) const;
 
   // True if this DisplayItem is the tombstone/"dead display item" as part of
-  // moving an item from one list to another. See the default constructor of
-  // DisplayItem.
-  bool IsTombstone() const { return is_tombstone_; }
+  // moving an item from one list to another. See CreateTombstone().
+  bool IsTombstone() const { return !is_not_tombstone_; }
 
   bool DrawsContent() const { return draws_content_; }
 
 #if DCHECK_IS_ON()
   static WTF::String TypeAsDebugString(DisplayItem::Type);
   WTF::String AsDebugString() const;
-  virtual void PropertiesAsJSON(JSONObject&) const;
+  void PropertiesAsJSON(JSONObject&) const;
 #endif
+
+ protected:
+  // Some fields are copied from |client|, because we need to access them in
+  // later paint cycles when |client| may have been destroyed.
+  DisplayItem(const DisplayItemClient& client,
+              Type type,
+              const IntRect& visual_rect,
+              bool draws_content = false)
+      : client_(&client),
+        visual_rect_(visual_rect),
+        fragment_(0),
+        type_(type),
+        raster_effect_outset_(
+            static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
+        draws_content_(draws_content),
+        is_cacheable_(client.IsCacheable()),
+        is_not_tombstone_(true),
+        known_to_be_opaque_is_set_(false),
+        known_to_be_opaque_(false) {
+    DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
+              GetRasterEffectOutset());
+  }
+
+  ~DisplayItem() = default;
 
  private:
   friend class DisplayItemList;
 
-  // The default DisplayItem constructor is only used by DisplayItemList::
-  // AppendByMoving() and ReplaceLastByMoving() where a tombstone DisplayItem is
-  // constructed at the source location. Only set draws_content_ to false and
-  // is_tombstone_ to true, leaving other fields as-is so that we can get their
-  // original values. |visual_rect_| and |raster_effect_outset_| are special,
-  // see DisplayItemList::AppendByMoving().
-  DisplayItem() : draws_content_(false), is_tombstone_(true) {}
+  // DisplayItemList calls this method to destruct a DisplayItem in place.
+  // It knows how to destruct subclasses.
+  void Destruct();
+
+  // Used by DisplayItemList::AppendByMoving() and ReplaceLastByMoving() where
+  // a tombstone DisplayItem is constructed at the source location. Only set
+  // draws_content_ and is_not_tombstone_ to false, leaving other fields as-is
+  // so that we can get their original values for debugging and raster
+  // invalidation.
+  void CreateTombstone() {
+    draws_content_ = false;
+    is_not_tombstone_ = false;
+  }
 
   const DisplayItemClient* client_;
   IntRect visual_rect_;
@@ -287,7 +294,9 @@ class PLATFORM_EXPORT DisplayItem {
   unsigned raster_effect_outset_ : 2;
   unsigned draws_content_ : 1;
   unsigned is_cacheable_ : 1;
-  unsigned is_tombstone_ : 1;
+  // This is not |is_tombstone_| to allow memset(0) to clear a display item to
+  // be a tombstone.
+  unsigned is_not_tombstone_ : 1;
 
  protected:
   // These are for DrawingDisplayItem to save memory.
