@@ -33,6 +33,10 @@ const char kGmailAppId[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";
 const char kGoogleCalendarAppId[] = "kjbdgfilnfhdoflbpgamdcdgpehopbep";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://mail.google.com/chat/"))
+const char kGoogleChatAppId[] = "mdpkiolbdkhdjpekfbkbmhigcaggjagi";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://docs.google.com/document/?usp=installed_webapp"))
 const char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
 

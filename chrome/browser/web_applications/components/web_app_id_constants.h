@@ -13,6 +13,7 @@ extern const char kCanvasAppId[];
 extern const char kDiagnosticsAppId[];
 extern const char kGmailAppId[];
 extern const char kGoogleCalendarAppId[];
+extern const char kGoogleChatAppId[];
 extern const char kGoogleDocsAppId[];
 extern const char kGoogleDriveAppId[];
 extern const char kGoogleKeepAppId[];
