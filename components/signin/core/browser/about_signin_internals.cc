@@ -203,6 +203,17 @@ std::string GetAccountConsistencyDescription(
   return "";
 }
 
+std::string GetSigninStatusDescription(
+    signin::IdentityManager* identity_manager) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return "Not Signed In";
+  } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return "Signed In, Consented for Sync";
+  } else {
+    return "Signed In, Not Consented for Sync";
+  }
+}
+
 }  // anonymous namespace
 
 AboutSigninInternals::AboutSigninInternals(
@@ -615,11 +626,8 @@ AboutSigninInternals::SigninStatus::ToValue(
       AddSection(signin_info.get(), "Basic Information");
   AddSectionEntry(basic_info, "Account Consistency",
                   GetAccountConsistencyDescription(account_consistency));
-  AddSectionEntry(
-      basic_info, "Signin Status",
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
-          ? "Signed In"
-          : "Not Signed In");
+  AddSectionEntry(basic_info, "Signin Status",
+                  GetSigninStatusDescription(identity_manager));
   signin::LoadCredentialsState load_tokens_state =
       identity_manager->GetDiagnosticsProvider()
           ->GetDetailedStateOfLoadingOfRefreshTokens();
@@ -629,9 +637,9 @@ AboutSigninInternals::SigninStatus::ToValue(
       basic_info, "Gaia cookies state",
       GetGaiaCookiesStateAsString(GetGaiaCookiesState(signin_client)));
 
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     AddSectionEntry(basic_info,
                     SigninStatusFieldToLabel(signin_internals_util::ACCOUNT_ID),
                     account_info.account_id.ToString());
