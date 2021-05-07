@@ -1828,6 +1828,8 @@ source_set("chromeos") {
     "../ash/system_logs/touch_log_source.h",
     "../ash/system_logs/ui_hierarchy_log_source.cc",
     "../ash/system_logs/ui_hierarchy_log_source.h",
+    "../ash/usb/cros_usb_detector.cc",
+    "../ash/usb/cros_usb_detector.h",
     "../ash/web_applications/camera_system_web_app_info.cc",
     "../ash/web_applications/camera_system_web_app_info.h",
     "../ash/web_applications/chrome_camera_app_ui_constants.h",
@@ -3122,8 +3124,6 @@ source_set("chromeos") {
     "tpm_firmware_update_notification.h",
     "u2f_notification.cc",
     "u2f_notification.h",
-    "usb/cros_usb_detector.cc",
-    "usb/cros_usb_detector.h",
     "vm_shutdown_observer.h",
     "vm_starting_observer.h",
     "window_throttle_observer_base.cc",
@@ -3868,6 +3868,7 @@ source_set("unit_tests") {
     "../ash/system_logs/shill_log_source_unittest.cc",
     "../ash/system_logs/single_debug_daemon_log_source_unittest.cc",
     "../ash/system_logs/single_log_file_log_source_unittest.cc",
+    "../ash/usb/cros_usb_detector_unittest.cc",
     "../ash/web_applications/help_app/help_app_discover_tab_notification_unittest.cc",
     "../ash/web_applications/help_app/help_app_notification_controller_unittest.cc",
     "../ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.cc",
@@ -4273,7 +4274,6 @@ source_set("unit_tests") {
     "throttle_observer_unittest.cc",
     "throttle_service_unittest.cc",
     "tpm_firmware_update_unittest.cc",
-    "usb/cros_usb_detector_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is

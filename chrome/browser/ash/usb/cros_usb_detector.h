@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_USB_CROS_USB_DETECTOR_H_
-#define CHROME_BROWSER_CHROMEOS_USB_CROS_USB_DETECTOR_H_
+#ifndef CHROME_BROWSER_ASH_USB_CROS_USB_DETECTOR_H_
+#define CHROME_BROWSER_ASH_USB_CROS_USB_DETECTOR_H_
 
 #include <map>
 #include <memory>
@@ -276,4 +276,4 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_USB_CROS_USB_DETECTOR_H_
+#endif  // CHROME_BROWSER_ASH_USB_CROS_USB_DETECTOR_H_
