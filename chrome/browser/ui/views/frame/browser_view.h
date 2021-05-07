@@ -178,6 +178,10 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* right_aligned_side_panel() { return right_aligned_side_panel_; }
 
+  ExtensionsSidePanelController* extensions_side_panel_controller() {
+    return extensions_side_panel_controller_.get();
+  }
+
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
   }

@@ -663,13 +663,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         AddChildView(std::make_unique<ContentsSeparator>());
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsSidePanel)) {
+  if (browser_->is_type_normal() &&
+      base::FeatureList::IsEnabled(features::kExtensionsSidePanel)) {
     left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
     left_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
     extensions_side_panel_controller_ =
         std::make_unique<ExtensionsSidePanelController>(
-            left_aligned_side_panel_, browser_->profile());
+            left_aligned_side_panel_, this);
   }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but

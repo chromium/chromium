@@ -5,17 +5,22 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_
 
-#include "content/public/browser/web_contents_observer.h"
+#include <memory>
 
-namespace content {
-class BrowserContext;
-}  // namespace content
+#include "content/public/browser/web_contents_observer.h"
+#include "extensions/common/extension_id.h"
+
+namespace extensions {
+class Extension;
+}
 
 namespace views {
 class WebView;
 }  // namespace views
 
+class BrowserView;
 class SidePanel;
+class ToolbarButton;
 
 // A class that manages hosting the extension WebContents in the left aligned
 // side panel of the browser window.
@@ -23,18 +28,26 @@ class SidePanel;
 class ExtensionsSidePanelController : public content::WebContentsObserver {
  public:
   ExtensionsSidePanelController(SidePanel* side_panel,
-                                content::BrowserContext* browser_context);
+                                BrowserView* browser_view);
   ExtensionsSidePanelController(const ExtensionsSidePanelController&) = delete;
   ExtensionsSidePanelController& operator=(
       const ExtensionsSidePanelController&) = delete;
   ~ExtensionsSidePanelController() override;
+
+  std::unique_ptr<ToolbarButton> CreateToolbarButton();
 
  private:
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 
+  const extensions::Extension* GetExtension();
+
+  void SidePanelButtonPressed();
+
+  const extensions::ExtensionId extension_id_;
   SidePanel* side_panel_;
+  BrowserView* browser_view_;
   views::WebView* web_view_;
 };
 
