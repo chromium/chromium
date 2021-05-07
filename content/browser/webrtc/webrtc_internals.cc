@@ -338,7 +338,7 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   DisableLocalEventLogRecordings();
 
   // TODO(tommi): Consider removing all the peer_connection_data_.
-  for (auto& dictionary : peer_connection_data_)
+  for (auto& dictionary : peer_connection_data_.GetList())
     FreeLogList(&dictionary);
 }
 
@@ -359,7 +359,7 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
   if (peer_connection_data_.GetSize() > 0)
     observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
 
-  for (const auto& request : get_user_media_requests_) {
+  for (const auto& request : get_user_media_requests_.GetList()) {
     observer->OnUpdate("add-get-user-media", &request);
   }
 }

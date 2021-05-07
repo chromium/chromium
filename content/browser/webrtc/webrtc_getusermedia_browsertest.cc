@@ -143,11 +143,11 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
     base::ListValue* values;
     ASSERT_TRUE(parsed_json.value->GetAsList(&values));
 
-    for (auto it = values->begin(); it != values->end(); ++it) {
+    for (const auto& entry : values->GetList()) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;
-      ASSERT_TRUE(it->GetAsDictionary(&dict));
+      ASSERT_TRUE(entry.GetAsDictionary(&dict));
       ASSERT_TRUE(dict->GetString("kind", &kind));
       ASSERT_TRUE(dict->GetString("id", &device_id));
       ASSERT_FALSE(device_id.empty());
