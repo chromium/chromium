@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+class FeatureTutorialService;
+
 class UserEducationInternalsPageHandlerImpl
     : public mojom::user_education_internals::
           UserEducationInternalsPageHandler {
@@ -21,8 +23,12 @@ class UserEducationInternalsPageHandlerImpl
   UserEducationInternalsPageHandlerImpl& operator=(
       const UserEducationInternalsPageHandlerImpl&) = delete;
 
+  // mojom::user_education_internals::UserEducationInternalsPageHandler:
+  void GetTutorials(GetTutorialsCallback callback) override;
+  void StartTutorial(const std::string& tutorial_id) override;
+
  private:
-  // Profile* profile_ = nullptr;
+  FeatureTutorialService* const tutorial_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_

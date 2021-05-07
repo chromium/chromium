@@ -35,9 +35,9 @@ class UserEducationInternalsElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    // TODO(crbug.com/1194751): fetch tutorial IDs from handler and display
-    // them.
-    this.tutorials_ = ['test1', 'test2'];
+    this.handler_.getTutorials().then(({tutorialIds}) => {
+      this.tutorials_ = tutorialIds;
+    });
   }
 
   /**
