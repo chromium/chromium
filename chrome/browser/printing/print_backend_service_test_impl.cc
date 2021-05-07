@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/printing/print_backend_service.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/backend/test_print_backend.h"
 
 namespace printing {
@@ -47,7 +47,7 @@ PrintBackendServiceTestImpl::LaunchForTesting(
 
   // Register this test version of print backend service to be used instead of
   // launching instances out-of-process on-demand.
-  SetPrintBackendServiceForTesting(&remote);
+  PrintBackendServiceManager::GetInstance().SetServiceForTesting(&remote);
 
   return service;
 }

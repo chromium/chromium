@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/printing/print_backend_service.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -191,10 +191,11 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting default printer via service";
-    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
-                           /*printer_name=*/std::string())
-        ->GetDefaultPrinterName(
-            base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
+    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+        g_browser_process->GetApplicationLocale(),
+        /*printer_name=*/std::string());
+    service->GetDefaultPrinterName(
+        base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
   } else {
     VLOG(1) << "Getting default printer in-process";
     base::PostTaskAndReplyWithResult(
@@ -212,11 +213,12 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Enumerate printers start via service";
-    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
-                           /*printer_name=*/std::string())
-        ->EnumeratePrinters(base::BindOnce(&OnDidEnumeratePrinters,
-                                           std::move(callback),
-                                           std::move(done_callback)));
+    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+        g_browser_process->GetApplicationLocale(),
+        /*printer_name=*/std::string());
+    service->EnumeratePrinters(base::BindOnce(&OnDidEnumeratePrinters,
+                                              std::move(callback),
+                                              std::move(done_callback)));
   } else {
     VLOG(1) << "Enumerate printers start in-process";
     base::PostTaskAndReplyWithResult(
@@ -235,12 +237,12 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting printer capabilities via service for " << device_name;
-    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
-                           device_name)
-        ->FetchCapabilities(
-            device_name,
-            base::BindOnce(&OnDidFetchCapabilities, device_name,
-                           /*has_secure_protocol=*/false, std::move(cb)));
+    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+        g_browser_process->GetApplicationLocale(), device_name);
+    service->FetchCapabilities(
+        device_name,
+        base::BindOnce(&OnDidFetchCapabilities, device_name,
+                       /*has_secure_protocol=*/false, std::move(cb)));
   } else {
     VLOG(1) << "Getting printer capabilities in-process for " << device_name;
     base::PostTaskAndReplyWithResult(

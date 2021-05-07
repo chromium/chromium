@@ -5573,8 +5573,8 @@ static_library("browser") {
     }
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [
-        "printing/print_backend_service.cc",
-        "printing/print_backend_service.h",
+        "printing/print_backend_service_manager.cc",
+        "printing/print_backend_service_manager.h",
       ]
       deps += [ "//chrome/services/printing/public/mojom" ]
     }

@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
-#include "chrome/browser/printing/print_backend_service.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

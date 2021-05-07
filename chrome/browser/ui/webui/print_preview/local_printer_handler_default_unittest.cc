@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/printing/print_backend_service.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"

@@ -22,7 +22,7 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/printing/print_backend_service.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
@@ -115,9 +115,9 @@ void FetchCapabilities(
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Fetching printer capabilities via service";
-    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
-                           printer_id)
-        ->GetPrinterSemanticCapsAndDefaults(printer_id, std::move(cb));
+    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+        g_browser_process->GetApplicationLocale(), printer_id);
+    service->GetPrinterSemanticCapsAndDefaults(printer_id, std::move(cb));
   } else {
     VLOG(1) << "Fetching printer capabilities in-process";
     // USER_VISIBLE because the result is displayed in the print preview dialog.

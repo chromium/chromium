@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/printing/print_backend_service.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 
 #include <string>
 
@@ -16,27 +16,25 @@
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace printing {
+
 namespace {
 
 // Amount of idle time to wait before resetting the connection to the service.
 constexpr base::TimeDelta kResetOnIdleTimeout =
     base::TimeDelta::FromSeconds(20);
 
-// `PrintBackendService` override for testing.
-mojo::Remote<printing::mojom::PrintBackendService>*
-    g_print_backend_service_for_test = nullptr;
-
 }  // namespace
 
-const mojo::Remote<printing::mojom::PrintBackendService>&
-GetPrintBackendService(const std::string& locale,
-                       const std::string& printer_name) {
-  static base::NoDestructor<base::flat_map<
-      std::string, mojo::Remote<printing::mojom::PrintBackendService>>>
-      remotes;
+PrintBackendServiceManager::PrintBackendServiceManager() = default;
 
-  if (g_print_backend_service_for_test)
-    return *g_print_backend_service_for_test;
+PrintBackendServiceManager::~PrintBackendServiceManager() = default;
+
+const mojo::Remote<printing::mojom::PrintBackendService>&
+PrintBackendServiceManager::GetService(const std::string& locale,
+                                       const std::string& printer_name) {
+  if (service_remote_for_test_)
+    return *service_remote_for_test_;
 
   std::string remote_id;
 #if defined(OS_WIN)
@@ -45,10 +43,10 @@ GetPrintBackendService(const std::string& locale,
   // https://crbug.com/957242
   remote_id = printer_name;
 #endif
-  auto iter = remotes->find(remote_id);
-  if (iter == remotes->end()) {
+  auto iter = remotes_.find(remote_id);
+  if (iter == remotes_.end()) {
     // First time for this `remote_id`.
-    auto result = remotes->emplace(
+    auto result = remotes_.emplace(
         printer_name, mojo::Remote<printing::mojom::PrintBackendService>());
     iter = result.first;
   }
@@ -84,7 +82,15 @@ GetPrintBackendService(const std::string& locale,
   return service;
 }
 
-void SetPrintBackendServiceForTesting(
+void PrintBackendServiceManager::SetServiceForTesting(
     mojo::Remote<printing::mojom::PrintBackendService>* remote) {
-  g_print_backend_service_for_test = remote;
+  service_remote_for_test_ = remote;
 }
+
+// static
+PrintBackendServiceManager& PrintBackendServiceManager::GetInstance() {
+  static base::NoDestructor<PrintBackendServiceManager> singleton;
+  return *singleton;
+}
+
+}  // namespace printing
