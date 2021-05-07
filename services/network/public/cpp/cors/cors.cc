@@ -17,6 +17,7 @@
 #include "net/base/mime_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -208,8 +209,13 @@ enum class AccessCheckResult {
   kMaxValue = kNotPermittedInPreflight,
 };
 
-void ReportAccessCheckResultMetric(AccessCheckResult result) {
+void ReportAccessCheckResultMetric(AccessCheckResult result,
+                                   const url::Origin& requestor_origin) {
   UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult", result);
+  if (!IsOriginPotentiallyTrustworthy(requestor_origin)) {
+    UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult.NotSecureRequestor",
+                              result);
+  }
 }
 
 }  // namespace
@@ -242,7 +248,8 @@ base::Optional<CorsErrorStatus> CheckAccess(
       CheckAccessInternal(response_url, allow_origin_header,
                           allow_credentials_header, credentials_mode, origin);
   ReportAccessCheckResultMetric(error_status ? AccessCheckResult::kNotPermitted
-                                             : AccessCheckResult::kPermitted);
+                                             : AccessCheckResult::kPermitted,
+                                origin);
   if (error_status) {
     UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckError",
                               error_status->cors_error);
@@ -287,7 +294,8 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
   ReportAccessCheckResultMetric(
       (error_status || !has_ok_status)
           ? AccessCheckResult::kNotPermittedInPreflight
-          : AccessCheckResult::kPermittedInPreflight);
+          : AccessCheckResult::kPermittedInPreflight,
+      origin);
 
   // Prefer using a preflight specific error code.
   if (error_status) {
