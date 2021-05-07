@@ -21,10 +21,9 @@
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -381,18 +380,24 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
   DCHECK(user);
 
   // Re-auth on lock - enabled only for the primary user.
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile_);
-  if (password_sync_manager) {
-    password_sync_manager->MaybeForceReauthOnLockScreen(
-        InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
+  proximity_auth::ScreenlockBridge* screenlock_bridge_ =
+      proximity_auth::ScreenlockBridge::Get();
+  DCHECK(screenlock_bridge_);
+
+  if (screenlock_bridge_->IsLocked()) {
+    // On the lock screen: need to update the UI.
+    screenlock_bridge_->lock_handler()->SetAuthType(
+        user->GetAccountId(), proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+        std::u16string());
   }
-  if (user->using_saml())
+
+  if (user->using_saml()) {
     RecordReauthReason(user->GetAccountId(),
                        ReauthReason::SAML_LOCK_SCREEN_REAUTH_POLICY);
-  else
+  } else {
     RecordReauthReason(user->GetAccountId(),
                        ReauthReason::GAIA_LOCK_SCREEN_REAUTH_POLICY);
+  }
   offline_lock_screen_signin_limit_timer_->Stop();
 }
 
