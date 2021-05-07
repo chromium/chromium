@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_IMPRESSION_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"

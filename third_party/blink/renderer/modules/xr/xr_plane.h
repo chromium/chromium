@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_PLANE_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"

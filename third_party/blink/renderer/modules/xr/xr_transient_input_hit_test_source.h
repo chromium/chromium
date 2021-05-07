@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_TRANSIENT_INPUT_HIT_TEST_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_TRANSIENT_INPUT_HIT_TEST_SOURCE_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"

@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_CONSUMER_H_
 
-#include <memory>
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

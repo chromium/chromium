@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DISALLOW_TRANSITION_SCOPE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DISALLOW_TRANSITION_SCOPE_H_
 
-#include <memory>
-
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_document.h"
 

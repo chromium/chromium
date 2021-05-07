@@ -25,8 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_TRACK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_TRACK_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "media/mojo/mojom/display_media_information.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"

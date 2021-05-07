@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_CHANNEL_CLIENT_H_
 
 #include <stdint.h>
-#include <memory>
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"

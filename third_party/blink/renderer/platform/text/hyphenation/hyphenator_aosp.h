@@ -23,7 +23,6 @@
  * An implementation of Liang's hyphenation algorithm.
  */
 
-#include <memory>
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace android {

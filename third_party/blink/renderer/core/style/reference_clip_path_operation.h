@@ -30,8 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_REFERENCE_CLIP_PATH_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_REFERENCE_CLIP_PATH_OPERATION_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"

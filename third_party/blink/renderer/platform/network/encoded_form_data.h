@@ -27,8 +27,6 @@
 // This requires some gymnastics below, to explicitly forward-declare the
 // required types without reference to the generator output headers.
 
-#include <utility>
-
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

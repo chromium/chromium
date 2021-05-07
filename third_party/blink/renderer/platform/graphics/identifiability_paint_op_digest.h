@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IDENTIFIABILITY_PAINT_OP_DIGEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IDENTIFIABILITY_PAINT_OP_DIGEST_H_
 
-#include <memory>
-
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_cache.h"

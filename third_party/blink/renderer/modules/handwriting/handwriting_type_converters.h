@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_HANDWRITING_HANDWRITING_TYPE_CONVERTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_HANDWRITING_HANDWRITING_TYPE_CONVERTERS_H_
 
-#include <string>
-
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

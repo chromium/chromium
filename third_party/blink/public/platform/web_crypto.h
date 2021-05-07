@@ -39,8 +39,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
-#include <memory>
-
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck

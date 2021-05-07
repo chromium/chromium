@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_METRICS_FORM_ELEMENT_PII_TYPE_H_
 
 #include <stdint.h>
-#include <string>
 
 namespace blink {
 

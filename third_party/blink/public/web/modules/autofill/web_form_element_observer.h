@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_WEB_FORM_ELEMENT_OBSERVER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_WEB_FORM_ELEMENT_OBSERVER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "third_party/blink/public/platform/web_common.h"
 

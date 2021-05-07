@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_UTIL_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "cc/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"

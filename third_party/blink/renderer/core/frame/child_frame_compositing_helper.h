@@ -7,10 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/surface_layer.h"

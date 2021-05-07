@@ -26,8 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"

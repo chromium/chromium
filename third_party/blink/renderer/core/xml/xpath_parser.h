@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PARSER_H_
 
-#include <memory>
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"
 #include "third_party/blink/renderer/core/xml/xpath_step.h"

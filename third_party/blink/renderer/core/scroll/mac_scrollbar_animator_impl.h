@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_
 
-#include <memory>
-
 #include "base/mac/scoped_nsobject.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"

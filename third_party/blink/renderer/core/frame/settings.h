@@ -28,8 +28,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"

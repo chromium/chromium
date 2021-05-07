@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NAMES_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NAMES_MAP_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"

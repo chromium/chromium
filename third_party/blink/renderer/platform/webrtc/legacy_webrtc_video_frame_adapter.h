@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_LEGACY_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 
 #include <stdint.h>
-#include <map>
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"

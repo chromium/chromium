@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SCHEDULER_HELPER_H_
 
 #include <stddef.h>
-#include <memory>
 
 #include "base/logging.h"
 #include "base/macros.h"

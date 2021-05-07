@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_INSPECTOR_HELPER_MIXIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_INSPECTOR_HELPER_MIXIN_H_
 
-#include <memory>
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

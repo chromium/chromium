@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SURFACE_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SURFACE_LAYER_BRIDGE_H_
 
-#include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"

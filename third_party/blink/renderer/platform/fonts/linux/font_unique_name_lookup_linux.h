@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 
-#include <memory>
-
 namespace blink {
 
 class FontUniqueNameLookupLinux : public FontUniqueNameLookup {

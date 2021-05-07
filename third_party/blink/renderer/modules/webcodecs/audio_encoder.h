@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_ENCODER_H_
 
-#include <memory>
-
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_encoder.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"

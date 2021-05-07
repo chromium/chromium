@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CONVERSION_MEASUREMENT_PARSING_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "base/optional.h"
 #include "third_party/blink/public/platform/web_impression.h"

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_CONTROLLER_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"

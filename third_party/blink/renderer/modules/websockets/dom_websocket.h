@@ -33,7 +33,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <memory>
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"

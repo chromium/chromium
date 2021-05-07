@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_CANVAS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_CANVAS_H_
 
-#include <memory>
-
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/platform/platform.h"

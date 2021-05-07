@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADABLE_LOADER_CLIENT_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/core/core_export.h"

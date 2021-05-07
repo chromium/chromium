@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_APPCACHE_APPLICATION_CACHE_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_APPCACHE_APPLICATION_CACHE_HOST_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

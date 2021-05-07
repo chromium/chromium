@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DIGITAL_GOODS_TYPE_CONVERTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DIGITAL_GOODS_TYPE_CONVERTERS_H_
 
-#include <string>
-
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"

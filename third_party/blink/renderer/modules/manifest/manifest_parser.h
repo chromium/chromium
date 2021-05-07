@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
