@@ -51,6 +51,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #else
@@ -297,6 +301,9 @@ class UserPolicySigninServiceTest : public testing::Test {
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper test_helper;
+#endif
 };
 
 class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {

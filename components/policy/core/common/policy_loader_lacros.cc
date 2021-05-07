@@ -27,13 +27,6 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
       task_runner_(task_runner) {
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (!lacros_chrome_service) {
-    // LacrosChromeService should be available at this timing in production.
-    // However, in some existing tests, it is not.
-    // TODO(crbug.com/1114069): Set up LacrosChromeServiceImpl in tests.
-    LOG(ERROR) << "No LacrosChromeService is found.";
-    return;
-  }
   const crosapi::mojom::BrowserInitParams* init_params =
       lacros_chrome_service->init_params();
   if (!init_params) {
