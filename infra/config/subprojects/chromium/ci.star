@@ -881,6 +881,7 @@ ci.android_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -889,6 +890,7 @@ ci.android_builder(
         category = "builder_tester|x86",
         short_name = "M_non-cq",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -945,6 +947,7 @@ ci.android_builder(
     ),
     triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
     notifies = ["weblayer-sheriff"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -955,6 +958,7 @@ ci.android_builder(
     ),
     triggered_by = ["android-weblayer-x86-rel"],
     notifies = ["weblayer-sheriff"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -965,6 +969,7 @@ ci.android_builder(
     ),
     triggered_by = ["android-weblayer-x86-rel"],
     notifies = ["weblayer-sheriff"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -1031,6 +1036,7 @@ ci.android_fyi_builder(
         category = "builder_tester|web-platform",
         short_name = "P",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_fyi_builder(
@@ -1039,6 +1045,7 @@ ci.android_fyi_builder(
         category = "builder_tester|weblayer",
         short_name = "P",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_fyi_builder(
@@ -1047,6 +1054,7 @@ ci.android_fyi_builder(
         category = "builder_tester|weblayer",
         short_name = "P",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_fyi_builder(
@@ -1055,6 +1063,7 @@ ci.android_fyi_builder(
         category = "builder_tester|webview",
         short_name = "P",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -1063,6 +1072,7 @@ ci.android_builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_fyi_builder(
@@ -1073,6 +1083,7 @@ ci.android_fyi_builder(
     ),
     triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_fyi_builder(
@@ -1108,6 +1119,7 @@ ci.android_fyi_builder(
         category = "emulator|11|x86",
         short_name = "rel",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.angle_linux_builder(
