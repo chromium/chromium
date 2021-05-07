@@ -12,6 +12,7 @@ source_set("welcome") {
     ":static_file_ui",
     ":welcome_ui",
     "//base",
+    "//components/metrics",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -27,11 +28,16 @@ source_set("welcome_ui") {
   sources = [
     "checkbox_button.h",
     "checkbox_button.mm",
+    "welcome_screen_mediator.h",
+    "welcome_screen_mediator.mm",
     "welcome_screen_view_controller.h",
     "welcome_screen_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/metrics",
+    "//components/prefs",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",

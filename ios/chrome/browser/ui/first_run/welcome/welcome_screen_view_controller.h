@@ -14,12 +14,19 @@
 // Called when the user taps to see the terms and services page.
 - (void)didTapTOSLink;
 
+// Returns whether the metrics reporting consent checkbox should be selected or
+// not by default.
+- (BOOL)isCheckboxSelectedByDefault;
+
 @end
 
 // View controller of welcome screen.
 @interface WelcomeScreenViewController : FirstRunScreenViewController
 
 @property(nonatomic, weak) id<WelcomeScreenViewControllerDelegate> delegate;
+
+// Whether the metrics reporting check box is selected.
+@property(nonatomic, readonly, assign) BOOL checkBoxSelected;
 
 @end
 

@@ -74,6 +74,12 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
   [super viewDidLoad];
 }
 
+#pragma mark - Accessors
+
+- (BOOL)checkBoxSelected {
+  return self.metricsConsentButton.selected;
+}
+
 #pragma mark - Private
 
 // Creates and configures the UMA consent checkbox button.
