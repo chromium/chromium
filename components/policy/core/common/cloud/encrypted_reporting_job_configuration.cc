@@ -17,6 +17,7 @@ namespace {
 
 // EncryptedReportingJobConfiguration strings
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
+constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kDeviceKey[] = "device";
 constexpr char kBrowserKey[] = "browser";
 
@@ -73,8 +74,9 @@ std::string EncryptedReportingJobConfiguration::GetUmaString() const {
 
 std::set<std::string>
 EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
-  static std::set<std::string> kTopLevelKeyAllowList{kEncryptedRecordListKey,
-                                                     kDeviceKey, kBrowserKey};
+  static std::set<std::string> kTopLevelKeyAllowList{
+      kEncryptedRecordListKey, kAttachEncryptionSettingsKey, kDeviceKey,
+      kBrowserKey};
   return kTopLevelKeyAllowList;
 }
 

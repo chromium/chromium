@@ -52,7 +52,10 @@ constexpr char kFirstFailedUploadedRecordKey[] = "firstFailedUploadedRecord";
 // UploadEncryptedReportingRequest list key
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 
-// Kays for EncrypedRecord
+// Encryption settings request key
+constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
+
+// Keys for EncrypedRecord
 constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
 constexpr char kSequencingInformationKey[] = "sequencingInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
@@ -104,7 +107,10 @@ base::Value GenerateSingleRecord(base::StringPiece encrypted_wrapped_record) {
 
 class RequestPayloadBuilder {
  public:
-  RequestPayloadBuilder() {
+  explicit RequestPayloadBuilder(bool attach_encryption_settings = false) {
+    if (attach_encryption_settings) {
+      payload_.SetBoolKey(kAttachEncryptionSettingsKey, true);
+    }
     payload_.SetKey(kEncryptedRecordListKey,
                     base::Value{base::Value::Type::LIST});
   }
@@ -247,9 +253,18 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
 
   void GetRecordList(EncryptedReportingJobConfiguration* configuration,
                      base::Value** record_list) {
-    base::Value* payload = GetPayload(configuration);
+    base::Value* const payload = GetPayload(configuration);
     *record_list = payload->FindListKey(kEncryptedRecordListKey);
     ASSERT_TRUE(*record_list);
+  }
+
+  bool GetAttachEncryptionSettings(
+      EncryptedReportingJobConfiguration* configuration) {
+    base::Value* const payload = GetPayload(configuration);
+    const auto attach_encryption_settings =
+        payload->FindBoolKey(kAttachEncryptionSettingsKey);
+    return attach_encryption_settings.has_value() &&
+           attach_encryption_settings.value();
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
@@ -377,6 +392,57 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
   for (const auto& record : records) {
     EXPECT_EQ(record_list->GetList()[counter++], record);
   }
+
+  EXPECT_FALSE(GetAttachEncryptionSettings(&configuration));
+}
+
+// Ensures that attach encryption settings request is included when no records
+// are present.
+TEST_F(EncryptedReportingJobConfigurationTest,
+       AllowsAttachEncryptionSettingsAlone) {
+  RequestPayloadBuilder builder{/*attach_encryption_settings=*/true};
+  EXPECT_CALL(complete_cb_, Call(_, _, _, _)).Times(1);
+  EncryptedReportingJobConfiguration configuration(
+      &client_, service_.configuration()->GetEncryptedReportingServerUrl(),
+      builder.Build(),
+      base::BindOnce(&MockCompleteCb::Call, base::Unretained(&complete_cb_)));
+
+  base::Value* record_list = nullptr;
+  GetRecordList(&configuration, &record_list);
+
+  EXPECT_TRUE(record_list->GetList().empty());
+
+  EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
+}
+
+TEST_F(EncryptedReportingJobConfigurationTest,
+       CorrectlyAddsMultipleRecordsWithAttachEncryptionSettings) {
+  const std::vector<std::string> kEncryptedWrappedRecords{
+      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
+  std::vector<base::Value> records;
+  RequestPayloadBuilder builder{/*attach_encryption_settings=*/true};
+  for (auto value : kEncryptedWrappedRecords) {
+    records.push_back(GenerateSingleRecord(value));
+    builder.AddRecord(records.back());
+  }
+
+  EXPECT_CALL(complete_cb_, Call(_, _, _, _)).Times(1);
+  EncryptedReportingJobConfiguration configuration(
+      &client_, service_.configuration()->GetEncryptedReportingServerUrl(),
+      builder.Build(),
+      base::BindOnce(&MockCompleteCb::Call, base::Unretained(&complete_cb_)));
+
+  base::Value* record_list = nullptr;
+  GetRecordList(&configuration, &record_list);
+
+  EXPECT_EQ(record_list->GetList().size(), records.size());
+
+  size_t counter = 0;
+  for (const auto& record : records) {
+    EXPECT_EQ(record_list->GetList()[counter++], record);
+  }
+
+  EXPECT_TRUE(GetAttachEncryptionSettings(&configuration));
 }
 
 // Ensures that the context can be updated.
