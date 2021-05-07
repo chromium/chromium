@@ -629,16 +629,15 @@ int Label::GetHeightForWidth(int w) const {
     height = std::max(GetMaxLines(), 1) * base_line_height;
   } else {
     // SetDisplayRect() has a side effect for later calls of GetStringSize().
-    // Be careful to invoke |full_text_->SetDisplayRect(gfx::Rect())| to
+    // Be careful to invoke full_text_->SetDisplayRect(gfx::Rect()) to
     // cancel this effect before the next time GetStringSize() is called.
-    // It would be beneficial not to cancel here, considering that some layout
-    // managers invoke GetHeightForWidth() for the same width multiple times
-    // and |full_text_| can cache the height.
+    // It's beneficial not to cancel here, considering that some layout managers
+    // invoke GetHeightForWidth() for the same width multiple times and
+    // |full_text_| can cache the height.
     full_text_->SetDisplayRect(gfx::Rect(0, 0, w, 0));
     int string_height = full_text_->GetStringSize().height();
-    // Cap the number of lines to |GetMaxLines()| if multi-line and non-zero
-    // |GetMaxLines()|.
-    height = GetMultiLine() && GetMaxLines() > 0
+    // Cap the number of lines to GetMaxLines() if that's set.
+    height = GetMaxLines() > 0
                  ? std::min(GetMaxLines() * base_line_height, string_height)
                  : string_height;
   }

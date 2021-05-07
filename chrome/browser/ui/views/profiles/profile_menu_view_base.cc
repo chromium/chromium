@@ -689,9 +689,17 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   sync_background_state_ = sync_info.background_state;
 
   sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
-  sync_info_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kSyncInfoInsidePadding));
+  sync_info_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets(kSyncInfoInsidePadding, 0));
+  sync_info_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kVertical,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded, true,
+                               views::MinimumFlexSizeRule::kScaleToZero));
 
   if (description.empty()) {
     sync_info_container_->AddChildView(std::make_unique<SyncButton>(
@@ -707,24 +715,36 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   // Add icon + description at the top.
   views::View* description_container =
       sync_info_container_->AddChildView(std::make_unique<views::View>());
-  views::BoxLayout* description_layout =
-      description_container->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-              kDescriptionIconSpacing));
+  description_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kVertical,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded, true,
+                               views::MinimumFlexSizeRule::kScaleToZero));
+  views::FlexLayout* description_layout =
+      &description_container
+           ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+           ->SetOrientation(views::LayoutOrientation::kHorizontal)
+           .SetIgnoreDefaultMainAxisMargins(true)
+           .SetCollapseMargins(true)
+           .SetDefault(views::kMarginsKey,
+                       gfx::Insets(0, kDescriptionIconSpacing));
 
   if (show_badge) {
     description_container->AddChildView(std::make_unique<SyncImageView>(this));
   } else {
     // If there is no image, the description is centered.
-    description_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
+    description_layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   }
 
   views::Label* label = description_container->AddChildView(
       std::make_unique<views::Label>(description));
   label->SetMultiLine(true);
   label->SetHandlesTooltips(false);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred, true));
 
   // Set sync info description as the name of the parent container, so
   // accessibility tools can read it together with the button text. The role
@@ -925,8 +945,8 @@ void ProfileMenuViewBase::Reset() {
   RemoveAllChildViews(/*delete_childen=*/true);
 
   auto components = std::make_unique<views::View>();
-  components->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  components->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 
   // Create and add new component containers in the correct order.
   // First, add the parts of the current profile.

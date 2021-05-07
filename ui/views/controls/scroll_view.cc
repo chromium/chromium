@@ -499,7 +499,7 @@ void ScrollView::Layout() {
   if (is_bounded()) {
     int content_width = available_rect.width();
     int content_height = contents_->GetHeightForWidth(content_width);
-    if (content_height > height()) {
+    if (content_height > available_rect.height()) {
       content_width = std::max(content_width - GetScrollBarLayoutWidth(), 0);
       content_height = contents_->GetHeightForWidth(content_width);
     }
