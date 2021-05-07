@@ -70,9 +70,4 @@ const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
 const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables default Chrome apps on Chrome OS to sync uninstallation across
-// devices.
-const base::Feature kDefaultChromeAppUninstallSync{
-    "DefaultChromeAppUninstallSync", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace extensions_features

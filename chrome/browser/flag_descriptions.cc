@@ -105,12 +105,6 @@ const char kConversionMeasurementDebugModeDescription[] =
     "reporting delays and noise. Only works if the Conversion Measurement API "
     "is already enabled.";
 
-const char kDefaultChromeAppUninstallSyncName[] =
-    "Default Chrome app uninstall sync";
-const char kDefaultChromeAppUninstallSyncDescription[] =
-    "Synchronizes uninstallation of default Chrome apps across Chrome OS "
-    "devices.";
-
 const char kDeprecateMenagerieAPIName[] = "Deprecate Menagerie API on Android";
 const char kDeprecateMenagerieAPIDescription[] =
     "If enabled, the legacy Menagerie API for profile data will be replaced by "
