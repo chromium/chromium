@@ -367,7 +367,7 @@ _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),
-    _GetBenchmarkConfig('rendering.desktop'),
+    _GetBenchmarkConfig('rendering.desktop', abridged=True),
 ])
 _WIN_10_AMD_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream'),
