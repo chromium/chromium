@@ -290,6 +290,19 @@
           'shards': 25,
         },
       },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is
+        # enough capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            },
+          ],
+          'hard_timeout': 4500,
+          'shards': 5,
+        },
+      },
       'ToTFuchsia x64': {
         'args': [
           '--platform=fuchsia',
@@ -504,10 +517,16 @@
         },
       },
       'mac11.0-blink-rel-dummy': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is
+        # enough capacity.
         'swarming': {
-          # Increase timeout and reduce shards.
-          'shards': 12,
-          'hard_timeout': 1800,
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            },
+          ],
+          'hard_timeout': 4500,
+          'shards': 5,
         },
       },
       'win10-blink-rel-dummy': {
@@ -631,6 +650,19 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
+      },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            }
+          ],
+          'hard_timeout': 4500,
+          'shards': 8,
+        },
       },
       'ToTWin(dbg)': {
         'swarming': {
@@ -1215,6 +1247,19 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter',
         ],
       },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            }
+          ],
+          'hard_timeout': 4500,
+          'shards': 2,
+        },
+      },
       'Marshmallow Tablet Tester': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.marshmallow_tablet_tester.content_browsertests.filter',
@@ -1771,19 +1816,15 @@
         },
       },
       'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
         'swarming': {
-          'shards': 6,
-          'dimension_sets': [{
-            'os': 'Mac-11|Mac-10.16',
-            'cpu': 'x86-64',
-            # TODO(crbug.com/1176803): The Mac 11 pool seems to be an odd
-            # mix of machines where some of them are 3x slower than others,
-            # which really messes with the scheduling. Until we can figure
-            # out what to do about that, we'll just have those machines for
-            # one test suite, and run all of the other test suites on the
-            # faster machines.
-            'machine_type': 'n1-highcpu-4',
-          }],
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            },
+          ],
+          'shards': 1,
         },
       },
       'ToTLinuxTSan': {
@@ -2639,6 +2680,18 @@
             '--gtest_filter=-*',
           ],
       },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            }
+          ],
+          'shards': 1,
+        },
+      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -2758,6 +2811,18 @@
           '--jobs=1',
         ],
       },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            },
+          ],
+          'shards': 1,
+        },
+      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--jobs=1',
@@ -2821,6 +2886,18 @@
   },
   'telemetry_unittests': {
     'modifications': {
+      # TODO(crbug.com/1206401): Restore to defaults when there is
+      # enough capacity.
+      'Mac11 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            },
+          ],
+          'shards': 1,
+        },
+      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
       },

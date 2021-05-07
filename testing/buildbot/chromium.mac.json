@@ -10789,7 +10789,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10808,7 +10808,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10830,7 +10830,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10850,7 +10850,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10869,7 +10869,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10888,7 +10888,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10907,7 +10907,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10926,7 +10926,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10945,7 +10945,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10964,7 +10964,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -10984,7 +10984,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11003,7 +11003,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11022,7 +11022,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11045,8 +11045,9 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
+          "hard_timeout": 4500,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 8
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -11064,7 +11065,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11083,7 +11084,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11102,7 +11103,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11121,7 +11122,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11140,7 +11141,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11159,7 +11160,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11178,7 +11179,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11201,8 +11202,9 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
+          "hard_timeout": 4500,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 2
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -11217,7 +11219,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11236,7 +11238,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11255,7 +11257,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11274,7 +11276,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11293,7 +11295,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11312,7 +11314,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11331,7 +11333,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11350,7 +11352,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11369,7 +11371,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11388,7 +11390,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11407,7 +11409,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11426,7 +11428,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11445,7 +11447,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11464,7 +11466,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11483,7 +11485,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11502,7 +11504,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11521,7 +11523,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11540,7 +11542,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11559,7 +11561,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11578,7 +11580,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11597,12 +11599,11 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-highcpu-4",
+              "machine_type": "n1-standard-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -11617,7 +11618,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11636,7 +11637,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11655,7 +11656,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11674,7 +11675,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11693,7 +11694,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11712,7 +11713,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11731,7 +11732,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11750,7 +11751,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11769,7 +11770,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11788,7 +11789,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11807,7 +11808,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11826,7 +11827,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11845,7 +11846,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11864,7 +11865,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11883,7 +11884,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11902,7 +11903,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11921,7 +11922,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11940,7 +11941,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11959,7 +11960,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11978,7 +11979,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -11997,7 +11998,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12016,7 +12017,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12035,7 +12036,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12054,7 +12055,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12073,7 +12074,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12092,7 +12093,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12130,7 +12131,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12149,7 +12150,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12168,7 +12169,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12187,7 +12188,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12206,7 +12207,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12225,7 +12226,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12244,7 +12245,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12263,7 +12264,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12283,7 +12284,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12302,7 +12303,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12328,7 +12329,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12361,8 +12362,9 @@
               "os": "Mac-11|Mac-10.16"
             }
           ],
+          "hard_timeout": 4500,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 5
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -12384,7 +12386,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12404,7 +12406,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12429,7 +12431,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12453,7 +12455,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12477,7 +12479,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12500,7 +12502,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12520,7 +12522,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12543,7 +12545,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12566,7 +12568,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12589,7 +12591,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],
@@ -12621,8 +12623,7 @@
             }
           ],
           "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
@@ -12650,8 +12651,7 @@
             }
           ],
           "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
@@ -12672,7 +12672,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "machine_type": "n1-standard-4",
+              "machine_type": "n1-highcpu-4",
               "os": "Mac-11|Mac-10.16"
             }
           ],

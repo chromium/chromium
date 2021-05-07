@@ -3500,15 +3500,6 @@
         'mixins': [
             'mac_11_x64',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '8086:0a2e',
-              'hidpi': '0',
-            },
-          ],
-          'hard_timeout': 900,
-        },
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
@@ -5270,6 +5261,19 @@
         'mixins': [
             'mac_11_x64',
         ],
+        # TODO(crbug.com/1176803): The Mac 11 pool seems to be an odd
+        # mix of machines where some of them are 3x slower than others,
+        # which really messes with the scheduling. Until we can figure
+        # out what to do about that, we'll just run most of the test suites
+        # on the slow bots (because they are fast) and run the big test
+        # suites on the faster machines.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-highcpu-4',
+            },
+          ],
+        },
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
