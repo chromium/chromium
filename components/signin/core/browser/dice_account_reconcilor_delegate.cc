@@ -14,9 +14,6 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 
-const base::Feature kUseMultiloginEndpoint{"UseMultiloginEndpoint",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace signin {
 
 DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
@@ -29,10 +26,6 @@ DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
-}
-
-bool DiceAccountReconcilorDelegate::IsMultiloginEndpointEnabled() const {
-  return base::FeatureList::IsEnabled(kUseMultiloginEndpoint);
 }
 
 DiceAccountReconcilorDelegate::InconsistencyReason
