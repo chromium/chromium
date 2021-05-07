@@ -158,13 +158,6 @@ class ScrollView::Viewport : public View {
     scroll_view_->ScrollContentsRegionToBeVisible(scroll_rect);
   }
 
-  // TODO(https://crbug.com/947053): this override should not be necessary, but
-  // there are some assumptions that this calls Layout().
-  void ChildPreferredSizeChanged(View* child) override {
-    if (parent())
-      parent()->Layout();
-  }
-
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override {
     if (details.is_add && GetIsContentsViewport() && Contains(details.parent))
@@ -464,12 +457,11 @@ void ScrollView::RemoveScrollViewObserver(Observer* observer) {
 }
 
 gfx::Size ScrollView::CalculatePreferredSize() const {
-  if (!is_bounded())
-    return View::CalculatePreferredSize();
-
-  gfx::Size size = contents_->GetPreferredSize();
-  size.SetToMax(gfx::Size(size.width(), min_height_));
-  size.SetToMin(gfx::Size(size.width(), max_height_));
+  gfx::Size size = contents_ ? contents_->GetPreferredSize() : gfx::Size();
+  if (is_bounded()) {
+    size.SetToMax(gfx::Size(size.width(), min_height_));
+    size.SetToMin(gfx::Size(size.width(), max_height_));
+  }
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
   return size;
@@ -481,7 +473,8 @@ int ScrollView::GetHeightForWidth(int width) const {
 
   gfx::Insets insets = GetInsets();
   width = std::max(0, width - insets.width());
-  int height = contents_->GetHeightForWidth(width) + insets.height();
+  int height = contents_ ? contents_->GetHeightForWidth(width) + insets.height()
+                         : insets.height();
   return base::ClampToRange(height, min_height_, max_height_);
 }
 
@@ -897,10 +890,7 @@ void ScrollView::SetHeaderOrContents(View* parent,
     *member = parent->AddChildView(std::move(new_view));
   else
     *member = nullptr;
-  // TODO(https://crbug.com/947053): this should call InvalidateLayout(), but
-  // there are some assumptions that it call Layout(). These assumptions should
-  // be updated.
-  Layout();
+  InvalidateLayout();
 }
 
 void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {

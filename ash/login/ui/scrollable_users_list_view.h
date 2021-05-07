@@ -63,6 +63,10 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
   // Returns user view with |account_id| if it exists or nullptr otherwise.
   LoginUserView* GetUserView(const AccountId& account_id);
 
+  // Updates the insets for the `user_view_host_layout_` based on whether the
+  // view is in landscape or portrait mode.
+  void UpdateUserViewHostLayoutInsets();
+
   // views::View:
   void Layout() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
