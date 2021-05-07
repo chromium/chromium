@@ -22,13 +22,12 @@ ASSERT_SIZE(DisplayItem, SameSizeAsDisplayItem);
 void DisplayItem::Destruct() {
   if (IsTombstone())
     return;
-  if (IsDrawing()) {
-    static_cast<DrawingDisplayItem*>(this)->~DrawingDisplayItem();
-  } else if (IsForeignLayer()) {
-    static_cast<ForeignLayerDisplayItem*>(this)->~ForeignLayerDisplayItem();
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    drawing->~DrawingDisplayItem();
+  } else if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    foreign_layer->~ForeignLayerDisplayItem();
   } else {
-    DCHECK(IsScrollbar());
-    static_cast<ScrollbarDisplayItem*>(this)->~ScrollbarDisplayItem();
+    To<ScrollbarDisplayItem>(this)->~ScrollbarDisplayItem();
   }
 }
 
@@ -49,20 +48,16 @@ bool DisplayItem::EqualsForUnderInvalidation(const DisplayItem& other) const {
       (!IsDrawing() || draws_content_))
     return false;
 
-  if (IsDrawing()) {
-    return static_cast<const DrawingDisplayItem*>(this)
-        ->EqualsForUnderInvalidationImpl(
-            static_cast<const DrawingDisplayItem&>(other));
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    return drawing->EqualsForUnderInvalidationImpl(
+        To<DrawingDisplayItem>(other));
   }
-  if (IsForeignLayer()) {
-    return static_cast<const ForeignLayerDisplayItem*>(this)
-        ->EqualsForUnderInvalidationImpl(
-            static_cast<const ForeignLayerDisplayItem&>(other));
+  if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    return foreign_layer->EqualsForUnderInvalidationImpl(
+        To<ForeignLayerDisplayItem>(other));
   }
-  DCHECK(IsScrollbar());
-  return static_cast<const ScrollbarDisplayItem*>(this)
-      ->EqualsForUnderInvalidationImpl(
-          static_cast<const ScrollbarDisplayItem&>(other));
+  return To<ScrollbarDisplayItem>(this)->EqualsForUnderInvalidationImpl(
+      To<ScrollbarDisplayItem>(other));
 }
 
 #if DCHECK_IS_ON()
@@ -222,14 +217,12 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
 
   if (IsTombstone()) {
     json.SetBoolean("ISTOMBSTONE", true);
-  } else if (IsDrawing()) {
-    static_cast<const DrawingDisplayItem*>(this)->PropertiesAsJSONImpl(json);
-  } else if (IsForeignLayer()) {
-    static_cast<const ForeignLayerDisplayItem*>(this)->PropertiesAsJSONImpl(
-        json);
+  } else if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+    drawing->PropertiesAsJSONImpl(json);
+  } else if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
+    foreign_layer->PropertiesAsJSONImpl(json);
   } else {
-    DCHECK(IsScrollbar());
-    static_cast<const ScrollbarDisplayItem*>(this)->PropertiesAsJSONImpl(json);
+    To<ScrollbarDisplayItem>(this)->PropertiesAsJSONImpl(json);
   }
 }
 

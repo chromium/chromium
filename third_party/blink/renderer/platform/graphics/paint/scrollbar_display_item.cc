@@ -34,6 +34,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
 }
 
 sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
+  DCHECK(!IsTombstone());
   auto* scrollbar = data_->scrollbar_.get();
   if (data_->record_) {
     DCHECK(!scrollbar->NeedsRepaintPart(
@@ -58,6 +59,7 @@ sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
 
 scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
     cc::ScrollbarLayerBase* existing_layer) const {
+  DCHECK(!IsTombstone());
   // This function is called when the scrollbar is composited. We don't need
   // record_ which is for non-composited scrollbars.
   data_->record_ = nullptr;

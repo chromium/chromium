@@ -77,6 +77,8 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
 }
 
 SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
+  DCHECK(!IsTombstone());
+
   if (GetType() != DisplayItem::kBoxDecorationBackground &&
       GetType() != DisplayItem::kDocumentBackground &&
       GetType() != DisplayItem::kDocumentRootBackdrop)

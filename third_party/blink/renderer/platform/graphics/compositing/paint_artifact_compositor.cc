@@ -142,8 +142,7 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     // This is only OK if the ForeignLayer doesn't have hit test data.
     DCHECK(!pending_layer.FirstPaintChunk().hit_test_data);
     const auto& foreign_layer_display_item =
-        static_cast<const ForeignLayerDisplayItem&>(
-            pending_layer.FirstDisplayItem());
+        To<ForeignLayerDisplayItem>(pending_layer.FirstDisplayItem());
     layer = foreign_layer_display_item.GetLayer();
     layer_offset =
         FloatPoint(foreign_layer_display_item.VisualRect().Location());
@@ -243,7 +242,7 @@ PaintArtifactCompositor::ScrollbarLayerForPendingLayer(
   // the layer's offset for decomposited transforms.
   DCHECK_EQ(FloatPoint(), pending_layer.offset_of_decomposited_transforms);
 
-  const auto& scrollbar_item = static_cast<const ScrollbarDisplayItem&>(item);
+  const auto& scrollbar_item = To<ScrollbarDisplayItem>(item);
   auto* existing_layer = ScrollbarLayer(scrollbar_item.ElementId());
   return scrollbar_item.CreateOrReuseLayer(existing_layer);
 }
@@ -320,10 +319,8 @@ cc::Layer* ForeignLayer(const PaintChunk& chunk,
     return nullptr;
   const auto& first_display_item =
       artifact.GetDisplayItemList()[chunk.begin_index];
-  if (!first_display_item.IsForeignLayer())
-    return nullptr;
-  return static_cast<const ForeignLayerDisplayItem&>(first_display_item)
-      .GetLayer();
+  auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(first_display_item);
+  return foreign_layer ? foreign_layer->GetLayer() : nullptr;
 }
 
 // True if the paint chunk change affects the result of |Update|, such as the
@@ -877,12 +874,12 @@ static bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
 }
 
 static bool IsCompositedScrollbar(const DisplayItem& item) {
-  if (!item.IsScrollbar())
-    return false;
-  const auto* scroll_translation =
-      static_cast<const ScrollbarDisplayItem&>(item).ScrollTranslation();
-  return scroll_translation &&
-         scroll_translation->HasDirectCompositingReasons();
+  if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
+    const auto* scroll_translation = scrollbar->ScrollTranslation();
+    return scroll_translation &&
+           scroll_translation->HasDirectCompositingReasons();
+  }
+  return false;
 }
 
 void PaintArtifactCompositor::LayerizeGroup(
@@ -1485,10 +1482,7 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
     case PendingLayer::kScrollbarLayer: {
       // TODO(pdr): Share this code with ScrollbarLayerForPendingLayer.
       const auto& item = pending_layer.FirstDisplayItem();
-      DCHECK(item.IsScrollbar());
-      const auto& scrollbar_item =
-          static_cast<const ScrollbarDisplayItem&>(item);
-      layer = ScrollbarLayer(scrollbar_item.ElementId());
+      layer = ScrollbarLayer(To<ScrollbarDisplayItem>(item).ElementId());
     } break;
     default: {
       ContentLayerClientImpl* content_layer_client = nullptr;
@@ -1864,8 +1858,7 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
         layer = &pending_layer.graphics_layer->CcLayer();
         break;
       case PendingLayer::kForeignLayer:
-        layer = static_cast<const ForeignLayerDisplayItem&>(
-                    pending_layer.FirstDisplayItem())
+        layer = To<ForeignLayerDisplayItem>(pending_layer.FirstDisplayItem())
                     .GetLayer();
         break;
       case PendingLayer::kScrollbarLayer:

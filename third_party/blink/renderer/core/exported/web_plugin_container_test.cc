@@ -1490,7 +1490,7 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
   ASSERT_EQ(1u, display_items.size());
   ASSERT_EQ(DisplayItem::kForeignLayerPlugin, display_items[0].GetType());
   const auto& foreign_layer_display_item =
-      static_cast<const ForeignLayerDisplayItem&>(display_items[0]);
+      To<ForeignLayerDisplayItem>(display_items[0]);
   EXPECT_EQ(plugin->GetCcLayer(), foreign_layer_display_item.GetLayer());
 }
 

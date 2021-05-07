@@ -49,7 +49,7 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
       }
 
       if ((flags & kShowPaintRecords) && item.IsDrawing()) {
-        const auto& drawing_item = static_cast<const DrawingDisplayItem&>(item);
+        const auto& drawing_item = To<DrawingDisplayItem>(item);
         if (const auto* record = drawing_item.GetPaintRecord().get())
           json->SetArray("record", RecordAsJSON(*record));
       }

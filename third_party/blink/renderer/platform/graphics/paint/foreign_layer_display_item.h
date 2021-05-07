@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -28,7 +29,10 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
                           scoped_refptr<cc::Layer>,
                           const IntPoint& offset);
 
-  cc::Layer* GetLayer() const { return layer_.get(); }
+  cc::Layer* GetLayer() const {
+    DCHECK(!IsTombstone());
+    return layer_.get();
+  }
 
  private:
   friend class DisplayItem;
@@ -51,6 +55,13 @@ class LiteralDebugNameClient : public DisplayItemClient {
 
  private:
   const char* name_;
+};
+
+template <>
+struct DowncastTraits<ForeignLayerDisplayItem> {
+  static bool AllowFrom(const DisplayItem& i) {
+    return !i.IsTombstone() && i.IsForeignLayer();
+  }
 };
 
 // Records a foreign layer into a GraphicsContext.

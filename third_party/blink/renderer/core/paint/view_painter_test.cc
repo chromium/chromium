@@ -81,8 +81,7 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
   }
 
   sk_sp<const PaintRecord> record =
-      static_cast<const DrawingDisplayItem*>(background_display_item)
-          ->GetPaintRecord();
+      To<DrawingDisplayItem>(background_display_item)->GetPaintRecord();
   ASSERT_EQ(record->size(), 2u);
   cc::PaintOpBuffer::Iterator it(record.get());
   ASSERT_EQ((*++it)->GetType(), cc::PaintOpType::DrawRect);

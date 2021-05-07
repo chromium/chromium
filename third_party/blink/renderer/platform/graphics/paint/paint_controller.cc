@@ -663,16 +663,11 @@ void PaintController::ShowUnderInvalidationError(
   LOG(ERROR) << "See http://crbug.com/619103.";
 
   const PaintRecord* new_record = nullptr;
-  if (new_item.IsDrawing()) {
-    new_record =
-        static_cast<const DrawingDisplayItem&>(new_item).GetPaintRecord().get();
-  }
+  if (auto* new_drawing = DynamicTo<DrawingDisplayItem>(new_item))
+    new_record = new_drawing->GetPaintRecord().get();
   const PaintRecord* old_record = nullptr;
-  if (old_item->IsDrawing()) {
-    old_record = static_cast<const DrawingDisplayItem*>(old_item)
-                     ->GetPaintRecord()
-                     .get();
-  }
+  if (auto* old_drawing = DynamicTo<DrawingDisplayItem>(old_item))
+    old_record = old_drawing->GetPaintRecord().get();
   LOG(INFO) << "new record:\n"
             << (new_record ? RecordAsDebugString(*new_record).Utf8() : "None");
   LOG(INFO) << "old record:\n"

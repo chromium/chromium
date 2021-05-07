@@ -27,9 +27,9 @@ TEST_F(DrawingRecorderTest, Nothing) {
   CommitAndFinishCycle();
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
               ElementsAre(IsSameId(&client, kForegroundType)));
-  EXPECT_FALSE(static_cast<const DrawingDisplayItem&>(
-                   GetPaintController().GetDisplayItemList()[0])
-                   .GetPaintRecord());
+  EXPECT_FALSE(
+      To<DrawingDisplayItem>(GetPaintController().GetDisplayItemList()[0])
+          .GetPaintRecord());
 }
 
 TEST_F(DrawingRecorderTest, Rect) {

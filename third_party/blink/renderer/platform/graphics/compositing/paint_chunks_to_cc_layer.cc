@@ -712,10 +712,10 @@ void ConversionContext::Convert(const PaintChunkSubset& chunks) {
 
     for (const auto& item : it.DisplayItems()) {
       sk_sp<const PaintRecord> record;
-      if (item.IsScrollbar())
-        record = static_cast<const ScrollbarDisplayItem&>(item).Paint();
-      else if (item.IsDrawing())
-        record = static_cast<const DrawingDisplayItem&>(item).GetPaintRecord();
+      if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item))
+        record = scrollbar->Paint();
+      else if (auto* drawing = DynamicTo<DrawingDisplayItem>(item))
+        record = drawing->GetPaintRecord();
       else
         continue;
 

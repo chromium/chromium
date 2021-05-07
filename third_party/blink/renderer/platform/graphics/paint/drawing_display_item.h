@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -24,9 +25,13 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
                      const IntRect& visual_rect,
                      sk_sp<const PaintRecord> record);
 
-  const sk_sp<const PaintRecord>& GetPaintRecord() const { return record_; }
+  const sk_sp<const PaintRecord>& GetPaintRecord() const {
+    DCHECK(!IsTombstone());
+    return record_;
+  }
 
   bool KnownToBeOpaque() const {
+    DCHECK(!IsTombstone());
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
       return false;
     if (!known_to_be_opaque_is_set_) {
@@ -36,6 +41,7 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
     return known_to_be_opaque_;
   }
   void SetKnownToBeOpaqueForTesting() {
+    DCHECK(!IsTombstone());
     known_to_be_opaque_is_set_ = true;
     known_to_be_opaque_ = true;
   }
@@ -65,8 +71,15 @@ inline DrawingDisplayItem::DrawingDisplayItem(const DisplayItemClient& client,
                   visual_rect,
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {
-  DCHECK(IsDrawingType(type));
+  DCHECK(IsDrawing());
 }
+
+template <>
+struct DowncastTraits<DrawingDisplayItem> {
+  static bool AllowFrom(const DisplayItem& i) {
+    return !i.IsTombstone() && i.IsDrawing();
+  }
+};
 
 }  // namespace blink
 
