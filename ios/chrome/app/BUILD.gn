@@ -36,7 +36,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "app_metrics_app_state_agent_unittest.mm",
-    "chrome_overlay_window_testing.h",
     "deferred_initialization_runner_unittest.mm",
     "main_application_delegate_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",

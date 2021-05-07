@@ -182,9 +182,6 @@ source_set("metrics_internal") {
     "first_user_action_recorder.h",
     "new_tab_page_uma.h",
     "new_tab_page_uma.mm",
-    "size_class_recorder.h",
-    "size_class_recorder.mm",
-    "size_class_recorder_private.h",
     "user_interface_style_recorder.h",
     "user_interface_style_recorder.mm",
   ]
@@ -219,7 +216,6 @@ source_set("unit_tests_internal") {
   testonly = true
   sources = [
     "first_user_action_recorder_unittest.cc",
-    "size_class_recorder_unittest.mm",
     "tab_usage_recorder_browser_agent_unittest.mm",
   ]
   deps = [

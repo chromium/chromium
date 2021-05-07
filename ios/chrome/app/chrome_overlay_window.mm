@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#import "ios/chrome/browser/metrics/size_class_recorder.h"
 #import "ios/chrome/browser/metrics/user_interface_style_recorder.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
@@ -18,11 +17,6 @@
 @property(nonatomic, strong)
     UserInterfaceStyleRecorder* userInterfaceStyleRecorder API_AVAILABLE(
         ios(13.0));
-@property(nonatomic, strong) SizeClassRecorder* sizeClassRecorder;
-
-// Initializes the size class recorder. On iPad It starts tracking horizontal
-// size class changes.
-- (void)initializeSizeClassRecorder;
 
 // Updates the Breakpad report with the current size class.
 - (void)updateBreakpad;
@@ -35,7 +29,6 @@
   self = [super initWithFrame:frame];
   if (self) {
     // When not created via a nib, create the recorders immediately.
-    [self initializeSizeClassRecorder];
     [self updateBreakpad];
     if (@available(iOS 13, *)) {
       _userInterfaceStyleRecorder = [[UserInterfaceStyleRecorder alloc]
@@ -47,18 +40,7 @@
 
 - (void)awakeFromNib {
   [super awakeFromNib];
-  // When creating via a nib, wait to be awoken, as the size class is not
-  // reliable before.
-  [self initializeSizeClassRecorder];
   [self updateBreakpad];
-}
-
-- (void)initializeSizeClassRecorder {
-  DCHECK(!_sizeClassRecorder);
-  if (IsIPadIdiom()) {
-    _sizeClassRecorder = [[SizeClassRecorder alloc]
-        initWithHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
-  }
 }
 
 - (void)updateBreakpad {
@@ -87,8 +69,6 @@
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
-    [_sizeClassRecorder
-        horizontalSizeClassDidChange:self.traitCollection.horizontalSizeClass];
     [self updateBreakpad];
   }
   if (@available(iOS 13, *)) {
@@ -100,12 +80,6 @@
     }
     [self updateBreakpad];
   }
-}
-
-#pragma mark - Testing methods
-
-- (void)unsetSizeClassRecorder {
-  _sizeClassRecorder = nil;
 }
 
 @end

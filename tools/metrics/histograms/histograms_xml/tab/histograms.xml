@@ -149,6 +149,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.HorizontalSizeClassUsed" enum="iOSSizeClassForReporting"
     expires_after="M77">
+  <obsolete>
+    Obsolete in M92. Replaced by IOS.MultiWindow.Configuration.
+  </obsolete>
   <owner>pkl@chromium.org</owner>
   <summary>
     [iOS] Used on iOS 9+ iPad to report the usage of Compact or Regular
@@ -210,6 +213,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.PageLoadInHorizontalSizeClass"
     enum="iOSSizeClassForReporting" expires_after="M77">
+  <obsolete>
+    Obsolete in M92. Wasn't being recorded correctly anyway.
+  </obsolete>
   <owner>pkl@chromium.org</owner>
   <summary>
     [iOS] Used on iOS 9+ iPad to report the usage of Compact or Regular
