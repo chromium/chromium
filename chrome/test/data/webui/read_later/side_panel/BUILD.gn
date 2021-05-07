@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":bookmark_folder_test",
     ":bookmarks_list_test",
     ":test_bookmarks_api_proxy",
   ]
@@ -21,7 +22,17 @@ js_library("bookmarks_list_test") {
   deps = [
     ":test_bookmarks_api_proxy",
     "../..:chai_assert",
+    "//chrome/browser/resources/read_later/side_panel:bookmark_folder",
     "//chrome/browser/resources/read_later/side_panel:bookmarks_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("bookmark_folder_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/read_later/side_panel:bookmark_folder",
+    "//ui/webui/resources/js:icon.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

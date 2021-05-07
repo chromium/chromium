@@ -18,6 +18,11 @@
     --cr-tabs-height: 40px;
     --cr-tabs-font-size: 13px;
   }
+
+  #content {
+    flex: 1;
+    overflow: auto;
+  }
 </style>
 
 <header>
@@ -25,7 +30,9 @@
   <cr-tabs tab-names="[[tabs_]]" selected="{{selectedTab_}}"></cr-tabs>
 </header>
 
-<iron-pages selected="[[selectedTab_]]">
-  <read-later-app side-panel></read-later-app>
-  <bookmarks-list></bookmarks-list>
-</iron-pages>
+<div id="content">
+  <iron-pages selected="[[selectedTab_]]">
+    <read-later-app side-panel></read-later-app>
+    <bookmarks-list></bookmarks-list>
+  </iron-pages>
+</div>

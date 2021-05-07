@@ -6,16 +6,17 @@
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
-import {BookmarksList} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
+import {BookmarksListElement} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarksListTest', () => {
-  /** @type {!BookmarksList} */
+  /** @type {!BookmarksListElement} */
   let bookmarksList;
 
   /** @type {!TestBookmarksApiProxy} */
@@ -40,6 +41,12 @@ suite('SidePanelBookmarksListTest', () => {
     },
   ];
 
+  /** @return {!Array<!BookmarkFolderElement>} */
+  function getFolderElements() {
+    return /** @type {!Array<!BookmarkFolderElement>} */ (Array.from(
+        bookmarksList.shadowRoot.querySelectorAll('bookmark-folder')));
+  }
+
   setup(async () => {
     document.body.innerHTML = '';
 
@@ -47,7 +54,7 @@ suite('SidePanelBookmarksListTest', () => {
     bookmarksApi.setFolders(folders);
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
-    bookmarksList = /** @type {!BookmarksList} */ (
+    bookmarksList = /** @type {!BookmarksListElement} */ (
         document.createElement('bookmarks-list'));
     document.body.appendChild(bookmarksList);
 
@@ -56,8 +63,10 @@ suite('SidePanelBookmarksListTest', () => {
 
   test('GetsAndShowsFolders', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
-    const folderElements =
-        bookmarksList.shadowRoot.querySelectorAll('bookmark-folder');
-    assertEquals(folders.length, folderElements.length);
+    assertEquals(folders.length, getFolderElements().length);
+  });
+
+  test('OpensFirstFolderByDefault', () => {
+    assertTrue(getFolderElements()[0].openByDefault);
   });
 });

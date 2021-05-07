@@ -1,7 +1,95 @@
 <style>
   :host {
     display: block;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .row {
+    align-items: center;
+    cursor: pointer;
+    display: grid;
+    grid-template-areas: 'arrow icon title';
+    grid-template-columns: 20px 20px auto;
+    height: 40px;
+    line-height: 40px;
+    padding-inline-start: calc(var(--node-depth) * 17px);
+  }
+
+  .row:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  .row:active {
+    background-color: var(--cr-active-background-color);
+  }
+
+  #arrow {
+    grid-area: arrow;
+    justify-self: center;
+  }
+
+  #arrowIcon {
+    --cr-icon-button-hover-background-color: transparent;
+    --cr-icon-button-active-background-color: transparent;
+    margin: 0;
+    transform: rotate(-90deg);
+  }
+
+  #arrowIcon[open] {
+    transform: rotate(0);
+  }
+
+  .icon {
+    background-position: left center;
+    background-repeat: no-repeat;
+    grid-area: icon;
+    height: 16px;
+    justify-self: center;
+    width: 16px;
+  }
+
+  #folderIcon {
+    background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
+  }
+
+  .title {
+    grid-area: title;
+    padding: 0 10px;
+  }
+
+  .bookmark {
+    color: currentColor;
+    text-decoration: none;
   }
 </style>
+<div class="row" on-click="onFolderClick_">
+  <div id="arrow" hidden$="[[!folder.children.length]]">
+    <cr-icon-button
+        id="arrowIcon"
+        iron-icon="cr:arrow-drop-down"
+        open$="[[open_]]">
+    </cr-icon-button>
+  </div>
+  <div id="folderIcon" class="icon"></div>
+  <div class="title">[[folder.title]]</div>
+</div>
 
-[[folder.title]]
+<div id="children" hidden$="[[!open_]]">
+  <template is="dom-repeat" items="[[folder.children]]">
+    <template is="dom-if" if="[[item.children]]">
+      <bookmark-folder folder="[[item]]" depth="[[childDepth_]]">
+      </bookmark-folder>
+    </template>
+
+    <template is="dom-if" if="[[!item.children]]">
+      <a href="[[item.url]]" class="bookmark row" on-click="onBookmarkClick_">
+        <div
+            class="icon"
+            style="background-image: [[getBookmarkIcon_(item.url)]]">
+        </div>
+        <div class="title">[[item.title]]</div>
+      </a>
+    </template>
+  </template>
+</div>

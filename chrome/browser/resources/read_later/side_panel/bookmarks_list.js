@@ -7,7 +7,7 @@ import './bookmark_folder.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
-export class BookmarksList extends PolymerElement {
+export class BookmarksListElement extends PolymerElement {
   static get is() {
     return 'bookmarks-list';
   }
@@ -41,4 +41,4 @@ export class BookmarksList extends PolymerElement {
   }
 }
 
-customElements.define(BookmarksList.is, BookmarksList);
+customElements.define(BookmarksListElement.is, BookmarksListElement);
