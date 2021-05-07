@@ -343,6 +343,17 @@ function addPeerConnection(data) {
         'when attempting to parse the a=extmap-allow-mixed line in the ' +
         'SDP remove the line from the SDP during signalling.');
     }
+    if (data.rtcConfiguration.indexOf('sdpSemantics: "plan-b"') !== -1) {
+      appendChildWithText(deprecationNotices, 'li',
+        'Plan B SDP semantics, which is used when constructing an ' +
+        'RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy ' +
+        'version of the Session Description Protocol that has severe ' +
+        'compatibility issues on modern browsers. The standardized SDP ' +
+        'format, \"unified-plan\", has been used by default since M72 ' +
+        '(January, 2019). Dropping support for Plan B is targeted for ' +
+        'M93. See https://www.chromestatus.com/feature/5823036655665152 ' +
+        'for more details.');
+    }
     peerConnectionElement.appendChild(deprecationNotices);
   }
 
