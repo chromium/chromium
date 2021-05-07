@@ -324,9 +324,8 @@ class QuickUnlockPrivateUnitTest
     // Extract the results.
     QuickUnlockModeList modes;
 
-    base::ListValue* list = nullptr;
-    EXPECT_TRUE(result->GetAsList(&list));
-    for (const base::Value& value : *list) {
+    EXPECT_TRUE(result->is_list());
+    for (const base::Value& value : result->GetList()) {
       std::string mode;
       EXPECT_TRUE(value.GetAsString(&mode));
       modes.push_back(quick_unlock_private::ParseQuickUnlockMode(mode));
@@ -343,9 +342,8 @@ class QuickUnlockPrivateUnitTest
 
     QuickUnlockModeList modes;
 
-    base::ListValue* list = nullptr;
-    EXPECT_TRUE(result->GetAsList(&list));
-    for (const base::Value& value : *list) {
+    EXPECT_TRUE(result->is_list());
+    for (const base::Value& value : result->GetList()) {
       std::string mode;
       EXPECT_TRUE(value.GetAsString(&mode));
       modes.push_back(quick_unlock_private::ParseQuickUnlockMode(mode));
