@@ -5,6 +5,7 @@
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
@@ -831,8 +832,8 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
   // profile.
   const base::ListValue* non_off_the_record_origins =
       profile()->GetPrefs()->GetList(prefs::kMediaRouterTabMirroringSources);
-  EXPECT_EQ(non_off_the_record_origins->Find(base::Value(origin)),
-            non_off_the_record_origins->end());
+  EXPECT_FALSE(base::Contains(non_off_the_record_origins->GetList(),
+                              base::Value(origin)));
 
   // Auto-join requests should be rejected.
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_));
