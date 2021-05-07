@@ -773,7 +773,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         base::SysInfo::NumberOfProcessors() - start_params_.num_cores_disabled;
     DCHECK_LT(0, cpus);
 
-    DCHECK(is_dev_mode_);
     std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
         start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
         GetChromeOsChannelFromLsbRelease());
