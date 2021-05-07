@@ -7,12 +7,12 @@
 #include <tuple>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/database_test_peer.h"
 #include "sql/test/scoped_error_expecter.h"
-#include "sql/test/sql_test_base.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,123 +21,131 @@
 namespace sql {
 namespace recover {
 
-class RecoverModuleTest : public sql::SQLTestBase {
+class RecoverModuleTest : public testing::Test {
  public:
+  ~RecoverModuleTest() override = default;
+
   void SetUp() override {
-    SQLTestBase::SetUp();
-    ASSERT_TRUE(DatabaseTestPeer::EnableRecoveryExtension(&db()));
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(
+        db_.Open(temp_dir_.GetPath().AppendASCII("recovery_test.sqlite")));
+    ASSERT_TRUE(DatabaseTestPeer::EnableRecoveryExtension(&db_));
   }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+  sql::Database db_;
 };
 
 TEST_F(RecoverModuleTest, CreateVtable) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                   "USING recover(backing, t TEXT)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                  "USING recover(backing, t TEXT)"));
 }
 TEST_F(RecoverModuleTest, CreateVtableWithDatabaseSpecifier) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                   "USING recover(main.backing, t TEXT)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                  "USING recover(main.backing, t TEXT)"));
 }
 TEST_F(RecoverModuleTest, CreateVtableOnSqliteMaster) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
-                   "sqlite_master, type TEXT, name TEXT, tbl_name TEXT, "
-                   "rootpage INTEGER, sql TEXT)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
+                  "sqlite_master, type TEXT, name TEXT, tbl_name TEXT, "
+                  "rootpage INTEGER, sql TEXT)"));
 }
 
 TEST_F(RecoverModuleTest, CreateVtableFailsOnNonTempTable) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
-    EXPECT_FALSE(db().Execute(
+    EXPECT_FALSE(db_.Execute(
         "CREATE VIRTUAL TABLE recover_backing USING recover(backing, t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingTable) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_CORRUPT);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_missing "
-                     "USING recover(missing, t TEXT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_missing "
+                    "USING recover(missing, t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, DISABLED_CreateVtableFailsOnMissingDatabase) {
   // TODO(pwnall): Enable test after removing incorrect DLOG(FATAL) from
   //               sql::Statement::Execute().
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(db.backing, t TEXT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(db.backing, t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, CreateVtableFailsOnTableWithInvalidQualifier) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_CORRUPT);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing invalid, t TEXT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing invalid, t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, DISABLED_CreateVtableFailsOnMissingTableName) {
   // TODO(pwnall): Enable test after removing incorrect DLOG(FATAL) from
   //               sql::Statement::Execute().
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(main., t TEXT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(main., t TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingSchemaSpec) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingDbName) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(.backing)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(.backing)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 
 TEST_F(RecoverModuleTest, ColumnTypeMappingAny) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                   "USING recover(backing, t ANY)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                  "USING recover(backing, t ANY)"));
 
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "t");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "t");
   EXPECT_EQ("(nullptr)", column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_FALSE(column_info.has_non_null_constraint);
@@ -145,13 +153,13 @@ TEST_F(RecoverModuleTest, ColumnTypeMappingAny) {
   EXPECT_FALSE(column_info.is_auto_incremented);
 }
 TEST_F(RecoverModuleTest, ColumnTypeMappingAnyNotNull) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   EXPECT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                   "USING recover(backing, t ANY NOT NULL)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                  "USING recover(backing, t ANY NOT NULL)"));
 
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "t");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "t");
   EXPECT_EQ("(nullptr)", column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_TRUE(column_info.has_non_null_constraint);
@@ -159,58 +167,58 @@ TEST_F(RecoverModuleTest, ColumnTypeMappingAnyNotNull) {
   EXPECT_FALSE(column_info.is_auto_incremented);
 }
 TEST_F(RecoverModuleTest, ColumnTypeMappingAnyStrict) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing, t ANY STRICT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing, t ANY STRICT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 
 TEST_F(RecoverModuleTest, ColumnTypeExtraKeyword) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing, t INTEGER SOMETHING)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing, t INTEGER SOMETHING)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, ColumnTypeNotNullExtraKeyword) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing, t INTEGER NOT NULL SOMETHING)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing, t INTEGER NOT NULL SOMETHING)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, ColumnTypeDoubleTypes) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing "
-                     "USING recover(backing, t INTEGER FLOAT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
+                    "USING recover(backing, t INTEGER FLOAT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
 TEST_F(RecoverModuleTest, ColumnTypeNotNullDoubleTypes) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE backing(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
     error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
-        db().Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
-                     "backing, t INTEGER NOT NULL TEXT)"));
+        db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing USING recover("
+                    "backing, t INTEGER NOT NULL TEXT)"));
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
@@ -220,30 +228,39 @@ class RecoverModuleColumnTypeMappingTest
       public ::testing::WithParamInterface<
           std::tuple<const char*, const char*, bool>> {
  public:
+  ~RecoverModuleColumnTypeMappingTest() override = default;
+
   void SetUp() override {
-    RecoverModuleTest::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(
+        db_.Open(temp_dir_.GetPath().AppendASCII("recovery_test.sqlite")));
+    ASSERT_TRUE(DatabaseTestPeer::EnableRecoveryExtension(&db_));
+
     std::string sql =
         base::StringPrintf("CREATE TABLE backing(data %s)", SchemaType());
-    ASSERT_TRUE(db().Execute(sql.c_str()));
+    ASSERT_TRUE(db_.Execute(sql.c_str()));
   }
 
- protected:
   void CreateRecoveryTable(const char* suffix) {
     std::string sql = base::StringPrintf(
         "CREATE VIRTUAL TABLE temp.recover_backing "
         "USING recover(backing, data %s%s)",
         SchemaType(), suffix);
-    ASSERT_TRUE(db().Execute(sql.c_str()));
+    ASSERT_TRUE(db_.Execute(sql.c_str()));
   }
 
   const char* SchemaType() const { return std::get<0>(GetParam()); }
   const char* ExpectedType() const { return std::get<1>(GetParam()); }
   bool IsAlwaysNonNull() const { return std::get<2>(GetParam()); }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+  sql::Database db_;
 };
 TEST_P(RecoverModuleColumnTypeMappingTest, Unqualified) {
   CreateRecoveryTable("");
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "data");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "data");
   EXPECT_EQ(ExpectedType(), column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_EQ(IsAlwaysNonNull(), column_info.has_non_null_constraint);
@@ -253,7 +270,7 @@ TEST_P(RecoverModuleColumnTypeMappingTest, Unqualified) {
 TEST_P(RecoverModuleColumnTypeMappingTest, NotNull) {
   CreateRecoveryTable(" NOT NULL");
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "data");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "data");
   EXPECT_EQ(ExpectedType(), column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_TRUE(column_info.has_non_null_constraint);
@@ -263,7 +280,7 @@ TEST_P(RecoverModuleColumnTypeMappingTest, NotNull) {
 TEST_P(RecoverModuleColumnTypeMappingTest, Strict) {
   CreateRecoveryTable(" STRICT");
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "data");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "data");
   EXPECT_EQ(ExpectedType(), column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_EQ(IsAlwaysNonNull(), column_info.has_non_null_constraint);
@@ -273,7 +290,7 @@ TEST_P(RecoverModuleColumnTypeMappingTest, Strict) {
 TEST_P(RecoverModuleColumnTypeMappingTest, StrictNotNull) {
   CreateRecoveryTable(" STRICT NOT NULL");
   sql::test::ColumnInfo column_info =
-      sql::test::ColumnInfo::Create(&db(), "temp", "recover_backing", "data");
+      sql::test::ColumnInfo::Create(&db_, "temp", "recover_backing", "data");
   EXPECT_EQ(ExpectedType(), column_info.data_type);
   EXPECT_EQ("BINARY", column_info.collation_sequence);
   EXPECT_TRUE(column_info.has_non_null_constraint);
@@ -305,12 +322,12 @@ void GenerateAlteredTable(sql::Database* db) {
 }  // namespace
 
 TEST_F(RecoverModuleTest, ReadFromAlteredTableNullDefaults) {
-  GenerateAlteredTable(&db());
+  GenerateAlteredTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_altered "
-                   "USING recover(altered, t TEXT, i INTEGER)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_altered "
+                  "USING recover(altered, t TEXT, i INTEGER)"));
 
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT t, i FROM recover_altered ORDER BY rowid"));
   ASSERT_TRUE(statement.Step());
   EXPECT_EQ("a", statement.ColumnString(0));
@@ -329,12 +346,12 @@ TEST_F(RecoverModuleTest, ReadFromAlteredTableNullDefaults) {
 }
 
 TEST_F(RecoverModuleTest, ReadFromAlteredTableSkipsNulls) {
-  GenerateAlteredTable(&db());
+  GenerateAlteredTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_altered "
-                   "USING recover(altered, t TEXT, i INTEGER NOT NULL)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_altered "
+                  "USING recover(altered, t TEXT, i INTEGER NOT NULL)"));
 
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT t, i FROM recover_altered ORDER BY rowid"));
   ASSERT_TRUE(statement.Step());
   EXPECT_EQ("d", statement.ColumnString(0));
@@ -366,13 +383,13 @@ void GenerateSizedTable(sql::Database* db,
 }  // namespace
 
 TEST_F(RecoverModuleTest, LeafNodes) {
-  GenerateSizedTable(&db(), 10, "Leaf-node-generating line ");
+  GenerateSizedTable(&db_, 10, "Leaf-node-generating line ");
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_sized "
-                   "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_sized "
+                  "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
 
   sql::Statement statement(
-      db().GetUniqueStatement("SELECT t, i FROM recover_sized ORDER BY rowid"));
+      db_.GetUniqueStatement("SELECT t, i FROM recover_sized ORDER BY rowid"));
   for (int i = 0; i < 10; ++i) {
     ASSERT_TRUE(statement.Step());
     EXPECT_EQ(base::StringPrintf("Leaf-node-generating line %d", i),
@@ -383,22 +400,22 @@ TEST_F(RecoverModuleTest, LeafNodes) {
 }
 
 TEST_F(RecoverModuleTest, EmptyTable) {
-  GenerateSizedTable(&db(), 0, "");
+  GenerateSizedTable(&db_, 0, "");
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_sized "
-                   "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_sized "
+                  "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, t, i FROM recover_sized ORDER BY rowid"));
   EXPECT_FALSE(statement.Step());
 }
 
 TEST_F(RecoverModuleTest, SingleLevelInteriorNodes) {
-  GenerateSizedTable(&db(), 100, "Interior-node-generating line ");
+  GenerateSizedTable(&db_, 100, "Interior-node-generating line ");
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_sized "
-                   "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_sized "
+                  "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
 
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, t, i FROM recover_sized ORDER BY rowid"));
   for (int i = 0; i < 100; ++i) {
     ASSERT_TRUE(statement.Step());
@@ -411,12 +428,12 @@ TEST_F(RecoverModuleTest, SingleLevelInteriorNodes) {
 }
 
 TEST_F(RecoverModuleTest, MultiLevelInteriorNodes) {
-  GenerateSizedTable(&db(), 5000, "Interior-node-generating line ");
+  GenerateSizedTable(&db_, 5000, "Interior-node-generating line ");
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_sized "
-                   "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_sized "
+                  "USING recover(sized, t TEXT, i INTEGER NOT NULL)"));
 
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, t, i FROM recover_sized ORDER BY rowid"));
   for (int i = 0; i < 5000; ++i) {
     ASSERT_TRUE(statement.Step());
@@ -444,11 +461,11 @@ void GenerateTypesTable(sql::Database* db) {
 }  // namespace
 
 TEST_F(RecoverModuleTest, Any) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value ANY)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value ANY)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -482,11 +499,11 @@ TEST_F(RecoverModuleTest, Any) {
 }
 
 TEST_F(RecoverModuleTest, Integers) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value INTEGER)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value INTEGER)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -503,11 +520,11 @@ TEST_F(RecoverModuleTest, Integers) {
 }
 
 TEST_F(RecoverModuleTest, NonNullIntegers) {
-  GenerateTypesTable(&db());
-  ASSERT_TRUE(db().Execute(
+  GenerateTypesTable(&db_);
+  ASSERT_TRUE(db_.Execute(
       "CREATE VIRTUAL TABLE temp.recover_types "
       "USING recover(types, rowtype TEXT, value INTEGER NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -520,11 +537,11 @@ TEST_F(RecoverModuleTest, NonNullIntegers) {
 }
 
 TEST_F(RecoverModuleTest, Floats) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value FLOAT)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value FLOAT)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -546,11 +563,11 @@ TEST_F(RecoverModuleTest, Floats) {
 }
 
 TEST_F(RecoverModuleTest, NonNullFloats) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value FLOAT NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value FLOAT NOT NULL)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -568,11 +585,11 @@ TEST_F(RecoverModuleTest, NonNullFloats) {
 }
 
 TEST_F(RecoverModuleTest, FloatsStrict) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value FLOAT STRICT)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value FLOAT STRICT)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -589,11 +606,11 @@ TEST_F(RecoverModuleTest, FloatsStrict) {
 }
 
 TEST_F(RecoverModuleTest, NonNullFloatsStrict) {
-  GenerateTypesTable(&db());
-  ASSERT_TRUE(db().Execute(
+  GenerateTypesTable(&db_);
+  ASSERT_TRUE(db_.Execute(
       "CREATE VIRTUAL TABLE temp.recover_types "
       "USING recover(types, rowtype TEXT, value FLOAT STRICT NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -606,11 +623,11 @@ TEST_F(RecoverModuleTest, NonNullFloatsStrict) {
 }
 
 TEST_F(RecoverModuleTest, Texts) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value TEXT)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value TEXT)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -634,11 +651,11 @@ TEST_F(RecoverModuleTest, Texts) {
 }
 
 TEST_F(RecoverModuleTest, NonNullTexts) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value TEXT NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value TEXT NOT NULL)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -658,11 +675,11 @@ TEST_F(RecoverModuleTest, NonNullTexts) {
 }
 
 TEST_F(RecoverModuleTest, TextsStrict) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value TEXT STRICT)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value TEXT STRICT)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -679,11 +696,11 @@ TEST_F(RecoverModuleTest, TextsStrict) {
 }
 
 TEST_F(RecoverModuleTest, NonNullTextsStrict) {
-  GenerateTypesTable(&db());
-  ASSERT_TRUE(db().Execute(
+  GenerateTypesTable(&db_);
+  ASSERT_TRUE(db_.Execute(
       "CREATE VIRTUAL TABLE temp.recover_types "
       "USING recover(types, rowtype TEXT, value TEXT STRICT NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -696,11 +713,11 @@ TEST_F(RecoverModuleTest, NonNullTextsStrict) {
 }
 
 TEST_F(RecoverModuleTest, Blobs) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value BLOB)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value BLOB)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -719,11 +736,11 @@ TEST_F(RecoverModuleTest, Blobs) {
 }
 
 TEST_F(RecoverModuleTest, NonNullBlobs) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value BLOB NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value BLOB NOT NULL)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -738,11 +755,11 @@ TEST_F(RecoverModuleTest, NonNullBlobs) {
 }
 
 TEST_F(RecoverModuleTest, AnyNonNull) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_types "
-                   "USING recover(types, rowtype TEXT, value ANY NOT NULL)"));
-  sql::Statement statement(db().GetUniqueStatement(
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_types "
+                  "USING recover(types, rowtype TEXT, value ANY NOT NULL)"));
+  sql::Statement statement(db_.GetUniqueStatement(
       "SELECT rowid, rowtype, value FROM recover_types"));
 
   ASSERT_TRUE(statement.Step());
@@ -772,20 +789,20 @@ TEST_F(RecoverModuleTest, AnyNonNull) {
 }
 
 TEST_F(RecoverModuleTest, RowidAlias) {
-  GenerateTypesTable(&db());
+  GenerateTypesTable(&db_);
 
   // The id column is an alias for rowid, and its values get serialized as NULL.
-  ASSERT_TRUE(db().Execute(
+  ASSERT_TRUE(db_.Execute(
       "CREATE TABLE types2(id INTEGER PRIMARY KEY, rowtype TEXT, value)"));
   ASSERT_TRUE(
-      db().Execute("INSERT INTO types2(id, rowtype, value) "
-                   "SELECT rowid, rowtype, value FROM types WHERE true"));
-  ASSERT_TRUE(db().Execute(
+      db_.Execute("INSERT INTO types2(id, rowtype, value) "
+                  "SELECT rowid, rowtype, value FROM types WHERE true"));
+  ASSERT_TRUE(db_.Execute(
       "CREATE VIRTUAL TABLE temp.recover_types2 "
       "USING recover(types2, id ROWID NOT NULL, rowtype TEXT, value ANY)"));
 
   sql::Statement statement(
-      db().GetUniqueStatement("SELECT id, rowid, rowtype, value FROM types2"));
+      db_.GetUniqueStatement("SELECT id, rowid, rowtype, value FROM types2"));
 
   ASSERT_TRUE(statement.Step());
   EXPECT_EQ(1, statement.ColumnInt(0));
@@ -819,7 +836,7 @@ TEST_F(RecoverModuleTest, RowidAlias) {
 }
 
 TEST_F(RecoverModuleTest, IntegerEncodings) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE integers(value)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE integers(value)"));
 
   const std::vector<int64_t> values = {
       // Encoded directly in type info.
@@ -857,7 +874,7 @@ TEST_F(RecoverModuleTest, IntegerEncodings) {
       -9223372036854775807,
   };
   sql::Statement insert(
-      db().GetUniqueStatement("INSERT INTO integers VALUES(?)"));
+      db_.GetUniqueStatement("INSERT INTO integers VALUES(?)"));
   for (int64_t value : values) {
     insert.BindInt64(0, value);
     ASSERT_TRUE(insert.Run());
@@ -865,10 +882,10 @@ TEST_F(RecoverModuleTest, IntegerEncodings) {
   }
 
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_integers "
-                   "USING recover(integers, value INTEGER)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_integers "
+                  "USING recover(integers, value INTEGER)"));
   sql::Statement select(
-      db().GetUniqueStatement("SELECT rowid, value FROM recover_integers"));
+      db_.GetUniqueStatement("SELECT rowid, value FROM recover_integers"));
   for (size_t i = 0; i < values.size(); ++i) {
     ASSERT_TRUE(select.Step()) << "Was attemping to read " << values[i];
     EXPECT_EQ(static_cast<int>(i + 1), select.ColumnInt(0));
@@ -967,30 +984,30 @@ TEST_F(RecoverModuleTest, VarintEncodings) {
       -0x8000000000000000,
   };
 
-  ASSERT_TRUE(db().Execute("CREATE TABLE varints(value INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE varints(value INTEGER PRIMARY KEY)"));
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_varints "
-                   "USING recover(varints, value ROWID)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_varints "
+                  "USING recover(varints, value ROWID)"));
 
   for (int64_t value : values) {
     sql::Statement insert(
-        db().GetUniqueStatement("INSERT INTO varints VALUES(?)"));
+        db_.GetUniqueStatement("INSERT INTO varints VALUES(?)"));
     insert.BindInt64(0, value);
     ASSERT_TRUE(insert.Run());
 
     sql::Statement select(
-        db().GetUniqueStatement("SELECT rowid, value FROM recover_varints"));
+        db_.GetUniqueStatement("SELECT rowid, value FROM recover_varints"));
     ASSERT_TRUE(select.Step()) << "Was attemping to read " << value;
     EXPECT_EQ(value, select.ColumnInt64(0));
     EXPECT_EQ(value, select.ColumnInt64(1));
     EXPECT_FALSE(select.Step());
 
-    ASSERT_TRUE(db().Execute("DELETE FROM varints"));
+    ASSERT_TRUE(db_.Execute("DELETE FROM varints"));
   }
 }
 
 TEST_F(RecoverModuleTest, TextEncodings) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE encodings(t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE encodings(t TEXT)"));
 
   const std::vector<std::string> values = {
       "",          "a",         u8"ö",       u8"Mjollnir", u8"Mjölnir",
@@ -998,7 +1015,7 @@ TEST_F(RecoverModuleTest, TextEncodings) {
   };
 
   sql::Statement insert(
-      db().GetUniqueStatement("INSERT INTO encodings VALUES(?)"));
+      db_.GetUniqueStatement("INSERT INTO encodings VALUES(?)"));
   for (const std::string& value : values) {
     insert.BindString(0, value);
     ASSERT_TRUE(insert.Run());
@@ -1006,10 +1023,10 @@ TEST_F(RecoverModuleTest, TextEncodings) {
   }
 
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_encodings "
-                   "USING recover(encodings, t TEXT)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_encodings "
+                  "USING recover(encodings, t TEXT)"));
   sql::Statement select(
-      db().GetUniqueStatement("SELECT rowid, t FROM recover_encodings"));
+      db_.GetUniqueStatement("SELECT rowid, t FROM recover_encodings"));
   for (size_t i = 0; i < values.size(); ++i) {
     ASSERT_TRUE(select.Step());
     EXPECT_EQ(static_cast<int>(i + 1), select.ColumnInt(0));
@@ -1019,7 +1036,7 @@ TEST_F(RecoverModuleTest, TextEncodings) {
 }
 
 TEST_F(RecoverModuleTest, BlobEncodings) {
-  ASSERT_TRUE(db().Execute("CREATE TABLE blob_encodings(t BLOB)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE blob_encodings(t BLOB)"));
 
   const std::vector<std::vector<uint8_t>> values = {
       {},           {0x00},       {0x01},
@@ -1028,7 +1045,7 @@ TEST_F(RecoverModuleTest, BlobEncodings) {
   };
 
   sql::Statement insert(
-      db().GetUniqueStatement("INSERT INTO blob_encodings VALUES(?)"));
+      db_.GetUniqueStatement("INSERT INTO blob_encodings VALUES(?)"));
   for (const std::vector<uint8_t>& value : values) {
     // std::vector::data() returns nullptr for empty vectors. Unfortunately,
     // sqlite3_bind_blob() always interprets null data as a NULL value. In this
@@ -1043,10 +1060,10 @@ TEST_F(RecoverModuleTest, BlobEncodings) {
   }
 
   ASSERT_TRUE(
-      db().Execute("CREATE VIRTUAL TABLE temp.recover_blob_encodings "
-                   "USING recover(blob_encodings, t BLOB)"));
+      db_.Execute("CREATE VIRTUAL TABLE temp.recover_blob_encodings "
+                  "USING recover(blob_encodings, t BLOB)"));
   sql::Statement select(
-      db().GetUniqueStatement("SELECT rowid, t FROM recover_blob_encodings"));
+      db_.GetUniqueStatement("SELECT rowid, t FROM recover_blob_encodings"));
   for (size_t i = 0; i < values.size(); ++i) {
     ASSERT_TRUE(select.Step());
     EXPECT_EQ(static_cast<int>(i + 1), select.ColumnInt(0));
@@ -1113,60 +1130,60 @@ constexpr int kOverflowOverhead = 4;
 }  // namespace
 
 TEST_F(RecoverModuleTest, ValueWithoutOverflow) {
-  CheckLargeValueRecovery(&db(), db().page_size() - kRecordOverhead);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(2 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(2 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page and a leaf page";
 }
 
 TEST_F(RecoverModuleTest, ValueWithOneByteOverflow) {
-  CheckLargeValueRecovery(&db(), db().page_size() - kRecordOverhead + 1);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead + 1);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 1 overflow page";
 }
 
 TEST_F(RecoverModuleTest, ValueWithOneOverflowPage) {
   CheckLargeValueRecovery(
-      &db(), db().page_size() - kRecordOverhead + db().page_size() / 2);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+      &db_, db_.page_size() - kRecordOverhead + db_.page_size() / 2);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 1 overflow page";
 }
 
 TEST_F(RecoverModuleTest, ValueWithOneFullOverflowPage) {
-  CheckLargeValueRecovery(&db(), db().page_size() - kRecordOverhead +
-                                     db().page_size() - kOverflowOverhead);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead +
+                                    db_.page_size() - kOverflowOverhead);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(3 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 1 overflow page";
 }
 
 TEST_F(RecoverModuleTest, ValueWithOneByteSecondOverflowPage) {
-  CheckLargeValueRecovery(&db(), db().page_size() - kRecordOverhead +
-                                     db().page_size() - kOverflowOverhead + 1);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead +
+                                    db_.page_size() - kOverflowOverhead + 1);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 2 overflow pages";
 }
 
 TEST_F(RecoverModuleTest, ValueWithTwoOverflowPages) {
-  CheckLargeValueRecovery(&db(), db().page_size() - kRecordOverhead +
-                                     db().page_size() - kOverflowOverhead +
-                                     db().page_size() / 2);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead +
+                                    db_.page_size() - kOverflowOverhead +
+                                    db_.page_size() / 2);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 2 overflow pages";
 }
 
 TEST_F(RecoverModuleTest, ValueWithTwoFullOverflowPages) {
   // This value is large enough that the varint encoding of its type ID takes up
   // 3 bytes, instead of 2.
-  CheckLargeValueRecovery(&db(),
-                          db().page_size() - kRecordOverhead +
-                              (db().page_size() - kOverflowOverhead) * 2 - 1);
-  int auto_vacuum_pages = HasEnabledAutoVacuum(&db()) ? 1 : 0;
-  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db()))
+  CheckLargeValueRecovery(&db_, db_.page_size() - kRecordOverhead +
+                                    (db_.page_size() - kOverflowOverhead) * 2 -
+                                    1);
+  int auto_vacuum_pages = HasEnabledAutoVacuum(&db_) ? 1 : 0;
+  ASSERT_EQ(4 + auto_vacuum_pages, sql::test::GetPageCount(&db_))
       << "Database should have a root page, a leaf page, and 2 overflow pages";
 }
 

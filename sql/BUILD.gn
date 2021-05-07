@@ -121,8 +121,6 @@ test("sql_unittests") {
     "test/paths.cc",
     "test/paths.h",
     "test/run_all_unittests.cc",
-    "test/sql_test_base.cc",
-    "test/sql_test_base.h",
     "test/sql_test_suite.cc",
     "test/sql_test_suite.h",
     "transaction_unittest.cc",
