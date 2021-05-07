@@ -165,6 +165,10 @@ bool RWBuffer::ROIter::Next() {
   return remaining_ != 0;
 }
 
+bool RWBuffer::ROIter::HasNext() const {
+  return block_ && block_->next_;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // The reader can only access block.capacity_ (which never changes), and cannot
 // access block.used_, which may be updated by the writer.

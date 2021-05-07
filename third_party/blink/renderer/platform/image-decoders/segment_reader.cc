@@ -272,9 +272,25 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
 
   RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
 
-  // TODO(thiabaud): It should be possible to do this without the extra copy in
-  // the case that everything is already in a single allocation. Double-check
-  // this and fix it to match ROBufferSegmentReader.
+  if (!iter.HasNext()) {  // No need to copy because the data is contiguous.
+    // We lock here so that we don't get a use-after-free. ParkableImage can
+    // not be parked while it is locked, so the buffer is valid for the whole
+    // lifetime of the SkData. We add the ref so that the ParkableImage has a
+    // longer limetime than the SkData.
+    parkable_image_->Lock();
+    parkable_image_->AddRef();
+    return SkData::MakeWithProc(
+        iter.data(), available_,
+        [](const void* ptr, void* context) -> void {
+          auto* parkable_image = static_cast<ParkableImage*>(context);
+          MutexLocker lock(parkable_image->lock_);
+          parkable_image->Unlock();
+          parkable_image->Release();
+        },
+        parkable_image_.get());
+  }
+
+  // Data is not contiguous so we need to copy.
   return BufferCopyAsSkData(iter, available_);
 }
 

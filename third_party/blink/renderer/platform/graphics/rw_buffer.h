@@ -28,7 +28,12 @@ class PLATFORM_EXPORT RWBuffer {
     explicit ROIter(RWBuffer*, size_t);
     size_t size() const;
     const void* data() const;
+    // Checks whether there is another block available and advances the iterator
+    // if there is.
     bool Next();
+    // Checks whether there is another block available. Does not advance the
+    // iterator.
+    bool HasNext() const;
 
    private:
     const RWBuffer* rw_buffer_;
