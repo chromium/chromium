@@ -263,15 +263,15 @@ class CORE_EXPORT HTMLTokenizer {
   // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
   InputStreamPreprocessor<HTMLTokenizer> input_stream_preprocessor_;
 
-  Vector<UChar, 32> appropriate_end_tag_name_;
+  LiteralBuffer<UChar, 32> appropriate_end_tag_name_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#temporary-buffer
-  Vector<LChar, 32> temporary_buffer_;
+  LiteralBuffer<LChar, 32> temporary_buffer_;
 
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag
   // token here so we remember it next time we re-enter the tokenizer.
-  Vector<LChar, 32> buffered_end_tag_name_;
+  LiteralBuffer<LChar, 32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
 

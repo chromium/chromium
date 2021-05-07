@@ -109,7 +109,7 @@ class CORE_EXPORT AtomicHTMLToken {
         NOTREACHED();
         break;
       case HTMLToken::DOCTYPE:
-        name_ = AtomicString(token.GetName());
+        name_ = token.GetName().AsAtomicString();
         doctype_data_ = token.ReleaseDoctypeData();
         break;
       case HTMLToken::kEndOfFile:
@@ -121,16 +121,16 @@ class CORE_EXPORT AtomicHTMLToken {
                 lookupHTMLTag(token.GetName().data(), token.GetName().size()))
           name_ = tag_name;
         else
-          name_ = AtomicString(token.GetName());
+          name_ = token.GetName().AsAtomicString();
         InitializeAttributes(token.Attributes());
         break;
       }
       case HTMLToken::kCharacter:
       case HTMLToken::kComment:
         if (token.IsAll8BitData())
-          data_ = String::Make8BitFrom16BitSource(token.Data());
+          data_ = token.Data().AsString8();
         else
-          data_ = String(token.Data());
+          data_ = token.Data().AsString();
         break;
     }
   }
@@ -231,14 +231,14 @@ inline void AtomicHTMLToken::InitializeAttributes(
   attributes_.clear();
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
-    if (attribute.NameAsVector().IsEmpty())
+    if (attribute.NameIsEmpty())
       continue;
 
     attribute.NameRange().CheckValid();
     attribute.ValueRange().CheckValid();
 
-    AtomicString value(attribute.ValueAsVector());
-    // attribute.ValueAsVector.data() is null for attributes with no values, but
+    AtomicString value(attribute.GetValue());
+    // The string pointer in |value| is null for attributes with no values, but
     // the null atom is used to represent absence of attributes; attributes with
     // no values have the value set to an empty atom instead.
     if (value == g_null_atom) {

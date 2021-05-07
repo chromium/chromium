@@ -77,10 +77,6 @@ class WTF_EXPORT AtomicString {
   AtomicString(const UChar* chars, unsigned length);
   AtomicString(const UChar* chars);
 
-  template <wtf_size_t inlineCapacity>
-  explicit AtomicString(const Vector<UChar, inlineCapacity>& vector)
-      : AtomicString(vector.data(), vector.size()) {}
-
   // Constructing an AtomicString from a String / StringImpl can be expensive if
   // the StringImpl is not already atomic.
   explicit AtomicString(StringImpl* impl) : string_(Add(impl)) {}

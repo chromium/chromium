@@ -86,7 +86,7 @@ bool Match(const String& name, const QualifiedName& q_name) {
 }
 
 const StringImpl* TagImplFor(const HTMLToken::DataVector& data) {
-  AtomicString tag_name(data);
+  AtomicString tag_name = data.AsAtomicString();
   const StringImpl* result = tag_name.Impl();
   if (result->IsStatic())
     return result;

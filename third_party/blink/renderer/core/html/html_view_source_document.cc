@@ -181,7 +181,7 @@ void HTMLViewSourceDocument::ProcessTagToken(const String& source,
                                              HTMLToken& token) {
   current_ = AddSpanWithClassName("html-tag");
 
-  AtomicString tag_name(token.GetName());
+  AtomicString tag_name = token.GetName().AsAtomicString();
 
   unsigned index = 0;
   HTMLToken::AttributeList::const_iterator iter = token.Attributes().begin();

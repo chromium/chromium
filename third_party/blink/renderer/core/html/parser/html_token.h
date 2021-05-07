@@ -33,6 +33,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -113,22 +114,22 @@ class HTMLToken {
       int end;
     };
 
-    AtomicString GetName() const { return AtomicString(name_); }
+    AtomicString GetName() const { return name_.AsAtomicString(); }
+    AtomicString GetValue() const { return value_.AsAtomicString(); }
+
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_, kLikely8Bit);
     }
-    const Vector<UChar, 32>& NameAsVector() const { return name_; }
-    const Vector<UChar, 32>& ValueAsVector() const { return value_; }
 
-    void AppendToName(UChar c) { name_.push_back(c); }
+    bool NameIsEmpty() const { return name_.IsEmpty(); }
+    void AppendToName(UChar c) { name_.AddChar(c); }
 
     scoped_refptr<StringImpl> Value8BitIfNecessary() const {
-      return StringImpl::Create8BitIfPossible(value_);
+      return StringImpl::Create8BitIfPossible(value_.data(), value_.size());
     }
-    String Value() const { return String(value_); }
+    String Value() const { return String(value_.data(), value_.size()); }
 
-    void AppendToValue(UChar c) { value_.push_back(c); }
-    void AppendToValue(const String& value) { value.AppendTo(value_); }
+    void AppendToValue(UChar c) { value_.AddChar(c); }
     void ClearValue() { value_.clear(); }
 
     const Range& NameRange() const { return name_range_; }
@@ -137,8 +138,10 @@ class HTMLToken {
     Range& MutableValueRange() { return value_range_; }
 
    private:
-    Vector<UChar, 32> name_;
-    Vector<UChar, 32> value_;
+    // TODO(chromium:1204030): Do a more rigorous study and select a
+    // better-informed inline capacity.
+    LiteralBuffer<UChar, 32> name_;
+    LiteralBuffer<UChar, 32> value_;
     Range name_range_;
     Range value_range_;
   };
@@ -148,7 +151,9 @@ class HTMLToken {
   // By using an inline capacity of 256, we avoid spilling over into an malloced
   // buffer approximately 99% of the time based on a non-scientific browse
   // around a number of popular web sites on 23 May 2013.
-  typedef Vector<UChar, 256> DataVector;
+  // TODO(chromium:1204030): Do a more rigorous study and select a
+  // better-informed inline capacity.
+  typedef LiteralBuffer<UChar, 256> DataVector;
 
   HTMLToken() { Clear(); }
 
@@ -157,12 +162,7 @@ class HTMLToken {
     range_.Clear();
     range_.start = 0;
     base_offset_ = 0;
-    // Don't call Vector::clear() as that would destroy the
-    // alloced VectorBuffer. If the innerHTML'd content has
-    // two 257 character text nodes in a row, we'll needlessly
-    // thrash malloc. When we finally finish the parse the
-    // HTMLToken will be destroyed and the VectorBuffer released.
-    data_.Shrink(0);
+    data_.clear();
     or_all_data_ = 0;
   }
 
@@ -199,7 +199,7 @@ class HTMLToken {
   void AppendToName(UChar character) {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
     DCHECK(character);
-    data_.push_back(character);
+    data_.AddChar(character);
     or_all_data_ |= character;
   }
 
@@ -224,7 +224,7 @@ class HTMLToken {
   void BeginDOCTYPE(UChar character) {
     DCHECK(character);
     BeginDOCTYPE();
-    data_.push_back(character);
+    data_.AddChar(character);
     or_all_data_ |= character;
   }
 
@@ -290,7 +290,7 @@ class HTMLToken {
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.push_back(character);
+    data_.AddChar(character);
     or_all_data_ |= character;
   }
 
@@ -301,17 +301,17 @@ class HTMLToken {
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.push_back(character);
+    data_.AddChar(character);
   }
 
-  void BeginEndTag(const Vector<LChar, 32>& characters) {
+  void BeginEndTag(const LiteralBuffer<LChar, 32>& characters) {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.AppendVector(characters);
+    data_.AppendLiteral(characters);
   }
 
   void AddNewAttribute() {
@@ -360,12 +360,6 @@ class HTMLToken {
     current_attribute_->AppendToValue(character);
   }
 
-  void AppendToAttributeValue(wtf_size_t i, const String& value) {
-    DCHECK(!value.IsEmpty());
-    DCHECK(type_ == kStartTag || type_ == kEndTag);
-    attributes_[i].AppendToValue(value);
-  }
-
   const AttributeList& Attributes() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     return attributes_;
@@ -395,18 +389,18 @@ class HTMLToken {
 
   void AppendToCharacter(char character) {
     DCHECK_EQ(type_, kCharacter);
-    data_.push_back(character);
+    data_.AddChar(character);
   }
 
   void AppendToCharacter(UChar character) {
     DCHECK_EQ(type_, kCharacter);
-    data_.push_back(character);
+    data_.AddChar(character);
     or_all_data_ |= character;
   }
 
-  void AppendToCharacter(const Vector<LChar, 32>& characters) {
+  void AppendToCharacter(const LiteralBuffer<LChar, 32>& characters) {
     DCHECK_EQ(type_, kCharacter);
-    data_.AppendVector(characters);
+    data_.AppendLiteral(characters);
   }
 
   /* Comment Tokens */
@@ -424,7 +418,7 @@ class HTMLToken {
   void AppendToComment(UChar character) {
     DCHECK(character);
     DCHECK_EQ(type_, kComment);
-    data_.push_back(character);
+    data_.AddChar(character);
     or_all_data_ |= character;
   }
 
