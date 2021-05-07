@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 
 #include "base/files/file_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"

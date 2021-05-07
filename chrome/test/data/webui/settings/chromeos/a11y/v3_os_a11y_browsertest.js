@@ -8,7 +8,7 @@ GEN_INCLUDE([
 ]);
 
 GEN('#include "build/branding_buildflags.h"');
-GEN('#include "chrome/browser/chromeos/crostini/crostini_pref_names.h"');
+GEN('#include "chrome/browser/ash/crostini/crostini_pref_names.h"');
 GEN('#include "chrome/browser/chromeos/crostini/fake_crostini_features.h"');
 GEN('#include "chrome/browser/profiles/profile.h"');
 GEN('#include "chrome/browser/ui/browser.h"');

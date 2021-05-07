@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 
-#include "chrome/browser/chromeos/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 
 namespace arc {
 

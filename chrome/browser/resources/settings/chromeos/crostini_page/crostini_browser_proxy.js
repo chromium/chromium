@@ -14,7 +14,7 @@
 
 /**
  * These values should remain consistent with their C++ counterpart
- * (chrome/browser/chromeos/crostini/crostini_port_forwarder.h).
+ * (chrome/browser/ash/crostini/crostini_port_forwarder.h).
  * @enum {number}
  */
 /* #export */ const CrostiniPortProtocol = {

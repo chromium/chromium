@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 
 class Profile;
 

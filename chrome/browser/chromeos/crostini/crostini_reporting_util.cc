@@ -11,7 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

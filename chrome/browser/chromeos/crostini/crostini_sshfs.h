@@ -12,9 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chromeos/disks/disk_mount_manager.h"
+
 namespace crostini {
 
 class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,

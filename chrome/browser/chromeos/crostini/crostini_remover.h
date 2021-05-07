@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_REMOVER_H_
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_REMOVER_H_
 
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 
 namespace crostini {
 
