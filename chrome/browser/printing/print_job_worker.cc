@@ -194,7 +194,7 @@ void PrintJobWorker::SetSettings(base::Value new_settings,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintJobWorker::SetSettingsFromPOD(
-    std::unique_ptr<printing::PrintSettings> new_settings,
+    std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -252,7 +252,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintJobWorker::UpdatePrintSettingsFromPOD(
-    std::unique_ptr<printing::PrintSettings> new_settings,
+    std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PrintingContext::Result result =
@@ -390,7 +390,7 @@ void PrintJobWorker::OnNewPage() {
 #if defined(OS_WIN)
   const bool source_is_pdf =
       !print_job_->document()->settings().is_modifiable();
-  if (!printing::features::ShouldPrintUsingXps(source_is_pdf)) {
+  if (!features::ShouldPrintUsingXps(source_is_pdf)) {
     // Using the Windows GDI print API.
     if (!OnNewPageHelperGdi())
       return;
