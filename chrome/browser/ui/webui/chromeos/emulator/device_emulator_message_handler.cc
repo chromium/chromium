@@ -407,7 +407,7 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
   // Try to find the previously selected source in the list.
   const power_manager::PowerSupplyProperties_PowerSource* selected_source =
       nullptr;
-  for (const auto& val : *sources) {
+  for (const auto& val : sources->GetList()) {
     const base::DictionaryValue* dict;
     CHECK(val.GetAsDictionary(&dict));
     power_manager::PowerSupplyProperties_PowerSource* source =
