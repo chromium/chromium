@@ -113,6 +113,20 @@ const char* GetPerPowerModeHistogramNameForProcessType(ProcessTypeForUma type) {
   }
 }
 
+const char* GetPowerModeChangeHistogramNameForProcessType(
+    ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.PowerScheduler.ProcessPowerModeChange.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.PowerScheduler.ProcessPowerModeChange.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.PowerScheduler.ProcessPowerModeChange.GPU";
+    default:
+      return "Power.PowerScheduler.ProcessPowerModeChange.Other";
+  }
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with power_scheduler::PowerMode.
@@ -426,6 +440,11 @@ class ProcessCpuTimeMetricsReporter
     base::Optional<power_scheduler::PowerMode> old_power_mode =
         power_mode_.has_value() ? power_mode_ : old_mode;
     power_mode_ = new_mode;
+
+    UMA_HISTOGRAM_ENUMERATION(
+        GetPowerModeChangeHistogramNameForProcessType(process_type_),
+        GetPowerModeForUma(new_mode));
+
     if (collection_in_progress_.load(std::memory_order_relaxed))
       return;
 
