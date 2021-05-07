@@ -219,15 +219,14 @@ WebRequestConditionAttributeContentType::Create(
       bool* bad_message) {
   DCHECK(name == keys::kContentTypeKey || name == keys::kExcludeContentTypeKey);
 
-  const base::ListValue* value_as_list = nullptr;
-  if (!value->GetAsList(&value_as_list)) {
+  if (!value->is_list()) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
     return nullptr;
   }
   std::vector<std::string> content_types;
-  for (auto it = value_as_list->begin(); it != value_as_list->end(); ++it) {
+  for (const auto& entry : value->GetList()) {
     std::string content_type;
-    if (!it->GetAsString(&content_type)) {
+    if (!entry.GetAsString(&content_type)) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
       return nullptr;
     }
@@ -371,9 +370,9 @@ HeaderMatcher::~HeaderMatcher() {}
 std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
     const base::ListValue* tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
-  for (auto it = tests->begin(); it != tests->end(); ++it) {
+  for (const auto& entry : tests->GetList()) {
     const base::DictionaryValue* tests = nullptr;
-    if (!it->GetAsDictionary(&tests))
+    if (!entry.GetAsDictionary(&tests))
       return nullptr;
 
     std::unique_ptr<const HeaderMatchTest> header_test(
@@ -497,7 +496,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
       case base::Value::Type::LIST: {
         const base::ListValue* list = nullptr;
         CHECK(content->GetAsList(&list));
-        for (const auto& it : *list) {
+        for (const auto& it : list->GetList()) {
           tests->push_back(StringMatchTest::Create(it, match_type, !is_name));
         }
         break;
@@ -723,14 +722,13 @@ namespace {
 // sets corresponding bits (see RequestStage) in |out_stages|. Returns true on
 // success, false otherwise.
 bool ParseListOfStages(const base::Value& value, int* out_stages) {
-  const base::ListValue* list = nullptr;
-  if (!value.GetAsList(&list))
+  if (!value.is_list())
     return false;
 
   int stages = 0;
   std::string stage_name;
-  for (auto it = list->begin(); it != list->end(); ++it) {
-    if (!(it->GetAsString(&stage_name)))
+  for (const auto& entry : value.GetList()) {
+    if (!entry.GetAsString(&stage_name))
       return false;
     if (stage_name == keys::kOnBeforeRequestEnum) {
       stages |= ON_BEFORE_REQUEST;

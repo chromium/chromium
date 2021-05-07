@@ -2366,9 +2366,8 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
   std::insert_iterator<ExtensionIdContainer> insert_iterator(
       *id_container_out, id_container_out->end());
   std::string extension_id;
-  for (auto value_it = user_pref_as_list->begin();
-       value_it != user_pref_as_list->end(); ++value_it) {
-    if (!value_it->GetAsString(&extension_id)) {
+  for (const auto& entry : user_pref_as_list->GetList()) {
+    if (!entry.GetAsString(&extension_id)) {
       NOTREACHED();
       continue;
     }
