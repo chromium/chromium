@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/bits.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -17,6 +18,7 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -435,7 +437,13 @@ bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
 
 base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {
-  // TODO: this should pad to 1K, not 256 bytes.
+  // The number of padding bytes is a uint16_t, so the granularity cannot be
+  // larger than that.
+  static_assert(kPostHandshakeMsgPaddingGranularity > 0, "");
+  static_assert(kPostHandshakeMsgPaddingGranularity - 1 <=
+                    std::numeric_limits<uint16_t>::max(),
+                "");
+
   base::Optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
@@ -443,35 +451,44 @@ base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   }
 
   base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
-  padded_size_checked += 1;  // padding-length byte
-  padded_size_checked = (padded_size_checked + 255) & ~255;
+  padded_size_checked += sizeof(uint16_t);  // padding-length bytes
+  padded_size_checked =
+      (padded_size_checked + kPostHandshakeMsgPaddingGranularity - 1) &
+      ~(kPostHandshakeMsgPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
     return base::nullopt;
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
-  DCHECK_GT(padded_size, cbor_bytes->size());
-  const size_t extra_padding = padded_size - cbor_bytes->size();
+  DCHECK_GE(padded_size, cbor_bytes->size() + sizeof(uint16_t));
+  const size_t extra_bytes = padded_size - cbor_bytes->size();
+  const size_t num_padding_bytes =
+      extra_bytes - sizeof(uint16_t) /* length of padding length */;
 
   cbor_bytes->resize(padded_size);
-  DCHECK_LE(extra_padding, 256u);
-  cbor_bytes->at(padded_size - 1) = static_cast<uint8_t>(extra_padding - 1);
+  const uint16_t num_padding_bytes16 =
+      base::checked_cast<uint16_t>(num_padding_bytes);
+  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
+         &num_padding_bytes16, sizeof(num_padding_bytes16));
 
   return *cbor_bytes;
 }
 
 base::Optional<cbor::Value> DecodePaddedCBORMap(
     base::span<const uint8_t> input) {
-  if (input.empty()) {
+  if (input.size() < sizeof(uint16_t)) {
     return base::nullopt;
   }
 
-  const size_t padding_length = input.back();
-  if (padding_length + 1 > input.size()) {
+  uint16_t padding_length16;
+  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
+         sizeof(padding_length16));
+  const size_t padding_length = padding_length16;
+  if (padding_length + sizeof(uint16_t) > input.size()) {
     FIDO_LOG(DEBUG) << "Invalid padding in caBLE handshake message";
     return base::nullopt;
   }
-  input = input.subspan(0, input.size() - padding_length - 1);
+  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
 
   base::Optional<cbor::Value> payload = cbor::Reader::Read(input);
   if (!payload || !payload->is_map()) {

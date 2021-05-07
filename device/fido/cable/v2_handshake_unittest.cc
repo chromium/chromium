@@ -75,21 +75,22 @@ TEST(CableV2Encoding, QRs) {
 }
 
 TEST(CableV2Encoding, PaddedCBOR) {
-  cbor::Value::MapValue map;
+  cbor::Value::MapValue map1;
   base::Optional<std::vector<uint8_t>> encoded =
-      EncodePaddedCBORMap(std::move(map));
+      EncodePaddedCBORMap(std::move(map1));
   ASSERT_TRUE(encoded);
-  EXPECT_EQ(256u, encoded->size());
+  EXPECT_EQ(kPostHandshakeMsgPaddingGranularity, encoded->size());
 
   base::Optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(0u, decoded->GetMap().size());
 
-  uint8_t blob[256] = {0};
-  map.emplace(1, base::span<const uint8_t>(blob, sizeof(blob)));
-  encoded = EncodePaddedCBORMap(std::move(map));
+  cbor::Value::MapValue map2;
+  uint8_t blob[kPostHandshakeMsgPaddingGranularity] = {0};
+  map2.emplace(1, base::span<const uint8_t>(blob, sizeof(blob)));
+  encoded = EncodePaddedCBORMap(std::move(map2));
   ASSERT_TRUE(encoded);
-  EXPECT_EQ(512u, encoded->size());
+  EXPECT_EQ(kPostHandshakeMsgPaddingGranularity * 2, encoded->size());
 
   decoded = DecodePaddedCBORMap(*encoded);
   ASSERT_TRUE(decoded);

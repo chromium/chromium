@@ -160,11 +160,12 @@ std::array<uint8_t, N> Derive(base::span<const uint8_t> secret,
 COMPONENT_EXPORT(DEVICE_FIDO)
 bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret);
 
-// EncodePaddedCBORMap encodes the given map and pads it to 256 bytes in such a
-// way that |DecodePaddedCBORMap| can decode it. The padding is done on the
-// assumption that the returned bytes will be encrypted and the encoded size of
-// the map should be hidden. The function can fail if the CBOR encoding fails
-// or, somehow, the size overflows.
+// EncodePaddedCBORMap encodes the given map and pads it to
+// |kPostHandshakeMsgPaddingGranularity| bytes in such a way that
+// |DecodePaddedCBORMap| can decode it. The padding is done on the assumption
+// that the returned bytes will be encrypted and the encoded size of the map
+// should be hidden. The function can fail if the CBOR encoding fails or,
+// somehow, the size overflows.
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map);

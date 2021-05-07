@@ -364,10 +364,20 @@ class TunnelTransport : public Transport {
 
         base::Optional<std::vector<uint8_t>> post_handshake_msg_bytes(
             EncodePaddedCBORMap(std::move(post_handshake_msg)));
-
-        if (!post_handshake_msg_bytes ||
-            !crypter_->Encrypt(&post_handshake_msg_bytes.value())) {
+        if (!post_handshake_msg_bytes) {
           FIDO_LOG(ERROR) << "failed to encode post-handshake message";
+          return;
+        }
+
+        // It should be the case that all post-handshake messages fall into
+        // a single padding bucket. It doesn't have to be the smallest one, but
+        // that's currently true. If altering this, consider whether
+        // kPostHandshakeMsgPaddingGranularity needs to be increased instead.
+        DCHECK_EQ(post_handshake_msg_bytes->size(),
+                  kPostHandshakeMsgPaddingGranularity);
+
+        if (!crypter_->Encrypt(&post_handshake_msg_bytes.value())) {
+          FIDO_LOG(ERROR) << "failed to encrypt post-handshake message";
           return;
         }
         websocket_client_->Write(*post_handshake_msg_bytes);
