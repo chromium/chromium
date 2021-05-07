@@ -53,7 +53,10 @@ BiometricAuthenticatorAndroid::BiometricAuthenticatorAndroid(
       window_android->GetJavaObject());
 }
 
-BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() = default;
+BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() {
+  Java_BiometricAuthenticatorBridge_destroy(AttachCurrentThread(),
+                                            java_object_);
+}
 
 BiometricsAvailability BiometricAuthenticatorAndroid::CanAuthenticate() {
   return static_cast<BiometricsAvailability>(

@@ -20,6 +20,8 @@ enum class BiometricsAvailability {
   kAvailable = 0,
   kNoHardware = 1,
   kNotEnrolled = 2,
+  kAndroidVersionNotSupported = 3,
+  kAvailableNoFallback = 4,
 };
 
 // This interface encapsulates operations related to biometric authentication.
