@@ -1,0 +1,11 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[Desktop Entry]
+Name=Chrome Remote Desktop URL Forwarder
+Exec=/opt/google/chrome-remote-desktop/remote-open-url %U
+Type=Application
+Terminal=false
+Comment=Helper application to open a URL on the Chrome Remote Desktop client
+MimeType=x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/mailto;

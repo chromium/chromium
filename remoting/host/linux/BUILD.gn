@@ -51,10 +51,16 @@ if (enable_me2me_host) {
     }
   }
 
+  copy("remoting_me2me_host_copy_url_forwarder_desktop_entry") {
+    sources = [ "crd_url_forwarder.desktop" ]
+    outputs = [ "$root_build_dir/remoting/crd-url-forwarder.desktop" ]
+  }
+
   group("remoting_dev_me2me_host") {
     deps = [
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_script",
+      ":remoting_me2me_host_copy_url_forwarder_desktop_entry",
       ":remoting_me2me_host_copy_user_session",
       ":remoting_me2me_host_copy_user_session_wrapper",
       ":remoting_native_messaging_host",

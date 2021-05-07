@@ -89,6 +89,10 @@ install:
 	  "$(INSTALL_DIR)/remote-open-url"
 
 	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/crd_url_forwarder.desktop" \
+	  "$(INSTALL_DIR)/crd-url-forwarder.desktop"
+
+	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
 
 	for locale in $$(ls $(BUILD_DIR)/remoting_locales); do \
