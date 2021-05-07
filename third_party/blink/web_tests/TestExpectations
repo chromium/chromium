@@ -6240,6 +6240,9 @@ virtual/scroll-unification/fast/scrolling/scrollbars/dsf-ready/mouse-interaction
 # Sheriff 2020-09-21
 crbug.com/1130500 [ Mac10.13 Debug ] virtual/plz-dedicated-worker/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
 
+# Temporarily disabled to unblock https://crrev.com/c/2878734
+crbug.com/1159307 inspector-protocol/debugger/wasm-compiled-streaming-breaks.js [ Pass Failure ]
+
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Pass Failure ]
 
