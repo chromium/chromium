@@ -45,7 +45,9 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override { handler_.reset(); }
 
-  void AssertWebUICalls(int num) { ASSERT_EQ(num, web_ui_.call_data().size()); }
+  void AssertWebUICalls(unsigned int num) {
+    ASSERT_EQ(num, web_ui_.call_data().size());
+  }
 
   bool WasWebUIListenerCalledWithStringArgument(
       const std::string& expected_listener,

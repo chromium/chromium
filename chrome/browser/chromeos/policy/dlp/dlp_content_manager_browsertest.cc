@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
 
   // Check that IsPrintingRestricted emitted an event.
   EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
-  EXPECT_EQ(events.size(), 1);
+  EXPECT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0],
               IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
 
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
                        /*print_only_selection=*/false);
   EXPECT_TRUE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
-  EXPECT_EQ(events.size(), 2);
+  EXPECT_EQ(events.size(), 2u);
   EXPECT_THAT(events[1],
               IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
 }
