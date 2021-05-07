@@ -337,7 +337,7 @@
     Activation code detected
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_USE_CAMERA_AGAIN" desc="Label for button informing the user to click to use the camera to rescan for QR codes.">
-    use camera again
+    Use camera again
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_ERROR" desc="Label informing the user that there was an error detecting activation code.">
     Error detecting code
