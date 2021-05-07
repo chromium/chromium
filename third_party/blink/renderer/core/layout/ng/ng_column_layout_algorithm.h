@@ -22,7 +22,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   const NGLayoutResult* Layout() override;
 

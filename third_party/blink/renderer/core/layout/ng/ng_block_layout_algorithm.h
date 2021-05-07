@@ -55,7 +55,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
                                NGBlockBreakToken> {
  public:
   // Default constructor.
-  NGBlockLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit NGBlockLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   ~NGBlockLayoutAlgorithm() override;
 
