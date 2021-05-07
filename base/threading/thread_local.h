@@ -53,7 +53,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/threading/thread_local_internal.h"
 #include "base/threading/thread_local_storage.h"
 
@@ -103,14 +102,10 @@ class ThreadLocalOwnedPointer {
 
   T* Get() const { return static_cast<T*>(slot_.Get()); }
 
-  // Sets a new value, returns the old.
-  std::unique_ptr<T> Set(std::unique_ptr<T> ptr) {
-    auto existing = WrapUnique(Get());
+  void Set(std::unique_ptr<T> ptr) {
+    delete Get();
     slot_.Set(const_cast<void*>(static_cast<const void*>(ptr.release())));
-    return existing;
   }
-
-  T& operator*() { return *Get(); }
 
  private:
   static void DeleteTlsPtr(void* ptr) { delete static_cast<T*>(ptr); }

@@ -40,23 +40,13 @@ class CheckedThreadLocalOwnedPointer {
     return ptr_tracker ? ptr_tracker->ptr_.get() : nullptr;
   }
 
-  std::unique_ptr<T> Set(std::unique_ptr<T> ptr) {
-    std::unique_ptr<T> existing_ptr;
-    auto existing_tracker = static_cast<PtrTracker*>(slot_.Get());
-    if (existing_tracker) {
-      existing_ptr = std::move(existing_tracker->ptr_);
-      delete existing_tracker;
-    }
-
+  void Set(std::unique_ptr<T> ptr) {
+    delete static_cast<PtrTracker*>(slot_.Get());
     if (ptr)
       slot_.Set(new PtrTracker(this, std::move(ptr)));
     else
       slot_.Set(nullptr);
-
-    return existing_ptr;
   }
-
-  T& operator*() { return *Get(); }
 
  private:
   struct PtrTracker {
@@ -71,7 +61,7 @@ class CheckedThreadLocalOwnedPointer {
     }
 
     CheckedThreadLocalOwnedPointer<T>* const outer_;
-    std::unique_ptr<T> ptr_;
+    const std::unique_ptr<T> ptr_;
   };
 
   static void DeleteTlsPtr(void* ptr) { delete static_cast<PtrTracker*>(ptr); }

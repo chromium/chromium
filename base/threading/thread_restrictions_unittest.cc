@@ -8,12 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
-#include "base/debug/stack_trace.h"
 #include "base/macros.h"
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -148,56 +144,5 @@ TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
   EXPECT_DCHECK_DEATH(internal::AssertBaseSyncPrimitivesAllowed());
   EXPECT_DCHECK_DEATH(AssertLongCPUWorkAllowed());
 }
-
-// thread_restriction_checks_enabled_and_has_death_tests
-#if !defined(OS_NACL) && !defined(OS_ANDROID) && \
-    defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
-
-TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {
-  ScopedDisallowBlocking scoped_disallow_blocking;
-  // The above ScopedDisallowBlocking should be on the blame list for who set
-  // the ban.
-  EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
-                   ? "ScopedDisallowBlocking"
-                   : "");
-  // And the stack should mention this test body as source.
-  EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
-                   ? "BlockingCheckEmitsStack"
-                   : "");
-}
-
-namespace {
-
-class CustomDisallow {
- public:
-  NOINLINE CustomDisallow() { ThreadRestrictions::SetIOAllowed(false); }
-  NOINLINE ~CustomDisallow() { ThreadRestrictions::SetIOAllowed(true); }
-};
-
-}  // namespace
-
-TEST_F(ThreadRestrictionsTest, NestedAllowRestoresPreviousStack) {
-  CustomDisallow custom_disallow;
-  {
-    ScopedAllowBlocking scoped_allow;
-    internal::AssertBlockingAllowed();
-  }
-  // CustomDisallow should be back on the blame list (as opposed to
-  // ~ScopedAllowBlocking which is the last one to have changed the state but is
-  // no longer relevant).
-  EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
-                   ? "CustomDisallow"
-                   : "");
-  // And the stack should mention this test body as source.
-  EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
-                   ? "NestedAllowRestoresPreviousStack"
-                   : "");
-}
-
-#endif  // thread_restriction_checks_enabled_and_has_death_tests
 
 }  // namespace base
