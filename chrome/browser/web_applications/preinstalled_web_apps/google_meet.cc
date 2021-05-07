@@ -17,10 +17,8 @@ ExternalInstallOptions GetConfigForGoogleMeet() {
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.gate_on_feature = kDefaultMeetWebApp.name;
-  options.add_to_desktop = false;
-  options.add_to_quick_launch_bar = false;
   options.only_for_new_users = true;
-  options.require_manifest = true;
+  options.add_to_quick_launch_bar = false;
 
   return options;
 }

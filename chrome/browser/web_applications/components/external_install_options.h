@@ -106,8 +106,10 @@ struct ExternalInstallOptions {
   // programmatically.
   bool bypass_service_worker_check = false;
 
-  // This should be used for installing all default apps so that good metadata
-  // is ensured.
+  // When set to true this will fail installation with
+  // |kNotValidManifestForWebApp| if the |install_url| doesn't have a manifest
+  // that passes basic validity checks. This is ignored when |app_info_factory|
+  // is used.
   bool require_manifest = false;
 
   // Whether the app should be reinstalled even if it is already installed.
