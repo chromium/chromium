@@ -116,6 +116,20 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyOverscrollStretch) {
   SendGestureScrollEnd();
 }
 
+// Verify that synthetic gesture events do not trigger an overscroll.
+TEST_F(ElasticOverscrollControllerBezierTest, NoSyntheticEventsOverscroll) {
+  // Test vertical overscroll.
+  WebGestureEvent event(WebInputEvent::Type::kGestureScrollBegin,
+                        WebInputEvent::kNoModifiers, base::TimeTicks(),
+                        WebGestureDevice::kScrollbar);
+  event.data.scroll_begin.inertial_phase = PhaseState::kNonMomentum;
+  event.data.scroll_begin.synthetic = true;
+  controller_.ObserveGestureEventAndResult(event,
+                                           cc::InputHandlerScrollResult());
+  EXPECT_EQ(controller_.state_,
+            ElasticOverscrollController::State::kStateInactive);
+}
+
 // Verify that ReconcileStretchAndScroll reduces the overscrolled delta.
 TEST_F(ElasticOverscrollControllerBezierTest, ReconcileStretchAndScroll) {
   // Test vertical overscroll.

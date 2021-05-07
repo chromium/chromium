@@ -548,9 +548,14 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
           type, original_timestamp, WebGestureDevice::kScrollbar,
           position_in_widget, scroll_delta, pointer_result.scroll_units);
 
-  // This will avoid hit testing and directly scroll the scroller with the
-  // provided element_id.
   if (type == WebInputEvent::Type::kGestureScrollBegin) {
+    // Gesture events for scrollbars are considered synthetic because they're
+    // created in response to mouse events. Additionally, synthetic GSB(s) are
+    // ignored by the blink::ElasticOverscrollController.
+    synthetic_gesture_event->data.scroll_begin.synthetic = true;
+
+    // This will avoid hit testing and directly scroll the scroller with the
+    // provided element_id.
     synthetic_gesture_event->data.scroll_begin.scrollable_area_element_id =
         pointer_result.target_scroller.GetStableId();
   }

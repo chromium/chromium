@@ -114,6 +114,8 @@ class PLATFORM_EXPORT ElasticOverscrollController {
                            VerifyForwardAnimationIsNotPlayed);
   FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
                            VerifyInitialStretchDelta);
+  FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
+                           NoSyntheticEventsOverscroll);
 
   enum State {
     // The initial state, during which the overscroll amount is zero and
