@@ -1230,6 +1230,7 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
   // just return.
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::PrintForSystemDialog() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > 1)
@@ -1259,7 +1260,6 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
   // just return.
 }
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::SetPrintPreviewUI(
     mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) {
   preview_ui_.Bind(std::move(preview));

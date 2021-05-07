@@ -276,6 +276,7 @@ interface PrintRenderFrame {
   // Tells the RenderFrame to switch the CSS to print media type, render every
   // requested page using the print preview document's frame/node, and then
   // switch the CSS back to display media type.
+  [EnableIf=enable_print_preview]
   PrintForSystemDialog();
 
   // Tells the RenderFrame to initiate print preview for the entire document.
