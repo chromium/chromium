@@ -94,9 +94,6 @@ BrowserAccessibility* GetTextFieldInnerEditorElement(
   DCHECK(text_container);
   if (text_container->GetRole() == ax::mojom::Role::kGenericContainer)
     return text_container;
-  NOTREACHED() << "The deepest text container in all native text fields should "
-                  "always have the kGenericContainer role.\n"
-               << const_cast<BrowserAccessibility&>(text_field).ToString();
   return nullptr;
 }
 
