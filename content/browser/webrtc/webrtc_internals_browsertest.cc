@@ -462,7 +462,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::DictionaryValue* dict_dump =
         static_cast<base::DictionaryValue*>(dump);
-    EXPECT_EQ((size_t) peer_connection_number, dict_dump->size());
+    EXPECT_EQ((size_t)peer_connection_number, dict_dump->DictSize());
 
     base::DictionaryValue::Iterator it(*dict_dump);
     for (; !it.IsAtEnd(); it.Advance()) {
@@ -484,7 +484,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       pc_dump->Get("stats", &value);
       EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
       base::DictionaryValue* dict = static_cast<base::DictionaryValue*>(value);
-      EXPECT_EQ((size_t) stats_number, dict->size());
+      EXPECT_EQ((size_t)stats_number, dict->DictSize());
     }
   }
 
@@ -511,7 +511,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::DictionaryValue* dataSeries =
         static_cast<base::DictionaryValue*>(value);
-    EXPECT_EQ(stats.values.size(), dataSeries->size());
+    EXPECT_EQ(stats.values.size(), dataSeries->DictSize());
   }
 };
 

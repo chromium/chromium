@@ -133,7 +133,7 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
   ignore_result(parsed_json.release());
 
   // |dictionary| should have exactly two entries, one per ssrc.
-  if (!dictionary || dictionary->size() != 2u)
+  if (!dictionary || dictionary->DictSize() != 2u)
     return goog_decode_ms;
 
   // Only a given |dictionary| entry will have a "stats" entry that has a key
