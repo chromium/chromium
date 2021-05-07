@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -173,11 +174,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
   // Verify no failures have yet been recorded.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 0);
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.Item.FailureToLaunch.Extension", 0);
 
   {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-        HoldingSpaceItem::Type::kDownload, base::FilePath("foo"),
+        HoldingSpaceItem::Type::kDownload, base::FilePath("foo.pdf"),
         GURL("filesystem:fake"), base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
@@ -191,6 +194,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
           // Verify the failure has been recorded.
           histogram_tester.ExpectBucketCount(
               "HoldingSpace.Item.FailureToLaunch", holding_space_item->type(),
+              1);
+          histogram_tester.ExpectBucketCount(
+              "HoldingSpace.Item.FailureToLaunch.Extension",
+              holding_space_metrics::FilePathToExtension(
+                  holding_space_item->file_path()),
               1);
 
           run_loop.Quit();
@@ -216,6 +224,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
 
   // Verify that only the expected failure was recorded.
   histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 1);
+  histogram_tester.ExpectTotalCount(
+      "HoldingSpace.Item.FailureToLaunch.Extension", 1);
 }
 
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when

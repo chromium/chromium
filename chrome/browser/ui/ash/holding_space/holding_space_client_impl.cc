@@ -156,7 +156,8 @@ void HoldingSpaceClientImpl::OpenItems(
 
   for (const HoldingSpaceItem* item : items) {
     if (item->file_path().empty()) {
-      holding_space_metrics::RecordItemFailureToLaunch(item->type());
+      holding_space_metrics::RecordItemFailureToLaunch(item->type(),
+                                                       item->file_path());
       *complete_success_ptr = false;
       barrier_closure.Run();
       return;
@@ -169,7 +170,8 @@ void HoldingSpaceClientImpl::OpenItems(
                const base::FilePath& file_path, HoldingSpaceItem::Type type,
                const base::Optional<base::File::Info>& info) {
               if (!weak_ptr || !info.has_value()) {
-                holding_space_metrics::RecordItemFailureToLaunch(type);
+                holding_space_metrics::RecordItemFailureToLaunch(type,
+                                                                 file_path);
                 *complete_success = false;
                 barrier_closure.Run();
                 return;
@@ -181,17 +183,18 @@ void HoldingSpaceClientImpl::OpenItems(
                   base::BindOnce(
                       [](base::RepeatingClosure barrier_closure,
                          bool* complete_success, HoldingSpaceItem::Type type,
+                         const base::FilePath& file_path,
                          platform_util::OpenOperationResult result) {
                         const bool success =
                             result == platform_util::OPEN_SUCCEEDED;
                         if (!success) {
                           holding_space_metrics::RecordItemFailureToLaunch(
-                              type);
+                              type, file_path);
                           *complete_success = false;
                         }
                         barrier_closure.Run();
                       },
-                      barrier_closure, complete_success, type));
+                      barrier_closure, complete_success, type, file_path));
             },
             weak_factory_.GetWeakPtr(), barrier_closure, complete_success_ptr,
             item->file_path(), item->type()));
