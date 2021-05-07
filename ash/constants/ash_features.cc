@@ -705,7 +705,7 @@ const base::Feature kTelemetryExtension{"TelemetryExtension",
 
 // Enables the updated cellular activation UI; see go/cros-cellular-design.
 const base::Feature kUpdatedCellularActivationUi{
-    "UpdatedCellularActivationUi", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UpdatedCellularActivationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Uses the same browser sync consent dialog as Windows/Mac/Linux. Allows the
 // user to fully opt-out of browser sync, including marking the IdentityManager
