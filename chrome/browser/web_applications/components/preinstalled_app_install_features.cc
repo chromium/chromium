@@ -66,11 +66,11 @@ const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
 
 // Enables default installing the Chat web app.
 const base::Feature kDefaultChatWebApp{"DefaultChatWebApp",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables default installing the Meet web app.
 const base::Feature kDefaultMeetWebApp{"DefaultMeetWebApp",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
