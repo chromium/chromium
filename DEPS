@@ -384,11 +384,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libjxl_revision': '9a8f5195e4d1c45112fd65f184ebe115f4163ba2',
+  'libjxl_revision': '040eae8105b61b312a67791213091103f4c0d034',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'highway_revision': '6cf3e578ee3f3c8f61668e0cb7c0f12f4b8d876e',
+  'highway_revision': 'ca1a57c342cd815053abfcffa29b44eaead4f20b',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
