@@ -79,6 +79,10 @@ apps::AppTypeName GetAppTypeNameForChromeApp(
   const extensions::Extension* extension =
       registry->GetInstalledExtension(app_id);
 
+  if (!extension || !extension->is_app()) {
+    return apps::AppTypeName::kUnknown;
+  }
+
   if (CanLaunchViaEvent(extension)) {
     return apps::AppTypeName::kChromeApp;
   }
