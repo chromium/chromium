@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 
 namespace blink {

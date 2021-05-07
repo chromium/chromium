@@ -7,7 +7,6 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_params.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"

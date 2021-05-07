@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 
 #include "base/threading/thread_task_runner_handle.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

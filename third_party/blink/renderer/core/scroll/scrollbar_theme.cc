@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #if !defined(OS_MAC)
 #include "third_party/blink/public/platform/web_theme_engine.h"

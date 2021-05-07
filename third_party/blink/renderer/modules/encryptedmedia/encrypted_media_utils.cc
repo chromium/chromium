@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 
 #include "media/base/eme_constants.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

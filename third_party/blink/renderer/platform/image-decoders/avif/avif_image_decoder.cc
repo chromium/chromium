@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space.h"

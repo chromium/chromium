@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {

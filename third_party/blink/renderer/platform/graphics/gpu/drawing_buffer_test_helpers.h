@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gl/gpu_preference.h"
 
 namespace blink {

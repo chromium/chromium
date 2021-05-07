@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 
 namespace blink {
