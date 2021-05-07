@@ -52,7 +52,7 @@
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"

@@ -16,7 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_features.h"
@@ -303,7 +303,7 @@ void BrowserTaskExecutor::InitializeIOThread() {
   Get()->browser_io_thread_handle_->EnableAllExceptBestEffortQueues();
 }
 
-std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
+std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   DCHECK(Get()->io_thread_executor_);
 
   std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate =
@@ -312,7 +312,7 @@ std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
   DCHECK(browser_io_thread_delegate);
   TRACE_EVENT0("startup", "BrowserTaskExecutor::CreateIOThread");
 
-  auto io_thread = std::make_unique<BrowserProcessSubThread>(BrowserThread::IO);
+  auto io_thread = std::make_unique<BrowserProcessIOThread>();
 
   if (browser_io_thread_delegate->allow_blocking_for_testing()) {
     io_thread->AllowBlockingForTesting();

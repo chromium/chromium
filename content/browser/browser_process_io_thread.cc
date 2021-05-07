@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -35,37 +35,37 @@
 
 namespace content {
 
-BrowserProcessSubThread::BrowserProcessSubThread(BrowserThread::ID identifier)
-    : base::Thread(BrowserThreadImpl::GetThreadName(identifier)),
-      identifier_(identifier) {
+BrowserProcessIOThread::BrowserProcessIOThread()
+    : base::Thread(BrowserThreadImpl::GetThreadName(BrowserThread::IO)) {
   // Not bound to creation thread.
   DETACH_FROM_THREAD(browser_thread_checker_);
 }
 
-BrowserProcessSubThread::~BrowserProcessSubThread() {
+BrowserProcessIOThread::~BrowserProcessIOThread() {
   Stop();
 }
 
-void BrowserProcessSubThread::RegisterAsBrowserThread() {
+void BrowserProcessIOThread::RegisterAsBrowserThread() {
   DCHECK(IsRunning());
 
   DCHECK(!browser_thread_);
-  browser_thread_.reset(new BrowserThreadImpl(identifier_, task_runner()));
+  browser_thread_.reset(
+      new BrowserThreadImpl(BrowserThread::IO, task_runner()));
 
   // Unretained(this) is safe as |this| outlives its underlying thread.
   task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &BrowserProcessSubThread::CompleteInitializationOnBrowserThread,
+          &BrowserProcessIOThread::CompleteInitializationOnBrowserThread,
           Unretained(this)));
 }
 
-void BrowserProcessSubThread::AllowBlockingForTesting() {
+void BrowserProcessIOThread::AllowBlockingForTesting() {
   DCHECK(!IsRunning());
   is_blocking_allowed_for_testing_ = true;
 }
 
-void BrowserProcessSubThread::Init() {
+void BrowserProcessIOThread::Init() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
 #if defined(OS_WIN)
@@ -77,7 +77,7 @@ void BrowserProcessSubThread::Init() {
   }
 }
 
-void BrowserProcessSubThread::Run(base::RunLoop* run_loop) {
+void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
 #if defined(OS_ANDROID)
@@ -89,22 +89,10 @@ void BrowserProcessSubThread::Run(base::RunLoop* run_loop) {
   }
 #endif
 
-  switch (identifier_) {
-    case BrowserThread::UI:
-      // The main thread is usually promoted as the UI thread and doesn't go
-      // through Run() but some tests do run a separate UI thread.
-      UIThreadRun(run_loop);
-      break;
-    case BrowserThread::IO:
-      IOThreadRun(run_loop);
-      return;
-    case BrowserThread::ID_COUNT:
-      NOTREACHED();
-      break;
-  }
+  IOThreadRun(run_loop);
 }
 
-void BrowserProcessSubThread::CleanUp() {
+void BrowserProcessIOThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   // Run extra cleanup if this thread represents BrowserThread::IO.
@@ -122,24 +110,13 @@ void BrowserProcessSubThread::CleanUp() {
 #endif
 }
 
-void BrowserProcessSubThread::CompleteInitializationOnBrowserThread() {
+void BrowserProcessIOThread::CompleteInitializationOnBrowserThread() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   notification_service_ = std::make_unique<NotificationServiceImpl>();
 }
 
-// Mark following two functions as NOINLINE so the compiler doesn't merge
-// them together.
-
-NOINLINE void BrowserProcessSubThread::UIThreadRun(base::RunLoop* run_loop) {
-  Thread::Run(run_loop);
-
-  // Inhibit tail calls of Run and inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
-}
-
-NOINLINE void BrowserProcessSubThread::IOThreadRun(base::RunLoop* run_loop) {
+void BrowserProcessIOThread::IOThreadRun(base::RunLoop* run_loop) {
   // Register the IO thread for hang watching before it starts running and set
   // up a closure to automatically unregister it when Run() returns.
   base::ScopedClosureRunner unregister_thread_closure;
@@ -155,7 +132,7 @@ NOINLINE void BrowserProcessSubThread::IOThreadRun(base::RunLoop* run_loop) {
   base::debug::Alias(&line_number);
 }
 
-void BrowserProcessSubThread::IOThreadCleanUp() {
+void BrowserProcessIOThread::IOThreadCleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   // Kill all things that might be holding onto
@@ -165,7 +142,7 @@ void BrowserProcessSubThread::IOThreadCleanUp() {
   net::URLFetcher::CancelAll();
 }
 
-void BrowserProcessSubThread::ProcessHostCleanUp() {
+void BrowserProcessIOThread::ProcessHostCleanUp() {
   for (BrowserChildProcessHostIterator it(PROCESS_TYPE_UTILITY); !it.Done();
        ++it) {
     if (it.GetDelegate()->GetServiceName() ==

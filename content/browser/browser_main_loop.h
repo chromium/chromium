@@ -15,7 +15,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "media/media_buildflags.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
@@ -308,7 +308,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   base::ScopedClosureRunner unregister_thread_closure_;
 
   // Members initialized in |PostMainMessageLoopStart()| -----------------------
-  std::unique_ptr<BrowserProcessSubThread> io_thread_;
+  std::unique_ptr<BrowserProcessIOThread> io_thread_;
   std::unique_ptr<base::SystemMonitor> system_monitor_;
   std::unique_ptr<base::HighResolutionTimerManager> hi_res_timer_manager_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;

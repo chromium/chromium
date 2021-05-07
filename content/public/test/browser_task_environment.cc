@@ -18,7 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/after_startup_task_utils.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 #include "content/browser/scheduler/browser_task_executor.h"
@@ -55,13 +55,13 @@ class TestBrowserThread {
  private:
   explicit TestBrowserThread(
       BrowserThread::ID identifier,
-      std::unique_ptr<BrowserProcessSubThread> real_thread);
+      std::unique_ptr<BrowserProcessIOThread> real_thread);
 
   const BrowserThread::ID identifier_;
 
   // A real thread which represents |identifier_| when StartIOThread() is used
   // (null otherwise).
-  std::unique_ptr<BrowserProcessSubThread> real_thread_;
+  std::unique_ptr<BrowserProcessIOThread> real_thread_;
 
   // Binds |identifier_| to |thread_runner| when the public constructor is used
   // (null otherwise).
@@ -80,7 +80,7 @@ std::unique_ptr<TestBrowserThread> TestBrowserThread::StartIOThread() {
 
 TestBrowserThread::TestBrowserThread(
     BrowserThread::ID identifier,
-    std::unique_ptr<BrowserProcessSubThread> real_thread)
+    std::unique_ptr<BrowserProcessIOThread> real_thread)
     : identifier_(identifier), real_thread_(std::move(real_thread)) {}
 
 TestBrowserThread::TestBrowserThread(

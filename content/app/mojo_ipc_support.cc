@@ -8,7 +8,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/public/common/content_features.h"
@@ -18,7 +18,7 @@
 namespace content {
 
 MojoIpcSupport::MojoIpcSupport(
-    std::unique_ptr<BrowserProcessSubThread> io_thread)
+    std::unique_ptr<BrowserProcessIOThread> io_thread)
     : io_thread_(std::move(io_thread)) {
   scoped_refptr<base::SingleThreadTaskRunner> mojo_ipc_task_runner =
       io_thread_->task_runner();

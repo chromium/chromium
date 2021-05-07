@@ -29,7 +29,7 @@
 namespace content {
 
 class BrowserTaskExecutorTest;
-class BrowserProcessSubThread;
+class BrowserProcessIOThread;
 
 class CONTENT_EXPORT BaseBrowserTaskExecutor : public base::TaskExecutor {
  public:
@@ -101,7 +101,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // Browser task queues will initially be disabled, that is tasks posted to
   // them will not run. But the default task runner of the thread (the one you
   // get via ThreadTaskRunnerHandle::Get()) will be active. This is the same
-  // task runner you get by calling BrowserProcessSubThread::task_runner(). The
+  // task runner you get by calling BrowserProcessIOThread::task_runner(). The
   // queues can be initialized by calling InitializeIOThread which is done
   // during Chromium starup in BrowserMainLoop::CreateThreads.
   //
@@ -119,7 +119,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // IO thread).
   // Attention: Must be called after Create()
   // Attention: Can not be called after Shutdown() or ResetForTesting()
-  static std::unique_ptr<BrowserProcessSubThread> CreateIOThread();
+  static std::unique_ptr<BrowserProcessIOThread> CreateIOThread();
 
   // Enables non best effort queues on the IO thread. Usually called from
   // BrowserMainLoop::CreateThreads.

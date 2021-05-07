@@ -154,7 +154,7 @@ class SystemReportComponent;
 namespace content {
 class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
-class BrowserProcessSubThread;
+class BrowserProcessIOThread;
 class BrowserShutdownProfileDumper;
 class BrowserTestBase;
 class CategorizedWorkerPool;
@@ -398,7 +398,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ash::MojoUtils;  // http://crbug.com/1055467
   friend class ash::BrowserDataMigrator;
   friend class blink::DiskDataAllocator;
-  friend class content::BrowserProcessSubThread;
+  friend class content::BrowserProcessIOThread;
   friend class content::NetworkServiceInstancePrivate;
   friend class content::PepperPrintSettingsManagerImpl;
   friend class content::RenderProcessHostImpl;
@@ -474,7 +474,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class chrome_cleaner::SystemReportComponent;
   friend class ::ChromeJsErrorReportProcessor;
   friend class content::BrowserMainLoop;
-  friend class content::BrowserProcessSubThread;
+  friend class content::BrowserProcessIOThread;
   friend class content::ServiceWorkerContextClient;
   friend class device::UsbContext;
   friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
