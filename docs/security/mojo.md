@@ -881,5 +881,5 @@ safe, vulnerabilities could arise.
 
 [security-tips-for-ipc]: https://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc
 [NfcTypeConverter.java]: https://chromium.googlesource.com/chromium/src/+/e97442ee6e8c4cf6bcf7f5623c6fb2cc8cce92ac/services/device/nfc/android/java/src/org/chromium/device/nfc/NfcTypeConverter.java
-[mojo-doc-process-crashes]: https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/bindings#Best-practices-for-dealing-with-process-crashes-and-callbacks
+[mojo-doc-process-crashes]: https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings#Best-practices-for-dealing-with-process-crashes-and-callbacks
 [serialize-struct-tm-safely]: https://chromium-review.googlesource.com/c/chromium/src/+/679441

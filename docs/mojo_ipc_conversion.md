@@ -273,7 +273,7 @@ Occasionally it is useful to do partial IPC conversions, where you want to
 convert a message to a Mojo interface method but you don't want to necessarily
 convert every structure passed by the message. In this case, you can leverage
 Mojo's
-[type-mapping](https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/bindings/README.md#Type-Mapping)
+[type-mapping](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings/README.md#Type-Mapping)
 system to repurpose existing `IPC::ParamTraits`.
 
 *** aside
