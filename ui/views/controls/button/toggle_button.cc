@@ -144,6 +144,11 @@ ToggleButton::ToggleButton(PressedCallback callback)
         return host->CreateInkDropForSquareRipple(rect.CenterPoint());
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](ToggleButton* host) {
+        return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
+      },
+      this));
 
   SetAddInkDropLayerCallback(base::BindRepeating(
       &InkDropHostView::AddInkDropLayer, base::Unretained(thumb_view_)));
@@ -328,10 +333,6 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
       GetTrackColor(true), GetTrackColor(false), color_ratio));
   canvas->DrawRoundRect(track_rect, track_rect.height() / 2, track_flags);
   canvas->Restore();
-}
-
-SkColor ToggleButton::GetInkDropBaseColor() const {
-  return GetTrackColor(GetIsOn() || HasFocus());
 }
 
 void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {

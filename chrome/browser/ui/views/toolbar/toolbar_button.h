@@ -117,7 +117,6 @@ class ToolbarButton : public views::LabelButton,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   views::InkDrop* GetInkDrop() override;
-  SkColor GetInkDropBaseColor() const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,

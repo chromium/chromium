@@ -195,6 +195,21 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
                                                         GetHighlightPath(host));
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](ToolbarButton* host) {
+        // Ensure this doesn't get called when InstallableInkDrops are enabled.
+        DCHECK(
+            !base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
+        if (host->has_in_product_help_promo_)
+          return GetFeaturePromoHighlightColorForToolbar(
+              host->GetThemeProvider());
+        base::Optional<SkColor> drop_base_color =
+            host->highlight_color_animation_.GetInkDropBaseColor();
+        if (drop_base_color)
+          return *drop_base_color;
+        return GetToolbarInkDropBaseColor(host);
+      },
+      this));
 
   // Make sure icons are flipped by default so that back, forward, etc. follows
   // UI direction.
@@ -583,18 +598,6 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
                                     : views::LabelButton::GetTooltipText(p);
 }
 
-SkColor ToolbarButton::GetInkDropBaseColor() const {
-  // Ensure this doesn't get called when InstallableInkDrops are enabled.
-  DCHECK(!base::FeatureList::IsEnabled(views::kInstallableInkDropFeature));
-  if (has_in_product_help_promo_)
-    return GetFeaturePromoHighlightColorForToolbar(GetThemeProvider());
-  base::Optional<SkColor> drop_base_color =
-      highlight_color_animation_.GetInkDropBaseColor();
-  if (drop_base_color)
-    return *drop_base_color;
-  return LabelButton::GetInkDropBaseColor();
-}
-
 views::InkDrop* ToolbarButton::GetInkDrop() {
   if (installable_ink_drop_)
     return installable_ink_drop_.get();
@@ -623,7 +626,7 @@ void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
 
   has_in_product_help_promo_ = has_in_product_help_promo;
 
-  // We override GetInkDropBaseColor() and call SetCreateInkDropMaskCallback(),
+  // We call SetInkDropBaseColorCallback() and SetCreateInkDropMaskCallback(),
   // returning the promo values if we are showing an in-product help promo.
   // Calling HostSizeChanged() will force the new mask and color to be fetched.
   //

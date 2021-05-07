@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -37,6 +38,13 @@ MdTextButton::MdTextButton(PressedCallback callback,
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](MdTextButton* host) {
+        return color_utils::DeriveDefaultIconColor(
+            host->label()->GetEnabledColor());
+      },
+      this));
+
   SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -100,10 +108,6 @@ float MdTextButton::GetCornerRadius() const {
 void MdTextButton::OnThemeChanged() {
   LabelButton::OnThemeChanged();
   UpdateColors();
-}
-
-SkColor MdTextButton::GetInkDropBaseColor() const {
-  return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
 }
 
 void MdTextButton::StateChanged(ButtonState old_state) {

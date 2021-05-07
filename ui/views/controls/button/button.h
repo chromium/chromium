@@ -166,8 +166,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   void SetShowInkDropWhenHotTracked(bool value);
   bool GetShowInkDropWhenHotTracked() const;
 
-  void SetInkDropBaseColor(SkColor color);
-
   void SetHasInkDropActionOnClick(bool value);
   bool GetHasInkDropActionOnClick() const;
 
@@ -211,11 +209,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
       const ViewHierarchyChangedDetails& details) override;
   void OnFocus() override;
   void OnBlur() override;
-
-  // Overridden from InkDropHostView:
-  // This just returns InkDropHostView::GetInkDropBaseColor(). It's overridden
-  // so that ADD_PROPERTY_METADATA can retrieve the InkDropBaseColor property.
-  SkColor GetInkDropBaseColor() const override;
 
   // Overridden from views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -342,9 +335,6 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   // tracked with SetHotTracked().
   bool show_ink_drop_when_hot_tracked_ = false;
 
-  // The color of the ripple and hover.
-  SkColor ink_drop_base_color_;
-
   // The focus ring for this Button.
   FocusRing* focus_ring_ = nullptr;
 
@@ -370,7 +360,6 @@ VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
 VIEW_BUILDER_PROPERTY(bool, AnimateOnStateChange)
 VIEW_BUILDER_PROPERTY(bool, HasInkDropActionOnClick)
 VIEW_BUILDER_PROPERTY(bool, HideInkDropWhenShowingContextMenu)
-VIEW_BUILDER_PROPERTY(SkColor, InkDropBaseColor)
 VIEW_BUILDER_PROPERTY(bool, InstallFocusRingOnFocus)
 VIEW_BUILDER_PROPERTY(bool, RequestFocusOnPress)
 VIEW_BUILDER_PROPERTY(Button::ButtonState, State)

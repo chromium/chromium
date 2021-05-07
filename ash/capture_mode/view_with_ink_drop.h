@@ -47,13 +47,13 @@ class ViewWithInkDrop : public T {
           return highlight;
         },
         this));
+    // TODO(pbos): See if this is a no-op when replaced with
+    // SetInkDropBaseColor(), i.e. that nothing sets it later.
+    T::SetInkDropBaseColorCallback(
+        base::BindRepeating([]() { return capture_mode::kInkDropBaseColor; }));
   }
 
   ~ViewWithInkDrop() override = default;
-
-  SkColor GetInkDropBaseColor() const override {
-    return capture_mode::kInkDropBaseColor;
-  }
 };
 
 }  // namespace ash

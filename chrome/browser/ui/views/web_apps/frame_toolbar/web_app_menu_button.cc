@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 
+#include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -35,6 +36,9 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
   views::SetHitTestComponent(this, static_cast<int>(HTMENU));
 
   SetInkDropMode(InkDropMode::ON);
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](WebAppMenuButton* host) { return host->GetColor(); }, this));
+
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   std::u16string application_name = accessible_name;
@@ -93,10 +97,6 @@ void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
   // Add UMA for how many times the web app menu button are clicked.
   base::RecordAction(
       base::UserMetricsAction("HostedAppMenuButtonButton_Clicked"));
-}
-
-SkColor WebAppMenuButton::GetInkDropBaseColor() const {
-  return GetColor();
 }
 
 void WebAppMenuButton::FadeHighlightOff() {

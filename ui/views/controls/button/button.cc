@@ -289,13 +289,6 @@ bool Button::GetShowInkDropWhenHotTracked() const {
   return show_ink_drop_when_hot_tracked_;
 }
 
-void Button::SetInkDropBaseColor(SkColor color) {
-  if (color == ink_drop_base_color_)
-    return;
-  ink_drop_base_color_ = color;
-  OnPropertyChanged(&ink_drop_base_color_, kPropertyEffectsNone);
-}
-
 void Button::SetHasInkDropActionOnClick(bool value) {
   if (value == has_ink_drop_action_on_click_)
     return;
@@ -577,18 +570,12 @@ void Button::OnBlur() {
     SchedulePaint();
 }
 
-SkColor Button::GetInkDropBaseColor() const {
-  return InkDropHostView::GetInkDropBaseColor();
-}
-
 void Button::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
 Button::Button(PressedCallback callback)
-    : AnimationDelegateViews(this),
-      callback_(std::move(callback)),
-      ink_drop_base_color_(gfx::kPlaceholderColor) {
+    : AnimationDelegateViews(this), callback_(std::move(callback)) {
   SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
   SetProperty(kIsButtonProperty, true);
   hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
@@ -603,8 +590,9 @@ Button::Button(PressedCallback callback)
         return ink_drop;
       },
       base::Unretained(this)));
-  SetInkDropBaseColorCallback(base::BindRepeating(
-      [](Button* button) { return button->ink_drop_base_color_; }, this));
+  // TODO(pbos): Investigate not setting a default color so that we can DCHECK
+  // if one hasn't been set.
+  SetInkDropBaseColor(gfx::kPlaceholderColor);
 }
 
 void Button::RequestFocusFromEvent() {
@@ -704,7 +692,6 @@ ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)
 ADD_PROPERTY_METADATA(bool, HideInkDropWhenShowingContextMenu)
-ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -97,6 +98,8 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
 
   SetInkDropMode(InkDropMode::ON);
   views::InkDrop::UseInkDropForFloodFillRipple(this);
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](views::View* host) { return GetInkDropColor(host); }, this));
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
@@ -270,10 +273,6 @@ void HoverButton::StateChanged(ButtonState old_state) {
   } else if (GetState() == STATE_NORMAL && HasFocus()) {
     GetFocusManager()->SetFocusedView(nullptr);
   }
-}
-
-SkColor HoverButton::GetInkDropBaseColor() const {
-  return GetInkDropColor(this);
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {

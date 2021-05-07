@@ -64,6 +64,13 @@ Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
             gfx::Size(21, 21));
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](Checkbox* host) {
+        // Usually ink-drop ripples match the text color. Checkboxes use the
+        // color of the unchecked, enabled icon.
+        return host->GetIconImageColor(IconState::ENABLED);
+      },
+      this));
 
   // Limit the checkbox height to match the legacy appearance.
   const gfx::Size preferred_size(LabelButton::CalculatePreferredSize());
@@ -162,12 +169,6 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
   UpdateImage();
-}
-
-SkColor Checkbox::GetInkDropBaseColor() const {
-  // Usually ink-drop ripples match the text color. Checkboxes use the color of
-  // the unchecked, enabled icon.
-  return GetIconImageColor(IconState::ENABLED);
 }
 
 SkPath Checkbox::GetFocusRingPath() const {

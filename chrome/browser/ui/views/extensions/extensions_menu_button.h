@@ -34,7 +34,6 @@ class ExtensionsMenuButton : public HoverButton,
   ~ExtensionsMenuButton() override;
 
   // HoverButton:
-  SkColor GetInkDropBaseColor() const override;
   bool CanShowIconInToolbar() const override;
   void AddedToWidget() override;
   void OnThemeChanged() override;

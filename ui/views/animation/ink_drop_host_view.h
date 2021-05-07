@@ -134,11 +134,16 @@ class VIEWS_EXPORT InkDropHostView : public View {
   GetCreateInkDropMaskCallback() const;
 
   // Returns the base color for the ink drop.
-  virtual SkColor GetInkDropBaseColor() const;
+  SkColor GetInkDropBaseColor() const;
 
-  // Callback version of GetInkDropBaseColor(). Note that this is called in the
-  // base implementation of GetInkDropBaseColor(), so if "it's not working",
-  // check the class hierarchy for overrides.
+  // Sets the base color for the ink drop.
+  void SetInkDropBaseColor(SkColor color);
+
+  // Callback version of GetInkDropBaseColor(). If possible, prefer using
+  // SetInkDropBaseColor(). If a callback has been set by previous configuration
+  // and you want to use the base version of GetInkDropBaseColor() that's
+  // reading SetInkDropBaseColor(), you need to reset the callback by calling
+  // SetInkDropBaseColorCallback({}).
   void SetInkDropBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
 
   // Only here to support metadata.
@@ -290,6 +295,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   float ink_drop_visible_opacity_ = 0.175f;
 
+  // The color of the ripple and hover.
+  base::Optional<SkColor> ink_drop_base_color_;
+
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
   // always set or using the default value. Then make this a non-optional float.
   base::Optional<float> ink_drop_highlight_opacity_;
@@ -320,6 +328,7 @@ VIEW_BUILDER_PROPERTY(base::Optional<float>, InkDropHighlightOpacity)
 VIEW_BUILDER_PROPERTY(int, InkDropLargeCornerRadius)
 VIEW_BUILDER_PROPERTY(InkDropHostView::InkDropMode, InkDropMode)
 VIEW_BUILDER_PROPERTY(int, InkDropSmallCornerRadius)
+VIEW_BUILDER_PROPERTY(SkColor, InkDropBaseColor)
 VIEW_BUILDER_PROPERTY(float, InkDropVisibleOpacity)
 END_VIEW_BUILDER
 

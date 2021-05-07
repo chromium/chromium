@@ -158,6 +158,11 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
         return ink_drop;
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](IconLabelBubbleView* host) {
+        return host->delegate_->GetIconLabelBubbleInkDropColor();
+      },
+      this));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
@@ -331,10 +336,6 @@ void IconLabelBubbleView::OnThemeChanged() {
   label()->SetBackground(nullptr);
 
   UpdateLabelColors();
-}
-
-SkColor IconLabelBubbleView::GetInkDropBaseColor() const {
-  return delegate_->GetIconLabelBubbleInkDropColor();
 }
 
 bool IconLabelBubbleView::IsTriggerableEvent(const ui::Event& event) {

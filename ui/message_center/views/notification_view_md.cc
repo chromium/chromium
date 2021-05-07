@@ -359,6 +359,12 @@ NotificationInputContainerMD::NotificationInputContainerMD(
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(1);
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](views::View* host) {
+        return host->GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_NotificationInkDropBase);
+      },
+      this));
 
   AddChildView(ink_drop_container_);
 
@@ -401,11 +407,6 @@ void NotificationInputContainerMD::RemoveLayerBeneathView(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerBeneathView(layer);
   textfield_->DestroyLayer();
   button_->DestroyLayer();
-}
-
-SkColor NotificationInputContainerMD::GetInkDropBaseColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationInkDropBase);
 }
 
 void NotificationInputContainerMD::OnThemeChanged() {
@@ -577,6 +578,12 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetInkDropCenterBasedOnLastEvent(),
             host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
+      },
+      this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](views::View* host) {
+        return host->GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_NotificationBackgroundActive);
       },
       this));
 
@@ -1483,11 +1490,6 @@ std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()
     const {
   return {header_row_, block_all_button_, dont_block_button_,
           settings_done_button_};
-}
-
-SkColor NotificationViewMD::GetInkDropBaseColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationBackgroundActive);
 }
 
 void NotificationViewMD::InkDropAnimationStarted() {

@@ -36,9 +36,6 @@ class WebAppMenuButton : public AppMenuButton {
 
   void ButtonPressed(const ui::Event& event);
 
-  // AppMenuButton:
-  SkColor GetInkDropBaseColor() const override;
-
  protected:
   BrowserView* browser_view() { return browser_view_; }
 

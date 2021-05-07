@@ -181,8 +181,12 @@ InkDropHostView::GetCreateInkDropMaskCallback() const {
 SkColor InkDropHostView::GetInkDropBaseColor() const {
   if (ink_drop_base_color_callback_)
     return ink_drop_base_color_callback_.Run();
-  NOTREACHED();
-  return gfx::kPlaceholderColor;
+  DCHECK(ink_drop_base_color_);
+  return ink_drop_base_color_.value_or(gfx::kPlaceholderColor);
+}
+
+void InkDropHostView::SetInkDropBaseColor(SkColor color) {
+  ink_drop_base_color_ = color;
 }
 
 void InkDropHostView::SetInkDropBaseColorCallback(
@@ -394,6 +398,7 @@ ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDropMask>()>,
 ADD_PROPERTY_METADATA(base::RepeatingCallback<SkColor()>,
                       InkDropBaseColorCallback)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
+ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(float, InkDropVisibleOpacity)
 ADD_PROPERTY_METADATA(base::Optional<float>, InkDropHighlightOpacity)
 ADD_PROPERTY_METADATA(int, InkDropLargeCornerRadius)

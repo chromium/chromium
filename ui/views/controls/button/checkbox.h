@@ -58,7 +58,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // LabelButton:
   void OnThemeChanged() override;
-  SkColor GetInkDropBaseColor() const override;
 
   // Returns the path to draw the focus ring around for this Checkbox.
   virtual SkPath GetFocusRingPath() const;

@@ -151,19 +151,21 @@ class TransparentButton : public views::Button {
     views::InstallRectHighlightPathGenerator(this);
     SetInkDropMode(InkDropMode::ON);
     set_context_menu_controller(parent);
+    // Button subclasses need to provide this because the default color is
+    // kPlaceholderColor. In theory we could statically compute it in the
+    // constructor but then it won't be correct after dark mode changes, and to
+    // deal with that this class would have to observe NativeTheme and so on.
+    SetInkDropBaseColorCallback(base::BindRepeating(
+        [](views::View* host) {
+          // This button will be used like a LabelButton, so use the same
+          // foreground base color as a label button.
+          return color_utils::DeriveDefaultIconColor(
+              views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                     views::style::STYLE_PRIMARY));
+        },
+        this));
   }
   ~TransparentButton() override = default;
-
-  // Button subclasses need to provide this because the default color is
-  // kPlaceholderColor. In theory we could statically compute it in the
-  // constructor but then it won't be correct after dark mode changes, and to
-  // deal with that this class would have to observe NativeTheme and so on.
-  SkColor GetInkDropBaseColor() const override {
-    // This button will be used like a LabelButton, so use the same foreground
-    // base color as a label button.
-    return color_utils::DeriveDefaultIconColor(views::style::GetColor(
-        *this, views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY));
-  }
 
   // Forward dragging and capture loss events, since this class doesn't have
   // enough context to handle them. Let the button class manage visual

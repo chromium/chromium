@@ -42,6 +42,7 @@ class TestInkDropHostView : public InkDropHostView {
           return ink_drop;
         },
         this));
+    SetInkDropBaseColor(gfx::kPlaceholderColor);
   }
 
   // Accessors to InkDropHostView internals.
@@ -50,12 +51,6 @@ class TestInkDropHostView : public InkDropHostView {
   int on_ink_drop_created_count() const { return on_ink_drop_created_count_; }
 
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
-
- protected:
-  // InkDropHostView:
-  SkColor GetInkDropBaseColor() const override {
-    return gfx::kPlaceholderColor;
-  }
 
  private:
   int on_ink_drop_created_count_ = 0;
@@ -278,20 +273,14 @@ TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
   EXPECT_TRUE(callback_called);
 }
 
-// A very basic InkDropHostView that only changes the GetInkDropBaseColor to
+// A very basic InkDropHostView that only calls SetInkDropBaseColor to
 // avoid hitting a NOTREACHED.
 class BasicTestInkDropHostView : public InkDropHostView {
  public:
-  BasicTestInkDropHostView() = default;
+  BasicTestInkDropHostView() { SetInkDropBaseColor(gfx::kPlaceholderColor); }
   BasicTestInkDropHostView(const BasicTestInkDropHostView&) = delete;
   BasicTestInkDropHostView& operator=(const BasicTestInkDropHostView&) = delete;
   ~BasicTestInkDropHostView() override = default;
-
- protected:
-  // InkDropHostView:
-  SkColor GetInkDropBaseColor() const override {
-    return gfx::kPlaceholderColor;
-  }
 };
 
 // Tests the existence of layer clipping or layer masking when certain path

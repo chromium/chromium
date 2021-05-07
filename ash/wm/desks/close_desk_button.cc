@@ -39,6 +39,8 @@ CloseDeskButton::CloseDeskButton(PressedCallback callback)
         return highlight;
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](CloseDeskButton* host) { return host->inkdrop_base_color_; }, this));
 
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -52,10 +54,6 @@ CloseDeskButton::~CloseDeskButton() = default;
 
 const char* CloseDeskButton::GetClassName() const {
   return "CloseDeskButton";
-}
-
-SkColor CloseDeskButton::GetInkDropBaseColor() const {
-  return inkdrop_base_color_;
 }
 
 void CloseDeskButton::OnThemeChanged() {

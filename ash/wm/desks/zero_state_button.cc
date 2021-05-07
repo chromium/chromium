@@ -70,6 +70,13 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
         return highlight;
       },
       this));
+  SetInkDropBaseColorCallback(base::BindRepeating(
+      [](DeskButtonBase* host) {
+        return AshColorProvider::Get()
+            ->GetRippleAttributes(host->background_color_)
+            .base_color;
+      },
+      this));
 
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
@@ -105,12 +112,6 @@ void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
                                                           : GetLocalBounds()),
                           corner_radius_, flags);
   }
-}
-
-SkColor DeskButtonBase::GetInkDropBaseColor() const {
-  return AshColorProvider::Get()
-      ->GetRippleAttributes(background_color_)
-      .base_color;
 }
 
 void DeskButtonBase::OnThemeChanged() {

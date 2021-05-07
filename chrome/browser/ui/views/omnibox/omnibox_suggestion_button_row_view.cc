@@ -57,6 +57,13 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
     SetInkDropHighlightOpacity(
         GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+    SetInkDropBaseColorCallback(base::BindRepeating(
+        [](OmniboxSuggestionRowButton* host) {
+          return color_utils::GetColorWithMaxContrast(
+              host->omnibox_bg_color_.value());
+        },
+        this));
+
     focus_ring()->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->model()->selection() == selection_;
@@ -68,10 +75,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       delete;
 
   ~OmniboxSuggestionRowButton() override = default;
-
-  SkColor GetInkDropBaseColor() const override {
-    return color_utils::GetColorWithMaxContrast(omnibox_bg_color_.value());
-  }
 
   void OnOmniboxBackgroundChange(SkColor omnibox_bg_color) {
     focus_ring()->SchedulePaint();

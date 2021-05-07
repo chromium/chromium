@@ -28,7 +28,6 @@ class ASH_EXPORT DeskButtonBase
   // LabelButton:
   const char* GetClassName() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
-  SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
 
   // OverviewHighlightController::OverviewHighlightableView:

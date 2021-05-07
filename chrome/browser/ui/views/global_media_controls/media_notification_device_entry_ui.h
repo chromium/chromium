@@ -56,9 +56,6 @@ class AudioDeviceEntryView : public DeviceEntryUI, public HoverButton {
                        SkColor background_color) override;
   DeviceEntryUIType GetType() const override;
 
-  // HoverButton
-  SkColor GetInkDropBaseColor() const override;
-
   void SetHighlighted(bool highlighted);
   bool GetHighlighted() const;
 };
@@ -78,9 +75,6 @@ class CastDeviceEntryView : public DeviceEntryUI,
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override;
   DeviceEntryUIType GetType() const override;
-
-  // HoverButton
-  SkColor GetInkDropBaseColor() const override;
 
   // media_router::CastDialogSinkButton
   void OnFocus() override;

@@ -87,7 +87,6 @@ class HoverButton : public views::LabelButton {
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
-  SkColor GetInkDropBaseColor() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   views::StyledLabel* title() const { return title_; }

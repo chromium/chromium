@@ -55,11 +55,14 @@ class LockScreenActionBackgroundView::NoteBackground
           return ink_drop_ripple;
         },
         this));
+
+    // TODO(pbos): See if this is a no-op when replaced with
+    // SetInkDropBaseColor(), i.e. that nothing sets it later.
+    SetInkDropBaseColorCallback(
+        base::BindRepeating([]() { return SK_ColorBLACK; }));
   }
 
   ~NoteBackground() override = default;
-
-  SkColor GetInkDropBaseColor() const override { return SK_ColorBLACK; }
 
  private:
   views::InkDropObserver* observer_;

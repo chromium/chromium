@@ -148,7 +148,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
-  SkColor GetInkDropBaseColor() const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void NotifyClick(const ui::Event& event) override;
