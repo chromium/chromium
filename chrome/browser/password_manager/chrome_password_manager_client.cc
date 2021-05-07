@@ -928,9 +928,9 @@ FieldInfoManager* ChromePasswordManagerClient::GetFieldInfoManager() const {
 
 void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          ui_data.form_data.url,
+          base::make_span(&ui_data.form_data, 1),
           BadMessageReason::
               CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED))
     return;
@@ -976,9 +976,9 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const autofill::FormData& form_data,
     autofill::FieldRendererId field_renderer_id,
     const std::u16string& password_value) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          form_data.url,
+          base::make_span(&form_data, 1),
           BadMessageReason::CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP))
     return;
   auto* driver = driver_factory_->GetDriverForFrame(
@@ -1009,9 +1009,9 @@ void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
 void ChromePasswordManagerClient::PresaveGeneratedPassword(
     const autofill::FormData& form_data,
     const std::u16string& password_value) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          form_data.url,
+          base::make_span(&form_data, 1),
           BadMessageReason::CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD)) {
     return;
   }
@@ -1026,9 +1026,9 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
 
 void ChromePasswordManagerClient::PasswordNoLongerGenerated(
     const autofill::FormData& form_data) {
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
-          form_data.url,
+          base::make_span(&form_data, 1),
           BadMessageReason::CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED)) {
     return;
   }
