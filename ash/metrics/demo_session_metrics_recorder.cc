@@ -99,6 +99,8 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kClipchamp;
   if (app_id == extension_misc::kGeForceNowAppId)
     return DemoModeApp::kGeForceNow;
+  if (app_id == extension_misc::kZoomAppId)
+    return DemoModeApp::kZoom;
 
   return DemoModeApp::kOtherChromeApp;
 }
