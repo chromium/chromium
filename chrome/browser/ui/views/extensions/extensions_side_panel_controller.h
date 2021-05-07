@@ -7,8 +7,11 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -26,8 +29,10 @@ class ToolbarButton;
 // A class that manages hosting the extension WebContents in the left aligned
 // side panel of the browser window.
 // TODO(crbug.com/1197555): Remove this once the experiment has concluded.
-class ExtensionsSidePanelController : public content::WebContentsObserver,
-                                      public content::WebContentsDelegate {
+class ExtensionsSidePanelController
+    : public content::WebContentsObserver,
+      public content::WebContentsDelegate,
+      public extensions::ExtensionRegistryObserver {
  public:
   ExtensionsSidePanelController(SidePanel* side_panel,
                                 BrowserView* browser_view);
@@ -37,11 +42,22 @@ class ExtensionsSidePanelController : public content::WebContentsObserver,
   ~ExtensionsSidePanelController() override;
 
   std::unique_ptr<ToolbarButton> CreateToolbarButton();
+  void ResetWebContents();
+  void SetNewWebContents();
 
   // content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
+
+  // extensions::ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
+
+  views::WebView* get_web_view_for_testing() { return web_view_; }
 
  private:
   // content::WebContentsObserver:
@@ -56,6 +72,11 @@ class ExtensionsSidePanelController : public content::WebContentsObserver,
   SidePanel* side_panel_;
   BrowserView* browser_view_;
   views::WebView* web_view_;
+  std::unique_ptr<content::WebContents> web_contents_;
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_

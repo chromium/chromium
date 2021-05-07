@@ -178,6 +178,10 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* right_aligned_side_panel() { return right_aligned_side_panel_; }
 
+  SidePanel* left_aligned_side_panel_for_testing() {
+    return left_aligned_side_panel_;
+  }
+
   ExtensionsSidePanelController* extensions_side_panel_controller() {
     return extensions_side_panel_controller_.get();
   }
