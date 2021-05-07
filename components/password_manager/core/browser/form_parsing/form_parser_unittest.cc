@@ -1087,14 +1087,17 @@ TEST(FormParserTest, ReadonlyFields) {
                   {.role = ElementRole::NEW_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "new-password",
+                   .value = u"newpass",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "new-password",
+                   .value = u"newpass",
                    .form_control_type = "password"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "current-password",
+                   .value = u"oldpass",
                    .form_control_type = "password"},
               },
           .is_new_password_reliable = true,
@@ -2773,6 +2776,55 @@ TEST(FormParserTest, DontSkipNotHiddenValues) {
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
   }
+}
+
+// Tests that 'new-password' autocomplete attribute is ignored when two
+// or more fields that have it have different values.
+TEST(FormParserTest, AutocompleteAttributesError) {
+  CheckTestData(
+      {{
+           .description_for_logging =
+               "Wrong autocomplete attributes, 2 fields.",
+           .fields =
+               {
+                   {.role_filling = ElementRole::NEW_PASSWORD,
+                    .role_saving = ElementRole::CURRENT_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"oldpass",
+                    .name = u"password1",
+                    .form_control_type = "password"},
+                   {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                    .role_saving = ElementRole::NEW_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password2",
+                    .form_control_type = "password"},
+               },
+       },
+       {
+           .description_for_logging =
+               "Wrong autocomplete attributes, 3 fields.",
+           .fields =
+               {
+                   {.role_filling = ElementRole::NEW_PASSWORD,
+                    .role_saving = ElementRole::CURRENT_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"oldpass",
+                    .name = u"password1",
+                    .form_control_type = "password"},
+                   {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                    .role_saving = ElementRole::NEW_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password2",
+                    .form_control_type = "password"},
+                   {.role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password3",
+                    .form_control_type = "password"},
+               },
+       }});
 }
 
 }  // namespace
