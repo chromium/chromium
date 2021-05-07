@@ -565,7 +565,8 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
           Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
-  test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
+  test::InkDropHostTestApi(button->ink_drop())
+      .SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(nullptr);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
@@ -594,7 +595,8 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
           Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
-  test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
+  test::InkDropHostTestApi(button->ink_drop())
+      .SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(nullptr);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());

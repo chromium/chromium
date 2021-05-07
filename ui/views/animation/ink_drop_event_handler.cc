@@ -23,7 +23,7 @@ InkDropEventHandler::InkDropEventHandler(View* host_view, Delegate* delegate)
 
 InkDropEventHandler::~InkDropEventHandler() = default;
 
-void InkDropEventHandler::AnimateInkDrop(InkDropState state,
+void InkDropEventHandler::AnimateToState(InkDropState state,
                                          const ui::LocatedEvent* event) {
 #if defined(OS_WIN)
   // On Windows, don't initiate ink-drops for touch/gesture events.
@@ -93,7 +93,7 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     // case would prematurely pre-empt these animations.
     return;
   }
-  AnimateInkDrop(ink_drop_state, event);
+  AnimateToState(ink_drop_state, event);
 }
 
 void InkDropEventHandler::OnMouseEvent(ui::MouseEvent* event) {

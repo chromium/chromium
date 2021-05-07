@@ -149,13 +149,13 @@ class TransparentButton : public views::Button {
   explicit TransparentButton(DownloadItemView* parent)
       : Button(Button::PressedCallback()) {
     views::InstallRectHighlightPathGenerator(this);
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     set_context_menu_controller(parent);
     // Button subclasses need to provide this because the default color is
     // kPlaceholderColor. In theory we could statically compute it in the
     // constructor but then it won't be correct after dark mode changes, and to
     // deal with that this class would have to observe NativeTheme and so on.
-    SetInkDropBaseColorCallback(base::BindRepeating(
+    ink_drop()->SetBaseColorCallback(base::BindRepeating(
         [](views::View* host) {
           // This button will be used like a LabelButton, so use the same
           // foreground base color as a label button.

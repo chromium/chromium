@@ -76,17 +76,18 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   swap_images_animation_->Reset(1);
 
   SetHasInkDropActionOnClick(true);
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
   UpdateInkDropBaseColor();
-  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](FrameCaptionButton* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetInkdropInsets(host->size()),
-            host->GetInkDropCenterBasedOnLastEvent(),
-            host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetBaseColor(),
+            host->ink_drop()->GetVisibleOpacity());
       },
       this));
 
@@ -252,7 +253,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     // the window is moving as a result of the animation from normal to
     // maximized state or vice versa. https://crbug.com/840901.
     cc::PaintFlags flags;
-    flags.setColor(GetInkDropBaseColor());
+    flags.setColor(ink_drop()->GetBaseColor());
     flags.setAlpha(highlight_alpha);
     const gfx::Point center(GetMirroredRect(GetContentsBounds()).CenterPoint());
     canvas->DrawCircle(center, ink_drop_corner_radius_, flags);
@@ -326,7 +327,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
   const SkColor button_color = GetButtonColor(background_color_);
-  SetInkDropBaseColor(
+  ink_drop()->SetBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 

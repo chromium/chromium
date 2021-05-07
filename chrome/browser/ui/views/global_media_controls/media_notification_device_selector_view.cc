@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +57,7 @@ ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(
       delegate_(delegate) {
   SetLabel(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL));
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 

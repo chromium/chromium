@@ -182,7 +182,7 @@ bool ToolbarActionView::OnMousePressed(const ui::MouseEvent& event) {
       // TODO(bruthig): The ACTION_PENDING triggering logic should be in
       // MenuButton::OnPressed() however there is a bug with the pressed state
       // logic in MenuButton. See http://crbug.com/567252.
-      AnimateInkDrop(views::InkDropState::ACTION_PENDING, &event);
+      ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING, &event);
     }
   }
 

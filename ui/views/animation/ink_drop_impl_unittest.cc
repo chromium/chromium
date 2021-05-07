@@ -6,6 +6,7 @@
 
 #include "ui/views/animation/ink_drop_impl.h"
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_simple_task_runner.h"
@@ -33,7 +34,7 @@ class InkDropImplTest : public testing::Test {
   const TestInkDropHost* ink_drop_host() const { return &ink_drop_host_; }
 
   InkDropImpl* ink_drop() {
-    return static_cast<InkDropImpl*>(ink_drop_host()->GetInkDrop());
+    return static_cast<InkDropImpl*>(ink_drop_host()->ink_drop()->GetInkDrop());
   }
 
   InkDropRipple* ink_drop_ripple() {
@@ -79,7 +80,7 @@ class InkDropImplTest : public testing::Test {
 };
 
 InkDropImplTest::InkDropImplTest() {
-  ink_drop_host()->SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  ink_drop_host()->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop());
   ink_drop_host()->set_disable_timers_for_test(true);
 }
@@ -97,7 +98,7 @@ bool InkDropImplTest::AreLayersAddedToHost() const {
 
 void InkDropImplTest::DestroyInkDrop() {
   test_api_.reset();
-  ink_drop_host()->SetInkDropMode(InkDropHostView::InkDropMode::OFF);
+  ink_drop_host()->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
 // AutoHighlightMode parameterized test fixture.
@@ -316,18 +317,19 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnSizeChange) {
 TEST_F(InkDropImplTest, HostTracksHighlightState) {
   bool callback_called = false;
   auto subscription =
-      ink_drop_host()->AddHighlightedChangedCallback(base::BindRepeating(
-          [](bool* called) { *called = true; }, &callback_called));
-  EXPECT_FALSE(ink_drop_host()->GetHighlighted());
+      ink_drop_host()->ink_drop()->AddHighlightedChangedCallback(
+          base::BindRepeating([](bool* called) { *called = true; },
+                              &callback_called));
+  EXPECT_FALSE(ink_drop_host()->ink_drop()->GetHighlighted());
 
   test_api()->SetShouldHighlight(true);
   EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(ink_drop_host()->GetHighlighted());
+  EXPECT_TRUE(ink_drop_host()->ink_drop()->GetHighlighted());
   callback_called = false;
 
   test_api()->SetShouldHighlight(false);
   EXPECT_TRUE(callback_called);
-  EXPECT_FALSE(ink_drop_host()->GetHighlighted());
+  EXPECT_FALSE(ink_drop_host()->ink_drop()->GetHighlighted());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

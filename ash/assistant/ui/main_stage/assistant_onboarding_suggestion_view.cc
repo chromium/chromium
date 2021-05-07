@@ -135,11 +135,11 @@ void AssistantOnboardingSuggestionView::InitLayout(
   focus_ring()->SetColor(gfx::kGoogleBlue300);
 
   // Ink Drop.
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  SetInkDropBaseColor(GetForegroundColor(index_));
-  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
-  SetInkDropHighlightOpacity(kInkDropHighlightOpacity);
+  ink_drop()->SetBaseColor(GetForegroundColor(index_));
+  ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
+  ink_drop()->SetHighlightOpacity(kInkDropHighlightOpacity);
 
   // Installing this highlight path generator will set the desired shape for
   // both ink drop effects as well as our focus ring.

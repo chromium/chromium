@@ -121,7 +121,8 @@ void RelaunchRecommendedBubbleView::VisibilityChanged(
     views::View* starting_from,
     bool is_visible) {
   views::Button::AsButton(GetAnchorView())
-      ->AnimateInkDrop(is_visible ? views::InkDropState::ACTIVATED
+      ->ink_drop()
+      ->AnimateToState(is_visible ? views::InkDropState::ACTIVATED
                                   : views::InkDropState::DEACTIVATED,
                        nullptr);
 }

@@ -52,15 +52,15 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
             base::Unretained(controller),
             page)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
-    SetCreateInkDropCallback(base::BindRepeating(
+    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
         [](InkDropHostView* host) {
           return TrayPopupUtils::CreateInkDrop(host,
                                                /*highlight_on_hover=*/true);
         },
         this));
-    SetCreateInkDropHighlightCallback(base::BindRepeating(
+    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](PageIndicatorButton* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
               gfx::SizeF(host->size()), host->ripple_base_color_);
@@ -68,7 +68,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
           return highlight;
         },
         this));
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](PageIndicatorButton* host) -> std::unique_ptr<views::InkDropRipple> {
           gfx::Point center = host->GetLocalBounds().CenterPoint();
           gfx::Rect bounds(center.x() - kInkDropRadius,
@@ -76,7 +76,7 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
                            2 * kInkDropRadius);
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->GetInkDropCenterBasedOnLastEvent(),
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
               host->ripple_base_color_, host->inkdrop_opacity_);
         },
         this));
@@ -135,7 +135,8 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
   // views::Button:
   void NotifyClick(const ui::Event& event) override {
     Button::NotifyClick(event);
-    GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);
+    ink_drop()->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTION_TRIGGERED);
   }
 
  private:

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -762,10 +763,10 @@ void CaptionBubble::SetTextColor() {
   views::SetImageFromVectorIcon(collapse_button_, vector_icons::kCaretUpIcon,
                                 kButtonDip, text_color);
 
-  back_to_tab_button_->SetInkDropBaseColor(text_color);
-  close_button_->SetInkDropBaseColor(text_color);
-  expand_button_->SetInkDropBaseColor(text_color);
-  collapse_button_->SetInkDropBaseColor(text_color);
+  back_to_tab_button_->ink_drop()->SetBaseColor(text_color);
+  close_button_->ink_drop()->SetBaseColor(text_color);
+  expand_button_->ink_drop()->SetBaseColor(text_color);
+  collapse_button_->ink_drop()->SetBaseColor(text_color);
 }
 
 void CaptionBubble::SetBackgroundColor() {

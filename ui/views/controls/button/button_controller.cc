@@ -27,7 +27,8 @@ bool ButtonController::OnMousePressed(const ui::MouseEvent& event) {
       button_controller_delegate_->ShouldEnterPushedState(event) &&
       button_->HitTestPoint(event.location())) {
     button_->SetState(Button::STATE_PRESSED);
-    button_->AnimateInkDrop(views::InkDropState::ACTION_PENDING, &event);
+    button_->ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING,
+                                        &event);
   }
   button_controller_delegate_->RequestFocusFromEvent();
   if (button_controller_delegate_->IsTriggerableEvent(event) &&
@@ -87,8 +88,8 @@ bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
       button_->SetState(Button::STATE_PRESSED);
       if (button_controller_delegate_->GetInkDrop()->GetTargetInkDropState() !=
           InkDropState::ACTION_PENDING) {
-        button_->AnimateInkDrop(InkDropState::ACTION_PENDING,
-                                nullptr /* event */);
+        button_->ink_drop()->AnimateToState(InkDropState::ACTION_PENDING,
+                                            nullptr /* event */);
       }
       return true;
     case Button::KeyClickAction::kOnKeyPress:

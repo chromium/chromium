@@ -35,10 +35,10 @@ MdTextButton::MdTextButton(PressedCallback callback,
                            const std::u16string& text,
                            int button_context)
     : LabelButton(std::move(callback), text, button_context) {
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
-  SetInkDropBaseColorCallback(base::BindRepeating(
+  ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](MdTextButton* host) {
         return color_utils::DeriveDefaultIconColor(
             host->label()->GetEnabledColor());
@@ -96,8 +96,8 @@ void MdTextButton::SetCornerRadius(float radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
-  SetInkDropSmallCornerRadius(corner_radius_);
-  SetInkDropLargeCornerRadius(corner_radius_);
+  ink_drop()->SetSmallCornerRadius(corner_radius_);
+  ink_drop()->SetLargeCornerRadius(corner_radius_);
   OnPropertyChanged(&corner_radius_, kPropertyEffectsPaint);
 }
 

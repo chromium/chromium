@@ -79,7 +79,7 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
     if (!enabled)
       background_color_ = AshColorProvider::GetDisabledColor(background_color_);
 
-    SetInkDropVisibleOpacity(
+    ink_drop()->SetVisibleOpacity(
         color_provider->GetRippleAttributes(background_color_).inkdrop_opacity);
     SchedulePaint();
   }

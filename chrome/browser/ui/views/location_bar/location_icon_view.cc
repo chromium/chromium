@@ -144,7 +144,7 @@ bool LocationIconView::GetShowText() const {
 }
 
 const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
-  return GetInkDrop();
+  return ink_drop()->GetInkDrop();
 }
 
 std::u16string LocationIconView::GetText() const {
@@ -236,18 +236,19 @@ void LocationIconView::Update(bool suppress_animations) {
                      : l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
 
   // We should only enable/disable the InkDrop if the editing state has changed,
-  // as the drop gets recreated when SetInkDropMode is called. This can result
-  // in strange behaviour, like the the InkDrop disappearing mid animation.
+  // as the drop gets recreated when ink_drop()->SetMode() is called.
+  // This can result in strange behaviour, like the the InkDrop disappearing mid
+  // animation.
   if (is_editing_or_empty != was_editing_or_empty_) {
     // If the omnibox is empty or editing, the user should not be able to left
     // click on the icon. As such, the icon should not show a highlight or be
     // focusable. Note: using the middle mouse to copy-and-paste should still
     // work on the icon.
     if (is_editing_or_empty) {
-      SetInkDropMode(InkDropMode::OFF);
+      ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
       SetFocusBehavior(FocusBehavior::NEVER);
     } else {
-      SetInkDropMode(InkDropMode::ON);
+      ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
 
 #if defined(OS_MAC)
       SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);

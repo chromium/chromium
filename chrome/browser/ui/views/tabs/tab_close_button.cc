@@ -49,14 +49,14 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropHighlightOpacity(0.16f);
-  SetInkDropVisibleOpacity(0.14f);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop()->SetHighlightOpacity(0.16f);
+  ink_drop()->SetVisibleOpacity(0.14f);
 
   // Disable animation so that the hover indicator shows up immediately to help
   // avoid mis-clicks.
   SetAnimationDuration(base::TimeDelta());
-  GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
+  ink_drop()->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
   // The ink drop highlight path is the same as the focus ring highlight path,
   // but needs to be explicitly mirrored for RTL.
@@ -98,7 +98,7 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
   if (colors == colors_)
     return;
   colors_ = std::move(colors);
-  SetInkDropBaseColor(
+  ink_drop()->SetBaseColor(
       color_utils::GetColorWithMaxContrast(colors_.background_color));
   OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
 }

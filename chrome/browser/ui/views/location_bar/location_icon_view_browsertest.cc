@@ -46,12 +46,14 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewBrowserTest, InkDropMode) {
   model->SetInputInProgress(true);
   icon_view()->Update(/*suppress_animations=*/true);
 
-  EXPECT_EQ(IconLabelBubbleView::InkDropMode::OFF,
-            views::test::InkDropHostViewTestApi(icon_view()).ink_drop_mode());
+  EXPECT_EQ(
+      views::InkDropHost::InkDropMode::OFF,
+      views::test::InkDropHostTestApi(icon_view()->ink_drop()).ink_drop_mode());
 
   model->SetInputInProgress(false);
   icon_view()->Update(/*suppress_animations=*/true);
 
-  EXPECT_EQ(IconLabelBubbleView::InkDropMode::ON,
-            views::test::InkDropHostViewTestApi(icon_view()).ink_drop_mode());
+  EXPECT_EQ(
+      views::InkDropHost::InkDropMode::ON,
+      views::test::InkDropHostTestApi(icon_view()->ink_drop()).ink_drop_mode());
 }

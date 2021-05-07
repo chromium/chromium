@@ -22,14 +22,14 @@ class TestToggleButton : public ToggleButton {
  public:
   explicit TestToggleButton(int* counter) {
     // TODO(pbos): Find a better testing strategy for this or throw out tests
-    // that rely on monitoring AddInkDropLayerCallbacks (which should hopefully
+    // that rely on monitoring AddLayerCallbacks (which should hopefully
     // go away). This is massively gross, but mimics virtual override of
     // ToggleButton's inkdrop behavior in order to monitor it.
     base::RepeatingCallback<void(ui::Layer*)> base_add_callback =
-        GetAddInkDropLayerCallback();
+        ink_drop()->GetAddLayerCallbackForTesting();
     base::RepeatingCallback<void(ui::Layer*)> base_remove_callback =
-        GetRemoveInkDropLayerCallback();
-    SetAddInkDropLayerCallback(base::BindRepeating(
+        ink_drop()->GetRemoveLayerCallbackForTesting();
+    ink_drop()->SetAddLayerCallback(base::BindRepeating(
         [](int* counter,
            base::RepeatingCallback<void(ui::Layer*)> base_callback,
            ui::Layer* layer) {
@@ -37,7 +37,7 @@ class TestToggleButton : public ToggleButton {
           base_callback.Run(layer);
         },
         counter, base_add_callback));
-    SetRemoveInkDropLayerCallback(base::BindRepeating(
+    ink_drop()->SetRemoveLayerCallback(base::BindRepeating(
         [](int* counter,
            base::RepeatingCallback<void(ui::Layer*)> base_callback,
            ui::Layer* layer) {
@@ -48,10 +48,10 @@ class TestToggleButton : public ToggleButton {
   }
 
   ~TestToggleButton() override {
-    // Calling SetInkDropMode() in this subclass allows this class's
+    // Calling ink_drop()->SetMode() in this subclass allows this class's
     // implementation of RemoveInkDropLayer() to be called. The same
     // call is made in ~ToggleButton() so this is testing the general technique.
-    SetInkDropMode(InkDropMode::OFF);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
 
   using View::Focus;

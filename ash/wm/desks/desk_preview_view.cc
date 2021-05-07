@@ -303,7 +303,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   DCHECK(mini_view_);
 
   SetFocusPainter(nullptr);
-  SetInkDropMode(InkDropMode::OFF);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   SetPaintToLayer(ui::LAYER_TEXTURED);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -395,7 +396,7 @@ void MediaNotificationContainerImplView::OnColorsChanged(SkColor foreground,
     UpdateDismissButtonIcon();
     if (stop_cast_button_) {
       stop_cast_button_->SetEnabledTextColors(foreground_color_);
-      stop_cast_button_->SetInkDropBaseColor(foreground_color_);
+      stop_cast_button_->ink_drop()->SetBaseColor(foreground_color_);
     }
   }
 
@@ -514,10 +515,10 @@ void MediaNotificationContainerImplView::AddStopCastButton(
                               base::Unretained(cast_item)),
           l10n_util::GetStringUTF16(
               IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
-  stop_cast_button_->SetInkDropMode(InkDropMode::ON);
+  stop_cast_button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   stop_cast_button_->SetHasInkDropActionOnClick(true);
-  stop_cast_button_->SetInkDropBaseColor(foreground_color_);
-  stop_cast_button_->SetInkDropLargeCornerRadius(
+  stop_cast_button_->ink_drop()->SetBaseColor(foreground_color_);
+  stop_cast_button_->ink_drop()->SetLargeCornerRadius(
       kStopCastButtonStripSize.height());
   stop_cast_button_->SetEnabledTextColors(foreground_color_);
   stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);

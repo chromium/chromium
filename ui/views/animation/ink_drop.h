@@ -20,8 +20,8 @@
 
 namespace views {
 
+class InkDropHost;
 class InkDropObserver;
-class InkDropHostView;
 
 // Base class that manages the lifetime and state of an ink drop ripple as
 // well as visual hover state feedback.
@@ -35,35 +35,35 @@ class VIEWS_EXPORT InkDrop {
   // InkDrop hides when the ripple effect is active instead of layering
   // underneath it.
   static std::unique_ptr<InkDrop> CreateInkDropForSquareRipple(
-      InkDropHostView* host,
+      InkDropHost* host,
       bool highlight_on_hover = true,
       bool highlight_on_focus = false);
 
   // Configure `host` to use CreateInkDropForSquareRipple().
-  static void UseInkDropForSquareRipple(InkDropHostView* host,
+  static void UseInkDropForSquareRipple(InkDropHost* host,
                                         bool highlight_on_hover = true,
                                         bool highlight_on_focus = false);
 
   // Create an InkDrop appropriate for the "flood-fill" InkDropRipple effect.
   // This InkDrop shows as a response to the ripple effect.
   static std::unique_ptr<InkDrop> CreateInkDropForFloodFillRipple(
-      InkDropHostView* host,
+      InkDropHost* host,
       bool highlight_on_hover = true,
       bool highlight_on_focus = false);
 
   // Configure `host` to use CreateInkDropForFloodFillRipple().
-  static void UseInkDropForFloodFillRipple(InkDropHostView* host,
+  static void UseInkDropForFloodFillRipple(InkDropHost* host,
                                            bool highlight_on_hover = true,
                                            bool highlight_on_focus = false);
 
   // Create an InkDrop whose highlight does not react to its ripple.
   static std::unique_ptr<InkDrop> CreateInkDropWithoutAutoHighlight(
-      InkDropHostView* host,
+      InkDropHost* host,
       bool highlight_on_hover = true,
       bool highlight_on_focus = false);
 
   // Configure `host` to use CreateInkDropWithoutAutoHighlight().
-  static void UseInkDropWithoutAutoHighlight(InkDropHostView* host,
+  static void UseInkDropWithoutAutoHighlight(InkDropHost* host,
                                              bool highlight_on_hover = true,
                                              bool highlight_on_focus = false);
 

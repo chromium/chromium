@@ -24,14 +24,14 @@ ShelfButton::ShelfButton(Shelf* shelf,
   SetHideInkDropWhenShowingContextMenu(false);
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   SetFocusPainter(views::Painter::CreateSolidFocusPainter(
       ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
       gfx::InsetsF()));
-  views::InkDrop::UseInkDropForSquareRipple(this,
+  views::InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                             /*highlight_on_hover=*/false);
 }
 
@@ -76,7 +76,8 @@ void ShelfButton::NotifyClick(const ui::Event& event) {
 
   Button::NotifyClick(event);
   if (shelf_button_delegate_)
-    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event, GetInkDrop());
+    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event,
+                                          ink_drop()->GetInkDrop());
 }
 
 }  // namespace ash

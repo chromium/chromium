@@ -396,6 +396,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_EQ(BrowserView::GetBrowserViewForBrowser(browser())
                 ->toolbar()
                 ->GetExtensionsButton()
+                ->ink_drop()
                 ->GetInkDrop()
                 ->GetTargetInkDropState(),
             views::InkDropState::ACTIVATED);

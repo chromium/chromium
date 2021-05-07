@@ -76,17 +76,18 @@ class Arrow : public Button {
     // TODO(pbos): Share ink-drop configuration code between here and
     // Combobox's TransparentButton.
     // Similar to Combobox's TransparentButton.
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    InkDrop::UseInkDropForSquareRipple(this,
+    InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                        /*highlight_on_hover=*/false);
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+              host->size(),
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
               style::GetColor(*host, style::CONTEXT_TEXTFIELD,
                               style::STYLE_PRIMARY),
-              host->GetInkDropVisibleOpacity());
+              host->ink_drop()->GetVisibleOpacity());
         },
         this));
   }

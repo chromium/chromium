@@ -155,7 +155,8 @@ void CastDialogSinkButton::OnMouseReleased(const ui::MouseEvent& event) {
 void CastDialogSinkButton::OnEnabledChanged() {
   // Prevent a DCHECK failure seen at https://crbug.com/912687 by not having an
   // InkDrop if the button is disabled.
-  SetInkDropMode(GetEnabled() ? InkDropMode::ON : InkDropMode::OFF);
+  ink_drop()->SetMode(GetEnabled() ? views::InkDropHost::InkDropMode::ON
+                                   : views::InkDropHost::InkDropMode::OFF);
   // If the button has a state other than AVAILABLE (e.g. CONNECTED), there is
   // no need to change the status or the icon.
   if (sink_.state != UIMediaSinkState::AVAILABLE)

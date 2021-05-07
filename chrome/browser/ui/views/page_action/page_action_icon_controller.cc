@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -54,7 +55,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   auto add_page_action_icon = [&params, this](PageActionIconType type,
                                               auto icon) {
     icon->SetVisible(false);
-    icon->SetInkDropVisibleOpacity(
+    icon->ink_drop()->SetVisibleOpacity(
         params.page_action_icon_delegate->GetPageActionInkDropVisibleOpacity());
     if (params.icon_color)
       icon->SetIconColor(*params.icon_color);

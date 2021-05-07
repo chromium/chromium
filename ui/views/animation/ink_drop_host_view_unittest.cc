@@ -30,19 +30,19 @@
 
 namespace views {
 namespace test {
-using InkDropMode = InkDropHostViewTestApi::InkDropMode;
+using InkDropMode = InkDropHostTestApi::InkDropMode;
 
 class TestInkDropHostView : public InkDropHostView {
  public:
   TestInkDropHostView() {
-    SetCreateInkDropCallback(base::BindRepeating(
+    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
         [](TestInkDropHostView* host) -> std::unique_ptr<InkDrop> {
           auto ink_drop = std::make_unique<TestInkDrop>();
           host->last_created_inkdrop_ = ink_drop.get();
           return ink_drop;
         },
         this));
-    SetInkDropBaseColor(gfx::kPlaceholderColor);
+    ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
   }
 
   // Accessors to InkDropHostView internals.
@@ -69,7 +69,7 @@ class InkDropHostViewTest : public testing::Test {
   TestInkDropHostView host_view_;
 
   // Provides internal access to |host_view_| test target.
-  InkDropHostViewTestApi test_api_;
+  InkDropHostTestApi test_api_;
 
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
@@ -81,7 +81,7 @@ class InkDropHostViewTest : public testing::Test {
 };
 
 InkDropHostViewTest::InkDropHostViewTest()
-    : test_api_(&host_view_),
+    : test_api_(host_view_.ink_drop()),
       animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {}
 
@@ -92,9 +92,10 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
   test_api_.SetInkDropMode(ink_drop_mode);
   host_view_.SetEnabled(true);
 
-  // Call GetInkDrop() to make sure the test CreateInkDrop() is created.
+  // Call ink_drop()->GetInkDrop() to make sure the test CreateInkDrop() is
+  // created.
   test_api_.GetInkDrop();
-  if (ink_drop_mode != InkDropMode::OFF)
+  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF)
     EXPECT_FALSE(host_view_.last_created_inkdrop()->is_hovered());
   else
     EXPECT_EQ(host_view_.last_created_inkdrop(), nullptr);
@@ -105,7 +106,7 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
 
   host_view_.GetTargetHandler()->OnEvent(&mouse_event);
 
-  if (ink_drop_mode != InkDropMode::OFF)
+  if (ink_drop_mode != views::InkDropHost::InkDropMode::OFF)
     EXPECT_TRUE(host_view_.last_created_inkdrop()->is_hovered());
   else
     EXPECT_EQ(host_view_.last_created_inkdrop(), nullptr);
@@ -115,8 +116,9 @@ void InkDropHostViewTest::MouseEventTriggersInkDropHelper(
 // Event.
 TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
-  test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, nullptr);
-  EXPECT_EQ(gfx::Point(10, 10), host_view_.GetInkDropCenterBasedOnLastEvent());
+  test_api_.AnimateToState(InkDropState::ACTION_PENDING, nullptr);
+  EXPECT_EQ(gfx::Point(10, 10),
+            host_view_.ink_drop()->GetInkDropCenterBasedOnLastEvent());
 }
 
 // Verifies the return value of GetInkDropCenterBasedOnLastEvent() for a located
@@ -128,8 +130,9 @@ TEST_F(InkDropHostViewTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
                                gfx::Point(5, 6), ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
 
-  test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, &located_event);
-  EXPECT_EQ(gfx::Point(5, 6), host_view_.GetInkDropCenterBasedOnLastEvent());
+  test_api_.AnimateToState(InkDropState::ACTION_PENDING, &located_event);
+  EXPECT_EQ(gfx::Point(5, 6),
+            host_view_.ink_drop()->GetInkDropCenterBasedOnLastEvent());
 }
 
 TEST_F(InkDropHostViewTest, HasInkDrop) {
@@ -138,32 +141,33 @@ TEST_F(InkDropHostViewTest, HasInkDrop) {
   test_api_.GetInkDrop();
   EXPECT_TRUE(test_api_.HasInkDrop());
 
-  test_api_.SetInkDropMode(InkDropMode::OFF);
+  test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::OFF);
   EXPECT_FALSE(test_api_.HasInkDrop());
 }
 
 // Verifies that mouse events trigger ink drops when ink drop mode is ON.
 TEST_F(InkDropHostViewTest, MouseEventsTriggerInkDropsWhenInkDropIsOn) {
-  MouseEventTriggersInkDropHelper(InkDropMode::ON);
+  MouseEventTriggersInkDropHelper(views::InkDropHost::InkDropMode::ON);
 }
 
 // Verifies that mouse events trigger ink drops when ink drop mode is
 // ON_NO_GESTURE_HANDLER.
 TEST_F(InkDropHostViewTest,
        MouseEventsTriggerInkDropsWhenInkDropIsOnNoGestureHandler) {
-  MouseEventTriggersInkDropHelper(InkDropMode::ON_NO_GESTURE_HANDLER);
+  MouseEventTriggersInkDropHelper(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
 }
 
 // Verifies that mouse events do not trigger ink drops when ink drop mode is
 // OFF.
 TEST_F(InkDropHostViewTest, MouseEventsDontTriggerInkDropsWhenInkDropIsOff) {
-  MouseEventTriggersInkDropHelper(InkDropMode::OFF);
+  MouseEventTriggersInkDropHelper(views::InkDropHost::InkDropMode::OFF);
 }
 
 // Verifies that ink drops are not shown when the host is disabled.
 TEST_F(InkDropHostViewTest,
        GestureEventsDontTriggerInkDropsWhenHostIsDisabled) {
-  test_api_.SetInkDropMode(InkDropMode::ON);
+  test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::ON);
   host_view_.SetEnabled(false);
 
   ui::GestureEvent gesture_event(
@@ -181,7 +185,8 @@ TEST_F(InkDropHostViewTest,
 TEST_F(InkDropHostViewTest,
        GestureEventsDontTriggerInkDropsWhenInkDropModeIsNotOn) {
   for (auto ink_drop_mode :
-       {InkDropMode::ON_NO_GESTURE_HANDLER, InkDropMode::OFF}) {
+       {views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER,
+        views::InkDropHost::InkDropMode::OFF}) {
     test_api_.SetInkDropMode(ink_drop_mode);
     ui::GestureEvent gesture_event(
         0.f, 0.f, 0, ui::EventTimeForNow(),
@@ -198,7 +203,8 @@ TEST_F(InkDropHostViewTest,
 TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
   host_view_.SetSize(gfx::Size(20, 20));
 
-  test_api_.SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  test_api_.SetInkDropMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
 
   // Ensure the target ink drop is in the expected state.
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
@@ -208,11 +214,11 @@ TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
       ui::ET_TOUCH_PRESSED, gfx::Point(5, 6), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
-  test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, &touch_event);
+  test_api_.AnimateToState(InkDropState::ACTION_PENDING, &touch_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
 
-  test_api_.AnimateInkDrop(InkDropState::ALTERNATE_ACTION_PENDING,
+  test_api_.AnimateToState(InkDropState::ALTERNATE_ACTION_PENDING,
                            &touch_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
@@ -220,11 +226,11 @@ TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
   ui::GestureEvent gesture_event(5.0f, 6.0f, 0, ui::EventTimeForNow(),
                                  ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 
-  test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, &gesture_event);
+  test_api_.AnimateToState(InkDropState::ACTION_PENDING, &gesture_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
 
-  test_api_.AnimateInkDrop(InkDropState::ALTERNATE_ACTION_PENDING,
+  test_api_.AnimateToState(InkDropState::ALTERNATE_ACTION_PENDING,
                            &gesture_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
@@ -238,7 +244,8 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
 
   host_view_.SetSize(gfx::Size(20, 20));
 
-  test_api_.SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+  test_api_.SetInkDropMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
 
   // Ensure the target ink drop is in the expected state.
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
@@ -248,7 +255,7 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
                              gfx::Point(5, 6), ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
 
-  test_api_.AnimateInkDrop(InkDropState::ACTION_PENDING, &mouse_event);
+  test_api_.AnimateToState(InkDropState::ACTION_PENDING, &mouse_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::ACTION_PENDING);
 
@@ -256,7 +263,7 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
       ui::ET_TOUCH_PRESSED, gfx::Point(5, 6), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
-  test_api_.AnimateInkDrop(InkDropState::ACTION_TRIGGERED, &touch_event);
+  test_api_.AnimateToState(InkDropState::ACTION_TRIGGERED, &touch_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::ACTION_TRIGGERED);
 }
@@ -267,17 +274,19 @@ TEST_F(InkDropHostViewTest, DismissInkDropOnTouchOrGestureEvents) {
 TEST_F(InkDropHostViewTest, HighlightedChangedFired) {
   bool callback_called = false;
   auto subscription =
-      host_view_.AddHighlightedChangedCallback(base::BindRepeating(
+      host_view_.ink_drop()->AddHighlightedChangedCallback(base::BindRepeating(
           [](bool* called) { *called = true; }, &callback_called));
-  host_view_.OnInkDropHighlightedChanged();
+  host_view_.ink_drop()->OnInkDropHighlightedChanged();
   EXPECT_TRUE(callback_called);
 }
 
-// A very basic InkDropHostView that only calls SetInkDropBaseColor to
-// avoid hitting a NOTREACHED.
+// A very basic InkDropHostView that only calls SetBaseColor to avoid
+// hitting a NOTREACHED.
 class BasicTestInkDropHostView : public InkDropHostView {
  public:
-  BasicTestInkDropHostView() { SetInkDropBaseColor(gfx::kPlaceholderColor); }
+  BasicTestInkDropHostView() {
+    ink_drop()->SetBaseColor(gfx::kPlaceholderColor);
+  }
   BasicTestInkDropHostView(const BasicTestInkDropHostView&) = delete;
   BasicTestInkDropHostView& operator=(const BasicTestInkDropHostView&) = delete;
   ~BasicTestInkDropHostView() override = default;
@@ -287,15 +296,15 @@ class BasicTestInkDropHostView : public InkDropHostView {
 // generators are applied on an InkDropHostView.
 class InkDropHostViewClippingTest : public testing::Test {
  public:
-  InkDropHostViewClippingTest() : host_view_test_api_(&host_view_) {
+  InkDropHostViewClippingTest() : host_view_test_api_(host_view_.ink_drop()) {
     // Set up an InkDropHostView. Clipping is based on the size of the view, so
     // make sure the size is non empty.
-    host_view_test_api_.SetInkDropMode(InkDropMode::ON);
+    host_view_test_api_.SetInkDropMode(views::InkDropHost::InkDropMode::ON);
     host_view_.SetSize(gfx::Size(20, 20));
 
     // The root layer of the ink drop is created the first time GetInkDrop is
     // called and then kept alive until the host view is destroyed.
-    ink_drop_ = static_cast<InkDropImpl*>(host_view_.GetInkDrop());
+    ink_drop_ = static_cast<InkDropImpl*>(host_view_.ink_drop()->GetInkDrop());
     ink_drop_test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop_);
   }
   InkDropHostViewClippingTest(const InkDropHostViewClippingTest&) = delete;
@@ -310,7 +319,7 @@ class InkDropHostViewClippingTest : public testing::Test {
   BasicTestInkDropHostView host_view_;
 
   // Provides internal access to |host_view_| test target.
-  InkDropHostViewTestApi host_view_test_api_;
+  InkDropHostTestApi host_view_test_api_;
 
   InkDropImpl* ink_drop_ = nullptr;
 

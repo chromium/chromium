@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
       toolbar_button_provider->GetAppMenuButton();
 
   const SkColor original_ink_drop_color =
-      app_menu_button->GetInkDropBaseColor();
+      app_menu_button->ink_drop()->GetBaseColor();
 
   {
     content::ThemeChangeWaiter theme_change_waiter(web_contents);
@@ -247,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
                                 "setAttribute('content', '#246')"));
     theme_change_waiter.Wait();
 
-    EXPECT_NE(app_menu_button->GetInkDropBaseColor(), original_ink_drop_color);
+    EXPECT_NE(app_menu_button->ink_drop()->GetBaseColor(),
+              original_ink_drop_color);
   }
 
   {
@@ -256,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
         web_contents, "document.getElementById('theme-color').remove()"));
     theme_change_waiter.Wait();
 
-    EXPECT_EQ(app_menu_button->GetInkDropBaseColor(), original_ink_drop_color);
+    EXPECT_EQ(app_menu_button->ink_drop()->GetBaseColor(),
+              original_ink_drop_color);
   }
 #endif
 }

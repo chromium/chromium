@@ -218,14 +218,14 @@ class LoginShelfButton : public views::LabelButton {
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     AshColorProvider::RippleAttributes ripple_attributes =
         color_provider->GetRippleAttributes();
-    SetInkDropBaseColor(ripple_attributes.base_color);
-    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    ink_drop()->SetBaseColor(ripple_attributes.base_color);
+    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
     views::InkDrop::UseInkDropWithoutAutoHighlight(
-        this, /*highlight_on_hover=*/false);
+        ink_drop(), /*highlight_on_hover=*/false);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -315,15 +315,15 @@ class KioskAppsButton : public views::MenuButton,
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
     SetFocusPainter(nullptr);
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     views::InkDrop::UseInkDropWithoutAutoHighlight(
-        this, /*highlight_on_hover=*/false);
+        ink_drop(), /*highlight_on_hover=*/false);
 
     const AshColorProvider::RippleAttributes ripple_attributes =
         AshColorProvider::Get()->GetRippleAttributes();
-    SetInkDropBaseColor(ripple_attributes.base_color);
-    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    ink_drop()->SetBaseColor(ripple_attributes.base_color);
+    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.

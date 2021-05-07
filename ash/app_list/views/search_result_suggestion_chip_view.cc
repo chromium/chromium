@@ -63,11 +63,11 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
   SetInstallFocusRingOnFocus(true);
   focus_ring()->SetColor(AppListColorProvider::Get()->GetFocusRingColor());
 
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
-  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
         const int ripple_radius = host->width() / 2;
@@ -79,7 +79,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-            host->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(bg_color),
             color_provider->GetRippleAttributesInkDropOpacity(bg_color));
       },

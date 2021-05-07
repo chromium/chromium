@@ -18,9 +18,8 @@ namespace ash {
 // plate code for all the Capture Mode views that will need it. This is used by
 // CaptureModeToggleButton, CaptureModeCloseButton, ... etc.
 // |T| must be a subtype of |views::InkDropHostView|.
-// TODO(pbos): After migrating below to use SetCreateInkDrop* callbacks, replace
-// this class with a shared ConfigureInkDrop function called from all current
-// ViewWithInkDrop subclasses' constructors).
+// TODO(pbos): Move this constructor into a shared configuration method and call
+// it for all uses of ViewWithInkDrop.
 template <typename T>
 class ViewWithInkDrop : public T {
  public:
@@ -32,24 +31,24 @@ class ViewWithInkDrop : public T {
   // view.
   template <typename... Args>
   explicit ViewWithInkDrop(Args... args) : T(std::forward<Args>(args)...) {
-    T::SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+    T::ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     T::SetHasInkDropActionOnClick(true);
-    T::SetInkDropVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
-    views::InkDrop::UseInkDropForFloodFillRipple(this,
+    T::ink_drop()->SetVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
+    views::InkDrop::UseInkDropForFloodFillRipple(T::ink_drop(),
                                                  /*highlight_on_hover=*/false,
                                                  /*highlight_on_focus=*/false);
-    T::SetCreateInkDropHighlightCallback(base::BindRepeating(
+    T::ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](views::InkDropHostView* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
-              gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+              gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
           highlight->set_visible_opacity(
               capture_mode::kInkDropHighlightVisibleOpacity);
           return highlight;
         },
         this));
     // TODO(pbos): See if this is a no-op when replaced with
-    // SetInkDropBaseColor(), i.e. that nothing sets it later.
-    T::SetInkDropBaseColorCallback(
+    // ink_drop()->SetBaseColor(), i.e. that nothing sets it later.
+    T::ink_drop()->SetBaseColorCallback(
         base::BindRepeating([]() { return capture_mode::kInkDropBaseColor; }));
   }
 

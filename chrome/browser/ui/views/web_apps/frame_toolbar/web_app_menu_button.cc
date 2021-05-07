@@ -35,8 +35,8 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
       browser_view_(browser_view) {
   views::SetHitTestComponent(this, static_cast<int>(HTMENU));
 
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropBaseColorCallback(base::BindRepeating(
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](WebAppMenuButton* host) { return host->GetColor(); }, this));
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -75,10 +75,10 @@ SkColor WebAppMenuButton::GetColor() const {
 }
 
 void WebAppMenuButton::StartHighlightAnimation() {
-  GetInkDrop()->SetHoverHighlightFadeDuration(
+  ink_drop()->GetInkDrop()->SetHoverHighlightFadeDuration(
       WebAppToolbarButtonContainer::kOriginFadeInDuration);
-  GetInkDrop()->SetHovered(true);
-  GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
+  ink_drop()->GetInkDrop()->SetHovered(true);
+  ink_drop()->GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
 
   highlight_off_timer_.Start(
       FROM_HERE,
@@ -101,10 +101,10 @@ void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
 
 void WebAppMenuButton::FadeHighlightOff() {
   if (!ShouldEnterHoveredState()) {
-    GetInkDrop()->SetHoverHighlightFadeDuration(
+    ink_drop()->GetInkDrop()->SetHoverHighlightFadeDuration(
         WebAppToolbarButtonContainer::kOriginFadeOutDuration);
-    GetInkDrop()->SetHovered(false);
-    GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
+    ink_drop()->GetInkDrop()->SetHovered(false);
+    ink_drop()->GetInkDrop()->UseDefaultHoverHighlightFadeDuration();
   }
 }
 

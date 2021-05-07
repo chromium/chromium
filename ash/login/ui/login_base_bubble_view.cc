@@ -310,10 +310,10 @@ gfx::Rect LoginBaseBubbleView::GetWorkArea() const {
 
 void LoginBaseBubbleView::ScheduleAnimation(bool visible) {
   if (GetBubbleOpener()) {
-    GetBubbleOpener()->AnimateInkDrop(visible
-                                          ? views::InkDropState::ACTIVATED
-                                          : views::InkDropState::DEACTIVATED,
-                                      nullptr /*event*/);
+    GetBubbleOpener()->ink_drop()->AnimateToState(
+        visible ? views::InkDropState::ACTIVATED
+                : views::InkDropState::DEACTIVATED,
+        nullptr /*event*/);
   }
 
   if (layer())

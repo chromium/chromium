@@ -34,11 +34,11 @@ bool HoverButtonController::OnMousePressed(const ui::MouseEvent& event) {
   if (button()->GetRequestFocusOnPress())
     button()->RequestFocus();
   if (callback_) {
-    button()->AnimateInkDrop(views::InkDropState::ACTION_TRIGGERED,
-                             ui::LocatedEvent::FromIfValid(&event));
+    button()->ink_drop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
+                                         ui::LocatedEvent::FromIfValid(&event));
   } else {
-    button()->AnimateInkDrop(views::InkDropState::HIDDEN,
-                             ui::LocatedEvent::FromIfValid(&event));
+    button()->ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
+                                         ui::LocatedEvent::FromIfValid(&event));
   }
   return true;
 }
@@ -51,7 +51,7 @@ void HoverButtonController::OnMouseReleased(const ui::MouseEvent& event) {
     if (callback_)
       callback_.Run(event);
   } else {
-    button()->AnimateInkDrop(views::InkDropState::HIDDEN, &event);
+    button()->ink_drop()->AnimateToState(views::InkDropState::HIDDEN, &event);
     ButtonController::OnMouseReleased(event);
   }
 }

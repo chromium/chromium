@@ -29,15 +29,24 @@ class InkDropRipple;
 enum class InkDropState;
 
 namespace test {
-class InkDropHostViewTestApi;
+class InkDropHostTestApi;
 }  // namespace test
 
-// A view that provides InkDropHost functionality.
-class VIEWS_EXPORT InkDropHostView : public View {
+// TODO(crbug.com/931964): Rename this type and move this header. Also consider
+// if InkDropHost should be what implements the InkDrop interface and have that
+// be the public interface.
+// The current division of labor is roughly as follows:
+// * InkDropHost manages an InkDrop and is responsible for a lot of its
+//   configuration and creating the parts of the InkDrop.
+// * InkDrop manages the parts of the ink-drop effect once it's up and running.
+// * InkDropRipple is a ripple effect that usually triggers as a result of
+//   clicking or activating the button / similar which hosts this.
+// * InkDropHighlight manages the hover/focus highlight layer.
+// TODO(pbos): See if this can be the only externally visible surface for an
+// ink-drop effect, and rename this InkDrop, or consolidate with InkDrop.
+class VIEWS_EXPORT InkDropHost {
  public:
-  METADATA_HEADER(InkDropHostView);
-
-  // Used in SetInkDropMode() to specify whether the ink drop effect is enabled
+  // Used in SetMode() to specify whether the ink drop effect is enabled
   // or not for the view. In case of having an ink drop, it also specifies
   // whether the default event handler for the ink drop should be installed or
   // the subclass will handle ink drop events itself.
@@ -47,10 +56,10 @@ class VIEWS_EXPORT InkDropHostView : public View {
     ON_NO_GESTURE_HANDLER,
   };
 
-  InkDropHostView();
-  InkDropHostView(const InkDropHostView&) = delete;
-  InkDropHostView& operator=(const InkDropHostView&) = delete;
-  ~InkDropHostView() override;
+  explicit InkDropHost(View* host);
+  InkDropHost(const InkDropHost&) = delete;
+  InkDropHost& operator=(const InkDropHost&) = delete;
+  virtual ~InkDropHost();
 
   // TODO(pbos): Re-think this API, we may want to expose adding a Layer beneath
   // a child view to add the effect in the middle of the layer stack. See
@@ -60,12 +69,11 @@ class VIEWS_EXPORT InkDropHostView : public View {
   //
   // Do not call from new code. Most uses for this API should be overriding
   // View::AddLayerBeneathView instead. New ones should re-think the API.
-  void SetAddInkDropLayerCallback(
-      base::RepeatingCallback<void(ui::Layer*)> callback);
+  void SetAddLayerCallback(base::RepeatingCallback<void(ui::Layer*)> callback);
 
-  // Only here to support metadata.
-  const base::RepeatingCallback<void(ui::Layer*)>& GetAddInkDropLayerCallback()
-      const;
+  // TODO(pbos): Remove, only used in toggle_button_unittest.cc.
+  const base::RepeatingCallback<void(ui::Layer*)>&
+  GetAddLayerCallbackForTesting() const;
 
   // TODO(pbos): Re-think this API, we may want to expose adding a Layer beneath
   // a child view to add the effect in the middle of the layer stack. See
@@ -75,11 +83,11 @@ class VIEWS_EXPORT InkDropHostView : public View {
   //
   // Do not call from new code. Most uses for this API should be overriding
   // View::AddLayerBeneathView instead. New ones should re-think the API.
-  void SetRemoveInkDropLayerCallback(
+  void SetRemoveLayerCallback(
       base::RepeatingCallback<void(ui::Layer*)> callback);
-  // Only here to support metadata.
+  // TODO(pbos): Remove, only used in toggle_button_unittest.cc.
   const base::RepeatingCallback<void(ui::Layer*)>&
-  GetRemoveInkDropLayerCallback() const;
+  GetRemoveLayerCallbackForTesting() const;
 
   // Returns a configured InkDrop. To override default behavior call
   // SetCreateInkDropCallback().
@@ -89,21 +97,13 @@ class VIEWS_EXPORT InkDropHostView : public View {
   void SetCreateInkDropCallback(
       base::RepeatingCallback<std::unique_ptr<InkDrop>()> callback);
 
-  // Only here to support metadata.
-  const base::RepeatingCallback<std::unique_ptr<InkDrop>()>&
-  GetCreateInkDropCallback() const;
-
   // Creates and returns the visual effect used for press. Used by InkDropImpl
   // instances.
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const;
 
   // Replaces CreateInkDropRipple() behavior.
-  void SetCreateInkDropRippleCallback(
+  void SetCreateRippleCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropRipple>()> callback);
-
-  // Only here to support metadata.
-  const base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>&
-  GetCreateInkDropRippleCallback() const;
 
   // Returns the point of the |last_ripple_triggering_event_| if it was a
   // LocatedEvent, otherwise the center point of the local bounds is returned.
@@ -112,42 +112,31 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Creates and returns the visual effect used for hover and focus. Used by
   // InkDropImpl instances. To override behavior call
-  // SetCreateInkDropHighlightCallback().
+  // SetCreateHighlightCallback().
   std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const;
 
   // Replaces CreateInkDropHighlight() behavior.
-  void SetCreateInkDropHighlightCallback(
+  void SetCreateHighlightCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback);
-
-  // Only here to support metadata.
-  const base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>&
-  GetCreateInkDropHighlightCallback() const;
 
   // Callback replacement of CreateInkDropMask().
   // TODO(pbos): Investigate removing this. It currently is only used by
   // ToolbarButton.
-  void SetCreateInkDropMaskCallback(
+  void SetCreateMaskCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback);
 
-  // Only here to support metadata.
-  const base::RepeatingCallback<std::unique_ptr<InkDropMask>()>&
-  GetCreateInkDropMaskCallback() const;
-
   // Returns the base color for the ink drop.
-  SkColor GetInkDropBaseColor() const;
+  SkColor GetBaseColor() const;
 
   // Sets the base color for the ink drop.
-  void SetInkDropBaseColor(SkColor color);
+  void SetBaseColor(SkColor color);
 
-  // Callback version of GetInkDropBaseColor(). If possible, prefer using
-  // SetInkDropBaseColor(). If a callback has been set by previous configuration
-  // and you want to use the base version of GetInkDropBaseColor() that's
-  // reading SetInkDropBaseColor(), you need to reset the callback by calling
-  // SetInkDropBaseColorCallback({}).
-  void SetInkDropBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
-
-  // Only here to support metadata.
-  const base::RepeatingCallback<SkColor()>& GetInkDropBaseColorCallback() const;
+  // Callback version of GetBaseColor(). If possible, prefer using
+  // SetBaseColor(). If a callback has been set by previous configuration
+  // and you want to use the base version of GetBaseColor() that's reading
+  // SetBaseColor(), you need to reset the callback by calling
+  // SetBaseColorCallback({}).
+  void SetBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
 
   // Toggle to enable/disable an InkDrop on this View.  Descendants can override
   // CreateInkDropHighlight() and CreateInkDropRipple() to change the look/feel
@@ -155,19 +144,18 @@ class VIEWS_EXPORT InkDropHostView : public View {
   //
   // TODO(bruthig): Add an easier mechanism than overriding functions to allow
   // subclasses/clients to specify the flavor of ink drop.
-  void SetInkDropMode(InkDropMode ink_drop_mode);
+  void SetMode(InkDropMode ink_drop_mode);
 
-  void SetInkDropVisibleOpacity(float visible_opacity);
-  float GetInkDropVisibleOpacity() const;
+  void SetVisibleOpacity(float visible_opacity);
+  float GetVisibleOpacity() const;
 
-  void SetInkDropHighlightOpacity(base::Optional<float> opacity);
-  base::Optional<float> GetInkDropHighlightOpacity() const;
+  void SetHighlightOpacity(base::Optional<float> opacity);
 
-  void SetInkDropSmallCornerRadius(int small_radius);
-  int GetInkDropSmallCornerRadius() const;
+  void SetSmallCornerRadius(int small_radius);
+  int GetSmallCornerRadius() const;
 
-  void SetInkDropLargeCornerRadius(int large_radius);
-  int GetInkDropLargeCornerRadius() const;
+  void SetLargeCornerRadius(int large_radius);
+  int GetLargeCornerRadius() const;
 
   // Allows InstallableInkDrop to override our InkDropEventHandler
   // instance.
@@ -186,7 +174,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // the purposes of centering ink drop ripples on located Events.  Thus nullptr
   // has been used by clients who do not have an Event instance available to
   // them.
-  void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
+  void AnimateToState(InkDropState state, const ui::LocatedEvent* event);
 
   // Returns true if an ink drop instance has been created.
   bool HasInkDrop() const;
@@ -194,7 +182,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // Provides public access to |ink_drop_| so that factory methods can configure
   // the inkdrop. Implements lazy initialization of |ink_drop_| so as to avoid
   // virtual method calls during construction since subclasses should be able to
-  // call SetInkDropMode() during construction.
+  // call SetMode() during construction.
   InkDrop* GetInkDrop();
 
   // Returns whether the ink drop should be considered "highlighted" (in or
@@ -202,7 +190,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
   bool GetHighlighted() const;
 
   base::CallbackListSubscription AddHighlightedChangedCallback(
-      PropertyChangedCallback callback);
+      base::RepeatingClosure callback);
 
   // Should be called by InkDrop implementations when their highlight state
   // changes, to trigger the corresponding property change notification here.
@@ -217,39 +205,41 @@ class VIEWS_EXPORT InkDropHostView : public View {
   static constexpr gfx::Size kDefaultSquareInkDropSize = gfx::Size(24, 24);
 
   // Creates a SquareInkDropRipple centered on |center_point|.
-  std::unique_ptr<InkDropRipple> CreateSquareInkDropRipple(
+  std::unique_ptr<InkDropRipple> CreateSquareRipple(
       const gfx::Point& center_point,
       const gfx::Size& size = kDefaultSquareInkDropSize) const;
 
+  View* host_view() { return host_view_; }
+  const View* host_view() const { return host_view_; }
+
  private:
-  friend class test::InkDropHostViewTestApi;
+  friend class test::InkDropHostTestApi;
 
   class ViewLayerTransformObserver : public ViewObserver {
    public:
-    explicit ViewLayerTransformObserver(InkDropHostView* host);
+    ViewLayerTransformObserver(InkDropHost* ink_drop_host, View* host);
     ~ViewLayerTransformObserver() override;
 
     void OnViewLayerTransformed(View* observed_view) override;
 
    private:
     base::ScopedObservation<View, ViewObserver> observation_{this};
-    InkDropHostView* const host_;
+    InkDropHost* const ink_drop_host_;
   };
 
-  class InkDropHostViewEventHandlerDelegate
-      : public InkDropEventHandler::Delegate {
+  class InkDropHostEventHandlerDelegate : public InkDropEventHandler::Delegate {
    public:
-    explicit InkDropHostViewEventHandlerDelegate(InkDropHostView* host_view);
+    explicit InkDropHostEventHandlerDelegate(InkDropHost* host);
 
-    // InkDropEventHandler:
+    // InkDropEventHandler::Delegate:
     InkDrop* GetInkDrop() override;
     bool HasInkDrop() const override;
 
     bool SupportsGestureEvents() const override;
 
    private:
-    // The host view.
-    InkDropHostView* const host_view_;
+    // The host.
+    InkDropHost* const ink_drop_host_;
   };
 
   const InkDropEventHandler* GetEventHandler() const;
@@ -268,8 +258,10 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // AddInkDropLayer().
   void InstallInkDropMask(ui::Layer* ink_drop_layer);
 
+  View* const host_view_;
+
   // Defines what type of |ink_drop_| to create.
-  InkDropMode ink_drop_mode_ = InkDropMode::OFF;
+  InkDropMode ink_drop_mode_ = views::InkDropHost::InkDropMode::OFF;
 
   // Used to observe View and inform the InkDrop of host-transform changes.
   ViewLayerTransformObserver host_view_transform_observer_;
@@ -279,7 +271,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
   // Intentionally declared after |ink_drop_| so that it doesn't access a
   // destroyed |ink_drop_| during destruction.
-  InkDropHostViewEventHandlerDelegate ink_drop_event_handler_delegate_;
+  InkDropHostEventHandlerDelegate ink_drop_event_handler_delegate_;
   InkDropEventHandler ink_drop_event_handler_;
 
   InkDropEventHandler* ink_drop_event_handler_override_ = nullptr;
@@ -312,15 +304,34 @@ class VIEWS_EXPORT InkDropHostView : public View {
   base::RepeatingCallback<std::unique_ptr<InkDropMask>()>
       create_ink_drop_mask_callback_;
   base::RepeatingCallback<SkColor()> ink_drop_base_color_callback_;
+
+  base::RepeatingClosureList highlighted_changed_callbacks_;
+};
+
+// A view that provides InkDropHost functionality.
+// TODO(crbug.com/931964): Remove this type and have child classes create their
+// own ink_drop() implementations. See Button::focus_ring() for instance.
+class VIEWS_EXPORT InkDropHostView : public View {
+ public:
+  METADATA_HEADER(InkDropHostView);
+  InkDropHostView();
+  InkDropHostView(const InkDropHostView&) = delete;
+  InkDropHostView& operator=(const InkDropHostView&) = delete;
+  ~InkDropHostView() override;
+
+  // Note that this is called ink_drop() to have most call sites interact with
+  // this as `ink_drop()`. The type for InkDropHost should instead be renamed.
+
+  // TODO(pbos): Consider having "InkDrop" be the public interface for these
+  // effects and have ink_drop() return that.
+  InkDropHost* ink_drop() { return ink_drop_.get(); }
+  const InkDropHost* ink_drop() const { return ink_drop_.get(); }
+
+ private:
+  std::unique_ptr<InkDropHost> ink_drop_{std::make_unique<InkDropHost>(this)};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, InkDropHostView, View)
-VIEW_BUILDER_PROPERTY(base::Optional<float>, InkDropHighlightOpacity)
-VIEW_BUILDER_PROPERTY(int, InkDropLargeCornerRadius)
-VIEW_BUILDER_PROPERTY(InkDropHostView::InkDropMode, InkDropMode)
-VIEW_BUILDER_PROPERTY(int, InkDropSmallCornerRadius)
-VIEW_BUILDER_PROPERTY(SkColor, InkDropBaseColor)
-VIEW_BUILDER_PROPERTY(float, InkDropVisibleOpacity)
 END_VIEW_BUILDER
 
 }  // namespace views

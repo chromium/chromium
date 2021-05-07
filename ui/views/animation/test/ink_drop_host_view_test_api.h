@@ -15,14 +15,14 @@
 namespace views {
 namespace test {
 
-// Test API to provide internal access to an InkDropHostView instance.
-class InkDropHostViewTestApi {
+// Test API to provide internal access to an InkDropHost instance.
+class InkDropHostTestApi {
  public:
-  // Make the protected enum accessbile.
-  using InkDropMode = InkDropHostView::InkDropMode;
+  // Make the protected enum accessible.
+  using InkDropMode = views::InkDropHost::InkDropMode;
 
-  explicit InkDropHostViewTestApi(InkDropHostView* host_view);
-  ~InkDropHostViewTestApi();
+  explicit InkDropHostTestApi(InkDropHost* ink_drop_host);
+  ~InkDropHostTestApi();
 
   void SetInkDropMode(InkDropMode ink_drop_mode);
 
@@ -30,28 +30,28 @@ class InkDropHostViewTestApi {
                   bool handles_gesture_events);
   void SetInkDrop(std::unique_ptr<InkDrop> ink_drop);
 
-  InkDrop* ink_drop() { return host_view_->ink_drop_.get(); }
+  InkDrop* ink_drop() { return ink_drop_host_->ink_drop_.get(); }
 
-  // Wrapper for InkDropHostView::HasInkDrop().
+  // Wrapper for InkDropHost::HasInkDrop().
   bool HasInkDrop() const;
 
-  // Wrapper for InkDropHostView::GetInkDrop() which lazily creates the ink drop
+  // Wrapper for InkDropHost::GetInkDrop() which lazily creates the ink drop
   // instance if it doesn't already exist. If you need direct access to
-  // InkDropHostView::ink_drop_ use ink_drop() instead.
+  // InkDropHost::ink_drop_ use ink_drop() instead.
   InkDrop* GetInkDrop();
 
   bool HasInkdropEventHandler() const;
 
-  // Wrapper for InkDropHostView::AnimateInkDrop().
-  void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
+  // Wrapper for InkDropHost::AnimateToState().
+  void AnimateToState(InkDropState state, const ui::LocatedEvent* event);
 
-  InkDropMode ink_drop_mode() const { return host_view_->ink_drop_mode_; }
+  InkDropMode ink_drop_mode() const { return ink_drop_host_->ink_drop_mode_; }
 
  private:
-  // The InkDropHostView to provide internal access to.
-  InkDropHostView* host_view_;
+  // The InkDropHost to provide internal access to.
+  InkDropHost* ink_drop_host_;
 
-  DISALLOW_COPY_AND_ASSIGN(InkDropHostViewTestApi);
+  DISALLOW_COPY_AND_ASSIGN(InkDropHostTestApi);
 };
 
 }  // namespace test

@@ -55,7 +55,7 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
   scroll_button->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   scroll_button->SetHasInkDropActionOnClick(true);
-  scroll_button->SetInkDropMode(views::Button::InkDropMode::ON);
+  scroll_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   scroll_button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   scroll_button->SetPreferredSize(gfx::Size(28, 28));
   views::HighlightPathGenerator::Install(

@@ -56,13 +56,13 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 
   // Do not show highlight on hover and focus. Since the button will be painted
   // with a background, see |highlight_on_hover_| for more details.
-  views::InkDrop::UseInkDropForFloodFillRipple(this,
+  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop(),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/false);
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](DeskButtonBase* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+            gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
         highlight->set_visible_opacity(
             AshColorProvider::Get()
                 ->GetRippleAttributes(host->background_color_)
@@ -70,7 +70,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
         return highlight;
       },
       this));
-  SetInkDropBaseColorCallback(base::BindRepeating(
+  ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](DeskButtonBase* host) {
         return AshColorProvider::Get()
             ->GetRippleAttributes(host->background_color_)
@@ -78,7 +78,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
       },
       this));
 
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);

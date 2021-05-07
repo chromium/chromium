@@ -26,122 +26,117 @@
 namespace views {
 
 // static
-constexpr gfx::Size InkDropHostView::kDefaultSquareInkDropSize;
+constexpr gfx::Size InkDropHost::kDefaultSquareInkDropSize;
 
-InkDropHostView::InkDropHostViewEventHandlerDelegate::
-    InkDropHostViewEventHandlerDelegate(InkDropHostView* host_view)
-    : host_view_(host_view) {}
+InkDropHost::InkDropHostEventHandlerDelegate::InkDropHostEventHandlerDelegate(
+    InkDropHost* ink_drop_host)
+    : ink_drop_host_(ink_drop_host) {}
 
-bool InkDropHostView::InkDropHostViewEventHandlerDelegate::HasInkDrop() const {
-  return host_view_->HasInkDrop();
+bool InkDropHost::InkDropHostEventHandlerDelegate::HasInkDrop() const {
+  return ink_drop_host_->HasInkDrop();
 }
 
-InkDrop* InkDropHostView::InkDropHostViewEventHandlerDelegate::GetInkDrop() {
-  return host_view_->GetInkDrop();
+InkDrop* InkDropHost::InkDropHostEventHandlerDelegate::GetInkDrop() {
+  return ink_drop_host_->GetInkDrop();
 }
 
-bool InkDropHostView::InkDropHostViewEventHandlerDelegate::
-    SupportsGestureEvents() const {
-  return host_view_->ink_drop_mode_ == InkDropMode::ON;
+bool InkDropHost::InkDropHostEventHandlerDelegate::SupportsGestureEvents()
+    const {
+  return ink_drop_host_->ink_drop_mode_ == InkDropMode::ON;
 }
 
-InkDropHostView::ViewLayerTransformObserver::ViewLayerTransformObserver(
-    InkDropHostView* host)
-    : host_(host) {
-  observation_.Observe(host);
+InkDropHost::ViewLayerTransformObserver::ViewLayerTransformObserver(
+    InkDropHost* ink_drop_host,
+    View* host_view)
+    : ink_drop_host_(ink_drop_host) {
+  observation_.Observe(host_view);
 }
 
-InkDropHostView::ViewLayerTransformObserver::~ViewLayerTransformObserver() =
+InkDropHost::ViewLayerTransformObserver::~ViewLayerTransformObserver() =
     default;
 
-void InkDropHostView::ViewLayerTransformObserver::OnViewLayerTransformed(
+void InkDropHost::ViewLayerTransformObserver::OnViewLayerTransformed(
     View* observed_view) {
-  DCHECK_EQ(observed_view, host_);
   // Notify the ink drop that we have transformed so it can adapt
   // accordingly.
-  if (host_->HasInkDrop())
-    host_->GetInkDrop()->HostTransformChanged(host_->GetTransform());
+  if (ink_drop_host_->HasInkDrop()) {
+    ink_drop_host_->GetInkDrop()->HostTransformChanged(
+        observed_view->GetTransform());
+  }
 }
 
-InkDropHostView::InkDropHostView()
-    : host_view_transform_observer_(this),
+InkDropHost::InkDropHost(View* view)
+    : host_view_(view),
+      host_view_transform_observer_(this, view),
       ink_drop_event_handler_delegate_(this),
-      ink_drop_event_handler_(this, &ink_drop_event_handler_delegate_) {}
+      ink_drop_event_handler_(view, &ink_drop_event_handler_delegate_) {}
 
-InkDropHostView::~InkDropHostView() {
+InkDropHost::~InkDropHost() {
   // TODO(bruthig): Improve InkDropImpl to be safer about calling back to
   // potentially destroyed InkDropHosts and remove |destroying_|.
   destroying_ = true;
 }
 
-void InkDropHostView::SetAddInkDropLayerCallback(
+void InkDropHost::SetAddLayerCallback(
     base::RepeatingCallback<void(ui::Layer*)> callback) {
   add_ink_drop_layer_callback_ = std::move(callback);
 }
 
 const base::RepeatingCallback<void(ui::Layer*)>&
-InkDropHostView::GetAddInkDropLayerCallback() const {
+InkDropHost::GetAddLayerCallbackForTesting() const {
   return add_ink_drop_layer_callback_;
 }
 
-void InkDropHostView::SetRemoveInkDropLayerCallback(
+void InkDropHost::SetRemoveLayerCallback(
     base::RepeatingCallback<void(ui::Layer*)> callback) {
   remove_ink_drop_layer_callback_ = std::move(callback);
 }
 
 const base::RepeatingCallback<void(ui::Layer*)>&
-InkDropHostView::GetRemoveInkDropLayerCallback() const {
+InkDropHost::GetRemoveLayerCallbackForTesting() const {
   return remove_ink_drop_layer_callback_;
 }
 
-std::unique_ptr<InkDrop> InkDropHostView::CreateInkDrop() {
+std::unique_ptr<InkDrop> InkDropHost::CreateInkDrop() {
   if (create_ink_drop_callback_)
     return create_ink_drop_callback_.Run();
   return InkDrop::CreateInkDropForFloodFillRipple(this);
 }
 
-void InkDropHostView::SetCreateInkDropCallback(
+void InkDropHost::SetCreateInkDropCallback(
     base::RepeatingCallback<std::unique_ptr<InkDrop>()> callback) {
   create_ink_drop_callback_ = std::move(callback);
 }
 
-const base::RepeatingCallback<std::unique_ptr<InkDrop>()>&
-InkDropHostView::GetCreateInkDropCallback() const {
-  return create_ink_drop_callback_;
-}
-
-std::unique_ptr<InkDropRipple> InkDropHostView::CreateInkDropRipple() const {
+std::unique_ptr<InkDropRipple> InkDropHost::CreateInkDropRipple() const {
   if (create_ink_drop_ripple_callback_)
     return create_ink_drop_ripple_callback_.Run();
   return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
+      host_view_->size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
+      GetBaseColor(), GetVisibleOpacity());
 }
 
-void InkDropHostView::SetCreateInkDropRippleCallback(
+void InkDropHost::SetCreateRippleCallback(
     base::RepeatingCallback<std::unique_ptr<InkDropRipple>()> callback) {
   create_ink_drop_ripple_callback_ = std::move(callback);
 }
 
-const base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>&
-InkDropHostView::GetCreateInkDropRippleCallback() const {
-  return create_ink_drop_ripple_callback_;
-}
-
-gfx::Point InkDropHostView::GetInkDropCenterBasedOnLastEvent() const {
+gfx::Point InkDropHost::GetInkDropCenterBasedOnLastEvent() const {
   return GetEventHandler()->GetLastRippleTriggeringEvent()
              ? GetEventHandler()->GetLastRippleTriggeringEvent()->location()
-             : GetMirroredRect(GetContentsBounds()).CenterPoint();
+             : host_view_->GetMirroredRect(host_view_->GetContentsBounds())
+                   .CenterPoint();
 }
 
-std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
-    const {
+std::unique_ptr<InkDropHighlight> InkDropHost::CreateInkDropHighlight() const {
   if (create_ink_drop_highlight_callback_)
     return create_ink_drop_highlight_callback_.Run();
 
   auto highlight = std::make_unique<views::InkDropHighlight>(
-      size(), 0, gfx::RectF(GetMirroredRect(GetLocalBounds())).CenterPoint(),
-      GetInkDropBaseColor());
+      host_view_->size(), 0,
+      gfx::RectF(host_view_->GetMirroredRect(host_view_->GetLocalBounds()))
+          .CenterPoint(),
+      GetBaseColor());
   // TODO(pbos): Once |ink_drop_highlight_opacity_| is either always set or
   // callers are using the default InkDropHighlight value then make this a
   // constructor argument to InkDropHighlight.
@@ -151,114 +146,90 @@ std::unique_ptr<InkDropHighlight> InkDropHostView::CreateInkDropHighlight()
   return highlight;
 }
 
-void InkDropHostView::SetCreateInkDropHighlightCallback(
+void InkDropHost::SetCreateHighlightCallback(
     base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()> callback) {
   create_ink_drop_highlight_callback_ = std::move(callback);
 }
 
-const base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>&
-InkDropHostView::GetCreateInkDropHighlightCallback() const {
-  return create_ink_drop_highlight_callback_;
-}
-
-std::unique_ptr<views::InkDropMask> InkDropHostView::CreateInkDropMask() const {
+std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
   if (create_ink_drop_mask_callback_)
     return create_ink_drop_mask_callback_.Run();
-  return std::make_unique<views::PathInkDropMask>(size(),
-                                                  GetHighlightPath(this));
+  return std::make_unique<views::PathInkDropMask>(host_view_->size(),
+                                                  GetHighlightPath(host_view_));
 }
 
-void InkDropHostView::SetCreateInkDropMaskCallback(
+void InkDropHost::SetCreateMaskCallback(
     base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback) {
   create_ink_drop_mask_callback_ = std::move(callback);
 }
 
-const base::RepeatingCallback<std::unique_ptr<InkDropMask>()>&
-InkDropHostView::GetCreateInkDropMaskCallback() const {
-  return create_ink_drop_mask_callback_;
-}
-
-SkColor InkDropHostView::GetInkDropBaseColor() const {
+SkColor InkDropHost::GetBaseColor() const {
   if (ink_drop_base_color_callback_)
     return ink_drop_base_color_callback_.Run();
   DCHECK(ink_drop_base_color_);
   return ink_drop_base_color_.value_or(gfx::kPlaceholderColor);
 }
 
-void InkDropHostView::SetInkDropBaseColor(SkColor color) {
+void InkDropHost::SetBaseColor(SkColor color) {
   ink_drop_base_color_ = color;
 }
 
-void InkDropHostView::SetInkDropBaseColorCallback(
+void InkDropHost::SetBaseColorCallback(
     base::RepeatingCallback<SkColor()> callback) {
   ink_drop_base_color_callback_ = std::move(callback);
 }
 
-const base::RepeatingCallback<SkColor()>&
-InkDropHostView::GetInkDropBaseColorCallback() const {
-  return ink_drop_base_color_callback_;
-}
-
-void InkDropHostView::SetInkDropMode(InkDropMode ink_drop_mode) {
+void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
   ink_drop_mode_ = ink_drop_mode;
   ink_drop_ = nullptr;
 }
 
-void InkDropHostView::SetInkDropVisibleOpacity(float visible_opacity) {
+void InkDropHost::SetVisibleOpacity(float visible_opacity) {
   if (visible_opacity == ink_drop_visible_opacity_)
     return;
   ink_drop_visible_opacity_ = visible_opacity;
-  OnPropertyChanged(&ink_drop_visible_opacity_, kPropertyEffectsPaint);
 }
 
-float InkDropHostView::GetInkDropVisibleOpacity() const {
+float InkDropHost::GetVisibleOpacity() const {
   return ink_drop_visible_opacity_;
 }
 
-void InkDropHostView::SetInkDropHighlightOpacity(
-    base::Optional<float> opacity) {
+void InkDropHost::SetHighlightOpacity(base::Optional<float> opacity) {
   if (opacity == ink_drop_highlight_opacity_)
     return;
   ink_drop_highlight_opacity_ = opacity;
-  OnPropertyChanged(&ink_drop_highlight_opacity_, kPropertyEffectsPaint);
 }
 
-base::Optional<float> InkDropHostView::GetInkDropHighlightOpacity() const {
-  return ink_drop_highlight_opacity_;
-}
-
-void InkDropHostView::SetInkDropSmallCornerRadius(int small_radius) {
+void InkDropHost::SetSmallCornerRadius(int small_radius) {
   if (small_radius == ink_drop_small_corner_radius_)
     return;
   ink_drop_small_corner_radius_ = small_radius;
-  OnPropertyChanged(&ink_drop_small_corner_radius_, kPropertyEffectsLayout);
 }
 
-int InkDropHostView::GetInkDropSmallCornerRadius() const {
+int InkDropHost::GetSmallCornerRadius() const {
   return ink_drop_small_corner_radius_;
 }
 
-void InkDropHostView::SetInkDropLargeCornerRadius(int large_radius) {
+void InkDropHost::SetLargeCornerRadius(int large_radius) {
   if (large_radius == ink_drop_large_corner_radius_)
     return;
   ink_drop_large_corner_radius_ = large_radius;
-  OnPropertyChanged(&ink_drop_large_corner_radius_, kPropertyEffectsLayout);
 }
 
-int InkDropHostView::GetInkDropLargeCornerRadius() const {
+int InkDropHost::GetLargeCornerRadius() const {
   return ink_drop_large_corner_radius_;
 }
 
-void InkDropHostView::AnimateInkDrop(InkDropState state,
-                                     const ui::LocatedEvent* event) {
-  GetEventHandler()->AnimateInkDrop(state, event);
+void InkDropHost::AnimateToState(InkDropState state,
+                                 const ui::LocatedEvent* event) {
+  GetEventHandler()->AnimateToState(state, event);
 }
 
-bool InkDropHostView::HasInkDrop() const {
+bool InkDropHost::HasInkDrop() const {
   return !!ink_drop_;
 }
 
-InkDrop* InkDropHostView::GetInkDrop() {
+InkDrop* InkDropHost::GetInkDrop() {
   if (!ink_drop_) {
     if (ink_drop_mode_ == InkDropMode::OFF)
       ink_drop_ = std::make_unique<InkDropStub>();
@@ -268,25 +239,20 @@ InkDrop* InkDropHostView::GetInkDrop() {
   return ink_drop_.get();
 }
 
-bool InkDropHostView::GetHighlighted() const {
+bool InkDropHost::GetHighlighted() const {
   return ink_drop_ && ink_drop_->IsHighlightFadingInOrVisible();
 }
 
-base::CallbackListSubscription InkDropHostView::AddHighlightedChangedCallback(
-    PropertyChangedCallback callback) {
-  // Since the highlight state is not directly represented by a member, use the
-  // applicable member (|ink_drop_|) as the property key.  Note that this won't
-  // suffice if a future InkDrop-related property is added.
-  return AddPropertyChangedCallback(&ink_drop_, std::move(callback));
+base::CallbackListSubscription InkDropHost::AddHighlightedChangedCallback(
+    base::RepeatingClosure callback) {
+  return highlighted_changed_callbacks_.Add(std::move(callback));
 }
 
-void InkDropHostView::OnInkDropHighlightedChanged() {
-  // See comments in AddHighlightedChangedCallback() re: using |ink_drop_| as
-  // the key.
-  OnPropertyChanged(&ink_drop_, kPropertyEffectsNone);
+void InkDropHost::OnInkDropHighlightedChanged() {
+  highlighted_changed_callbacks_.Notify();
 }
 
-void InkDropHostView::AddInkDropLayer(ui::Layer* ink_drop_layer) {
+void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   if (add_ink_drop_layer_callback_) {
     add_ink_drop_layer_callback_.Run(ink_drop_layer);
     return;
@@ -295,10 +261,10 @@ void InkDropHostView::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   // If a clip is provided, use that as it is more performant than a mask.
   if (!AddInkDropClip(ink_drop_layer))
     InstallInkDropMask(ink_drop_layer);
-  AddLayerBeneathView(ink_drop_layer);
+  host_view_->AddLayerBeneathView(ink_drop_layer);
 }
 
-void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
+void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   // No need to do anything when called during shutdown, and if a derived
   // class has set `remove_ink_drop_layer_callback_` then running that callback
   // is very likely to be a use-after-free.
@@ -310,7 +276,7 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
     return;
   }
 
-  RemoveLayerBeneathView(ink_drop_layer);
+  host_view_->RemoveLayerBeneathView(ink_drop_layer);
 
   // Remove clipping.
   ink_drop_layer->SetClipRect(gfx::Rect());
@@ -320,32 +286,32 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   ink_drop_mask_.reset();
 }
 
-std::unique_ptr<InkDropRipple> InkDropHostView::CreateSquareInkDropRipple(
+std::unique_ptr<InkDropRipple> InkDropHost::CreateSquareRipple(
     const gfx::Point& center_point,
     const gfx::Size& size) const {
   constexpr float kLargeInkDropScale = 1.333f;
   const gfx::Size large_size = gfx::ScaleToCeiledSize(size, kLargeInkDropScale);
   auto ripple = std::make_unique<SquareInkDropRipple>(
       large_size, ink_drop_large_corner_radius_, size,
-      ink_drop_small_corner_radius_, center_point, GetInkDropBaseColor(),
-      GetInkDropVisibleOpacity());
+      ink_drop_small_corner_radius_, center_point, GetBaseColor(),
+      GetVisibleOpacity());
   return ripple;
 }
 
-const InkDropEventHandler* InkDropHostView::GetEventHandler() const {
+const InkDropEventHandler* InkDropHost::GetEventHandler() const {
   if (ink_drop_event_handler_override_)
     return ink_drop_event_handler_override_;
   return &ink_drop_event_handler_;
 }
 
-InkDropEventHandler* InkDropHostView::GetEventHandler() {
+InkDropEventHandler* InkDropHost::GetEventHandler() {
   return const_cast<InkDropEventHandler*>(
-      const_cast<const InkDropHostView*>(this)->GetEventHandler());
+      const_cast<const InkDropHost*>(this)->GetEventHandler());
 }
 
-bool InkDropHostView::AddInkDropClip(ui::Layer* ink_drop_layer) {
+bool InkDropHost::AddInkDropClip(ui::Layer* ink_drop_layer) {
   base::Optional<gfx::RRectF> clipping_data =
-      HighlightPathGenerator::GetRoundRectForView(this);
+      HighlightPathGenerator::GetRoundRectForView(host_view_);
   if (!clipping_data)
     return false;
 
@@ -368,34 +334,16 @@ bool InkDropHostView::AddInkDropClip(ui::Layer* ink_drop_layer) {
   return true;
 }
 
-void InkDropHostView::InstallInkDropMask(ui::Layer* ink_drop_layer) {
+void InkDropHost::InstallInkDropMask(ui::Layer* ink_drop_layer) {
   ink_drop_mask_ = CreateInkDropMask();
   DCHECK(ink_drop_mask_);
   ink_drop_layer->SetMaskLayer(ink_drop_mask_->layer());
 }
 
+InkDropHostView::InkDropHostView() = default;
+InkDropHostView::~InkDropHostView() = default;
+
 BEGIN_METADATA(InkDropHostView, View)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<void(ui::Layer*)>,
-                      AddInkDropLayerCallback)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<void(ui::Layer*)>,
-                      RemoveInkDropLayerCallback)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDrop>()>,
-                      CreateInkDropCallback)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>,
-                      CreateInkDropRippleCallback)
-ADD_PROPERTY_METADATA(
-    base::RepeatingCallback<std::unique_ptr<InkDropHighlight>()>,
-    CreateInkDropHighlightCallback)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<std::unique_ptr<InkDropMask>()>,
-                      CreateInkDropMaskCallback)
-ADD_PROPERTY_METADATA(base::RepeatingCallback<SkColor()>,
-                      InkDropBaseColorCallback)
-ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
-ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, ui::metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(float, InkDropVisibleOpacity)
-ADD_PROPERTY_METADATA(base::Optional<float>, InkDropHighlightOpacity)
-ADD_PROPERTY_METADATA(int, InkDropLargeCornerRadius)
-ADD_PROPERTY_METADATA(int, InkDropSmallCornerRadius)
 END_METADATA
 
 }  // namespace views

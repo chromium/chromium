@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -90,7 +91,7 @@ void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
     } else {
       next_state = views::InkDropState::DEACTIVATED;
     }
-    GetInkDrop()->AnimateToState(next_state);
+    ink_drop()->GetInkDrop()->AnimateToState(next_state);
   }
 }
 

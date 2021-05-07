@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -141,7 +142,7 @@ void ToolbarIconContainerView::ObserveButton(views::Button* button) {
   // We don't care about the main button being highlighted.
   if (button != main_button_) {
     subscriptions_.push_back(
-        button->AddHighlightedChangedCallback(base::BindRepeating(
+        button->ink_drop()->AddHighlightedChangedCallback(base::BindRepeating(
             &ToolbarIconContainerView::OnButtonHighlightedChanged,
             base::Unretained(this), base::Unretained(button))));
   }
@@ -274,7 +275,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(
     views::Button* button) {
-  if (button->GetHighlighted())
+  if (button->ink_drop()->GetHighlighted())
     highlighted_buttons_.insert(button);
   else
     highlighted_buttons_.erase(button);

@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -510,6 +511,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
               ash::ClipboardHistoryUtil::kDeleteButtonViewID));
   ASSERT_TRUE(delete_button->GetVisible());
   EXPECT_TRUE(const_cast<ash::ClipboardHistoryDeleteButton*>(delete_button)
+                  ->ink_drop()
                   ->GetInkDrop()
                   ->IsHighlightFadingInOrVisible());
 

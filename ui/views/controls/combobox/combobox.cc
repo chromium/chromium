@@ -66,17 +66,18 @@ class TransparentButton : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    InkDrop::UseInkDropForSquareRipple(this,
+    InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                        /*highlight_on_hover=*/false);
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(), host->GetInkDropCenterBasedOnLastEvent(),
+              host->size(),
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
               host->GetNativeTheme()->GetSystemColor(
                   ui::NativeTheme::kColorId_LabelEnabledColor),
-              host->GetInkDropVisibleOpacity());
+              host->ink_drop()->GetVisibleOpacity());
         },
         this));
   }

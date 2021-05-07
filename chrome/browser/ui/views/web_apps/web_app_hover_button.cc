@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,13 +66,13 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
 inline WebAppHoverButton::~WebAppHoverButton() = default;
 
 void WebAppHoverButton::MarkAsUnselected(const ui::Event* event) {
-  AnimateInkDrop(views::InkDropState::HIDDEN,
-                 ui::LocatedEvent::FromIfValid(event));
+  ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
+                             ui::LocatedEvent::FromIfValid(event));
 }
 
 void WebAppHoverButton::MarkAsSelected(const ui::Event* event) {
-  AnimateInkDrop(views::InkDropState::ACTIVATED,
-                 ui::LocatedEvent::FromIfValid(event));
+  ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                             ui::LocatedEvent::FromIfValid(event));
 }
 
 void WebAppHoverButton::OnIconsRead(

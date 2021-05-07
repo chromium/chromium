@@ -26,10 +26,10 @@ PaddedButton::PaddedButton(PressedCallback callback)
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
   SetAnimateOnStateChange(false);
 
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropVisibleOpacity(0.12f);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop()->SetVisibleOpacity(0.12f);
   SetHasInkDropActionOnClick(true);
-  views::InkDrop::UseInkDropForSquareRipple(this,
+  views::InkDrop::UseInkDropForSquareRipple(ink_drop(),
                                             /*highlight_on_hover=*/false);
 }
 
@@ -44,7 +44,8 @@ void PaddedButton::OnThemeChanged() {
   SkColor background_color =
       theme->GetSystemColor(ui::NativeTheme::kColorId_WindowBackground);
 #endif
-  SetInkDropBaseColor(color_utils::GetColorWithMaxContrast(background_color));
+  ink_drop()->SetBaseColor(
+      color_utils::GetColorWithMaxContrast(background_color));
 }
 
 BEGIN_METADATA(PaddedButton, views::ImageButton)

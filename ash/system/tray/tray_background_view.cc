@@ -216,11 +216,11 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   SetNotifyEnterExitOnChild(true);
 
   auto ripple_attributes = AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](TrayBackgroundView* host) {
         gfx::Rect bounds = host->GetBackgroundBounds();
         // Currently, we don't handle view resize. To compensate for that,
@@ -241,13 +241,13 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
         return highlight;
       },
       this));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](TrayBackgroundView* host) -> std::unique_ptr<views::InkDropRipple> {
         const AshColorProvider::RippleAttributes ripple_attributes =
             AshColorProvider::Get()->GetRippleAttributes();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetBackgroundInsets(),
-            host->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
             ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
       },
       this));
@@ -636,9 +636,9 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
   if (is_active_ == is_active)
     return;
   is_active_ = is_active;
-  AnimateInkDrop(is_active_ ? views::InkDropState::ACTIVATED
-                            : views::InkDropState::DEACTIVATED,
-                 nullptr);
+  ink_drop()->AnimateToState(is_active_ ? views::InkDropState::ACTIVATED
+                                        : views::InkDropState::DEACTIVATED,
+                             nullptr);
 }
 
 views::View* TrayBackgroundView::GetBubbleAnchor() const {

@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
 
 IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
   PageActionIconView* star_icon = GetStarIcon();
-  views::test::InkDropHostViewTestApi ink_drop_test_api(star_icon);
+  views::test::InkDropHostTestApi ink_drop_test_api(star_icon->ink_drop());
 
   if (ink_drop_test_api.HasInkDrop()) {
     GURL url("http://test.com");

@@ -124,10 +124,10 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
       BrowserNonClientFrameViewChromeOS* frame_view) {
     WebAppFrameToolbarView* container =
         frame_view->web_app_frame_toolbar_for_testing();
-    views::test::InkDropHostViewTestApi ink_drop_api(
-        container->GetAppMenuButton());
+    views::test::InkDropHostTestApi ink_drop_api(
+        container->GetAppMenuButton()->ink_drop());
     EXPECT_TRUE(container->GetContentSettingContainerForTesting()->layer());
-    EXPECT_EQ(views::InkDropHostView::InkDropMode::ON,
+    EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
               ink_drop_api.ink_drop_mode());
   }
 

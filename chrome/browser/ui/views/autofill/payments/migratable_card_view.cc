@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 
+#include "base/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_dialog_view.h"
@@ -119,7 +120,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // TODO(crbug/867194): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
-        checkbox_->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+        checkbox_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
         checkbox_->SetAssociatedLabel(card_description.get());
       }
       break;

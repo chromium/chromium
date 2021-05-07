@@ -58,7 +58,7 @@ SystemLabelButton::SystemLabelButton(PressedCallback callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetTextSubpixelRenderingEnabled(false);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
@@ -128,9 +128,9 @@ void SystemLabelButton::SetAlertMode(bool alert_mode) {
       AshColorProvider::Get()->GetBaseLayerColor(kBubbleLayerType));
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes(effective_background_color);
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  ink_drop()->SetHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 }  // namespace ash

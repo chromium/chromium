@@ -55,9 +55,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    SetInkDropHighlightOpacity(
+    ink_drop()->SetHighlightOpacity(
         GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
-    SetInkDropBaseColorCallback(base::BindRepeating(
+    ink_drop()->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
           return color_utils::GetColorWithMaxContrast(
               host->omnibox_bg_color_.value());

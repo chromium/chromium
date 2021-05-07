@@ -45,7 +45,7 @@ std::unique_ptr<views::Button> CreateCloseButton(
   auto close_button = views::CreateVectorImageButtonWithNativeTheme(
       std::move(close_callback), vector_icons::kCloseRoundedIcon);
   close_button->SetSize(kCloseButtonSize);
-  close_button->SetInkDropMode(views::Button::InkDropMode::OFF);
+  close_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   return close_button;
 }
 

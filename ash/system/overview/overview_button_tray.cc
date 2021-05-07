@@ -72,7 +72,7 @@ void OverviewButtonTray::UpdateAfterLoginStatusChange() {
 }
 
 void OverviewButtonTray::SnapRippleToActivated() {
-  GetInkDrop()->SnapToActivated();
+  ink_drop()->GetInkDrop()->SnapToActivated();
 }
 
 void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
@@ -130,7 +130,7 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
         }
       }
 
-      AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+      ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
       wm::ActivateWindow(new_active_window);
       last_press_event_time_ = base::nullopt;
       return true;

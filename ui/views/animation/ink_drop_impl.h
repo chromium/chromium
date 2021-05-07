@@ -22,7 +22,7 @@ class InkDropImplTestApi;
 }  // namespace test
 
 class InkDropRipple;
-class InkDropHostView;
+class InkDropHost;
 class InkDropHighlight;
 
 // A functional implementation of an InkDrop.
@@ -50,7 +50,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   //
   // By default the highlight will be made visible while |this| is hovered but
   // not focused and the NONE AutoHighlightMode will be used.
-  InkDropImpl(InkDropHostView* ink_drop_host, const gfx::Size& host_size);
+  InkDropImpl(InkDropHost* ink_drop_host, const gfx::Size& host_size);
   ~InkDropImpl() override;
 
   // Auto highlighting is a mechanism to show/hide the highlight based on the
@@ -267,7 +267,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // The host of the ink drop. Used to create the ripples and highlights, and to
   // add/remove the root layer to/from it.
-  InkDropHostView* const ink_drop_host_;
+  InkDropHost* const ink_drop_host_;
 
   // The root Layer that parents the InkDropRipple layers and the
   // InkDropHighlight layers. The |root_layer_| is the one that is added and

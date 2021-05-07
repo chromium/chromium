@@ -93,10 +93,10 @@ class SearchBoxImageButton : public views::ImageButton {
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     // InkDropState will reset after clicking.
     SetHasInkDropActionOnClick(true);
-    SetCreateInkDropHighlightCallback(base::BindRepeating(
+    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](InkDropHostView* host) {
           constexpr SkColor ripple_color =
               SkColorSetA(gfx::kGoogleGrey900, 0x12);
@@ -106,7 +106,7 @@ class SearchBoxImageButton : public views::ImageButton {
           return highlight;
         },
         this));
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](SearchBoxImageButton* host)
             -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = host->GetLocalBounds().CenterPoint();
@@ -119,7 +119,8 @@ class SearchBoxImageButton : public views::ImageButton {
 
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->GetInkDropCenterBasedOnLastEvent(), ripple_color, 1.0f);
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+              ripple_color, 1.0f);
         },
         this));
 

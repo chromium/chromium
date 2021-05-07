@@ -297,13 +297,13 @@ void PrivacyInfoView::InitCloseButton() {
   close_button->SizeToPreferredSize();
 
   // Ink ripple.
-  close_button->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  close_button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   constexpr SkColor kInkDropBaseColor = gfx::kGoogleGrey900;
   constexpr float kInkDropVisibleOpacity = 0.06f;
   constexpr float kInkDropHighlightOpacity = 0.08f;
-  close_button->SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
-  close_button->SetInkDropHighlightOpacity(kInkDropHighlightOpacity);
-  close_button->SetInkDropBaseColor(kInkDropBaseColor);
+  close_button->ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
+  close_button->ink_drop()->SetHighlightOpacity(kInkDropHighlightOpacity);
+  close_button->ink_drop()->SetBaseColor(kInkDropBaseColor);
   close_button->SetHasInkDropActionOnClick(true);
   views::InstallCircleHighlightPathGenerator(close_button.get());
   close_button_ = AddChildView(std::move(close_button));

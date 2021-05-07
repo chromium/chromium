@@ -154,12 +154,12 @@ class MediaActionButton : public views::ImageButton {
             view,
             this)),
         icon_size_(icon_size) {
-    SetInkDropMode(views::Button::InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    SetCreateInkDropHighlightCallback(base::BindRepeating(
+    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](InkDropHostView* host) {
           return std::make_unique<views::InkDropHighlight>(
-              gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+              gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
         },
         this));
 

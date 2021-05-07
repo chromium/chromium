@@ -18,6 +18,7 @@
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -91,8 +92,8 @@ class FilesAppChip : public views::Button {
     // Ink drop.
     const AshColorProvider::RippleAttributes ripple_attributes =
         ash_color_provider->GetRippleAttributes();
-    SetInkDropBaseColor(ripple_attributes.base_color);
-    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    ink_drop()->SetBaseColor(ripple_attributes.base_color);
+    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
   }
 
   void Init() {
@@ -103,7 +104,7 @@ class FilesAppChip : public views::Button {
     SetID(kHoldingSpaceFilesAppChipId);
 
     // Ink drop.
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kFilesAppChipHeight / 2);
 

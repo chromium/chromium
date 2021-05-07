@@ -12,6 +12,7 @@
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -45,7 +46,7 @@ void ClipboardHistoryItemView::ContentsView::OnHostPseudoFocusUpdated() {
 
   const bool focused =
       (container_->pseudo_focus_ == PseudoFocus::kDeleteButton);
-  delete_button_->GetInkDrop()->SetFocused(focused);
+  delete_button_->ink_drop()->GetInkDrop()->SetFocused(focused);
   if (focused) {
     delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
                                              /*send_native_event*/ true);

@@ -303,8 +303,8 @@ class ToolbarButton : public views::LabelButton,
   // |views::kInstallableInkDropFeature| is enabled.
   // TODO(crbug.com/931964): When InkDrops can be externally installed, connect
   // this InkDrop when the experiment is enabled. This is currently not working
-  // as a virtual GetInkDrop() override was removed to finish InkDropHostView
-  // migration from the View hierarchy.
+  // as a virtual GetInkDrop() override was removed to finish
+  // InkDropHostView migration from the View hierarchy.
   std::unique_ptr<views::InstallableInkDrop> installable_ink_drop_;
 
   // Class responsible for animating highlight color (calling a callback on

@@ -32,7 +32,7 @@ class BubbleMenuItem : public views::LabelButton {
 
   void OnThemeChanged() override {
     LabelButton::OnThemeChanged();
-    SetInkDropBaseColor(HoverButton::GetInkDropColor(this));
+    ink_drop()->SetBaseColor(HoverButton::GetInkDropColor(this));
   }
 };
 
@@ -44,9 +44,10 @@ END_METADATA
 void ConfigureBubbleMenuItem(views::Button* button, int button_id) {
   // Items within a menu should not show focus rings.
   button->SetInstallFocusRingOnFocus(false);
-  button->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-  button->GetInkDrop()->SetShowHighlightOnFocus(true);
-  button->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
+  button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  button->ink_drop()->GetInkDrop()->SetShowHighlightOnFocus(true);
+  button->ink_drop()->GetInkDrop()->SetHoverHighlightFadeDuration(
+      base::TimeDelta());
   views::InstallRectHighlightPathGenerator(button);
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   button->SetID(button_id);

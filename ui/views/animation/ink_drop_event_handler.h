@@ -44,7 +44,7 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   InkDropEventHandler(View* host_view, Delegate* delegate);
   ~InkDropEventHandler() override;
 
-  void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
+  void AnimateToState(InkDropState state, const ui::LocatedEvent* event);
   ui::LocatedEvent* GetLastRippleTriggeringEvent() const;
 
  private:

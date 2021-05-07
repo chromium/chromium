@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -123,7 +124,7 @@ void ExtensionsMenuItemView::OnThemeChanged() {
           ui::NativeTheme::kColorId_MenuIconColor));
 
   if (pin_button_)
-    pin_button_->SetInkDropBaseColor(icon_color);
+    pin_button_->ink_drop()->SetBaseColor(icon_color);
 
   SetButtonIconWithColor(context_menu_button_, kBrowserToolsIcon, icon_color);
 

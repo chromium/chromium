@@ -32,9 +32,9 @@ ExtensionsMenuButton::ExtensionsMenuButton(
       allow_pinning_(allow_pinning) {
   controller_->SetDelegate(this);
   // TODO(pbos): This currently inherits HoverButton, is this not a no-op?
-  // Also see call in OnThemeChanged() to SetInkDropBaseColor which tries to do
-  // the same thing.
-  SetInkDropBaseColorCallback(base::BindRepeating(
+  // Also see call in OnThemeChanged() to ink_drop()->SetBaseColor which
+  // tries to do the same thing.
+  ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) { return HoverButton::GetInkDropColor(host); },
       this));
 }
@@ -52,7 +52,7 @@ void ExtensionsMenuButton::AddedToWidget() {
 
 void ExtensionsMenuButton::OnThemeChanged() {
   HoverButton::OnThemeChanged();
-  SetInkDropBaseColor(HoverButton::GetInkDropColor(this));
+  ink_drop()->SetBaseColor(HoverButton::GetInkDropColor(this));
 }
 
 // ToolbarActionViewDelegateViews:

@@ -27,7 +27,7 @@
 #include "ui/aura/window.h"
 #endif
 
-using views::test::InkDropHostViewTestApi;
+using views::test::InkDropHostTestApi;
 using views::test::TestInkDrop;
 
 namespace {
@@ -79,7 +79,8 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   }
 
   void HideBubble() {
-    AnimateInkDrop(views::InkDropState::HIDDEN, nullptr /* event */);
+    ink_drop()->AnimateToState(views::InkDropState::HIDDEN,
+                               nullptr /* event */);
     is_bubble_showing_ = false;
   }
 
@@ -114,7 +115,8 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   bool IsShrinking() const override { return state() == SHRINKING; }
 
   bool ShowBubble(const ui::Event& event) override {
-    AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr /* event */);
+    ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                               nullptr /* event */);
     is_bubble_showing_ = true;
     return true;
   }
@@ -183,7 +185,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
 
   void AttachInkDrop() {
     ink_drop_ = new TestInkDrop();
-    InkDropHostViewTestApi(view_).SetInkDrop(base::WrapUnique(ink_drop_));
+    InkDropHostTestApi(view_->ink_drop())
+        .SetInkDrop(base::WrapUnique(ink_drop_));
   }
 
  private:

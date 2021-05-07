@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -202,7 +203,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
                         shelf,
                         shelf_button_delegate),
         shelf_(shelf) {
-    SetInkDropMode(InkDropMode::OFF);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);

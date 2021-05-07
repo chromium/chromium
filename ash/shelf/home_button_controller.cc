@@ -76,8 +76,10 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
         assistant_animation_delay_timer_->Stop();
       }
 
-      if (CanActivate(button_->GetDisplayId()))
-        button_->AnimateInkDrop(views::InkDropState::ACTION_TRIGGERED, event);
+      if (CanActivate(button_->GetDisplayId())) {
+        button_->ink_drop()->AnimateToState(
+            views::InkDropState::ACTION_TRIGGERED, event);
+      }
 
       // After animating the ripple, let the button handle the event.
       return false;
@@ -89,8 +91,10 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
                            base::Unretained(this)));
       }
 
-      if (CanActivate(button_->GetDisplayId()))
-        button_->AnimateInkDrop(views::InkDropState::ACTION_PENDING, event);
+      if (CanActivate(button_->GetDisplayId())) {
+        button_->ink_drop()->AnimateToState(views::InkDropState::ACTION_PENDING,
+                                            event);
+      }
 
       return false;
     case ui::ET_GESTURE_LONG_PRESS:
@@ -113,7 +117,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
         return false;
 
       // This event happens after the user long presses and lifts the finger.
-      button_->AnimateInkDrop(views::InkDropState::HIDDEN, event);
+      button_->ink_drop()->AnimateToState(views::InkDropState::HIDDEN, event);
 
       // We already handled the long press; consume the long tap to avoid
       // bringing up the context menu again.
@@ -147,7 +151,8 @@ void HomeButtonController::OnAppListVisibilityWillChange(bool shown,
 }
 
 void HomeButtonController::OnTabletModeStarted() {
-  button_->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+  button_->ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED,
+                                      nullptr);
 }
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
@@ -174,8 +179,10 @@ void HomeButtonController::StartAssistantAnimation() {
 void HomeButtonController::OnAppListShown() {
   // Do not show a highlight in tablet mode, since the home screen view is
   // always open in the background.
-  if (!Shell::Get()->IsInTabletMode())
-    button_->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+  if (!Shell::Get()->IsInTabletMode()) {
+    button_->ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                                        nullptr);
+  }
   is_showing_app_list_ = true;
 }
 
@@ -183,10 +190,11 @@ void HomeButtonController::OnAppListDismissed() {
   // If ink drop is not hidden already, snap it to active state, so animation to
   // DEACTIVATED state starts immediately (the animation would otherwise wait
   // for the current animation to finish).
-  views::InkDrop* const ink_drop = button_->GetInkDrop();
+  views::InkDrop* const ink_drop = button_->ink_drop()->GetInkDrop();
   if (ink_drop->GetTargetInkDropState() != views::InkDropState::HIDDEN)
     ink_drop->SnapToActivated();
-  button_->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+  button_->ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED,
+                                      nullptr);
 
   is_showing_app_list_ = false;
 }

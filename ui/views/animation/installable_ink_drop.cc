@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -82,24 +83,24 @@ InstallableInkDrop::InstallableInkDrop(View* view)
   }
 }
 
-InstallableInkDrop::InstallableInkDrop(InkDropHostView* ink_drop_host_view)
-    : InstallableInkDrop(static_cast<View*>(ink_drop_host_view)) {
-  // To get all events, we must override InkDropHostView's event handler.
-  ink_drop_host_view->set_ink_drop_event_handler_override(&event_handler_);
-  ink_drop_host_view_ = ink_drop_host_view;
+InstallableInkDrop::InstallableInkDrop(InkDropHost* ink_drop_host)
+    : InstallableInkDrop(ink_drop_host->host_view()) {
+  // To get all events, we must override InkDropHost's event handler.
+  ink_drop_host->set_ink_drop_event_handler_override(&event_handler_);
+  ink_drop_host_ = ink_drop_host;
 
   // TODO(crbug.com/931964): When this is removed, classes relying on property
-  // changed notifications from InkDropHostView for the highlighted state will
+  // changed notifications from InkDropHost for the highlighted state will
   // need to register here instead.
   RegisterHighlightedChangedCallback(
-      base::BindRepeating(&InkDropHostView::OnInkDropHighlightedChanged,
-                          base::Unretained(ink_drop_host_view_)));
+      base::BindRepeating(&InkDropHost::OnInkDropHighlightedChanged,
+                          base::Unretained(ink_drop_host_)));
 }
 
 InstallableInkDrop::~InstallableInkDrop() {
   view_->RemoveLayerBeneathView(layer_.get());
-  if (ink_drop_host_view_)
-    ink_drop_host_view_->set_ink_drop_event_handler_override(nullptr);
+  if (ink_drop_host_)
+    ink_drop_host_->set_ink_drop_event_handler_override(nullptr);
   if (DCHECK_IS_ON())
     view_->RemoveObserver(this);
 }

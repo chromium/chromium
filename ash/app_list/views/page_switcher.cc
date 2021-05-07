@@ -55,9 +55,9 @@ class PageSwitcherButton : public views::Button {
       : is_root_app_grid_page_switcher_(is_root_app_grid_page_switcher),
         background_color_(background_color) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    SetInkDropMode(InkDropMode::ON);
-    views::InkDrop::UseInkDropForFloodFillRipple(this);
-    SetCreateInkDropHighlightCallback(base::BindRepeating(
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
+    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](PageSwitcherButton* host) {
           const AppListColorProvider* const color_provider =
               AppListColorProvider::Get();
@@ -71,7 +71,7 @@ class PageSwitcherButton : public views::Button {
           return highlight;
         },
         this));
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](PageSwitcherButton* host) -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = host->GetLocalBounds().CenterPoint();
           const int max_radius =
@@ -84,7 +84,7 @@ class PageSwitcherButton : public views::Button {
               AppListColorProvider::Get();
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->GetInkDropCenterBasedOnLastEvent(),
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
               color_provider->GetRippleAttributesBaseColor(
                   host->background_color_),
               color_provider->GetRippleAttributesInkDropOpacity(
@@ -128,7 +128,8 @@ class PageSwitcherButton : public views::Button {
   // views::Button:
   void NotifyClick(const ui::Event& event) override {
     Button::NotifyClick(event);
-    GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);
+    ink_drop()->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTION_TRIGGERED);
   }
 
  private:

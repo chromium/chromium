@@ -30,7 +30,7 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
           base::Unretained(container))),
       container_(container) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetID(ClipboardHistoryUtil::kMainButtonViewID);
 
   // Let the parent handle accessibility features.
@@ -50,7 +50,7 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
   // Hence, highlighted background is implemented by customizing in
   // `PaintButtonContents()`.
   views::InkDrop::UseInkDropForFloodFillRipple(
-      this, /*highlight_on_hover=*/false,
+      ink_drop(), /*highlight_on_hover=*/false,
       /*highlight_on_focus=*/!focus_ring());
 }
 
@@ -90,8 +90,8 @@ void ClipboardHistoryMainButton::OnThemeChanged() {
 
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
 }
 
 void ClipboardHistoryMainButton::OnGestureEvent(ui::GestureEvent* event) {

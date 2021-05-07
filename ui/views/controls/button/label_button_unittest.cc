@@ -794,8 +794,8 @@ class InkDropLabelButtonTest : public ViewsTestBase {
         Button::PressedCallback(), std::u16string()));
 
     test_ink_drop_ = new test::TestInkDrop();
-    test::InkDropHostViewTestApi(button_).SetInkDrop(
-        base::WrapUnique(test_ink_drop_));
+    test::InkDropHostTestApi(button_->ink_drop())
+        .SetInkDrop(base::WrapUnique(test_ink_drop_));
   }
 
   void TearDown() override {

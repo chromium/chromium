@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -111,7 +112,7 @@ bool MenuButtonController::OnMousePressed(const ui::MouseEvent& event) {
 
   // If this is an unintentional trigger do not display the inkdrop.
   if (!is_intentional_menu_trigger_)
-    button()->AnimateInkDrop(InkDropState::HIDDEN, &event);
+    button()->ink_drop()->AnimateToState(InkDropState::HIDDEN, &event);
   return true;
 }
 
@@ -122,7 +123,7 @@ void MenuButtonController::OnMouseReleased(const ui::MouseEvent& event) {
     Activate(&event);
   } else {
     if (button()->GetHideInkDropWhenShowingContextMenu())
-      button()->AnimateInkDrop(InkDropState::HIDDEN, &event);
+      button()->ink_drop()->AnimateToState(InkDropState::HIDDEN, &event);
     ButtonController::OnMouseReleased(event);
   }
 }
@@ -264,8 +265,8 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     increment_pressed_lock_called_ = nullptr;
 
     if (!increment_pressed_lock_called && pressed_lock_count_ == 0) {
-      button()->AnimateInkDrop(InkDropState::ACTION_TRIGGERED,
-                               ui::LocatedEvent::FromIfValid(event));
+      button()->ink_drop()->AnimateToState(
+          InkDropState::ACTION_TRIGGERED, ui::LocatedEvent::FromIfValid(event));
     }
 
     // We must return false here so that the RootView does not get stuck
@@ -274,8 +275,8 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     return false;
   }
 
-  button()->AnimateInkDrop(InkDropState::HIDDEN,
-                           ui::LocatedEvent::FromIfValid(event));
+  button()->ink_drop()->AnimateToState(InkDropState::HIDDEN,
+                                       ui::LocatedEvent::FromIfValid(event));
   return true;
 }
 
@@ -318,7 +319,7 @@ void MenuButtonController::IncrementPressedLocked(
     if (snap_ink_drop_to_activated)
       delegate()->GetInkDrop()->SnapToActivated();
     else
-      button()->AnimateInkDrop(InkDropState::ACTIVATED, event);
+      button()->ink_drop()->AnimateToState(InkDropState::ACTIVATED, event);
   }
   button()->SetState(Button::STATE_PRESSED);
   delegate()->GetInkDrop()->SetHovered(false);
@@ -346,7 +347,8 @@ void MenuButtonController::DecrementPressedLocked() {
     // The widget may be null during shutdown. If so, it doesn't make sense to
     // try to add an ink drop effect.
     if (button()->GetWidget() && button()->GetState() != Button::STATE_PRESSED)
-      button()->AnimateInkDrop(InkDropState::DEACTIVATED, nullptr /* event */);
+      button()->ink_drop()->AnimateToState(InkDropState::DEACTIVATED,
+                                           nullptr /* event */);
   }
 }
 

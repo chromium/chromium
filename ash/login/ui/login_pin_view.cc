@@ -106,8 +106,8 @@ class BasePinButton : public views::InkDropHostView {
     // focus painter to paint.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-    SetCreateInkDropHighlightCallback(base::BindRepeating(
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+    ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
         [](BasePinButton* host) {
           auto highlight = std::make_unique<views::InkDropHighlight>(
               gfx::SizeF(host->size()),
@@ -116,7 +116,7 @@ class BasePinButton : public views::InkDropHostView {
           return highlight;
         },
         this));
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](BasePinButton* host) -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = host->GetLocalBounds().CenterPoint();
           const gfx::Rect bounds(center.x() - kInkDropCornerRadiusDp,
@@ -126,7 +126,7 @@ class BasePinButton : public views::InkDropHostView {
 
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-              host->GetInkDropCenterBasedOnLastEvent(),
+              host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
               host->palette_.pin_ink_drop_ripple_color,
               /*visible_opacity=*/1.f);
         },
@@ -180,8 +180,8 @@ class BasePinButton : public views::InkDropHostView {
     if (event)
       event->SetHandled();
 
-    AnimateInkDrop(views::InkDropState::ACTION_TRIGGERED,
-                   ui::LocatedEvent::FromIfValid(event));
+    ink_drop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
+                               ui::LocatedEvent::FromIfValid(event));
     SchedulePaint();
 
     // |on_press_| may delete us.
@@ -281,7 +281,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
 
   void OnEnabledChanged() {
     if (!GetEnabled()) {
-      AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+      ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
       CancelRepeat();
     }
     UpdateImage();
@@ -328,8 +328,8 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       if (event)
         event->SetHandled();
 
-      AnimateInkDrop(views::InkDropState::ACTIVATED,
-                     ui::LocatedEvent::FromIfValid(event));
+      ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                                 ui::LocatedEvent::FromIfValid(event));
       SchedulePaint();
 
       return;
@@ -365,7 +365,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     if (!did_submit && on_press_)
       on_press_.Run();
 
-    AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+    ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
     SchedulePaint();
   }
 

@@ -29,18 +29,18 @@ class LockScreenActionBackgroundView::NoteBackground
   explicit NoteBackground(views::InkDropObserver* observer)
       : observer_(observer) {
     DCHECK(observer);
-    SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
 
-    SetCreateInkDropCallback(base::BindRepeating(
+    ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
         [](NoteBackground* host) {
           std::unique_ptr<views::InkDrop> ink_drop =
               views::InkDrop::CreateInkDropWithoutAutoHighlight(
-                  host, /*highlight_on_hover=*/false);
+                  host->ink_drop(), /*highlight_on_hover=*/false);
           ink_drop->AddObserver(host->observer_);
           return ink_drop;
         },
         this));
-    SetCreateInkDropRippleCallback(base::BindRepeating(
+    ink_drop()->SetCreateRippleCallback(base::BindRepeating(
         [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
           const gfx::Point center = base::i18n::IsRTL()
                                         ? host->GetLocalBounds().origin()
@@ -48,7 +48,7 @@ class LockScreenActionBackgroundView::NoteBackground
           auto ink_drop_ripple =
               std::make_unique<views::FloodFillInkDropRipple>(
                   host->size(), gfx::Insets(), center,
-                  host->GetInkDropBaseColor(), 1);
+                  host->ink_drop()->GetBaseColor(), 1);
           ink_drop_ripple->set_use_hide_transform_duration_for_hide_fade_out(
               true);
           ink_drop_ripple->set_duration_factor(1.5);
@@ -57,8 +57,8 @@ class LockScreenActionBackgroundView::NoteBackground
         this));
 
     // TODO(pbos): See if this is a no-op when replaced with
-    // SetInkDropBaseColor(), i.e. that nothing sets it later.
-    SetInkDropBaseColorCallback(
+    // ink_drop()->SetBaseColor(), i.e. that nothing sets it later.
+    ink_drop()->SetBaseColorCallback(
         base::BindRepeating([]() { return SK_ColorBLACK; }));
   }
 
@@ -92,14 +92,15 @@ void LockScreenActionBackgroundView::AnimateShow(base::OnceClosure done) {
   animation_end_callback_ = std::move(done);
   animating_to_state_ = views::InkDropState::ACTIVATED;
 
-  background_->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+  background_->ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                                          nullptr);
 }
 
 void LockScreenActionBackgroundView::AnimateHide(base::OnceClosure done) {
   animation_end_callback_ = std::move(done);
   animating_to_state_ = views::InkDropState::HIDDEN;
 
-  background_->AnimateInkDrop(views::InkDropState::HIDDEN, nullptr);
+  background_->ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr);
 }
 
 void LockScreenActionBackgroundView::InkDropAnimationStarted() {}

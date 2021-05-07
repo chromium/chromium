@@ -30,7 +30,7 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback)
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kProjectorButtonSize / 2.f);
 
-  views::InkDrop::UseInkDropForFloodFillRipple(this,
+  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop(),
                                                /*highlight_on_hover=*/true,
                                                /*highlight_on_focus=*/true);
 }
@@ -55,10 +55,10 @@ void ProjectorButton::OnThemeChanged() {
   // Ink Drop.
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 }  // namespace ash

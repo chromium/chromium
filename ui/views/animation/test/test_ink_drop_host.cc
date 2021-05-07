@@ -78,19 +78,19 @@ class TestInkDropHighlight : public InkDropHighlight {
 }  // namespace
 
 TestInkDropHost::TestInkDropHost() {
-  InkDrop::UseInkDropWithoutAutoHighlight(this);
+  InkDrop::UseInkDropWithoutAutoHighlight(ink_drop());
 
-  SetAddInkDropLayerCallback(base::BindRepeating(
+  ink_drop()->SetAddLayerCallback(base::BindRepeating(
       [](TestInkDropHost* host, ui::Layer*) {
         ++host->num_ink_drop_layers_added_;
       },
       this));
-  SetRemoveInkDropLayerCallback(base::BindRepeating(
+  ink_drop()->SetRemoveLayerCallback(base::BindRepeating(
       [](TestInkDropHost* host, ui::Layer*) {
         ++host->num_ink_drop_layers_removed_;
       },
       this));
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropHighlight> {
         auto highlight = std::make_unique<TestInkDropHighlight>(
             host->size(), 0, gfx::PointF(), SK_ColorBLACK);
@@ -101,7 +101,7 @@ TestInkDropHost::TestInkDropHost() {
         return highlight;
       },
       this));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropRipple> {
         auto ripple = std::make_unique<TestInkDropRipple>(
             host->size(), 0, host->size(), 0, gfx::Point(), SK_ColorBLACK,

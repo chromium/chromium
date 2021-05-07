@@ -62,7 +62,7 @@ ReaderModeIconView::~ReaderModeIconView() {
 void ReaderModeIconView::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (GetVisible())
-    AnimateInkDrop(views::InkDropState::HIDDEN, nullptr);
+    ink_drop()->AnimateToState(views::InkDropState::HIDDEN, nullptr);
 }
 
 void ReaderModeIconView::ReadyToCommitNavigation(

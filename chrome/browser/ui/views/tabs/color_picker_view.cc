@@ -91,7 +91,7 @@ class ColorPickerElementView : public views::Button {
                              : gfx::Insets(padding);
     SetBorder(views::CreateEmptyBorder(insets));
 
-    SetInkDropMode(InkDropMode::OFF);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetAnimateOnStateChange(true);
   }
 

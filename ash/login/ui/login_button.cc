@@ -28,15 +28,15 @@ LoginButton::LoginButton(PressedCallback callback)
     : views::ImageButton(std::move(callback)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](InkDropHostView* host) {
         return std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()), kInkDropHighlightColor);
       },
       this));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](LoginButton* host) -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
         const int radius = host->GetInkDropRadius();
@@ -45,8 +45,8 @@ LoginButton::LoginButton(PressedCallback callback)
 
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-            host->GetInkDropCenterBasedOnLastEvent(), kInkDropRippleColor,
-            1.f /*visible_opacity*/);
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            kInkDropRippleColor, 1.f /*visible_opacity*/);
       },
       this));
 

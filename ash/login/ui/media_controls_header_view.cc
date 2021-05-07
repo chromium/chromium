@@ -91,7 +91,7 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_CLOSE));
   close_button->SetAccessibleName(close_button_label);
-  close_button->SetInkDropBaseColor(
+  close_button->ink_drop()->SetBaseColor(
       color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
   close_button_ = AddChildView(std::move(close_button));
 }

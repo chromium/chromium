@@ -53,26 +53,27 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
   // Ink drop.
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  SetInkDropBaseColor(kInkDropBaseColor);
-  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
+  ink_drop()->SetBaseColor(kInkDropBaseColor);
+  ink_drop()->SetVisibleOpacity(kInkDropVisibleOpacity);
   views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
-  views::InkDrop::UseInkDropForFloodFillRipple(this);
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](InkDropHostView* host) {
         auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), host->GetInkDropBaseColor());
+            gfx::SizeF(host->size()), host->ink_drop()->GetBaseColor());
         highlight->set_visible_opacity(kInkDropHighlightOpacity);
         return highlight;
       },
       this));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), gfx::Insets(kInkDropInset),
-            host->GetInkDropCenterBasedOnLastEvent(),
-            host->GetInkDropBaseColor(), host->GetInkDropVisibleOpacity());
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetBaseColor(),
+            host->ink_drop()->GetVisibleOpacity());
       },
       this));
 }
@@ -109,7 +110,7 @@ void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Note that the current assumption is that button bounds are square.
   DCHECK_EQ(width(), height());
   SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
-      SkColorSetA(GetInkDropBaseColor(), 0xff * kInkDropHighlightOpacity),
+      SkColorSetA(ink_drop()->GetBaseColor(), 0xff * kInkDropHighlightOpacity),
       width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
 }
 

@@ -52,19 +52,19 @@ Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   SetRequestFocusOnPress(false);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
-  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](Checkbox* host) {
         // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
-        return host->CreateSquareInkDropRipple(
+        return host->ink_drop()->CreateSquareRipple(
             host->image()->GetMirroredContentsBounds().CenterPoint(),
             gfx::Size(21, 21));
       },
       this));
-  SetInkDropBaseColorCallback(base::BindRepeating(
+  ink_drop()->SetBaseColorCallback(base::BindRepeating(
       [](Checkbox* host) {
         // Usually ink-drop ripples match the text color. Checkboxes use the
         // color of the unchecked, enabled icon.

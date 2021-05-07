@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 
+#include "base/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -82,9 +83,9 @@ void ConfigureInkDropForToolbar(views::Button* host) {
   host->SetHasInkDropActionOnClick(true);
   views::HighlightPathGenerator::Install(
       host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
-  host->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-  host->SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
-  host->SetInkDropHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
-  host->SetInkDropBaseColorCallback(
+  host->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  host->ink_drop()->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
+  host->ink_drop()->SetHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
+  host->ink_drop()->SetBaseColorCallback(
       base::BindRepeating(&GetToolbarInkDropBaseColor, host));
 }

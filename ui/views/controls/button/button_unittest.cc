@@ -49,7 +49,7 @@
 
 namespace views {
 
-using test::InkDropHostViewTestApi;
+using test::InkDropHostTestApi;
 using test::TestInkDrop;
 
 namespace {
@@ -116,7 +116,7 @@ class TestButtonObserver {
  public:
   explicit TestButtonObserver(Button* button) {
     highlighted_changed_subscription_ =
-        button->AddHighlightedChangedCallback(base::BindRepeating(
+        button->ink_drop()->AddHighlightedChangedCallback(base::BindRepeating(
             [](TestButtonObserver* obs) { obs->highlighted_changed_ = true; },
             base::Unretained(this)));
     state_changed_subscription_ =
@@ -147,8 +147,8 @@ class TestButtonObserver {
 TestInkDrop* AddTestInkDrop(TestButton* button) {
   auto owned_ink_drop = std::make_unique<TestInkDrop>();
   TestInkDrop* ink_drop = owned_ink_drop.get();
-  button->SetInkDropMode(InkDropHostView::InkDropMode::ON);
-  InkDropHostViewTestApi(button).SetInkDrop(std::move(owned_ink_drop));
+  button->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  InkDropHostTestApi(button->ink_drop()).SetInkDrop(std::move(owned_ink_drop));
   return ink_drop;
 }
 
@@ -193,7 +193,7 @@ class ButtonTest : public ViewsTestBase {
 
   void CreateButtonWithObserver() {
     button_ = widget()->SetContentsView(std::make_unique<TestButton>(false));
-    button_->SetInkDropMode(InkDropHostView::InkDropMode::ON);
+    button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
     button_observer_ = std::make_unique<TestButtonObserver>(button_);
   }
 
@@ -737,8 +737,8 @@ class VisibilityTestButton : public TestButton {
       ADD_FAILURE();
     auto ink_drop_layer_add_failure_callback =
         base::BindRepeating([](ui::Layer*) { ADD_FAILURE(); });
-    SetAddInkDropLayerCallback(ink_drop_layer_add_failure_callback);
-    SetRemoveInkDropLayerCallback(ink_drop_layer_add_failure_callback);
+    ink_drop()->SetAddLayerCallback(ink_drop_layer_add_failure_callback);
+    ink_drop()->SetRemoveLayerCallback(ink_drop_layer_add_failure_callback);
   }
 };
 
@@ -847,19 +847,19 @@ TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
 TEST_F(ButtonTest, ChangingHighlightStateNotifiesCallback) {
   CreateButtonWithObserver();
   EXPECT_FALSE(button_observer()->highlighted_changed());
-  EXPECT_FALSE(button()->GetHighlighted());
+  EXPECT_FALSE(button()->ink_drop()->GetHighlighted());
 
   button()->SetHighlighted(/*bubble_visible=*/true);
   EXPECT_TRUE(button_observer()->highlighted_changed());
-  EXPECT_TRUE(button()->GetHighlighted());
+  EXPECT_TRUE(button()->ink_drop()->GetHighlighted());
 
   button_observer()->Reset();
   EXPECT_FALSE(button_observer()->highlighted_changed());
-  EXPECT_TRUE(button()->GetHighlighted());
+  EXPECT_TRUE(button()->ink_drop()->GetHighlighted());
 
   button()->SetHighlighted(/*bubble_visible=*/false);
   EXPECT_TRUE(button_observer()->highlighted_changed());
-  EXPECT_FALSE(button()->GetHighlighted());
+  EXPECT_FALSE(button()->ink_drop()->GetHighlighted());
 }
 
 // Verifies that button state changes trigger property change callbacks.

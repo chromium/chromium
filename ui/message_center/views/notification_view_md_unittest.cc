@@ -226,7 +226,8 @@ void NotificationViewMDTest::TearDown() {
   DCHECK(notification_view_ || delete_on_preferred_size_changed_ ||
          delete_on_notification_removed_);
   if (notification_view_) {
-    notification_view_->SetInkDropMode(MessageView::InkDropMode::OFF);
+    notification_view_->ink_drop()->SetMode(
+        views::InkDropHost::InkDropMode::OFF);
     static_cast<views::View*>(notification_view_)->RemoveObserver(this);
     notification_view_->GetWidget()->Close();
     notification_view_ = nullptr;
@@ -1274,14 +1275,14 @@ TEST_F(NotificationViewMDTest, InlineSettingsInkDropAnimation) {
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 
-  notification_view()->GetInkDrop()->AddObserver(this);
+  notification_view()->ink_drop()->GetInkDrop()->AddObserver(this);
 
   // Resize the widget by 1px to simulate the expand animation.
   gfx::Rect size = notification_view()->GetWidget()->GetWindowBoundsInScreen();
   size.Inset(0, 0, 0, 1);
   notification_view()->GetWidget()->SetBounds(size);
 
-  notification_view()->GetInkDrop()->RemoveObserver(this);
+  notification_view()->ink_drop()->GetInkDrop()->RemoveObserver(this);
 
   // The ink drop animation should still be running.
   EXPECT_FALSE(ink_drop_stopped());
@@ -1311,8 +1312,8 @@ TEST_F(NotificationViewMDTest, InkDropClipRect) {
   // Toggle inline settings to show ink drop background.
   notification_view()->ToggleInlineSettings(DummyEvent());
 
-  auto* ink_drop =
-      static_cast<views::InkDropImpl*>(notification_view()->GetInkDrop());
+  auto* ink_drop = static_cast<views::InkDropImpl*>(
+      notification_view()->ink_drop()->GetInkDrop());
   views::test::InkDropImplTestApi ink_drop_test_api(ink_drop);
   gfx::Rect clip_rect = ink_drop_test_api.GetRootLayer()->clip_rect();
 

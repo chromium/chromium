@@ -85,7 +85,7 @@ void CastDialogNoSinksView::SetHelpIconView() {
   icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   icon->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
-  icon->SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+  icon->ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   icon_ = icon;
 
   label_->SetText(

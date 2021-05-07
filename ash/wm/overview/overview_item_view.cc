@@ -88,8 +88,8 @@ class OverviewCloseButton : public views::ImageButton {
  public:
   explicit OverviewCloseButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
-    SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-    views::InkDrop::UseInkDropForFloodFillRipple(this);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+    views::InkDrop::UseInkDropForFloodFillRipple(ink_drop());
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
@@ -118,8 +118,8 @@ class OverviewCloseButton : public views::ImageButton {
              gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color));
 
     const auto ripple_attributes = color_provider->GetRippleAttributes(color);
-    SetInkDropBaseColor(ripple_attributes.base_color);
-    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    ink_drop()->SetBaseColor(ripple_attributes.base_color);
+    ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
   }
 };
 

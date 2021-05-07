@@ -141,11 +141,11 @@ TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   for (int i = 0; i < 10; ++i) {
-    tab_strip_region_view_->new_tab_button()->AnimateInkDropToStateForTesting(
+    tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
         views::InkDropState::ACTION_TRIGGERED);
     controller_->AddTab(i, true /* is_active */);
     CompleteAnimationAndLayout();
-    tab_strip_region_view_->new_tab_button()->AnimateInkDropToStateForTesting(
+    tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
         views::InkDropState::HIDDEN);
   }
 }

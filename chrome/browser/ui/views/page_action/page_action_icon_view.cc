@@ -63,7 +63,7 @@ PageActionIconView::PageActionIconView(
   DCHECK(delegate_);
 
   image()->SetFlipCanvasOnPaintForRTLUI(true);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(

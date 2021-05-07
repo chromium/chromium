@@ -34,12 +34,12 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
   SetInstallFocusRingOnFocus(false);
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
-  SetCreateInkDropCallback(base::BindRepeating(
+  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
       [](InkDropHostView* host) { return TrayPopupUtils::CreateInkDrop(host); },
       this));
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](ActionableView* host) {
         return TrayPopupUtils::CreateInkDropRipple(host->ink_drop_style_, host);
       },
@@ -53,9 +53,10 @@ ActionableView::~ActionableView() {
 
 void ActionableView::HandlePerformActionResult(bool action_performed,
                                                const ui::Event& event) {
-  AnimateInkDrop(action_performed ? views::InkDropState::ACTION_TRIGGERED
-                                  : views::InkDropState::HIDDEN,
-                 ui::LocatedEvent::FromIfValid(&event));
+  ink_drop()->AnimateToState(action_performed
+                                 ? views::InkDropState::ACTION_TRIGGERED
+                                 : views::InkDropState::HIDDEN,
+                             ui::LocatedEvent::FromIfValid(&event));
 }
 
 const char* ActionableView::GetClassName() const {

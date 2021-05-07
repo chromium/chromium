@@ -28,7 +28,7 @@ namespace ash {
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS), listener_(listener) {
   SetNotifyEnterExitOnChild(true);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
 }
 
 HoverHighlightView::~HoverHighlightView() = default;

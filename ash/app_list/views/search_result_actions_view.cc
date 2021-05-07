@@ -77,8 +77,8 @@ SearchResultImageButton::SearchResultImageButton(
   // Avoid drawing default dashed focus and draw customized focus in
   // OnPaintBackground();
   SetFocusPainter(nullptr);
-  SetInkDropMode(InkDropMode::ON);
-  SetCreateInkDropHighlightCallback(base::BindRepeating(
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](SearchResultImageButton* host) {
         const AppListColorProvider* const color_provider =
             AppListColorProvider::Get();
@@ -91,7 +91,7 @@ SearchResultImageButton::SearchResultImageButton(
         return highlight;
       },
       this));
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](SearchResultImageButton* host)
           -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Point center = host->GetLocalBounds().CenterPoint();
@@ -103,7 +103,7 @@ SearchResultImageButton::SearchResultImageButton(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
-            host->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(bg_color),
             color_provider->GetRippleAttributesInkDropOpacity(bg_color));
       },

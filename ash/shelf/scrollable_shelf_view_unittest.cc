@@ -58,10 +58,10 @@ class PageFlipWaiter : public ScrollableShelfView::TestObserver {
 class InkDropAnimationWaiter : public views::InkDropObserver {
  public:
   explicit InkDropAnimationWaiter(views::Button* button) : button_(button) {
-    button->GetInkDrop()->AddObserver(this);
+    button->ink_drop()->GetInkDrop()->AddObserver(this);
   }
   ~InkDropAnimationWaiter() override {
-    button_->GetInkDrop()->RemoveObserver(this);
+    button_->ink_drop()->GetInkDrop()->RemoveObserver(this);
   }
 
   void Wait() {
@@ -613,7 +613,7 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyActivateIconRippleOnVerySmallDisplay) {
 
   // Activate a shelf icon's ink drop. Verify that no crash happens.
   views::InkDropHostView* icon = test_api_->GetButton(0);
-  auto* ink_drop = icon->GetInkDrop();
+  auto* ink_drop = icon->ink_drop()->GetInkDrop();
   ink_drop->SnapToActivated();
   EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 }
@@ -711,7 +711,7 @@ TEST_P(ScrollableShelfViewRTLTest,
     waiter.Wait();
   }
   ASSERT_EQ(views::InkDropState::ACTIVATED,
-            icon->GetInkDrop()->GetTargetInkDropState());
+            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
 
   // Verify that in clamshell when the ripple ring is activated, the rounded
   // corners should not be applied.
@@ -729,7 +729,7 @@ TEST_P(ScrollableShelfViewRTLTest,
     waiter.Wait();
   }
   EXPECT_EQ(views::InkDropState::HIDDEN,
-            icon->GetInkDrop()->GetTargetInkDropState());
+            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
 
   // Verify that the rounded corners should not be applied when the ripple ring
   // is hidden.
@@ -766,7 +766,7 @@ TEST_F(ScrollableShelfViewTest,
     waiter.Wait();
   }
   EXPECT_EQ(views::InkDropState::ACTIVATED,
-            icon->GetInkDrop()->GetTargetInkDropState());
+            icon->ink_drop()->GetInkDrop()->GetTargetInkDropState());
 
   // Emulate to remove a shelf icon from context menu.
   shelf_model->RemoveItemAt(index);

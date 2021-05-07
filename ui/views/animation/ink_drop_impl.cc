@@ -562,8 +562,7 @@ InkDropImpl::HighlightStateFactory::CreateVisibleState(
   return nullptr;
 }
 
-InkDropImpl::InkDropImpl(InkDropHostView* ink_drop_host,
-                         const gfx::Size& host_size)
+InkDropImpl::InkDropImpl(InkDropHost* ink_drop_host, const gfx::Size& host_size)
     : ink_drop_host_(ink_drop_host),
       root_layer_(new ui::Layer(ui::LAYER_NOT_DRAWN)) {
   root_layer_->SetBounds(gfx::Rect(host_size));
@@ -733,7 +732,7 @@ void InkDropImpl::CreateInkDropHighlight() {
 
   // If the platform provides HC colors, we need to show them fully on hover and
   // press.
-  if (views::UsingPlatformHighContrastInkDrop(ink_drop_host_))
+  if (views::UsingPlatformHighContrastInkDrop(ink_drop_host_->host_view()))
     highlight_->set_visible_opacity(1.0f);
 
   highlight_->set_observer(this);

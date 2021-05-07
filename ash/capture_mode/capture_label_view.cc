@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -161,11 +162,12 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_button_->SetNotifyEnterExitOnChild(true);
 
-  label_button_->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  label_button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   const auto ripple_attributes =
       color_provider->GetRippleAttributes(background_color);
-  label_button_->SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  label_button_->SetInkDropBaseColor(ripple_attributes.base_color);
+  label_button_->ink_drop()->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
+  label_button_->ink_drop()->SetBaseColor(ripple_attributes.base_color);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));

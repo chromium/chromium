@@ -123,9 +123,8 @@ TEST_F(LoginUserMenuViewTest, LoginButtonRipple) {
   container->AddChildView(bubble_opener);
   SetWidget(CreateWidgetWithContent(container));
 
-  views::test::InkDropHostViewTestApi ink_drop_api(bubble_opener);
-  EXPECT_EQ(ink_drop_api.ink_drop_mode(),
-            views::InkDropHostView::InkDropMode::ON);
+  views::test::InkDropHostTestApi ink_drop_api(bubble_opener->ink_drop());
+  EXPECT_EQ(ink_drop_api.ink_drop_mode(), views::InkDropHost::InkDropMode::ON);
   EXPECT_TRUE(ink_drop_api.HasInkDrop());
 
   auto* bubble = new LoginUserMenuView(LoginUserInfo(), container /*anchor*/,

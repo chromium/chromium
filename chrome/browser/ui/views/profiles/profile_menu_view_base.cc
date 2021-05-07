@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -186,7 +187,7 @@ class CircularImageButton : public views::ImageButton {
         background_profile_color_(background_profile_color),
         show_border_(show_border) {
     SetTooltipText(text);
-    SetInkDropMode(views::Button::InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
 
     InstallCircleHighlightPathGenerator(this);
   }
@@ -207,7 +208,7 @@ class CircularImageButton : public views::ImageButton {
         ImageForMenu(icon_, kShortcutIconToImageRatio, icon_color);
     SetImage(views::Button::STATE_NORMAL,
              SizeImage(image, kCircularImageButtonSize));
-    SetInkDropBaseColor(icon_color);
+    ink_drop()->SetBaseColor(icon_color);
 
     if (show_border_) {
       const SkColor separator_color = GetNativeTheme()->GetSystemColor(
@@ -550,7 +551,8 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
   SetPaintClientToLayer(true);
   set_margins(gfx::Insets(0));
   DCHECK(anchor_button);
-  anchor_button->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+  anchor_button->ink_drop()->AnimateToState(views::InkDropState::ACTIVATED,
+                                            nullptr);
 
   SetEnableArrowKeyTraversal(true);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
@@ -997,7 +999,8 @@ void ProfileMenuViewBase::Init() {
 void ProfileMenuViewBase::OnWindowClosing() {
   DCHECK_EQ(g_profile_bubble_, this);
   if (anchor_button())
-    anchor_button()->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+    anchor_button()->ink_drop()->AnimateToState(
+        views::InkDropState::DEACTIVATED, nullptr);
   g_profile_bubble_ = nullptr;
 }
 

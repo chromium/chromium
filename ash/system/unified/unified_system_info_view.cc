@@ -21,6 +21,7 @@
 #include "ash/system/supervised/supervised_icon_string.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -98,7 +99,7 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
   SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
   SetInstallFocusRingOnFocus(true);
-  SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
 DateView::~DateView() {
@@ -286,7 +287,7 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
 
   SetInstallFocusRingOnFocus(true);
-  SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
 // A view that shows whether the device is enterprise managed or not. It updates

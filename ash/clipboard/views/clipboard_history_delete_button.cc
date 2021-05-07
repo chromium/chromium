@@ -34,7 +34,7 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   SetPreferredSize(gfx::Size(ClipboardHistoryViews::kDeleteButtonSizeDip,
                              ClipboardHistoryViews::kDeleteButtonSizeDip));
   SetVisible(false);
-  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
@@ -50,7 +50,7 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   views::InstallFixedSizeCircleHighlightPathGenerator(
       this, ClipboardHistoryViews::kDeleteButtonSizeDip / 2);
   views::InkDrop::UseInkDropForFloodFillRipple(
-      this, /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
+      ink_drop(), /*highlight_on_hover=*/false, /*highlight_on_focus=*/true);
 }
 
 ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() = default;
@@ -82,9 +82,9 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
 
   const AshColorProvider::RippleAttributes ripple_attributes =
       AshColorProvider::Get()->GetRippleAttributes();
-  SetInkDropBaseColor(ripple_attributes.base_color);
-  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);
+  ink_drop()->SetBaseColor(ripple_attributes.base_color);
+  ink_drop()->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  ink_drop()->SetHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {

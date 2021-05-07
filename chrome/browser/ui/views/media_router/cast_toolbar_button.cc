@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 
+#include "base/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -92,11 +93,11 @@ void CastToolbarButton::HideIcon() {
 }
 
 void CastToolbarButton::ActivateIcon() {
-  AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+  ink_drop()->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
 }
 
 void CastToolbarButton::DeactivateIcon() {
-  AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+  ink_drop()->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
 }
 
 void CastToolbarButton::OnIssue(const media_router::Issue& issue) {

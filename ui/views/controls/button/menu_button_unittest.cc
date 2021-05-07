@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -117,7 +118,8 @@ class MenuButtonTest : public ViewsTestBase {
 
     auto ink_drop = std::make_unique<test::TestInkDrop>();
     ink_drop_ = ink_drop.get();
-    test::InkDropHostViewTestApi(button_).SetInkDrop(std::move(ink_drop));
+    test::InkDropHostTestApi(button_->ink_drop())
+        .SetInkDrop(std::move(ink_drop));
 
     widget_->Show();
   }
@@ -296,7 +298,7 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 
   EXPECT_TRUE(button()->clicked());
   gfx::Point inkdrop_center_point =
-      button()->GetInkDropCenterBasedOnLastEvent();
+      button()->ink_drop()->GetInkDropCenterBasedOnLastEvent();
   View::ConvertPointToScreen(button(), &inkdrop_center_point);
   EXPECT_EQ(click_point, inkdrop_center_point);
 }
@@ -312,7 +314,8 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClickWithPressedLock) {
                                                  false, &click_event);
 
   EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
-  EXPECT_EQ(click_point, button()->GetInkDropCenterBasedOnLastEvent());
+  EXPECT_EQ(click_point,
+            button()->ink_drop()->GetInkDropCenterBasedOnLastEvent());
 }
 
 // Test that the MenuButton stays pressed while there are any PressedLocks.

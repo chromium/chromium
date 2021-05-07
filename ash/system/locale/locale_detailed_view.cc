@@ -46,7 +46,7 @@ class LocaleItem : public ActionableView {
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
         locale_detailed_view_(locale_detailed_view),
         checked_(checked) {
-    SetInkDropMode(InkDropMode::ON);
+    ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
     AddChildView(tri_view);

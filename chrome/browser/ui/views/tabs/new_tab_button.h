@@ -41,7 +41,7 @@ class NewTabButton : public views::ImageButton,
   // the best contrast on the background.
   virtual void FrameColorsChanged();
 
-  void AnimateInkDropToStateForTesting(views::InkDropState state);
+  void AnimateToStateForTesting(views::InkDropState state);
 
   // views::ImageButton:
   void AddLayerBeneathView(ui::Layer* new_layer) override;

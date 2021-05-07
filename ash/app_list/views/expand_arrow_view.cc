@@ -141,18 +141,18 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
   // TODO(pbos): Replace ::OnPaint focus painting with FocusRing +
   // HighlightPathGenerator usage.
   SetInstallFocusRingOnFocus(false);
-  SetInkDropMode(InkDropMode::ON);
+  ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ExpandArrowHighlightPathGenerator>());
-  views::InkDrop::UseInkDropWithoutAutoHighlight(this,
+  views::InkDrop::UseInkDropWithoutAutoHighlight(ink_drop(),
                                                  /*highlight_on_hover=*/false);
-  SetCreateInkDropRippleCallback(base::BindRepeating(
+  ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
         const AppListColorProvider* color_provider =
             AppListColorProvider::Get();
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(GetCircleBounds()),
-            host->GetInkDropCenterBasedOnLastEvent(),
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
             color_provider->GetRippleAttributesBaseColor(),
             color_provider->GetRippleAttributesInkDropOpacity());
       },
@@ -367,7 +367,8 @@ void ExpandArrowView::OnButtonPressed() {
   button_pressed_ = true;
   ResetHintingAnimation();
   TransitToFullscreenAllAppsState();
-  GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);
+  ink_drop()->GetInkDrop()->AnimateToState(
+      views::InkDropState::ACTION_TRIGGERED);
 }
 
 void ExpandArrowView::TransitToFullscreenAllAppsState() {
