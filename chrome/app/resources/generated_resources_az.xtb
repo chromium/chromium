@@ -2175,7 +2175,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3396800784455899911">"Qəbul edin və davam edin" düyməsinə klikləməklə bu Google xidmətləri üçün yuxarıda təsvir edilən proseslərə razılıq verirsiniz.</translation>
 <translation id="3399432415385675819">Bildirişlər deaktiv ediləcək</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hers) - növbəli</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} parol bu cihazda saxlanılıb}other{{COUNT} parol bu cihazda saxlanılıb}}</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} parol bu cihazda saxlanılır}other{{COUNT} parol bu cihazda saxlanılır}}</translation>
 <translation id="3402255108239926910">Avatar seçin</translation>
 <translation id="3402585168444815892">Demo Rejimində qeydiyyat</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>

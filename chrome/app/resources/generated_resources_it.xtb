@@ -1503,7 +1503,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2628770867680720336">Per attivare il debug ADB è necessario eseguire un ripristino dei dati di fabbrica di questo Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Sviluppo di app Android</translation>
 <translation id="2630681426381349926">Per iniziare, collegati alla rete Wi-Fi</translation>
-<translation id="2631498379019108537">Mostra opzioni di immissione nello shelf</translation>
+<translation id="2631498379019108537">Mostra opzioni di immissione nella barra delle app</translation>
 <translation id="2633212996805280240">Rimuovere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> non è stato in grado di completare l'installazione ma continuerà a essere eseguito dall'immagine disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -1886,7 +1886,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3023464535986383522">Seleziona per ascoltare</translation>
 <translation id="3024374909719388945">Usa orologio 24 ore</translation>
 <translation id="3027296729579831126">Attiva Condivisione nelle vicinanze</translation>
-<translation id="3029466929721441205">Mostrare strumenti stilo nello shelf</translation>
+<translation id="3029466929721441205">Mostrare strumenti stilo nella barra delle app</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede il download di un aggiornamento oggi stesso. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a Internet.}other{<ph name="MANAGER" /> richiede il download di un aggiornamento prima della scadenza. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a Internet.}}</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Seleziona elementi da importare:</translation>
@@ -2401,7 +2401,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3628275722731025472">Disattivare il Bluetooth</translation>
 <translation id="3629631988386925734">Inserisci la password per attivare Smart Lock. La prossima volta potrai usare il telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
 <translation id="3630132874740063857">Il tuo telefono</translation>
-<translation id="3630995161997703415">Aggiungi questo sito alla shelf per usarlo in qualsiasi momento</translation>
+<translation id="3630995161997703415">Aggiungi questo sito alla barra delle app per usarlo in qualsiasi momento</translation>
 <translation id="3633309367764744750">Vengono precaricate le informazioni delle pagine, incluse quelle non ancora visitate. Le informazioni recuperate potrebbero includere i cookie, se sono consentiti.</translation>
 <translation id="3634507049637220048">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestita dall'amministratore, dettagli</translation>
 <translation id="3634652306074934350">Richiesta di autorizzazione scaduta</translation>
@@ -3147,7 +3147,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4474155171896946103">Aggiungi tutte le schede ai Preferiti...</translation>
 <translation id="4475552974751346499">Cerca tra i file scaricati</translation>
-<translation id="4475830133618397783">Scegli quali password spostare. Puoi trovarle ogni volta che esegui l'accesso.</translation>
+<translation id="4475830133618397783">Scegli quali password spostare. Puoi averle a tua disposizione ogni volta che esegui l'accesso.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per eseguire la scansione di questo codice, puoi usare un'app scanner QR sul telefono oppure alcune app fotocamera.</translation>
 <translation id="4477015793815781985">Includi CTRL, ALT o ⌘</translation>
@@ -4359,7 +4359,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5860494867054883682">Aggiornamento del dispositivo al canale <ph name="CHANNEL_NAME" /> in corso (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="5862109781435984885">Mostra strumenti stilo nello shelf</translation>
+<translation id="5862109781435984885">Mostra strumenti stilo nella barra delle app</translation>
 <translation id="5862319196656206789">Configura i dispositivi connessi</translation>
 <translation id="5863445608433396414">Attiva funzioni di debug</translation>
 <translation id="5864195618110239517">Usa connessione a consumo</translation>
@@ -5850,7 +5850,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7548856833046333824">Limonata</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
-<translation id="7551643184018910560">Blocca sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7553012839257224005">Controllo del container Linux</translation>
 <translation id="7553242001898162573">Inserisci la password</translation>
@@ -6574,7 +6574,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8327039559959785305">Errore durante il montaggio di file Linux. Riprova.</translation>
 <translation id="8327676037044516220">Autorizzazioni e impostazioni contenuti</translation>
 <translation id="833256022891467078">Cartelle condivise di Crostini</translation>
-<translation id="8335587457941836791">Stacca dallo shelf</translation>
+<translation id="8335587457941836791">Stacca dalla barra delle app</translation>
 <translation id="8336407002559723354">Gli aggiornamenti terminano a <ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336721153892716270">Riavvia il dispositivo per visualizzare il testo di sistema in <ph name="LANGUAGE" /></translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>

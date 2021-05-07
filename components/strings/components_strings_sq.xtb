@@ -245,7 +245,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     titulli është formuar gabimisht, gjë që e parandalon përmbushjen e
     kërkesës sate për <ph name="SITE" />. Politikat e origjinës mund të përdoren nga operatorët e sajtit për të konfiguruar karakteristikat e sigurisë dhe karakteristika të tjera për një sajt.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1783075131180517613">Përditëso frazën e kalimit të sinkronizimit.</translation>
+<translation id="1783075131180517613">Përditëso frazën e kalimit për sinkronizimin.</translation>
 <translation id="1787142507584202372">Skedat e tua të hapura shfaqen këtu</translation>
 <translation id="1791429645902722292">Smart Lock-u i Google</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
@@ -1510,7 +1510,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6711464428925977395">Ka një gabim me serverin përfaqësues ose adresa është e pasaktë.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6718612893943028815">Të përdoret kamera?</translation>
-<translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit të sinkronizimit <ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
+<translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="674375294223700098">Gabim i panjohur i certifikatës së serverit</translation>
 <translation id="6744009308914054259">Ndërkohë që pret për një lidhje, mund të vizitosh "Shkarkimet" për të lexuar artikuj jashtë linje.</translation>
 <translation id="6753269504797312559">Vlera e politikës</translation>
@@ -2155,7 +2155,7 @@ Detaje shtesë:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> përdor një protokoll të pambështetur.</translation>
 <translation id="9191834167571392248">Shpim poshtë majtas</translation>
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
-<translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit të sinkronizimit. Fute atë për të nisur sinkronizmin.</translation>
+<translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="9207861905230894330">Dështoi në shtimin e artikullit.</translation>
 <translation id="9213433120051936369">Personalizo pamjen</translation>
 <translation id="9215416866750762878">Një aplikacion e pengon Chrome që të lidhet në mënyrë të sigurt me këtë sajt</translation>

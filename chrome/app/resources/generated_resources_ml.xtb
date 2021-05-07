@@ -2178,7 +2178,7 @@
 <translation id="3396800784455899911">"അംഗീകരിച്ച് തുടരുക" ബട്ടൺ ക്ലിക്ക് ചെയ്യുക വഴി, ഈ Google സേവനങ്ങൾക്കായി മുകളിൽ വിവരിച്ചിട്ടുള്ള പ്രോസസിംഗിന് നിങ്ങൾ സമ്മതിക്കുകയാണ്.</translation>
 <translation id="3399432415385675819">അറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാകും</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ഹേർട്‌സ്) - മിശ്രമാക്കിയത്</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‍വേഡ് സംഭരിച്ചിരിക്കുന്നു}other{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‍വേഡുകൾ സംഭരിച്ചിരിക്കുന്നു}}</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡ് സംഭരിച്ചിരിക്കുന്നു}other{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‍വേഡുകൾ സംഭരിച്ചിരിക്കുന്നു}}</translation>
 <translation id="3402255108239926910">അവതാർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3402585168444815892">ഡെമോ മോഡിൽ എൻറോൾ ചെയ്യുന്നു</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -4315,7 +4315,7 @@
 <translation id="5814126672212206791">കണക്ഷൻ തരം</translation>
 <translation id="5815645614496570556">X.400 വിലാസം</translation>
 <translation id="5816434091619127343">അഭ്യർത്ഥിച്ച പ്രിന്റർ മാറ്റങ്ങൾ, പ്രിന്ററിനെ ഉപയോഗിക്കാൻ കഴിയാത്ത നിലയിലാക്കും.</translation>
-<translation id="5817069030404929329">ഈ ഉപകരണത്തിൽ നിന്ന് പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് നീക്കണോ?</translation>
+<translation id="5817069030404929329">ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് പാസ്‌വേഡുകൾ നീക്കണോ?</translation>
 <translation id="5817918615728894473">ജോടിയാക്കുക</translation>
 <translation id="5821565227679781414">കുറുക്കുവഴി സൃഷ്‌ടിക്കുക</translation>
 <translation id="5825412242012995131">ഓണാക്കുക (ശുപാർശചെയ്‌തത്)</translation>

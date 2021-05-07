@@ -712,7 +712,7 @@
 <translation id="1753067873202720523">የእርስዎ Chromebook በርቶ ሳለ ባትሪ ላይሞላ ይችላል።</translation>
 <translation id="1753905327828125965">በይበልጥ የተጎበኙ</translation>
 <translation id="1755601632425835748">የጽሑፍ መጠን</translation>
-<translation id="1755872274219796698">የይለፍ ቃላትን ይውሰዱ</translation>
+<translation id="1755872274219796698">የይለፍ ቃላትን ውሰድ</translation>
 <translation id="1756681705074952506">የግቤት ስልት</translation>
 <translation id="1757301747492736405">ማራገፍ በመጠባበቅ ላይ</translation>
 <translation id="175772926354468439">ገጽታን አንቃ</translation>
@@ -1318,7 +1318,7 @@
 <translation id="2428939361789119025">Wi-Fiን አጥፋ</translation>
 <translation id="2428978615149723410">እነዚህ ተሳቢዎች</translation>
 <translation id="2431027948063157455">Google ረዳት የአውታረ መረብ ግንኙነትዎን መፈተሽ እና ዳግም መሞከር አልቻለም።</translation>
-<translation id="243179355394256322">የእርስዎ ድርጅት መሣሪያን ማስመዘገብ ለተፈቀደላቸው ተጠቃሚዎች ብቻ ይገድባል። ይህ ተጠቃሚ መሣሪያዎችን እንዲያስመዘግባቸው አልተፈቀደለትም። እባክዎ በአስተዳዳሪው console በተጠቃሚዎች ክፍል ውስጥ ተጠቃሚው «የGoogle Meet ሃርድዌርን አስመዝግብ» የአስተዳዳሪ መብት እንዳለው ያረጋግጡ።</translation>
+<translation id="243179355394256322">የእርስዎ ድርጅት መሣሪያን ማስመዘገብን ለተፈቀደላቸው ተጠቃሚዎች ብቻ ይገድባል። እኚህ ተጠቃሚ መሣሪያዎችን እንዲያስመዘግቡ አልተፈቀደላቸውም። እባክዎ ተጠቃሚው በአሰዳደር መሥሪያ የተጠቃሚ ክፍል ውስጥ «የGoogle Meet ሃርድዌርን አስመዝግብ» የአስተዳዳሪ መብት እንዳላቸው ያረጋግጡ።</translation>
 <translation id="2433452467737464329">ገጹን በራስ-ሰር ለማደስ በዩ አር ኤል ውስጥ የመጠይቅ ልኬት ያክሉ፦ chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">ገጽታ</translation>
 <translation id="2433836460518180625">መሣሪያ ብቻ ክፈት</translation>
@@ -1936,7 +1936,7 @@
 <translation id="3088325635286126843">እንደገና &amp;ሰይም...</translation>
 <translation id="3089064280130434511">ጣቢያዎች መስኮቶችን እንዳይከፍቱና በማያ ገጽዎችዎ ላይ እንዳያስቀምጧቸው ያግዷቸው</translation>
 <translation id="3089137131053189723">ፍለጋ ጸድቷል</translation>
-<translation id="3090589793601454425">አይውሰዱ</translation>
+<translation id="3090589793601454425">አትውሰድ</translation>
 <translation id="3090819949319990166">ውጫዊ የcrx ፋይል ወደ <ph name="TEMP_CRX_FILE" /> መቅዳት አልተቻለም።</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» ተጣምሯል</translation>
 <translation id="3093714882666365141">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን እንዲጭኑ አይፍቀዱ</translation>
@@ -4316,7 +4316,7 @@
 <translation id="5814126672212206791">የግንኙነት ዓይነት</translation>
 <translation id="5815645614496570556">X.400 አድራሻ</translation>
 <translation id="5816434091619127343">የተጠየቁት የአታሚ ለውጦች አታሚው ጥቅም እንዳይሰጥ ያደርጉታል።</translation>
-<translation id="5817069030404929329">የይለፍ ቃ፤አት ከዚህ መሣሪያ ወደ Google መለያዎ ይወሰዱ?</translation>
+<translation id="5817069030404929329">የይለፍ ቃላት ከዚህ መሣሪያ ወደ የእርስዎ Google መለያ ይወሰዱ?</translation>
 <translation id="5817918615728894473">አጣምር</translation>
 <translation id="5821565227679781414">አቋራጭ ፍጠር</translation>
 <translation id="5825412242012995131">በርቷል (የሚመከር)</translation>
@@ -4416,7 +4416,7 @@
 <translation id="5932124097031739492">Linux በተሳካ ሁኔታ ደረጃው ተሻሽሏል።</translation>
 <translation id="5932224571077948991">ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="59324397759951282">የዩኤስቢ መሣሪያ ከ<ph name="MANUFACTURER_NAME" /></translation>
-<translation id="5932441198730183141">ይህንን የGoogle Meet ሃርድዌር መሳሪያ ለማስመዝገብ በቂ የሚገኙ ፈቃዶች የሉዎትም። የበለጠ ለመግዛት እባክዎ ሽያጮችን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
+<translation id="5932441198730183141">ይህንን የGoogle Meet ሃርድዌር መሳሪያ ለማስመዝገብ በቂ የሚገኙ ፈቃዶች የሉዎትም። የበለጠ ለመግዛት እባክዎ ሽያጮችን ያነጋግሩ። ይህን መልዕክት እያዩት ያለው በስህተት እንደሆነ ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
 <translation id="5932881020239635062">ተከታታይ</translation>
 <translation id="5933376509899483611">የጊዜ ሰቅ</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
@@ -5404,7 +5404,7 @@
 <translation id="7029307918966275733">Crostini አልተጫነም። ምስጋናዎችን ለመመልከት እባክዎ Crostiniን ይጫኑ።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ተከታታይ ወደብ ተገናኝቷል</translation>
-<translation id="7034692021407794547">የየሂሳብ አከፋፈል አስተዳደር መብቶች ያለው አስተዳዳሪ በመጀመሪያ በአስተዳዳሪው console በGoogle Meet ሃርድዌር ክፍል ውስጥ የGoogle Meet ሃርድዌር የአገልግሎት ውሎችን መቀበል አለበት።</translation>
+<translation id="7034692021407794547">የሒሳብ አከፋፈል አስተዳደር ልዩ መብቶች ያሉት አስተዳዳሪ መጀመሪያ በአስተዳዳሪ መሥሪያው የGoogle Meet ሃርድዌር ክፍል ውስጥ የGoogle Meet ሃርድዌር የአገልግሎት ውልን መቀበል አለባቸው።</translation>
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7037509989619051237">ቅድሚያ የሚታይ ጽሑፍ</translation>
 <translation id="7038632520572155338">የመዳረሻ መቀየሪያ</translation>

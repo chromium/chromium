@@ -349,7 +349,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
 <translation id="4666531726415300315">Je identifikuar si <ph name="EMAIL" />.
 
-Të dhënat e tua janë të koduara me frazën tënde të kalimit. Fute atë për të nisur sinkronizimin.</translation>
+Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkronizimin. Fute atë për të nisur sinkronizimin.</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -520,7 +520,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6417838470969808600">Ke faqeshënues, historik, fjalëkalime dhe cilësime të tjera nga <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Je identifikuar si <ph name="EMAIL" />.
 
-Të dhënat e tua janë koduar me frazën tënde të kalimit më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
+Të dhënat e tua janë koduar me frazën tënde të kalimit për sinkronizimin më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
 <translation id="6434591244308415567">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6439338047467462846">Lejo të gjitha</translation>

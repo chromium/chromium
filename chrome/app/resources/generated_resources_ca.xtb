@@ -1998,7 +1998,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (emmagatzemat en maquinari)</translation>
 <translation id="3161522574479303604">Tots els idiomes</translation>
 <translation id="3162853326462195145">Compte de centre educatiu</translation>
-<translation id="3162899666601560689">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó de la compra</translation>
+<translation id="3162899666601560689">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic</translation>
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Els serveis següents ajuden a protegir les teves dades. Pots desactivar aquestes funcions en qualsevol moment.</translation>
 <translation id="3164329792803560526">S'està compartint aquesta pestanya amb <ph name="APP_NAME" /></translation>
@@ -5841,7 +5841,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7531771599742723865">Dispositiu en ús</translation>
 <translation id="7531779363494549572">Ves a Configuració &gt; Aplicacions i notificacions &gt; Notificacions.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> no respon. Selecciona "Força el tancament" per tancar l'aplicació.</translation>
-<translation id="7537451260744431038">Els llocs web no poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó de la compra</translation>
+<translation id="7537451260744431038">Els llocs web no poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic</translation>
 <translation id="7540972813190816353">S'ha produït un error durant la cerca d'actualitzacions: <ph name="ERROR" /></translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> amb l'aplicació <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Està sincronitzada amb altres dispositius del teu compte. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>

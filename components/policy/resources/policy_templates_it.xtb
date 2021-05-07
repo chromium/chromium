@@ -655,7 +655,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="1888871729456797026">Il token di registrazione della norma relativa alla cloud su desktop</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="1897365952389968758">Consenti l'esecuzione di JavaScript in tutti i siti</translation>
-<translation id="1902043648529789224">Controlla la posizione della shelf</translation>
+<translation id="1902043648529789224">Controlla la posizione della barra delle app</translation>
 <translation id="1904323733389537794">Se il criterio è impostato su true, vengono eseguiti i controlli online di <ph name="OCSP_CRL_LABEL" />.
 
       Se il criterio è impostato su false o non viene configurato, <ph name="PRODUCT_NAME" /> non eseguirà i controlli delle revoche online in <ph name="PRODUCT_NAME" /> 19 e versioni successive.
@@ -895,7 +895,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2201555246697292490">Configura whitelist messaggi nativi</translation>
 <translation id="2202787915587511214">Attiva NTLMv2</translation>
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
-<translation id="2204753382813641270">Controlla la visualizzazione automatica dello shelf</translation>
+<translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
 
@@ -1148,7 +1148,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
-<translation id="2498238926436517902">Nascondi sempre automaticamente lo shelf</translation>
+<translation id="2498238926436517902">Nascondi sempre automaticamente la barra delle app</translation>
 <translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
 
       Se il criterio non viene configurato, i Termini di servizio non vengono visualizzati.
@@ -1534,7 +1534,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione).
 
-      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sullo shelf di <ph name="PRODUCT_OS_NAME" />.</translation>
+      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sulla barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2985097017239074272">Google News (supportato dalla versione 91)</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
@@ -2295,7 +2295,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su True e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
-<translation id="3973371701361892765">Non nascondere mai automaticamente lo shelf</translation>
+<translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -2315,7 +2315,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Tieni presente che questa norma non influisce sull'eliminazione o meno dei dati utenti locali sul dispositivo.</translation>
 <translation id="4010738624545340900">Consenti richiamo di finestre di dialogo di selezione file</translation>
-<translation id="401260868452018796">Posiziona la shelf nella parte inferiore dello schermo</translation>
+<translation id="401260868452018796">Posiziona la barra delle app nella parte inferiore dello schermo</translation>
 <translation id="4012737788880122133">Se questa norma viene impostata su True, gli aggiornamenti automatici vengono disattivati.
 
 Se questa norma non viene configurata o viene impostata su False, i dispositivi <ph name="PRODUCT_OS_NAME" /> controllano automaticamente la disponibilità di aggiornamenti.
@@ -2351,7 +2351,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai rapporti sugli arresti anomali.</translation>
-<translation id="4075675819066819571">Posiziona la shelf sul lato sinistro dello schermo</translation>
+<translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
 <translation id="408029843066770167">Consenti query a un servizio orario di Google</translation>
 <translation id="408076456549153854">Attiva accesso al browser</translation>
 <translation id="4081127242481747676">Impostazioni dei sensori</translation>
@@ -2797,9 +2797,9 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4802905909524200151">Configura il comportamento di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Riavvia sempre all'uscita dell'utente.</translation>
 <translation id="4807950475297505572">Gli utenti utilizzati meno di recente vengono rimossi fino alla disponibilità di spazio libero sufficiente</translation>
-<translation id="4812270373673968774">Se il criterio è impostato su Always, lo shelf <ph name="PRODUCT_OS_NAME" /> viene nascosto automaticamente. Se il criterio è impostato su Never, lo shelf non viene mai nascosto automaticamente.
+<translation id="4812270373673968774">Se il criterio è impostato su Always, la barra delle app <ph name="PRODUCT_OS_NAME" /> viene nascosta automaticamente. Se il criterio è impostato su Never, la barra delle app non viene mai nascosta automaticamente.
 
-      Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se lo shelf viene nascosto automaticamente.</translation>
+      Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se la barra delle app viene nascosta automaticamente.</translation>
 <translation id="4812714598405913256">Configura il messaggio della scadenza dell'aggiornamento automatico per il criterio DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Consenti all'utente aziendale di essere l'utente principale e secondario (comportamento predefinito per gli utenti non gestiti)</translation>
 <translation id="4818228398115369966">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Google News ed Esplora da disattivare</translation>
@@ -3086,7 +3086,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5177260184597743704">Criterio di configurazione per il connettore OnSecurityEvent di Chrome Enterprise</translation>
 <translation id="5178479074002209469">Un flag booleano che indica se le sessioni utente non gestite devono ricevere o meno notifiche e forzare o meno l'uscita dall'account in caso di aggiornamento obbligatorio, in base a questo criterio.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5182483318861266793">Posiziona la shelf sul lato destro dello schermo</translation>
+<translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
 <translation id="5190426551516379357">La configurazione del criterio applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se il criterio viene impostato su:
 
@@ -4556,17 +4556,17 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene configurato, viene utilizzato <ph name="BLOCK_PLUGINS_POLICY_NAME" /> e gli utenti possono cambiare l'impostazione.
 
       Nota: la riproduzione automatica è consentita soltanto per i domini espressamente elencati nel criterio <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Per attivare la riproduzione automatica per tutti i siti, aggiungi http://* e https://* a questo elenco.</translation>
-<translation id="7037812781389976160">Consente di controllare la posizione della shelf di <ph name="PRODUCT_OS_NAME" />.
+<translation id="7037812781389976160">Consente di controllare la posizione della barra delle app di <ph name="PRODUCT_OS_NAME" />.
 
-      Se per questo criterio viene impostato il valore "In basso", la shelf viene posizionata nella parte inferiore dello schermo.
+      Se per questo criterio viene impostato il valore "In basso", la barra delle app viene posizionata nella parte inferiore dello schermo.
 
-      Se per questo criterio viene impostato il valore "A sinistra", la shelf viene posizionata sul lato sinistro dello schermo.
+      Se per questo criterio viene impostato il valore "A sinistra", la barra delle app viene posizionata sul lato sinistro dello schermo.
 
-      Se per questo criterio viene impostato il valore "A destra", la shelf viene posizionata sul lato destro dello schermo.
+      Se per questo criterio viene impostato il valore "A destra", la barra delle app viene posizionata sul lato destro dello schermo.
 
       Se imposti questo criterio come obbligatorio, gli utenti non potranno modificarlo o ignorarlo.
 
-      Se il criterio non viene impostato, la shelf verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
+      Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7063895219334505671">Consenti popup su questi siti</translation>

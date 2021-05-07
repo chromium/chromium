@@ -65,12 +65,12 @@
 <translation id="2914313326123580426">Mostra o nasconde il riquadro Strumenti per sviluppatori</translation>
 <translation id="292495055542441795">Attiva/disattiva lo schermo intero</translation>
 <translation id="3020183492814296499">Scorciatoie</translation>
-<translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla shelf</translation>
-<translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella shelf</translation>
+<translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla barra delle app</translation>
+<translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella barra delle app</translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Area attiva nella barra degli indirizzi</translation>
-<translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla shelf</translation>
+<translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3288816184963444640">Chiude la finestra corrente</translation>
 <translation id="3407560819924487926">Apre il Task Manager</translation>
 <translation id="3417835166382867856">Cerca tra le schede</translation>
@@ -86,11 +86,11 @@
 <translation id="3720939646656082033">Apre il link in una nuova scheda e passa alla nuova scheda</translation>
 <translation id="3725795051337497754">Chiude la scheda corrente</translation>
 <translation id="3751033133896282964">Annulla l'ultima azione</translation>
-<translation id="3792178297143798024">Consente di aprire l'elemento evidenziato sulla shelf</translation>
+<translation id="3792178297143798024">Consente di aprire l'elemento evidenziato sulla barra delle app</translation>
 <translation id="379295446891231126">Da <ph name="CTRL" /><ph name="SEPARATOR" /> 1 a 8</translation>
 <translation id="3837047332182291558">Aumenta la luminosità della tastiera (soltanto per tastiere retroilluminate)</translation>
 <translation id="3949671998904569433">virgola</translation>
-<translation id="3976863468609830880">Seleziona l'ultima icona nella shelf</translation>
+<translation id="3976863468609830880">Seleziona l'ultima icona nella barra delle app</translation>
 <translation id="3994783594793697310">Reimposta il livello di zoom dello schermo</translation>
 <translation id="4026843240379844265">Sposta la finestra attiva tra gli schermi</translation>
 <translation id="4035482366624727273">Seleziona tutti i contenuti della pagina</translation>
@@ -150,8 +150,8 @@
 <translation id="6340769215862220182">Aumenta lo zoom dello schermo</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Seleziona il testo alla fine della riga</translation>
-<translation id="6425378783626925378">Consente di fare clic sulle icone 1-8 nella shelf</translation>
-<translation id="6435207348963613811">Mette in evidenza l'elemento precedente sulla shelf</translation>
+<translation id="6425378783626925378">Consente di fare clic sulle icone 1-8 nella barra delle app</translation>
+<translation id="6435207348963613811">Mette in evidenza l'elemento precedente sulla barra delle app</translation>
 <translation id="6445033640292336367">Ripristina la posizione originale della scheda</translation>
 <translation id="6474744297082284761">Diminuisce lo zoom (con lente d’ingrandimento ancorata o a schermo intero attiva)</translation>
 <translation id="649811797655257835">Seleziona il file, quindi premi <ph name="SPACE" /></translation>

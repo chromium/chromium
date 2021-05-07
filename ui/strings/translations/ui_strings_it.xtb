@@ -83,7 +83,7 @@
 <translation id="2981684127883932071">Visualizzazione dei suggerimenti</translation>
 <translation id="3036649622769666520">Apri file</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">Shelf a sinistra</translation>
+<translation id="3068711042108640621">Barra delle app a sinistra</translation>
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Ripristina</translation>
@@ -95,7 +95,7 @@
 <translation id="335581015389089642">Voce</translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
 <translation id="3406306243914553062">Contenuti HTML</translation>
-<translation id="348799646910989694">Shelf nascosto in automatico</translation>
+<translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 giorno rimanente}other{# giorni rimanenti}}</translation>
 <translation id="3600969208114796418">File <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
@@ -126,7 +126,7 @@
 <translation id="4588090240171750605">Scorri a destra</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
-<translation id="4690510401873698237">Shelf in basso</translation>
+<translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4724120544754982507">Centro notifiche, <ph name="UNREAD_NOTIFICATION_COUNT" /> notifiche da leggere</translation>
 <translation id="4730374152663651037">USATE SPESSO</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mese rimasto}other{# mesi rimasti}}</translation>
@@ -145,13 +145,13 @@
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sopra <ph name="IN_PLACE_APP" />, rilascia per creare una cartella.</translation>
 <translation id="5463830097259460683">Emoji e simboli</translation>
 <translation id="5476505524087279545">deseleziona</translation>
-<translation id="547979256943495781">Shelf a destra</translation>
+<translation id="547979256943495781">Barra delle app a destra</translation>
 <translation id="5528053674512161860">Impossibile caricare la pagina perché il modulo UI sviluppatore (dev_ui) non è installato</translation>
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Freccia sinistra</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
-<translation id="5675363643668471212">Elemento shelf</translation>
+<translation id="5675363643668471212">Elemento barra delle app</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ultima attività: oggi}=1{Ultima attività: 1 giorno fa}other{Ultima attività: # giorni fa}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 giorno e }other{# giorni e }}</translation>
@@ -247,7 +247,7 @@
 <translation id="8394908167088220973">Play/Pausa contenuti multimediali</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 a}other{# a}}</translation>
 <translation id="8602707065186045623">File <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="8649597172973390955">Shelf sempre visualizzato</translation>
+<translation id="8649597172973390955">Barra delle app sempre visualizzata</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8685326675965865247">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web. Usa i tasti freccia per esplorare le tue app.</translation>
 <translation id="8725488761726303204">+ altre <ph name="NUMBER" /></translation>
@@ -260,7 +260,7 @@
 <translation id="8867568208303837180">Invio in corso...</translation>
 <translation id="8876215549894133151">Formato:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8926951137623668982">Shelf sempre nascosto</translation>
+<translation id="8926951137623668982">Barra delle app sempre nascosta</translation>
 <translation id="8996630695507351249">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet.</translation>
 <translation id="9002566407876343676">apri</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sec}other{# sec}}</translation>

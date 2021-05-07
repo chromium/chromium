@@ -20,7 +20,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
 <translation id="1119348796022671382">La modalità colore A tema usa i colori estratti dallo sfondo per colorare leggermente l'interfaccia.</translation>
-<translation id="112308213915226829">Nascondi automaticamente shelf</translation>
+<translation id="112308213915226829">Nascondi automaticamente barra delle app</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1165712434476988950">È necessario riavviare il dispositivo per applicare l'aggiornamento.</translation>
 <translation id="1175572348579024023">Scorri</translation>
@@ -53,7 +53,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Mostra impostazioni Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Mostra sempre shelf</translation>
+<translation id="1316069254387866896">Mostra sempre barra delle app</translation>
 <translation id="1316811122439383437">Tote: acquisizioni schermo recenti, download e file bloccati</translation>
 <translation id="1333308631814936910">Dispositivo <ph name="DISPLAY_NAME" /> connesso</translation>
 <translation id="1341651618736211726">Overflow</translation>
@@ -138,7 +138,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
-<translation id="2079504693865562705">Nascondi app nello shelf</translation>
+<translation id="2079504693865562705">Nascondi app nella barra delle app</translation>
 <translation id="2083190527011054446">Buonanotte <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
@@ -165,7 +165,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2302092602801625023">Questo account è gestito da Family Link</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
-<translation id="2339073806695260576">Tocca il pulsante dello stilo nello shelf per creare note, acquisire screenshot, usare il puntatore laser o la lente d'ingrandimento.</translation>
+<translation id="2339073806695260576">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="2341729377289034582">Bloccata in verticale</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
@@ -218,7 +218,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />.</translation>
-<translation id="2825619548187458965">Shelf</translation>
+<translation id="2825619548187458965">Barra delle app</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
 <translation id="2865888419503095837">Informazioni di rete</translation>
@@ -228,7 +228,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
-<translation id="2942516765047364088">Posizione shelf</translation>
+<translation id="2942516765047364088">Posizione barra delle app</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
 <translation id="2961963223658824723">Si è verificato un problema. Riprova tra qualche secondo.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -773,7 +773,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
-<translation id="7551643184018910560">Blocca sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
@@ -797,11 +797,11 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
-<translation id="7745560842763881396">Mostra app nello shelf</translation>
+<translation id="7745560842763881396">Mostra app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
-<translation id="7796353162336583443">Tocca il pulsante dello stilo nella shelf per creare note, acquisire screenshot, usare l'Assistente Google, il puntatore laser o la lente d'ingrandimento.</translation>
+<translation id="7796353162336583443">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare l'Assistente Google, il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Segnale forte</translation>
@@ -883,7 +883,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
-<translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella shelf è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella barra delle app è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Scrivania <ph name="DESK_TITILE" /> attivata</translation>
 <translation id="8452135315243592079">Scheda SIM mancante</translation>
 <translation id="8454013096329229812">Wi-Fi attivo.</translation>
@@ -915,7 +915,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8683506306463609433">Traccia delle prestazioni attiva</translation>
-<translation id="8703634754197148428">Avvia registrazione. Dopo aver avviato la registrazione, utilizza i tasti Alt + Maiusc + L per accedere allo shelf e individuare il pulsante per interrompere la registrazione</translation>
+<translation id="8703634754197148428">Avvia registrazione. Dopo aver avviato la registrazione, utilizza i tasti Alt + Maiusc + L per accedere alla barra delle app e individuare il pulsante per interrompere la registrazione</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8721053961083920564">Attiva/disattiva volume. <ph name="STATE_TEXT" /></translation>

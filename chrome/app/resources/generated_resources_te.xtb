@@ -1936,6 +1936,7 @@
 <translation id="3088325635286126843">&amp;పేరుమార్చు...</translation>
 <translation id="3089064280130434511">మీ స్క్రీన్‌లలో విండోలను తెరవకుండా, ఉంచకుండా ఉండటానికి సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="3089137131053189723">శోధన తీసివేయబడింది</translation>
+<translation id="3090589793601454425">తరలించకండి</translation>
 <translation id="3090819949319990166">బాహ్య crx ఫైల్‌ను <ph name="TEMP_CRX_FILE" />‌కు కాపీ చేయడం సాధ్యపడదు.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" జత చేయబడింది</translation>
 <translation id="3093714882666365141">పేమెంట్ హ్యాండ్లర్‌లను ఇన్‌స్టాల్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
@@ -2180,6 +2181,7 @@
 <translation id="3396800784455899911">"నేను అంగీకరిస్తున్నాను" బటన్‌ని క్లిక్ చేయడం ద్వారా, ఈ Google సేవల కోసం ఎగువ పేర్కొన్న వాటిని ప్రాసెస్ చేయడానికి మీరు అంగీకరిస్తున్నారు.</translation>
 <translation id="3399432415385675819">నోటిఫికేషన్‌లు నిలిపివేయబడతాయి</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> హెర్జ్) - అంతర్గత అల్లిక చేయబడింది</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} పాస్‌వర్డ్ ఈ పరికరంలో స్టోర్ అయ్యింది.}other{{COUNT} పాస్‌వర్డ్‌లు ఈ పరికరంలో స్టోర్ అయ్యాయి}}</translation>
 <translation id="3402255108239926910">ఒక అవతార్‌ను ఎంచుకోండి</translation>
 <translation id="3402585168444815892">డెమో మోడ్‌కు ఎన్‌రోల్ అవుతోంది</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -3146,6 +3148,7 @@
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4474155171896946103">అన్ని టాబ్‌లను బుక్‌మార్క్ చేయి...</translation>
 <translation id="4475552974751346499">డౌన్‌లోడ్‌లను వెతకండి</translation>
+<translation id="4475830133618397783">ఏ పాస్‌వర్డ్‌లను తరలించాలో ఎంచుకోండి. మీరెప్పుడు సైన్ ఇన్ చేసినా, వాటిని యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="4476590490540813026">అథ్లెట్</translation>
 <translation id="4476659815936224889">ఈ కోడ్‌ను స్కాన్ చేయడానికి, మీ ఫోన్ లేదా కొన్ని కెమెరా యాప్‌లలో QR స్కానర్ యాప్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="4477015793815781985">Ctrl, Alt లేదా ⌘ని చేర్చండి</translation>
@@ -3805,6 +3808,7 @@
 <translation id="5235050375939235066">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="523505283826916779">యాక్సెస్‌ సెట్టింగ్‌లు</translation>
 <translation id="5235750401727657667">కొత్త ట్యాబ్‌ను తెరిచేటప్పుడు మీరు చూసే పేజీని భర్తీ చేయండి</translation>
+<translation id="5236374273162681467">మీ పరికరాలన్నిటిలో వాటిని సులభంగా ఉపయోగించడానికి, వాటిని మీరు మీ Google ఖాతాకు తరలించవచ్చు</translation>
 <translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" యాప్ ఆటోమేటిక్‌గా తీసివేయబడింది.</translation>
 <translation id="5241128660650683457">మీరు సందర్శించే వెబ్‌సైట్‌ల్లోని మీ మొత్తం డేటాను చదవండి</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ను ప్రారంభించాలా?</translation>
@@ -4314,6 +4318,7 @@
 <translation id="5814126672212206791">కనెక్షన్ రకం</translation>
 <translation id="5815645614496570556">X.400 చిరునామా</translation>
 <translation id="5816434091619127343">అభ్యర్ధించిన ప్రింటర్ మార్పులు ప్రింటర్‌ను నిరుపయోగంగా చేస్తాయి.</translation>
+<translation id="5817069030404929329">ఈ పరికరం నుండి మీ Google ఖాతాకు పాస్‌వర్డ్‌లను తరలించాలా?</translation>
 <translation id="5817918615728894473">జత చేయి</translation>
 <translation id="5821565227679781414">షార్ట్‌కట్‌ను సృష్టించు</translation>
 <translation id="5825412242012995131">ఆన్ (సిఫార్సు చేయడమైనది)</translation>

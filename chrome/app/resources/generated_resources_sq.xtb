@@ -684,7 +684,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Për të hequr aplikacionet, shko te Cilësimet &gt; Dyqani i Google Play &gt; Menaxho preferencat e Android &gt; Aplikacionet ose "Menaxheri i aplikacioneve". Më pas trokit tek aplikacioni që dëshiron të çinstalosh (mund të jetë e nevojshme që të rrëshqasësh djathtas ose majtas për të gjetur aplikacionin). Më pas trokit te "Çinstalo" ose "Çaktivizo".<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">Po dërgon kërkesën...</translation>
 <translation id="1733064249834771892">fontet</translation>
-<translation id="1733383495376208985">Enkripto të dhënat e sinkronizuara me <ph name="BEGIN_LINK" />frazën tënde të kalimit<ph name="END_LINK" />. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
+<translation id="1733383495376208985">Enkripto të dhënat e sinkronizuara me <ph name="BEGIN_LINK" />frazën tënde të kalimit për sinkronizimin<ph name="END_LINK" />. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="1734212868489994726">Blu e çelur</translation>
 <translation id="1734230530703461088">Ngarkimi i shtesave brenda kufirit kohor dështoi. Kontakto me administratorin tënd.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> mund të mos jetë në gjendje të përditësohet vetë</translation>
@@ -1842,7 +1842,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2990583317361835189">Mos lejo që sajtet të përdorin sensorët e lëvizjes</translation>
 <translation id="2992931425024192067">Shfaq të gjithë përmbajtjen e njoftimit</translation>
 <translation id="2993517869960930405">Informacioni mbi aplikacionin</translation>
-<translation id="2996286169319737844">Të dhënat janë enkriptuar me frazën tënde të kalimit. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
+<translation id="2996286169319737844">Të dhënat janë enkriptuar me frazën tënde të kalimit për sinkronizimin. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="2996722619877761919">Ktheje në anën e gjatë</translation>
 <translation id="3000236644796679448">Sajtet mund të kërkojnë të përdorin mikrofonin tënd (rekomandohet)</translation>
 <translation id="3000378525979847272">Të lejuara: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -1932,7 +1932,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3088325635286126843">&amp;Riemërtoje...</translation>
 <translation id="3089064280130434511">Blloko sajtet që të mos hapin dhe vendosin dritare në ekranet e tua</translation>
 <translation id="3089137131053189723">Kërkimi u pastrua</translation>
-<translation id="3090589793601454425">Mos e zhvendos</translation>
+<translation id="3090589793601454425">Mos i zhvendos</translation>
 <translation id="3090819949319990166">Skedari i jashtëm crx nuk mund të kopjohet te <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" u çiftua</translation>
 <translation id="3093714882666365141">Mos lejo që sajtet të instalojnë përpunuesit e pagesave</translation>
@@ -2177,7 +2177,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3396800784455899911">Duke klikuar butonin "Prano dhe vazhdo", bie njëherësh dakord me përpunimin e përshkruar më lart për këto shërbime të Google.</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herc) - të gërshetuara</translation>
-<translation id="3402059702184703067">{COUNT,plural, =1{Në këtë pajisje ruhet {COUNT} fjalëkalim}other{Në këtë pajisje ruhen {COUNT} fjalëkalime}}</translation>
+<translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} fjalëkalim është ruajtur në këtë pajisje}other{{COUNT} fjalëkalime janë ruajtur në këtë pajisje}}</translation>
 <translation id="3402255108239926910">Zgjidh një simbol</translation>
 <translation id="3402585168444815892">Po regjistrohesh në modalitetin e demonstrimit</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
@@ -2635,7 +2635,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3871350334636688135">Pas 24 orësh, administratori yt do të kryejë një përditësim vetëm një herë që do të fshijë të dhënat e tua lokale kur të rinisësh pajisjen tënde. Ruaj çdo të dhënë lokale që të nevojitet në hapësirën ruajtëse të resë kompjuterike brenda 24 orësh.</translation>
 <translation id="3872220884670338524">Veprime të tjera, llogaria e ruajtur për <ph name="USERNAME" /> në <ph name="DOMAIN" /></translation>
 <translation id="3872991219937722530">Liro hapësirë në disk ose pajisja nuk do të reagojë ndaj komandave.</translation>
-<translation id="3873315167136380065">Për ta aktivizuar këtë, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit të sinkronizimit</translation>
+<translation id="3873315167136380065">Për ta aktivizuar këtë, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit për sinkronizimin</translation>
 <translation id="3873423927483480833">Shfaq kodet PIN</translation>
 <translation id="3873915545594852654">Ndodhi një problem me ARC++.</translation>
 <translation id="3874164307099183178">Aktivizo "Asistentin e Google"</translation>
@@ -3144,7 +3144,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
 <translation id="4475552974751346499">Kërko për shkarkimet</translation>
-<translation id="4475830133618397783">Zgjidh se cilat fjalëkalime do të zhvendosësh. Mund të qasesh tek ta sa herë që je i identifikuar.</translation>
+<translation id="4475830133618397783">Zgjidh se cilat fjalëkalime do të zhvendosësh. Mund të qasesh te fjalëkalimet në çdo kohë kur je i identifikuar.</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Për ta skanuar këtë kod, mund të përdorësh një aplikacion skaneri të kodeve QR në telefon ose disa aplikacione për kamera.</translation>
 <translation id="4477015793815781985">Përfshi Ctrl, Alt ose ⌘</translation>
@@ -3804,7 +3804,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5235050375939235066">Të çinstalohet aplikacioni?</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5235750401727657667">Zëvendëso faqen që shikon kur hap një skedë të re</translation>
-<translation id="5236374273162681467">Për t'i përdorur në të gjitha pajisjet e tua, mund t'i zhvendosësh te "Llogaria jote e Google"</translation>
+<translation id="5236374273162681467">Për t'i përdorur me lehtësi në të gjitha pajisjet e tua, mund t'i zhvendosësh ato te "Llogaria jote e Google"</translation>
 <translation id="5238278114306905396">Aplikacioni "<ph name="EXTENSION_NAME" />" u hoq automatikisht.</translation>
 <translation id="5241128660650683457">Lexo të gjitha të dhënat e tua në faqet e internetit që viziton</translation>
 <translation id="5242724311594467048">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
@@ -5753,7 +5753,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7434969625063495310">Serveri i printimit nuk mund të shtohej. Kontrollo konfigurimin e serverit dhe provo përsëri.</translation>
 <translation id="7436921188514130341">Mos! Pati një gabim gjatë riemërtimit.</translation>
 <translation id="7439519621174723623">Shto një pajisje për të vazhduar</translation>
-<translation id="7441736921018636843">Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit të sinkronizmit tënd</translation>
+<translation id="7441736921018636843">Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit për sinkronizimin</translation>
 <translation id="7441830548568730290">Përdoruesit e tjerë</translation>
 <translation id="744341768939279100">Krijo një profil të ri</translation>
 <translation id="744366959743242014">Po ngarkohen të dhënat. Kjo mund të zgjasë disa sekonda.</translation>
@@ -6391,7 +6391,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8118860139461251237">Menaxho shkarkimet e tua</translation>
 <translation id="8119438628456698432">Po krijohen skedarët e evidencave...</translation>
 <translation id="811994229154425014">Hapësirë e dyfishtë për të shkruar pikë</translation>
-<translation id="8123590694679414600">Të dhënat janë enkriptuar me frazën tënde të kalimit në datën
+<translation id="8123590694679414600">Të dhënat janë enkriptuar me frazën tënde të kalimit për sinkronizimin më datë
           <ph name="TIME" />. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="81238879832906896">Lule e verdhë dhe e bardhë</translation>
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
