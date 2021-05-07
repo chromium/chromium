@@ -225,11 +225,6 @@ class TranslateBrowserTest : public WebLayerBrowserTest {
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageLanguageDetection) {
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
-
   // Go to a page in English.
   ResetLanguageDeterminationWaiter();
   NavigateAndWaitForCompletion(
@@ -250,11 +245,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationSuccess) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   // Navigate to a page in French.
   ResetLanguageDeterminationWaiter();
@@ -291,11 +281,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoTranslateBrowserTest,
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
-
   // Navigate to a page in French.
   ResetLanguageDeterminationWaiter();
   NavigateAndWaitForCompletion(
@@ -322,8 +307,12 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationError) {
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
+  // Navigate to a empty page to result in the model returning "und".
+  // An "und" result will result in "auto" as the source language
+  // in the translate script.
   ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/clipboard.html")), shell());
   language_determination_waiter_->Wait();
   EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
@@ -347,11 +336,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   SetTranslateScript(kTestScriptInitializationError);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   // Navigate to a page in French.
   ResetLanguageDeterminationWaiter();
@@ -380,11 +364,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationTimeoutError) {
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
-
   // Navigate to a page in French.
   ResetLanguageDeterminationWaiter();
   NavigateAndWaitForCompletion(
@@ -411,11 +390,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, Autotranslation) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   // Before browsing, set autotranslate from French to Chinese.
   translate_client->GetTranslatePrefs()->AddLanguagePairToAlwaysTranslateList(
@@ -448,11 +422,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   TestInfoBarManagerObserver infobar_observer;
   infobar_manager->AddObserver(&infobar_observer);
@@ -504,13 +473,6 @@ IN_PROC_BROWSER_TEST_F(
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
-
-  EXPECT_EQ(0u, infobar_manager->infobar_count());
-
   // Navigate to a page in French.
   ResetLanguageDeterminationWaiter();
   NavigateAndWaitForCompletion(
@@ -536,11 +498,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   TestInfoBarManagerObserver infobar_observer;
   infobar_manager->AddObserver(&infobar_observer);
@@ -610,11 +567,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   TestInfoBarManagerObserver infobar_observer;
   infobar_manager->AddObserver(&infobar_observer);
@@ -687,11 +639,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
 
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
-
   TestInfoBarManagerObserver infobar_observer;
   infobar_manager->AddObserver(&infobar_observer);
 
@@ -757,11 +704,6 @@ IN_PROC_BROWSER_TEST_P(NeverTranslateMenuItemTranslateBrowserTest,
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
-
-  ResetLanguageDeterminationWaiter();
-  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("und", translate_client->GetLanguageState().source_language());
 
   TestInfoBarManagerObserver infobar_observer;
   infobar_manager->AddObserver(&infobar_observer);

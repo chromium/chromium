@@ -165,6 +165,20 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     return;
 
   WebDocument document = main_frame->GetDocument();
+  GURL url = GURL(document.Url());
+  // Limit detection to URLs that only detect the language of the content if the
+  // page is potentially a candidate for translation.  This should be strictly a
+  // subset of the conditions in TranslateService::IsTranslatableURL, however,
+  // due to layering they cannot be identical. Critically, this list should
+  // never filter anything that is eligible for translation. Under filtering is
+  // ok as the translate service will make the final call and only results in a
+  // slight overhead in running the model when unnecessary.
+  if (url.is_empty() || url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeDevToolsScheme) || url.IsAboutBlank() ||
+      url.SchemeIs(url::kFtpScheme)) {
+    return;
+  }
+
   WebLanguageDetectionDetails web_detection_details =
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
   std::string content_language = web_detection_details.content_language.Utf8();
@@ -176,12 +190,6 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
 
   std::string language;
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
-    if (!document.Url().ProtocolIs(url::kHttpsScheme) &&
-        !document.Url().ProtocolIs(url::kHttpScheme)) {
-      // TFLite-based language detection only supports HTTP/HTTPS pages.
-      // Others should be ignored, for example the New Tab Page.
-      return;
-    }
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
     bool is_available = language_detection_model.IsAvailable();

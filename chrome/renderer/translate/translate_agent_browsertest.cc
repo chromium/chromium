@@ -13,6 +13,7 @@
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "extensions/common/constants.h"
@@ -29,6 +30,12 @@ using testing::AtLeast;
 using testing::Return;
 
 namespace {
+
+std::string UpdateGURLScheme(GURL url, const char scheme[]) {
+  GURL::Replacements replacements;
+  replacements.SetScheme(scheme, url::Component(0, strlen(scheme)));
+  return url.ReplaceComponents(replacements).spec();
+}
 
 class FakeContentTranslateDriver
     : public translate::mojom::ContentTranslateDriver {
@@ -529,4 +536,39 @@ TEST_F(TranslateAgentBrowserTest, BackToTranslatablePage) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_EQ("es", fake_translate_driver_.details_->adopted_language);
+}
+
+TEST_F(TranslateAgentBrowserTest, UnsupportedTranslateSchemes) {
+  GURL url("https://foo.com");
+  LoadHTMLWithUrlOverride(
+      "<html><body>A random page with random content.</body></html>",
+      UpdateGURLScheme(url, content::kChromeUIScheme).c_str());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+
+  LoadHTMLWithUrlOverride(
+      "<html><body>A random page with random content.</body></html>",
+      UpdateGURLScheme(url, url::kFtpScheme).c_str());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+
+  LoadHTMLWithUrlOverride(
+      "<html><body>A random page with random content.</body></html>",
+      url::kAboutBlankURL);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+
+  LoadHTMLWithUrlOverride(
+      "<html><body>A random page with random content.</body></html>",
+      UpdateGURLScheme(url, content::kChromeDevToolsScheme).c_str());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
 }

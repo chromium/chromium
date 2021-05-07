@@ -74,7 +74,29 @@ int RetryForHistogramUntilCountReached(
 
 }  // namespace
 
-using TranslateModelServiceDisabledBrowserTest = InProcessBrowserTest;
+class TranslateModelServiceDisabledBrowserTest : public InProcessBrowserTest {
+ public:
+  TranslateModelServiceDisabledBrowserTest() = default;
+
+  void SetUp() override {
+    origin_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    origin_server_->ServeFilesFromSourceDirectory(
+        "chrome/test/data/optimization_guide");
+
+    ASSERT_TRUE(origin_server_->Start());
+    english_url_ = origin_server_->GetURL("/hello_world.html");
+    InProcessBrowserTest::SetUp();
+  }
+
+  ~TranslateModelServiceDisabledBrowserTest() override = default;
+
+  const GURL& english_url() const { return english_url_; }
+
+ private:
+  GURL english_url_;
+  std::unique_ptr<net::EmbeddedTestServer> origin_server_;
+};
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
                        TranslateModelServiceDisabled) {
@@ -109,7 +131,8 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceWithoutOptimizationGuideBrowserTest,
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
                        LanguageDetectionModelNotCreated) {
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), GURL("https://test.com"));
+
+  ui_test_utils::NavigateToURL(browser(), english_url());
   RetryForHistogramUntilCountReached(
       &histogram_tester, "Translate.CLD3.TopLanguageEvaluationDuration", 1);
   histogram_tester.ExpectTotalCount(

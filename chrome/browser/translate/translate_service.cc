@@ -141,6 +141,7 @@ bool TranslateService::IsTranslatableURL(const GURL& url) {
   // - Chrome OS file manager extension
   // - an FTP page (as FTP pages tend to have long lists of filenames that may
   //   confuse the CLD)
+  // Note: Keep in sync with condition in TranslateAgent::PageCaptured.
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) &&
          !url.SchemeIs(content::kChromeDevToolsScheme) && !url.IsAboutBlank() &&
