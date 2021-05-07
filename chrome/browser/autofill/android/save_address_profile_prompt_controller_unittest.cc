@@ -51,13 +51,13 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   }
 
   // Profile with raw data as it is returned from Java.
-  AutofillProfile GetFullProfileNotFinalizedNoStatus() {
+  AutofillProfile GetFullProfileNoStatus() {
     AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
     profile.SetRawInfo(NAME_FULL, u"Mona J. Liza");
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",
                          "Company Inc.", "33 Narrow Street", "Apt 42",
                          "Playa Vista", "LA", "12345", "US", "13105551234",
-                         /*finalize=*/false,
+                         /*finalize=*/true,
                          structured_address::VerificationStatus::kNoStatus);
     return profile;
   }
@@ -138,7 +138,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenUserAcceptsAfterEditingTheProfile) {
   controller_->DisplayPrompt();
 
-  AutofillProfile edited_profile = GetFullProfileNotFinalizedNoStatus();
+  AutofillProfile edited_profile = GetFullProfileNoStatus();
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
                   edited_profile));
@@ -196,7 +196,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldRefreshContentAfterEditingTheProfile) {
   controller_->DisplayPrompt();
 
-  AutofillProfile edited_profile = GetFullProfileNotFinalizedNoStatus();
+  AutofillProfile edited_profile = GetFullProfileNoStatus();
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
       PersonalDataManagerAndroid::CreateJavaProfileFromNative(env_,
                                                               edited_profile);

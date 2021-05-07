@@ -356,6 +356,7 @@ void PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
                   Java_AutofillProfile_getEmailAddress(env, jprofile));
   profile->set_language_code(ConvertJavaStringToUTF8(
       Java_AutofillProfile_getLanguageCode(env, jprofile)));
+  profile->FinalizeAfterImport();
 }
 
 jboolean PersonalDataManagerAndroid::IsDataLoaded(
