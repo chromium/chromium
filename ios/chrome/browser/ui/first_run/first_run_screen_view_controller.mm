@@ -62,7 +62,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (@available(iOS 13.4, *)) {
+  if (@available(iOS 13, *)) {
     self.modalInPresentation = !self.canDismissScreen;
   }
 

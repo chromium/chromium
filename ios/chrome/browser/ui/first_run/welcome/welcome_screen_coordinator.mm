@@ -82,6 +82,10 @@
                            URL:TOSURL];
   [staticViewController setTitle:title];
 
+  if (@available(iOS 13, *)) {
+    staticViewController.modalInPresentation = YES;
+  }
+
   [self.baseNavigationController pushViewController:staticViewController
                                            animated:YES];
 }

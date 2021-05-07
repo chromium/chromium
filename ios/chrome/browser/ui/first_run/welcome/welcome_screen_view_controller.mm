@@ -8,6 +8,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,10 +23,10 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
 
 }  // namespace
 
-@interface WelcomeScreenViewController ()
+@interface WelcomeScreenViewController () <UITextViewDelegate>
 
 @property(nonatomic, strong) CheckboxButton* metricsConsentButton;
-@property(nonatomic, strong) UILabel* termsOfServiceLabel;
+@property(nonatomic, strong) UITextView* termsOfServiceTextView;
 
 @end
 
@@ -47,8 +48,8 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
   self.metricsConsentButton = [self createMetricsConsentButton];
   [self.specificContentView addSubview:self.metricsConsentButton];
 
-  self.termsOfServiceLabel = [self createTermsOfServiceLabel];
-  [self.specificContentView addSubview:self.termsOfServiceLabel];
+  self.termsOfServiceTextView = [self createTermsOfServiceTextView];
+  [self.specificContentView addSubview:self.termsOfServiceTextView];
 
   [NSLayoutConstraint activateConstraints:@[
     [self.metricsConsentButton.topAnchor
@@ -59,14 +60,14 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
     [self.metricsConsentButton.widthAnchor
         constraintEqualToAnchor:self.specificContentView.widthAnchor],
 
-    [self.termsOfServiceLabel.topAnchor
+    [self.termsOfServiceTextView.topAnchor
         constraintEqualToAnchor:self.metricsConsentButton.bottomAnchor
                        constant:kDefaultMargin],
-    [self.termsOfServiceLabel.centerXAnchor
+    [self.termsOfServiceTextView.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [self.termsOfServiceLabel.widthAnchor
+    [self.termsOfServiceTextView.widthAnchor
         constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [self.termsOfServiceLabel.bottomAnchor
+    [self.termsOfServiceTextView.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
   ]];
 
@@ -95,39 +96,66 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
   return button;
 }
 
-// Creates and configures the label for the terms of service, with a formatted
-// link to the full text of the terms of service.
-- (UILabel*)createTermsOfServiceLabel {
-  // TODO(crbug.com/1189815): 1) Handle taps to display the ToS text; 2) Use a
-  // UITextView so only the link part is tappable.
-  UILabel* label = [[UILabel alloc] init];
-  label.numberOfLines = 0;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.adjustsFontForContentSizeCategory = YES;
+// Creates and configures the text view for the terms of service, with a
+// formatted link to the full text of the terms of service.
+- (UITextView*)createTermsOfServiceTextView {
+  UITextView* textView = [[UITextView alloc] init];
+  textView.scrollEnabled = NO;
+  textView.editable = NO;
+  textView.adjustsFontForContentSizeCategory = YES;
+  textView.delegate = self;
+  textView.backgroundColor = UIColor.clearColor;
+  textView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+  textView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
 
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1]
-  };
-  NSDictionary* linkAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-    NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1],
-    NSLinkAttributeName : [NSURL URLWithString:kTermsOfServiceUrl]
+    NSParagraphStyleAttributeName : paragraphStyle
   };
-  NSAttributedString* attributedString = AttributedStringFromStringWithLink(
+  NSDictionary* linkAttributes =
+      @{NSLinkAttributeName : [NSURL URLWithString:kTermsOfServiceUrl]};
+  // TODO(crbug.com/1189815): Use final strings and enable localization.
+  NSAttributedString* attributedText = AttributedStringFromStringWithLink(
       @"Test - By continuing, you agree to the BEGIN_LINKTerms of "
       @"ServiceEND_LINK",
       textAttributes, linkAttributes);
+  textView.attributedText = attributedText;
 
-  label.attributedText = attributedString;
-  return label;
+  return textView;
 }
 
 - (void)didTapMetricsButton {
   self.metricsConsentButton.selected = !self.metricsConsentButton.selected;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(textView == self.termsOfServiceTextView);
+  [self.delegate didTapTOSLink];
+
+  // The delegate is already handling the tap.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable. Another solution is
+  // to subclass |UITextView| and override |canBecomeFirstResponder| to return
+  // NO, but that workaround only works on iOS 13.5+. This is the simplest
+  // approach that works well on iOS 12, 13 & 14.
+  textView.selectedTextRange = nil;
 }
 
 @end
