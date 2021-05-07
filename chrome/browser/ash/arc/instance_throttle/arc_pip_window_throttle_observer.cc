@@ -45,11 +45,11 @@ void ArcPipWindowThrottleObserver::StartObserving(
 }
 
 void ArcPipWindowThrottleObserver::StopObserving() {
+  ThrottleObserver::StopObserving();
   auto* const container = GetPipContainer();
   if (!container)  // for testing
     return;
   container->RemoveObserver(this);
-  ThrottleObserver::StopObserving();
 }
 
 void ArcPipWindowThrottleObserver::OnWindowAdded(aura::Window* window) {
@@ -61,10 +61,16 @@ void ArcPipWindowThrottleObserver::OnWindowRemoved(aura::Window* window) {
   // Check if there are any ARC windows left in the PipContainer. An old PIP
   // window may be removed after a new one is added.
   auto* const container = GetPipContainer();
-  if (std::none_of(container->children().begin(), container->children().end(),
+  if (!container ||
+      std::none_of(container->children().begin(), container->children().end(),
                    &ash::IsArcWindow)) {
     SetActive(false);
   }
+}
+
+void ArcPipWindowThrottleObserver::OnWindowDestroying(aura::Window* window) {
+  SetActive(false);
+  StopObserving();
 }
 
 }  // namespace arc

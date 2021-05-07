@@ -33,6 +33,7 @@ class ArcPipWindowThrottleObserver : public chromeos::ThrottleObserver,
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* window) override;
   void OnWindowRemoved(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
 };
 
 }  // namespace arc
