@@ -79,10 +79,10 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   switch (rfh->cross_origin_embedder_policy().value) {
     case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
       break;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless:
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
       client->LogWebFeatureForCurrentPage(
-          rfh, blink::mojom::WebFeature::
-                   kCrossOriginEmbedderPolicyCorsOrCredentialless);
+          rfh,
+          blink::mojom::WebFeature::kCrossOriginEmbedderPolicyCredentialless);
       break;
     case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
       client->LogWebFeatureForCurrentPage(

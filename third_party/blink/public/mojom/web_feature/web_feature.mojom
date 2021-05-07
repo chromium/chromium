@@ -3193,7 +3193,7 @@ enum WebFeature {
   kPrefixedStorageQuotaThirdPartyContext = 3878,
   kRequestedFileSystemPersistentThirdPartyContext = 3879,
   kPrefixedStorageInfoThirdPartyContext = 3880,
-  kCrossOriginEmbedderPolicyCorsOrCredentialless = 3881,
+  kCrossOriginEmbedderPolicyCredentialless = 3881,
   kPostMessageFromSecureToSecure = 3882,
   kPostMessageFromInsecureToInsecure = 3883,
   kWebAppManifestProtocolHandlers = 3884,

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-PASS CORS or Credentialless and Shared worker
+PASS shared-worker
 PASS fetch same-origin
 PASS fetch same-origin + credentialless worker
 PASS fetch cross-origin

@@ -2551,7 +2551,7 @@ makeCrossOriginEmbedderPolicyValue(
   switch (value) {
     case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::None;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless:
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::
           CorsOrCredentialless;
     case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:

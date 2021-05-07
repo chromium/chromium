@@ -156,7 +156,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   bool require_corp =
       embedder_policy == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
       (embedder_policy ==
-           mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless &&
+           mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
        request_mode == mojom::RequestMode::kNavigate);
 
   // COEP https://mikewest.github.io/corpp/#corp-check

@@ -438,7 +438,7 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
     return false;
 
   // > 4. If ownerPolicy's report-only value is "require-corp" or
-  // "cors-or-credentialless" and policy's value is "unsafe-none", then queue a
+  // "credentialless" and policy's value is "unsafe-none", then queue a
   // cross-origin embedder policy inheritance violation with response, "worker
   // initialization", owner's policy's report only reporting endpoint,
   // "reporting", and owner.
@@ -452,7 +452,7 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
   }
 
   // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
-  // "require-corp" or "cors-or-credentialless", then return true.
+  // "require-corp" or "credentialless", then return true.
   if (!network::CompatibleWithCrossOriginIsolated(
           creator_cross_origin_embedder_policy) ||
       network::CompatibleWithCrossOriginIsolated(

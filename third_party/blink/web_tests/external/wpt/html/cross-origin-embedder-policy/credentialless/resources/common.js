@@ -6,13 +6,13 @@ const executor_js_path = directory + '/resources/executor.js?pipe=';
 const coep_none =
     '|header(Cross-Origin-Embedder-Policy,none)';
 const coep_credentialless =
-    '|header(Cross-Origin-Embedder-Policy,cors-or-credentialless)';
+    '|header(Cross-Origin-Embedder-Policy,credentialless)';
 const coep_require_corp =
     '|header(Cross-Origin-Embedder-Policy,require-corp)';
 
 // COEP-Report-Only
 const coep_report_only_credentialless =
-    '|header(Cross-Origin-Embedder-Policy-Report-Only,cors-or-credentialless)';
+    '|header(Cross-Origin-Embedder-Policy-Report-Only,credentialless)';
 
 // COOP
 const coop_same_origin =

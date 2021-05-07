@@ -400,7 +400,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns whether sending/storing credentials is allowed by COEP.
   // |url| is the latest request URL, either the original URL or
   // `redirect_info.new_url`.
-  // When Cross-Origin-Embedder-Policy: cors-or-credentialless is set, do not
+  // When Cross-Origin-Embedder-Policy: credentialless is set, do not
   // send or store credentials for no-cors cross-origin request.
   bool CoepAllowCredentials(const GURL& url);
 

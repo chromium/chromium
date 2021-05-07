@@ -32387,7 +32387,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3878" label="PrefixedStorageQuotaThirdPartyContext"/>
   <int value="3879" label="RequestedFileSystemPersistentThirdPartyContext"/>
   <int value="3880" label="PrefixedStorageInfoThirdPartyContext"/>
-  <int value="3881" label="CrossOriginEmbedderPolicyCorsOrCredentialless"/>
+  <int value="3881" label="CrossOriginEmbedderPolicyCredentialless"/>
   <int value="3882" label="PostMessageFromSecureToSecure"/>
   <int value="3883" label="PostMessageFromInsecureToInsecure"/>
   <int value="3884" label="WebAppManifestProtocolHandlers"/>

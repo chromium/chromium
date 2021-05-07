@@ -35,7 +35,7 @@ bool CompatibleWithCrossOriginIsolated(
   switch (value) {
     case mojom::CrossOriginEmbedderPolicyValue::kNone:
       return false;
-    case mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless:
+    case mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
     case mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
       return true;
   }

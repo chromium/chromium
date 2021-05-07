@@ -76,7 +76,7 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
     "ProactivelyThrottleLowPriorityRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables Cross-Origin-Embedder-Policy: cors-or-credentialless.
+// Enables Cross-Origin-Embedder-Policy: credentialless.
 // https://github.com/mikewest/credentiallessness
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{

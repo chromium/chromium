@@ -1,21 +1,21 @@
 <!doctype html>
-<title>CORS or Credentialless and Shared worker</title>
 <meta name="timeout" content="long">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
-<script src="../resources/common.js"></script>
-<script src="../resources/dispatcher.js"></script>
+<script src="./resources/common.js"></script>
+<script src="./resources/dispatcher.js"></script>
 <script>
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
-const cookie_key = "credentialless_shared_worker";
+const cookie_key = "credentialless_dedicated_worker";
 const cookie_same_origin = "same_origin";
 const cookie_cross_origin = "cross_origin";
 
 promise_test(async test => {
+
   await Promise.all([
     setCookie(same_origin, cookie_key, cookie_same_origin),
     setCookie(cross_origin, cookie_key, cookie_cross_origin),
@@ -35,7 +35,12 @@ promise_test(async test => {
   const w_credentialless = window.open(w_credentialless_url);
   add_completion_callback(() => w_credentialless.close());
 
-  const sharedWorkerTest = function(
+  let GetCookie = (response) => {
+    const headers_credentialless = JSON.parse(response);
+    return parseCookies(headers_credentialless)[cookie_key];
+  }
+
+  const dedicatedWorkerTest = function(
     description, origin, coep_for_worker,
     expected_cookies_control,
     expected_cookies_credentialless)
@@ -45,59 +50,75 @@ promise_test(async test => {
       const worker_token_1 = token();
       const worker_token_2 = token();
 
+      // Used to check for errors creating the DedicatedWorker.
+      const worker_error_1 = token();
+      const worker_error_2  = token();
+
       const w_worker_src_1 = same_origin + executor_js_path +
         coep_for_worker + `&uuid=${worker_token_1}`;
-      send(w_control_token, `new SharedWorker("${w_worker_src_1}", {});`);
+      send(w_control_token, `
+        new Worker("${w_worker_src_1}", {});
+        worker.onerror = () => {
+          send("${worker_error_1}", "Worker blocked");
+        }
+      `);
 
       const w_worker_src_2 = same_origin + executor_js_path +
         coep_for_worker + `&uuid=${worker_token_2}`;
-      send(w_credentialless_token, `new SharedWorker("${w_worker_src_2}", {});`);
+      send(w_credentialless_token, `
+        const worker = new Worker("${w_worker_src_2}", {});
+        worker.onerror = () => {
+          send("${worker_error_2}", "Worker blocked");
+        }
+      `);
 
       // Fetch resources with the workers.
       const request_token_1 = token();
       const request_token_2 = token();
       const request_url_1 = showRequestHeaders(origin, request_token_1);
       const request_url_2 = showRequestHeaders(origin, request_token_2);
-      send(worker_token_1,
-        `fetch("${request_url_1}", {mode: 'no-cors', credentials: 'include'})`);
-      send(worker_token_2,
-        `fetch("${request_url_2}", {mode: 'no-cors', credentials: 'include'})`);
 
-      // Retrieve the resource request info.
-      const headers_control = JSON.parse(await receive(request_token_1));
-      const headers_credentialless = JSON.parse(await receive(request_token_2));
+      send(worker_token_1, `
+        fetch("${request_url_1}", {mode: 'no-cors', credentials: 'include'})
+      `);
+      send(worker_token_2, `
+        fetch("${request_url_2}", {mode: 'no-cors', credentials: 'include'});
+      `);
 
-      assert_equals(parseCookies(headers_control)[cookie_key],
+      const response_control = await Promise.race([
+        receive(worker_error_1),
+        receive(request_token_1).then(GetCookie)
+      ]);
+      assert_equals(response_control,
         expected_cookies_control,
         "coep:none => ");
-      assert_equals(parseCookies(headers_credentialless)[cookie_key],
+
+      const response_credentialless = await Promise.race([
+        receive(worker_error_2),
+        receive(request_token_2).then(GetCookie)
+      ]);
+      assert_equals(response_credentialless,
         expected_cookies_credentialless,
         "coep:credentialless => ");
     }, `fetch ${description}`)
   };
 
-  // TODO(https://crbug.com/1200233). A COEP:cors-or-credentialless document
-  // shouldn't be able to load COEP:none SharedWorker. The sharedWorkerTest
-  // should listen for worker.onerror events and the expectations updated.
-  sharedWorkerTest("same-origin",
-    same_origin, coep_none,
-    cookie_same_origin,
-    cookie_same_origin);
-
-  sharedWorkerTest("same-origin + credentialless worker",
+  dedicatedWorkerTest("same-origin + credentialless worker",
     same_origin, coep_credentialless,
     cookie_same_origin,
     cookie_same_origin);
 
-  // TODO(https://crbug.com/1200233). A COEP:cors-or-credentialless document
-  // shouldn't be able to load COEP:none SharedWorker. The sharedWorkerTest
-  // should listen for worker.onerror events and the expectations updated.
-  sharedWorkerTest("cross-origin",
+  dedicatedWorkerTest("same-origin",
+    same_origin, coep_none,
+    cookie_same_origin,
+    "Worker blocked");
+
+  dedicatedWorkerTest("cross-origin",
     cross_origin, coep_none,
     cookie_cross_origin,
-    cookie_cross_origin);
+    "Worker blocked");
 
-  sharedWorkerTest("cross-origin + credentialless worker",
+  dedicatedWorkerTest("cross-origin + credentialless worker",
     cross_origin, coep_credentialless,
     undefined,
     undefined);

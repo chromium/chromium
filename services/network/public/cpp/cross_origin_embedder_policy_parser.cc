@@ -47,9 +47,9 @@ Parse(base::StringPiece header_value) {
 
   if (base::FeatureList::IsEnabled(
           features::kCrossOriginEmbedderPolicyCredentialless) &&
-      item->item.GetString() == "cors-or-credentialless") {
+      item->item.GetString() == "credentialless") {
     return {
-        mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless,
+        mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
         std::move(endpoint),
     };
   }

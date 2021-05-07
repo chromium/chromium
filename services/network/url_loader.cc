@@ -2410,10 +2410,8 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
           ? factory_params_->client_security_state->cross_origin_embedder_policy
                 .value
           : mojom::CrossOriginEmbedderPolicyValue::kNone;
-  if (coep_policy !=
-      mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless) {
+  if (coep_policy != mojom::CrossOriginEmbedderPolicyValue::kCredentialless)
     return true;
-  }
   DCHECK(base::FeatureList::IsEnabled(
       features::kCrossOriginEmbedderPolicyCredentialless));
 

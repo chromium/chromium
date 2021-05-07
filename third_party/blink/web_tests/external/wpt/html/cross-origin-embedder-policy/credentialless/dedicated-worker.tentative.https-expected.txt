@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-PASS CORS or Credentialless and dedicated worker
+PASS dedicated-worker
 PASS fetch same-origin + credentialless worker
 FAIL fetch same-origin assert_equals: coep:credentialless =>  expected "Worker blocked" but got "same_origin"
 FAIL fetch cross-origin assert_equals: coep:credentialless =>  expected (string) "Worker blocked" but got (undefined) undefined
