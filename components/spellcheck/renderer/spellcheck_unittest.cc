@@ -1065,12 +1065,12 @@ TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
 TEST_F(SpellCheckTest, SpellCheckParagraphLongSentence) {
   std::vector<SpellCheckResult> expected;
   // The text is taken from US constitution preamble.
-  const std::u16string text = base::UTF8ToUTF16(
-      "We the people of the United States, in order to form a more perfect "
-      "union, establish justice, insure domestic tranquility, provide for "
-      "the common defense, promote the general welfare, and secure the "
-      "blessings of liberty to ourselves and our posterity, do ordain and "
-      "establish this Constitution for the United States of America.");
+  const std::u16string text =
+      u"We the people of the United States, in order to form a more perfect "
+      u"union, establish justice, insure domestic tranquility, provide for "
+      u"the common defense, promote the general welfare, and secure the "
+      u"blessings of liberty to ourselves and our posterity, do ordain and "
+      u"establish this Constitution for the United States of America.";
 
   TestSpellCheckParagraph(text, expected);
 }
@@ -1080,12 +1080,12 @@ TEST_F(SpellCheckTest, SpellCheckParagraphLongSentenceMultipleMisspellings) {
   std::vector<SpellCheckResult> expected;
 
   // All 'the' are converted to 'hte' in US consitition preamble.
-  const std::u16string text = base::UTF8ToUTF16(
-      "We hte people of hte United States, in order to form a more perfect "
-      "union, establish justice, insure domestic tranquility, provide for "
-      "hte common defense, promote hte general welfare, and secure hte "
-      "blessings of liberty to ourselves and our posterity, do ordain and "
-      "establish this Constitution for hte United States of America.");
+  const std::u16string text =
+      u"We hte people of hte United States, in order to form a more perfect "
+      u"union, establish justice, insure domestic tranquility, provide for "
+      u"hte common defense, promote hte general welfare, and secure hte "
+      u"blessings of liberty to ourselves and our posterity, do ordain and "
+      u"establish this Constitution for hte United States of America.";
 
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 3, 3));

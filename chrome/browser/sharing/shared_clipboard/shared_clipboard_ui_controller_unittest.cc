@@ -33,7 +33,7 @@ using ::testing::Property;
 
 namespace {
 
-const char kText[] = "Text to be copied";
+const char16_t kText[] = u"Text to be copied";
 const char kExpectedText[] = "Text to be copied";
 const char kReceiverGuid[] = "test_receiver_guid";
 const char kReceiverName[] = "test_receiver_name";
@@ -54,7 +54,7 @@ class SharedClipboardUiControllerTest : public testing::Test {
         CreateFakeDeviceInfo(kReceiverGuid, kReceiverName);
     controller_ = SharedClipboardUiController::GetOrCreateFromWebContents(
         web_contents_.get());
-    controller_->OnDeviceSelected(base::UTF8ToUTF16(kText), *device_info.get());
+    controller_->OnDeviceSelected(kText, *device_info.get());
   }
 
  protected:

@@ -85,6 +85,7 @@
 namespace {
 
 constexpr const char kExampleURL[] = "http://example.org/";
+constexpr const char16_t kExampleURL16[] = u"http://example.org/";
 constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
@@ -672,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CopyURL) {
   std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
-  EXPECT_EQ(result, base::UTF8ToUTF16(kExampleURL));
+  EXPECT_EQ(result, kExampleURL16);
 }
 
 // Tests that the command for popping a tab out to a PWA window is disabled in
@@ -985,8 +986,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallToShelfContainsAppName) {
   EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(IDC_INSTALL_PWA,
                                                            &model, &index));
   EXPECT_EQ(app_menu_model.get(), model);
-  EXPECT_EQ(model->GetLabelAt(index),
-            base::UTF8ToUTF16("Install Manifest test app\xE2\x80\xA6"));
+  EXPECT_EQ(model->GetLabelAt(index), u"Install Manifest test app…");
 }
 
 // Check that no assertions are hit when showing a permission request bubble.

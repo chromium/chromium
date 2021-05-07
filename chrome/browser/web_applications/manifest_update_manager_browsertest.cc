@@ -97,6 +97,7 @@ constexpr char kAnotherInstallableIconList[] = R"(
 )";
 
 constexpr char kAnotherShortcutsItemName[] = "Timeline";
+constexpr char16_t kAnotherShortcutsItemName16[] = u"Timeline";
 constexpr char kAnotherShortcutsItemUrl[] = "/shortcut";
 constexpr char kAnotherShortcutsItemShortName[] = "H";
 constexpr char kAnotherShortcutsItemDescription[] = "Navigate home";
@@ -1765,7 +1766,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_EQ(
       GetProvider().registrar().GetAppShortcutsMenuItemInfos(app_id)[0].name,
-      base::UTF8ToUTF16(kAnotherShortcutsItemName));
+      kAnotherShortcutsItemName16);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,

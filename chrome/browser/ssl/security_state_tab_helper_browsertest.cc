@@ -139,6 +139,7 @@ const char kCreateBlobUrlJavascript[] =
 enum CertificateStatus { VALID_CERTIFICATE, INVALID_CERTIFICATE };
 
 const char kTestCertificateIssuerName[] = "Test Root CA";
+const char16_t kTestCertificateIssuerName16[] = u"Test Root CA";
 
 bool IsShowingInterstitial(content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -294,10 +295,9 @@ void CheckSecureCertificateExplanation(
             expected_cert->issuer().GetDisplayName());
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_VALID_SERVER_CERTIFICATE),
             explanation.summary);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF8(IDS_VALID_SERVER_CERTIFICATE_DESCRIPTION,
-                                base::UTF8ToUTF16(kTestCertificateIssuerName)),
-      explanation.description);
+  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_VALID_SERVER_CERTIFICATE_DESCRIPTION,
+                                      kTestCertificateIssuerName16),
+            explanation.description);
   net::X509Certificate* cert = browser->tab_strip_model()
                                    ->GetActiveWebContents()
                                    ->GetController()

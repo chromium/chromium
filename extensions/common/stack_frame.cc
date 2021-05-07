@@ -13,7 +13,7 @@
 namespace extensions {
 
 namespace {
-const char kAnonymousFunction[] = "(anonymous function)";
+const char16_t kAnonymousFunction[] = u"(anonymous function)";
 }
 
 StackFrame::StackFrame() : line_number(1), column_number(1) {
@@ -33,8 +33,7 @@ StackFrame::StackFrame(uint32_t line_number,
     : line_number(line_number),
       column_number(column_number),
       source(source),
-      function(function.empty() ? base::UTF8ToUTF16(kAnonymousFunction)
-                                : function) {}
+      function(function.empty() ? kAnonymousFunction : function) {}
 
 StackFrame::~StackFrame() {
 }

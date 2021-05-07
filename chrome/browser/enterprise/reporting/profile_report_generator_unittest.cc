@@ -35,6 +35,7 @@ namespace {
 const int kMaxNumberOfExtensionRequest = 1000;
 
 constexpr char kProfile[] = "Profile";
+constexpr char16_t kProfile16[] = u"Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
 constexpr char16_t kIdleProfile16[] = u"IdleProfile";
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
@@ -68,7 +69,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     InitPolicyMap();
 
     profile_ = profile_manager_.CreateTestingProfile(
-        kProfile, {}, base::UTF8ToUTF16(kProfile), 0, {},
+        kProfile, {}, kProfile16, 0, {},
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
         base::nullopt, std::move(policy_service_));

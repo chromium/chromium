@@ -7278,6 +7278,7 @@ IN_PROC_BROWSER_TEST_F(SSLUICaptivePortalListResourceBundleTest,
 namespace {
 
 char kTestMITMSoftwareName[] = "Misconfigured Firewall";
+char16_t kTestMITMSoftwareName16[] = u"Misconfigured Firewall";
 
 class SSLUIMITMSoftwareTest : public CertVerifierBrowserTest {
  public:
@@ -7671,12 +7672,12 @@ IN_PROC_BROWSER_TEST_F(SSLUIMITMSoftwareEnabledTest, EnterpriseManaged) {
   SetUpMITMSoftwareCertList(kLargeVersionId);
   TestMITMSoftwareInterstitial();
 
-  const std::string expected_primary_paragraph = l10n_util::GetStringFUTF8(
-      IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_ENTERPRISE,
-      net::EscapeForHTML(base::UTF8ToUTF16(kTestMITMSoftwareName)));
+  const std::string expected_primary_paragraph =
+      l10n_util::GetStringFUTF8(IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_ENTERPRISE,
+                                net::EscapeForHTML(kTestMITMSoftwareName16));
   const std::string expected_explanation = l10n_util::GetStringFUTF8(
       IDS_MITM_SOFTWARE_EXPLANATION_ENTERPRISE,
-      net::EscapeForHTML(base::UTF8ToUTF16(kTestMITMSoftwareName)),
+      net::EscapeForHTML(kTestMITMSoftwareName16),
       l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_EXPLANATION));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -7699,7 +7700,7 @@ IN_PROC_BROWSER_TEST_F(SSLUIMITMSoftwareEnabledTest, NotEnterpriseManaged) {
   // has escaped HTML characters which throw an error.
   const std::string expected_explanation = l10n_util::GetStringFUTF8(
       IDS_MITM_SOFTWARE_EXPLANATION_NONENTERPRISE,
-      net::EscapeForHTML(base::UTF8ToUTF16(kTestMITMSoftwareName)),
+      net::EscapeForHTML(kTestMITMSoftwareName16),
       l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_EXPLANATION));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();

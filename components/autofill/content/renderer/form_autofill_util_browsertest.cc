@@ -50,7 +50,7 @@ struct AutofillFieldLabelSourceCase {
 struct AutofillFieldUtilCase {
   const char* description;
   const char* html;
-  const char* expected_label;
+  const char16_t* expected_label;
 };
 
 const char kElevenChildren[] =
@@ -67,8 +67,8 @@ const char kElevenChildren[] =
     "<div>child9</div>"
     "<div>child10</div>"
     "</div>";
-const char kElevenChildrenExpected[] =
-    "child0child1child2child3child4child5child6child7child8";
+const char16_t kElevenChildrenExpected[] =
+    u"child0child1child2child3child4child5child6child7child8";
 
 const char kElevenChildrenNested[] =
     "<div id='target'>"
@@ -85,7 +85,8 @@ const char kElevenChildrenNested[] =
     "<div>child10"
     "</div></div></div></div></div></div></div></div></div></div></div></div>";
 // Take 10 elements -1 for target element, -1 as text is a leaf element.
-const char kElevenChildrenNestedExpected[] = "child0child1child2child3child4";
+const char16_t kElevenChildrenNestedExpected[] =
+    u"child0child1child2child3child4";
 
 const char kSkipElement[] =
     "<div id='target'>"
@@ -94,13 +95,13 @@ const char kSkipElement[] =
     "<div>child2</div>"
     "</div>";
 // TODO(crbug.com/796918): Should be child0child2
-const char kSkipElementExpected[] = "child0";
+const char16_t kSkipElementExpected[] = u"child0";
 
 const char kDivTableExample1[] =
     "<div>"
     "<div>label</div><div><input id='target'/></div>"
     "</div>";
-const char kDivTableExample1Expected[] = "label";
+const char16_t kDivTableExample1Expected[] = u"label";
 
 const char kDivTableExample2[] =
     "<div>"
@@ -108,7 +109,7 @@ const char kDivTableExample2[] =
     "<div>should be skipped<input/></div>"
     "<div><input id='target'/></div>"
     "</div>";
-const char kDivTableExample2Expected[] = "label";
+const char16_t kDivTableExample2Expected[] = u"label";
 
 const char kDivTableExample3[] =
     "<div>"
@@ -116,7 +117,7 @@ const char kDivTableExample3[] =
     "<div>label</div>"
     "<div><input id='target'/></div>"
     "</div>";
-const char kDivTableExample3Expected[] = "label";
+const char16_t kDivTableExample3Expected[] = u"label";
 
 const char kDivTableExample4[] =
     "<div>"
@@ -125,21 +126,21 @@ const char kDivTableExample4[] =
     "<div><input id='target'/></div>"
     "</div>";
 // TODO(crbug.com/796918): Should be label
-const char kDivTableExample4Expected[] = "";
+const char16_t kDivTableExample4Expected[] = u"";
 
 const char kDivTableExample5[] =
     "<div>"
     "<div>label<div><input id='target'/></div>behind</div>"
     "</div>";
 // TODO(crbug.com/796918): Should be label
-const char kDivTableExample5Expected[] = "labelbehind";
+const char16_t kDivTableExample5Expected[] = u"labelbehind";
 
 const char kDivTableExample6[] =
     "<div>"
     "<div>label<div><div>-<div><input id='target'/></div></div>"
     "</div>";
 // TODO(crbug.com/796918): Should be "label" or "label-"
-const char kDivTableExample6Expected[] = "";
+const char16_t kDivTableExample6Expected[] = u"";
 
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
@@ -163,13 +164,13 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
   static const AutofillFieldUtilCase test_cases[] = {
-      {"simple test", "<div id='target'>test</div>", "test"},
+      {"simple test", "<div id='target'>test</div>", u"test"},
       {"Concatenate test", "<div id='target'><span>one</span>two</div>",
-       "onetwo"},
+       u"onetwo"},
       // TODO(crbug.com/796918): should be "onetwo"
       {"Ignore input", "<div id='target'>one<input value='test'/>two</div>",
-       "one"},
-      {"Trim", "<div id='target'>   one<span>two  </span></div>", "onetwo"},
+       u"one"},
+      {"Trim", "<div id='target'>   one<span>two  </span></div>", u"onetwo"},
       {"eleven children", kElevenChildren, kElevenChildrenExpected},
       // TODO(crbug.com/796918): Depth is only 5 elements
       {"eleven children nested", kElevenChildrenNested,
@@ -182,8 +183,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
     ASSERT_NE(nullptr, web_frame);
     WebElement target = web_frame->GetDocument().GetElementById("target");
     ASSERT_FALSE(target.IsNull());
-    EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label),
-              FindChildText(target));
+    EXPECT_EQ(test_case.expected_label, FindChildText(target));
   }
 }
 
@@ -205,7 +205,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
       to_skip.insert(web_to_skip[i]);
     }
 
-    EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label),
+    EXPECT_EQ(test_case.expected_label,
               FindChildTextWithIgnoreListForTesting(target, to_skip));
   }
 }
@@ -234,12 +234,12 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
     InferLabelForElementForTesting(form_target, &label, &label_source);
-    EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label), label);
+    EXPECT_EQ(test_case.expected_label, label);
   }
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
-  const char kLabelSourceExpectedLabel[] = "label";
+  const char16_t kLabelSourceExpectedLabel[] = u"label";
   static const AutofillFieldLabelSourceCase test_cases[] = {
       {"<div><div>label</div><div><input id='target'/></div></div>",
        FormFieldData::LabelSource::kDivTable},
@@ -279,7 +279,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     std::u16string label;
     EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
         form_target, &label, &label_source));
-    EXPECT_EQ(base::UTF8ToUTF16(kLabelSourceExpectedLabel), label);
+    EXPECT_EQ(kLabelSourceExpectedLabel, label);
     EXPECT_EQ(test_case.label_source, label_source);
   }
 }
@@ -441,19 +441,18 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
-    const char* const name;
+    const char16_t* const name;
     bool enabled;
   } kExpectedFields[] = {
-      {"name1", true},
-      {"name2", false},
-      {"name3", true},
-      {"name4", false},
+      {u"name1", true},
+      {u"name2", false},
+      {u"name3", true},
+      {u"name4", false},
   };
   const size_t number_of_cases = base::size(kExpectedFields);
   ASSERT_EQ(number_of_cases, target.fields.size());
   for (size_t i = 0; i < number_of_cases; ++i) {
-    EXPECT_EQ(base::UTF8ToUTF16(kExpectedFields[i].name),
-              target.fields[i].name);
+    EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);
     EXPECT_EQ(kExpectedFields[i].enabled, target.fields[i].is_enabled);
   }
 }
@@ -482,19 +481,18 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
-    const char* const name;
+    const char16_t* const name;
     bool readonly;
   } kExpectedFields[] = {
-      {"name1", false},
-      {"name2", true},
-      {"name3", false},
-      {"name4", true},
+      {u"name1", false},
+      {u"name2", true},
+      {u"name3", false},
+      {u"name4", true},
   };
   const size_t number_of_cases = base::size(kExpectedFields);
   ASSERT_EQ(number_of_cases, target.fields.size());
   for (size_t i = 0; i < number_of_cases; ++i) {
-    EXPECT_EQ(base::UTF8ToUTF16(kExpectedFields[i].name),
-              target.fields[i].name);
+    EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);
     EXPECT_EQ(kExpectedFields[i].readonly, target.fields[i].is_readonly);
   }
 }

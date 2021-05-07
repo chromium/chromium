@@ -197,8 +197,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_sequence_number = 456;
     frame_state->page_scale_factor = 2.0f;
 
-    frame_state->document_state.push_back(base::UTF8ToUTF16(
-        "\n\r?% WebKit serialized form state version 8 \n\r=&"));
+    frame_state->document_state.push_back(
+        u"\n\r?% WebKit serialized form state version 8 \n\r=&");
     frame_state->document_state.push_back(u"form key");
     frame_state->document_state.push_back(u"1");
     frame_state->document_state.push_back(u"foo");
@@ -459,9 +459,8 @@ TEST_F(PageStateSerializationTest, ScrollAnchorSelectorLengthLimited) {
   ExplodedPageState input;
   PopulateFrameState(&input.top);
 
-  std::string excessive_length_string(kMaxScrollAnchorSelectorLength + 1, 'a');
-
-  input.top.scroll_anchor_selector = base::UTF8ToUTF16(excessive_length_string);
+  input.top.scroll_anchor_selector =
+      std::u16string(kMaxScrollAnchorSelectorLength + 1, u'a');
 
   std::string encoded;
   EncodePageState(input, &encoded);

@@ -308,8 +308,8 @@ INSTANTIATE_TEST_SUITE_P(
 namespace {
 
 // Test page titles.
-const char kTestTitle1[] = "Test Title 1";
-const char kTestTitle2[] = "Test Title 2";
+const char16_t kTestTitle1[] = u"Test Title 1";
+const char16_t kTestTitle2[] = u"Test Title 2";
 
 }  // namespace
 
@@ -415,8 +415,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
 TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Create a test media session and request audio focus.
   std::unique_ptr<WebContents> web_contents1 = CreateTestWebContents();
-  static_cast<TestWebContents*>(web_contents1.get())
-      ->SetTitle(base::UTF8ToUTF16(kTestTitle1));
+  static_cast<TestWebContents*>(web_contents1.get())->SetTitle(kTestTitle1);
   MediaSessionImpl* media_session1 = MediaSessionImpl::Get(web_contents1.get());
   media_session1->RequestSystemAudioFocus(AudioFocusType::kGain);
   WaitForCallbackCount(1);
@@ -438,8 +437,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
 
   // Create another media session.
   std::unique_ptr<WebContents> web_contents2 = CreateTestWebContents();
-  static_cast<TestWebContents*>(web_contents2.get())
-      ->SetTitle(base::UTF8ToUTF16(kTestTitle2));
+  static_cast<TestWebContents*>(web_contents2.get())->SetTitle(kTestTitle2);
   MediaSessionImpl* media_session2 = MediaSessionImpl::Get(web_contents2.get());
   media_session2->RequestSystemAudioFocus(
       AudioFocusType::kGainTransientMayDuck);

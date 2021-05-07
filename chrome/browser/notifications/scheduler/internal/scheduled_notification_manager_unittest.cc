@@ -30,7 +30,7 @@ namespace {
 
 const char kGuid[] = "test_guid_1234";
 const char kNonExistentGuid[] = "guid_non_existent";
-const char kTitle[] = "test_title";
+const char16_t kTitle[] = u"test_title";
 const char kSmallIconUuid[] = "test_small_icon_uuid";
 const char kLargeIconUuid[] = "test_large_icon_uuid";
 
@@ -298,7 +298,7 @@ TEST_F(ScheduledNotificationManagerTest, IconDbInitAndLoadKeys) {
 TEST_F(ScheduledNotificationManagerTest, ScheduleNotification) {
   InitWithData(std::vector<NotificationEntry>());
   NotificationData notification_data;
-  notification_data.title = base::UTF8ToUTF16(kTitle);
+  notification_data.title = kTitle;
   ScheduleParams schedule_params;
   schedule_params.priority = ScheduleParams::Priority::kLow;
   auto params = std::make_unique<NotificationParams>(
@@ -333,7 +333,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotification) {
   EXPECT_NE(entry->create_time, base::Time());
 
   // TODO(xingliu): change these to compare with operator==.
-  EXPECT_EQ(base::UTF16ToUTF8(entry->notification_data.title), kTitle);
+  EXPECT_EQ(entry->notification_data.title, kTitle);
   EXPECT_EQ(entry->schedule_params.priority, ScheduleParams::Priority::kLow);
 
   // Verify that |enable_ihnr_buttons| will add the helpful/unhelpful buttons.
@@ -349,7 +349,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotification) {
 TEST_F(ScheduledNotificationManagerTest, ScheduleInvalidNotification) {
   InitWithData(std::vector<NotificationEntry>());
   NotificationData notification_data;
-  notification_data.title = base::UTF8ToUTF16(kTitle);
+  notification_data.title = kTitle;
   ScheduleParams schedule_params;
   // Client type kTest3 is not registered.
   auto params = std::make_unique<NotificationParams>(
@@ -367,7 +367,7 @@ TEST_F(ScheduledNotificationManagerTest, ScheduleNotificationDuplicateGuid) {
   InitWithData(std::vector<NotificationEntry>({entry}));
 
   NotificationData notification_data;
-  notification_data.title = base::UTF8ToUTF16(kTitle);
+  notification_data.title = kTitle;
   ScheduleParams schedule_params;
   auto params = std::make_unique<NotificationParams>(
       SchedulerClientType::kTest1, notification_data, schedule_params);

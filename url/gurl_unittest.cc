@@ -117,8 +117,7 @@ TEST(GURLTest, Empty) {
 }
 
 TEST(GURLTest, Copy) {
-  GURL url(base::UTF8ToUTF16(
-      "http://user:pass@google.com:99/foo;bar?q=a#ref"));
+  GURL url(u"http://user:pass@google.com:99/foo;bar?q=a#ref");
 
   GURL url2(url);
   EXPECT_TRUE(url2.is_valid());
@@ -151,8 +150,7 @@ TEST(GURLTest, Copy) {
 }
 
 TEST(GURLTest, Assign) {
-  GURL url(base::UTF8ToUTF16(
-      "http://user:pass@google.com:99/foo;bar?q=a#ref"));
+  GURL url(u"http://user:pass@google.com:99/foo;bar?q=a#ref");
 
   GURL url2;
   url2 = url;
@@ -194,8 +192,7 @@ TEST(GURLTest, SelfAssign) {
 }
 
 TEST(GURLTest, CopyFileSystem) {
-  GURL url(base::UTF8ToUTF16(
-      "filesystem:https://user:pass@google.com:99/t/foo;bar?q=a#ref"));
+  GURL url(u"filesystem:https://user:pass@google.com:99/t/foo;bar?q=a#ref");
 
   GURL url2(url);
   EXPECT_TRUE(url2.is_valid());

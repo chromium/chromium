@@ -37,6 +37,7 @@ namespace {
 constexpr char kGaiaUsername[] = "username";
 constexpr char16_t kGaiaUsername16[] = u"username";
 constexpr char kGaiaEmail[] = "username@gmail.com";
+constexpr char16_t kGaiaEmail16[] = u"username@gmail.com";
 constexpr char kGaiaId[] = "test_gaia_id";
 
 }  // namespace
@@ -102,7 +103,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   params.profile_path = profile_path;
   params.profile_name = u"TestProfileName";
   params.gaia_id = kGaiaId;
-  params.user_name = base::UTF8ToUTF16(kGaiaEmail);
+  params.user_name = kGaiaEmail16;
   profile_storage->AddProfile(std::move(params));
 
   // Check that the signin qualifies for interception.

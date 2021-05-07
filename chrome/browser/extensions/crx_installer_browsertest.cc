@@ -82,9 +82,9 @@ class SkBitmap;
 namespace {
 
 const char kAppUrl[] = "http://www.google.com";
-const char kAppTitle[] = "Test title";
-const char kAppDescription[] = "Test description";
-const char kShortcutItemName[] = "shortcut";
+const char16_t kAppTitle[] = u"Test title";
+const char16_t kAppDescription[] = u"Test description";
+const char16_t kShortcutItemName[] = u"shortcut";
 const char kShortcutUrl[] = "http://www.google.com/shortcut";
 const char kShortcutIconUrl[] = "http://www.google.com/shortcut/icon.png";
 
@@ -140,14 +140,14 @@ SkBitmap CreateSquareBitmap(int size) {
   return bitmap;
 }
 
-WebApplicationInfo CreateWebAppInfo(const char* title,
-                                    const char* description,
+WebApplicationInfo CreateWebAppInfo(const char16_t* title,
+                                    const char16_t* description,
                                     const char* start_url,
                                     int size,
                                     bool create_with_shortcuts) {
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::UTF8ToUTF16(title);
-  web_app_info.description = base::UTF8ToUTF16(description);
+  web_app_info.title = title;
+  web_app_info.description = description;
   web_app_info.start_url = GURL(start_url);
   web_app_info.scope = GURL(start_url);
   web_app_info.icon_bitmaps.any[size] = CreateSquareBitmap(size);
@@ -155,7 +155,7 @@ WebApplicationInfo CreateWebAppInfo(const char* title,
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     WebApplicationShortcutsMenuItemInfo::Icon icon;
     IconBitmaps shortcut_icon_bitmaps;
-    shortcut_item.name = base::UTF8ToUTF16(kShortcutItemName);
+    shortcut_item.name = kShortcutItemName;
     shortcut_item.url = GURL(kShortcutUrl);
     icon.url = GURL(kShortcutIconUrl);
     icon.square_size_px = size;
