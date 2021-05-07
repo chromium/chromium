@@ -1706,6 +1706,7 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
             + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
+    @DisabledTest(message = "http://crbug/1206081 - the Instant_Return version is flaky.")
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
