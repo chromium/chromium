@@ -555,7 +555,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   for (const char* pref : nonempty_prefs) {
     DictionaryPrefUpdate update(&prefs, pref);
     const base::DictionaryValue* dictionary = update.Get();
-    EXPECT_EQ(1u, dictionary->size());
+    EXPECT_EQ(1u, dictionary->DictSize());
   }
 
   provider.ShutdownOnUIThread();
