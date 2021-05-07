@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -121,8 +122,9 @@ BASE_EXPORT void SetSystemPagesAccess(
 // virtual address range may be released back to the system, but the address
 // space is still allocated to the process (possibly using up page table entries
 // or other accounting resources). There is no guarantee that the pages are
-// zeroed. Unless PageKeepPermissionsIfPossible disposition is used, any access
-// to a decommitted region of memory is an error and will generate a fault.
+// zeroed, see |DecommittedMemoryIsAlwaysZeroed()| for such a guarantee. Unless
+// PageKeepPermissionsIfPossible disposition is used, any access to a
+// decommitted region of memory is an error and will generate a fault.
 //
 // This operation is not atomic on all platforms.
 //
@@ -140,6 +142,16 @@ BASE_EXPORT void DecommitSystemPages(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
+
+// Whether decommitted memory is guaranteed to be zeroed when it is
+// recommitted. Do not assume that this will not change over time.
+constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
+#if defined(OS_APPLE)
+  return false;
+#else
+  return true;
+#endif
+}
 
 // Recommit one or more system pages, starting at |address| and continuing for
 // |length| bytes with the given |page_accessibility| (must not be

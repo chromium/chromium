@@ -737,7 +737,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       }
 
       new_slot_span->Reset();
-      *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
+      *is_already_zeroed = DecommittedMemoryIsAlwaysZeroed();
     }
     PA_DCHECK(new_slot_span);
   } else {

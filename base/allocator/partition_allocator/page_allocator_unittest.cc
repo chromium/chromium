@@ -422,7 +422,7 @@ TEST(PageAllocatorTest, PageTagging) {
 #endif  // defined(OS_ANDROID)
 
 TEST(PageAllocatorTest, DecommitErasesMemory) {
-  if (!kDecommittedPagesAreAlwaysZeroed)
+  if (!DecommittedMemoryIsAlwaysZeroed())
     return;
 
   size_t size = PageAllocationGranularity();

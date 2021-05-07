@@ -51,6 +51,7 @@ void DecommitPages(void* address, size_t size) {
                    MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   PA_CHECK(ptr == address);
 #else
+  static_assert(DecommittedMemoryIsAlwaysZeroed(), "");
   DecommitSystemPages(address, size, PageUpdatePermissions);
 #endif
 }

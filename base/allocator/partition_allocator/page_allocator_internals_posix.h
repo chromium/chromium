@@ -6,10 +6,13 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 
 #include <errno.h>
+#include <string.h>
 #include <sys/mman.h>
+#include <algorithm>
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/dcheck_is_on.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
@@ -27,8 +30,6 @@
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <sys/resource.h>
-
-#include <algorithm>
 #endif
 
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -253,13 +254,32 @@ void DecommitSystemPagesInternal(
   // pages in the region.
   DiscardSystemPages(address, length);
 
+  bool change_permissions = accessibility_disposition == PageUpdatePermissions;
+#if DCHECK_IS_ON()
+  // This is not guaranteed, show that we're serious.
+  //
+  // More specifically, several callers have had issues with assuming that
+  // memory is zeroed, this would hopefully make these bugs more visible.  We
+  // don't memset() everything, because ranges can be very large, and doing it
+  // over the entire range could make Chrome unusable with DCHECK_IS_ON().
+  //
+  // Only do it when we are about to change the permissions, since we don't know
+  // the previous permissions, and cannot restore them.
+  if (!DecommittedMemoryIsAlwaysZeroed() && change_permissions) {
+    // Memory may not be writable.
+    size_t size = std::min(length, 2 * SystemPageSize());
+    PA_CHECK(mprotect(address, size, PROT_WRITE) == 0);
+    memset(address, 0xcc, size);
+  }
+#endif
+
   // Make pages inaccessible, unless the caller requested to keep permissions.
   //
   // Note, there is a small window between these calls when the pages can be
   // incorrectly touched and brought back to memory. Not ideal, but doing those
-  // operaions in the opposite order resulted in PMF regression on Mac (see
+  // operations in the opposite order resulted in PMF regression on Mac (see
   // crbug.com/1153021).
-  if (accessibility_disposition == PageUpdatePermissions) {
+  if (change_permissions) {
     SetSystemPagesAccess(address, length, PageInaccessible);
   }
 }
