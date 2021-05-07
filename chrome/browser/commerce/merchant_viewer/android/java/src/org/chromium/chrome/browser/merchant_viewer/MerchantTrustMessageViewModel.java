@@ -67,8 +67,7 @@ class MerchantTrustMessageViewModel {
         builder.append(" ");
         builder.append(context.getResources().getQuantityString(
                 R.plurals.merchant_viewer_message_description_reviews,
-                trustSignals.getMerchantCountRating(),
-                numberFormatter.format(trustSignals.getMerchantCountRating())));
+                trustSignals.getMerchantCountRating(), trustSignals.getMerchantCountRating()));
         return builder;
     }
 
