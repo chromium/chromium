@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -601,18 +602,17 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
 }
 
 void GpuControlList::Entry::GetFeatureNames(
-    base::ListValue* feature_names,
+    base::Value& feature_names,
     const FeatureMap& feature_map) const {
-  DCHECK(feature_names);
   for (size_t ii = 0; ii < feature_size; ++ii) {
     auto iter = feature_map.find(features[ii]);
     DCHECK(iter != feature_map.end());
-    feature_names->AppendString(iter->second);
+    feature_names.Append(iter->second);
   }
   for (size_t ii = 0; ii < disabled_extension_size; ++ii) {
     std::string name =
         base::StringPrintf("disable(%s)", disabled_extensions[ii]);
-    feature_names->AppendString(name);
+    feature_names.Append(name);
   }
 }
 
@@ -738,30 +738,30 @@ std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
                                   disabled_webgl_extensions.end());
 }
 
-void GpuControlList::GetReasons(base::ListValue* problem_list,
+void GpuControlList::GetReasons(base::Value& problem_list,
                                 const std::string& tag,
                                 const std::vector<uint32_t>& entries) const {
-  DCHECK(problem_list);
   for (auto index : entries) {
     DCHECK_LT(index, entry_count_);
     const Entry& entry = entries_[index];
-    auto problem = std::make_unique<base::DictionaryValue>();
+    auto problem = base::Value(base::Value::Type::DICTIONARY);
 
-    problem->SetString("description", entry.description);
+    problem.SetStringKey("description", entry.description);
 
-    auto cr_bugs = std::make_unique<base::ListValue>();
+    auto cr_bugs = base::Value(base::Value::Type::LIST);
     for (size_t jj = 0; jj < entry.cr_bug_size; ++jj)
-      cr_bugs->AppendInteger(entry.cr_bugs[jj]);
-    problem->Set("crBugs", std::move(cr_bugs));
+      cr_bugs.Append(
+          util::Int64ToValue(static_cast<int64_t>(entry.cr_bugs[jj])));
+    problem.SetKey("crBugs", std::move(cr_bugs));
 
-    auto features = std::make_unique<base::ListValue>();
-    entry.GetFeatureNames(features.get(), feature_map_);
-    problem->Set("affectedGpuSettings", std::move(features));
+    auto features = base::Value(base::Value::Type::LIST);
+    entry.GetFeatureNames(features, feature_map_);
+    problem.SetKey("affectedGpuSettings", std::move(features));
 
     DCHECK(tag == "workarounds" || tag == "disabledFeatures");
-    problem->SetString("tag", tag);
+    problem.SetStringKey("tag", tag);
 
-    problem_list->Append(std::move(problem));
+    problem_list.Append(std::move(problem));
   }
 }
 

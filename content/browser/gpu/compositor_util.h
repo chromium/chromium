@@ -37,13 +37,12 @@ CONTENT_EXPORT int NumberOfRendererRasterThreads();
 // Returns true if main thread can be pipelined with activation.
 CONTENT_EXPORT bool IsMainFrameBeforeActivationEnabled();
 
-CONTENT_EXPORT std::unique_ptr<base::DictionaryValue> GetFeatureStatus();
-CONTENT_EXPORT std::unique_ptr<base::ListValue> GetProblems();
+CONTENT_EXPORT base::Value GetFeatureStatus();
+CONTENT_EXPORT base::Value GetProblems();
 CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkarounds();
 
-CONTENT_EXPORT std::unique_ptr<base::DictionaryValue>
-GetFeatureStatusForHardwareGpu();
-CONTENT_EXPORT std::unique_ptr<base::ListValue> GetProblemsForHardwareGpu();
+CONTENT_EXPORT base::Value GetFeatureStatusForHardwareGpu();
+CONTENT_EXPORT base::Value GetProblemsForHardwareGpu();
 CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkaroundsForHardwareGpu();
 
 }  // namespace content

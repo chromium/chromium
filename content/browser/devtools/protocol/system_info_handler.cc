@@ -230,7 +230,8 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   enumerator.EndAuxAttributes();
 
   std::unique_ptr<base::DictionaryValue> base_feature_status =
-      GetFeatureStatus();
+      base::DictionaryValue::From(
+          std::make_unique<base::Value>(GetFeatureStatus()));
   std::unique_ptr<protocol::DictionaryValue> feature_status =
       protocol::DictionaryValue::cast(
           protocol::toProtocolValue(base_feature_status.get(), 1000));

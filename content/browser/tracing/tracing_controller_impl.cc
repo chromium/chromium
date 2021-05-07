@@ -337,7 +337,9 @@ TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict->SetString("gpu-gl-vendor", gpu_info.gl_vendor);
   metadata_dict->SetString("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
-  metadata_dict->SetDictionary("gpu-features", GetFeatureStatus());
+  metadata_dict->SetDictionary(
+      "gpu-features", base::DictionaryValue::From(
+                          std::make_unique<base::Value>(GetFeatureStatus())));
 
   metadata_dict->SetString("clock-domain", GetClockString());
   metadata_dict->SetBoolean("highres-ticks",
