@@ -19,12 +19,16 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/platform_test.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,6 +80,12 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    CellularMetricsLogger::RegisterLocalStatePrefs(local_state_.registry());
+    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
+        local_state_.registry());
+    NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
+    NetworkMetadataStore::RegisterPrefs(local_state_.registry());
+    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
 
     SetupDefaultShillState();
     base::RunLoop().RunUntilIdle();
@@ -103,6 +113,11 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     const char kTestEidName[] = "eid";
     const char kTestIccid[] = "iccid";
 
+    // Disable stub cellular networks so that eSIM profile and service can both
+    // be added at the same time without stub network interfering.
+    NetworkHandler::Get()
+        ->network_state_handler()
+        ->set_stub_cellular_networks_provider(nullptr);
     ShillServiceClient::TestInterface* service_test =
         ShillServiceClient::Get()->GetTestInterface();
     service_test->ClearServices();
@@ -181,12 +196,13 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
   HermesManagerClient::TestInterface* hermes_manager_test_;
   HermesEuiccClient::TestInterface* hermes_euicc_test_;
   ash::TestSystemTrayClient test_system_tray_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
+  TestingPrefServiceSimple user_prefs_;
+  TestingPrefServiceSimple local_state_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NetworkStateNotifierTest);
