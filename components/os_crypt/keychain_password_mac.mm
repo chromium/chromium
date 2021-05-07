@@ -48,11 +48,11 @@ std::string AddRandomPasswordToKeychain(const AppleKeychain& keychain,
 // the encryption keyword.  So as to not lose encrypted data when system
 // locale changes we DO NOT LOCALIZE.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char KeychainPassword::service_name[] = "Chrome Safe Storage";
-const char KeychainPassword::account_name[] = "Chrome";
+KeychainPassword::KeychainNameType KeychainPassword::service_name("Chrome Safe Storage");
+KeychainPassword::KeychainNameType KeychainPassword::account_name("Chrome");
 #else
-const char KeychainPassword::service_name[] = "Chromium Safe Storage";
-const char KeychainPassword::account_name[] = "Chromium";
+KeychainPassword::KeychainNameType KeychainPassword::service_name("Chromium Safe Storage");
+KeychainPassword::KeychainNameType KeychainPassword::account_name("Chromium");
 #endif
 
 KeychainPassword::KeychainPassword(const AppleKeychain& keychain)
@@ -64,8 +64,9 @@ std::string KeychainPassword::GetPassword() const {
   UInt32 password_length = 0;
   void* password_data = nullptr;
   OSStatus error = keychain_.FindGenericPassword(
-      strlen(service_name), service_name, strlen(account_name), account_name,
-      &password_length, &password_data, nullptr);
+      service_name->size(), service_name->c_str(),
+      account_name->size(), account_name->c_str(), &password_length,
+      &password_data, nullptr);
 
   if (error == noErr) {
     std::string password =
@@ -75,8 +76,8 @@ std::string KeychainPassword::GetPassword() const {
   }
 
   if (error == errSecItemNotFound) {
-    std::string password =
-        AddRandomPasswordToKeychain(keychain_, service_name, account_name);
+    std::string password = AddRandomPasswordToKeychain(
+        keychain_, *service_name, *account_name);
     return password;
   }
 

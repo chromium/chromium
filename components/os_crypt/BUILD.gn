@@ -52,6 +52,10 @@ component("os_crypt") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_OS_CRYPT_IMPL" ]
 
+  if (allow_runtime_configurable_key_storage) {
+    defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
+  }
+
   if ((is_posix || is_fuchsia) && !is_apple &&
       (!(is_linux || is_chromeos_lacros) || is_chromecast)) {
     sources += [ "os_crypt_posix.cc" ]
