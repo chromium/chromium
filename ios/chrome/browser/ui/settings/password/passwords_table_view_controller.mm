@@ -17,7 +17,6 @@
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -27,7 +26,6 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
@@ -97,13 +95,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_list) {
+    const std::vector<password_manager::PasswordForm>& password_list) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       password_list_copy;
   for (const auto& form : password_list) {
     password_list_copy.push_back(
-        std::make_unique<password_manager::PasswordForm>(*form));
+        std::make_unique<password_manager::PasswordForm>(form));
   }
   return password_list_copy;
 }
@@ -111,7 +108,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 }  // namespace
 
 @interface PasswordFormContentItem : TableViewDetailTextItem
-@property(nonatomic) password_manager::PasswordForm* form;
+@property(nonatomic) password_manager::PasswordForm form;
 @end
 @implementation PasswordFormContentItem
 @end
@@ -189,16 +186,10 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   TableViewTextItem* _checkForProblemsItem;
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
-  // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
   // The list of the user's saved passwords.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> _savedForms;
+  std::vector<password_manager::PasswordForm> _savedForms;
   // The list of the user's blocked sites.
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> _blockedForms;
-  // Map containing duplicates of saved passwords.
-  password_manager::DuplicatesMap _savedPasswordDuplicates;
-  // Map containing duplicates of blocked passwords.
-  password_manager::DuplicatesMap _blockedPasswordDuplicates;
+  std::vector<password_manager::PasswordForm> _blockedForms;
   // The browser where the screen is being displayed.
   Browser* _browser;
   // The current Chrome browser state.
@@ -256,9 +247,6 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     self.title = l10n_util::GetNSString(IDS_IOS_PASSWORDS);
     self.shouldHideDoneButton = YES;
     self.searchTerm = @"";
-    _passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-        _browserState, ServiceAccessType::EXPLICIT_ACCESS);
-    DCHECK(_passwordStore);
     _passwordManagerEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:_browserState->GetPrefs()
                    prefName:password_manager::prefs::kCredentialsEnableService];
@@ -580,10 +568,10 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   return exportPasswordsItem;
 }
 
-- (SavedFormContentItem*)savedFormItemWithText:(NSString*)text
-                                 andDetailText:(NSString*)detailText
-                                       forForm:(password_manager::PasswordForm*)
-                                                   form {
+- (SavedFormContentItem*)
+    savedFormItemWithText:(NSString*)text
+            andDetailText:(NSString*)detailText
+                  forForm:(const password_manager::PasswordForm&)form {
   SavedFormContentItem* passwordItem =
       [[SavedFormContentItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.text = text;
@@ -596,7 +584,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
 - (BlockedFormContentItem*)
     blockedFormItemWithText:(NSString*)text
-                    forForm:(password_manager::PasswordForm*)form {
+                    forForm:(const password_manager::PasswordForm&)form {
   BlockedFormContentItem* passwordItem =
       [[BlockedFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
@@ -719,32 +707,62 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 }
 
 - (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
-  _blockedForms.clear();
-  _savedForms.clear();
-  _savedPasswordDuplicates.clear();
-  _blockedPasswordDuplicates.clear();
+            (std::vector<password_manager::PasswordForm>)savedForms
+             blockedForms:
+                 (std::vector<password_manager::PasswordForm>)blockedForms {
+  _blockedForms = std::move(blockedForms);
+  _savedForms = std::move(savedForms);
 
-  _didReceiveSavedForms = YES;
-  [self hideLoadingSpinnerBackground];
-  if (results.empty()) {
+  if (!_didReceiveSavedForms) {
+    _didReceiveSavedForms = YES;
+    [self hideLoadingSpinnerBackground];
+    [self updateUIForEditState];
     [self reloadData];
-    return;
-  }
-  for (auto& form : results) {
-    if (form->blocked_by_user)
-      _blockedForms.push_back(std::move(form));
-    else
-      _savedForms.push_back(std::move(form));
-  }
+  } else {
+    TableViewModel* model = self.tableViewModel;
+    NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
 
-  password_manager::SortEntriesAndHideDuplicates(&_savedForms,
-                                                 &_savedPasswordDuplicates);
-  password_manager::SortEntriesAndHideDuplicates(&_blockedForms,
-                                                 &_blockedPasswordDuplicates);
+    // Hold in reverse order of section indexes (bottom up of section
+    // displayed). if we don't we'll cause a crash.
+    SectionIdentifier sections[2] = {SectionIdentifierBlocked,
+                                     SectionIdentifierSavedPasswords};
+    for (int i = 0; i < 2; i++) {
+      SectionIdentifier section = sections[i];
+      bool hasSection = [model hasSectionForSectionIdentifier:section];
+      bool needsSection = section == SectionIdentifierBlocked
+                              ? !_blockedForms.empty()
+                              : !_savedForms.empty();
 
-  [self updateUIForEditState];
-  [self reloadData];
+      // If section exists but it shouldn't - gracefully remove it with
+      // animation.
+      if (!needsSection && hasSection) {
+        [self clearSectionWithIdentifier:section
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+      }
+      // If section exists and it should - reload it.
+      else if (needsSection && hasSection) {
+        [sectionsToUpdate addIndex:[model sectionForSectionIdentifier:section]];
+      }
+      // If section doesn't exist but it should - add it.
+      else if (needsSection && !hasSection) {
+        // This is very rare condition, in this case just reload all data.
+        [self updateUIForEditState];
+        [self reloadData];
+        return;
+      }
+    }
+
+    [self updateExportPasswordsButton];
+
+    // Reload items in sections.
+    if (sectionsToUpdate.count > 0) {
+      [self filterItems:self.searchTerm];
+      [self.tableView reloadSections:sectionsToUpdate
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else if (_savedForms.empty() && _blockedForms.empty()) {
+      [self setEditing:NO animated:YES];
+    }
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -970,8 +988,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
                SectionIdentifierSavedPasswords];
     for (const auto& form : _savedForms) {
       NSString* text = base::SysUTF8ToNSString(
-          password_manager::GetShownOriginAndLinkUrl(*form).first);
-      NSString* detailText = base::SysUTF16ToNSString(form->username_value);
+          password_manager::GetShownOriginAndLinkUrl(form).first);
+      NSString* detailText = base::SysUTF16ToNSString(form.username_value);
       bool hidden =
           searchTerm.length > 0 &&
           ![text localizedCaseInsensitiveContainsString:searchTerm] &&
@@ -980,7 +998,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
         continue;
       [model addItem:[self savedFormItemWithText:text
                                    andDetailText:detailText
-                                         forForm:form.get()]
+                                         forForm:form]
           toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   }
@@ -989,12 +1007,12 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierBlocked];
     for (const auto& form : _blockedForms) {
       NSString* text = base::SysUTF8ToNSString(
-          password_manager::GetShownOriginAndLinkUrl(*form).first);
+          password_manager::GetShownOriginAndLinkUrl(form).first);
       bool hidden = searchTerm.length > 0 &&
                     ![text localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:[self blockedFormItemWithText:text forForm:form.get()]
+      [model addItem:[self blockedFormItemWithText:text forForm:form]
           toSectionWithIdentifier:SectionIdentifierBlocked];
     }
   }
@@ -1227,96 +1245,17 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 }
 
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
-  // Ensure indexPaths are sorted to maintain delete logic, and keep track of
-  // number of items deleted to adjust index for accessing elements in the
-  // forms vectors.
-  NSArray* sortedIndexPaths =
-      [indexPaths sortedArrayUsingSelector:@selector(compare:)];
-  auto passwordIterator = _savedForms.begin();
-  auto passwordEndIterator = _savedForms.end();
-  auto blockedIterator = _blockedForms.begin();
-  auto blockedEndIterator = _blockedForms.end();
-  for (NSIndexPath* indexPath in sortedIndexPaths) {
+  std::vector<password_manager::PasswordForm> formsToDelete;
+
+  for (NSIndexPath* indexPath in indexPaths) {
     // Only form items are editable.
     PasswordFormContentItem* item =
         base::mac::ObjCCastStrict<PasswordFormContentItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
-    BOOL blocked = [item isKindOfClass:[BlockedFormContentItem class]];
-    auto& forms = blocked ? _blockedForms : _savedForms;
-    auto& duplicates =
-        blocked ? _blockedPasswordDuplicates : _savedPasswordDuplicates;
-
-    const password_manager::PasswordForm& deletedForm = *item.form;
-    auto begin = blocked ? blockedIterator : passwordIterator;
-    auto end = blocked ? blockedEndIterator : passwordEndIterator;
-
-    auto formIterator = std::find_if(
-        begin, end,
-        [&deletedForm](
-            const std::unique_ptr<password_manager::PasswordForm>& value) {
-          return password_manager::ArePasswordFormUniqueKeysEqual(*value,
-                                                                  deletedForm);
-        });
-    DCHECK(formIterator != end);
-
-    std::unique_ptr<password_manager::PasswordForm> form =
-        std::move(*formIterator);
-    std::string key = password_manager::CreateSortKey(*form);
-    auto duplicatesRange = duplicates.equal_range(key);
-    for (auto iterator = duplicatesRange.first;
-         iterator != duplicatesRange.second; ++iterator) {
-      _passwordStore->RemoveLogin(*(iterator->second));
-    }
-    duplicates.erase(key);
-
-    formIterator = forms.erase(formIterator);
-    _passwordStore->RemoveLogin(*form);
-
-    // Keep track of where we are in the current list.
-    if (blocked) {
-      blockedIterator = formIterator;
-    } else {
-      passwordIterator = formIterator;
-    }
+    formsToDelete.push_back(item.form);
   }
 
-  // Remove empty sections.
-  __weak PasswordsTableViewController* weakSelf = self;
-  [self.tableView
-      performBatchUpdates:^{
-        PasswordsTableViewController* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-
-        [strongSelf removeFromModelItemAtIndexPaths:indexPaths];
-        [strongSelf.tableView
-            deleteRowsAtIndexPaths:indexPaths
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-
-        // Delete in reverse order of section indexes (bottom up of section
-        // displayed), so that indexes in model matches those in the view.  if
-        // we don't we'll cause a crash.
-        if (strongSelf->_blockedForms.empty()) {
-          [self clearSectionWithIdentifier:SectionIdentifierBlocked
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-        if (strongSelf->_savedForms.empty()) {
-          [strongSelf
-              clearSectionWithIdentifier:SectionIdentifierSavedPasswords
-                        withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-      }
-      completion:^(BOOL finished) {
-        PasswordsTableViewController* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-        // If both lists are empty, exit editing mode.
-        if (strongSelf->_savedForms.empty() &&
-            strongSelf->_blockedForms.empty())
-          [strongSelf setEditing:NO animated:YES];
-        [strongSelf updateUIForEditState];
-        [strongSelf updateExportPasswordsButton];
-      }];
+  [self.delegate deletePasswordForms:formsToDelete];
 }
 
 - (void)showPasswordIssuesPage {
@@ -1356,7 +1295,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       SavedFormContentItem* saveFormItem =
           base::mac::ObjCCastStrict<SavedFormContentItem>(
               [model itemAtIndexPath:indexPath]);
-      [self.handler showDetailedViewForForm:*saveFormItem.form];
+      [self.handler showDetailedViewForForm:saveFormItem.form];
       break;
     }
     case ItemTypeBlocked: {
@@ -1365,7 +1304,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       BlockedFormContentItem* blockedItem =
           base::mac::ObjCCastStrict<BlockedFormContentItem>(
               [model itemAtIndexPath:indexPath]);
-      [self.handler showDetailedViewForForm:*blockedItem.form];
+      [self.handler showDetailedViewForForm:blockedItem.form];
       break;
     }
     case ItemTypeExportPasswordsButton:
@@ -1627,43 +1566,6 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     self.navigationItem.searchController.searchBar.alpha =
         kTableViewNavigationAlphaForDisabledSearchBar;
   }
-}
-
-// Deletes passed password form and updates list accordingly.
-- (void)deletePasswordForm:(const password_manager::PasswordForm&)form {
-  _passwordStore->RemoveLogin(form);
-
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms =
-      form.blocked_by_user ? _blockedForms : _savedForms;
-  auto iterator = std::find_if(
-      forms.begin(), forms.end(),
-      [&form](const std::unique_ptr<password_manager::PasswordForm>& value) {
-        return password_manager::ArePasswordFormUniqueKeysEqual(*value, form);
-      });
-  // If |form| not found, pop password details view controller.
-  if (iterator == forms.end()) {
-    [self.navigationController popViewControllerAnimated:YES];
-    return;
-  }
-
-  forms.erase(iterator);
-
-  password_manager::DuplicatesMap& duplicates = form.blocked_by_user
-                                                    ? _blockedPasswordDuplicates
-                                                    : _savedPasswordDuplicates;
-  std::string key = password_manager::CreateSortKey(form);
-  auto duplicatesRange = duplicates.equal_range(key);
-  for (auto iterator = duplicatesRange.first;
-       iterator != duplicatesRange.second; ++iterator) {
-    _passwordStore->RemoveLogin(*(iterator->second));
-  }
-  duplicates.erase(key);
-
-  [self updateUIForEditState];
-  [self reloadData];
-  // TODO(crbug.com/1096986): Delete this once
-  // LegacyPasswordDetailsTableViewController is removed.
-  [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - Testing

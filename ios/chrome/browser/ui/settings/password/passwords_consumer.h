@@ -38,8 +38,9 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
       compromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
-- (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)forms;
+- (void)
+    setPasswordsForms:(std::vector<password_manager::PasswordForm>)savedForms
+         blockedForms:(std::vector<password_manager::PasswordForm>)blockedForms;
 
 @end
 

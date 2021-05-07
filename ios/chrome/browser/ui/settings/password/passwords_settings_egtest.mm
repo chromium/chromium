@@ -537,9 +537,10 @@ void CopyPasswordDetailWithID(int detail_id) {
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Check that the current view is now the list view, by locating the header
-  // of the list of passwords.
-  [[EarlGrey selectElementWithMatcher:SavedPasswordsHeaderMatcher()]
+  // Check that the current view is now the list view, by locating
+  // PasswordTableViewController.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -597,9 +598,10 @@ void CopyPasswordDetailWithID(int detail_id) {
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Check that the current view is now the list view, by locating the header
-  // of the list of passwords.
-  [[EarlGrey selectElementWithMatcher:SavedPasswordsHeaderMatcher()]
+  // Check that the current view is now the list view, by locating
+  // PasswordTableViewController.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
@@ -645,13 +647,11 @@ void CopyPasswordDetailWithID(int detail_id) {
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Check that the current view is now the list view, by locating the header
-  // of the list of passwords.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_IOS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING)),
-                            grey_accessibilityTrait(UIAccessibilityTraitHeader),
-                            nullptr)] assertWithMatcher:grey_notNil()];
+  // Check that the current view is now the list view, by locating
+  // PasswordTableViewController.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion was propagated to the PasswordStore.
   GREYAssertEqual(0, [PasswordSettingsAppInterface passwordStoreResultsCount],
@@ -1608,6 +1608,49 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that removing multiple passwords works fine.
+- (void)testRemovingMultiplePasswords {
+  constexpr int kPasswordsCount = 4;
+
+  // Send the passwords to the queue to be added to the PasswordStore.
+  [PasswordSettingsAppInterface saveExamplePasswordWithCount:kPasswordsCount];
+
+  OpenPasswordSettings();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+
+  TapEdit();
+
+  for (int i = kPasswordsCount; i >= 1; i--) {
+    [GetInteractionForPasswordEntry([NSString
+        stringWithFormat:@"www%02d.example.com, concrete username %02d", i, i])
+        performAction:grey_tap()];
+  }
+
+  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+
+  // Wait until animation is over.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that saved forms header is removed.
+  [[EarlGrey selectElementWithMatcher:SavedPasswordsHeaderMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the deletion was propagated to the PasswordStore.
+  GREYAssertEqual(0, [PasswordSettingsAppInterface passwordStoreResultsCount],
+                  @"Stored password was not removed from PasswordStore.");
+
+  // Finally, verify that the Edit button is visible and disabled, because there
+  // are no other password entries left for deletion via the "Edit" mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
+                                   grey_not(grey_enabled()), nil)];
+
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]

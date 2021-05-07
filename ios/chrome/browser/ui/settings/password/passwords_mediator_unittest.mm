@@ -53,9 +53,23 @@ scoped_refptr<TestPasswordStore> BuildTestPasswordStore(
                                   web::BrowserState, TestPasswordStore>))
           .get()));
 }
+
+// Creates a saved password form.
+PasswordForm CreatePasswordForm() {
+  PasswordForm form;
+  form.username_value = u"test@egmail.com";
+  form.password_value = u"test";
+  form.signon_realm = "http://www.example.com/";
+  form.in_store = PasswordForm::Store::kProfileStore;
+  return form;
+}
+
 }  // namespace
 
-@interface FakePasswordsConsumer : NSObject <PasswordsConsumer>
+@interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
+  std::vector<password_manager::PasswordForm> _savedForms;
+  std::vector<password_manager::PasswordForm> _blockedForms;
+}
 
 @end
 
@@ -66,7 +80,15 @@ scoped_refptr<TestPasswordStore> BuildTestPasswordStore(
 }
 
 - (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)form {
+            (std::vector<password_manager::PasswordForm>)savedForms
+             blockedForms:
+                 (std::vector<password_manager::PasswordForm>)blockedForms {
+  _savedForms = savedForms;
+  _blockedForms = blockedForms;
+}
+
+- (std::vector<password_manager::PasswordForm>)savedForms {
+  return _savedForms;
 }
 
 @end
@@ -98,10 +120,10 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     consumer_ = [[FakePasswordsConsumer alloc] init];
 
-    mediator_ = [[PasswordsMediator alloc] initWithPasswordStore:store_
-                                            passwordCheckManager:password_check_
-                                                     authService:auth_service_
-                                                     syncService:syncService()];
+    mediator_ =
+        [[PasswordsMediator alloc] initWithPasswordCheckManager:password_check_
+                                                    authService:auth_service_
+                                                    syncService:syncService()];
     mediator_.consumer = consumer_;
   }
 
@@ -112,6 +134,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   PasswordsMediator* mediator() { return mediator_; }
 
   ChromeBrowserState* browserState() { return browser_state_.get(); }
+
+  TestPasswordStore* store() { return store_.get(); }
+
+  FakePasswordsConsumer* consumer() { return consumer_; }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -142,4 +170,33 @@ TEST_F(PasswordsMediatorTest, ElapsedTimeSinceLastCheck) {
 
   EXPECT_NSEQ(@"Last checked 5 minutes ago.",
               [mediator() formatElapsedTimeSinceLastCheck]);
+}
+
+// Consumer should be notified when passwords are changed.
+TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
+  PasswordForm form = CreatePasswordForm();
+  store()->AddLogin(form);
+  RunUntilIdle();
+  EXPECT_THAT([consumer() savedForms], testing::ElementsAre(form));
+
+  // Remove form from the store.
+  store()->RemoveLogin(form);
+  RunUntilIdle();
+  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+}
+
+// Duplicates of a form should be removed as well.
+TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
+  PasswordForm form = CreatePasswordForm();
+  PasswordForm duplicate = form;
+  duplicate.username_element = u"element";
+
+  store()->AddLogin(form);
+  store()->AddLogin(duplicate);
+  RunUntilIdle();
+  ASSERT_THAT([consumer() savedForms], testing::ElementsAre(form));
+
+  [mediator() deletePasswordForm:form];
+  RunUntilIdle();
+  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
 }

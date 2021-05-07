@@ -26,9 +26,6 @@ class Browser;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Deletes passed password form and updates list accordingly.
-- (void)deletePasswordForm:(const password_manager::PasswordForm&)form;
-
 @property(nonatomic, weak) id<PasswordsSettingsCommands> handler;
 
 // Delegate.

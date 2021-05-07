@@ -99,21 +99,18 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     CreateController();
 
     mediator_ = [[PasswordsMediator alloc]
-        initWithPasswordStore:IOSChromePasswordStoreFactory::GetForBrowserState(
-                                  browser_->GetBrowserState(),
-                                  ServiceAccessType::EXPLICIT_ACCESS)
-         passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                  GetForBrowserState(
-                                      browser_->GetBrowserState())
-                  authService:nil
-                  syncService:nil];
+        initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                         GetForBrowserState(
+                                             browser_->GetBrowserState())
+                         authService:nil
+                         syncService:nil];
 
     // Inject some fake passwords to pass the loading state.
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
-    [passwords_controller setPasswordsForms:{}];
+    [passwords_controller setPasswordsForms:{} blockedForms:{}];
   }
 
   int GetSectionIndex(PasswordsSections section) {
@@ -237,15 +234,13 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     RunUntilIdle();
   }
 
-  // Deletes the item at (row, section) and wait util condition returns true or
-  // timeout.
-  bool deleteItemAndWait(int section, int row, ConditionBlock condition) {
+  // Deletes the item at (row, section) and wait util idle.
+  void deleteItemAndWait(int section, int row) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
     [passwords_controller
         deleteItems:@[ [NSIndexPath indexPathForRow:row inSection:section] ]];
-    return base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForUIElementTimeout, condition);
+    RunUntilIdle();
   }
 
   void CheckDetailItemTextWithPluralIds(int expected_text_id,
@@ -355,23 +350,23 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItems) {
   AddSavedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
+  ASSERT_EQ(5, NumberOfSections());
 
   // Delete item in save passwords section.
-  ASSERT_TRUE(deleteItemAndWait(GetSectionIndex(SavedPasswords), 0, ^{
-    return NumberOfSections() == (3 + SectionsOffset());
-  }));
+  deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
+  EXPECT_EQ(4, NumberOfSections());
+
   // Section 2 should now be the blocked passwords section, and should still
   // have both its items.
   EXPECT_EQ(2, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 
   // Delete item in blocked passwords section.
-  ASSERT_TRUE(deleteItemAndWait(GetSectionIndex(SavedPasswords), 0, ^{
-    return NumberOfItemsInSection(GetSectionIndex(SavedPasswords)) == 1;
-  }));
+  deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
+  EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
+
   // There should be no password sections remaining and no search bar.
-  EXPECT_TRUE(deleteItemAndWait(GetSectionIndex(SavedPasswords), 0, ^{
-    return NumberOfSections() == (2 + +SectionsOffset());
-  }));
+  deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
+  EXPECT_EQ(3, NumberOfSections());
 }
 
 // Tests deleting items from saved passwords and blocked passwords sections
@@ -382,23 +377,23 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
   AddBlockedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
+  ASSERT_EQ(5, NumberOfSections());
 
   // Delete item in save passwords section.
-  ASSERT_TRUE(deleteItemAndWait(GetSectionIndex(SavedPasswords), 0, ^{
-    return NumberOfSections() == (3 + SectionsOffset());
-  }));
+  deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
+  EXPECT_EQ(4, NumberOfSections());
+
   // Section 2 should now be the blocked passwords section, and should still
   // have both its items.
   EXPECT_EQ(2, NumberOfItemsInSection(GetSectionIndex(Blocked) - 1));
 
   // Delete item in blocked passwords section.
-  ASSERT_TRUE(deleteItemAndWait(GetSectionIndex(Blocked) - 1, 0, ^{
-    return NumberOfItemsInSection(GetSectionIndex(Blocked) - 1) == 1;
-  }));
+  deleteItemAndWait(GetSectionIndex(Blocked) - 1, 0);
+  EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(Blocked) - 1));
+
   // There should be no password sections remaining and no search bar.
-  EXPECT_TRUE(deleteItemAndWait(GetSectionIndex(Blocked) - 1, 0, ^{
-    return NumberOfSections() == (2 + SectionsOffset());
-  }));
+  deleteItemAndWait(GetSectionIndex(Blocked) - 1, 0);
+  EXPECT_EQ(3, NumberOfSections());
 }
 
 TEST_F(PasswordsTableViewControllerTest,
@@ -673,21 +668,6 @@ TEST_F(PasswordsTableViewControllerTest, PasswordStoreListener) {
       GetTestStore().stored_passwords().at("http://www.example.com/").at(0);
   GetTestStore().RemoveLogin(password);
   RunUntilIdle();
-  EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
-}
-
-// Test verifies Passwords View Controller handles deletion of passwords.
-TEST_F(PasswordsTableViewControllerTest, PasswordIssuesDeletion) {
-  AddSavedForm1();
-  AddSavedForm2();
-  EXPECT_EQ(2, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
-
-  PasswordsTableViewController* passwords_controller =
-      static_cast<PasswordsTableViewController*>(controller());
-
-  auto password =
-      GetTestStore().stored_passwords().at("http://www.example.com/").at(0);
-  [passwords_controller deletePasswordForm:password];
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
 

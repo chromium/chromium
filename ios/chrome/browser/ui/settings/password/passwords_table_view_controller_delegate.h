@@ -7,8 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
+struct PasswordForm;
+}
+
 // Delegate for |PasswordsTableViewController|.
 @protocol PasswordsTableViewControllerDelegate
+
+// Deletes form with its duplicates.
+- (void)deletePasswordForms:
+    (const std::vector<password_manager::PasswordForm>&)forms;
 
 // Starts password check.
 - (void)startPasswordCheck;

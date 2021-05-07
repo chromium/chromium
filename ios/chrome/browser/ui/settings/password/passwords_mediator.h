@@ -16,24 +16,21 @@ class IOSChromePasswordCheckManager;
 @protocol PasswordsConsumer;
 class SyncSetupService;
 
-namespace password_manager {
-class PasswordStore;
-}
-
 // This mediator fetches and organises the passwords for its consumer.
 @interface PasswordsMediator : NSObject <PasswordsTableViewControllerDelegate,
                                          SuccessfulReauthTimeAccessor>
 
-- (instancetype)
-    initWithPasswordStore:
-        (scoped_refptr<password_manager::PasswordStore>)passwordStore
-     passwordCheckManager:
-         (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
-              authService:(AuthenticationService*)authService
-              syncService:(SyncSetupService*)syncService
+- (instancetype)initWithPasswordCheckManager:
+                    (scoped_refptr<IOSChromePasswordCheckManager>)
+                        passwordCheckManager
+                                 authService:(AuthenticationService*)authService
+                                 syncService:(SyncSetupService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Deletes 'form' and its duplicates.
+- (void)deletePasswordForm:(const password_manager::PasswordForm&)form;
 
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
 

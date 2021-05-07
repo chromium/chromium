@@ -8,14 +8,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#include "ios/chrome/browser/passwords/password_store_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -37,13 +36,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 }  // namespace
 
 @interface PasswordsMediator () <PasswordCheckObserver,
-                                 PasswordStoreObserver,
-                                 SavePasswordsConsumerDelegate> {
+                                 SavedPasswordsPresenterObserver> {
   // The service responsible for password check feature.
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
-
-  // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
 
   // Service used to check if user is signed in.
   AuthenticationService* _authService;
@@ -51,16 +46,16 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   // Service to check if passwords are synced.
   SyncSetupService* _syncService;
 
+  password_manager::SavedPasswordsPresenter* _savedPasswordsPresenter;
+
   // A helper object for passing data about changes in password check status
   // and changes to compromised credentials list.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
   // A helper object for passing data about saved passwords from a finished
   // password store request to the PasswordsTableViewController.
-  std::unique_ptr<ios::SavePasswordsConsumer> _savedPasswordsConsumer;
-
-  // A helper object which listens to the password store changes.
-  std::unique_ptr<PasswordStoreObserverBridge> _passwordStoreObserver;
+  std::unique_ptr<SavedPasswordsPresenterObserverBridge>
+      _passwordsPresenterObserver;
 
   // Current state of password check.
   PasswordCheckState _currentState;
@@ -76,33 +71,33 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 @implementation PasswordsMediator
 
-- (instancetype)
-    initWithPasswordStore:
-        (scoped_refptr<password_manager::PasswordStore>)passwordStore
-     passwordCheckManager:
-         (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
-              authService:(AuthenticationService*)authService
-              syncService:(SyncSetupService*)syncService {
+- (instancetype)initWithPasswordCheckManager:
+                    (scoped_refptr<IOSChromePasswordCheckManager>)
+                        passwordCheckManager
+                                 authService:(AuthenticationService*)authService
+                                 syncService:(SyncSetupService*)syncService {
   self = [super init];
   if (self) {
-    _passwordStore = passwordStore;
     _authService = authService;
     _syncService = syncService;
-    _savedPasswordsConsumer =
-        std::make_unique<ios::SavePasswordsConsumer>(self);
-    _passwordStoreObserver =
-        std::make_unique<PasswordStoreObserverBridge>(self);
-    _passwordStore->AddObserver(_passwordStoreObserver.get());
+
     _passwordCheckManager = passwordCheckManager;
+    _savedPasswordsPresenter =
+        passwordCheckManager->GetSavedPasswordsPresenter();
+    DCHECK(_savedPasswordsPresenter);
+
     _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
         self, _passwordCheckManager.get());
+    _passwordsPresenterObserver =
+        std::make_unique<SavedPasswordsPresenterObserverBridge>(
+            self, _savedPasswordsPresenter);
   }
   return self;
 }
 
 - (void)dealloc {
-  if (_passwordStoreObserver) {
-    _passwordStore->RemoveObserver(_passwordStoreObserver.get());
+  if (_passwordsPresenterObserver) {
+    _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
   }
   if (_passwordCheckObserver) {
     _passwordCheckManager->RemoveObserver(_passwordCheckObserver.get());
@@ -113,7 +108,8 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   if (_consumer == consumer)
     return;
   _consumer = consumer;
-  [self loginsDidChange];
+
+  [self providePasswordsToConsumer];
 
   _currentState = _passwordCheckManager->GetPasswordCheckState();
   [self.consumer setPasswordCheckUIState:
@@ -123,7 +119,18 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
                                              .size()];
 }
 
+- (void)deletePasswordForm:(const password_manager::PasswordForm&)form {
+  _savedPasswordsPresenter->RemovePassword(form);
+}
+
 #pragma mark - PasswordsTableViewControllerDelegate
+
+- (void)deletePasswordForms:
+    (const std::vector<password_manager::PasswordForm>&)forms {
+  for (const auto& form : forms) {
+    _savedPasswordsPresenter->RemovePassword(form);
+  }
+}
 
 - (void)startPasswordCheck {
   _passwordCheckManager->StartPasswordCheck();
@@ -232,6 +239,24 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
 #pragma mark - Private Methods
 
+// Provides passwords and blocked forms to the '_consumer'.
+- (void)providePasswordsToConsumer {
+  std::vector<password_manager::PasswordForm> forms =
+      _savedPasswordsPresenter->GetUniquePasswordForms();
+
+  std::vector<password_manager::PasswordForm> savedForms, blockedForms;
+  for (const auto& form : forms) {
+    if (form.blocked_by_user) {
+      blockedForms.push_back(std::move(form));
+    } else {
+      savedForms.push_back(std::move(form));
+    }
+  }
+
+  [_consumer setPasswordsForms:std::move(savedForms)
+                  blockedForms:std::move(blockedForms)];
+}
+
 // Returns PasswordCheckUIState based on PasswordCheckState.
 - (PasswordCheckUIState)computePasswordCheckUIStateWith:
     (PasswordCheckState)newState {
@@ -270,20 +295,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
          !_syncService->IsEncryptEverythingEnabled();
 }
 
-#pragma mark - PasswordStoreObserver
+#pragma mark - SavedPasswordsPresenterObserver
 
-- (void)loginsDidChange {
-  // Cancel ongoing requests to the password store and issue a new request.
-  _savedPasswordsConsumer->cancelable_task_tracker()->TryCancelAll();
-  _passwordStore->GetAllLogins(_savedPasswordsConsumer.get());
-}
-
-#pragma mark - SavePasswordsConsumerDelegate
-
-- (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
-  DCHECK(self.consumer);
-  [self.consumer setPasswordsForms:std::move(results)];
+- (void)savedPasswordsDidChanged:
+    (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords {
+  [self providePasswordsToConsumer];
 }
 
 #pragma mark SuccessfulReauthTimeAccessor

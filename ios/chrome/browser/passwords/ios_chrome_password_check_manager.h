@@ -94,6 +94,10 @@ class IOSChromePasswordCheckManager
     observers_.RemoveObserver(observer);
   }
 
+  password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter() {
+    return &saved_passwords_presenter_;
+  }
+
  private:
   friend class RefCounted<IOSChromePasswordCheckManager>;
   friend class IOSChromePasswordCheckManagerProxy;
