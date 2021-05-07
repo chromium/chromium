@@ -6,10 +6,14 @@
 
 #include <memory>
 
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -17,21 +21,56 @@
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
+using views::BubbleBorder;
 
 namespace ash {
+namespace {
 
-AppListBubbleView::AppListBubbleView(aura::Window* root_window) {
+// Returns the point on the screen to which the bubble is anchored.
+gfx::Point GetAnchorPointInScreen(aura::Window* root_window,
+                                  ShelfAlignment shelf_alignment) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  switch (shelf_alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return base::i18n::IsRTL() ? display.work_area().bottom_right()
+                                 : display.work_area().bottom_left();
+    case ShelfAlignment::kLeft:
+      return display.work_area().origin();
+    case ShelfAlignment::kRight:
+      return display.work_area().top_right();
+  }
+}
+
+// Returns which corner of the bubble is anchored. The views bubble code calls
+// this "arrow" for historical reasons. No arrow is drawn.
+BubbleBorder::Arrow GetArrowCorner(ShelfAlignment shelf_alignment) {
+  switch (shelf_alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return base::i18n::IsRTL() ? BubbleBorder::BOTTOM_RIGHT
+                                 : BubbleBorder::BOTTOM_LEFT;
+    case ShelfAlignment::kLeft:
+      return BubbleBorder::TOP_LEFT;
+    case ShelfAlignment::kRight:
+      return BubbleBorder::TOP_RIGHT;
+  }
+}
+
+}  // namespace
+
+AppListBubbleView::AppListBubbleView(aura::Window* root_window,
+                                     ShelfAlignment shelf_alignment) {
   DCHECK(root_window);
-  // TODO(https://crbug.com/1204554): Support BubbleBorder::TOP_LEFT and
-  // TOP_RIGHT for side-aligned shelf.
-  SetArrow(views::BubbleBorder::BOTTOM_LEFT);
+  // The bubble is anchored to a screen corner point, but the API takes a rect.
+  SetAnchorRect(gfx::Rect(GetAnchorPointInScreen(root_window, shelf_alignment),
+                          gfx::Size()));
+  SetArrow(GetArrowCorner(shelf_alignment));
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_parent_window(
       Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
-
-  // TODO(https://crbug.com/1204554): Anchor to launcher button rect.
-  SetAnchorRect(Shelf::ForWindow(root_window)->GetShelfBoundsInScreen());
 
   auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));

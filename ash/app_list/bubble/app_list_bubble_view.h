@@ -14,11 +14,14 @@ class Window;
 
 namespace ash {
 
+enum class ShelfAlignment;
+
 // Contains the views for the bubble version of the launcher.
 class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView {
  public:
-  // Creates the bubble on the display for `root_window`.
-  explicit AppListBubbleView(aura::Window* root_window);
+  // Creates the bubble on the display for `root_window`. Anchors the bubble to
+  // a corner of the screen based on `shelf_alignment`.
+  AppListBubbleView(aura::Window* root_window, ShelfAlignment shelf_alignment);
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;

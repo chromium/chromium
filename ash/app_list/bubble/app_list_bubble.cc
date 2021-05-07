@@ -28,16 +28,17 @@ void AppListBubble::Show(int64_t display_id) {
     return;
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
+  Shelf* shelf = Shelf::ForWindow(root_window);
   bubble_widget_ =
       base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-          std::make_unique<AppListBubbleView>(root_window)));
+          std::make_unique<AppListBubbleView>(root_window,
+                                              shelf->alignment())));
   bubble_widget_->Show();
   // TODO(https://crbug.com/1205494): Focus search box.
 
   // Set up event filter to close the bubble for clicks outside the bubble that
   // don't cause window activation changes (e.g. clicks on wallpaper or blank
   // areas of shelf).
-  Shelf* shelf = Shelf::ForWindow(root_window);
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
   bubble_event_filter_ = std::make_unique<BubbleEventFilter>(
       bubble_widget_.get(), home_button,
