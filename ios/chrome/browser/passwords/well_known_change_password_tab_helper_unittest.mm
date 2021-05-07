@@ -13,15 +13,15 @@
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
+#include "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/test/web_test.h"
-#include "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/http/http_status_code.h"
@@ -31,7 +31,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -116,13 +115,14 @@ class TestChangePasswordUrlService
 // This test uses a mockserver to simulate different response. To handle the
 // url_loader requests we also mock the response for the url_loader_factory.
 class WellKnownChangePasswordTabHelperTest
-    : public web::FakeWebClient,
-      public web::WebTestWithWebState,
+    : public ChromeWebTest,
       public ::testing::WithParamInterface<bool> {
  public:
   using UkmBuilder =
       ukm::builders::PasswordManager_WellKnownChangePasswordResult;
-  WellKnownChangePasswordTabHelperTest() {
+  WellKnownChangePasswordTabHelperTest()
+      : ChromeWebTest(std::make_unique<web::FakeWebClient>(),
+                      web::WebTaskEnvironment::Options::IO_MAINLOOP) {
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &WellKnownChangePasswordTabHelperTest::HandleRequest,
         base::Unretained(this)));
@@ -137,7 +137,7 @@ class WellKnownChangePasswordTabHelperTest
   }
 
   void SetUp() override {
-    web::WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     EXPECT_TRUE(test_server_->InitializeAndListen());
     test_server_->StartAcceptingConnections();
 
@@ -164,7 +164,7 @@ class WellKnownChangePasswordTabHelperTest
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
         web_state());
-    SetSharedURLLoaderFactory(
+    chrome_browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
