@@ -780,10 +780,6 @@ void LocalDOMWindow::StatePopped(
 
 LocalDOMWindow::~LocalDOMWindow() = default;
 
-LocalFrame* LocalDOMWindow::GetFrame() const {
-  return To<LocalFrame>(DOMWindow::GetFrame());
-}
-
 void LocalDOMWindow::Dispose() {
   // Oilpan: should the LocalDOMWindow be GCed along with its LocalFrame without
   // the frame having first notified its observers of imminent destruction, the
