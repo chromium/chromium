@@ -15,6 +15,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view.h"
 
+class PageInfoSecurityContentView;
+
 // The main view of the page info, contains security information, permissions
 // and  site-related settings. This is used in the experimental
 // PageInfoNewBubbleView (under a flag PageInfoV2Desktop).
@@ -84,17 +86,6 @@ class PageInfoMainView : public views::View,
   // be alive to finish handling the mouse or keyboard click.
   void HandleMoreInfoRequestAsync(int view_id);
 
-  void ResetDecisionsClicked();
-
-  void SecurityDetailsClicked(const ui::Event& event);
-
-  PageInfoUI::SecurityDescriptionType GetSecurityDescriptionType() const;
-
-  void SetSecurityDescriptionType(
-      const PageInfoUI::SecurityDescriptionType& type);
-
-  void UpdateSecurityView(const IdentityInfo& identity_info);
-
   PageInfo* presenter_;
 
   PageInfoUiDelegate* ui_delegate_;
@@ -111,23 +102,20 @@ class PageInfoMainView : public views::View,
   // The button that opens the "Cookies" dialog.
   PageInfoHoverButton* cookie_button_ = nullptr;
 
-  // The button that opens the "Certificate" dialog.
-  PageInfoHoverButton* certificate_button_ = nullptr;
-
   // The button that opens up "Site Settings".
   views::View* site_settings_link_ = nullptr;
 
   // The view that contains the "Permissions" table of the bubble.
   views::View* permissions_view_ = nullptr;
 
+  // The view that contains `SecurityInformationView` and a certificate button.
+  PageInfoSecurityContentView* security_content_view_ = nullptr;
+
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting
   // VR page.
   views::View* page_feature_info_view_ = nullptr;
 #endif
-
-  // The certificate provided by the site, if one exists.
-  scoped_refptr<net::X509Certificate> certificate_;
 
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
@@ -136,14 +124,7 @@ class PageInfoMainView : public views::View,
 
   views::Label* title_ = nullptr;
 
-  SecurityInformationView* security_view_ = nullptr;
-
   views::View* security_container_view_ = nullptr;
-
-  // TODO(olesiamarukhno): Was used for tests, will update it after redesigning
-  // moves forward.
-  PageInfoUI::SecurityDescriptionType security_description_type_ =
-      PageInfoUI::SecurityDescriptionType::CONNECTION;
 
   base::WeakPtrFactory<PageInfoMainView> weak_factory_{this};
 };

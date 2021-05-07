@@ -794,10 +794,18 @@ const ui::ImageModel PageInfoUI::GetChosenObjectIcon(
 }
 
 // static
-const ui::ImageModel PageInfoUI::GetCertificateIcon() {
+const ui::ImageModel PageInfoUI::GetValidCertificateIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kCertificateIcon,
       ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize);
+}
+
+// static
+const ui::ImageModel PageInfoUI::GetInvalidCertificateIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kCertificateIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
+      &vector_icons::kBlockedBadgeIcon);
 }
 
 // static

@@ -205,8 +205,11 @@ class PageInfoUI {
   static const ui::ImageModel GetChosenObjectIcon(const ChosenObjectInfo& info,
                                                   bool deleted);
 
-  // Returns the icon for the page Certificate.
-  static const ui::ImageModel GetCertificateIcon();
+  // Returns the icon for the page's certificate when it's valid.
+  static const ui::ImageModel GetValidCertificateIcon();
+
+  // Returns the icon for the page's certificate when it's invalid.
+  static const ui::ImageModel GetInvalidCertificateIcon();
 
   // Returns the icon for the button / link to Site settings.
   static const ui::ImageModel GetSiteSettingsIcon();

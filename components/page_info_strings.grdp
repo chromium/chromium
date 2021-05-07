@@ -249,6 +249,12 @@
       <message name="IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED" desc="Button text used as part of IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT when the Page Information bubble has been opened for a site with an invalid certificate.">
         (Invalid)
       </message>
+      <message name="IDS_PAGE_INFO_CERTIFICATE_IS_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with a valid certificate.">
+        Certificate is valid
+      </message>
+      <message name="IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
+        Certificate is not valid
+      </message>
       <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_CERTIFICATE_VALID_LINK.">
         Show certificate (issued by <ph name="ISSUER">$1<ex>Let's Encrypt X3</ex></ph>)
       </message>

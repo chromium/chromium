@@ -556,7 +556,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     // Add the Certificate Section.
-    const ui::ImageModel icon = PageInfoUI::GetCertificateIcon();
+    const ui::ImageModel icon = PageInfoUI::GetValidCertificateIcon();
     const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
