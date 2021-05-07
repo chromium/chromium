@@ -124,20 +124,20 @@ void BrowserTaskQueues::Handle::PostFeatureListInitializationSetup() {
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BrowserTaskQueues::PostFeatureListInitializationSetup,
-                     base::Unretained(outer_)));
+                     base::Unretained(outer_.get())));
 }
 
 void BrowserTaskQueues::Handle::EnableAllQueues() {
   control_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&BrowserTaskQueues::EnableAllQueues,
-                                base::Unretained(outer_)));
+                                base::Unretained(outer_.get())));
 }
 
 void BrowserTaskQueues::Handle::EnableAllExceptBestEffortQueues() {
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BrowserTaskQueues::EnableAllExceptBestEffortQueues,
-                     base::Unretained(outer_)));
+                     base::Unretained(outer_.get())));
 }
 
 void BrowserTaskQueues::Handle::ScheduleRunAllPendingTasksForTesting(
@@ -146,7 +146,7 @@ void BrowserTaskQueues::Handle::ScheduleRunAllPendingTasksForTesting(
       FROM_HERE,
       base::BindOnce(
           &BrowserTaskQueues::StartRunAllPendingTasksForTesting,
-          base::Unretained(outer_),
+          base::Unretained(outer_.get()),
           base::ScopedClosureRunner(std::move(on_pending_task_ran))));
 }
 

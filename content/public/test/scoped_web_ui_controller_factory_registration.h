@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_SCOPED_WEB_UI_CONTROLLER_FACTORY_REGISTRATION_H_
 #define CONTENT_PUBLIC_TEST_SCOPED_WEB_UI_CONTROLLER_FACTORY_REGISTRATION_H_
 
+#include "base/memory/checked_ptr.h"
+
 namespace content {
 
 class WebUIControllerFactory;
@@ -23,8 +25,8 @@ class ScopedWebUIControllerFactoryRegistration {
   ~ScopedWebUIControllerFactoryRegistration();
 
  private:
-  content::WebUIControllerFactory* factory_;
-  content::WebUIControllerFactory* factory_to_replace_;
+  CheckedPtr<content::WebUIControllerFactory> factory_;
+  CheckedPtr<content::WebUIControllerFactory> factory_to_replace_;
 };
 
 }  // namespace content

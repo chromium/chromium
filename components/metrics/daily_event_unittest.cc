@@ -5,6 +5,7 @@
 #include "components/metrics/daily_event.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "components/prefs/testing_pref_service.h"
@@ -40,12 +41,12 @@ class DailyEventTest : public testing::Test {
   DailyEventTest() : event_(&prefs_, kTestPrefName, kTestMetricName) {
     DailyEvent::RegisterPref(prefs_.registry(), kTestPrefName);
     observer_ = new TestDailyObserver();
-    event_.AddObserver(base::WrapUnique(observer_));
+    event_.AddObserver(base::WrapUnique(observer_.get()));
   }
 
  protected:
   TestingPrefServiceSimple prefs_;
-  TestDailyObserver* observer_;
+  CheckedPtr<TestDailyObserver> observer_;
   DailyEvent event_;
 
  private:

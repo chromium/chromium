@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -126,17 +127,17 @@ class ProofVerifierChromium::Job {
   int CheckCTCompliance();
 
   // Proof verifier to notify when this jobs completes.
-  ProofVerifierChromium* proof_verifier_;
+  CheckedPtr<ProofVerifierChromium> proof_verifier_;
 
   // The underlying verifier used for verifying certificates.
-  CertVerifier* verifier_;
+  CheckedPtr<CertVerifier> verifier_;
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
 
-  CTPolicyEnforcer* policy_enforcer_;
+  CheckedPtr<CTPolicyEnforcer> policy_enforcer_;
 
-  TransportSecurityState* transport_security_state_;
+  CheckedPtr<TransportSecurityState> transport_security_state_;
 
-  SCTAuditingDelegate* sct_auditing_delegate_;
+  CheckedPtr<SCTAuditingDelegate> sct_auditing_delegate_;
 
   // |hostname| specifies the hostname for which |certs| is a valid chain.
   std::string hostname_;

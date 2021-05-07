@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "url/gurl.h"
@@ -81,7 +82,7 @@ class BlocklistStore {
 
  private:
   // The pref service used to persist the suggestions blocklist.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   // Delay after which a URL becomes candidate for upload, measured from the
   // last time the URL was added.

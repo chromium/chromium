@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/policy/policy_export.h"
@@ -77,8 +78,8 @@ class POLICY_EXPORT RemoteCommandsQueue {
 
   std::unique_ptr<RemoteCommandJob> running_command_;
 
-  const base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::Clock> clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
   base::OneShotTimer execution_timeout_timer_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;

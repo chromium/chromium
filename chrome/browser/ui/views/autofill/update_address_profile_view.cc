@@ -173,11 +173,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
 
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -247,7 +247,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       /*edit_button_callback=*/
       base::BindRepeating(
           &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_)));
+          base::Unretained(controller_.get())));
 
   if (has_non_empty_original_values) {
     layout->AddPaddingRow(views::GridLayout::kFixedSize,

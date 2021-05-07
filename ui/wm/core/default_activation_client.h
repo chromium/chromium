@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -58,7 +59,7 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
   std::vector<aura::Window*> active_windows_;
 
   // The window which was active before the currently active one.
-  aura::Window* last_active_;
+  CheckedPtr<aura::Window> last_active_;
 
   base::ObserverList<ActivationChangeObserver>::Unchecked observers_;
 

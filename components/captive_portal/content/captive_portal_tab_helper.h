@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -104,7 +105,7 @@ class CaptivePortalTabHelper
   // The current main frame navigation happening for the WebContents, or
   // nullptr if there is none. If there are two main frame navigations
   // happening at once, it's the one that started most recently.
-  content::NavigationHandle* navigation_handle_;
+  CheckedPtr<content::NavigationHandle> navigation_handle_;
 
   // Neither of these will ever be NULL.
   std::unique_ptr<CaptivePortalTabReloader> tab_reloader_;

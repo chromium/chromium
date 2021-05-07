@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -91,9 +92,9 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     ~FinishCompleteLoginParams();
 
     // Pointer to WebUI handler.  May be nullptr.
-    InlineLoginHandlerImpl* handler;
+    CheckedPtr<InlineLoginHandlerImpl> handler;
     // The isolate storage partition containing sign in cookies.
-    content::StoragePartition* partition;
+    CheckedPtr<content::StoragePartition> partition;
     // URL of sign in containing parameters such as email, source, etc.
     GURL url;
     // Path to profile being signed in. Non empty only when unlocking a profile
@@ -178,7 +179,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
 
   GaiaAuthFetcher gaia_auth_fetcher_;
   base::WeakPtr<InlineLoginHandlerImpl> handler_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   Profile::CreateStatus create_status_;
   GURL current_url_;
   std::string email_;

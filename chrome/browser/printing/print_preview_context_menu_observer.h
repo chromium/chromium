@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
 namespace content {
@@ -25,7 +26,7 @@ class PrintPreviewContextMenuObserver : public RenderViewContextMenuObserver {
  private:
   bool IsPrintPreviewDialog();
 
-  content::WebContents* contents_;
+  CheckedPtr<content::WebContents> contents_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewContextMenuObserver);
 };

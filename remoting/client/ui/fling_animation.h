@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "remoting/client/ui/fling_tracker.h"
 
@@ -45,7 +46,7 @@ class FlingAnimation {
 
   base::TimeTicks fling_start_time_;
 
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   // FlingAnimation is neither copyable nor movable.
   FlingAnimation(const FlingAnimation&) = delete;

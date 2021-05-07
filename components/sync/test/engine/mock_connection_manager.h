@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
@@ -312,7 +313,7 @@ class MockConnectionManager : public ServerConnectionManager {
   // The updates we'll return to the next request.
   std::list<sync_pb::GetUpdatesResponse> update_queue_;
   base::OnceClosure mid_commit_callback_;
-  MidCommitObserver* mid_commit_observer_;
+  CheckedPtr<MidCommitObserver> mid_commit_observer_;
 
   // The keystore key we return for a GetUpdates with need_encryption_key set.
   std::string keystore_key_;

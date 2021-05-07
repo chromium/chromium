@@ -13,6 +13,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -89,14 +90,14 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // An unbound Delegate that will be bound to the thread. Ownership
     // of |delegate| will be transferred to the thread.
     // TODO(alexclarke): This should be a std::unique_ptr
-    Delegate* delegate = nullptr;
+    CheckedPtr<Delegate> delegate = nullptr;
 
     // Specifies timer slack for thread message loop.
     TimerSlack timer_slack = TIMER_SLACK_NONE;
 
     // The time domain to be used by the task queue. This is not compatible with
     // a non-null |delegate|.
-    sequence_manager::TimeDomain* task_queue_time_domain = nullptr;
+    CheckedPtr<sequence_manager::TimeDomain> task_queue_time_domain = nullptr;
 
     // Used to create the MessagePump for the MessageLoop. The callback is Run()
     // on the thread. If message_pump_factory.is_null(), then a MessagePump

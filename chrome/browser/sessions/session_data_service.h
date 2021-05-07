@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_DATA_SERVICE_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_DATA_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -28,7 +29,7 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   bool cleanup_started_ = false;
 };
 

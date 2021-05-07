@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -76,8 +77,8 @@ class SyncSessionDurationsMetricsRecorder
   // refresh token in the identity manager.
   FeatureState DeterminePrimaryAccountStatus() const;
 
-  SyncService* const sync_service_;
-  signin::IdentityManager* const identity_manager_;
+  const CheckedPtr<SyncService> sync_service_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

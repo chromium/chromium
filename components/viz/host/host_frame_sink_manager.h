@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -204,7 +205,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     }
 
     // The client to be notified of changes to this FrameSink.
-    HostFrameSinkClient* client = nullptr;
+    CheckedPtr<HostFrameSinkClient> client = nullptr;
 
     // Indicates whether or not this client cares to receive
     // FirstSurfaceActivation notifications.

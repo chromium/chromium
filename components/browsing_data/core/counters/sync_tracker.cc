@@ -25,7 +25,7 @@ void SyncTracker::OnInitialized(SyncPredicate predicate) {
   predicate_ = predicate;
   if (sync_service_)
     sync_service_->AddObserver(this);
-  sync_enabled_ = predicate_.Run(sync_service_);
+  sync_enabled_ = predicate_.Run(sync_service_.get());
 }
 
 bool SyncTracker::IsSyncActive() {
@@ -33,7 +33,7 @@ bool SyncTracker::IsSyncActive() {
 }
 
 void SyncTracker::OnStateChanged(syncer::SyncService* sync) {
-  bool sync_enabled_new = predicate_.Run(sync_service_);
+  bool sync_enabled_new = predicate_.Run(sync_service_.get());
 
   if (sync_enabled_ != sync_enabled_new) {
     sync_enabled_ = sync_enabled_new;

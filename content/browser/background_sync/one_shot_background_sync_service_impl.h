@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_registration_helper.h"
@@ -49,7 +50,7 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
   void OnMojoDisconnect();
 
   // |background_sync_context_| owns |this|.
-  BackgroundSyncContextImpl* const background_sync_context_;
+  const CheckedPtr<BackgroundSyncContextImpl> background_sync_context_;
 
   std::unique_ptr<BackgroundSyncRegistrationHelper> registration_helper_;
   mojo::Receiver<blink::mojom::OneShotBackgroundSyncService> receiver_;

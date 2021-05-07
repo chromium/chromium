@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -78,7 +79,7 @@ class AMPPageLoadMetricsObserver
 
     // Pointer to the RenderViewHost for the iframe hosting the AMP document
     // associated with the main frame AMP navigation.
-    content::RenderFrameHost* subframe_rfh = nullptr;
+    CheckedPtr<content::RenderFrameHost> subframe_rfh = nullptr;
 
     // Navigation start time for the main frame AMP navigation. We use this time
     // as an approximation of the time the user initiated the navigation.

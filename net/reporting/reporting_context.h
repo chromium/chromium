@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
@@ -80,8 +81,8 @@ class NET_EXPORT ReportingContext {
  private:
   ReportingPolicy policy_;
 
-  base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  CheckedPtr<base::Clock> clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
   std::unique_ptr<ReportingUploader> uploader_;
 
   base::ObserverList<ReportingCacheObserver, /* check_empty= */ true>::Unchecked
@@ -91,7 +92,7 @@ class NET_EXPORT ReportingContext {
 
   std::unique_ptr<ReportingCache> cache_;
 
-  ReportingCache::PersistentReportingStore* const store_;
+  const CheckedPtr<ReportingCache::PersistentReportingStore> store_;
 
   // |delivery_agent_| must come after |tick_clock_|, |delegate_|, |uploader_|,
   // and |cache_|.

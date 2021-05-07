@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -325,7 +326,7 @@ class VariationsServiceTest : public ::testing::Test {
 
  protected:
   TestingPrefServiceSimple prefs_;
-  network::TestNetworkConnectionTracker* network_tracker_;
+  CheckedPtr<network::TestNetworkConnectionTracker> network_tracker_;
 
  private:
   base::test::TaskEnvironment task_environment_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_stats.h"
@@ -63,8 +64,8 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   std::u16string GetMessageBody() const;
   void RunDone(Action action);
 
-  download::DownloadItem* download_;
-  Profile* profile_;
+  CheckedPtr<download::DownloadItem> download_;
+  CheckedPtr<Profile> profile_;
   // If show_context_ is true, this is a download confirmation dialog by
   // download API, otherwise it is download recovery dialog from a regular
   // download.

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -34,7 +35,7 @@ class NoteServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<NoteService> note_service_;
-  test::MockTemplateStore* mock_template_store_;
+  CheckedPtr<test::MockTemplateStore> mock_template_store_;
 };
 
 TEST_F(NoteServiceTest, GetTemplatesSuccess_Empty) {

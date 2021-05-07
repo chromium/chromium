@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/reauth_tab_helper.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -37,7 +38,7 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness,
   const GURL& reauth_url() { return reauth_url_; }
 
  private:
-  ReauthTabHelper* tab_helper_ = nullptr;
+  CheckedPtr<ReauthTabHelper> tab_helper_ = nullptr;
   base::MockOnceCallback<void(signin::ReauthResult)> mock_callback_;
   const GURL reauth_url_;
 };

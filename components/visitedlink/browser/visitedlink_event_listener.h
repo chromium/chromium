@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/timer/timer.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
@@ -54,7 +55,7 @@ class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
   base::OneShotTimer default_coalesce_timer_;
   // A pointer to either |default_coalesce_timer_| or to an override set using
   // SetCoalesceTimerForTest(). This does not own the timer.
-  base::OneShotTimer* coalesce_timer_;
+  CheckedPtr<base::OneShotTimer> coalesce_timer_;
   VisitedLinkCommon::Fingerprints pending_visited_links_;
 
   content::NotificationRegistrar registrar_;
@@ -67,7 +68,7 @@ class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
 
   // Used to filter RENDERER_PROCESS_CREATED notifications to renderers that
   // belong to this BrowserContext.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(VisitedLinkEventListener);
 };

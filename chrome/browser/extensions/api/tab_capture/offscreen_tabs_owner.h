@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/size.h"
@@ -64,7 +65,7 @@ class OffscreenTabsOwner final
       content::MediaResponseCallback callback) override;
   void DestroyTab(OffscreenTab* tab) override;
 
-  content::WebContents* const extension_web_contents_;
+  const CheckedPtr<content::WebContents> extension_web_contents_;
   std::vector<std::unique_ptr<OffscreenTab>> tabs_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

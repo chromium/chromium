@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -152,12 +153,14 @@ class ProfilePolicyConnector final {
 
   std::unique_ptr<ConfigurationPolicyProvider>
       wrapped_platform_policy_provider_;
-  const ConfigurationPolicyProvider* configuration_policy_provider_ = nullptr;
-  const CloudPolicyStore* policy_store_ = nullptr;
+  CheckedPtr<const ConfigurationPolicyProvider> configuration_policy_provider_ =
+      nullptr;
+  CheckedPtr<const CloudPolicyStore> policy_store_ = nullptr;
 
   // If this is not nullptr, this provider will be used as (highest priority)
   // platform policy provider.
-  ConfigurationPolicyProvider* platform_policy_provider_for_testing_ = nullptr;
+  CheckedPtr<ConfigurationPolicyProvider>
+      platform_policy_provider_for_testing_ = nullptr;
 
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.

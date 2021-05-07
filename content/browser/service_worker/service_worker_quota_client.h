@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -65,7 +66,8 @@ class ServiceWorkerQuotaClient : public storage::mojom::QuotaClient {
   //
   // The pointer is guaranteed to be non-null. It is not a reference because
   // ResetContext() changes the object it points to.
-  ServiceWorkerContextCore* context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CheckedPtr<ServiceWorkerContextCore> context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

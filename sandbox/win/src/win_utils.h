@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "sandbox/win/src/nt_internals.h"
 
@@ -36,7 +37,7 @@ class AutoLock {
   ~AutoLock() { ::LeaveCriticalSection(lock_); }
 
  private:
-  CRITICAL_SECTION* lock_;
+  CheckedPtr<CRITICAL_SECTION> lock_;
   DISALLOW_IMPLICIT_CONSTRUCTORS(AutoLock);
 };
 

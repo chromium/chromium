@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
@@ -58,7 +60,7 @@ class ChannelReflectorListener : public Listener {
   void Send(IPC::Message* message);
 
  private:
-  Sender* channel_;
+  CheckedPtr<Sender> channel_;
   base::OnceClosure quit_closure_;
 };
 

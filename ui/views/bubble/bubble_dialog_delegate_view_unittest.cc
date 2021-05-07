@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,7 +53,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   explicit TestBubbleDialogDelegateView(View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    AddChildView(view_);
+    AddChildView(view_.get());
   }
   ~TestBubbleDialogDelegateView() override = default;
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
@@ -101,7 +102,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   using BubbleDialogDelegateView::SizeToContents;
 
  private:
-  View* view_ = new View;
+  CheckedPtr<View> view_ = new View;
   std::unique_ptr<View> title_view_;
   bool should_show_close_button_ = false;
   bool should_show_window_title_ = true;

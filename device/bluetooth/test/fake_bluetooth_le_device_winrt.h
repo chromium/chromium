@@ -17,6 +17,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_device_information_winrt.h"
 
@@ -148,7 +149,7 @@ class FakeBluetoothLEDeviceWinrt
   void SimulateGattServicesDiscoveryError();
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   uint32_t reference_count_ = 1u;
   base::Optional<std::string> name_;
 
@@ -212,7 +213,7 @@ class FakeBluetoothLEDeviceStaticsWinrt
   IFACEMETHODIMP GetDeviceSelector(HSTRING* device_selector) override;
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEDeviceStaticsWinrt);
 };

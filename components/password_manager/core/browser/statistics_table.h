@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -79,7 +80,7 @@ class StatisticsTable {
   int GetNumAccounts();
 
  private:
-  sql::Database* db_ = nullptr;
+  CheckedPtr<sql::Database> db_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(StatisticsTable);
 };

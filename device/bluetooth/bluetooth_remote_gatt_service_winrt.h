@@ -16,6 +16,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_winrt.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -127,7 +128,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
       BluetoothUUID uuid,
       uint16_t attribute_handle);
 
-  BluetoothDevice* device_;
+  CheckedPtr<BluetoothDevice> device_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                              GenericAttributeProfile::IGattDeviceService>
       gatt_service_;

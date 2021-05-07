@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 
@@ -51,9 +52,9 @@ class VectorElementBinding : public BindingBase {
   }
 
  private:
-  std::vector<M>* models_ = nullptr;
+  CheckedPtr<std::vector<M>> models_ = nullptr;
   size_t index_ = 0;
-  V* view_;
+  CheckedPtr<V> view_;
   std::vector<std::unique_ptr<BindingBase>> bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(VectorElementBinding);

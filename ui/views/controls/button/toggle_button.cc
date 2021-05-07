@@ -138,9 +138,10 @@ ToggleButton::ToggleButton(PressedCallback callback)
   views::InkDrop::UseInkDropForSquareRipple(this,
                                             /*highlight_on_hover=*/false);
   SetAddInkDropLayerCallback(base::BindRepeating(
-      &InkDropHostView::AddInkDropLayer, base::Unretained(thumb_view_)));
-  SetRemoveInkDropLayerCallback(base::BindRepeating(
-      &InkDropHostView::RemoveInkDropLayer, base::Unretained(thumb_view_)));
+      &InkDropHostView::AddInkDropLayer, base::Unretained(thumb_view_.get())));
+  SetRemoveInkDropLayerCallback(
+      base::BindRepeating(&InkDropHostView::RemoveInkDropLayer,
+                          base::Unretained(thumb_view_.get())));
 }
 
 ToggleButton::~ToggleButton() {

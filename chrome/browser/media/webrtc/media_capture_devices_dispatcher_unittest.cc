@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -71,7 +72,7 @@ class MediaCaptureDevicesDispatcherTest
   }
 
  protected:
-  MediaCaptureDevicesDispatcher* dispatcher_;
+  CheckedPtr<MediaCaptureDevicesDispatcher> dispatcher_;
 };
 
 TEST_F(MediaCaptureDevicesDispatcherTest,

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -542,7 +543,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
     const char* name;
     bool is_json;
     // Pointer to location at which the string can be modified.
-    std::string* value_ptr;
+    CheckedPtr<std::string> value_ptr;
   } kStringTestCases[] = {
       {
           "interestGroup.name",
@@ -642,7 +643,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
     // String used in JS to access the parameter.
     const char* name;
     // Pointer to location at which the integer can be modified.
-    int* value_ptr;
+    CheckedPtr<int> value_ptr;
   } kIntegerTestCases[] = {
       {"browserSignals.joinCount", &browser_signal_join_count_},
       {"browserSignals.bidCount", &browser_signal_bid_count_}};
@@ -926,7 +927,7 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     const char* name;
     bool is_json;
     // Pointer to location at which the string can be modified.
-    std::string* value_ptr;
+    CheckedPtr<std::string> value_ptr;
     // Whether to expect an error. This can be empty when call fails in case
     // it's due to something like passing non-JSON to JSON parameter which user
     // code should be unable to trigger, and for which we thus do not produce

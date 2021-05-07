@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_FAVICON_SQL_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace favicon {
@@ -31,7 +32,7 @@ class FaviconSQLHandler : public SQLHandler {
   // true if all unused favicons are deleted.
   bool DeleteUnusedFavicon(const std::vector<favicon_base::FaviconID>& ids);
 
-  favicon::FaviconDatabase* favicon_db_;
+  CheckedPtr<favicon::FaviconDatabase> favicon_db_;
 
   DISALLOW_COPY_AND_ASSIGN(FaviconSQLHandler);
 };

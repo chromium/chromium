@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"
@@ -72,7 +73,7 @@ class RendererUpdater : public KeyedService,
       mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>*
           renderer_configuration);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::OAuth2LoginManager* oauth2_login_manager_;
@@ -88,7 +89,7 @@ class RendererUpdater : public KeyedService,
 
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       identity_manager_observer_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_

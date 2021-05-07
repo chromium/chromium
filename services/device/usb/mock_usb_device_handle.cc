@@ -11,7 +11,7 @@ namespace device {
 MockUsbDeviceHandle::MockUsbDeviceHandle(UsbDevice* device) : device_(device) {}
 
 scoped_refptr<UsbDevice> MockUsbDeviceHandle::GetDevice() const {
-  return device_;
+  return device_.get();
 }
 
 MockUsbDeviceHandle::~MockUsbDeviceHandle() = default;

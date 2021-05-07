@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_GL_COMMON_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_GL_COMMON_H_
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_bindings.h"
@@ -43,7 +44,7 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
     ~ScopedResetAndRestoreUnpackState();
 
    private:
-    gl::GLApi* const api_;
+    const CheckedPtr<gl::GLApi> api_;
 
     // Always used if |es3_capable|.
     GLint unpack_buffer_ = 0;
@@ -75,7 +76,7 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
     ~ScopedRestoreTexture();
 
    private:
-    gl::GLApi* api_;
+    CheckedPtr<gl::GLApi> api_;
     GLenum target_;
     GLuint old_binding_ = 0;
     DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture);

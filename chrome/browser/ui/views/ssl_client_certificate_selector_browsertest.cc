@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,7 +89,7 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_;
   // The selector will be deleted when a cert is selected or the tab is closed.
-  SSLClientCertificateSelector* selector_ = nullptr;
+  CheckedPtr<SSLClientCertificateSelector> selector_ = nullptr;
 };
 
 class SSLClientCertificateSelectorMultiTabTest
@@ -162,8 +163,8 @@ class SSLClientCertificateSelectorMultiTabTest
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_2_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_2_;
-  SSLClientCertificateSelector* selector_1_;
-  SSLClientCertificateSelector* selector_2_;
+  CheckedPtr<SSLClientCertificateSelector> selector_1_;
+  CheckedPtr<SSLClientCertificateSelector> selector_2_;
 };
 
 class SSLClientCertificateSelectorMultiProfileTest
@@ -214,10 +215,10 @@ class SSLClientCertificateSelectorMultiProfileTest
   }
 
  protected:
-  Browser* browser_1_;
+  CheckedPtr<Browser> browser_1_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock> > auth_requestor_1_;
-  SSLClientCertificateSelector* selector_1_;
+  CheckedPtr<SSLClientCertificateSelector> selector_1_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelectorMultiProfileTest);

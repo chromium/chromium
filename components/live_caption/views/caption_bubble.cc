@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -357,7 +358,7 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
   }
 
  private:
-  CaptionBubbleLabel* owner_;
+  CheckedPtr<CaptionBubbleLabel> owner_;
 };
 #endif
 

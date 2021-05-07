@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {
@@ -43,7 +44,7 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    ClipboardEchoFilter* filter_;
+    CheckedPtr<ClipboardEchoFilter> filter_;
   };
 
   class HostFilter : public ClipboardStub {
@@ -52,14 +53,14 @@ class ClipboardEchoFilter {
     void InjectClipboardEvent(const ClipboardEvent& event) override;
 
    private:
-    ClipboardEchoFilter* filter_;
+    CheckedPtr<ClipboardEchoFilter> filter_;
   };
 
   void InjectClipboardEventToHost(const ClipboardEvent& event);
   void InjectClipboardEventToClient(const ClipboardEvent& event);
 
-  ClipboardStub* host_stub_;
-  ClipboardStub* client_stub_;
+  CheckedPtr<ClipboardStub> host_stub_;
+  CheckedPtr<ClipboardStub> client_stub_;
   ClientFilter client_filter_;
   HostFilter host_filter_;
 

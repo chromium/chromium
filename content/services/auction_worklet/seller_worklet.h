@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -141,7 +142,7 @@ class SellerWorklet {
       base::Optional<std::string> error_msg);
 
   const GURL script_source_url_;
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
   std::unique_ptr<WorkletLoader> worklet_loader_;
 
   // Compiled script, not bound to any context. Can be repeatedly bound to

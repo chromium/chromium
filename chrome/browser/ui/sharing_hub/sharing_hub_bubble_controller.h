@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Profile;
@@ -52,9 +53,9 @@ class SharingHubBubbleController
   friend class content::WebContentsUserData<SharingHubBubbleController>;
 
   // The web_contents associated with this controller.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  SharingHubBubbleView* sharing_hub_bubble_view_ = nullptr;
+  CheckedPtr<SharingHubBubbleView> sharing_hub_bubble_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
