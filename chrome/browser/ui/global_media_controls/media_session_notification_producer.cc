@@ -101,6 +101,13 @@ MediaSessionNotificationProducer::Session::Session(
   SetController(std::move(controller));
   if (presentation_manager_)
     presentation_manager_->AddObserver(this);
+
+  bool has_presentation_request =
+      presentation_manager_ &&
+      presentation_manager_->HasDefaultPresentationRequest();
+  base::UmaHistogramBoolean(
+      "Media.GlobalMediaControls.HasDefaultPresentationRequest",
+      has_presentation_request);
 }
 
 MediaSessionNotificationProducer::Session::~Session() {

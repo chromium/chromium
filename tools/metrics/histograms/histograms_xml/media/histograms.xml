@@ -2121,6 +2121,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.HasDefaultPresentationRequest"
+    enum="Boolean" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records whether a media session is from a WebContents with a default
+    PresentationReuqest. Recorded whenever a session is instantiated in the
+    global media controls, even if the user doesn't open the UI to view it.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.InteractionDelayAfterPause"
     units="ms" expires_after="2021-10-31">
   <owner>steimel@chromium.org</owner>
