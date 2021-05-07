@@ -484,72 +484,9 @@ void V8TestInterfaceConditionalSecureContext::InstallConditionalFeatures(
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
 
   if (!prototype_object.IsEmpty() || !interface_object.IsEmpty()) {
-    if (is_secure_context || !RuntimeEnabledFeatures::SecureContextnessFeatureEnabled()) {
-      static constexpr V8DOMConfiguration::AccessorConfiguration
-      kAccessorConfigurations[] = {
-          { "secureContextAttribute", V8TestInterfaceConditionalSecureContext::SecureContextAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-      };
-      V8DOMConfiguration::InstallAccessors(
-          isolate, world, instance_object, prototype_object, interface_object,
-          signature, kAccessorConfigurations,
-          base::size(kAccessorConfigurations));
-
-      if (RuntimeEnabledFeatures::SecureFeatureEnabled()) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "secureContextRuntimeEnabledAttribute", V8TestInterfaceConditionalSecureContext::SecureContextRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-      }
-    }
     if (execution_context && (execution_context->IsWindow())) {
-      if (is_secure_context || !RuntimeEnabledFeatures::SecureContextnessFeatureEnabled()) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "secureContextWindowExposedAttribute", V8TestInterfaceConditionalSecureContext::SecureContextWindowExposedAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextWindowExposedAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-
-        if (RuntimeEnabledFeatures::SecureFeatureEnabled()) {
-          static constexpr V8DOMConfiguration::AccessorConfiguration
-          kAccessorConfigurations[] = {
-              { "secureContextWindowExposedRuntimeEnabledAttribute", V8TestInterfaceConditionalSecureContext::SecureContextWindowExposedRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextWindowExposedRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-          };
-          V8DOMConfiguration::InstallAccessors(
-              isolate, world, instance_object, prototype_object, interface_object,
-              signature, kAccessorConfigurations,
-              base::size(kAccessorConfigurations));
-        }
-      }
     }
     if (execution_context && (execution_context->IsWorkerGlobalScope())) {
-      if (is_secure_context || !RuntimeEnabledFeatures::SecureContextnessFeatureEnabled()) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "secureContextWorkerExposedAttribute", V8TestInterfaceConditionalSecureContext::SecureContextWorkerExposedAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextWorkerExposedAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-
-        if (RuntimeEnabledFeatures::SecureFeatureEnabled()) {
-          static constexpr V8DOMConfiguration::AccessorConfiguration
-          kAccessorConfigurations[] = {
-              { "secureContextWorkerExposedRuntimeEnabledAttribute", V8TestInterfaceConditionalSecureContext::SecureContextWorkerExposedRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceConditionalSecureContext::SecureContextWorkerExposedRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-          };
-          V8DOMConfiguration::InstallAccessors(
-              isolate, world, instance_object, prototype_object, interface_object,
-              signature, kAccessorConfigurations,
-              base::size(kAccessorConfigurations));
-        }
-      }
     }
     if (is_secure_context || !RuntimeEnabledFeatures::SecureContextnessFeatureEnabled()) {
       {

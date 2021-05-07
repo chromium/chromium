@@ -479,6 +479,24 @@ static void CrossOriginIsolatedRuntimeEnabledMethodMethod(const v8::FunctionCall
   impl->crossOriginIsolatedRuntimeEnabledMethod(arg);
 }
 
+static void DirectSocketEnabledRuntimeEnabledMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  ExceptionState exception_state(info.GetIsolate(), ExceptionState::kExecutionContext, "TestInterfaceCheckSecurity", "directSocketEnabledRuntimeEnabledMethod");
+
+  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
+
+  if (UNLIKELY(info.Length() < 1)) {
+    exception_state.ThrowTypeError(ExceptionMessages::NotEnoughArguments(1, info.Length()));
+    return;
+  }
+
+  V8StringResource<> arg;
+  arg = info[0];
+  if (!arg.Prepare())
+    return;
+
+  impl->directSocketEnabledRuntimeEnabledMethod(arg);
+}
+
 static const struct {
   using GetterCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
   using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginCallbackInfo&);
@@ -668,6 +686,13 @@ void V8TestInterfaceCheckSecurity::CrossOriginIsolatedRuntimeEnabledMethodMethod
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceCheckSecurity_crossOriginIsolatedRuntimeEnabledMethod");
 
   test_interface_check_security_v8_internal::CrossOriginIsolatedRuntimeEnabledMethodMethod(info);
+}
+
+void V8TestInterfaceCheckSecurity::DirectSocketEnabledRuntimeEnabledMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  BLINK_BINDINGS_TRACE_EVENT("TestInterfaceCheckSecurity.directSocketEnabledRuntimeEnabledMethod");
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceCheckSecurity_directSocketEnabledRuntimeEnabledMethod");
+
+  test_interface_check_security_v8_internal::DirectSocketEnabledRuntimeEnabledMethodMethod(info);
 }
 
 bool V8TestInterfaceCheckSecurity::SecurityCheck(v8::Local<v8::Context> accessing_context, v8::Local<v8::Object> accessed_object, v8::Local<v8::Value> data) {
@@ -938,6 +963,7 @@ void V8TestInterfaceCheckSecurity::InstallConditionalFeatures(
   DCHECK(execution_context);
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
   bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
+  bool is_direct_socket_enabled = (execution_context && execution_context->DirectSocketCapability());
 
   if (!instance_object.IsEmpty()) {
     if (is_secure_context) {
@@ -961,6 +987,21 @@ void V8TestInterfaceCheckSecurity::InstallConditionalFeatures(
           // Install crossOriginIsolatedRuntimeEnabledMethod configuration
           const V8DOMConfiguration::MethodConfiguration kConfigurations[] = {
               {"crossOriginIsolatedRuntimeEnabledMethod", V8TestInterfaceCheckSecurity::CrossOriginIsolatedRuntimeEnabledMethodMethodCallback, 1, v8::None, V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds}
+          };
+          for (const auto& config : kConfigurations) {
+            V8DOMConfiguration::InstallMethod(
+                isolate, world, instance_object, prototype_object,
+                interface_object, signature, config);
+          }
+        }
+      }
+    }
+    if (execution_context && (is_direct_socket_enabled)) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
+        {
+          // Install directSocketEnabledRuntimeEnabledMethod configuration
+          const V8DOMConfiguration::MethodConfiguration kConfigurations[] = {
+              {"directSocketEnabledRuntimeEnabledMethod", V8TestInterfaceCheckSecurity::DirectSocketEnabledRuntimeEnabledMethodMethodCallback, 1, v8::None, V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds}
           };
           for (const auto& config : kConfigurations) {
             V8DOMConfiguration::InstallMethod(

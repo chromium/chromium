@@ -485,70 +485,13 @@ void V8TestInterfaceCrossOriginIsolated::InstallConditionalFeatures(
 
   if (!prototype_object.IsEmpty() || !interface_object.IsEmpty()) {
     if (execution_context && (is_cross_origin_isolated)) {
-      static constexpr V8DOMConfiguration::AccessorConfiguration
-      kAccessorConfigurations[] = {
-          { "crossOriginIsolatedAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-      };
-      V8DOMConfiguration::InstallAccessors(
-          isolate, world, instance_object, prototype_object, interface_object,
-          signature, kAccessorConfigurations,
-          base::size(kAccessorConfigurations));
-
-      if (RuntimeEnabledFeatures::RuntimeFeature2Enabled()) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "crossOriginIsolatedRuntimeEnabledAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-      }
     }
     if (execution_context && (execution_context->IsWindow())) {
       if (execution_context && (is_cross_origin_isolated)) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "crossOriginIsolatedWindowExposedAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWindowExposedAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWindowExposedAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-
-        if (RuntimeEnabledFeatures::RuntimeFeature2Enabled()) {
-          static constexpr V8DOMConfiguration::AccessorConfiguration
-          kAccessorConfigurations[] = {
-              { "crossOriginIsolatedWindowExposedRuntimeEnabledAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWindowExposedRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWindowExposedRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-          };
-          V8DOMConfiguration::InstallAccessors(
-              isolate, world, instance_object, prototype_object, interface_object,
-              signature, kAccessorConfigurations,
-              base::size(kAccessorConfigurations));
-        }
       }
     }
     if (execution_context && (execution_context->IsWorkerGlobalScope())) {
       if (execution_context && (is_cross_origin_isolated)) {
-        static constexpr V8DOMConfiguration::AccessorConfiguration
-        kAccessorConfigurations[] = {
-            { "crossOriginIsolatedWorkerExposedAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWorkerExposedAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWorkerExposedAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-        };
-        V8DOMConfiguration::InstallAccessors(
-            isolate, world, instance_object, prototype_object, interface_object,
-            signature, kAccessorConfigurations,
-            base::size(kAccessorConfigurations));
-
-        if (RuntimeEnabledFeatures::RuntimeFeature2Enabled()) {
-          static constexpr V8DOMConfiguration::AccessorConfiguration
-          kAccessorConfigurations[] = {
-              { "crossOriginIsolatedWorkerExposedRuntimeEnabledAttribute", V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWorkerExposedRuntimeEnabledAttributeAttributeGetterCallback, V8TestInterfaceCrossOriginIsolated::CrossOriginIsolatedWorkerExposedRuntimeEnabledAttributeAttributeSetterCallback, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
-          };
-          V8DOMConfiguration::InstallAccessors(
-              isolate, world, instance_object, prototype_object, interface_object,
-              signature, kAccessorConfigurations,
-              base::size(kAccessorConfigurations));
-        }
       }
     }
     if (execution_context && (is_cross_origin_isolated)) {

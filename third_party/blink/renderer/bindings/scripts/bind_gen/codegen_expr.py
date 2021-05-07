@@ -181,6 +181,7 @@ def expr_from_exposure(exposure,
     #         feature_selector-2nd-phase-term))
     # which can be represented in more details as:
     #   (and cross_origin_isolated_term
+    #        direct_socket_enabled_term
     #        secure_context_term
     #        uncond_exposed_term
     #        (or
@@ -192,6 +193,7 @@ def expr_from_exposure(exposure,
     #             feature_selector_term)))
     # where
     #   cross_origin_isolated_term represents [CrossOriginIsolated]
+    #   direct_socket_enabled_term represents [DirectSocketEnabled]
     #   secure_context_term represents [SecureContext=F1]
     #   uncond_exposed_term represents [Exposed=(G1, G2)]
     #   cond_exposed_term represents [Exposed(G1 F1, G2 F2)]
@@ -223,6 +225,12 @@ def expr_from_exposure(exposure,
         cross_origin_isolated_term = _Expr("${is_cross_origin_isolated}")
     else:
         cross_origin_isolated_term = _Expr(True)
+
+    # [DirectSocketEnabled]
+    if exposure.only_in_direct_socket_contexts:
+        direct_socket_enabled_term = _Expr("${is_direct_socket_enabled}")
+    else:
+        direct_socket_enabled_term = _Expr(True)
 
     # [SecureContext]
     if exposure.only_in_secure_contexts is True:
@@ -295,6 +303,7 @@ def expr_from_exposure(exposure,
     # Build an expression.
     top_level_terms = []
     top_level_terms.append(cross_origin_isolated_term)
+    top_level_terms.append(direct_socket_enabled_term)
     top_level_terms.append(secure_context_term)
     if uncond_exposed_terms:
         top_level_terms.append(expr_or(uncond_exposed_terms))

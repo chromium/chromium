@@ -7,7 +7,8 @@
 
 [
   ImplementedAs=NavigatorSocket,
-  RuntimeEnabled=DirectSockets
+  RuntimeEnabled=DirectSockets,
+  DirectSocketEnabled
 ] partial interface Navigator {
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
   Promise<TCPSocket> openTCPSocket(optional SocketOptions options = {});

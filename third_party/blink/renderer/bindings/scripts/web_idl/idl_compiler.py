@@ -224,6 +224,9 @@ class IdlCompiler(object):
             propagate(('ContextEnabled', 'add_context_enabled_feature'))
             propagate(('CrossOriginIsolated', 'set_only_in_coi_contexts'),
                       default_value=True)
+            propagate(
+                ('DirectSocketEnabled', 'set_only_in_direct_socket_contexts'),
+                default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
                       default_value=True)
 
@@ -521,9 +524,9 @@ class IdlCompiler(object):
 
     def _propagate_extattrs_to_overload_group(self):
         ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'Custom',
-                  'LegacyLenientThis', 'LegacyUnforgeable',
-                  'NoAllocDirectCall', 'NotEnumerable', 'PerWorldBindings',
-                  'SecureContext', 'Unscopable')
+                  'DirectSocketEnabled', 'LegacyLenientThis',
+                  'LegacyUnforgeable', 'NoAllocDirectCall', 'NotEnumerable',
+                  'PerWorldBindings', 'SecureContext', 'Unscopable')
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.INTERFACE,
                                             IRMap.IR.Kind.NAMESPACE)
@@ -595,6 +598,13 @@ class IdlCompiler(object):
                     pass  # Exposed by default.
                 else:
                     group.exposure.set_only_in_coi_contexts(True)
+
+                # [DirectSocketEnabled]
+                if any(not exposure.only_in_direct_socket_contexts
+                       for exposure in exposures):
+                    pass  # Exposed by default.
+                else:
+                    group.exposure.set_only_in_direct_socket_contexts(True)
 
                 # [SecureContext]
                 if any(exposure.only_in_secure_contexts is False

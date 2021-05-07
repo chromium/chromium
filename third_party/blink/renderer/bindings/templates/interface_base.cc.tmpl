@@ -866,6 +866,9 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% if feature.needs_cross_origin_isolated %}
   bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
   {% endif %}{# needs cross-origin isolated #}
+  {% if feature.needs_direct_socket_enabled %}
+  bool is_direct_socket_enabled = (execution_context && execution_context->DirectSocketCapability());
+  {% endif %}{# needs direct socket enabled #}
   {% if feature.needs_secure_context %}
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
   {% endif %}{# needs secure context #}
@@ -877,6 +880,16 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% endfor %}
   {% for cross_origin_isolated_test, attribute_list in feature.attributes | rejectattr('is_data_type_property') | groupby('cross_origin_isolated_test') %}
   {% filter cross_origin_isolated(cross_origin_isolated_test) %}
+  {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
+  {% endfilter %}
+  {% endfor %}
+  {% for direct_socket_enabled_test, attribute_list in feature.attributes | selectattr('is_data_type_property') | groupby('direct_socket_enabled_test') %}
+  {% filter direct_socket_enabled(direct_socket_enabled_test) %}
+  {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
+  {% endfilter %}
+  {% endfor %}
+  {% for direct_socket_enabled_test, attribute_list in feature.attributes | rejectattr('is_data_type_property') | groupby('direct_socket_enabled_test') %}
+  {% filter direct_socket_enabled(direct_socket_enabled_test) %}
   {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
   {% endfilter %}
   {% endfor %}
@@ -903,6 +916,7 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% filter exposed(method.exposed_test) %}
   {% filter secure_context(method.secure_context_test) %}
   {% filter cross_origin_isolated(method.cross_origin_isolated_test) %}
+  {% filter direct_socket_enabled(method.direct_socket_enabled_test) %}
   static constexpr V8DOMConfiguration::MethodConfiguration
   k{{method.camel_case_name}}Configurations[] = {
       {{method_configuration(method) | trim | indent(6)}}
@@ -912,6 +926,7 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
         isolate, world, instance, prototype,
         interface, signature, config);
   }
+  {% endfilter %}{# direct_socket_enabled #}
   {% endfilter %}{# cross_origin_isolated #}
   {% endfilter %}{# secure_context #}
   {% endfilter %}{# exposed_test #}
@@ -1006,6 +1021,9 @@ void {{v8_class_or_partial}}::InstallConditionalFeatures(
   {% endif %}
   {% if has_conditional_coi_attributes or has_conditional_coi_methods %}
   bool is_cross_origin_isolated = (execution_context && execution_context->CrossOriginIsolatedCapability());
+  {% endif %}
+  {% if has_conditional_direct_socket_attributes or has_conditional_direct_socket_methods %}
+  bool is_direct_socket_enabled = (execution_context && execution_context->DirectSocketCapability());
   {% endif %}
 
   {% set attributes_on_instance = conditional_attributes | selectattr('on_instance') | list %}

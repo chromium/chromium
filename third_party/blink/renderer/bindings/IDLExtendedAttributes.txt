@@ -52,6 +52,7 @@ Custom=|Getter|Setter|LegacyCallAsFunction|PropertyGetter|PropertyEnumerator|Pro
 CustomConstructor
 DefaultValue=Undefined
 DeprecateAs=*
+DirectSocketEnabled
 DoNotCheckConstants
 DoNotTestNewObject
 EnforceRange

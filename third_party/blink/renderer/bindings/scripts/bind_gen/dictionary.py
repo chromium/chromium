@@ -106,6 +106,10 @@ def bind_member_iteration_local_vars(code_node):
             "const bool ${is_cross_origin_isolated} = "
             "${execution_context}->CrossOriginIsolatedCapability();"),
         SymbolNode(
+            "is_direct_socket_enabled",
+            "const bool ${is_direct_socket_enabled} = "
+            "${execution_context}->DirectSocketCapability();"),
+        SymbolNode(
             "is_in_secure_context", "const bool ${is_in_secure_context} = "
             "${execution_context}->IsSecureContext();"),
     ]

@@ -169,9 +169,13 @@ def origin_trial_features(interface, constants, attributes, methods):
         feature['needs_cross_origin_isolated'] = any(
             member.get('cross_origin_isolated_test', False)
             for member in members)
+        feature['needs_direct_socket_enabled'] = any(
+            member.get('direct_socket_enabled_test', False)
+            for member in members)
         feature['needs_context'] = feature['needs_secure_context'] or feature[
-            'needs_cross_origin_isolated'] or any(
-                member.get('exposed_test', False) for member in members)
+            'needs_cross_origin_isolated'] or feature[
+                'needs_direct_socket_enabled'] or any(
+                    member.get('exposed_test', False) for member in members)
 
     if features:
         includes.add('platform/bindings/script_state.h')
@@ -538,8 +542,11 @@ def interface_context(interface, interfaces, component_info):
         attr for attr in conditionally_enabled_attributes
         if attr['constructor_type']
     ]
-    has_conditional_coi_attributes = any(  #pylint: disable=invalid-name
+    has_conditional_coi_attributes = any(  # pylint: disable=invalid-name
         v8_attributes.is_cross_origin_isolated(attr)
+        for attr in conditionally_enabled_attributes)
+    has_conditional_direct_socket_attributes = any(  # pylint: disable=invalid-name
+        v8_attributes.is_direct_socket_enabled(attr)
         for attr in conditionally_enabled_attributes)
     has_conditional_secure_attributes = any(  # pylint: disable=invalid-name
         v8_attributes.is_secure_context(attr)
@@ -551,6 +558,8 @@ def interface_context(interface, interfaces, component_info):
         conditional_interface_objects,
         'has_conditional_coi_attributes':
         has_conditional_coi_attributes,
+        'has_conditional_direct_socket_attributes':
+        has_conditional_direct_socket_attributes,
         'has_conditional_secure_attributes':
         has_conditional_secure_attributes,
     })
@@ -565,10 +574,15 @@ def interface_context(interface, interfaces, component_info):
     has_conditional_coi_methods = any(  # pylint: disable=invalid-name
         v8_methods.is_cross_origin_isolated(method)
         for method in conditional_methods)
+    has_conditional_direct_socket_methods = any(  # pylint: disable=invalid-name
+        v8_methods.is_direct_socket_enabled(method)
+        for method in conditional_methods)
     has_conditional_secure_methods = any(  # pylint: disable=invalid-name
         v8_methods.is_secure_context(method) for method in conditional_methods)
     context.update({
         'has_conditional_coi_methods': has_conditional_coi_methods,
+        'has_conditional_direct_socket_methods':
+        has_conditional_direct_socket_methods,
         'has_conditional_secure_methods': has_conditional_secure_methods,
         'conditional_methods': conditional_methods,
     })
@@ -1224,6 +1238,9 @@ def overloads_context(interface, overloads):
         # [CrossOriginIsolated]
         'cross_origin_isolated_test_all':
         common_value(overloads, 'cross_origin_isolated_test'),
+        # [DirectSocketEnabled]
+        'direct_socket_enabled_test_all':
+        common_value(overloads, 'direct_socket_enabled_test'),
         # [SecureContext]
         'secure_context_test_all':
         common_value(overloads, 'secure_context_test'),

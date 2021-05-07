@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    DirectSocketEnabled,
+    Exposed=(Window,Worker)
+] interface TestInterfaceDirectSocketEnabled {
+    void directSocketEnabledMethod();
+    attribute boolean directSocketEnabledAttribute;
+    [RuntimeEnabled=RuntimeFeature2] void directSocketEnabledRuntimeEnabledMethod();
+    [RuntimeEnabled=RuntimeFeature2] attribute boolean directSocketEnabledRuntimeEnabledAttribute;
+    [Exposed=Window] void directSocketEnabledWindowExposedMethod();
+    [Exposed=Window] attribute boolean directSocketEnabledWindowExposedAttribute;
+    [Exposed=Worker] void directSocketEnabledWorkerExposedMethod();
+    [Exposed=Worker] attribute boolean directSocketEnabledWorkerExposedAttribute;
+    [Exposed=Window,RuntimeEnabled=RuntimeFeature2] void directSocketEnabledWindowExposedRuntimeEnabledMethod();
+    [Exposed=Window,RuntimeEnabled=RuntimeFeature2] attribute boolean directSocketEnabledWindowExposedRuntimeEnabledAttribute;
+    [Exposed=Worker,RuntimeEnabled=RuntimeFeature2] void directSocketEnabledWorkerExposedRuntimeEnabledMethod();
+    [Exposed=Worker,RuntimeEnabled=RuntimeFeature2] attribute boolean directSocketEnabledWorkerExposedRuntimeEnabledAttribute;
+};

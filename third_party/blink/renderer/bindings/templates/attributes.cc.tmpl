@@ -641,13 +641,15 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
 
 
 {##############################################################################}
-{# This macro installs |attributes_to_install| conditionally based on Exposed, CrossOriginIsolated, SecureContext, and RuntimeEnabled checks. #}
+{# This macro installs |attributes_to_install| conditionally based on Exposed, CrossOriginIsolated, DirectSocketEnabled, SecureContext, and RuntimeEnabled checks. #}
 {% macro install_conditional_attributes(attributes_to_install) %}
 {% for exposed_test, exposed_attribute_list in attributes_to_install | groupby('exposed_test') %}
 {% filter exposed(exposed_test) %}
 {% for cross_origin_isolated_test, cross_origin_isolated_attribute_list in exposed_attribute_list | groupby('cross_origin_isolated_test') %}
 {% filter cross_origin_isolated(cross_origin_isolated_test) %}
-{% for secure_context_test, secure_context_attribute_list in cross_origin_isolated_attribute_list | groupby('secure_context_test') %}
+{% for direct_socket_enabled_test, direct_socket_enabled_attribute_list in cross_origin_isolated_attribute_list | groupby('direct_socket_enabled_test') %}
+{% filter direct_socket_enabled(direct_socket_enabled_test) %}
+{% for secure_context_test, secure_context_attribute_list in direct_socket_enabled_isolated_attribute_list | groupby('secure_context_test') %}
 {% filter secure_context(secure_context_test) %}
 {% for feature_name, attribute_list in secure_context_attribute_list | groupby('runtime_enabled_feature_name') %}
 {% filter runtime_enabled(feature_name) %}
@@ -655,9 +657,11 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
 {% endfilter %}{# runtime_enabled #}
 {% endfor %}{# secure_context_attribute_list grouped by runtime_enabled #}
 {% endfilter %}{# secure_context #}
-{% endfor %}{# cross_origin_isolated_attribute_list grouped by secure_context_text #}
+{% endfor %}{# direct_socket_isolated_attribute_list grouped by secure_context_text #}
+{% endfilter %}{# direct_socket_enabled #}
+{% endfor %}{# cross_origin_isolated_attribute_list grouped by direct_socket_enabled_test #}
 {% endfilter %}{# cross_origin_isolated #}
-{% endfor %}{# cross_origin_isolated_attribute_list grouped by cross_origin_isolated_test #}
+{% endfor %}{# exposed_attribute_list grouped by cross_origin_isolation_test #}
 {% endfilter %}{# exposed #}
 {% endfor %}{# attributes grouped by exposed_test #}
 {% endmacro %}
@@ -680,13 +684,15 @@ V8DOMConfiguration::InstallAccessors(
 
 
 {##############################################################################}
-{# This macro installs |attributes_to_install| conditionally based on Exposed, CrossOriginIsolated, SecureContext, and RuntimeEnabled checks. #}
+{# This macro installs |attributes_to_install| conditionally based on Exposed, CrossOriginIsolated, DirectSocketEnabled, SecureContext, and RuntimeEnabled checks. #}
 {% macro install_conditional_interface_objects(attributes_to_install) %}
 {% for exposed_test, exposed_attribute_list in attributes_to_install | groupby('exposed_test') %}
 {% filter exposed(exposed_test) %}
 {% for cross_origin_isolated_test, cross_origin_isolated_attribute_list in exposed_attribute_list | groupby('cross_origin_isolated_test') %}
 {% filter cross_origin_isolated(cross_origin_isolated_test) %}
-{% for secure_context_test, secure_context_attribute_list in cross_origin_isolated_attribute_list | groupby('secure_context_test') %}
+{% for direct_socket_enabled_test, direct_socket_enabled_attribute_list in cross_origin_isolated_attribute_list | groupby('direct_socket_enabled_test') %}
+{% filter direct_socket_enabled(direct_socket_enabled_test) %}
+{% for secure_context_test, secure_context_attribute_list in direct_socket_enabled_attribute_list | groupby('secure_context_test') %}
 {% filter secure_context(secure_context_test) %}
 {% for feature_name, attribute_list in secure_context_attribute_list | groupby('runtime_enabled_feature_name') %}
 {% filter runtime_enabled(feature_name) %}
@@ -694,9 +700,11 @@ V8DOMConfiguration::InstallAccessors(
 {% endfilter %}{# runtime_enabled #}
 {% endfor %}{# secure_context_attribute_list grouped by runtime_enabled #}
 {% endfilter %}{# secure_context #}
-{% endfor %}{# cross_origin_isolated_attribute_list grouped by secure_context_text #}
+{% endfor %}{# direct_socket_isolated_attribute_list grouped by secure_context_text #}
+{% endfilter %}{# direct_socket_enabled #}
+{% endfor %}{# cross_origin_isolated_attribute_list grouped by direct_socket_enabled_test #}
 {% endfilter %}{# cross_origin_isolated #}
-{% endfor %}{# exposed_attribute_list grouped by cross_origin_isolated_test #}
+{% endfor %}{# exposed_attribute_list grouped by cross_origin_isolation_test #}
 {% endfilter %}{# exposed #}
 {% endfor %}{# attributes grouped by exposed_test #}
 {% endmacro %}

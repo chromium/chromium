@@ -2836,8 +2836,18 @@ WebExposedIsolationInfo RenderFrameHostManager::GetWebExposedIsolationInfo(
           navigation_request->coop_status().current_coop().value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
       if (is_cross_origin_isolated) {
-        return WebExposedIsolationInfo::CreateIsolated(
-            url::Origin::Create(navigation_request->common_params().url));
+        url::Origin origin =
+            url::Origin::Create(navigation_request->common_params().url);
+
+        // For short-term testing, we'll treat COI as "good enough" to treat as
+        // an isolated application iff the kDirectSockets feature is also
+        // enabled.
+        //
+        // TODO(mkwst): Build a better distinction: https://crbug.com/1206150.
+        if (base::FeatureList::IsEnabled(features::kDirectSockets))
+          return WebExposedIsolationInfo::CreateIsolatedApplication(origin);
+
+        return WebExposedIsolationInfo::CreateIsolated(origin);
       }
     } else {
       // If we are in an iframe, we inherit the isolation state of

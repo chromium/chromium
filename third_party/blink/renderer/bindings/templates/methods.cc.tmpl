@@ -622,6 +622,9 @@ V8SetReturnValue(info, wrapper);
 {% filter cross_origin_isolated(method.overloads.cross_origin_isolated_test_all
                                 if method.overloads else
                                 method.cross_origin_isolated_test) %}
+{% filter direct_socket_enabled(method.overloads.direct_socket_enabled_test_all
+                                if method.overloads else
+                                method.direct_socket_enabled_test) %}
 {% filter secure_context(method.overloads.secure_context_test_all
                          if method.overloads else
                          method.secure_context_test) %}
@@ -645,6 +648,7 @@ V8SetReturnValue(info, wrapper);
 {% endfilter %}{# runtime_enabled() #}
 {% endfilter %}{# exposed() #}
 {% endfilter %}{# secure_context() #}
+{% endfilter %}{# direct_socket_enabled() #}
 {% endfilter %}{# cross_origin_isolated() #}
 {% endfor %}
 {%- endmacro %}

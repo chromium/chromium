@@ -69,6 +69,12 @@ def is_cross_origin_isolated(method):
         method else method['cross_origin_isolated_test'])
 
 
+def is_direct_socket_enabled(method):
+    return bool(
+        method['overloads']['direct_socket_enabled_test_all'] if 'overloads' in
+        method else method['direct_socket_enabled_test'])
+
+
 def is_secure_context(method):
     return bool(method['overloads']['secure_context_test_all'] if 'overloads'
                 in method else method['secure_context_test'])
@@ -78,7 +84,7 @@ def is_conditionally_enabled(method):
     exposed = method['overloads']['exposed_test_all'] \
         if 'overloads' in method else method['exposed_test']
     return exposed or is_secure_context(method) or is_cross_origin_isolated(
-        method)
+        method) or is_direct_socket_enabled(method)
 
 
 def filter_conditionally_enabled(methods, interface_is_partial):
@@ -315,6 +321,9 @@ def method_context(interface, method, component_info, is_visible=True):
         # [CrossOriginIsolated]
         'cross_origin_isolated_test':
         v8_utilities.cross_origin_isolated(method, interface),
+        # [DirectSocketEnabled]
+        'direct_socket_enabled_test':
+        v8_utilities.direct_socket_enabled(method, interface),
         # [SecureContext]
         'secure_context_test':
         v8_utilities.secure_context(method, interface),

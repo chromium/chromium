@@ -70,6 +70,14 @@ def cross_origin_isolated_if(code, cross_origin_isolated_test):
         code, 'execution_context && (%s)' % cross_origin_isolated_test)
 
 
+# [DirectSocketEnabled]
+def direct_socket_enabled_if(code, direct_socket_enabled_test):
+    if not direct_socket_enabled_test:
+        return code
+    return generate_indented_conditional(
+        code, 'execution_context && (%s)' % direct_socket_enabled_test)
+
+
 # [SecureContext]
 def secure_context_if(code, secure_context_test):
     if secure_context_test is None:
@@ -123,6 +131,7 @@ def initialize_jinja_env(cache_dir):
         'runtime_enabled': runtime_enabled_if,
         'runtime_enabled_function': v8_utilities.runtime_enabled_function,
         'cross_origin_isolated': cross_origin_isolated_if,
+        'direct_socket_enabled': direct_socket_enabled_if,
         'secure_context': secure_context_if
     })
     jinja_env.filters.update(constant_filters())

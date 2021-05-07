@@ -46,4 +46,5 @@
     [CrossOrigin, RuntimeEnabled=RuntimeFeature] void doNotCheckSecurityVoidOverloadMethod(String argument1, optional long argument2);
     [SecureContext, RuntimeEnabled=RuntimeFeature] void secureContextRuntimeEnabledMethod(String arg);
     [CrossOriginIsolated, RuntimeEnabled=RuntimeFeature] void crossOriginIsolatedRuntimeEnabledMethod(String arg);
+    [DirectSocketEnabled, RuntimeEnabled=RuntimeFeature] void directSocketEnabledRuntimeEnabledMethod(String arg);
 };
