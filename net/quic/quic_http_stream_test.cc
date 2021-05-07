@@ -2704,7 +2704,7 @@ TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
   base::HistogramTester histogram_tester;
 
   session_->OnAcceptChFrameReceivedViaAlps(
-      {{{"https://www.example.org", "Sec-UA-CH-Platform"}}});
+      {{{"https://www.example.org", "Sec-CH-UA-Platform"}}});
 
   request_.method = "GET";
   request_.url = GURL("https://www.example.org/foo");
@@ -2712,7 +2712,7 @@ TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
   EXPECT_EQ(OK,
             stream_->InitializeStream(&request_, true, DEFAULT_PRIORITY,
                                       net_log_.bound(), callback_.callback()));
-  EXPECT_EQ("Sec-UA-CH-Platform", stream_->GetAcceptChViaAlps());
+  EXPECT_EQ("Sec-CH-UA-Platform", stream_->GetAcceptChViaAlps());
   EXPECT_TRUE(AtEof());
 
   histogram_tester.ExpectBucketCount(
