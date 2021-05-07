@@ -118,6 +118,28 @@ class InstallTest(XcodeUtilTest):
     mock_move_runtime.assert_called_with('test/path/Runtime',
                                          'test/path/Xcode.app', True)
 
+  @mock.patch('xcode_util.move_runtime', autospec=True)
+  @mock.patch('xcode_util._install_runtime')
+  @mock.patch('xcode_util._install_xcode')
+  def test_new_mactoolchain_new_xcode_no_runtime(self, mock_install_xcode,
+                                                 mock_install_runtime,
+                                                 mock_move_runtime):
+    self.mock(xcode_util, '_using_new_mac_toolchain', lambda cmd: True)
+    self.mock(xcode_util, '_is_legacy_xcode_package', lambda path: False)
+
+    is_legacy_xcode = xcode_util.install(
+        self.mac_toolchain,
+        self.xcode_build_version,
+        self.xcode_app_path,
+        runtime_cache_folder=None,
+        ios_version=None)
+
+    self.assertFalse(is_legacy_xcode, 'install should return False')
+    mock_install_xcode.assert_called_with('mac_toolchain', 'TestXcodeVersion',
+                                          'test/path/Xcode.app', True)
+    self.assertFalse(mock_install_runtime.called)
+    self.assertFalse(mock_move_runtime.called)
+
 
 class HelperFunctionTests(XcodeUtilTest):
   """Test class for xcode_util misc util functions."""

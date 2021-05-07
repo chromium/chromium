@@ -49,41 +49,53 @@ class Runner():
     if args:
       self.parse_args(args)
 
-  def install_xcode(self, xcode_build_version, mac_toolchain_cmd,
-                    xcode_app_path):
+  def install_xcode(self):
     """Installs the requested Xcode build version.
 
-    Args:
-      xcode_build_version: (string) Xcode build version to install.
-      mac_toolchain_cmd: (string) Path to mac_toolchain command to install Xcode
-      See https://chromium.googlesource.com/infra/infra/+/master/go/src/infra/cmd/mac_toolchain/
-      xcode_app_path: (string) Path to install the contents of Xcode.app.
-
     Returns:
-      True if installation was successful. False otherwise.
+      (bool, bool)
+        First bool: True if installation was successful. False otherwise.
+        Second bool: True if Xcode is legacy package. False if it's new.
     """
     try:
-      if not mac_toolchain_cmd:
-        raise test_runner.MacToolchainNotFoundError(mac_toolchain_cmd)
+      if not self.args.mac_toolchain_cmd:
+        raise test_runner.MacToolchainNotFoundError(self.args.mac_toolchain_cmd)
       # Guard against incorrect install paths. On swarming, this path
       # should be a requested named cache, and it must exist.
-      if not os.path.exists(xcode_app_path):
-        raise test_runner.XcodePathNotFoundError(xcode_app_path)
+      if not os.path.exists(self.args.xcode_path):
+        raise test_runner.XcodePathNotFoundError(self.args.xcode_path)
 
-      # TODO(crbug.com/1191260): Pass in runtime args and handle moving runtime
-      # back to cache after runtime cache is set up in swarming, if Xcode
-      # installed is a new version (without runtime bundled)
-      xcode.install(mac_toolchain_cmd, xcode_build_version, xcode_app_path)
-      xcode.select(xcode_app_path)
+      runtime_cache_folder = None
+      # Runner script only utilizes runtime cache when it's a simulator task.
+      if self.args.version:
+        runtime_cache_folder = xcode.construct_runtime_cache_folder(
+            self.args.runtime_cache_prefix, self.args.version)
+        if not os.path.exists(runtime_cache_folder):
+          # Depending on infra project, runtime named cache might not be
+          # deployed. Create the dir if it doesn't exist since xcode_util
+          # assumes it exists.
+          # TODO(crbug.com/1191260): Raise error instead of creating dirs after
+          # runtime named cache is deployed everywhere.
+          os.makedirs(runtime_cache_folder)
+      # xcode.install() installs the Xcode & iOS runtime, and returns a bool
+      # indicating if the Xcode version in CIPD is a legacy Xcode package (which
+      # includes iOS runtimes).
+      is_legacy_xcode = xcode.install(
+          self.args.mac_toolchain_cmd,
+          self.args.xcode_build_version,
+          self.args.xcode_path,
+          runtime_cache_folder=runtime_cache_folder,
+          ios_version=self.args.version)
+      xcode.select(self.args.xcode_path)
     except subprocess.CalledProcessError as e:
       # Flush buffers to ensure correct output ordering.
       sys.stdout.flush()
       sys.stderr.write('Xcode build version %s failed to install: %s\n' %
-                       (xcode_build_version, e))
+                       (self.args.xcode_build_version, e))
       sys.stderr.flush()
-      return False
-
-    return True
+      return (False, False)
+    else:
+      return (True, is_legacy_xcode)
 
   def run(self, args):
     """
@@ -93,9 +105,8 @@ class Runner():
 
     # This logic is run by default before the otool command is invoked such that
     # otool has the correct Xcode selected for command line dev tools.
-    if not self.install_xcode(self.args.xcode_build_version,
-                              self.args.mac_toolchain_cmd,
-                              self.args.xcode_path):
+    install_success, is_legacy_xcode = self.install_xcode()
+    if not install_success:
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
     # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS are additional test environment
@@ -232,6 +243,14 @@ class Runner():
         with open(output_json_path, 'w') as f:
           json.dump(tr.test_results, f)
 
+      # Move the iOS runtime back to cache dir if the Xcode package is not
+      # legacy (i.e. Xcode program & runtimes are in different CIPD packages.)
+      # and it's a simulator task.
+      if not is_legacy_xcode and self.args.version:
+        runtime_cache_folder = xcode.construct_runtime_cache_folder(
+            self.args.runtime_cache_prefix, self.args.version)
+        xcode.move_runtime(runtime_cache_folder, self.args.xcode_path, False)
+
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')
 
@@ -332,6 +351,17 @@ class Runner():
         help='Number of times to retry failed test cases.',
         metavar='n',
         type=int,
+    )
+    parser.add_argument(
+        '--runtime-cache-prefix',
+        metavar='PATH',
+        help=(
+            'Path prefix for runtime cache folder. The prefix will be appended '
+            'with iOS version to construct the path. iOS simulator will be '
+            'installed to the path and further copied into Xcode. Default: '
+            '%(default)s. WARNING: this folder will be overwritten! This '
+            'folder is intended to be a cached CIPD installation.'),
+        default='Runtime-ios-',
     )
     parser.add_argument(
         '-s',

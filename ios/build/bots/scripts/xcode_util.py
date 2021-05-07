@@ -91,6 +91,16 @@ def _install_runtime(mac_toolchain, install_path, xcode_build_version,
   return output
 
 
+def construct_runtime_cache_folder(runtime_cache_prefix, ios_version):
+  """Composes runtime cache folder from it's prefix and ios_version.
+
+  Note: Please keep the pattern consistent between what's being passed into
+  runner script in gn(build/config/ios/ios_test_runner_wrapper.gni), and what's
+  being configured for swarming cache in test configs (testing/buildbot/*).
+  """
+  return runtime_cache_prefix + ios_version
+
+
 def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
   """Moves runtime from runtime cache into xcode or vice versa.
 
@@ -220,7 +230,8 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     mac_toolchain: (string) Path to mac_toolchain command to install Xcode
     See https://chromium.googlesource.com/infra/infra/+/main/go/src/infra/cmd/mac_toolchain/
     xcode_app_path: (string) Path to install the contents of Xcode.app.
-    runtime_args: Keyword arguments related with runtime installation, namely:
+    runtime_args: Keyword arguments related with runtime installation. Can be
+    empty when installing an Xcode w/o runtime (for real device tasks). Namely:
       runtime_cache_folder: (string) Path to the folder where runtime package
           file (e.g. iOS.simruntime) is stored.
       ios_version: (string) iOS version requested to be in Xcode package.
@@ -246,7 +257,8 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     raise test_runner_errors.XcodeMacToolchainMismatchError(xcode_build_version)
 
   # Install & move the runtime to Xcode. Can only work with new mac_toolchain.
-  if not is_legacy_xcode_package:
+  # Only install runtime when it's working for a simulator task.
+  if not is_legacy_xcode_package and runtime_args.get('ios_version'):
     runtime_cache_folder = runtime_args.get('runtime_cache_folder')
     ios_version = runtime_args.get('ios_version')
     if not runtime_cache_folder or not ios_version:
