@@ -29,6 +29,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::
 void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    AutofillClient::SaveAddressProfilePromptOptions options,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   // Don't show the bubble if it's already visible.
@@ -39,12 +40,13 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
-  Show();
+  if (options.show_prompt)
+    Show();
 }
 
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
     const {
-  // TODO(crbug.com/1167060): Use ineternationalized string upon having final
+  // TODO(crbug.com/1167060): Use internationalized string upon having final
   // strings.
   // TODO(crbug.com/1167060): Update prompt title should reflect the fields that
   // are being updated.

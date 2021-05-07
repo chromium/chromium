@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -65,8 +66,10 @@ void EditAddressProfileDialogControllerImpl::OnUserDecision(
   SaveUpdateAddressProfileBubbleControllerImpl* controller =
       SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->OfferSave(profile, base::OptionalOrNullptr(original_profile_),
-                        std::move(address_profile_save_prompt_callback_));
+  controller->OfferSave(
+      profile, base::OptionalOrNullptr(original_profile_),
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      std::move(address_profile_save_prompt_callback_));
 }
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed() {

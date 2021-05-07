@@ -539,13 +539,13 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
   save_address_profile_flow_manager_.OfferSave(
       web_contents(), profile, original_profile, std::move(callback));
 #else
-  // TODO(crbug.com/1167060): Respect SaveAddressProfilePromptOptions.
   SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
       web_contents());
   SaveUpdateAddressProfileBubbleControllerImpl* controller =
       SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->OfferSave(profile, original_profile, std::move(callback));
+  controller->OfferSave(profile, original_profile, options,
+                        std::move(callback));
 #endif
 }
 

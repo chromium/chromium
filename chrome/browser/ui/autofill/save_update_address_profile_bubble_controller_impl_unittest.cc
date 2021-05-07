@@ -7,6 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +41,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(profile, /*original_profile=*/nullptr,
-                          callback.Get());
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      callback.Get());
 
   EXPECT_CALL(
       callback,
@@ -55,8 +58,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(profile, /*original_profile=*/nullptr,
-                          callback.Get());
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      callback.Get());
 
   EXPECT_CALL(
       callback,
@@ -64,6 +69,36 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
           testing::_));
   controller()->OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+}
+
+// This is testing that when the SaveAddressProfilePromptOptions has the
+// show_prompt set to true, the bubble should be visible.
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+       BubbleShouldBeVisibleWithShowPrompt) {
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      callback.Get());
+  // Bubble is visible and active
+  EXPECT_TRUE(controller()->GetSaveBubbleView());
+  EXPECT_TRUE(controller()->IsBubbleActive());
+}
+
+// This is testing that when the SaveAddressProfilePromptOptions has the
+// show_prompt set to false, the bubble should be invisible.
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+       BubbleShouldBeInvisibleWithoutShowPrompt) {
+  AutofillProfile profile = test::GetFullProfile();
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+  controller()->OfferSave(
+      profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = false},
+      callback.Get());
+  // Bubble is invisible but active
+  EXPECT_FALSE(controller()->GetSaveBubbleView());
+  EXPECT_TRUE(controller()->IsBubbleActive());
 }
 
 }  // namespace autofill
