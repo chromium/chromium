@@ -6,13 +6,17 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -63,6 +67,10 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = builder.Build();
 
     consumer_ = [[ManageSyncSettingsTableViewController alloc]
@@ -70,6 +78,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [consumer_ loadModel];
 
     pref_service_ = SetPrefService();
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
@@ -79,6 +89,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         initWithSyncService:sync_service_mock_
             userPrefService:pref_service_];
     mediator_.syncSetupService = sync_setup_service_mock_;
+    mediator_.authService = authentication_service_;
     mediator_.consumer = consumer_;
   }
 
@@ -115,6 +126,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   ManageSyncSettingsMediator* mediator_ = nullptr;
   ManageSyncSettingsTableViewController* consumer_ = nullptr;
   PrefService* pref_service_ = nullptr;
+  AuthenticationService* authentication_service_ = nullptr;
 };
 
 // Tests for Advanced Settings items.
@@ -196,4 +208,29 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabled) {
 
   ASSERT_FALSE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
+}
+
+// Tests that a Sync error that occurs after the user has loaded the Settings
+// page once will update the full page.
+TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  SetupSyncServiceInitializedExpectations();
+  EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
+      .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
+      .WillOnce(Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
+
+  // Loads the Sync page once in success state.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+  // Loads the Sync page again in disabled tate.
+  [mediator_ onSyncStateChanged];
+
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  NSArray* error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+  ASSERT_EQ(1UL, error_items.count);
 }

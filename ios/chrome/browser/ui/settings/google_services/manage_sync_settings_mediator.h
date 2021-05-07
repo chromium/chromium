@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
 
@@ -23,7 +24,8 @@ class SyncService;
 // Mediator for the manager sync settings.
 @interface ManageSyncSettingsMediator
     : NSObject <ManageSyncSettingsServiceDelegate,
-                ManageSyncSettingsTableViewControllerModelDelegate>
+                ManageSyncSettingsTableViewControllerModelDelegate,
+                SyncObserverModelBridge>
 
 // Consumer.
 @property(nonatomic, weak) id<ManageSyncSettingsConsumer> consumer;

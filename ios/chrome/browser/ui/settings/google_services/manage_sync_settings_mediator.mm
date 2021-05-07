@@ -50,9 +50,9 @@ NSString* kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <BooleanObserver,
-                                          IdentityManagerObserverBridgeDelegate,
-                                          SyncObserverModelBridge> {
+@interface ManageSyncSettingsMediator () <
+    BooleanObserver,
+    IdentityManagerObserverBridgeDelegate> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // Whether Sync State changes should be currently ignored.
@@ -586,9 +586,11 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   }
   BOOL needsSyncErrorItemsUpdate = [self updateSyncErrorItems];
   if (notifyConsumer && needsSyncErrorItemsUpdate) {
-    NSUInteger sectionIndex = [self.consumer.tableViewModel
-        sectionForSectionIdentifier:SyncErrorsSectionIdentifier];
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+    // Need to reload all sections since the error will be inserted into the
+    // first section position.
+    NSIndexSet* indexSet = [NSIndexSet
+        indexSetWithIndexesInRange:NSMakeRange(0, self.consumer.tableViewModel
+                                                      .numberOfSections)];
     [self.consumer reloadSections:indexSet];
   }
 }
@@ -651,10 +653,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     self.syncErrorItem = [self createSyncErrorItemWithItemType:type];
   }
   [self.consumer.tableViewModel
-      addSectionWithIdentifier:SyncErrorsSectionIdentifier];
-  [model insertItem:self.syncErrorItem
-      inSectionWithIdentifier:SyncErrorsSectionIdentifier
-                      atIndex:0];
+      insertSectionWithIdentifier:SyncErrorsSectionIdentifier
+                          atIndex:0];
+  [model addItem:self.syncErrorItem
+      toSectionWithIdentifier:SyncErrorsSectionIdentifier];
   return YES;
 }
 
