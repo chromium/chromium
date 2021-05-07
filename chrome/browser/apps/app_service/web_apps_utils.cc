@@ -144,6 +144,18 @@ apps::mojom::AppPtr ConvertWebApp(Profile* profile,
   return app;
 }
 
+apps::mojom::AppPtr ConvertUninstalledWebApp(const web_app::WebApp* web_app,
+                                             apps::mojom::AppType app_type) {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type;
+  app->app_id = web_app->app_id();
+  // TODO(loyso): Plumb uninstall source (reason) here.
+  app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+
+  apps_util::SetWebAppShowInFields(app, web_app);
+  return app;
+}
+
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::mojom::UninstallSource uninstall_source) {
   switch (uninstall_source) {

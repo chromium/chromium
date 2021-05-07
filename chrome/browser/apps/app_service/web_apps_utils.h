@@ -37,6 +37,11 @@ apps::mojom::AppPtr ConvertWebApp(Profile* profile,
                                   apps::mojom::AppType app_type,
                                   apps::mojom::Readiness readiness);
 
+// Constructs an App with only the information required to identify an
+// uninstallation.
+apps::mojom::AppPtr ConvertUninstalledWebApp(const web_app::WebApp* web_app,
+                                             apps::mojom::AppType app_type);
+
 // Converts |uninstall_source| to a |WebappUninstallSource|.
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::mojom::UninstallSource uninstall_source);

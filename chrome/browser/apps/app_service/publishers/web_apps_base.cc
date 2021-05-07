@@ -90,16 +90,8 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
     return;
   }
 
-  // Construct an App with only the information required to identify an
-  // uninstallation.
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type_;
-  app->app_id = web_app->app_id();
-  // TODO(loyso): Plumb uninstall source (reason) here.
-  app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-
-  apps_util::SetWebAppShowInFields(app, web_app);
-  Publish(std::move(app), subscribers_);
+  Publish(apps_util::ConvertUninstalledWebApp(web_app, app_type_),
+          subscribers_);
 }
 
 IconEffects WebAppsBase::GetIconEffects(const web_app::WebApp* web_app) {

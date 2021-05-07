@@ -1830,6 +1830,12 @@ if (!is_android) {
       ]
     }
 
+    if (is_chromeos_lacros) {
+      sources += [
+        "../browser/apps/app_service/web_apps_publisher_host_browsertest.cc",
+      ]
+    }
+
     if (!is_chromeos) {
       sources +=
           [ "../browser/policy/test/native_messaging_policy_browsertest.cc" ]
