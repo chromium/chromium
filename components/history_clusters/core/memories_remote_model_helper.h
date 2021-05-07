@@ -41,7 +41,7 @@ class MemoriesRemoteModelHelper {
                    const std::vector<history::AnnotatedVisit>& visits);
 
  private:
-  // Helpers for making requests used by |GetMemories()|.
+  // Helpers for making requests used by `GetMemories()`.
   static std::unique_ptr<network::ResourceRequest> CreateRequest(
       const GURL& endpoint);
   static std::unique_ptr<network::SimpleURLLoader> CreateLoader(

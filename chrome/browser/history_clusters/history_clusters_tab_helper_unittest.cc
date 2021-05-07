@@ -31,8 +31,8 @@
 
 namespace {
 
-// Used to invoke a callback after |WebContentsDestroyed()| is invoked, but
-// before the |WebContents| has been destroyed.
+// Used to invoke a callback after `WebContentsDestroyed()` is invoked, but
+// before the `WebContents` has been destroyed.
 class OnDestroyWebContentsObserver : content::WebContentsObserver {
  public:
   OnDestroyWebContentsObserver(content::WebContents* web_contents,
@@ -47,7 +47,7 @@ class OnDestroyWebContentsObserver : content::WebContentsObserver {
   base::OnceCallback<void()> callback_;
 };
 
-// Returns a Time that's |seconds| seconds after Windows epoch.
+// Returns a Time that's `seconds` seconds after Windows epoch.
 base::Time IntToTime(int seconds) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromSeconds(seconds));
@@ -127,25 +127,25 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 
 // There are multiple events that occur with nondeterministic order:
 // - History (w/ N visits): a history navigation occurs,
-//   |OnUpdatedHistoryForNavigation()| is invoked, and a history query is made
+//   `OnUpdatedHistoryForNavigation()` is invoked, and a history query is made
 //   which will (possibly after other events in the timeline) resolve with N
 //   visits.
 // - History resolve: the history query made above resolves.
-// - Copy: the omnibox URL is copied and |OnOmniboxUrlCopied()| is invoked.
+// - Copy: the omnibox URL is copied and `OnOmniboxUrlCopied()` is invoked.
 // - Expect UKM: UKM begins tracking a navigation and
-//   |TagNavigationAsExpectingUkmNavigationComplete()| is invoked.
-// - UKM: UKM ends tracking a navigation and |OnUkmNavigationComplete()| is
+//   `TagNavigationAsExpectingUkmNavigationComplete()` is invoked.
+// - UKM: UKM ends tracking a navigation and `OnUkmNavigationComplete()` is
 //   invoked.
-// - Destroy: The |WebContents| is destroyed (i.e. the tab is closed) and
-//   |WebContentsDestroyed()| is invoked.
+// - Destroy: The `WebContents` is destroyed (i.e. the tab is closed) and
+//   `WebContentsDestroyed()` is invoked.
 // The below tests test different permutations of these events.
 
 // History (w/ 0 visits) -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked but its history request isn't
+// 1) `OnUpdatedHistoryForNavigation()` is invoked but its history request isn't
 //     resolved (because either the tab is closed too soon or there are no
 //     matching visits).
-// 2) |WebContentsDestroyed()| is invoked.
+// 2) `WebContentsDestroyed()` is invoked.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
   AddToHistory(GURL{"https://google.com"});
@@ -157,10 +157,10 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
 
 // History (w/ 1 visit) -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked and 1 history visit are
+// 1) `OnUpdatedHistoryForNavigation()` is invoked and 1 history visit are
 //    fetched.
-// 2) |WebContentsDestroyed()| is invoked.
-// Then: 1 visit should be committed w/o |duration_since_last_visit|.
+// 2) `WebContentsDestroyed()` is invoked.
+// Then: 1 visit should be committed w/o `duration_since_last_visit`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
   AddToHistory(GURL{"https://github.com"});
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
@@ -179,9 +179,9 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
 
 // History (w/ 2 visits) -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked and 2 history visits are
+// 1) `OnUpdatedHistoryForNavigation()` is invoked and 2 history visits are
 //    fetched.
-// 2) |WebContentsDestroyed()| is invoked.
+// 2) `WebContentsDestroyed()` is invoked.
 // Then: 1 visit should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
   AddToHistory(GURL{"https://github.com"}, u"Title", IntToTime(19));
@@ -200,13 +200,13 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
 
 // History (w/ 0 visits) -> history (w/ 0 visits) -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked but its history request isn't
+// 1) `OnUpdatedHistoryForNavigation()` is invoked but its history request isn't
 //     resolved (because either the tab is closed too soon or there are no
 //     matching visits).
-// 2) |OnUpdatedHistoryForNavigation()| is invoked but its history request isn't
+// 2) `OnUpdatedHistoryForNavigation()` is invoked but its history request isn't
 //     resolved (because either the tab is closed too soon or there are no
 //     matching visits).
-// 3) |WebContentsDestroyed()| is invoked.
+// 3) `WebContentsDestroyed()` is invoked.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith0HistoryVisits) {
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
@@ -217,11 +217,11 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith0HistoryVisits) {
 
 // History (w/ 2 visits) -> history (w/ 2 visits) -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked and 2 history visits are
+// 1) `OnUpdatedHistoryForNavigation()` is invoked and 2 history visits are
 //    fetched.
-// 2) |OnUpdatedHistoryForNavigation()| is invoked and 2 history visits are
+// 2) `OnUpdatedHistoryForNavigation()` is invoked and 2 history visits are
 //    fetched.
-// 3) |WebContentsDestroyed()| is invoked.
+// 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
   AddToHistory(GURL{"https://github.com"});
@@ -247,8 +247,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
 
 // History -> destroy -> history resolve
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |WebContentsDestroyed()| is invoked before the previous history request is
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `WebContentsDestroyed()` is invoked before the previous history request is
 //    resolved.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
@@ -261,10 +261,10 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
 
 // History -> history -> history resolve -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |OnUpdatedHistoryForNavigation()| is invoked before the previous history
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `OnUpdatedHistoryForNavigation()` is invoked before the previous history
 //    request is resolved.
-// 3) |WebContentsDestroyed()| is invoked.
+// 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
   AddToHistory(GURL{"https://google.com"});
@@ -288,16 +288,16 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
 
 // History -> copy -> history resolve -> history -> history -> copy -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |OnOmniboxUrlCopied()| is invoked before the previous history request is
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `OnOmniboxUrlCopied()` is invoked before the previous history request is
 //    resolved.
-// 3) |OnUpdatedHistoryForNavigation()| is invoked.
-// 4) |OnUpdatedHistoryForNavigation()| is invoked.
-// 5) |OnOmniboxUrlCopied()| is invoked after the previous history request is
+// 3) `OnUpdatedHistoryForNavigation()` is invoked.
+// 4) `OnUpdatedHistoryForNavigation()` is invoked.
+// 5) `OnOmniboxUrlCopied()` is invoked after the previous history request is
 //    resolved
-// 6) |WebContentsDestroyed()| is invoked.
+// 6) `WebContentsDestroyed()` is invoked.
 // Then: 3 visits should be committed; the 1st and 3rd should have
-//       |omnibox_url_copied| true.
+//       `omnibox_url_copied` true.
 TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
   AddToHistory(GURL{"https://github.com"});
   AddToHistory(GURL{"https://google.com"});
@@ -330,11 +330,11 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
 
 // History -> expect UKM -> UKM -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked.
-// 3) |OnUkmNavigationComplete()| is invoked.
-// 4) |WebContentsDestroyed()| is invoked.
-// Then: 1 visit should be committed after step 3 w/ a |page_end_reason|.
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked.
+// 3) `OnUkmNavigationComplete()` is invoked.
+// 4) `WebContentsDestroyed()` is invoked.
+// Then: 1 visit should be committed after step 3 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
   AddToHistory(GURL{"https://github.com"});
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
@@ -352,19 +352,19 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
 
 // History -> expect UKM -> destroy -> UKM
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked.
-// 3) |WebContentsDestroyed()| is invoked.
-// 4) |OnUkmNavigationComplete()| is invoked.
-// Then: 1 visit should be committed after step 4 w/ a |page_end_reason|.
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked.
+// 3) `WebContentsDestroyed()` is invoked.
+// 4) `OnUkmNavigationComplete()` is invoked.
+// Then: 1 visit should be committed after step 4 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
   AddToHistory(GURL{"https://github.com"});
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
 
-  // Invoke |OnUkmNavigationComplete()| after |WebContentsDestroyed()| is
-  // invoked, but before the |WebContents| has been destroyed.
+  // Invoke `OnUkmNavigationComplete()` after `WebContentsDestroyed()` is
+  // invoked, but before the `WebContents` has been destroyed.
   EXPECT_TRUE(GetVisits().empty());
   OnDestroyWebContentsObserver test_web_contents_observer(
       web_contents(), base::BindLambdaForTesting([&]() {
@@ -384,11 +384,11 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
 
 // Expect UKM -> history -> UKM -> destroy
 // When:
-// 1) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked.
-// 2) |OnUpdatedHistoryForNavigation()| is invoked.
-// 3) |OnUkmNavigationComplete()| is invoked.
-// 4) |WebContentsDestroyed()| is invoked.
-// Then: 1 visit should be committed after step 3 w/ a |page_end_reason|.
+// 1) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked.
+// 2) `OnUpdatedHistoryForNavigation()` is invoked.
+// 3) `OnUkmNavigationComplete()` is invoked.
+// 4) `WebContentsDestroyed()` is invoked.
+// Then: 1 visit should be committed after step 3 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationAfterUkmExpectAndWithUkmBeforeDestroy) {
   AddToHistory(GURL{"https://github.com"});
@@ -407,12 +407,12 @@ TEST_F(HistoryClustersTabHelperTest,
 
 // History -> expect UKM -> UKM -> destroy -> history resolve
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked.
-// 3) |OnUkmNavigationComplete()| is invoked.
-// 4) |WebContentsDestroyed()| is invoked before the previous history request is
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked.
+// 3) `OnUkmNavigationComplete()` is invoked.
+// 4) `WebContentsDestroyed()` is invoked before the previous history request is
 //    resolved.
-// Then: 1 visit should be committed after step 4 w/ a |page_end_reason|.
+// Then: 1 visit should be committed after step 4 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationWithUkmBeforeDestroyAndHistoryResolvedAfterDestroy) {
   AddToHistory(GURL{"https://github.com"});
@@ -421,8 +421,8 @@ TEST_F(HistoryClustersTabHelperTest,
   helper_->OnUkmNavigationComplete(0,
                                    page_load_metrics::PageEndReason::END_OTHER);
 
-  // Resolve the history request after |WebContentsDestroyed()| is invoked, but
-  // before the |WebContents| has been destroyed.
+  // Resolve the history request after `WebContentsDestroyed()` is invoked, but
+  // before the `WebContents` has been destroyed.
   EXPECT_TRUE(GetVisits().empty());
   OnDestroyWebContentsObserver test_web_contents_observer(
       web_contents(), base::BindLambdaForTesting([&]() {
@@ -443,14 +443,14 @@ TEST_F(HistoryClustersTabHelperTest,
 
 // Expect History -> expect UKM 1 -> UKM 1 -> history -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked for the above
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked for the above
 //    navigation.
-// 3) |OnUkmNavigationComplete()| is invoked for the above navigation.
-// 4) |OnUpdatedHistoryForNavigation()| is invoked.
-// 5) |WebContentsDestroyed()| is invoked.
+// 3) `OnUkmNavigationComplete()` is invoked for the above navigation.
+// 4) `OnUpdatedHistoryForNavigation()` is invoked.
+// 5) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed after steps 3 and 5; the 1st should have a
-//       |page_end_reason|.
+//       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmBefore2ndNavigation) {
   AddToHistory(GURL{"https://google.com"});
@@ -479,14 +479,14 @@ TEST_F(HistoryClustersTabHelperTest,
 
 // Expect History -> Expect UKM 1 -> history -> UKM 1 -> destroy
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked for the above
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked for the above
 //    navigation.
-// 3) |OnUpdatedHistoryForNavigation()| is invoked.
-// 4) |OnUkmNavigationComplete()| is invoked for the 1st navigation.
-// 5) |WebContentsDestroyed()| is invoked.
+// 3) `OnUpdatedHistoryForNavigation()` is invoked.
+// 4) `OnUkmNavigationComplete()` is invoked for the 1st navigation.
+// 5) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed after steps 4 and 5; the 1st should have a
-//       |page_end_reason|.
+//       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmAfter2ndNavigation) {
   AddToHistory(GURL{"https://google.com"});
@@ -513,14 +513,14 @@ TEST_F(HistoryClustersTabHelperTest,
 
 // Expect History -> Expect UKM 2 -> history -> destroy -> UKM 2
 // When:
-// 1) |OnUpdatedHistoryForNavigation()| is invoked.
-// 2) |TagNavigationAsExpectingUkmNavigationComplete()| is invoked for the below
+// 1) `OnUpdatedHistoryForNavigation()` is invoked.
+// 2) `TagNavigationAsExpectingUkmNavigationComplete()` is invoked for the below
 //    navigation.
-// 3) |OnUpdatedHistoryForNavigation()| is invoked.
-// 4) |WebContentsDestroyed()| is invoked.
-// 5) |OnUkmNavigationComplete()| is invoked for the 2nd navigation.
+// 3) `OnUpdatedHistoryForNavigation()` is invoked.
+// 4) `WebContentsDestroyed()` is invoked.
+// 5) `OnUkmNavigationComplete()` is invoked for the 2nd navigation.
 // Then: 2 visits should be committed after steps 2 and 5; the 2nd should have a
-//       |page_end_reason|.
+//       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
   AddToHistory(GURL{"https://google.com"});
   AddToHistory(GURL{"https://github.com"});
@@ -536,8 +536,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
   helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
 
-  // Invoke |OnUkmNavigationComplete()| after |WebContentsDestroyed()| is
-  // invoked, but before the |WebContents| has been destroyed.
+  // Invoke `OnUkmNavigationComplete()` after `WebContentsDestroyed()` is
+  // invoked, but before the `WebContents` has been destroyed.
   ASSERT_EQ(GetVisits().size(), 1u);
   OnDestroyWebContentsObserver test_web_contents_observer(
       web_contents(), base::BindLambdaForTesting([&]() {

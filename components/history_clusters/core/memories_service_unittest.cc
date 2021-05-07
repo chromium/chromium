@@ -38,7 +38,7 @@ namespace history_clusters {
 
 namespace {
 
-// Returns a Time that's |milliseconds| milliseconds after Windows epoch.
+// Returns a Time that's `milliseconds` milliseconds after Windows epoch.
 base::Time IntToTime(int milliseconds) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMilliseconds(milliseconds));
@@ -189,7 +189,7 @@ class MemoriesServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  // Used to construct a |MemoriesService|.
+  // Used to construct a `MemoriesService`.
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
 

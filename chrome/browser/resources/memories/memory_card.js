@@ -90,7 +90,7 @@ class MemoryCardElement extends PolymerElement {
   /**
    * @param {!Array} array
    * @param {number} num
-   * @return {!Array} Shallow copy of the first |num| items of the input array.
+   * @return {!Array} Shallow copy of the first `num` items of the input array.
    * @private
    */
   arrayItems_(array, num) {

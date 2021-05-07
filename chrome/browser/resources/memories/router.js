@@ -53,7 +53,7 @@ class MemoriesRouterElement extends PolymerElement {
       /**
        * The string query parameters of the page URL ('?foo=bar'), provided by
        * <iron-location> and parsed by <iron-query-params> into
-       * |queryParamsObject_| and vice versa. Not to be modified directly.
+       * `queryParamsObject_` and vice versa. Not to be modified directly.
        * @private {string}
        */
       queryParamsString_: {

@@ -55,16 +55,16 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
-  // Called with |memory_mojoms| and |continuation_query_params| when the
+  // Called with `memory_mojoms` and `continuation_query_params` when the
   // results of querying the MemoriesService are available. The latter is
   // created in anticipation of a continuation query. Subsequently, the bound
-  // partially constructed |result_mojom| parameter is supplied with
-  // |memory_mojoms| and |continuation_query_params| and sent to the JS.
+  // partially constructed `result_mojom` parameter is supplied with
+  // `memory_mojoms` and `continuation_query_params` and sent to the JS.
   void OnMemoriesQueryResult(
       history_clusters::mojom::MemoriesResultPtr result_mojom,
       history_clusters::mojom::QueryParamsPtr continuation_query_params,
       std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms);
-  // Called with the set of removed visits. Subsequently, |visits| is sent to
+  // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<history_clusters::mojom::VisitPtr> visits);
 

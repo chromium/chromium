@@ -240,7 +240,7 @@ class MemoriesAppElement extends PolymerElement {
    */
   onMemoriesQueryResult_(result) {
     if (result.isContinuation) {
-      // Do not replace the existing result. |result| contains a partial set of
+      // Do not replace the existing result. `result` contains a partial set of
       // memories that should be appended to the existing ones.
       this.push('result_.memories', ...result.memories);
       this.result_.continuationQueryParams = result.continuationQueryParams;
@@ -259,7 +259,7 @@ class MemoriesAppElement extends PolymerElement {
     }
 
     this.onBrowserIdle_().then(() => {
-      // Request up to |RESULTS_PER_PAGE| of the freshest Memories until now.
+      // Request up to `RESULTS_PER_PAGE` of the freshest Memories until now.
       const queryParams = {
         query: this.query_.trim(),
         maxCount: RESULTS_PER_PAGE,

@@ -13,20 +13,20 @@ namespace history_clusters {
 // re-recording fields and 2) determine whether a visit is compete (i.e. has all
 // expected fields recorded).
 struct RecordingStatus {
-  // Whether |url_row| and |visit_row| have been set.
+  // Whether `url_row` and `visit_row` have been set.
   bool history_rows = false;
   // Whether a navigation has ended; i.e. another navigation has began in the
   // same tab or the navigation's tab has been closed.
   bool navigation_ended = false;
-  // Whether the |context_annotations| associated with navigation end have been
-  // set. Should only be true if both |history_rows| and |navigation_ended| are
+  // Whether the `context_annotations` associated with navigation end have been
+  // set. Should only be true if both `history_rows` and `navigation_ended` are
   // true.
   bool navigation_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_annotations| is expected to be
+  // Whether the UKM `page_end_reason` `context_annotations` is expected to be
   // set.
   bool expect_ukm_page_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_annotations| has been set.
-  // Should only be true if |expect_ukm_page_end_signals| is true.
+  // Whether the UKM `page_end_reason` `context_annotations` has been set.
+  // Should only be true if `expect_ukm_page_end_signals` is true.
   bool ukm_page_end_signals = false;
 };
 

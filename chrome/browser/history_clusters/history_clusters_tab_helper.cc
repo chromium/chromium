@@ -39,7 +39,7 @@ using UrlAndVisitCallback =
     base::OnceCallback<void(history::URLRow, history::VisitVector)>;
 
 // Gets the 2 most recent visits to a URL. Used to associate a memories visit
-// with its history rows and compute the |duration_since_last_visit|
+// with its history rows and compute the `duration_since_last_visit`
 // context annotation.
 class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
  public:
@@ -87,7 +87,7 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   return false;
 }
 
-// Pass in a separate |url| parameter to ensure that we check the same URL that
+// Pass in a separate `url` parameter to ensure that we check the same URL that
 // is being logged in History.
 bool IsPageBookmarked(content::WebContents* contents, const GURL& url) {
   DCHECK(contents);
@@ -148,10 +148,10 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
       .is_existing_bookmark = IsPageBookmarked(web_contents(), url);
 
   if (auto* history_service = GetHistoryService()) {
-    // This |GetMostRecentVisitsToUrl| task will find at least 1 visit since
-    // |HistoryTabHelper::UpdateHistoryForNavigation()|, invoked prior to
-    // |OnUpdatedHistoryForNavigation()|, will have posted a task to add the
-    // visit associated to |incomplete_visit_context_annotations|.
+    // This `GetMostRecentVisitsToUrl` task will find at least 1 visit since
+    // `HistoryTabHelper::UpdateHistoryForNavigation()`, invoked prior to
+    // `OnUpdatedHistoryForNavigation()`, will have posted a task to add the
+    // visit associated to `incomplete_visit_context_annotations`.
     history_service->ScheduleDBTask(
         FROM_HERE,
         std::make_unique<GetMostRecentVisitsToUrl>(
@@ -210,15 +210,15 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
       memories_service->GetIncompleteVisitContextAnnotations(navigation_id);
   incomplete_visit_context_annotations.context_annotations.page_end_reason =
       page_end_reason;
-  // |RecordPageEndMetricsIfNeeded()| will fail to complete the
-  // `IncompleteVisitContextAnnotations` as |ukm_page_end_signals| hasn't been
+  // `RecordPageEndMetricsIfNeeded()` will fail to complete the
+  // `IncompleteVisitContextAnnotations` as `ukm_page_end_signals` hasn't been
   // set yet, but it will record metrics if needed (i.e. not already recorded)
-  // and possible (i.e. the history request has resolved and |history_rows| have
+  // and possible (i.e. the history request has resolved and `history_rows` have
   // been recorded).
   RecordPageEndMetricsIfNeeded(navigation_id);
   // Make a copy of the context annotations as the referenced
   // incomplete_visit_context_annotations may be destroyed in
-  // |CompleteVisitContextAnnotationsIfReady()|.
+  // `CompleteVisitContextAnnotationsIfReady()`.
   auto context_annotations_copy =
       incomplete_visit_context_annotations.context_annotations;
   DCHECK(
@@ -256,7 +256,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
   incomplete_visit_context_annotations.status.navigation_ended = true;
   // Don't record page end metrics if the history rows request hasn't resolved
   // because some of the metrics rely on |url_row.url()|. Setting
-  // |navigation_ended| above will ensure |RecordPageEndMetricsIfNeeded()| is
+  // `navigation_ended` above will ensure `RecordPageEndMetricsIfNeeded()` is
   // re-invoked once the history request resolves.
   if (!incomplete_visit_context_annotations.status.history_rows)
     return;

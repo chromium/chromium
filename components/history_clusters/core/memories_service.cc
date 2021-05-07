@@ -89,7 +89,7 @@ std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
 // Form a `QueryMemoriesResponse` containing `clusters` and continuation query
 // params meant to be used in a follow-up request. `query_params` are the params
 // used to get `clusters` from `QueryMemories()`.
-// TODO(mahmadi): At the moment, the recency threshold of |query_params| is
+// TODO(mahmadi): At the moment, the recency threshold of `query_params` is
 //  ignored and continuation query params is set to nullptr. The service does
 //  not support paging.
 MemoriesService::QueryMemoriesResponse FormQueryMemoriesResponse(
@@ -188,12 +188,12 @@ void MemoriesService::QueryMemories(
     mojom::QueryParamsPtr query_params,
     base::OnceCallback<void(QueryMemoriesResponse)> callback,
     base::CancelableTaskTracker* task_tracker) {
-  // |QueryMemories| has 4 steps:
+  // `QueryMemories` has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
-  //    from |visits_|.
-  // 2. Ask |remote_model_helper_| to convert the visits to memories.
-  // 3. Filter memories matching |query_params| and create.
-  // 4. Run |callback| with the continuation query params and matched memories.
+  //    from `visits_`.
+  // 2. Ask `remote_model_helper_` to convert the visits to memories.
+  // 3. Filter memories matching `query_params` and create.
+  // 4. Run `callback` with the continuation query params and matched memories.
 
   // Copy `query_params->query` because `query_params` is about to be moved.
   auto query_string = query_params->query;
@@ -209,7 +209,7 @@ void MemoriesService::QueryMemories(
     history_service_->GetAnnotatedVisits(
         kMaxVisitsToCluster.Get(),
         base::BindOnce(
-            // This echo callback is necessary to copy the |AnnotatedVisit|
+            // This echo callback is necessary to copy the `AnnotatedVisit`
             // refs.
             [](std::vector<history::AnnotatedVisit> visits) { return visits; })
             .Then(std::move(on_visits_callback)),

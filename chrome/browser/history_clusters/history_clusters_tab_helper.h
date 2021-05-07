@@ -32,22 +32,22 @@ class HistoryClustersTabHelper
   // Called when the user shares the URL via mobile sharing hub.
   void OnOmniboxUrlShared();
 
-  // Called by |HistoryTabHelper| right after submitting a new navigation for
-  // |web_contents()| to HistoryService. We need close coordination with
+  // Called by `HistoryTabHelper` right after submitting a new navigation for
+  // `web_contents()` to HistoryService. We need close coordination with
   // History's conception of the visit lifetime.
   void OnUpdatedHistoryForNavigation(int64_t navigation_id, const GURL& url);
 
   // Invoked for navigations that are tracked by UKM. Specifically, same-app
   // navigations aren't tracked individually in UKM and therefore won't receive
-  // UKM's |page_end_reason| signal. Visits for such navigations will be
+  // UKM's `page_end_reason` signal. Visits for such navigations will be
   // completed as soon as both the history rows query completes and the history
   // navigation ends. Visits that are tracked by UKM will additionally wait for
-  // a UKM |page_end_reason|.
+  // a UKM `page_end_reason`.
   void TagNavigationAsExpectingUkmNavigationComplete(int64_t navigation_id);
 
-  // Updates the visit with |navigation_id| with |page_end_reason|. This also
+  // Updates the visit with `navigation_id` with `page_end_reason`. This also
   // records the page end metrics, if necessary. It returns a copy of the
-  // completed |AnnotatedVisit|'s |VisitContextAnnotations|, if available.
+  // completed `AnnotatedVisit`'s `VisitContextAnnotations`, if available.
   //
   // This should only be called once per navigation, as this may flush the visit
   // to MemoriesService.
@@ -74,17 +74,17 @@ class HistoryClustersTabHelper
   void WebContentsDestroyed() override;
 
   // Helper functions to return the memories and history services.
-  // |GetMemoriesService()| will never return nullptr.
+  // `GetMemoriesService()` will never return nullptr.
   history_clusters::MemoriesService* GetMemoriesService();
-  // |GetHistoryService()| may return nullptr.
+  // `GetHistoryService()` may return nullptr.
   history::HistoryService* GetHistoryService();
 
   // The navigations initiated in this tab. Used for:
-  // 1) On |OnUpdatedHistoryForNavigation()|, the last navigation will be
+  // 1) On `OnUpdatedHistoryForNavigation()`, the last navigation will be
   //    assumed ended and its page end metrics will be recorded.
-  // 2) On |OnOmniboxUrlCopied()|, the last navigation will be assumed to be the
+  // 2) On `OnOmniboxUrlCopied()`, the last navigation will be assumed to be the
   //    subject.
-  // 3) On |WebContentsDestroyed()|, the |AnnotatedVisit| corresponding to these
+  // 3) On `WebContentsDestroyed()`, the `AnnotatedVisit` corresponding to these
   //    IDs will be assumed ended and their page end metrics will be recorded if
   //    they haven't already.
   std::vector<int64_t> navigation_ids_;

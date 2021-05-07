@@ -288,7 +288,7 @@ void MemoriesHandler::OnHistoryQueryResults(
       std::function<void(std::vector<history_clusters::mojom::VisitPtr>&, bool)>
           add_visit;
       add_visit = [&visit, &add_visit](auto& visits, bool are_top_visits) {
-        // Count |visit| toward duplicate visits if the same URL is seen before.
+        // Count `visit` toward duplicate visits if the same URL is seen before.
         auto duplicate_visit_it = std::find_if(
             visits.begin(), visits.end(), [&visit](const auto& visit_ptr) {
               return visit_ptr->url == visit->url;
@@ -298,7 +298,7 @@ void MemoriesHandler::OnHistoryQueryResults(
           (*duplicate_visit_it)->first_visit_time = visit->time;
           return;
         }
-        // For the top visits, if the domain name is seen before, add |visit| to
+        // For the top visits, if the domain name is seen before, add `visit` to
         // the related visits of the respective top visit recursively.
         if (are_top_visits) {
           auto related_visit_it = std::find_if(
@@ -310,7 +310,7 @@ void MemoriesHandler::OnHistoryQueryResults(
             return;
           }
         }
-        // Otherwise, simply add |visit| to the list of visits.
+        // Otherwise, simply add `visit` to the list of visits.
         visits.push_back(std::move(visit));
       };
       add_visit(memory_mojom->top_visits, true);
@@ -376,7 +376,7 @@ void MemoriesHandler::OnHistoryQueryResults(
   }
 
   // Continue to extract Memories. Set the recency threshold to 11:59:59pm of
-  // the day before the Memory's |last_visit_time|.
+  // the day before the Memory's `last_visit_time`.
   query_params->recency_threshold =
       memory_mojom->last_visit_time.LocalMidnight() -
       base::TimeDelta::FromSeconds(1);

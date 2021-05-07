@@ -53,7 +53,7 @@ struct Visit {
   url.mojom.Url? thumbnail_url;
   // Time of the visit.
   mojo_base.mojom.Time time;
-  // Time of the least recent visit in the Memory to the same URL. Equals |time|
+  // Time of the least recent visit in the Memory to the same URL. Equals `time`
   // if there is only one visit in the Memory to the URL.
   mojo_base.mojom.Time first_visit_time;
   // Localized string of approximate time of visit, e.g., "2 days ago".
@@ -107,7 +107,7 @@ struct QueryParams {
   string query;
 
   // The optional time threshold (exclusive) for how recent the Memories can be.
-  // If specified, Memories before |recency_threshold| and if missing, Memories
+  // If specified, Memories before `recency_threshold` and if missing, Memories
   // until the present time that match the other criteria are returned.
   mojo_base.mojom.Time? recency_threshold;
 
