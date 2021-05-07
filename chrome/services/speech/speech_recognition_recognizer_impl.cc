@@ -33,12 +33,12 @@ constexpr char kInvalidAudioDataError[] = "Invalid audio data received.";
 // static
 const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName[] =
-        "Accessibility.LiveCaption.Duration.CaptionBubbleVisible";
+        "Accessibility.LiveCaption.Duration.CaptionBubbleVisible2";
 
 // static
 const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName[] =
-        "Accessibility.LiveCaption.Duration.CaptionBubbleHidden";
+        "Accessibility.LiveCaption.Duration.CaptionBubbleHidden2";
 
 namespace {
 
@@ -297,13 +297,13 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
 
 void SpeechRecognitionRecognizerImpl::RecordDuration() {
   if (caption_bubble_visible_duration_ > base::TimeDelta()) {
-    base::UmaHistogramMediumTimes(kCaptionBubbleVisibleHistogramName,
-                                  caption_bubble_visible_duration_);
+    base::UmaHistogramLongTimes100(kCaptionBubbleVisibleHistogramName,
+                                   caption_bubble_visible_duration_);
   }
 
   if (caption_bubble_hidden_duration_ > base::TimeDelta()) {
-    base::UmaHistogramMediumTimes(kCaptionBubbleHiddenHistogramName,
-                                  caption_bubble_hidden_duration_);
+    base::UmaHistogramLongTimes100(kCaptionBubbleHiddenHistogramName,
+                                   caption_bubble_hidden_duration_);
   }
 }
 

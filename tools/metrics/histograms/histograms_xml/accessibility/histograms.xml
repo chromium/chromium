@@ -788,6 +788,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}"
     units="ms" expires_after="2021-09-05">
+  <obsolete>
+    Removed in M92, replaced with
+    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2.
+  </obsolete>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures how long SODA was running while the Live Caption UI was
+    {Visibility}. Logged once on the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"
+        summary="hidden. This might be because it was closed by user or
+                 because there was an error passing transcriptions to the UI"/>
+    <variant name="Visible" summary="visible and showing transcriptions"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
+    units="ms" expires_after="2021-09-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
