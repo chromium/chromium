@@ -799,6 +799,25 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, StatusTray) {
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
 }
 
+// Verifies that TTS output stops after the user has closed the dialog.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, StopSpeechAfterClose) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  test::ExecuteOobeJS(kSetAvailableVoices);
+  const std::string set_is_speaking = R"(
+    chrome.tts.isSpeaking = function(callback) {
+      callback(true);
+    };)";
+  test::ExecuteOobeJS(set_is_speaking);
+  test::SpeechMonitor monitor;
+  GiveChromeVoxHintForTesting();
+  WaitForChromeVoxHintDialogToOpen();
+  test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
+  int expected_stop_count = monitor.stop_count() + 1;
+  test::OobeJS().ClickOnPath(kDismissChromeVoxButton);
+  ASSERT_EQ(expected_stop_count, monitor.stop_count());
+}
+
 class WelcomeScreenInternationalChromeVoxHintTest
     : public WelcomeScreenChromeVoxHintTest {
  public:

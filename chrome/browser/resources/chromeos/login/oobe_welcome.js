@@ -594,6 +594,11 @@ Polymer({
   /** @private */
   onChromeVoxHintDismissed_() {
     this.userActed('dismissChromeVoxHint');
+    chrome.tts.isSpeaking((speaking) => {
+      if (speaking) {
+        chrome.tts.stop();
+      }
+    });
   },
 
   /**

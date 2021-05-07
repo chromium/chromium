@@ -57,6 +57,7 @@ void SpeechMonitor::Speak(int utterance_id,
 }
 
 bool SpeechMonitor::StopSpeaking() {
+  ++stop_count_;
   return true;
 }
 
