@@ -5,15 +5,16 @@
 import {assertTrue} from '../../chai_assert.js';
 
 /**
- * Helper function for getting an array of data-point elements from a
- * diagnostics card.
+ * Helper function for getting an array of data-point elements.
  * @param {?T} element
+ * @param {string=} selector
  * @template T
  * @return {!NodeList<!DataPointElement>}
  */
-export function getDataPointElements(element) {
+export function getDataPointElements(element, selector) {
   return /** @type {!NodeList<!DataPointElement>} */ (
-      element.shadowRoot.querySelectorAll('data-point'));
+      element.shadowRoot.querySelectorAll(
+          selector ? `${selector} > data-point` : 'data-point'));
 }
 
 /**
