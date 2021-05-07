@@ -715,6 +715,7 @@ ci.android_builder(
         category = "builder|other",
         short_name = "size",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
@@ -870,6 +871,7 @@ ci.android_builder(
     ),
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.android_builder(
