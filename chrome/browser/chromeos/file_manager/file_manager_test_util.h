@@ -27,6 +27,10 @@ class FolderInMyFiles {
   // Copies additional files into |folder_|, appending to |files_|.
   void Add(const std::vector<base::FilePath>& files);
 
+  // Copies the contents of |file| to |folder_| with the given |new_base_name|.
+  void AddWithName(const base::FilePath& file,
+                   const base::FilePath& new_base_name);
+
   // Use platform_util::OpenItem() on the file with basename matching |path| to
   // simulate a user request to open that path, e.g., from the Files app or
   // chrome://downloads.

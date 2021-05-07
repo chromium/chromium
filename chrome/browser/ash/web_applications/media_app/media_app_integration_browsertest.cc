@@ -673,15 +673,79 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   EXPECT_EQ(expected_contents, renamed_contents);
 }
 
+// Integration test for deleting a file using the WritableFiles API.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, DeleteFile) {
+  WaitForTestSystemAppInstall();
+
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({
+      TestFile(kFileJpeg640x480),
+      TestFile(kFilePng800x600),
+  });
+  folder.Open(TestFile(kFileJpeg640x480));
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  int result = 0;
+  constexpr char kScript[] =
+      "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
+      ".then(() => domAutomationController.send(42));";
+  EXPECT_EQ(true, content::ExecuteScriptAndExtractInt(app, kScript, &result));
+  EXPECT_EQ(42, result);  // Magic success (no exception thrown).
+
+  // Ensure the file *not* deleted is the only one that remains.
+  folder.Refresh();
+  EXPECT_EQ(1u, folder.files().size());
+  EXPECT_EQ(kFilePng800x600, folder.files()[0].BaseName().value());
+}
+
+// Integration test for deleting a special file using the WritableFiles API.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
+                       FailToDeleteReservedFile) {
+  WaitForTestSystemAppInstall();
+
+  file_manager::test::FolderInMyFiles folder(profile());
+
+  // Files like "thumbs.db" can't be accessed by filename using WritableFiles.
+  const base::FilePath reserved_file =
+      base::FilePath().AppendASCII("thumbs.db");
+  folder.AddWithName(TestFile(kFileJpeg640x480), reserved_file);
+
+  // Even though the file doesn't have a ".jpg" extension, MIME sniffing in the
+  // files app should still direct the file at the image/jpeg handler of the
+  // media app.
+  folder.Open(reserved_file);
+
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, "thumbs.db"));
+
+  std::string result;
+  constexpr char kScript[] =
+      "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
+      ".then(() => domAutomationController.send('bad-success'))"
+      ".catch(e => domAutomationController.send(e.name));";
+  EXPECT_EQ(true,
+            content::ExecuteScriptAndExtractString(app, kScript, &result));
+  EXPECT_EQ("InvalidModificationError", result);
+
+  // The file should still be there.
+  folder.Refresh();
+  EXPECT_EQ(1u, folder.files().size());
+  EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     MediaAppIntegrationAllProfilesTest);
 
-// Note: All MediaAppIntegrationWithFilesAppTest cases above currently want
-// coverage for all profile types, so the "less" prarameterized prefix is not
-// instantiated to avoid a gtest warning.
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationWithFilesAppTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     MediaAppIntegrationWithFilesAppAllProfilesTest);

@@ -49,6 +49,13 @@ void FolderInMyFiles::Add(const std::vector<base::FilePath>& files) {
   }
 }
 
+void FolderInMyFiles::AddWithName(const base::FilePath& file,
+                                  const base::FilePath& new_base_name) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  files_.push_back(folder_.Append(new_base_name));
+  base::CopyFile(file, files_.back());
+}
+
 OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   const auto& it = std::find_if(files_.begin(), files_.end(),
                                 [file](const base::FilePath& i) {
