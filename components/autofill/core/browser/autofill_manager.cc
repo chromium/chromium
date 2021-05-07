@@ -267,6 +267,13 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   // queryable forms will be updated once the field type query is complete.
   driver()->SendAutofillTypePredictionsToRenderer(non_queryable_forms);
   driver()->SendAutofillTypePredictionsToRenderer(queryable_forms);
+  // Send the fields that are eligible for manual filling to the renderer. If
+  // server predictions are not yet available for these forms, the eligible
+  // fields would be updated again once they are available.
+  driver()->SendFieldsEligibleForManualFillingToRenderer(
+      FormStructure::FindFieldsEligibleForManualFilling(non_queryable_forms));
+  driver()->SendFieldsEligibleForManualFillingToRenderer(
+      FormStructure::FindFieldsEligibleForManualFilling(queryable_forms));
   LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
 
@@ -377,7 +384,10 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
 
   // Annotate the updated form with its predicted types.
   driver()->SendAutofillTypePredictionsToRenderer({*form_structure});
-
+  // Update the renderer with the latest set of fields eligible for manual
+  // filling.
+  driver()->SendFieldsEligibleForManualFillingToRenderer(
+      FormStructure::FindFieldsEligibleForManualFilling({*form_structure}));
   // There is no data to return if there are no auto-fillable fields.
   if (!(*form_structure)->autofill_count())
     return false;
@@ -511,6 +521,9 @@ void AutofillManager::OnLoadedServerPredictions(
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
   driver()->SendAutofillTypePredictionsToRenderer(queried_forms);
+
+  driver()->SendFieldsEligibleForManualFillingToRenderer(
+      FormStructure::FindFieldsEligibleForManualFilling(queried_forms));
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 

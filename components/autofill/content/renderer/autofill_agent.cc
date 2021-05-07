@@ -754,6 +754,11 @@ void AutofillAgent::EnableHeavyFormDataScraping() {
   is_heavy_form_data_scraping_enabled_ = true;
 }
 
+void AutofillAgent::SetFieldsEligibleForManualFilling(
+    const std::vector<FieldRendererId>& fields) {
+  form_cache_.SetFieldsEligibleForManualFilling(fields);
+}
+
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
     bool autoselect_first_suggestion) {

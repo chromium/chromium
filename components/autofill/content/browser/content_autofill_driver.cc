@@ -193,10 +193,19 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
     const std::vector<FormStructure*>& forms) {
   if (!RendererIsAvailable())
     return;
-
+  // TODO(crbug.com/1185232) Send the FormDataPredictions object only if the
+  // debugging flag is enabled.
   std::vector<FormDataPredictions> type_predictions =
       FormStructure::GetFieldTypePredictions(forms);
   GetAutofillAgent()->FieldTypePredictionsAvailable(type_predictions);
+}
+
+void ContentAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
+    const std::vector<FieldRendererId>& fields) {
+  if (!RendererIsAvailable())
+    return;
+
+  GetAutofillAgent()->SetFieldsEligibleForManualFilling(fields);
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(

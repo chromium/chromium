@@ -86,6 +86,9 @@ interface AutofillAgent {
   // Allows heavy scraping of form data (e.g., button titles for
   // unowned forms).
   EnableHeavyFormDataScraping();
+
+  // Update fields that are eligible to show manual filling on form interaction.
+  SetFieldsEligibleForManualFilling(array<FieldRendererId> fields);
 };
 
 // There is one instance of this interface per render frame in the render

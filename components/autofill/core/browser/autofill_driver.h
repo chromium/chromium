@@ -133,6 +133,11 @@ class AutofillDriver {
       const gfx::RectF& bounding_box) = 0;
 
   virtual net::IsolationInfo IsolationInfo() = 0;
+
+  // Tells the renderer about the form fields that are eligible for triggering
+  // manual filling on form interaction.
+  virtual void SendFieldsEligibleForManualFillingToRenderer(
+      const std::vector<FieldRendererId>& fields) = 0;
 };
 
 }  // namespace autofill

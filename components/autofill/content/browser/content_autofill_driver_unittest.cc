@@ -235,6 +235,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void SetAssistantActionState(bool running) override {}
 
+  void SetFieldsEligibleForManualFilling(
+      const std::vector<FieldRendererId>& fields) override {}
+
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 
   base::OnceClosure quit_closure_;

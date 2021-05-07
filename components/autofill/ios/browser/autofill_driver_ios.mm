@@ -143,6 +143,9 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field,
     const std::u16string& value) {}
 
+void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
+    const std::vector<FieldRendererId>& fields) {}
+
 void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {

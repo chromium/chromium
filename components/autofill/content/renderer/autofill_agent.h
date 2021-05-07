@@ -106,6 +106,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       GetElementFormAndFieldDataAtIndexCallback callback) override;
   void SetAssistantActionState(bool running) override;
   void EnableHeavyFormDataScraping() override;
+  void SetFieldsEligibleForManualFilling(
+      const std::vector<FieldRendererId>& fields) override;
 
   void FormControlElementClicked(const blink::WebFormControlElement& element,
                                  bool was_focused);

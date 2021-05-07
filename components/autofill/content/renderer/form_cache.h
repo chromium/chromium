@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace blink {
@@ -54,6 +55,16 @@ class FormCache {
   // use of autocomplete attributes.
   bool ShowPredictions(const FormDataPredictions& form,
                        bool attach_predictions_to_dom);
+
+  // For a given |control_element| check whether it is eligible for manual
+  // filling on form interaction.
+  bool IsFormElementEligibleForManualFilling(
+      const blink::WebFormControlElement& control_element);
+
+  // Stores the FieldRendererId of the fields that are eligible for manual
+  // filling in a set.
+  void SetFieldsEligibleForManualFilling(
+      const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FormCacheTest,
@@ -107,6 +118,9 @@ class FormCache {
   // The cached initial values for checkable <input> elements. Entries are
   // keyed by the unique_renderer_form_control_id of the WebInputElements.
   std::map<FieldRendererId, bool> initial_checked_state_;
+
+  // Fields that are eligible to show manual filling on form interaction.
+  base::flat_set<FieldRendererId> fields_eligible_for_manual_filling_;
 
   DISALLOW_COPY_AND_ASSIGN(FormCache);
 };

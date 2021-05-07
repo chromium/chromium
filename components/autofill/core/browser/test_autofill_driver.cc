@@ -103,6 +103,9 @@ net::IsolationInfo TestAutofillDriver::IsolationInfo() {
   return isolation_info_;
 }
 
+void TestAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
+    const std::vector<FieldRendererId>& fields) {}
+
 void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
 }

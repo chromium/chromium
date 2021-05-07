@@ -327,4 +327,41 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
   EXPECT_TRUE(select_month.UserHasEditedTheField());
 }
 
+TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "<label>Middle Name:</label> <input id='mname' name='1'/><br/>"
+      "<label>Last Name:</label> <input id='lname' name='2'/><br/>"
+      "</form></html>");
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  auto first_name_element = doc.GetElementById("fname").To<WebInputElement>();
+  auto middle_name_element = doc.GetElementById("mname").To<WebInputElement>();
+  auto last_name_element = doc.GetElementById("lname").To<WebInputElement>();
+
+  FormCache form_cache(GetMainFrame());
+  std::vector<FormData> forms =
+      form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
+  const FormData* form_data = GetFormByName(forms, "myForm");
+  EXPECT_EQ(3u, form_data->fields.size());
+
+  // Set the first_name and last_name fields as eligible for manual filling.
+  std::vector<FieldRendererId> fields_eligible_for_manual_filling;
+  fields_eligible_for_manual_filling.push_back(
+      form_data->fields[0].unique_renderer_id);
+  fields_eligible_for_manual_filling.push_back(
+      form_data->fields[2].unique_renderer_id);
+  form_cache.SetFieldsEligibleForManualFilling(
+      fields_eligible_for_manual_filling);
+
+  EXPECT_TRUE(
+      form_cache.IsFormElementEligibleForManualFilling(first_name_element));
+  EXPECT_FALSE(
+      form_cache.IsFormElementEligibleForManualFilling(middle_name_element));
+  EXPECT_TRUE(
+      form_cache.IsFormElementEligibleForManualFilling(last_name_element));
+}
+
 }  // namespace autofill

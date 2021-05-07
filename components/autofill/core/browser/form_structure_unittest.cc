@@ -8390,4 +8390,48 @@ TEST_F(FormStructureTestImpl, IgnoreAribtraryAutocompleteSectionName) {
   EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
 }
 
+TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
+  FormData form;
+  form.url = GURL("http://foo.com");
+  FormFieldData field;
+  field.form_control_type = "text";
+  field.max_length = 10000;
+
+  FieldRendererId full_name_renderer_id = MakeFieldRendererId();
+  field.label = u"Full Name";
+  field.name = u"fullName";
+  field.unique_renderer_id = full_name_renderer_id;
+  form.fields.push_back(field);
+
+  FieldRendererId country_renderer_id = MakeFieldRendererId();
+  field.label = u"Country";
+  field.name = u"country";
+  field.unique_renderer_id = country_renderer_id;
+  form.fields.push_back(field);
+
+  FieldRendererId unknown_renderer_id = MakeFieldRendererId();
+  field.label = u"Unknown";
+  field.name = u"unknown";
+  field.unique_renderer_id = unknown_renderer_id;
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+
+  form_structure.set_server_field_type_for_testing(0, CREDIT_CARD_NAME_FULL);
+  form_structure.set_server_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
+  form_structure.set_server_field_type_for_testing(2, UNKNOWN_TYPE);
+
+  std::vector<FormStructure*> forms;
+  forms.push_back(&form_structure);
+
+  form_structure.identify_sections_for_testing();
+  std::vector<FieldRendererId> expected_result;
+  // Only credit card related and unknown fields are elible for manual filling.
+  expected_result.push_back(full_name_renderer_id);
+  expected_result.push_back(unknown_renderer_id);
+
+  EXPECT_EQ(expected_result,
+            FormStructure::FindFieldsEligibleForManualFilling(forms));
+}
+
 }  // namespace autofill

@@ -952,6 +952,29 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
   return forms;
 }
 
+// static
+std::vector<FieldRendererId> FormStructure::FindFieldsEligibleForManualFilling(
+    const std::vector<FormStructure*>& forms) {
+  std::vector<FieldRendererId> fields_eligible_for_manual_filling;
+  for (const auto* form : forms) {
+    for (const auto& field : form->fields_) {
+      FieldTypeGroup field_type_group =
+          autofill::GroupTypeOfServerFieldType(field->server_type());
+      // In order to trigger the payments bottom sheet that assists users to
+      // manually fill the form, credit card form fields are marked eligible for
+      // manual filling. Also, if a field is not classified to a type, we can
+      // assume that the prediction failed and thus mark it eligible for manual
+      // filling. As more form types support manual filling on form interaction,
+      // this list may expand in the future.
+      if (field_type_group == FieldTypeGroup::kCreditCard ||
+          field_type_group == FieldTypeGroup::kNoGroup) {
+        fields_eligible_for_manual_filling.push_back(field->unique_renderer_id);
+      }
+    }
+  }
+  return fields_eligible_for_manual_filling;
+}
+
 std::unique_ptr<FormStructure> FormStructure::CreateForPasswordManagerUpload(
     FormSignature form_signature,
     const std::vector<FieldSignature>& field_signatures) {

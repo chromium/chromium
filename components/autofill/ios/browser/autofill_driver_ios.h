@@ -58,6 +58,8 @@ class AutofillDriverIOS : public AutofillDriver {
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override;
+  void SendFieldsEligibleForManualFillingToRenderer(
+      const std::vector<FieldRendererId>& fields) override;
 
   BrowserAutofillManager* autofill_manager() {
     return &browser_autofill_manager_;

@@ -65,6 +65,8 @@ class TestAutofillDriver : public ContentAutofillDriver {
   gfx::RectF TransformBoundingBoxToViewportCoordinates(
       const gfx::RectF& bounding_box) override;
   net::IsolationInfo IsolationInfo() override;
+  void SendFieldsEligibleForManualFillingToRenderer(
+      const std::vector<FieldRendererId>& fields) override;
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.
