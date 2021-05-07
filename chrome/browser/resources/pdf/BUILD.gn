@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//chrome/common/features.gni")
 import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -22,6 +22,7 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
+  defines = [ "enable_ink=$enable_ink" ]
   in_files = [
     "bookmark_type.js",
     "constants.js",
@@ -40,7 +41,7 @@ preprocess_if_expr("preprocess") {
     "zoom_manager.js",
   ]
 
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     in_files += [ "ink_controller.js" ]
   }
 }
@@ -50,6 +51,7 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  defines = [ "enable_ink=$enable_ink" ]
   in_files = [
     "elements/icons.js",
     "elements/shared-css.js",
@@ -68,7 +70,7 @@ preprocess_if_expr("preprocess_generated") {
     "pdf_viewer.js",
     "pdf_viewer_shared_style.js",
   ]
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     in_files += [
       "elements/viewer-annotations-bar.js",
       "elements/viewer-annotations-mode-dialog.js",
@@ -108,7 +110,7 @@ generate_grd("build_grd") {
     "index.html",
     "main.js",
   ]
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     input_files += [
       "ink/index.html",
       "ink/ink_api.js",
@@ -137,7 +139,7 @@ generate_grd("build_grd") {
 }
 
 grit("resources") {
-  defines = chrome_grit_defines
+  defines = chrome_grit_defines + [ "enable_ink=$enable_ink" ]
 
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
@@ -174,7 +176,7 @@ group("closure_compile") {
     ":closure_compile_local",
     "elements:closure_compile",
   ]
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     deps += [ "ink:closure_compile" ]
   }
 }

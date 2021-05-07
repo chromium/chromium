@@ -700,9 +700,6 @@
   "third_party/blink/public/strings/blink_strings.grd": {
     "messages": [3560],
   },
-  "third_party/ink/ink_resources.grd": {
-    "includes": [3580],
-  },
   "third_party/libaddressinput/chromium/address_input_strings.grd": {
     "messages": [3600],
   },

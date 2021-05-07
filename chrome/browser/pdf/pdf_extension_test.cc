@@ -46,6 +46,7 @@
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
+#include "chrome/browser/resources/pdf/ink/buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -986,14 +987,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Elements) {
   RunTestsInJsModule("material_elements_test.js", "test.pdf");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ElementsCros) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("material_elements_cros_test.js", "test.pdf");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, DownloadControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
@@ -1062,10 +1055,17 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerThumbnail) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Printing) {
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(https://crbug.com/920684): Test times out under sanatizers
-// TODO(crbug.com/1177131) Re-enable test
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
+#if BUILDFLAG(ENABLE_INK)
+// TODO(https://crbug.com/920684): Test times out under sanitizers.
+#if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(_DEBUG)
+#define MAYBE_AnnotationsFeatureEnabled DISABLED_AnnotationsFeatureEnabled
+#else
+#define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
 
@@ -1074,7 +1074,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, AnnotationsToolbar) {
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerToolbarDropdown) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
+}
+#endif  // BUILDFLAG(ENABLE_INK)
 
 class PDFExtensionContentSettingJSTest : public PDFExtensionJSTestBase {
  public:

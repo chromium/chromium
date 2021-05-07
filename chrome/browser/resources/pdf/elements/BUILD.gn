@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
@@ -24,7 +24,7 @@ js_type_check("closure_compile") {
     ":viewer-zoom-button",
     ":viewer-zoom-toolbar",
   ]
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     deps += [
       ":viewer-annotations-bar",
       ":viewer-annotations-mode-dialog",
@@ -81,7 +81,7 @@ js_library("viewer-annotations-mode-dialog") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (enable_ink) {
   js_library("viewer-ink-host") {
     deps = [
       "..:metrics",
@@ -199,7 +199,7 @@ html_to_js("web_components") {
     "viewer-zoom-button.js",
     "viewer-zoom-toolbar.js",
   ]
-  if (is_chromeos_ash) {
+  if (enable_ink) {
     js_files += [
       "viewer-annotations-bar.js",
       "viewer-annotations-mode-dialog.js",

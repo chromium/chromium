@@ -140,7 +140,7 @@
     sidenav-collapsed="[[sidenavCollapsed_]]"
     two-up-view-enabled="[[twoUpViewEnabled_]]"
     viewport-zoom="[[viewportZoom_]]" zoom-bounds="[[zoomBounds_]]"
-<if expr="chromeos">
+<if expr="enable_ink">
     annotation-available="[[annotationAvailable_]]"
     pdf-annotations-enabled="[[pdfAnnotationsEnabled_]]"
 </if>
@@ -154,7 +154,7 @@
     on-two-up-view-changed="onTwoUpViewChanged_"
     on-zoom-changed="onZoomChanged" on-zoom-in="onZoomIn"
     on-zoom-out="onZoomOut" on-rotate-left="rotateCounterclockwise"
-<if expr="chromeos">
+<if expr="enable_ink">
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>

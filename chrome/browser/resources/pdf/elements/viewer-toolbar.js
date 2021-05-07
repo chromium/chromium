@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './icons.js';
-// <if expr="chromeos">
+// <if expr="enable_ink">
 import './viewer-annotations-bar.js';
 // </if>
 import './viewer-download-controls.js';
@@ -22,7 +22,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {FittingType} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
-// <if expr="chromeos">
+// <if expr="enable_ink">
 import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
 // </if>
 
@@ -37,7 +37,7 @@ export class ViewerToolbarElement extends PolymerElement {
 
   static get properties() {
     return {
-      // <if expr="chromeos">
+      // <if expr="enable_ink">
       annotationAvailable: Boolean,
       annotationMode: {
         type: Boolean,
@@ -94,7 +94,7 @@ export class ViewerToolbarElement extends PolymerElement {
         observer: 'viewportZoomPercentChanged_',
       },
 
-      // <if expr="chromeos">
+      // <if expr="enable_ink">
       /** @private */
       showAnnotationsModeDialog_: {
         type: Boolean,
@@ -183,7 +183,7 @@ export class ViewerToolbarElement extends PolymerElement {
     this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
   }
 
-  // <if expr="chromeos">
+  // <if expr="enable_ink">
   /**
    * @return {boolean}
    * @private
@@ -211,7 +211,7 @@ export class ViewerToolbarElement extends PolymerElement {
         'display-annotations-changed', {detail: this.displayAnnotations_}));
     this.getMenu_().close();
 
-    // <if expr="chromeos">
+    // <if expr="enable_ink">
     if (!this.displayAnnotations_ && this.annotationMode) {
       this.toggleAnnotation();
     }
@@ -390,7 +390,7 @@ export class ViewerToolbarElement extends PolymerElement {
         this.viewportZoomPercent_ === this.zoomBounds.max;
   }
 
-  // <if expr="chromeos">
+  // <if expr="enable_ink">
   /** @private */
   onDialogClose_() {
     const confirmed =

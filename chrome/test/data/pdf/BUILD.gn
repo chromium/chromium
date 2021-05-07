@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -49,8 +50,8 @@ js_type_check("closure_compile") {
     #":zoom_manager_test",
   ]
 
-  if (is_chromeos) {
-    deps += [ ":material_elements_cros_test" ]
+  if (enable_ink) {
+    deps += [ ":viewer_toolbar_dropdown_test" ]
   }
 }
 
@@ -103,8 +104,8 @@ js_library("material_elements_test") {
   externs_list = [ "$externs_path/test.js" ]
 }
 
-if (is_chromeos) {
-  js_library("material_elements_cros_test") {
+if (enable_ink) {
+  js_library("viewer_toolbar_dropdown_test") {
     deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
     externs_list = [ "$externs_path/test.js" ]
   }

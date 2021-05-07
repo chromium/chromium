@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
-import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
@@ -250,13 +249,6 @@ template("chrome_extra_paks") {
         "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",
       ]
-
-      if (!enable_use_media_app_ink) {
-        # TODO(crbug/1150244): Remove when enable_use_media_app_ink is default
-        # true.
-        sources += [ "$root_gen_dir/third_party/ink/ink_resources.pak" ]
-        deps += [ "//third_party/ink:ink_resources" ]
-      }
 
       if (!is_official_build) {
         sources += [

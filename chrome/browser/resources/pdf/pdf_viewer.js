@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="chromeos">
+// <if expr="enable_ink">
 import './elements/viewer-ink-host.js';
 // </if>
 import './elements/viewer-password-dialog.js';
@@ -25,7 +25,7 @@ import {PluginController} from './controller.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerToolbarElement} from './elements/viewer-toolbar.js';
-// <if expr="chromeos">
+// <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
@@ -309,7 +309,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     /** @private {?PluginController} */
     this.pluginController_ = null;
 
-    // <if expr="chromeos">
+    // <if expr="enable_ink">
     /** @private {?InkController} */
     this.inkController_ = null;
     // </if>
@@ -346,7 +346,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     this.pluginController_ = PluginController.getInstance();
 
-    // <if expr="chromeos">
+    // <if expr="enable_ink">
     this.inkController_ = InkController.getInstance();
     this.inkController_.init(
         this.viewport, /** @type {!HTMLDivElement} */ (this.getContent()));
@@ -452,7 +452,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.handleToolbarKeyEvent_(e);
   }
 
-  // <if expr="chromeos">
+  // <if expr="enable_ink">
   /** @private */
   onResetView_() {
     if (this.twoUpViewEnabled_) {
@@ -1122,7 +1122,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     if (requestType !== SaveRequestType.ORIGINAL || !this.annotationMode_) {
       result = await this.currentController.save(requestType);
     } else {
-      // <if expr="chromeos">
+      // <if expr="enable_ink">
       // Request type original in annotation mode --> need to exit annotation
       // mode before saving. See https://crbug.com/919364.
       await this.exitAnnotationMode_();
@@ -1165,7 +1165,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           });
         });
 
-    // <if expr="chromeos">
+    // <if expr="enable_ink">
     // Saving in Annotation mode is destructive: crbug.com/919364
     this.exitAnnotationMode_();
     // </if>
@@ -1196,7 +1196,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @private */
   async onPrint_() {
     record(UserAction.PRINT);
-    // <if expr="chromeos">
+    // <if expr="enable_ink">
     await this.exitAnnotationMode_();
     // </if>
     this.currentController.print();

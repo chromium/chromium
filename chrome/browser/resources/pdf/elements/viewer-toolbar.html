@@ -163,7 +163,7 @@
     visibility: visible;
   }
 
-<if expr="chromeos">
+<if expr="enable_ink">
   #annotate {
     margin-inline-end: 4px;
   }
@@ -199,7 +199,7 @@
     <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
         title="$i18n{menu}" aria-label="$i18n{menu}"
         aria-expanded$="[[getAriaExpanded_(sidenavCollapsed)]]"
-<if expr="chromeos">
+<if expr="enable_ink">
         disabled="[[annotationMode]]"
 </if>
         on-click="onSidenavToggleClick_">
@@ -236,7 +236,7 @@
         on-click="onFitToButtonClick_">
     </cr-icon-button>
     <cr-icon-button iron-icon="pdf:rotate-left" dir="ltr"
-<if expr="chromeos">
+<if expr="enable_ink">
         disabled="[[annotationMode]]"
 </if>
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
@@ -244,7 +244,7 @@
     </cr-icon-button>
   </div>
   <div id="end">
-  <if expr="chromeos">
+  <if expr="enable_ink">
     <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
       <cr-icon-button id="annotate" iron-icon="pdf:create"
           on-click="onAnnotationClick_"
@@ -273,7 +273,7 @@
 <cr-action-menu on-open-changed="onMoreOpenChanged_">
   <button id="two-page-view-button"
       class="dropdown-item" on-click="toggleTwoPageViewClick_" role="checkbox"
-<if expr="chromeos">
+<if expr="enable_ink">
       disabled="[[annotationMode]]"
 </if>
       aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled)]]">
@@ -312,14 +312,14 @@
   </template>
 </cr-action-menu>
 
-<if expr="chromeos">
+<if expr="enable_ink">
   <template is="dom-if" if="[[showAnnotationsModeDialog_]]" restamp>
     <viewer-annotations-mode-dialog two-up-view-enabled="[[twoUpViewEnabled]]"
         rotated="[[rotated]]" on-close="onDialogClose_">
     </viewer-annotations-mode-dialog>
   </template>
 </if>
-<if expr="chromeos">
+<if expr="enable_ink">
   <template is="dom-if" if="[[showAnnotationsBar_]]">
     <viewer-annotations-bar annotation-mode="[[annotationMode]]">
     </viewer-annotations-bar>

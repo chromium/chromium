@@ -1,8 +1,0 @@
-Name: Google Ink
-Short Name: ink
-URL: https://github.com/google/ink
-Version: 311554669
-License: Apache 2.0
-Security Critical: yes
-
-The build artifacts from Ink are downloaded to this directory via DEPS.
