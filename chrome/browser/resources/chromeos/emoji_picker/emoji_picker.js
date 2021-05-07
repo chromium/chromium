@@ -190,7 +190,7 @@ export class EmojiPicker extends PolymerElement {
     }
     // Make highlight bar visible (now we know where it should be) and
     // add smooth sliding.
-    this.updateActiveGroup();
+    this.updateActiveGroup(/*updateTabsScroll=*/ true);
     this.$.bar.style.display = 'block';
     this.$.bar.style.transition = 'left 200ms';
   }
@@ -248,7 +248,8 @@ export class EmojiPicker extends PolymerElement {
   clearRecentEmoji() {
     this.set(['history', 'emoji'], makeRecentlyUsed([]));
     this.recentEmojiStore.clearRecents();
-    afterNextRender(this, () => this.updateActiveGroup());
+    afterNextRender(
+        this, () => this.updateActiveGroup(/*updateTabsScroll=*/ true));
   }
 
   /**
@@ -264,14 +265,15 @@ export class EmojiPicker extends PolymerElement {
     group.scrollIntoView();
   }
 
-  onEmojiScroll(ev) {
+  onEmojiScroll() {
     // the scroll event is fired very frequently while scrolling.
     // only update active tab 100ms after last scroll event by setting
     // a timeout.
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
     }
-    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 100);
+    this.scrollTimeout = setTimeout(
+        () => this.updateActiveGroup(/*updateTabsScroll=*/ true), 100);
   }
 
   onRightChevronClick() {
@@ -321,7 +323,7 @@ export class EmojiPicker extends PolymerElement {
    */
   groupTabScrollFinished() {
     this.groupTabsMoving = false;
-    this.updateActiveGroup();
+    this.updateActiveGroup(/*updateTabsScroll=*/ false);
   }
 
   /**
@@ -342,11 +344,16 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
-
-  updateActiveGroup() {
+  /**
+   *
+   * @param {boolean} updateTabsScroll
+   */
+  updateActiveGroup(updateTabsScroll) {
     // no need to update scroll state if search is showing.
     if (this.search)
       return;
+
+    this.updateChevrons();
 
     // get bounding rect of scrollable emoji region.
     const thisRect = this.$.groups.getBoundingClientRect();
@@ -394,9 +401,14 @@ export class EmojiPicker extends PolymerElement {
         tabscrollLeft = GROUP_ICON_SIZE * (5);
       }
 
-      this.$.tabs.scrollLeft = tabscrollLeft;
-      this.$.bar.style.left =
-          ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
+      if (updateTabsScroll) {
+        this.$.tabs.scrollLeft = tabscrollLeft;
+        this.$.bar.style.left =
+            ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
+      } else {
+        this.$.bar.style.left =
+            ((index * GROUP_ICON_SIZE - this.$.tabs.scrollLeft)) + 'px';
+      }
     }
   }
 
@@ -477,7 +489,7 @@ export class EmojiPicker extends PolymerElement {
     afterNextRender(this, () => {
       this.apiProxy_.showUI();
       this.emojiData = emojidata;
-      this.updateActiveGroup();
+      this.updateActiveGroup(/*updateTabsScroll=*/ true);
     });
   }
 
