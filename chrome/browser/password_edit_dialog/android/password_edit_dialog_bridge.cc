@@ -10,11 +10,13 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
+PasswordEditDialog::~PasswordEditDialog() = default;
+
 // static
-std::unique_ptr<PasswordEditDialogBridge> PasswordEditDialogBridge::Create(
+std::unique_ptr<PasswordEditDialog> PasswordEditDialogBridge::Create(
     content::WebContents* web_contents,
     DialogAcceptedCallback dialog_accepted_callback,
-    base::OnceClosure dialog_dismissed_callback) {
+    DialogDismissedCallback dialog_dismissed_callback) {
   DCHECK(web_contents);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
@@ -28,7 +30,7 @@ std::unique_ptr<PasswordEditDialogBridge> PasswordEditDialogBridge::Create(
 PasswordEditDialogBridge::PasswordEditDialogBridge(
     base::android::ScopedJavaLocalRef<jobject> j_window_android,
     DialogAcceptedCallback dialog_accepted_callback,
-    base::OnceClosure dialog_dismissed_callback)
+    DialogDismissedCallback dialog_dismissed_callback)
     : dialog_accepted_callback_(std::move(dialog_accepted_callback)),
       dialog_dismissed_callback_(std::move(dialog_dismissed_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -73,7 +75,8 @@ void PasswordEditDialogBridge::OnDialogAccepted(JNIEnv* env,
   std::move(dialog_accepted_callback_).Run(selected_username_index);
 }
 
-void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env) {
+void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
+                                                 jboolean dialogAccepted) {
   java_password_dialog_.Reset();
-  std::move(dialog_dismissed_callback_).Run();
+  std::move(dialog_dismissed_callback_).Run(dialogAccepted);
 }

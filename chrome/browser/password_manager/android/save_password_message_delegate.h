@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/optional.h"
+#include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+#include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -24,6 +27,12 @@ class WebContents;
 // saving password form in response to user interactions and recording metrics.
 class SavePasswordMessageDelegate {
  public:
+  using PasswordEditDialogFactory =
+      base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
+          content::WebContents*,
+          PasswordEditDialog::DialogAcceptedCallback,
+          PasswordEditDialog::DialogDismissedCallback)>;
+
   SavePasswordMessageDelegate();
   ~SavePasswordMessageDelegate();
 
@@ -31,26 +40,43 @@ class SavePasswordMessageDelegate {
   // |form_to_save|.
   void DisplaySavePasswordPrompt(
       content::WebContents* web_contents,
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
-  // Dismisses currently displayed message.
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
+      bool update_password);
+
+  // Dismisses currently displayed message or dialog. Because the implementation
+  // uses some of the dependencies (e.g. log manager) this method needs to be
+  // called before the object is destroyed.
   void DismissSavePasswordPrompt();
 
  private:
   friend class SavePasswordMessageDelegateTest;
 
-  void DismissSavePasswordPromptInternal(
-      messages::DismissReason dismiss_reason);
+  SavePasswordMessageDelegate(
+      PasswordEditDialogFactory password_edit_dialog_factory);
+
+  void DismissSavePasswordMessage(messages::DismissReason dismiss_reason);
 
   void DisplaySavePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      base::Optional<AccountInfo> account_info);
+      base::Optional<AccountInfo> account_info,
+      bool update_password);
+  void CreateMessage(bool update_password);
 
-  // Called in response to user clicking "Save" and "Never" buttons.
-  void HandleSaveClick();
-  void HandleNeverClick();
-  // Called when the message is dismissed.
-  void HandleDismissCallback(messages::DismissReason dismiss_reason);
+  // Populates |usernames| with the list of usernames from best saved matches to
+  // be presented to the user in a dropdown. Returns the index of the username
+  // that matches the one from pending credentials.
+  unsigned int GetDisplayUsernames(std::vector<std::u16string>* usernames);
+
+  // Following methods handle events associated with user interaction with UI.
+  void HandleSaveButtonClicked();
+  void HandleNeverSaveClicked();
+  void HandleDisplayEditDialog();
+  void HandleMessageDismissed(messages::DismissReason dismiss_reason);
+  void HandleSavePasswordFromDialog(int selected_username);
+  void HandleDialogDismissed(bool dialogAccepted);
+
+  void ClearState();
 
   void RecordMessageShownMetrics();
   void RecordDismissalReasonMetrics(
@@ -60,11 +86,17 @@ class SavePasswordMessageDelegate {
   MessageDismissReasonToPasswordManagerUIDismissalReason(
       messages::DismissReason dismiss_reason);
 
+  PasswordEditDialogFactory password_edit_dialog_factory_;
+
   content::WebContents* web_contents_ = nullptr;
+  std::string account_email_;
+
+  // ManagePasswordsState maintains the password form that is being
+  // saved/updated. It provides helper functions for populating username list.
+  ManagePasswordsState passwords_state_;
+
   std::unique_ptr<messages::MessageWrapper> message_;
-  // The PasswordFormManager managing the form we're asking the user about,
-  // and should update as per their decision.
-  std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save_;
+  std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_PASSWORD_MESSAGE_DELEGATE_H_

@@ -307,7 +307,7 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   } else {
     if (messages::IsPasswordMessagesUiEnabled()) {
       save_password_message_delegate_.DisplaySavePasswordPrompt(
-          web_contents(), std::move(form_to_save));
+          web_contents(), std::move(form_to_save), /*update_password=*/false);
     } else {
       SavePasswordInfoBarDelegate::Create(web_contents(),
                                           std::move(form_to_save));
@@ -1255,6 +1255,10 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
   if (autofill_assistant_manager) {
     autofill_assistant_manager->RemoveObserver(this);
   }
+
+#if defined(OS_ANDROID)
+  save_password_message_delegate_.DismissSavePasswordPrompt();
+#endif
 }
 
 #if !defined(OS_ANDROID)

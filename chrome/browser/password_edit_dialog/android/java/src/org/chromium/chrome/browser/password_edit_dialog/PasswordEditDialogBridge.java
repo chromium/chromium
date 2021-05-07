@@ -48,15 +48,15 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     }
 
     @Override
-    public void onDialogDismissed() {
+    public void onDialogDismissed(boolean dialogAccepted) {
         assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onDialogDismissed(mNativeDialog);
+        PasswordEditDialogBridgeJni.get().onDialogDismissed(mNativeDialog, dialogAccepted);
         mNativeDialog = 0;
     }
 
     @NativeMethods
     interface Natives {
         void onDialogAccepted(long nativePasswordEditDialogBridge, int selectedUsernameIndex);
-        void onDialogDismissed(long nativePasswordEditDialogBridge);
+        void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
     }
 }

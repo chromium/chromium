@@ -37,8 +37,12 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
          */
         void onDialogAccepted(int selectedUsernameIndex);
 
-        /** Called when the dialog is dismissed. */
-        void onDialogDismissed();
+        /**
+         * Called when the dialog is dismissed.
+         *
+         * @param dialogAccepted Indicates whether the dialog was accepted or cancelled by the user.
+         */
+        void onDialogDismissed(boolean dialogAccepted);
     }
 
     private final Context mContext;
@@ -155,7 +159,7 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        mDelegate.onDialogDismissed();
+        mDelegate.onDialogDismissed(dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
     @VisibleForTesting
