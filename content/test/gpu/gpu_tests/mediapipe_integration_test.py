@@ -56,6 +56,13 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if errors:
       self.fail(errors)
 
+  @classmethod
+  def ExpectationsFiles(cls):
+    return [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations', 'mediapipe_expectations.txt'),
+    ]
+
 
 def _get_test_html(entry):
   return '%s/_CLICK_ME_TO_RUN_%s_LOCALLY.html' % (entry, entry)
