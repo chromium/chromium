@@ -336,9 +336,11 @@ function pickWritableFile(suggestedName, mimeType) {
   // Strip non-alphnumeric characters: showSaveFilePicker() will reject them if
   // they appear in the extension. See b/175625372. This regex should be
   // consistent with IsValidSuffixCodePoint() in global_file_system_access.cc.
-  // The extension also can not be empty, so provide a dummy backup since we'd
-  // be renaming anyway if all characters are stripped.
-  const extension = '.' + (suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '') || 'ext');
+  // The extension also cannot be empty, so provide a dummy backup since we'd
+  // be renaming anyway if all characters are stripped. showSaveFilePicker()
+  // also rejects extensions longer than 16 characters (including the .).
+  let extension = '.' + (suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '') || 'ext');
+  extension = extension.substr(0, 16);
   // TODO(b/161087799): Add a default filename when it's supported by the
   // File System Access API.
   /** @type {!FilePickerOptions} */
