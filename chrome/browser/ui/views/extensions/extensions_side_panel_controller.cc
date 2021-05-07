@@ -50,6 +50,7 @@ ExtensionsSidePanelController::ExtensionsSidePanelController(
   side_panel_->SetVisible(false);
   side_panel_->SetPanelWidth(kDefaultWidth);
   Observe(web_view_->GetWebContents());
+  web_view_->GetWebContents()->SetDelegate(this);
 
   // Enable the hosted WebContents to leverage extensions APIs.
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
@@ -66,7 +67,9 @@ ExtensionsSidePanelController::ExtensionsSidePanelController(
     web_view_->LoadInitialURL(extension->GetResourceURL("side_panel.html"));
 }
 
-ExtensionsSidePanelController::~ExtensionsSidePanelController() = default;
+ExtensionsSidePanelController::~ExtensionsSidePanelController() {
+  web_view_->GetWebContents()->SetDelegate(nullptr);
+}
 
 std::unique_ptr<ToolbarButton>
 ExtensionsSidePanelController::CreateToolbarButton() {
@@ -77,6 +80,12 @@ ExtensionsSidePanelController::CreateToolbarButton() {
       &ExtensionsSidePanelController::SidePanelButtonPressed,
       base::Unretained(this)));
   return toolbar_button;
+}
+
+content::WebContents* ExtensionsSidePanelController::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  return browser_view_->browser()->OpenURL(params);
 }
 
 // The extension host uses URL params to control various properties of the side

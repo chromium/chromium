@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension_id.h"
 
@@ -25,7 +26,8 @@ class ToolbarButton;
 // A class that manages hosting the extension WebContents in the left aligned
 // side panel of the browser window.
 // TODO(crbug.com/1197555): Remove this once the experiment has concluded.
-class ExtensionsSidePanelController : public content::WebContentsObserver {
+class ExtensionsSidePanelController : public content::WebContentsObserver,
+                                      public content::WebContentsDelegate {
  public:
   ExtensionsSidePanelController(SidePanel* side_panel,
                                 BrowserView* browser_view);
@@ -35,6 +37,11 @@ class ExtensionsSidePanelController : public content::WebContentsObserver {
   ~ExtensionsSidePanelController() override;
 
   std::unique_ptr<ToolbarButton> CreateToolbarButton();
+
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
 
  private:
   // content::WebContentsObserver:
