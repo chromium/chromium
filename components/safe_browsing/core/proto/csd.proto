@@ -128,8 +128,8 @@ message ClientPhishingRequest {
   // List of shingle hashes we extracted.
   repeated uint32 shingle_hashes = 12 [packed = true];
 
-  // The model filename (basename) that was used by the client.
-  optional string model_filename = 13;
+  // The model filename (basename) that was used by the client. Deprecated.
+  optional string DEPRECATED_model_filename = 13 [deprecated = true];
 
   // Population that the reporting user is part of.
   optional ChromeUserPopulation population = 14;

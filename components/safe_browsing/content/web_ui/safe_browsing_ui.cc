@@ -849,7 +849,6 @@ std::string SerializeClientPhishingRequest(
   }
   dict.SetList("shingle_hashes", std::move(shingle_hashes));
 
-  dict.SetString("model_filename", cpr.model_filename());
   dict.SetKey("population", SerializeChromeUserPopulation(cpr.population()));
   if (cpr.has_screenshot_digest()) {
     dict.SetKey("screenshot_digest", base::Value(cpr.screenshot_digest()));
