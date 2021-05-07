@@ -160,6 +160,11 @@ const char kRestoreSessionFromCacheDescription[] =
     "Enable iOS_TBA instant session restoration for faster and more "
     "web session restoration.";
 
+const char kEnableAutofillAccountWalletStorageName[] =
+    "Enable the account data storage for autofill";
+const char kEnableAutofillAccountWalletStorageDescription[] =
+    "Enable the ephemeral storage for account data for autofill.";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =

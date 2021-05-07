@@ -68,13 +68,16 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   std::unique_ptr<PersonalDataManager> service(
       new PersonalDataManager(GetApplicationContext()->GetApplicationLocale(),
                               GetCountryCodeFromVariations()));
-  auto autofill_db =
+  auto local_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+  auto account_storage =
+      ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
           chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   service->Init(
-      autofill_db, nullptr, chrome_browser_state->GetPrefs(),
+      local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       AutofillProfileValidatorFactory::GetInstance(), history_service,

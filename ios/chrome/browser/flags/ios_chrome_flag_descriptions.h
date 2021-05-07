@@ -143,6 +143,9 @@ extern const char kEditPasswordsInSettingsDescription[];
 extern const char kRestoreSessionFromCacheName[];
 extern const char kRestoreSessionFromCacheDescription[];
 
+extern const char kEnableAutofillAccountWalletStorageName[];
+extern const char kEnableAutofillAccountWalletStorageDescription[];
+
 // Title and description for the flag to enable autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
