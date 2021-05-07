@@ -231,7 +231,7 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   if (base::IsMachineExternallyManaged())
     return true;
 #endif
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
     return true;
 #endif

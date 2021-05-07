@@ -87,7 +87,7 @@ const base::Feature kAppShimNewCloseBehavior{"AppShimNewCloseBehavior",
 // Enables the built-in DNS resolver.
 const base::Feature kAsyncDns {
   "AsyncDns",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_ANDROID)
+#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -330,7 +330,7 @@ const base::Feature kDesktopPWAsWithoutExtensions{
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || \
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -352,7 +352,7 @@ const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,
 // Sets whether the DoH setting is displayed in the settings UI.
 const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
   &kDnsOverHttps, "ShowUi",
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || \
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_ANDROID)
       true
 #else
