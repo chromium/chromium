@@ -54,10 +54,9 @@ std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
   std::vector<std::string> results;
   results.reserve(value->GetSize());
   std::string s;
-  for (auto it = value->begin(); it != value->end(); ++it) {
-    if (!it->GetAsString(&s))
-      continue;
-    results.push_back(s);
+  for (const auto& entry : value->GetList()) {
+    if (entry.GetAsString(&s))
+      results.push_back(s);
   }
   return results;
 }
