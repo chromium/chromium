@@ -19,13 +19,12 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
-
-#include "storage/browser/file_system/external_mount_points.h"
 
 namespace apps {
 
@@ -121,6 +120,15 @@ TEST_F(FileUtilsTest, GetFileUrls) {
   // that use the kFileSystemTypeExternal type with Files Manager's origin.
   // TODO(crbug/1203961): The use of Files Manager origin in these URLs is
   // probably incorrect and should be revisited.
+  EXPECT_THAT(
+      url_list,
+      ElementsAre(ToGURL(
+          base::FilePath(storage::kExternalDir).Append(mount_name_), path)));
+
+  // Case 3: paths not originating in a known root are ignored.
+  fp_list.push_back(base::FilePath("/not/a/known/root").Append(path));
+  url_list = GetFileUrls(GetProfile(), fp_list);
+  // Still just one path corresponding to foo.jpg under a known root.
   EXPECT_THAT(
       url_list,
       ElementsAre(ToGURL(
