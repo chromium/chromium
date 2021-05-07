@@ -270,7 +270,7 @@ void AppendValueData(MessageWriter* writer, const base::Value& value) {
       value.GetAsList(&list);
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("v", &array_writer);
-      for (const auto& value_in_list : *list) {
+      for (const auto& value_in_list : list->GetList()) {
         AppendValueDataAsVariant(&array_writer, value_in_list);
       }
       writer->CloseContainer(&array_writer);
