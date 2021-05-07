@@ -10,8 +10,8 @@
 #include "base/guid.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/download/public/common//mock_simple_download_manager.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/download/public/common/mock_simple_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

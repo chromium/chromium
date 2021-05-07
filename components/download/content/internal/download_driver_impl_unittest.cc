@@ -13,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
-#include "components/download/public/common//mock_simple_download_manager.h"
+#include "components/download/public/common/mock_simple_download_manager.h"
 #include "content/public/test/fake_download_item.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"

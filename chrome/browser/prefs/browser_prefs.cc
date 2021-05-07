@@ -407,7 +407,7 @@
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/device_identity//device_oauth2_token_store_desktop.h"
+#include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 #include "chrome/browser/downgrade/downgrade_prefs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #endif

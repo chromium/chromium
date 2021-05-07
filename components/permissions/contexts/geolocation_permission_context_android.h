@@ -28,7 +28,7 @@
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_dialog_context.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
-#include "components/permissions/contexts//geolocation_permission_context.h"
+#include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/permission_request_id.h"
 
 namespace content {
