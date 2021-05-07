@@ -197,7 +197,7 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kCurrentAppLocale, locale);
 
   // They are two separate records; the latter did not overwrite the former.
-  EXPECT_EQ(2u, consents->size());
+  EXPECT_EQ(2u, consents->DictSize());
   EXPECT_TRUE(
       consents->FindKeyOfType("feature1", base::Value::Type::DICTIONARY));
 
@@ -224,7 +224,7 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kFeature2NewAppLocale, locale);
 
   // We still have two records.
-  EXPECT_EQ(2u, consents->size());
+  EXPECT_EQ(2u, consents->DictSize());
 }
 
 TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
