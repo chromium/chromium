@@ -4,6 +4,8 @@
 
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 
+#include "ash/capture_mode/capture_mode_button.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,25 +19,11 @@ namespace ash {
 CaptureModeToggleButton::CaptureModeToggleButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon)
-    : ViewWithInkDrop(callback) {
-  SetPreferredSize(capture_mode::kButtonSize);
-  SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
-  SetImageHorizontalAlignment(ALIGN_CENTER);
-  SetImageVerticalAlignment(ALIGN_MIDDLE);
-  GetViewAccessibility().OverrideIsLeaf(true);
-
-  SetInstallFocusRingOnFocus(true);
-  const auto* color_provider = AshColorProvider::Get();
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-  focus_ring()->SetPathGenerator(
-      std::make_unique<views::CircleHighlightPathGenerator>(
-          capture_mode::kButtonPadding));
-  views::InstallCircleHighlightPathGenerator(this,
-                                             capture_mode::kButtonPadding);
+    : views::ToggleImageButton(callback) {
+  CaptureModeButton::ConfigureButton(this, focus_ring());
 
   SetIcon(icon);
-  toggled_background_color_ = color_provider->GetControlsLayerColor(
+  toggled_background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
 }
 
@@ -83,8 +71,7 @@ void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
   SetToggledImage(views::Button::STATE_NORMAL, &toggled_icon);
 }
 
-BEGIN_METADATA(CaptureModeToggleButton,
-               ViewWithInkDrop<views::ToggleImageButton>)
+BEGIN_METADATA(CaptureModeToggleButton, views::ToggleImageButton)
 END_METADATA
 
 }  // namespace ash

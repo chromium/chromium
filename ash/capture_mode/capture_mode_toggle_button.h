@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
-#include "ash/capture_mode/view_with_ink_drop.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -22,7 +21,7 @@ namespace ash {
 // toggle between image and video capture, and between fullscreen, window, and
 // region capture sources.
 class ASH_EXPORT CaptureModeToggleButton
-    : public ViewWithInkDrop<views::ToggleImageButton>,
+    : public views::ToggleImageButton,
       public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeToggleButton);
