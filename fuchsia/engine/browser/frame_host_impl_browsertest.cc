@@ -9,7 +9,6 @@
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/url_constants.h"
 
 namespace {
 
@@ -23,21 +22,25 @@ using FrameHostImplBrowserTest = cr_fuchsia::WebEngineBrowserTest;
 IN_PROC_BROWSER_TEST_F(FrameHostImplBrowserTest, IsolatedFromWebContext) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Create a new Frame via the fuchsia.web.Context.
-  cr_fuchsia::TestNavigationListener navigation_listener1;
-  fuchsia::web::FramePtr frame1 = CreateFrame(&navigation_listener1);
+  // Create a new Frame via the fuchsia.web.Context, and spin the loop to
+  // allow the request to be processed.
+  fuchsia::web::FramePtr context_frame;
+  context()->CreateFrameWithParams({}, context_frame.NewRequest());
+  base::RunLoop().RunUntilIdle();
 
   // Verify that the FrameImpl can be found via the |context_impl()| to which
   // the fuchsia.web.Context is connected.
-  EXPECT_TRUE(context_impl()->GetFrameImplForTest(&frame1) != nullptr);
+  EXPECT_TRUE(context_impl()->GetFrameImplForTest(&context_frame) != nullptr);
 
   // Create a new Frame via a FrameHost instance.
   fuchsia::web::FrameHostPtr frame_host;
   published_services().Connect(frame_host.NewRequest());
-  fuchsia::web::FramePtr frame2;
-  frame_host->CreateFrameWithParams({}, frame2.NewRequest());
+  fuchsia::web::FramePtr frame_host_frame;
+  frame_host->CreateFrameWithParams({}, frame_host_frame.NewRequest());
+  base::RunLoop().RunUntilIdle();
 
   // Verify that the new Frame cannot be resolved to a FrameImpl under the
   // |context_impl()| to which the fuchsia.web.Context is connected.
-  EXPECT_TRUE(context_impl()->GetFrameImplForTest(&frame2) == nullptr);
+  EXPECT_TRUE(context_impl()->GetFrameImplForTest(&frame_host_frame) ==
+              nullptr);
 }
