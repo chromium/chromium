@@ -80,7 +80,6 @@ no_check_targets = [
   "//chrome/test:sync_integration_tests",
   "//chrome/test:sync_integration_test_support",
   "//chrome/test:sync_performance_tests",
-  "//chrome/test:test_support",
   "//chrome/test:test_support_ui",
   "//chrome/test:test_support_ui_android",
   "//chrome/test:test_support_unit",
