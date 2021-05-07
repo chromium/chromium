@@ -50,6 +50,10 @@ bool URLIsWithinScope(const KURL& url, const KURL& scope) {
          url.GetPath().StartsWith(scope.GetPath());
 }
 
+static bool IsCrLfOrTabChar(UChar c) {
+  return c == '\n' || c == '\r' || c == '\t';
+}
+
 }  // anonymous namespace
 
 ManifestParser::ManifestParser(const String& data,
@@ -263,11 +267,21 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
 
 String ManifestParser::ParseName(const JSONObject* object) {
   base::Optional<String> name = ParseString(object, "name", Trim);
+  if (name.has_value()) {
+    name = name->RemoveCharacters(IsCrLfOrTabChar);
+    if (name->length() == 0)
+      name = base::nullopt;
+  }
   return name.has_value() ? *name : String();
 }
 
 String ManifestParser::ParseShortName(const JSONObject* object) {
   base::Optional<String> short_name = ParseString(object, "short_name", Trim);
+  if (short_name.has_value()) {
+    short_name = short_name->RemoveCharacters(IsCrLfOrTabChar);
+    if (short_name->length() == 0)
+      short_name = base::nullopt;
+  }
   return short_name.has_value() ? *short_name : String();
 }
 
