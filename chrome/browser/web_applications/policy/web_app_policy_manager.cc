@@ -445,7 +445,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (!disabled_system_features_pref)
     return;
 
-  for (const auto& entry : *disabled_system_features_pref) {
+  for (const auto& entry : disabled_system_features_pref->GetList()) {
     switch (entry.GetInt()) {
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(SystemAppType::CAMERA);
