@@ -1007,8 +1007,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1020,7 +1018,6 @@ try_.chromium_linux_builder(
             ".+/[+]/chromecast/.+",
         ],
     ),
-    os = os.LINUX_BIONIC,
 )
 
 try_.chromium_linux_builder(
@@ -1113,8 +1110,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1123,8 +1118,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1133,8 +1126,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1202,7 +1193,6 @@ try_.chromium_linux_builder(
     name = "linux-clang-tidy-dbg",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1255,8 +1245,6 @@ try_.chromium_linux_builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1265,8 +1253,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1291,7 +1277,6 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 # Experimental builder to check dual coverage on linux platform.
@@ -1386,7 +1371,6 @@ try_.chromium_linux_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
-    os = os.LINUX_BIONIC,
 )
 
 try_.chromium_linux_builder(
@@ -1431,8 +1415,6 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug/1202745)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -1477,7 +1459,6 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
     tryjob = try_.job(),
 )
 
@@ -1558,13 +1539,11 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "tricium-oilpan-analysis",
     executable = "recipe:tricium_oilpan",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
     name = "tricium-simple",
     executable = "recipe:tricium_simple",
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 try_.chromium_mac_builder(
@@ -2068,6 +2047,7 @@ try_.chromium_linux_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_mac_builder(
@@ -2098,6 +2078,7 @@ try_.chromium_android_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_linux_builder(
@@ -2106,6 +2087,7 @@ try_.chromium_linux_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_chromiumos_builder(
@@ -2114,6 +2096,7 @@ try_.chromium_chromiumos_builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_mac_ios_builder(
