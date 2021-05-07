@@ -201,8 +201,8 @@ public abstract class PathUtils {
     /**
      * Returns the downloads directory. Before Android Q, this returns the public download directory
      * for Chrome app. On Q+, this returns the first private download directory for the app, since Q
-     * will block public directory access. May return null when there is no external storage volumes
-     * mounted.
+     * will block public directory access. May return empty string when there are no external
+     * storage volumes mounted.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -217,7 +217,7 @@ public abstract class PathUtils {
                 // storage for which no additional permissions are required.
                 String[] dirs = getAllPrivateDownloadsDirectories();
                 assert dirs != null;
-                return dirs[0];
+                return dirs.length == 0 ? "" : dirs[0];
             }
             return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     .getPath();
