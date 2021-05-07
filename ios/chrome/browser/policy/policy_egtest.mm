@@ -89,7 +89,7 @@ void VerifyBoolPolicy(const std::string& policy_key,
                       const std::string& pref_name) {
   // Loading chrome://policy isn't necessary for the test to succeed, but it
   // provides some visual feedback as the test runs.
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_HEADER_NAME)];
   // Force the preference off via policy.
@@ -161,7 +161,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
 // Tests that about:policy is available.
 - (void)testAboutPolicy {
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_HEADER_NAME)];
 }
@@ -196,7 +196,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // Disable default search provider via policy and make sure it does not crash
   // the omnibox UI.
   SetPolicy(false, policy::key::kDefaultSearchProviderEnabled);
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
 
   // Open a new tab and verify that the NTP does not crash. Regression test for
   // http://crbug.com/1148903.

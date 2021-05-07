@@ -14,6 +14,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -163,7 +164,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // Tests that about:policy is not available when policy is disabled. Also serves
 // as a test that the browser does not crash on startup with policy disabled.
 - (void)testAboutPolicyNotAvailable {
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_ERRORPAGES_HEADING_NOT_AVAILABLE)];
@@ -204,7 +205,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
   GREYAssertFalse(suggestValue->GetBool(),
                   @"suggestValue had an unexpected value");
 
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_SHOW_UNSET)];
 }
@@ -236,7 +237,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
   GREYAssertFalse(suggestValue->GetBool(),
                   @"suggestValue had an unexpected value");
 
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_SHOW_UNSET)];
 }
