@@ -126,9 +126,9 @@ bool EventRewriterDelegateImpl::NotifyDeprecatedFKeyRewrite() {
   return deprecation_controller_->NotifyDeprecatedFKeyRewrite();
 }
 
-bool EventRewriterDelegateImpl::NotifyDeprecatedAltBasedKeyRewrite(
+bool EventRewriterDelegateImpl::NotifyDeprecatedSixPackKeyRewrite(
     ui::KeyboardCode key_code) {
-  return deprecation_controller_->NotifyDeprecatedAltBasedKeyRewrite(key_code);
+  return deprecation_controller_->NotifyDeprecatedSixPackKeyRewrite(key_code);
 }
 
 const PrefService* EventRewriterDelegateImpl::GetPrefService() const {

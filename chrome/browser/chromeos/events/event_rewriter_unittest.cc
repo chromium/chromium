@@ -1759,8 +1759,10 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
   });
 }
 
-TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_Old) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndDisableFeature(
+      ::features::kImprovedKeyboardShortcuts);
   TestNonAppleKeyboardVariants({
       // Period -> Period
       {ui::ET_KEY_PRESSED,
@@ -1778,6 +1780,58 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert) {
        {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD,
         ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
         ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_CONTROL_DOWN,
+        ui::DomKey::INSERT}},
+  });
+}
+
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_DeprecatedNotification) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  TestNonAppleKeyboardVariants({
+      // Period -> Period
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_NONE,
+        ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_NONE,
+        ui::DomKey::Constant<'.'>::Character}},
+      // Search+Period -> No rewrite (and shows notification)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD, ui::EF_COMMAND_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
+      // Control+Search+Period -> No rewrite (and shows notification)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       {ui::VKEY_OEM_PERIOD, ui::DomCode::PERIOD,
+        ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::Constant<'.'>::Character},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
+  });
+}
+
+TEST_F(EventRewriterTest, TestRewriteExtendedKeyInsert_New) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  TestNonAppleKeyboardVariants({
+      // Search+Shift+Backspace -> Insert
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_NONE, ui::DomKey::INSERT}},
+      // Control+Search+Shift+Backspace -> Control+Insert
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::BACKSPACE},
        {ui::VKEY_INSERT, ui::DomCode::INSERT, ui::EF_CONTROL_DOWN,
         ui::DomKey::INSERT}},
   });
@@ -4521,7 +4575,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   bool IsSearchKeyAcceleratorReserved() const override { return false; }
   bool NotifyDeprecatedRightClickRewrite() override { return false; }
   bool NotifyDeprecatedFKeyRewrite() override { return false; }
-  bool NotifyDeprecatedAltBasedKeyRewrite(ui::KeyboardCode key_code) override {
+  bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
 

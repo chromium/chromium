@@ -618,20 +618,20 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
 // "six pack" eg. Home, End, PageUp, PageDown, Delete, Insert.
 void RecordSixPackEventRewrites(ui::EventType event_type,
                                 ui::KeyboardCode key_code,
-                                bool search_variant) {
+                                bool legacy_variant) {
   if (event_type != ET_KEY_PRESSED) {
     return;
   }
 
-  if (search_variant) {
+  if (!legacy_variant) {
     switch (key_code) {
       case ui::VKEY_DELETE:
         base::RecordAction(
             base::UserMetricsAction("SearchBasedKeyRewrite_Delete"));
         break;
       case ui::VKEY_INSERT:
-        base::RecordAction(
-            base::UserMetricsAction("SearchBasedKeyRewrite_Insert"));
+        base::RecordAction(base::UserMetricsAction(
+            "SearchBasedKeyRewrite_Insert_ViaSearchShiftBackspace"));
         break;
       case ui::VKEY_HOME:
         base::RecordAction(
@@ -658,6 +658,10 @@ void RecordSixPackEventRewrites(ui::EventType event_type,
       case ui::VKEY_DELETE:
         base::RecordAction(
             base::UserMetricsAction("AltBasedKeyRewrite_Delete"));
+        break;
+      case ui::VKEY_INSERT:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_Insert"));
         break;
       case ui::VKEY_HOME:
         base::RecordAction(base::UserMetricsAction("AltBasedKeyRewrite_Home"));
@@ -1414,7 +1418,52 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
       }
     }
 
-    static const KeyboardRemapping kSearchRemappings[] = {
+    // The new Search+Shift+Backspace rewrite is only active when
+    // IsImprovedKeyboardShortcutsEnabled() is true.
+    // TODO(crbug.com/1179893): Merge this entry into kSixPackRemappings
+    // once the flag is removed.
+    static const KeyboardRemapping kOldInsertRemapping[] = {
+        {// Search+Period -> Insert
+         {EF_COMMAND_DOWN, VKEY_OEM_PERIOD},
+         {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+    };
+
+    if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+      static const KeyboardRemapping kNewInsertRemapping[] = {
+          {// Search+Shift+BackSpace -> Insert
+           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
+           {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+      };
+
+      if (!skip_search_key_remapping &&
+          RewriteWithKeyboardRemappings(kNewInsertRemapping,
+                                        base::size(kNewInsertRemapping),
+                                        incoming, state, strict)) {
+        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+                                   /*legacy_variant=*/false);
+        return;
+      }
+
+      // Test for the deprecated insert rewrite in order to show a notification.
+      const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
+          kOldInsertRemapping, base::size(kOldInsertRemapping), incoming);
+      if (deprecated_key != VKEY_UNKNOWN) {
+        // If the key would have matched prior to being deprecated then notify
+        // the delegate to show a notification.
+        delegate_->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
+      }
+    } else {
+      if (!skip_search_key_remapping &&
+          RewriteWithKeyboardRemappings(kOldInsertRemapping,
+                                        base::size(kOldInsertRemapping),
+                                        incoming, state, strict)) {
+        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+                                   /*legacy_variant=*/true);
+        return;
+      }
+    }
+
+    static const KeyboardRemapping kSixPackRemappings[] = {
         {// Search+BackSpace -> Delete
          {EF_COMMAND_DOWN, VKEY_BACK},
          {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
@@ -1429,23 +1478,21 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
          {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
         {// Search+Down -> Next (aka PageDown)
          {EF_COMMAND_DOWN, VKEY_DOWN},
-         {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}},
-        {// Search+Period -> Insert
-         {EF_COMMAND_DOWN, VKEY_OEM_PERIOD},
-         {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}}};
+         {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+
     if (!skip_search_key_remapping &&
-        RewriteWithKeyboardRemappings(kSearchRemappings,
-                                      base::size(kSearchRemappings), incoming,
+        RewriteWithKeyboardRemappings(kSixPackRemappings,
+                                      base::size(kSixPackRemappings), incoming,
                                       state, strict)) {
       RecordSixPackEventRewrites(key_event.type(), state->key_code,
-                                 /*search_variant=*/true);
+                                 /*legacy_variant=*/false);
       return;
     }
   }
 
   // TODO(crbug.com/1179893): Remove block once Alt rewrites are deprecated.
   if ((incoming.flags & EF_ALT_DOWN) && is_alt_down_remapping_enabled_) {
-    static const KeyboardRemapping kNonSearchRemappings[] = {
+    static const KeyboardRemapping kLegacySixPackRemappings[] = {
         {// Alt+BackSpace -> Delete
          {EF_ALT_DOWN, VKEY_BACK},
          {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
@@ -1462,20 +1509,21 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
          {EF_ALT_DOWN, VKEY_DOWN},
          {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
     if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-      if (RewriteWithKeyboardRemappings(kNonSearchRemappings,
-                                        base::size(kNonSearchRemappings),
+      if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
+                                        base::size(kLegacySixPackRemappings),
                                         incoming, state)) {
         RecordSixPackEventRewrites(key_event.type(), state->key_code,
-                                   /*search_variant=*/false);
+                                   /*legacy_variant=*/true);
         return;
       }
     } else {
       const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
-          kNonSearchRemappings, base::size(kNonSearchRemappings), incoming);
+          kLegacySixPackRemappings, base::size(kLegacySixPackRemappings),
+          incoming);
       if (deprecated_key != VKEY_UNKNOWN) {
         // If the key would have matched prior to being deprecated then notify
         // the delegate to show a notification.
-        delegate_->NotifyDeprecatedAltBasedKeyRewrite(deprecated_key);
+        delegate_->NotifyDeprecatedSixPackKeyRewrite(deprecated_key);
       }
     }
   }

@@ -138,10 +138,11 @@ class EventRewriterChromeOS : public EventRewriter {
     // and this function returns true if the notification was shown.
     virtual bool NotifyDeprecatedFKeyRewrite() = 0;
 
-    // Used to send a notification about Alt based key rewrite being deprecated.
-    // The notification is only sent once per user session, and this function
-    // returns true if the notification was shown.
-    virtual bool NotifyDeprecatedAltBasedKeyRewrite(KeyboardCode key_code) = 0;
+    // Used to send a notification about a Six Pack (PageUp, PageDown, Home,
+    // End, Insert, Delete) key rewrite being deprecated. The notification
+    // is only sent once per user session, and this function returns true if
+    // the notification was shown.
+    virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);

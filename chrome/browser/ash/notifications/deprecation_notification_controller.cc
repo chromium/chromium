@@ -65,21 +65,21 @@ bool DeprecationNotificationController::NotifyDeprecatedFKeyRewrite() {
   return true;
 }
 
-bool DeprecationNotificationController::NotifyDeprecatedAltBasedKeyRewrite(
+bool DeprecationNotificationController::NotifyDeprecatedSixPackKeyRewrite(
     ui::KeyboardCode key_code) {
-  if (!ShouldShowAltBasedDeprecationNotification(key_code)) {
+  if (!ShouldShowSixPackKeyDeprecationNotification(key_code)) {
     return false;
   }
 
   // The notification id is not user visible.
   const std::string id =
       std::string(kNotificationIdPrefix) + base::NumberToString(key_code);
-  const int message_id = GetAltBasedDeprecationMessageId(key_code);
+  const int message_id = GetSixPackKeyDeprecationMessageId(key_code);
   ShowNotificationFromIdWithLauncherKey(id, message_id);
 
   // Keep track that the notification was shown to decide whether to show it
   // again in future.
-  RecordAltBasedDeprecationNotificationShown(key_code);
+  RecordSixPackKeyDeprecationNotificationShown(key_code);
   return true;
 }
 
@@ -126,21 +126,23 @@ void DeprecationNotificationController::ShowNotification(
 }
 
 bool DeprecationNotificationController::
-    ShouldShowAltBasedDeprecationNotification(ui::KeyboardCode key_code) {
+    ShouldShowSixPackKeyDeprecationNotification(ui::KeyboardCode key_code) {
   return !shown_key_notifications_.contains(key_code);
 }
 
 void DeprecationNotificationController::
-    RecordAltBasedDeprecationNotificationShown(ui::KeyboardCode key_code) {
+    RecordSixPackKeyDeprecationNotificationShown(ui::KeyboardCode key_code) {
   DCHECK(!shown_key_notifications_.contains(key_code));
   shown_key_notifications_.insert(key_code);
 }
 
-int DeprecationNotificationController::GetAltBasedDeprecationMessageId(
+int DeprecationNotificationController::GetSixPackKeyDeprecationMessageId(
     ui::KeyboardCode key_code) {
   switch (key_code) {
     case ui::VKEY_DELETE:
       return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_DELETE;
+    case ui::VKEY_INSERT:
+      return IDS_ASH_SHORTCUT_DEPRECATION_SEARCH_PERIOD_INSERT;
     case ui::VKEY_HOME:
       return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_HOME;
     case ui::VKEY_END:
