@@ -2451,10 +2451,31 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // offset transform for paint_offset_root.
       !context_.current.paint_offset_root->PaintingLayer()
            ->EnclosingPaginationLayer()) {
-    if (object_.StyleRef().GetPosition() == EPosition::kAbsolute)
+    if (object_.StyleRef().GetPosition() == EPosition::kAbsolute) {
+      if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+        // FIXME(dbaron): When the TransformInteropEnabled flag is removed
+        // because it's always enabled, we should move these variables from
+        // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext to
+        // PaintPropertyTreeBuilderFragmentContext.
+        context_.absolute_position.should_flatten_inherited_transform =
+            context_.current.should_flatten_inherited_transform;
+        context_.absolute_position.rendering_context_id =
+            context_.current.rendering_context_id;
+      }
       context_.current = context_.absolute_position;
-    else if (object_.StyleRef().GetPosition() == EPosition::kFixed)
+    } else if (object_.StyleRef().GetPosition() == EPosition::kFixed) {
+      if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+        // FIXME(dbaron): When the TransformInteropEnabled flag is removed
+        // because it's always enabled, we should move these variables from
+        // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext to
+        // PaintPropertyTreeBuilderFragmentContext.
+        context_.fixed_position.should_flatten_inherited_transform =
+            context_.current.should_flatten_inherited_transform;
+        context_.fixed_position.rendering_context_id =
+            context_.current.rendering_context_id;
+      }
       context_.current = context_.fixed_position;
+    }
 
     // Set fragment visual paint offset.
     PhysicalOffset paint_offset =
@@ -2497,6 +2518,16 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       case EPosition::kAbsolute: {
         DCHECK_EQ(full_context_.container_for_absolute_position,
                   box_model_object.Container());
+        if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+          // FIXME(dbaron): When the TransformInteropEnabled flag is removed
+          // because it's always enabled, we should move these variables from
+          // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext
+          // to PaintPropertyTreeBuilderFragmentContext.
+          context_.absolute_position.should_flatten_inherited_transform =
+              context_.current.should_flatten_inherited_transform;
+          context_.absolute_position.rendering_context_id =
+              context_.current.rendering_context_id;
+        }
         context_.current = context_.absolute_position;
 
         // Absolutely positioned content in an inline should be positioned
@@ -2517,6 +2548,16 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       case EPosition::kFixed: {
         DCHECK_EQ(full_context_.container_for_fixed_position,
                   box_model_object.Container());
+        if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+          // FIXME(dbaron): When the TransformInteropEnabled flag is removed
+          // because it's always enabled, we should move these variables from
+          // PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext
+          // to PaintPropertyTreeBuilderFragmentContext.
+          context_.fixed_position.should_flatten_inherited_transform =
+              context_.current.should_flatten_inherited_transform;
+          context_.fixed_position.rendering_context_id =
+              context_.current.rendering_context_id;
+        }
         context_.current = context_.fixed_position;
         // Fixed-position elements that are fixed to the viewport have a
         // transform above the scroll of the LayoutView. Child content is
