@@ -304,7 +304,8 @@ class Target(object):
              _GetPackageUri(package_name), '>/dev/null'],
             timeout_secs=_INSTALL_TIMEOUT_SECS)
         if return_code != 0:
-          raise Exception('Error while resolving %s.' % package_name)
+          raise Exception(
+              'Error {} while resolving {}.'.format(return_code, package_name))
 
       # Verify that the newly resolved versions of packages are reported.
       for package_path in package_paths:
