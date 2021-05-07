@@ -82,42 +82,4 @@ TEST_F(InlineBoxPositionTest, InFlatTreeAfterInputWithPlaceholderDoesntCrash) {
   EXPECT_EQ(1, box_position.offset_in_box);
 }
 
-TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakLTR) {
-  // This test is for a bidi caret afinity specific behavior.
-  ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
-
-  SetBodyContent("<div id=div>&#x05D0;&#x05D1;&#x05D2<br>ABC</div>");
-  const Element* const div = GetElementById("div");
-  const Node* const rtl_text = div->firstChild();
-  const PositionWithAffinity before_br(Position(rtl_text, 3),
-                                       TextAffinity::kDownstream);
-
-  const Element* const br = GetDocument().QuerySelector("br");
-  const InlineBox* const box =
-      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
-
-  const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
-  EXPECT_EQ(box, box_position.inline_box);
-  EXPECT_EQ(0, box_position.offset_in_box);
-}
-
-TEST_F(InlineBoxPositionTest, DownstreamBeforeLineBreakRTL) {
-  // This test is for a bidi caret afinity specific behavior.
-  ScopedBidiCaretAffinityForTest scoped_bidi_affinity(true);
-
-  SetBodyContent("<div id=div dir=rtl>ABC<br>&#x05D0;&#x05D1;&#x05D2;</div>");
-  const Element* const div = GetElementById("div");
-  const Node* const rtl_text = div->firstChild();
-  const PositionWithAffinity before_br(Position(rtl_text, 3),
-                                       TextAffinity::kDownstream);
-
-  const Element* const br = GetDocument().QuerySelector("br");
-  const InlineBox* const box =
-      To<LayoutText>(br->GetLayoutObject())->FirstTextBox();
-
-  const InlineBoxPosition box_position = ComputeInlineBoxPosition(before_br);
-  EXPECT_EQ(box, box_position.inline_box);
-  EXPECT_EQ(0, box_position.offset_in_box);
-}
-
 }  // namespace blink
