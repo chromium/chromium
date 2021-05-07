@@ -21,7 +21,9 @@
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -75,6 +77,8 @@ using signin_metrics::PromoAction;
 // be dismissed and the sync setup flag should not be marked as done. The sync
 // should be kept undecided, not marked as disabled.
 @property(nonatomic, assign) BOOL signinInterrupted;
+// Displays the sign-out options for a syncing user.
+@property(nonatomic, strong) ActionSheetCoordinator* signOutCoordinator;
 
 @end
 
@@ -233,6 +237,19 @@ using signin_metrics::PromoAction;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [handler closeSettingsUIAndOpenURL:command];
+}
+
+- (void)showTurnOffSyncOptions {
+  __weak ManageSyncSettingsCoordinator* weakSelf = self;
+  SignoutActionSheetCoordinatorCompletion completion =
+      ^(SignoutActionSheetCoordinatorResult result) {
+        if (result != SignoutActionSheetCoordinatorResultCanceled) {
+          [weakSelf closeManageSyncSettings];
+        }
+      };
+  self.signOutCoordinator = SignoutActionSheetCoordinator(
+      self.viewController, self.browser, self.viewController.view, completion);
+  [self.signOutCoordinator start];
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

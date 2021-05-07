@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 
-#import <UIKit/UIKit.h>
-
 // Protocol to communicate user actions from the mediator to its coordinator.
 @protocol ManageSyncSettingsCommandHandler <NSObject>
 
@@ -15,6 +13,9 @@
 
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
+
+// Presents the data options available when turning off Sync.
+- (void)showTurnOffSyncOptions;
 
 @end
 
