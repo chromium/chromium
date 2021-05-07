@@ -800,7 +800,7 @@ TEST_F(PolicyWatcherTest, GetEffectivePoliciesError) {
   StartWatching();
   std::unique_ptr<base::DictionaryValue> effective_policies =
       policy_watcher_->GetEffectivePolicies();
-  ASSERT_EQ(0u, effective_policies->size());
+  ASSERT_EQ(0u, effective_policies->DictSize());
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPolicies) {
@@ -811,9 +811,9 @@ TEST_F(PolicyWatcherTest, GetPlatformPolicies) {
               OnPolicyUpdatePtr(IsPolicies(&nat_false_)));
 
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->DictSize());
   SetPolicies(nat_false_);
-  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->DictSize());
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPoliciesMultipleOverrides) {
@@ -828,13 +828,13 @@ TEST_F(PolicyWatcherTest, GetPlatformPoliciesMultipleOverrides) {
               OnPolicyUpdatePtr(IsPolicies(&nat_true_domain_empty_)));
 
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->DictSize());
   SetPolicies(domain_full_);
-  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->DictSize());
   SetPolicies(nat_false_domain_full_);
-  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->DictSize());
   SetPolicies(nat_true_domain_empty_);
-  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->DictSize());
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPoliciesError) {
@@ -842,7 +842,7 @@ TEST_F(PolicyWatcherTest, GetPlatformPoliciesError) {
 
   SetPolicies(nat_one_);
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->DictSize());
 }
 
 }  // namespace remoting
