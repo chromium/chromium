@@ -848,6 +848,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTime" units="ms"
     expires_after="2021-06-01">
+  <obsolete>
+    Removed in May 2021 and merged into PrintPreview.RenderAndGeneratePDFTime.
+  </obsolete>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -859,6 +862,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTimeAvgPerPage"
     units="ms" expires_after="2021-06-01">
+  <obsolete>
+    Removed in May 2021 and merged into
+    PrintPreview.RenderAndGeneratePDFTimeAvgPerPage.
+  </obsolete>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -880,6 +887,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.PrintPreview.RenderToPDFTime" units="ms"
     expires_after="2021-06-01">
+  <obsolete>
+    Removed in May 2021 and merged into PrintPreview.RenderToPDFTime.
+  </obsolete>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>Time taken for ARC to render a PDF for print preview.</summary>

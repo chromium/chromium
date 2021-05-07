@@ -2728,17 +2728,12 @@ void PrintRenderFrameHelper::PrintPreviewContext::FinalizePrintReadyDocument() {
       (base::TimeTicks::Now() - begin_time) + document_render_time_;
   base::TimeDelta avg_time_per_page = total_time / pages_to_render_.size();
 
-  base::UmaHistogramMediumTimes(is_for_arc_ ? "Arc.PrintPreview.RenderToPDFTime"
-                                            : "PrintPreview.RenderToPDFTime",
+  base::UmaHistogramMediumTimes("PrintPreview.RenderToPDFTime",
                                 document_render_time_);
+  base::UmaHistogramMediumTimes("PrintPreview.RenderAndGeneratePDFTime",
+                                total_time);
   base::UmaHistogramMediumTimes(
-      is_for_arc_ ? "Arc.PrintPreview.RenderAndGeneratePDFTime"
-                  : "PrintPreview.RenderAndGeneratePDFTime",
-      total_time);
-  base::UmaHistogramMediumTimes(
-      is_for_arc_ ? "Arc.PrintPreview.RenderAndGeneratePDFTimeAvgPerPage"
-                  : "PrintPreview.RenderAndGeneratePDFTimeAvgPerPage",
-      avg_time_per_page);
+      "PrintPreview.RenderAndGeneratePDFTimeAvgPerPage", avg_time_per_page);
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::Finished() {
