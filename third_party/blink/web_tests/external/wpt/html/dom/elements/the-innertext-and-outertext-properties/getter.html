@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>innerText getter test</title>
+<title>innerText/outerText getter test</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -55,7 +55,8 @@ function textTextInContainer(cont, html, expectedPlain, msg) {
     while (e && e.nodeType != Node.ELEMENT_NODE) {
       e = e.nextSibling;
     }
-    assert_equals(e.innerText, expectedPlain);
+    assert_equals(e.innerText, expectedPlain, "innerText");
+    assert_equals(e.outerText, expectedPlain, "outerText");
     cont.textContent = '';
   }, msg + ' (' + format_value(html) + ')');
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>innerText getter test with dynamic style changes</title>
+<title>innerText/outerText getter test with dynamic style changes</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="container"></div>
@@ -19,7 +19,8 @@ function testText(html, expectedPlain, msg, mutate) {
     if (!e) {
       e = container.firstChild;
     }
-    assert_equals(e.innerText, expectedPlain);
+    assert_equals(e.innerText, expectedPlain, "innerText");
+    assert_equals(e.outerText, expectedPlain, "outerText");
     container.textContext = '';
   }, msg + ' (' + format_value(html) + ')');
 }

@@ -9,7 +9,8 @@ async_test(t => {
     t1.data = "X";
     t2.data = " ";
     t3.data = "Y";
-    assert_equals(div.innerText, "X Y");
+    assert_equals(div.innerText, "X Y", "innerText");
+    assert_equals(div.outerText, "X Y", "outerText");
     t.done();
   }, 100);
 }, "Ensure multiple text nodes get rendered properly");

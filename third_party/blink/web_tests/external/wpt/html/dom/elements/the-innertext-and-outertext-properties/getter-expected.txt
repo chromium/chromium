@@ -68,7 +68,7 @@ PASS Soft breaks ignored, text-transform applied ("<div style='width:1px; word-b
 PASS <br> returned as newline, following space collapsed ("<div style='width:1px; word-break:break-word'>Hello<br> Kitty</div>")
 PASS <br> returned as newline, preceding space collapsed ("<div style='width:1px; word-break:break-word'>Hello <br>Kitty</div>")
 PASS <br> returned as newline, adjacent spaces collapsed across element boundaries ("<div style='width:1px; word-break:break-word'><x>Hello </x> <br> <x> Kitty</x></div>")
-FAIL ::first-line styles applied ("<div class='first-line-uppercase' style='width:0'>abc def") assert_equals: expected "ABC def" but got "abc def"
+FAIL ::first-line styles applied ("<div class='first-line-uppercase' style='width:0'>abc def") assert_equals: innerText expected "ABC def" but got "abc def"
 PASS ::first-letter styles applied ("<div class='first-letter-uppercase' style='width:0'>abc def")
 PASS ::first-letter float ignored ("<div class='first-letter-float' style='width:0'>abc def")
 PASS &nbsp; preserved ("<div>&nbsp;")
@@ -109,7 +109,7 @@ PASS <textarea> contents ignored ("<textarea>abc")
 PASS <iframe> contents ignored ("<iframe>abc")
 PASS <iframe> contents ignored ("<iframe><div id='target'>abc")
 PASS <iframe> subdocument ignored ("<iframe src='data:text/html,abc'>")
-FAIL <audio> contents ignored ("<audio style='display:block'>abc") assert_equals: expected "" but got "abc"
+FAIL <audio> contents ignored ("<audio style='display:block'>abc") assert_equals: innerText expected "" but got "abc"
 PASS <audio> contents ok for element not being rendered ("<audio style='display:block'><source id='target' class='poke' style='display:block'>")
 PASS <audio> contents ok for element not being rendered ("<audio style='display:block'><source id='target' class='poke' style='display:none'>")
 PASS <video> contents ignored ("<video>abc")
@@ -120,7 +120,7 @@ PASS <canvas><div id='target'> contents ok for element not being rendered ("<can
 PASS <img> alt text ignored ("<img alt='abc'>")
 PASS <img> contents ignored ("<img src='about:blank' class='poke'>")
 PASS <svg> text contents preserved ("<div><svg><text>abc</text></svg></div>")
-FAIL <svg><defs> text contents ignored ("<div><svg><defs><text>abc</text></defs></svg></div>") assert_equals: expected "" but got "abc"
+FAIL <svg><defs> text contents ignored ("<div><svg><defs><text>abc</text></defs></svg></div>") assert_equals: innerText expected "" but got "abc"
 PASS <svg> non-rendered text ignored ("<div><svg><stop>abc</stop></svg></div>")
 PASS <foreignObject> contents preserved ("<svg><foreignObject><span id='target'>abc</span></foreignObject></svg>")
 PASS <select size='1'> contents of options preserved ("<select size='1'><option>abc</option><option>def")
@@ -133,7 +133,7 @@ PASS empty <option> in <select> ("<div>a<select><option></select>bc")
 PASS <select> containing text node child ("<select class='poke'></select>")
 PASS <optgroup> containing <optgroup> ("<select><optgroup class='poke-optgroup'></select>")
 PASS <optgroup> containing <option> ("<select><optgroup><option>abc</select>")
-FAIL <div> in <option> ("<select><option class='poke-div'>123</select>") assert_equals: expected "123\nabc" but got "123abc"
+FAIL <div> in <option> ("<select><option class='poke-div'>123</select>") assert_equals: innerText expected "123\nabc" but got "123abc"
 PASS empty <optgroup> in <div> ("<div>a<optgroup></optgroup>bc")
 PASS <optgroup> in <div> ("<div>a<optgroup>123</optgroup>bc")
 PASS empty <option> in <div> ("<div>a<option></option>bc")
