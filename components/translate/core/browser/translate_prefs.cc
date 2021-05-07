@@ -860,7 +860,7 @@ void TranslatePrefs::MigrateNeverPromptSites() {
   if (never_prompt_list) {
     const base::ListValue* list =
         prefs_->GetList(kPrefNeverPromptSitesDeprecated);
-    for (auto& site : *list) {
+    for (auto& site : list->GetList()) {
       if (!never_prompt_list->HasKey(site.GetString())) {
         never_prompt_list->SetKey(site.GetString(), base::Value(0));
       }
