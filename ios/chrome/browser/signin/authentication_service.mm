@@ -308,7 +308,6 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
              ->IsValidIdentity(identity));
 
   ResetPromptForSignIn();
-  sync_setup_service_->PrepareForFirstSyncSetup();
 
   // Load all credentials from SSO library. This must load the credentials
   // for the primary account too.
@@ -365,6 +364,12 @@ void AuthenticationService::GrantSyncConsent(ChromeIdentity* identity) {
   CHECK(success);
   CHECK_EQ(account_id,
            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
+
+  // Sets the Sync setup handle to prepare for configuring the Sync data types
+  // before Sync-the-feature actually starts.
+  // TODO(crbug.com/1206680): Add EarlGrey tests to ensure that the Sync feature
+  // only starts after GrantSyncConsent is called.
+  sync_setup_service_->PrepareForFirstSyncSetup();
 
   // Kick-off sync: The authentication error UI (sign in infobar and warning
   // badge in settings screen) check the sync auth error state. Sync

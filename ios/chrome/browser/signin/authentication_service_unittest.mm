@@ -101,7 +101,7 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   void SetExpectationsForSignIn() {
-    EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup());
+    EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(0);
   }
 
   void StoreKnownAccountsWhileInForeground() {
@@ -657,7 +657,7 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
 
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
-  SetExpectationsForSignIn();
+  EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(0);
   authentication_service()->SignIn(identity(0));
 
   EXPECT_NSEQ(identity(0),
@@ -669,6 +669,7 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   EXPECT_TRUE(authentication_service()->IsAuthenticated());
 
   // Grant Sync consent.
+  EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(1);
   EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
               SetSyncRequested(true));
   authentication_service()->GrantSyncConsent(identity(0));
