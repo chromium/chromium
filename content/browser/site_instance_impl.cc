@@ -1801,8 +1801,10 @@ void SiteInstance::StartIsolatingSite(
   // This function currently assumes the new isolated site should persist
   // across restarts, so ask the embedder to save it, excluding off-the-record
   // profiles.
-  if (!context->IsOffTheRecord() && should_persist)
-    GetContentClient()->browser()->PersistIsolatedOrigin(context, site_origin);
+  if (!context->IsOffTheRecord() && should_persist) {
+    GetContentClient()->browser()->PersistIsolatedOrigin(context, site_origin,
+                                                         source);
+  }
 }
 
 void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {

@@ -638,14 +638,10 @@ ContentBrowserClientImpl::GetAdditionalSiteIsolationModes() {
 
 void ContentBrowserClientImpl::PersistIsolatedOrigin(
     content::BrowserContext* context,
-    const url::Origin& origin) {
-  DCHECK(!context->IsOffTheRecord());
-  ListPrefUpdate update(user_prefs::UserPrefs::Get(context),
-                        site_isolation::prefs::kUserTriggeredIsolatedOrigins);
-  base::ListValue* list = update.Get();
-  base::Value value(origin.Serialize());
-  if (!base::Contains(list->GetList(), value))
-    list->Append(std::move(value));
+    const url::Origin& origin,
+    content::ChildProcessSecurityPolicy::IsolatedOriginSource source) {
+  site_isolation::SiteIsolationPolicy::PersistIsolatedOrigin(context, origin,
+                                                             source);
 }
 
 base::OnceClosure ContentBrowserClientImpl::SelectClientCertificate(

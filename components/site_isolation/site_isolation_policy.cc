@@ -9,11 +9,11 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 
@@ -127,6 +127,24 @@ bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold() {
 #endif
 
   return false;
+}
+
+// static
+void SiteIsolationPolicy::PersistIsolatedOrigin(
+    content::BrowserContext* context,
+    const url::Origin& origin,
+    content::ChildProcessSecurityPolicy::IsolatedOriginSource source) {
+  DCHECK(!context->IsOffTheRecord());
+  // TODO(alexmos): Support web-triggered IsolatedOriginSources.
+  DCHECK_EQ(source, content::ChildProcessSecurityPolicy::IsolatedOriginSource::
+                        USER_TRIGGERED);
+
+  ListPrefUpdate update(user_prefs::UserPrefs::Get(context),
+                        site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  base::ListValue* list = update.Get();
+  base::Value value(origin.Serialize());
+  if (!base::Contains(list->GetList(), value))
+    list->Append(std::move(value));
 }
 
 // static

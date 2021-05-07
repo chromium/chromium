@@ -2099,15 +2099,10 @@ ChromeContentBrowserClient::GetAdditionalSiteIsolationModes() {
 
 void ChromeContentBrowserClient::PersistIsolatedOrigin(
     content::BrowserContext* context,
-    const url::Origin& origin) {
-  DCHECK(!context->IsOffTheRecord());
-  Profile* profile = Profile::FromBrowserContext(context);
-  ListPrefUpdate update(profile->GetPrefs(),
-                        site_isolation::prefs::kUserTriggeredIsolatedOrigins);
-  base::ListValue* list = update.Get();
-  base::Value value(origin.Serialize());
-  if (!base::Contains(list->GetList(), value))
-    list->Append(std::move(value));
+    const url::Origin& origin,
+    content::ChildProcessSecurityPolicy::IsolatedOriginSource source) {
+  site_isolation::SiteIsolationPolicy::PersistIsolatedOrigin(context, origin,
+                                                             source);
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

@@ -29,6 +29,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -589,8 +590,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Called when a new dynamic isolated origin was added in |context|, and the
   // origin desires to be persisted across restarts, to give the embedder an
   // opportunity to save this isolated origin to disk.
-  virtual void PersistIsolatedOrigin(BrowserContext* context,
-                                     const url::Origin& origin) {}
+  virtual void PersistIsolatedOrigin(
+      BrowserContext* context,
+      const url::Origin& origin,
+      ChildProcessSecurityPolicy::IsolatedOriginSource source) {}
 
   // Indicates whether a file path should be accessible via file URL given a
   // request from a browser context which lives within |profile_path|.

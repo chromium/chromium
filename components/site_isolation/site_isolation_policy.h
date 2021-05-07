@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_SITE_ISOLATION_SITE_ISOLATION_POLICY_H_
 #define COMPONENTS_SITE_ISOLATION_SITE_ISOLATION_POLICY_H_
 
-#include "base/macros.h"
-
 #include <vector>
+
+#include "base/macros.h"
+#include "content/public/browser/child_process_security_policy.h"
 
 class GURL;
 
@@ -41,6 +42,15 @@ class SiteIsolationPolicy {
   // devices because of 1) performance impact and 2) infeasibility of
   // Spectre-like attacks on such devices).
   static bool IsEnterprisePolicyApplicable();
+
+  // Saves a new dynamic isolated origin to user prefs associated with
+  // `context` so that it can be persisted across restarts. `source`
+  // specifies why the isolated origin was added; different sources may have
+  // different persistence policies.
+  static void PersistIsolatedOrigin(
+      content::BrowserContext* context,
+      const url::Origin& origin,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource source);
 
   // Reads and applies any isolated origins stored in user prefs associated with
   // |browser_context|.  This is expected to be called on startup after user
