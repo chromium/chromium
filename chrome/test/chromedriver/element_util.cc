@@ -594,6 +594,8 @@ Status GetElementEffectiveStyle(
                                   element_id, property_name, property_value);
 }
 
+// Wrapper to JavaScript code in js/get_element_region.js. See comments near the
+// beginning of that file for what is returned.
 Status GetElementRegion(
     Session* session,
     WebView* web_view,
@@ -800,6 +802,16 @@ Status ScrollElementIntoView(
   return Status(kOk);
 }
 
+// Scroll a region of an element (identified by |element_id|) into view.
+// It first scrolls the element region relative to its enclosing viewport,
+// so that the region becomes visible in that viewport.
+// If that viewport is a frame, it then makes necessary scroll to make the
+// region of the frame visible in its enclosing viewport. It repeats this up
+// the frame chain until it reaches the top-level viewport.
+//
+// Upon return, |location| gives the location of the region relative to the
+// top-level viewport. If |center| is true, the location is for the center of
+// the region, otherwise it is for the upper-left corner of the region.
 Status ScrollElementRegionIntoView(
     Session* session,
     WebView* web_view,
@@ -810,6 +822,7 @@ Status ScrollElementRegionIntoView(
     WebPoint* location) {
   WebPoint region_offset = region.origin;
   WebSize region_size = region.size;
+  // Scroll the element region in its enclosing viewport.
   Status status = ScrollElementRegionIntoViewHelper(
       session->GetCurrentFrameId(), web_view, element_id, region,
       center, clickable_element_id, &region_offset);
@@ -820,6 +833,9 @@ Status ScrollElementRegionIntoView(
       "  return document.evaluate(xpath, document, null,"
       "      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;"
       "}";
+  // If the element is in a frame, go up the frame chain (from the innermost
+  // frame up to the top-level window) and scroll each frame relative to its
+  // parent frame, so that the region becomes visible in the parent frame.
   for (auto rit = session->frames.rbegin(); rit != session->frames.rend();
        ++rit) {
     base::ListValue args;
