@@ -188,6 +188,9 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // them.
   void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
 
+  // Returns true if an ink drop instance has been created.
+  bool HasInkDrop() const;
+
   // Provides public access to |ink_drop_| so that factory methods can configure
   // the inkdrop. Implements lazy initialization of |ink_drop_| so as to avoid
   // virtual method calls during construction since subclasses should be able to
@@ -210,21 +213,13 @@ class VIEWS_EXPORT InkDropHostView : public View {
   void AddInkDropLayer(ui::Layer* ink_drop_layer);
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
 
- protected:
   // Size used by default for the SquareInkDropRipple.
-  static constexpr gfx::Size kDefaultInkDropSize = gfx::Size(24, 24);
+  static constexpr gfx::Size kDefaultSquareInkDropSize = gfx::Size(24, 24);
 
   // Creates a SquareInkDropRipple centered on |center_point|.
-  std::unique_ptr<InkDropRipple> CreateInkDropForSquareRipple(
+  std::unique_ptr<InkDropRipple> CreateSquareInkDropRipple(
       const gfx::Point& center_point,
-      const gfx::Size& size = kDefaultInkDropSize) const;
-
-  // Returns true if an ink drop instance has been created.
-  bool HasInkDrop() const;
-
-  // Returns a large ink drop size based on the |small_size| that works well
-  // with the SquareInkDropRipple animation durations.
-  static gfx::Size CalculateLargeInkDropSize(const gfx::Size& small_size);
+      const gfx::Size& size = kDefaultSquareInkDropSize) const;
 
  private:
   friend class test::InkDropHostViewTestApi;

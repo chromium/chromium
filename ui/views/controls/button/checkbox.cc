@@ -59,7 +59,7 @@ Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
   SetCreateInkDropRippleCallback(base::BindRepeating(
       [](Checkbox* host) {
         // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
-        return host->CreateInkDropForSquareRipple(
+        return host->CreateSquareInkDropRipple(
             host->image()->GetMirroredContentsBounds().CenterPoint(),
             gfx::Size(21, 21));
       },

@@ -141,7 +141,7 @@ ToggleButton::ToggleButton(PressedCallback callback)
       [](ToggleButton* host) {
         gfx::Rect rect = host->thumb_view_->GetLocalBounds();
         rect.Inset(-ThumbView::GetShadowOutsets());
-        return host->CreateInkDropForSquareRipple(rect.CenterPoint());
+        return host->CreateSquareInkDropRipple(rect.CenterPoint());
       },
       this));
   SetInkDropBaseColorCallback(base::BindRepeating(

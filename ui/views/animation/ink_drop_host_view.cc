@@ -26,7 +26,7 @@
 namespace views {
 
 // static
-constexpr gfx::Size InkDropHostView::kDefaultInkDropSize;
+constexpr gfx::Size InkDropHostView::kDefaultSquareInkDropSize;
 
 InkDropHostView::InkDropHostViewEventHandlerDelegate::
     InkDropHostViewEventHandlerDelegate(InkDropHostView* host_view)
@@ -254,6 +254,10 @@ void InkDropHostView::AnimateInkDrop(InkDropState state,
   GetEventHandler()->AnimateInkDrop(state, event);
 }
 
+bool InkDropHostView::HasInkDrop() const {
+  return !!ink_drop_;
+}
+
 InkDrop* InkDropHostView::GetInkDrop() {
   if (!ink_drop_) {
     if (ink_drop_mode_ == InkDropMode::OFF)
@@ -316,27 +320,16 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   ink_drop_mask_.reset();
 }
 
-std::unique_ptr<InkDropRipple> InkDropHostView::CreateInkDropForSquareRipple(
+std::unique_ptr<InkDropRipple> InkDropHostView::CreateSquareInkDropRipple(
     const gfx::Point& center_point,
     const gfx::Size& size) const {
+  constexpr float kLargeInkDropScale = 1.333f;
+  const gfx::Size large_size = gfx::ScaleToCeiledSize(size, kLargeInkDropScale);
   auto ripple = std::make_unique<SquareInkDropRipple>(
-      CalculateLargeInkDropSize(size), ink_drop_large_corner_radius_, size,
+      large_size, ink_drop_large_corner_radius_, size,
       ink_drop_small_corner_radius_, center_point, GetInkDropBaseColor(),
       GetInkDropVisibleOpacity());
   return ripple;
-}
-
-bool InkDropHostView::HasInkDrop() const {
-  return !!ink_drop_;
-}
-
-// static
-gfx::Size InkDropHostView::CalculateLargeInkDropSize(
-    const gfx::Size& small_size) {
-  // The scale factor to compute the large size of the default
-  // SquareInkDropRipple.
-  constexpr float kLargeInkDropScale = 1.333f;
-  return gfx::ScaleToCeiledSize(gfx::Size(small_size), kLargeInkDropScale);
 }
 
 const InkDropEventHandler* InkDropHostView::GetEventHandler() const {
