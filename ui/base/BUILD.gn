@@ -817,7 +817,10 @@ static_library("test_support") {
       "ime/chromeos/mock_input_method_manager.cc",
       "ime/chromeos/mock_input_method_manager.h",
     ]
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [
+      "//ui/base/ime/chromeos",
+      "//ui/base/ime/chromeos:typing_session_manager",
+    ]
   }
 }
 
@@ -1055,10 +1058,12 @@ test("ui_base_unittests") {
         "ime/chromeos/input_method_chromeos_unittest.cc",
         "ime/chromeos/input_method_descriptor_unittest.cc",
         "ime/chromeos/input_method_util_unittest.cc",
+        "ime/chromeos/typing_session_manager_unittest.cc",
       ]
       deps += [
         "//build:branding_buildflags",
         "//ui/base/ime/chromeos",
+        "//ui/base/ime/chromeos:typing_session_manager",
       ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {

@@ -256,6 +256,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.CharactersPerSession" units="characters"
+    expires_after="2021-11-01">
+  <owner>keithlee@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Number of characters entered in a single user session on ChromeOS. A user
+    session consists of a user typing 10+ characters for 1+ seconds where there
+    is no period of time where the user is inactive for more than 3 seconds.
+    This gets recorded when we detect user input and it has been more than 3
+    seconds since the last input by the user and also when a change in the
+    Engine or Text field selected is detected.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Commit.Index" units="units"
     expires_after="2021-10-10">
   <owner>shend@chromium.org</owner>
@@ -581,6 +595,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The suggestion accuracy type which the user chooses to commit for physical
     keyboard autocorrect.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.SessionDuration" units="ms"
+    expires_after="2021-11-01">
+  <owner>keithlee@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The average length of user sessions on ChromeOS. This can be combined with
+    characters per session to determine characters per minute. A user session
+    consists of a user typing 10+ characters for 1+ seconds where there is no
+    period of time where the user is inactive for more than 3 seconds. This gets
+    recorded when we detect user input and it has been more than 3 seconds since
+    the last input by the user and also when a change in the Engine or Text
+    field selected is detected.
   </summary>
 </histogram>
 

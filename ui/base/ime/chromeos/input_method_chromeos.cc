@@ -18,11 +18,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "base/time/default_clock.h"
 #include "chromeos/system/devicemode.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/chromeos/typing_session_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
@@ -39,7 +41,9 @@ ui::IMEEngineHandlerInterface* GetEngine() {
 // InputMethodChromeOS implementation -----------------------------------------
 InputMethodChromeOS::InputMethodChromeOS(
     internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate) {
+    : InputMethodBase(delegate),
+      typing_session_manager_(
+          TypingSessionManager(base::DefaultClock::GetInstance())) {
   ResetContext();
 }
 
@@ -52,6 +56,7 @@ InputMethodChromeOS::~InputMethodChromeOS() {
       ui::IMEBridge::Get()->GetInputContextHandler() == this) {
     ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
   }
+  typing_session_manager_.EndAndRecordSession();
 }
 
 InputMethodChromeOS::PendingSetCompositionRange::PendingSetCompositionRange(
@@ -346,7 +351,7 @@ bool InputMethodChromeOS::SetCompositionRange(
 
   if (IsTextInputTypeNone())
     return false;
-
+  typing_session_manager_.Heartbeat();
   // The given range and spans are relative to the current selection.
   gfx::Range range;
   if (!client->GetEditableSelectionRange(&range))
@@ -427,6 +432,7 @@ bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
 bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
   if (IsTextInputTypeNone())
     return false;
+  typing_session_manager_.Heartbeat();
   return GetTextInputClient()->SetEditableSelectionRange(
       gfx::Range(start, end));
 }
@@ -434,9 +440,11 @@ bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
 void InputMethodChromeOS::ConfirmCompositionText(bool reset_engine,
                                                  bool keep_selection) {
   TextInputClient* client = GetTextInputClient();
-  if (client && client->HasCompositionText())
-    client->ConfirmCompositionText(keep_selection);
-
+  if (client && client->HasCompositionText()) {
+    const uint32_t characters_committed =
+        client->ConfirmCompositionText(keep_selection);
+    typing_session_manager_.CommitCharacters(characters_committed);
+  }
   // See https://crbug.com/984472.
   ResetContext(reset_engine);
 }
@@ -563,8 +571,10 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessUnfilteredKeyPressEvent(
   // If a key event was not filtered by |context_| and |character_composer_|,
   // then it means the key event didn't generate any result text. So we need
   // to send corresponding character to the focused text input client.
-  if (event->GetCharacter())
+  if (event->GetCharacter()) {
     client->InsertChar(*event);
+    typing_session_manager_.CommitCharacters(1);
+  }
   return details;
 }
 
@@ -601,6 +611,7 @@ void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
       }
       composing_text_ = false;
     }
+    typing_session_manager_.CommitCharacters(result_text_.length());
   }
 
   // TODO(https://crbug.com/952757): Refactor this code to be clearer and less
@@ -670,10 +681,10 @@ void InputMethodChromeOS::CommitText(
   // If we are not handling key event, do not bother sending text result if the
   // focused text input client does not support text input.
   if (!handling_key_event_ && !IsTextInputTypeNone()) {
-    if (!SendFakeProcessKeyEvent(true))
+    if (!SendFakeProcessKeyEvent(true)) {
       GetTextInputClient()->InsertText(text, cursor_behavior);
-    SendFakeProcessKeyEvent(false);
-    result_text_.clear();
+      typing_session_manager_.CommitCharacters(text.length());
+    }
     result_text_cursor_ = 0;
   }
 }

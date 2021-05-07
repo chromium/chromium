@@ -10,6 +10,18 @@ source_set("ime_types") {
   sources = [ "ime_keyset.h" ]
 }
 
+source_set("typing_session_manager") {
+  sources = [
+    "typing_session_manager.cc",
+    "typing_session_manager.h",
+  ]
+
+  public_deps = [
+    "//base:base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 component("chromeos") {
   output_name = "ui_base_ime_chromeos"
 
@@ -55,6 +67,7 @@ component("chromeos") {
 
   deps = [
     ":ime_types",
+    ":typing_session_manager",
     "//build:branding_buildflags",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/system",

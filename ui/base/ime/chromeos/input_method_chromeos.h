@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/ime/chromeos/typing_session_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/text_input_client.h"
@@ -184,6 +185,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // Indicates whether currently is handling a physical key event.
   // This is used in CommitText/UpdateCompositionText/etc.
   bool handling_key_event_ = false;
+
+  TypingSessionManager typing_session_manager_;
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodChromeOS> weak_ptr_factory_{this};
