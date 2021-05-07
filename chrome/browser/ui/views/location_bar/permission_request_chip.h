@@ -14,25 +14,41 @@ class Browser;
 class PermissionRequestChip : public PermissionChip {
  public:
   METADATA_HEADER(PermissionRequestChip);
-  explicit PermissionRequestChip(
-      Browser* browser,
-      permissions::PermissionPrompt::Delegate* delegate);
+  explicit PermissionRequestChip(Browser* browser);
   PermissionRequestChip(const PermissionRequestChip& chip) = delete;
   PermissionRequestChip& operator=(const PermissionRequestChip& chip) = delete;
   ~PermissionRequestChip() override;
 
   // PermissionChip:
+  void DisplayRequest(
+      permissions::PermissionPrompt::Delegate* delegate) override;
+
+  // PermissionChip:
+  void FinalizeRequest() override;
+
+  // PermissionChip:
   void OpenBubble() override;
-  views::BubbleDialogDelegateView* GetPermissionPromptBubbleForTest() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // PermissionChip:
+  views::BubbleDialogDelegateView* GetPermissionPromptBubbleForTest() override;
 
   // BubbleOwnerDelegate:
   bool IsBubbleShowing() const override;
 
  private:
+  // PermissionChip:
+  const gfx::VectorIcon& GetPermissionIconId() const override;
+
+  // PermissionChip:
+  std::u16string GetPermissionMessage() const override;
+
   void RecordChipButtonPressed();
+
+  // If uma metric was already recorded on the button click.
+  bool already_recorded_interaction_ = false;
 
   Browser* browser_ = nullptr;
 

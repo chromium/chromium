@@ -50,10 +50,12 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
 
  private:
   LocationBarView* GetLocationBarView();
+
   void ShowBubble();
+
   void ShowChipUI();
+
   bool ShouldCurrentRequestUseChipUI();
-  void FinalizeChip();
 
   // The popup bubble. Not owned by this class; it will delete itself when a
   // decision is made.
