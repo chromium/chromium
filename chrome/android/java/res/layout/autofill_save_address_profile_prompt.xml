@@ -2,53 +2,60 @@
 <!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:fadeScrollbars="false">
 
-  <org.chromium.ui.widget.ChromeImageButton
-      android:id="@+id/edit_button"
-      android:layout_width="48dp"
-      android:layout_height="48dp"
-      android:layout_alignParentEnd="true"
-      android:layout_marginEnd="8dp"
-      android:padding="12dp"
-      android:background="?attr/selectableItemBackground"
-      android:contentDescription="@string/payments_edit_address"
-      android:scaleType="fitCenter"
-      app:srcCompat="@drawable/edit_icon"
-      app:tint="@color/default_icon_color_tint_list"
-      tools:src="@drawable/edit_icon" />
-
-  <LinearLayout
+  <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_toStartOf="@id/edit_button"
-      android:paddingTop="@dimen/dialog_padding_top"
-      android:paddingStart="@dimen/dialog_padding_sides"
-      android:orientation="vertical"
-      tools:ignore="RtlSymmetry">
+      android:layout_height="wrap_content">
 
-    <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/address"
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/payments_edit_address"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/edit_icon"
+        app:tint="@color/default_icon_color_tint_list"
+        tools:src="@drawable/edit_icon" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        app:leading="@dimen/text_size_medium_leading"
-        tools:text="Alex Park\n345 High Street\nSan Francisco, CA, 94105\nUnited States" />
+        android:layout_toStartOf="@id/edit_button"
+        android:paddingTop="@dimen/dialog_padding_top"
+        android:paddingStart="@dimen/dialog_padding_sides"
+        android:orientation="vertical"
+        tools:ignore="RtlSymmetry">
 
-    <TextView
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="alex.park@gmail.com" />
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/address"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="12dp"
+          app:leading="@dimen/text_size_medium_leading"
+          tools:text="Alex Park\n345 High Street\nSan Francisco, CA, 94105\nUnited States" />
 
-    <TextView
-        android:id="@+id/phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="+1 858 230 4000" />
-  </LinearLayout>
-</RelativeLayout>
+      <TextView
+          android:id="@+id/email"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          tools:text="alex.park@gmail.com" />
+
+      <TextView
+          android:id="@+id/phone"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          tools:text="+1 858 230 4000" />
+    </LinearLayout>
+  </RelativeLayout>
+</org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
