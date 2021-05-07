@@ -282,8 +282,17 @@ Polymer({
       }
     },
 
-    /** @private {?ScanSettings} */
-    savedScanSettings_: Object,
+    /** @private {!ScanSettings} */
+    savedScanSettings_: {
+      type: Object,
+      value() {
+        return {
+          lastUsedScannerName: '',
+          scanToPath: '',
+          scanners: [],
+        };
+      },
+    },
 
     /** @private {string} */
     lastUsedScannerId_: String,
@@ -424,7 +433,8 @@ Polymer({
     this.selectedFileType = ash.scanning.mojom.FileType.kPdf.toString();
 
     this.setAppState_(
-        this.savedScanSettings_ && this.scanAppStickySettingsEnabled_ ?
+        this.scanAppStickySettingsEnabled_ &&
+                this.areSavedScanSettingsAvailable_() ?
             AppState.SETTING_SAVED_SETTINGS :
             AppState.READY);
   },
@@ -481,7 +491,7 @@ Polymer({
     const fileType = fileTypeFromString(this.selectedFileType);
     const colorMode = colorModeFromString(this.selectedColorMode);
     const pageSize = pageSizeFromString(this.selectedPageSize);
-    const resolution = Number(this.selectedResolution)
+    const resolution = Number(this.selectedResolution);
 
     const settings = {
       sourceName: this.selectedSource,
@@ -509,6 +519,9 @@ Polymer({
             /*@type {!{success: boolean}}*/ (response) => {
               this.onStartScanResponse_(response);
             });
+    if (this.scanAppStickySettingsEnabled_) {
+      this.saveScanSettings_();
+    }
 
     const scanJobSettingsForMetrics = {
       sourceType: this.sourceTypeMap_.get(this.selectedSource),
@@ -762,7 +775,7 @@ Polymer({
 
   /** @private */
   setScanSettingsFromSavedSettings_() {
-    if (!this.savedScanSettings_) {
+    if (!this.areSavedScanSettingsAvailable_()) {
       return;
     }
 
@@ -807,8 +820,7 @@ Polymer({
    * @private
    */
   isLastUsedScanner_(scanner) {
-    return this.savedScanSettings_ !== undefined &&
-        this.savedScanSettings_.lastUsedScannerName ===
+    return this.savedScanSettings_.lastUsedScannerName ===
         getScannerDisplayName(scanner);
   },
 
@@ -874,6 +886,53 @@ Polymer({
               this.selectedFolder = baseName;
               this.selectedFilePath = filePath;
             });
+  },
+
+  /** @private */
+  saveScanSettings_() {
+    assert(this.scanAppStickySettingsEnabled_);
+
+    const scannerName = this.getSelectedScannerDisplayName_();
+    this.savedScanSettings_.lastUsedScannerName = scannerName;
+    this.savedScanSettings_.scanToPath = this.selectedFilePath;
+
+    // Search the scan settings array for the currently selected scanner. If
+    // found, replace it with the new scan settings. If not, add it to the list.
+    const newScannerSetting = this.createScannerSettingForSelectedScanner_();
+    const scannerIndex = this.savedScanSettings_.scanners.findIndex(
+        scanner => scanner.name === scannerName);
+    if (scannerIndex === -1) {
+      this.savedScanSettings_.scanners.push(newScannerSetting);
+    } else {
+      this.savedScanSettings_.scanners[scannerIndex] = newScannerSetting;
+    }
+
+    this.browserProxy_.saveScanSettings(
+        JSON.stringify(this.savedScanSettings_));
+  },
+
+  /**
+   * @return {!ScannerSetting}
+   * @private
+   */
+  createScannerSettingForSelectedScanner_() {
+    return /** @type {!ScannerSetting} */ ({
+      name: this.getSelectedScannerDisplayName_(),
+      lastScanDate: new Date(),
+      sourceName: this.selectedSource,
+      fileType: fileTypeFromString(this.selectedFileType),
+      colorMode: colorModeFromString(this.selectedColorMode),
+      pageSize: pageSizeFromString(this.selectedPageSize),
+      resolutionDpi: Number(this.selectedResolution),
+    });
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  areSavedScanSettingsAvailable_() {
+    return this.savedScanSettings_.scanners.length !== 0;
   },
 
   /**

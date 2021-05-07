@@ -110,7 +110,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  saveScanSettings(scanSettings) {}
+  saveScanSettings(scanSettings) {
+    this.methodCalled('saveScanSettings', scanSettings);
+  }
 
   /** @override */
   getScanSettings() {
