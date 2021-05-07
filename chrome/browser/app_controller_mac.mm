@@ -297,6 +297,18 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
   }
 }
 
+// Returns the profile path to be used at startup.
+base::FilePath GetStartupProfilePathMac(const base::FilePath& user_data_dir) {
+  // This profile path is used to open URLs passed in application:openFiles: and
+  // should not default to Guest when the profile picker is shown.
+  // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
+  // once the picker supports opening URLs.
+  return GetStartupProfilePath(user_data_dir,
+                               /*current_directory=*/base::FilePath(),
+                               *base::CommandLine::ForCurrentProcess(),
+                               /*ignore_profile_picker=*/true);
+}
+
 }  // namespace
 
 // Returns the last profile. This is extracted as a standalone function in order
@@ -307,20 +319,11 @@ Profile* GetLastProfileMac() {
     return nullptr;
 
   base::FilePath profile_path =
-      GetStartupProfilePath(profile_manager->user_data_dir(),
-                            /*current_directory=*/base::FilePath(),
-                            *base::CommandLine::ForCurrentProcess(),
-                            /*ignore_profile_picker=*/true);
-
+      GetStartupProfilePathMac(profile_manager->user_data_dir());
   // ProfileManager::GetProfile() is blocking if the profile was not loaded yet.
-  // TODO(https://1176734): Change this code to return nullptr when the profile
-  // is not loaded, and update all callers to handle this case.
+  // TODO(https://crbug.com/1176734): Change this code to return nullptr when
+  // the profile is not loaded, and update all callers to handle this case.
   base::ScopedAllowBlocking allow_blocking;
-
-  // lastProfile is used to open URLs passed in application:openFiles: and
-  // should not default to Guest, even if the profile picker is shown.
-  // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
-  // once the picker supports opening URLs.
   return profile_manager->GetProfile(profile_path);
 }
 
@@ -1037,8 +1040,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 // Checks with the TabRestoreService to see if there's anything there to
 // restore and returns YES if so.
 - (BOOL)canRestoreTab {
+  Profile* lastProfile = [self lastProfileIfLoaded];
+  if (!lastProfile)
+    return NO;
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile([self lastProfile]);
+      TabRestoreServiceFactory::GetForProfile(lastProfile);
   return service && !service->entries().empty();
 }
 
@@ -1476,11 +1482,32 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   [app registerServicesMenuSendTypes:types returnTypes:types];
 }
 
-// Return null if Chrome is not ready or there is no ProfileManager.
-- (Profile*)lastProfile {
+// Returns null if the profile is not loaded in memory.
+- (Profile*)lastProfileIfLoaded {
   // Return the profile of the last-used Browser, if available.
   if (_lastProfile)
     return _lastProfile;
+
+  if (![self isProfileReady])
+    return nullptr;
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return nullptr;
+
+  // GetProfileByPath() returns nullptr if the profile is not loaded.
+  return profile_manager->GetProfileByPath(
+      GetStartupProfilePathMac(profile_manager->user_data_dir()));
+}
+
+// Returns null if Chrome is not ready or there is no ProfileManager.
+// DEPRECATED: use lastProfileIfLoaded instead.
+// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// |-lastProfileIfLoaded|.
+- (Profile*)lastProfile {
+  Profile* lastLoadedProfile = [self lastProfileIfLoaded];
+  if (lastLoadedProfile)
+    return lastLoadedProfile;
 
   if (![self isProfileReady])
     return nullptr;

@@ -119,6 +119,11 @@ class TabMenuBridge;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;
+@property(readonly, nonatomic) Profile* lastProfileIfLoaded;
+
+// DEPRECATED: use lastProfileIfLoaded instead.
+// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
 
 // This method is called very early in application startup after the main menu
