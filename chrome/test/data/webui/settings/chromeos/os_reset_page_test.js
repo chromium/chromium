@@ -84,12 +84,10 @@ cr.define('settings_reset_page', function() {
 
       // Open powerwash dialog.
       assertTrue(!!resetPage);
-      resetPage.$.powerwash.click();
+      resetPage.$$('#powerwash').click();
       Polymer.dom.flush();
       const dialog = resetPage.$$('os-settings-powerwash-dialog');
-      assertTrue(!!dialog);
-      assertTrue(dialog.$.dialog.open);
-      assertTrue(!!dialog.$$('#powerwashContainer'));
+      assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
       const onDialogClosed = new Promise(function(resolve, reject) {
         dialog.addEventListener('close', function() {
           assertFalse(dialog.$.dialog.open);
@@ -102,6 +100,25 @@ cr.define('settings_reset_page', function() {
         onDialogClosed,
         resetPageBrowserProxy.whenCalled('onPowerwashDialogShow'),
       ]);
+    }
+
+    /**
+     * @param {boolean} shouldBeShowingESimWarning
+     */
+    function assertOpenDialogUIState(shouldBeShowingESimWarning) {
+      const dialog = resetPage.$$('os-settings-powerwash-dialog');
+      assertTrue(!!dialog);
+      assertTrue(dialog.$.dialog.open);
+
+      assertEquals(
+          !!dialog.$$('#powerwashContainer'), !shouldBeShowingESimWarning);
+      assertEquals(
+          !!dialog.$$('#powerwashContainer'), !shouldBeShowingESimWarning);
+      assertEquals(!!dialog.$$('#powerwash'), !shouldBeShowingESimWarning);
+
+      assertEquals(
+          !!dialog.$$('#profilesListContainer'), shouldBeShowingESimWarning);
+      assertEquals(!!dialog.$$('#continue'), shouldBeShowingESimWarning);
     }
 
     /**
@@ -136,12 +153,11 @@ cr.define('settings_reset_page', function() {
       init(/*updatedCellularActivationUi=*/ false);
 
       // Open powerwash dialog.
-      resetPage.$.powerwash.click();
+      resetPage.$$('#powerwash').click();
       Polymer.dom.flush();
       const dialog = resetPage.$$('os-settings-powerwash-dialog');
-      assertTrue(!!dialog);
-      assertTrue(!!dialog.$$('#powerwashContainer'));
-      dialog.$.powerwash.click();
+      assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
+      dialog.$$('#powerwash').click();
       const requestTpmFirmwareUpdate =
           await lifetimeBrowserProxy.whenCalled('factoryReset');
       assertFalse(requestTpmFirmwareUpdate);
@@ -155,7 +171,8 @@ cr.define('settings_reset_page', function() {
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
       assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertTrue(
-          await isDeepLinkFocusedForSettingId(resetPage.$.powerwash, '1600'),
+          await isDeepLinkFocusedForSettingId(
+              resetPage.$$('#powerwash'), '1600'),
           'Powerwash should be focused for settingId=1600.');
     });
 
@@ -167,7 +184,8 @@ cr.define('settings_reset_page', function() {
       loadTimeData.overrideValues({isDeepLinkingEnabled: false});
       assertFalse(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertFalse(
-          await isDeepLinkFocusedForSettingId(resetPage.$.powerwash, '1600'),
+          await isDeepLinkFocusedForSettingId(
+              resetPage.$$('#powerwash'), '1600'),
           'Powerwash should not be focused with flag disabled.');
     });
 
@@ -179,7 +197,8 @@ cr.define('settings_reset_page', function() {
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
       assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertFalse(
-          await isDeepLinkFocusedForSettingId(resetPage.$.powerwash, '1234'),
+          await isDeepLinkFocusedForSettingId(
+              resetPage.$$('#powerwash'), '1234'),
           'Powerwash should not be focused for settingId=1234.');
     });
 
@@ -215,14 +234,13 @@ cr.define('settings_reset_page', function() {
               chromeos.cellularSetup.mojom.ProfileState.kActive;
 
           // Click the powerwash button.
-          resetPage.$.powerwash.click();
+          resetPage.$$('#powerwash').click();
           await flushAsync();
 
           // The eSIM warning should be showing.
+          assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ true);
           const dialog = resetPage.$$('os-settings-powerwash-dialog');
-          assertTrue(!!dialog);
-          assertTrue(dialog.$.dialog.open);
-          assertFalse(!!dialog.$$('#powerwashContainer'));
+          assertEquals(dialog.$$('iron-list').items.length, 1);
         });
   });
 

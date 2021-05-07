@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":os_powerwash_dialog",
+    ":os_powerwash_dialog_esim_item",
     ":os_reset_browser_proxy",
     ":os_reset_page",
   ]
@@ -18,11 +19,20 @@ js_type_check("closure_compile_module") {
 
 js_library("os_powerwash_dialog") {
   deps = [
+    ":os_powerwash_dialog_esim_item",
     ":os_reset_browser_proxy",
     "..:metrics_recorder.m",
     "../..:lifetime_browser_proxy",
     "../localized_link:localized_link.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("os_powerwash_dialog_esim_item") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -48,6 +58,7 @@ js_library("os_reset_page") {
 html_to_js("web_components") {
   js_files = [
     "os_powerwash_dialog.js",
+    "os_powerwash_dialog_esim_item.js",
     "os_reset_page.js",
   ]
 }

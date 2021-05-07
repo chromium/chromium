@@ -8,9 +8,12 @@
  * from the user for a device reset (aka powerwash).
  */
 import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import '../localized_link/localized_link.m.js';
 import '../../settings_shared_css.js';
+import './os_powerwash_dialog_esim_item.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,6 +42,13 @@ Polymer({
         return [];
       },
     },
+
+    /** @private */
+    shouldShowESimWarning_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeShouldShowESimWarning_(installedESimProfiles)',
+    },
   },
 
   /** @override */
@@ -63,7 +73,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowESimWarning_() {
+  computeShouldShowESimWarning_() {
     return !!this.installedESimProfiles.length;
   },
 });

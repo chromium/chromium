@@ -3126,11 +3126,29 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_FACTORY_RESET_WARNING" desc="Warning text in the 'Factory Reset' window">
     A restart is required before your device can be reset with Powerwash. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING_TITLE" desc="Name of the 'Factory reset' window">
+    Remove eSIM profiles before Powerwash
+  </message>
+  <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING" desc="Warning text in the 'Factory Reset' window informing the user that the eSIM profiles they have installed won't be removed by a factory reset. Contains a url to the mobile data subpage.">
+    Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Mobile Settings<ph name="LINK_END">&lt;/a&gt;</ph> to manually remove these profiles.
+  </message>
+  <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_LIST_TITLE" desc="Title for the list showing installed eSIM profiles in the 'Factory Reset' window.">
+    Active profiles
+  </message>
+  <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_LIST_ITEM_TITLE" desc="Label for an eSIM profile shown in the 'Factory Reset' window displaying its name and provider.">
+    <ph name="NETWORK_NAME">$1<ex>My Verizon eSIM</ex></ph> - <ph name="SPAN_START">&lt;span id="providerName"&gt;</ph><ph name="CARRIER_NAME">$2<ex>Verizon Wireless</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING_CHECKBOX_LABEL" desc="Label for checkbox in the 'Factory Reset' window that confirms that the user is aware that the eSIM profiles they have installed won't be removed by a factory reset.">
+    I understand that installed eSIM profiles will not be removed by Powerwash
+  </message>
   <message name="IDS_SETTINGS_FACTORY_RESET_BUTTON_LABEL" desc="Label for the factory reset button.">
     Reset
   </message>
   <message name="IDS_SETTINGS_FACTORY_RESET_BUTTON_ROLE" desc="A label to be read aloud by screen readers when the Reset button is focused. This button initiates the device factory reset flow.">
     Reset Button
+  </message>
+  <message name="IDS_SETTINGS_FACTORY_CONTINUE_BUTTON_LABEL" desc="Label for the button that navigates from the eSIM warning to the 'Factory Reset' UI.">
+    Continue
   </message>
 
   <!-- Google Assistant Page (OS Settings)-->

@@ -48,6 +48,7 @@ import './os_printing_page/os_printing_page.js';
 import './os_privacy_page/os_privacy_page.m.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.m.js';
 import './os_reset_page/os_powerwash_dialog.js';
+import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_reset_page/os_reset_page.js';
 import './os_files_page/smb_shares_page.m.js';
 

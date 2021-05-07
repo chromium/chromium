@@ -1,27 +1,99 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  :host {
+    --cr-dialog-width: 400px;
+  }
+
+  :host cr-checkbox {
+    --cr-checkbox-label-color: var(--cr-secondary-text-color);
+    --cr-checkbox-label-padding-start: 12px;
+    --cr-checkbox-unchecked-box-color: #888888;
+  }
+
+  iron-list {
+    background-color: #E8EAED61;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  os-settings-powerwash-dialog-esim-item {
+    height: 32px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  #profilesListContainer {
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+
+  #profilesListTitle {
+    font-size: calc(14 / 13 * 100%);
+  }
+
+  #checkboxLabel {
+    margin-top: 16px;
+  }
+</style>
 <cr-dialog id="dialog" close-text="$i18n{close}"
     ignore-enter-key>
-  <div slot="title">$i18n{powerwashDialogTitle}</div>
-  <div slot="body">
-    <!-- TODO(crbug.com/1196511): UI still in progress. -->
-    <template is="dom-if"
-        if="[[shouldShowESimWarning_(installedESimProfiles)]]">
-
-    </template>
-    <template is="dom-if"
-        if="[[!shouldShowESimWarning_(installedESimProfiles)]]">
+  <template is="dom-if" if="[[shouldShowESimWarning_]]">
+    <div slot="title">$i18n{powerwashDialogESimWarningTitle}</div>
+    <div slot="body">
+      <!-- TODO(crbug.com/1196511): Add link to mobile settings. -->
+      <settings-localized-link
+          localized-string="$i18n{powerwashDialogESimWarning}"
+          link-url="#">
+      </settings-localized-link>
+      <div id="profilesListContainer">
+        <div id="profilesListTitle">
+          $i18n{powerwashDialogESimListTitle}
+        </div>
+        <iron-list items="[[installedESimProfiles]]"
+            scroll-target="profilesListContainer"
+            role="listbox">
+          <template>
+            <os-settings-powerwash-dialog-esim-item
+                profile="[[item]]"
+                tabindex="0"
+                role="option">
+            </os-powerwash-dialog-esim-item>
+          </template>
+        </iron-list>
+      </div>
+      <cr-checkbox>
+        <div id="checkboxLabel">
+          $i18n{powerwashDialogESimWarningCheckbox}
+        </div>
+      </cr-checkbox>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!shouldShowESimWarning_]]">
+    <div slot="title">$i18n{powerwashDialogTitle}</div>
+    <div slot="body">
       <div id="powerwashContainer">
         <settings-localized-link
           localized-string="$i18n{powerwashDialogExplanation}"
           link-url="$i18nRaw{powerwashLearnMoreUrl}">
         </settings-localized-link>
       </div>
-    </template>
-  </div>
+    </div>
+  </template>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelTap_"
         id="cancel">$i18n{cancel}</cr-button>
-    <cr-button class="action-button" id="powerwash"
-        on-click="onRestartTap_">$i18n{powerwashDialogButton}</cr-button>
+    <template is="dom-if" if="[[!shouldShowESimWarning_]]">
+      <cr-button class="action-button" id="powerwash"
+          on-click="onRestartTap_">
+        $i18n{powerwashDialogButton}
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[shouldShowESimWarning_]]">
+      <!-- TODO(crbug.com/1196511): Add continue button logic. -->
+      <cr-button class="action-button" id="continue"
+          hidden="[[!shouldShowESimWarning_]]">
+        $i18n{powerwashContinue}
+      </cr-button>
+    </template>
   </div>
 </cr-dialog>

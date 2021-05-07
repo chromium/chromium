@@ -308,6 +308,7 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/chromeos/os_printing_page/cups_settings_add_printer_dialog.html",
   "chrome/browser/resources/settings/chromeos/os_printing_page/os_printing_page.html",
   "chrome/browser/resources/settings/chromeos/os_reset_page/os_powerwash_dialog.html",
+  "chrome/browser/resources/settings/chromeos/os_reset_page/os_powerwash_dialog_esim_item.html",
   "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_browser_proxy.html",
   "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_page.html",
   "chrome/browser/resources/settings/chromeos/personalization_page/change_picture_browser_proxy.html",
