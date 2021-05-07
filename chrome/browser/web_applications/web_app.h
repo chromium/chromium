@@ -124,6 +124,10 @@ class WebApp {
 
   const apps::FileHandlers& file_handlers() const { return file_handlers_; }
 
+  bool file_handler_permission_blocked() const {
+    return file_handler_permission_blocked_;
+  }
+
   const base::Optional<apps::ShareTarget>& share_target() const {
     return share_target_;
   }
@@ -247,6 +251,7 @@ class WebApp {
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const base::Optional<std::string>& manifest_id);
+  void SetFileHandlerPermissionBlocked(bool permission_blocked);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -308,6 +313,7 @@ class WebApp {
   ClientData client_data_;
   GURL manifest_url_;
   base::Optional<std::string> manifest_id_;
+  bool file_handler_permission_blocked_ = false;
   // New fields must be added to:
   //  - |operator==|
   //  - |operator<<|

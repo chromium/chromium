@@ -114,10 +114,10 @@ void TestOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     std::unique_ptr<ShortcutInfo> old_shortcut,
-    bool file_handlers_need_os_update,
+    FileHandlerUpdateAction file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info) {
-  if (file_handlers_need_os_update)
-    num_update_file_handlers_calls_++;
+  if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)
+    ++num_update_file_handlers_calls_;
 }
 
 void TestOsIntegrationManager::SetFileHandlerManager(
