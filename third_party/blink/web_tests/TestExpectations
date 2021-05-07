@@ -6821,7 +6821,6 @@ crbug.com/1205133 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-ove
 crbug.com/1205133 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Pass Timeout ]
 crbug.com/1205020 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Pass Failure ]
 crbug.com/1205020 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Pass Failure ]
-crbug.com/1161155 [ Mac ] paint/invalidation/image/canvas-composite-repaint-by-all-imagesource.html [ Failure ]
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Timeout Pass ]
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
 crbug.com/1093041 fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Pass Failure ]
