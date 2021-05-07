@@ -3005,9 +3005,6 @@
         'mixins': [
           'enable_resultdb',
         ],
-        # TODO(crbug.com/1201887): Make this non-experimental once tests are
-        # stable.
-        'experiment_percentage': 100,
       },
     },
 
@@ -3031,9 +3028,6 @@
         'mixins': [
           'enable_resultdb',
         ],
-        # TODO(crbug.com/1201887): Make this non-experimental once tests are
-        # stable.
-        'experiment_percentage': 100,
       },
     },
 
@@ -6357,6 +6351,7 @@
 
     'gpu_fyi_linux_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
@@ -6403,6 +6398,8 @@
 
     'gpu_fyi_mac_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
