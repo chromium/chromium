@@ -17,20 +17,22 @@
 #endif
 
 DiscoverFeedService::DiscoverFeedService(ChromeBrowserState* browser_state) {
-  discover_feed_provider_ =
-      ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider();
-  identity_manager_ = IdentityManagerFactory::GetForBrowserState(browser_state);
-  if (identity_manager_) {
-    identity_manager_->AddObserver(this);
-  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
+  if (identity_manager)
+    identity_manager_observation_.Observe(identity_manager);
 
   discover_feed_metrics_recorder_ = [[DiscoverFeedMetricsRecorder alloc] init];
 
   DiscoverFeedConfiguration* discover_config =
       [[DiscoverFeedConfiguration alloc] init];
   discover_config.browserState = browser_state;
+  discover_config.authService =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  discover_config.prefService = browser_state->GetPrefs();
   discover_config.metricsRecorder = discover_feed_metrics_recorder_;
-  discover_feed_provider_->StartFeed(discover_config);
+  ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StartFeed(
+      discover_config);
 }
 
 DiscoverFeedService::~DiscoverFeedService() {}
@@ -41,14 +43,17 @@ DiscoverFeedService::GetDiscoverFeedMetricsRecorder() {
 }
 
 void DiscoverFeedService::Shutdown() {
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
+  identity_manager_observation_.Reset();
+
   // Stop the Discover feed to disconnects its services.
   ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
+
+  discover_feed_metrics_recorder_ = nil;
 }
 
 void DiscoverFeedService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  discover_feed_provider_->UpdateFeedForAccountChange();
+  ios::GetChromeBrowserProvider()
+      ->GetDiscoverFeedProvider()
+      ->UpdateFeedForAccountChange();
 }

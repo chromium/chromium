@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_SERVICE_H_
 #define IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_SERVICE_H_
 
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ChromeBrowserState;
 @class DiscoverFeedMetricsRecorder;
-class DiscoverFeedProvider;
 
 // A browser-context keyed service that is used to keep the Discover Feed data
 // up to date.
@@ -18,7 +18,7 @@ class DiscoverFeedService : public KeyedService,
                             public signin::IdentityManager::Observer {
  public:
   // Initializes the service.
-  DiscoverFeedService(ChromeBrowserState* browser_state);
+  explicit DiscoverFeedService(ChromeBrowserState* browser_state);
   ~DiscoverFeedService() override;
 
   // Returns the FeedMetricsRecorder to be used by the Feed, a single instance
@@ -33,14 +33,13 @@ class DiscoverFeedService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  // Identity manager to observe.
-  signin::IdentityManager* identity_manager_;
-
-  // Discover Feed provider to notify of changes.
-  DiscoverFeedProvider* discover_feed_provider_;
+  // Helper to track registration as an signin::IdentityManager::Observer.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Metrics recorder for the DiscoverFeed.
-  DiscoverFeedMetricsRecorder* discover_feed_metrics_recorder_;
+  __strong DiscoverFeedMetricsRecorder* discover_feed_metrics_recorder_ = nil;
 
   DISALLOW_COPY_AND_ASSIGN(DiscoverFeedService);
 };
