@@ -172,6 +172,81 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (override));
 };
 
+// Waiters ---------------------------------------------------------------------
+
+// A class capable of waiting until a layer has stopped animating.
+class LayerAnimationStoppedWaiter : public ui::LayerAnimationObserver {
+ public:
+  // Waits until the specified `layer`'s animation is stopped.
+  void Wait(ui::Layer* layer) {
+    if (!layer->GetAnimator()->is_animating())
+      return;
+
+    // Temporarily cache and observe `layer`'s animator.
+    layer_animator_ = layer->GetAnimator();
+    base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
+        layer_animator_observer{this};
+    layer_animator_observer.Observe(layer_animator_);
+
+    // Loop until the `layer`'s animation is stopped.
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+
+    // Reset.
+    layer_animator_ = nullptr;
+    wait_loop_.reset();
+  }
+
+ private:
+  // ui::LayerAnimationObserver:
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
+  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {}
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
+    if (!layer_animator_->is_animating())
+      wait_loop_->Quit();
+  }
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
+    if (!layer_animator_->is_animating())
+      wait_loop_->Quit();
+  }
+
+  ui::LayerAnimator* layer_animator_ = nullptr;
+  std::unique_ptr<base::RunLoop> wait_loop_;
+};
+
+// ViewVisibilityChangedWaiter -------------------------------------------------
+
+// A class capable of waiting until a view's visibility is changed.
+class ViewVisibilityChangedWaiter : public views::ViewObserver {
+ public:
+  // Waits until the specified `view`'s visibility is changed.
+  void Wait(views::View* view) {
+    // Temporarily observe `view`.
+    base::ScopedObservation<views::View, views::ViewObserver> observer{this};
+    observer.Observe(view);
+
+    // Loop until the `view`'s visibility is changed.
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+
+    // Reset.
+    wait_loop_.reset();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* view,
+                               views::View* starting_view) override {
+    wait_loop_->Quit();
+  }
+
+  std::unique_ptr<base::RunLoop> wait_loop_;
+};
+
 // TransformRecordingLayerDelegate ---------------------------------------------
 
 // A scoped `ui::LayerDelegate` which records information about transforms.
@@ -195,10 +270,14 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
   // Resets recorded information.
   void Reset() {
     const gfx::Transform& transform = layer_->transform();
+    did_animate_ = false;
     start_scale_ = end_scale_ = min_scale_ = max_scale_ = transform.Scale2d();
     start_translation_ = end_translation_ = min_translation_ =
         max_translation_ = transform.To2dTranslation();
   }
+
+  // Returns true if an animation occurred.
+  bool DidAnimate() const { return did_animate_; }
 
   // Returns true if a scale occurred.
   bool DidScale() const {
@@ -243,6 +322,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
   void OnLayerTransformed(const gfx::Transform& old_transform,
                           ui::PropertyChangeReason reason) override {
     const gfx::Transform& transform = layer_->transform();
+    did_animate_ |= reason == ui::PropertyChangeReason::FROM_ANIMATION;
     end_scale_ = transform.Scale2d();
     end_translation_ = transform.To2dTranslation();
     min_scale_.SetToMin(end_scale_);
@@ -254,6 +334,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
   ui::Layer* const layer_;
   ui::LayerDelegate* const layer_delegate_;
 
+  bool did_animate_ = false;
   gfx::Vector2dF start_scale_;
   gfx::Vector2dF start_translation_;
   gfx::Vector2dF end_scale_;
@@ -270,8 +351,7 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 class HoldingSpaceTrayTest : public AshTestBase {
  public:
-  HoldingSpaceTrayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  HoldingSpaceTrayTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -2413,7 +2493,7 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
 // Verifies that the holding space tray animates in and out as expected.
 TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Prior to session start, the tray should not be showing.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
@@ -2429,17 +2509,10 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   // animation.
   StartSession();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Gives it a small duration to let the session get changed. This duration is
-  // way smaller than the animation duration, so that the animation will not
-  // finish when this duration ends. The same for the other places below.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-
   EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
-
-  // Gives 3s duration to let the (if there is any) animation finish. The same
-  // for the other places below.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  EXPECT_TRUE(tray->layer()->transform().IsIdentity());
+  EXPECT_FALSE(transform_recorder.DidAnimate());
+  transform_recorder.Reset();
 
   // Pin a holding space item. Because the tray was already showing there
   // should be no change in tray visibility.
@@ -2448,18 +2521,21 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
   // Because there was no change in visibility, there should be no transform.
-  EXPECT_FALSE(transform_recorder.DidScale());
-  EXPECT_FALSE(transform_recorder.DidTranslate());
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(tray->layer()->transform().IsIdentity());
+  EXPECT_FALSE(transform_recorder.DidAnimate());
   transform_recorder.Reset();
 
   // Remove all holding space items. Because a holding space item was
   // previously pinned, the tray should animate out.
   RemoveAllItems();
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  ViewVisibilityChangedWaiter().Wait(tray);
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // The exit animation should be the default exit animation in which the tray
   // scales down and pivots about its center point.
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(transform_recorder.DidAnimate());
   EXPECT_TRUE(transform_recorder.ScaledFrom({1.f, 1.f}, {0.5f, 0.5f}));
   EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
   EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {11.f, 12.f}));
@@ -2470,10 +2546,11 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
-
   // The entry animation should be the bounce in animation in which the tray
   // translates in vertically with scaling (since it previously scaled out).
+  LayerAnimationStoppedWaiter().Wait(tray->layer());
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(transform_recorder.DidAnimate());
   EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
   EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
   EXPECT_TRUE(transform_recorder.TranslatedFrom({11.f, 12.f}, {0.f, 0.f}));
@@ -2484,11 +2561,13 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
   auto* session_controller =
       ash_test_helper()->test_session_controller_client();
   session_controller->LockScreen();
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  ViewVisibilityChangedWaiter().Wait(tray);
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // The exit animation should be the default exit animation in which the tray
   // scales down and pivots about its center point.
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(transform_recorder.DidAnimate());
   EXPECT_TRUE(transform_recorder.ScaledFrom({1.0f, 1.0f}, {0.5f, 0.5f}));
   EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
   EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {11.f, 12.f}));
@@ -2497,12 +2576,11 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
 
   // Unlock the screen. The tray should show up without animation.
   session_controller->UnlockScreen();
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-
-  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
-
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(tray->layer()->transform().IsIdentity());
+  EXPECT_FALSE(transform_recorder.DidAnimate());
+  transform_recorder.Reset();
 
   // Switch to another user with a populated model. The tray should show up
   // without animation.
@@ -2513,13 +2591,18 @@ TEST_F(HoldingSpaceTrayTest, EnterAndExitAnimations) {
                  base::FilePath("/tmp/fake3"));
   SwitchToSecondaryUser(kSecondaryUserId, /*client=*/nullptr,
                         &secondary_holding_space_model);
-
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
-
-  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
-
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // NOTE: When switching to the secondary user the tray will have briefly been
+  // hidden while the primary user's holding space model was detached until the
+  // secondary user's holding space model was attached. That said, the tray will
+  // have scaled out and must scale back in but should *not* bounce.
+  EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(transform_recorder.ScaledFrom({1.f, 1.f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {0.f, 0.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {11.f, 12.f}));
+  transform_recorder.Reset();
 
   // Clean up.
   UnregisterModelForUser(kSecondaryUserId);
