@@ -63,13 +63,14 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   private backgrounds_: NtpBackgroundData[]|null = null;
   private finalized_: boolean = false;
   private imageIsLoading_: boolean = false;
-  private metricsManager_: ModuleMetricsManager|null = null;
-  private ntpBackgroundProxy_: NtpBackgroundProxy|null = null;
+  private metricsManager_: ModuleMetricsManager;
+  private ntpBackgroundProxy_: NtpBackgroundProxy;
   private selectedBackground_: NtpBackgroundData|undefined;
-  indicatorModel: stepIndicatorModel;
+  indicatorModel?: stepIndicatorModel;
 
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+
     this.ntpBackgroundProxy_ = NtpBackgroundProxyImpl.getInstance();
     this.metricsManager_ =
         new ModuleMetricsManager(NtpBackgroundMetricsProxyImpl.getInstance());
@@ -120,7 +121,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   }
 
   private hasValidSelectedBackground_(): boolean {
-    return this.selectedBackground_.id > -1;
+    return this.selectedBackground_!.id > -1;
   }
 
   private isSelectedBackground_(background: NtpBackgroundData) {
@@ -128,14 +129,14 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   }
 
   private onSelectedBackgroundChange_() {
-    const id = this.selectedBackground_.id;
+    const id = this.selectedBackground_!.id;
     if (id > -1) {
       this.imageIsLoading_ = true;
-      const imageUrl = this.selectedBackground_.imageUrl;
+      const imageUrl = this.selectedBackground_!.imageUrl;
       const beforeLoadTime = window.performance.now();
       this.ntpBackgroundProxy_.preloadImage(imageUrl).then(
           () => {
-            if (this.selectedBackground_.id === id) {
+            if (this.selectedBackground_!.id === id) {
               this.imageIsLoading_ = false;
               this.$.backgroundPreview.classList.add('active');
               this.$.backgroundPreview.style.backgroundImage =
@@ -176,11 +177,11 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
 
   private onBackgroundKeyUp_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      this.changeFocus_(e.currentTarget, 1);
+      this.changeFocus_(e.currentTarget!, 1);
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      this.changeFocus_(e.currentTarget, -1);
+      this.changeFocus_(e.currentTarget!, -1);
     } else {
-      this.changeFocus_(e.currentTarget, 0);
+      this.changeFocus_(e.currentTarget!, 0);
     }
   }
 
@@ -191,7 +192,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
 
     // Reverse direction if RTL.
     const buttons =
-        this.shadowRoot.querySelectorAll<HTMLButtonElement>('.option');
+        this.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
     const targetIndex = Array.prototype.indexOf.call(buttons, element);
 
     const oldFocus = buttons[targetIndex];

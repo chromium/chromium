@@ -52,20 +52,19 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
     };
   }
 
-  private browserProxy_: NuxSetAsDefaultProxy|null = null;
+  private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
   private navigateToNextStep_: Function;
-  indicatorModel: stepIndicatorModel;
+  indicatorModel?: stepIndicatorModel;
 
   constructor() {
     super();
     this.navigateToNextStep_ = navigateToNextStep;
+    this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
   ready() {
     super.ready();
-
-    this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
 
     this.addWebUIListener(
         'browser-default-state-changed',

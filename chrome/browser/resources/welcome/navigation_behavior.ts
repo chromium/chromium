@@ -74,7 +74,7 @@ function notifyObservers() {
 
   // If currentRouteElement is not null, it means there was a new route.
   if (currentRouteElement) {
-    currentRouteElement.notifyRouteEnter();
+    (currentRouteElement as NavigationBehaviorInterface).notifyRouteEnter();
   }
 }
 
@@ -136,7 +136,9 @@ export const NavigationBehavior = {
     // Modules are only attached to DOM if they're for the current route, so
     // as long as the id of an element matches up to the current step, it
     // means that element is for the current route.
-    if (this.id === `step-${step}`) {
+    // TODO(crbug.com/1189595): Figure out the proper way of making TS
+    // understand that this class is an HTMLElement.
+    if ((this as any).id === `step-${step}`) {
       currentRouteElement = this;
       this.notifyRouteEnter();
     }
@@ -154,7 +156,9 @@ export const NavigationBehavior = {
 
   /** Called to update focus when progressing through the modules. */
   updateFocusForA11y(): void {
-    const header = this.$$('h1');
+    // TODO(crbug.com/1189595): Figure out the proper way of making TS
+    // understand that this class is also a LegacyElementMixin
+    const header = (this as any).$$('h1');
     if (header) {
       afterNextRender(this, () => header.focus());
     }

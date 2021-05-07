@@ -34,17 +34,14 @@ export class SigninViewElement extends SigninViewElementBase {
   }
 
   private finalized_: boolean = false;
-  private welcomeBrowserProxy_: WelcomeBrowserProxy|null = null;
-  private signinViewProxy_: SigninViewProxy|null = null;
+  private welcomeBrowserProxy_: WelcomeBrowserProxy;
+  private signinViewProxy_: SigninViewProxy;
 
   constructor() {
     super();
-  }
 
-  ready() {
-    super.ready();
-    this.welcomeBrowserProxy_ = WelcomeBrowserProxyImpl.getInstance();
     this.signinViewProxy_ = SigninViewProxyImpl.getInstance();
+    this.welcomeBrowserProxy_ = WelcomeBrowserProxyImpl.getInstance();
   }
 
   onRouteEnter() {

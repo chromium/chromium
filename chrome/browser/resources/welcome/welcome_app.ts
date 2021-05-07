@@ -90,14 +90,14 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
   }
 
   private onDefaultBrowserChange_() {
-    this.shadowRoot.querySelector('cr-toast').show();
+    this.shadowRoot!.querySelector('cr-toast')!.show();
   }
 
   onRouteChange(route: Routes, step: number) {
     const setStep = () => {
       // If the specified step doesn't exist, that means there are no more
       // steps. In that case, replace this page with NTP.
-      if (!this.shadowRoot.querySelector(`#step-${step}`)) {
+      if (!this.shadowRoot!.querySelector(`#step-${step}`)) {
         WelcomeBrowserProxyImpl.getInstance().goToNewTabPage(
             /* replace */ true);
       } else {  // Otherwise, go to the chosen step of that route.

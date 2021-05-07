@@ -28,13 +28,13 @@ export class OnboardingBackgroundElement extends PolymerElement {
     ];
     details.forEach(([id, width]) => {
       this.createLineAnimation_(
-          (this.shadowRoot.querySelector(`#${id}`) as HTMLElement), width);
+          (this.shadowRoot!.querySelector(`#${id}`) as HTMLElement), width);
     });
   }
 
   private createLineAnimation_(lineContainer: HTMLElement, width: number) {
-    const line = lineContainer.firstElementChild;
-    const lineFill = line.firstElementChild;
+    const line = lineContainer.firstElementChild as HTMLElement;
+    const lineFill = line.firstElementChild as HTMLElement;
     const pointOptions = {
       endDelay: 3250,
       fill: 'forwards' as FillMode,

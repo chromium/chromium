@@ -10,8 +10,10 @@ type bookmarkData = {
   url: string,
 };
 
+type AddBookmarkCallback = (node: chrome.bookmarks.BookmarkTreeNode) => void;
+
 export interface BookmarkProxy {
-  addBookmark(data: bookmarkData, callback: Function): void;
+  addBookmark(data: bookmarkData, callback: AddBookmarkCallback): void;
 
   /** @param id ID provided by callback when bookmark was added. */
   removeBookmark(id: string): void;
@@ -21,7 +23,7 @@ export interface BookmarkProxy {
 }
 
 export class BookmarkProxyImpl implements BookmarkProxy {
-  addBookmark(data: bookmarkData, callback) {
+  addBookmark(data: bookmarkData, callback: AddBookmarkCallback) {
     chrome.bookmarks.create(data, callback);
   }
 

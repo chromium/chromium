@@ -35,20 +35,18 @@ export class LandingViewElement extends LandingViewElementBase {
 
   static get properties() {
     return {
-      signinAllowed_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('signinAllowed'),
-      }
+      signinAllowed_: Boolean,
     };
   }
 
-  private landingViewProxy_: LandingViewProxy|null = null;
+  private landingViewProxy_: LandingViewProxy;
   private finalized_: boolean = false;
   private signinAllowed_: boolean;
 
-  ready() {
-    super.ready();
+  constructor() {
+    super();
     this.landingViewProxy_ = LandingViewProxyImpl.getInstance();
+    this.signinAllowed_ = loadTimeData.getBoolean('signinAllowed');
   }
 
   onRouteEnter() {

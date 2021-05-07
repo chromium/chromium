@@ -35,8 +35,8 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
     };
   }
 
-  model: stepIndicatorModel;
-  private dots_: undefined[];
+  model?: stepIndicatorModel;
+  private dots_?: undefined[];
 
   private computeLabel_(active: number, total: number): string {
     return this.i18n('stepsLabel', active + 1, total);
@@ -44,11 +44,11 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
 
   private computeDots_(): undefined[] {
     // If total is 1, show nothing.
-    return new Array(this.model.total > 1 ? this.model.total : 0);
+    return new Array(this.model!.total > 1 ? this.model!.total : 0);
   }
 
   private getActiveClass_(index: number): string {
-    return index === this.model.active ? 'active' : '';
+    return index === this.model!.active ? 'active' : '';
   }
 
   static get template() {

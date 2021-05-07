@@ -73,18 +73,18 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     };
   }
 
-  private appProxy_: GoogleAppProxy|null = null;
-  private metricsManager_: ModuleMetricsManager|null = null;
+  private appProxy_: GoogleAppProxy;
+  private metricsManager_: ModuleMetricsManager;
   private finalized_: boolean = false;
-  private bookmarkProxy_: BookmarkProxy|null = null;
-  private bookmarkBarManager_: BookmarkBarManager|null = null;
+  private bookmarkProxy_: BookmarkProxy;
+  private bookmarkBarManager_: BookmarkBarManager;
   private wasBookmarkBarShownOnInit_: boolean = false;
   private appList_: AppItem[]|null = null;
   private hasAppsSelected_: boolean = true;
-  indicatorModel: stepIndicatorModel;
+  indicatorModel?: stepIndicatorModel;
 
-  ready() {
-    super.ready();
+  constructor() {
+    super();
 
     this.appProxy_ = GoogleAppProxyImpl.getInstance();
     this.metricsManager_ =
@@ -125,7 +125,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
       direction *= -1;  // Reverse direction if RTL.
     }
 
-    const buttons = this.root.querySelectorAll('button');
+    const buttons = this.shadowRoot!.querySelectorAll('button');
     const targetIndex = Array.prototype.indexOf.call(buttons, element);
 
     const oldFocus = buttons[targetIndex];
@@ -198,9 +198,9 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
 
   private onAppKeyUp_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight') {
-      this.changeFocus_(e.currentTarget, 1);
+      this.changeFocus_(e.currentTarget!, 1);
     } else if (e.key === 'ArrowLeft') {
-      this.changeFocus_(e.currentTarget, -1);
+      this.changeFocus_(e.currentTarget!, -1);
     } else {
       (e.currentTarget as HTMLElement).classList.add(KEYBOARD_FOCUSED);
     }
@@ -210,9 +210,9 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     (e.currentTarget as HTMLElement).classList.remove(KEYBOARD_FOCUSED);
   }
 
-  private onGetStartedClicked_() {
+  private onNextClicked_() {
     this.finalized_ = true;
-    this.appList_.forEach(app => {
+    this.appList_!.forEach(app => {
       if (app.selected) {
         this.appProxy_.recordProviderSelected(app.id);
       }
@@ -274,7 +274,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
    */
   private updateHasAppsSelected_() {
     this.hasAppsSelected_ =
-        this.appList_ && this.appList_.some(a => a.selected);
+        !!this.appList_ && this.appList_.some(a => a.selected);
     if (!this.hasAppsSelected_) {
       this.bookmarkBarManager_.setShown(this.wasBookmarkBarShownOnInit_);
     }
