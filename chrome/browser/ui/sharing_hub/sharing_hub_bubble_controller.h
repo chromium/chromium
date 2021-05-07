@@ -16,6 +16,7 @@ class WebContents;
 namespace sharing_hub {
 
 class SharingHubBubbleView;
+struct SharingHubAction;
 
 // Controller component of the Sharing Hub dialog bubble.
 // Responsible for showing and hiding an owned bubble.
@@ -41,6 +42,13 @@ class SharingHubBubbleController
   // Returns true if the omnibox icon should be shown.
   bool ShouldOfferOmniboxIcon();
 
+  // Returns the list of Sharing Hub actions.
+  virtual std::vector<SharingHubAction> GetActions() const;
+
+  // Handles when the user clicks on a Sharing Hub action. If this is a first
+  // party action, executes the appropriate browser command. If this is a third
+  // party action, navigates to an external webpage.
+  virtual void OnActionSelected(int command_id, bool is_first_party);
   // Handler for when the bubble is closed.
   void OnBubbleClosed();
 

@@ -7547,6 +7547,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARING_HUB_TOOLTIP" desc="Tooltip for the Sharing Hub feature omnibox icon.">
         Share this page
       </message>
+      <message name="IDS_SHARING_HUB_COPY_LINK_LABEL" desc="The text label for the copy link button in the Sharing Hub dialog and app menu.">
+        Copy link
+      </message>
+      <message name="IDS_SHARING_HUB_SAVE_PAGE_LABEL" desc="The text label for the save page button in the Sharing Hub dialog and app menu.">
+        Save page as...
+      </message>
+      <message name="IDS_SHARING_HUB_MEDIA_ROUTER_LABEL" desc="The text label for the media router button in the Sharing Hub dialog and app menu.">
+        Cast...
+      </message>
 
       <!-- Clipboard History Menu feature. -->
       <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"

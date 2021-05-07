@@ -20,6 +20,8 @@ class WebContents;
 namespace sharing_hub {
 
 class SharingHubBubbleController;
+class SharingHubBubbleActionButton;
+struct SharingHubAction;
 
 // View component of the Sharing Hub bubble that allows users to share/save the
 // current page.
@@ -47,14 +49,19 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // Shows the bubble view.
   void Show(DisplayReason reason);
 
+  void OnActionSelected(SharingHubBubbleActionButton* button);
+
   const views::View* GetButtonContainerForTesting() const;
 
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
 
+  // Creates the scroll view.
+  void CreateScrollView();
+
   // Populates the scroll view containing sharing actions.
-  void PopulateScrollView();
+  void PopulateScrollView(const std::vector<SharingHubAction>& actions);
 
   // Resizes and potentially moves the bubble to fit the content's preferred
   // size.

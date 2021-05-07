@@ -4140,6 +4140,8 @@ static_library("ui") {
       "views/sharing/sharing_dialog_view.h",
       "views/sharing/sharing_icon_view.cc",
       "views/sharing/sharing_icon_view.h",
+      "views/sharing_hub/sharing_hub_bubble_action_button.cc",
+      "views/sharing_hub/sharing_hub_bubble_action_button.h",
       "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
       "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       "views/sharing_hub/sharing_hub_icon_view.cc",

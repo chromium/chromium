@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing_hub/sharing_hub_model.h"
+#include "chrome/browser/sharing_hub/sharing_hub_service.h"
+#include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
@@ -64,6 +68,33 @@ bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
   // TODO(1186845): Check enterprise policy
 
   return true;
+}
+
+std::vector<SharingHubAction> SharingHubBubbleController::GetActions() const {
+  SharingHubService* const service =
+      SharingHubServiceFactory::GetForProfile(GetProfile());
+  SharingHubModel* const model =
+      service ? service->GetSharingHubModel() : nullptr;
+
+  std::vector<SharingHubAction> actions;
+  if (model)
+    model->GetActionList(web_contents_, &actions);
+
+  return actions;
+}
+
+void SharingHubBubbleController::OnActionSelected(int command_id,
+                                                  bool is_first_party) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  // Can be null in tests.
+  if (!browser)
+    return;
+
+  if (is_first_party) {
+    chrome::ExecuteCommand(browser, command_id);
+  } else {
+    // TODO(1186833): execute 3p action
+  }
 }
 
 void SharingHubBubbleController::OnBubbleClosed() {
