@@ -8,14 +8,20 @@ dictionary BluetoothDataFilterInit {
   BufferSource mask;
 };
 
+dictionary BluetoothManufacturerDataFilterInit : BluetoothDataFilterInit {
+  required [EnforceRange] unsigned short companyIdentifier;
+};
+
+dictionary BluetoothServiceDataFilterInit : BluetoothDataFilterInit {
+  required BluetoothServiceUUID service;
+};
+
 dictionary BluetoothLEScanFilterInit {
   sequence<BluetoothServiceUUID> services;
   DOMString name;
   DOMString namePrefix;
-  // Maps unsigned shorts to BluetoothDataFilters.
-  object manufacturerData;
-  // Maps BluetoothServiceUUIDs to BluetoothDataFilters.
-  object serviceData;
+  sequence<BluetoothManufacturerDataFilterInit> manufacturerData;
+  sequence<BluetoothServiceDataFilterInit> serviceData;
 };
 
 dictionary RequestDeviceOptions {

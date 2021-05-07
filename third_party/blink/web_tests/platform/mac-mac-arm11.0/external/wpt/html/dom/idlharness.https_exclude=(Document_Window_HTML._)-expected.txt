@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1441 tests; 1410 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1418 tests; 1387 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -431,7 +431,6 @@ PASS CanvasRenderingContext2D interface: attribute canvas
 PASS CanvasRenderingContext2D interface: operation getContextAttributes()
 PASS CanvasRenderingContext2D interface: operation save()
 PASS CanvasRenderingContext2D interface: operation restore()
-PASS CanvasRenderingContext2D interface: operation reset()
 PASS CanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS CanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -478,9 +477,9 @@ PASS CanvasRenderingContext2D interface: operation measureText(DOMString)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS CanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
+PASS CanvasRenderingContext2D interface: operation createImageData(long, long)
 PASS CanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS CanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
+PASS CanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
 PASS CanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS CanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS CanvasRenderingContext2D interface: attribute lineWidth
@@ -494,12 +493,6 @@ PASS CanvasRenderingContext2D interface: attribute font
 PASS CanvasRenderingContext2D interface: attribute textAlign
 PASS CanvasRenderingContext2D interface: attribute textBaseline
 PASS CanvasRenderingContext2D interface: attribute direction
-PASS CanvasRenderingContext2D interface: attribute textLetterSpacing
-PASS CanvasRenderingContext2D interface: attribute textWordSpacing
-PASS CanvasRenderingContext2D interface: attribute fontKerning
-PASS CanvasRenderingContext2D interface: attribute fontStretch
-PASS CanvasRenderingContext2D interface: attribute fontVariantCaps
-PASS CanvasRenderingContext2D interface: attribute textRendering
 PASS CanvasRenderingContext2D interface: operation closePath()
 PASS CanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)
@@ -515,7 +508,6 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getContextAttributes()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "save()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "restore()" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "reset()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "scale(unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling scale(unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "rotate(unrestricted double)" with the proper type
@@ -592,12 +584,12 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(long, long, optional ImageDataSettings)" with the proper type
-PASS CanvasRenderingContext2D interface: calling createImageData(long, long, optional ImageDataSettings) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(long, long)" with the proper type
+PASS CanvasRenderingContext2D interface: calling createImageData(long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(ImageData)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createImageData(ImageData) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getImageData(long, long, long, long, optional ImageDataSettings)" with the proper type
-PASS CanvasRenderingContext2D interface: calling getImageData(long, long, long, long, optional ImageDataSettings) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getImageData(long, long, long, long)" with the proper type
+PASS CanvasRenderingContext2D interface: calling getImageData(long, long, long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "putImageData(ImageData, long, long)" with the proper type
 PASS CanvasRenderingContext2D interface: calling putImageData(ImageData, long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "putImageData(ImageData, long, long, long, long, long, long)" with the proper type
@@ -614,12 +606,6 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textAlign" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textBaseline" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "direction" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textLetterSpacing" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textWordSpacing" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontKerning" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontStretch" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontVariantCaps" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textRendering" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "closePath()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "moveTo(unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling moveTo(unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
@@ -678,13 +664,11 @@ PASS ImageData interface: existence and properties of interface prototype object
 PASS ImageData interface: attribute width
 PASS ImageData interface: attribute height
 PASS ImageData interface: attribute data
-PASS ImageData interface: attribute colorSpace
 PASS ImageData must be primary interface of new ImageData(10, 10)
 PASS Stringification of new ImageData(10, 10)
 PASS ImageData interface: new ImageData(10, 10) must inherit property "width" with the proper type
 PASS ImageData interface: new ImageData(10, 10) must inherit property "height" with the proper type
 FAIL ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type assert_inherits: property "data" found on object expected in prototype chain
-PASS ImageData interface: new ImageData(10, 10) must inherit property "colorSpace" with the proper type
 PASS Path2D interface: existence and properties of interface object
 PASS Path2D interface object length
 PASS Path2D interface object name
@@ -730,7 +714,6 @@ PASS OffscreenCanvasRenderingContext2D interface: operation commit()
 PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
-PASS OffscreenCanvasRenderingContext2D interface: operation reset()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -773,9 +756,9 @@ PASS OffscreenCanvasRenderingContext2D interface: operation measureText(DOMStrin
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
+PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
+PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: attribute lineWidth
@@ -789,12 +772,6 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
-PASS OffscreenCanvasRenderingContext2D interface: attribute textLetterSpacing
-PASS OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
-PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)

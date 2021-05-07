@@ -9,21 +9,14 @@ dictionary RTCInsertableStreams {
     WritableStream writable;
 };
 
-// New fields in RTCConfiguration
-partial dictionary RTCConfiguration {
-    boolean encodedInsertableStreams = false;
-};
-
 typedef (SFrameTransform or RTCRtpScriptTransform) RTCRtpTransform;
 
 // New methods for RTCRtpSender and RTCRtpReceiver
 partial interface RTCRtpSender {
-    RTCInsertableStreams createEncodedStreams();
     attribute RTCRtpTransform? transform;
 };
 
 partial interface RTCRtpReceiver {
-    RTCInsertableStreams createEncodedStreams();
     attribute RTCRtpTransform? transform;
 };
 

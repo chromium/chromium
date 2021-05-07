@@ -1,16 +1,11 @@
 # META: timeout=long
-import base64
+from base64 import decodebytes
 
 import pytest
-
-import six
 
 from tests.support.asserts import assert_dialog_handled, assert_error, assert_success
 from .printcmd import do_print, assert_pdf
 
-
-def decodebytes(s):
-    return base64.decodebytes(six.ensure_binary(s))
 
 @pytest.fixture
 def check_user_prompt_closed_without_exception(session, create_dialog, inline):
@@ -22,7 +17,7 @@ def check_user_prompt_closed_without_exception(session, create_dialog, inline):
         response = do_print(session, {})
         value = assert_success(response)
 
-        pdf = decodebytes(value)
+        pdf = decodebytes(value.encode())
         assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
 
         assert_pdf(pdf)

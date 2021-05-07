@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 50 tests; 33 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 tests; 39 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
+PASS Partial dictionary RTCConfiguration: original dictionary defined
+PASS Partial dictionary RTCConfiguration: member names are unique
 PASS Partial interface RTCRtpSender: original interface defined
 PASS Partial interface RTCRtpSender: member names are unique
 PASS Partial interface RTCRtpReceiver: original interface defined
@@ -46,9 +48,13 @@ FAIL RTCRtpScriptTransform interface object name assert_own_property: self does 
 FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
 FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
 FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
+PASS RTCRtpSender interface: operation createEncodedStreams()
 FAIL RTCRtpSender interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
+PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "createEncodedStreams()" with the proper type
 FAIL RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
+PASS RTCRtpReceiver interface: operation createEncodedStreams()
 FAIL RTCRtpReceiver interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
+PASS RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "createEncodedStreams()" with the proper type
 FAIL RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
 Harness: the test ran to completion.
 

@@ -1,12 +1,10 @@
-import os, sys, base64
+import os, sys
+from base64 import decodebytes
 
 from wptserve.utils import isomorphic_decode
 import importlib
 subresource = importlib.import_module("common.security-features.subresource.subresource")
 
-
-def decodebytes(s):
-    return base64.decodebytes(s)
 
 def generate_payload(request, server_data):
     data = (u'{"headers": %(headers)s}') % server_data

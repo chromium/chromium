@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 804 tests; 796 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 796 tests; 788 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -295,7 +295,6 @@ PASS ImageData interface: existence and properties of interface prototype object
 PASS ImageData interface: attribute width
 PASS ImageData interface: attribute height
 PASS ImageData interface: attribute data
-PASS ImageData interface: attribute colorSpace
 PASS Path2D interface: existence and properties of interface object
 PASS Path2D interface object length
 PASS Path2D interface object name
@@ -341,7 +340,6 @@ PASS OffscreenCanvasRenderingContext2D interface: operation commit()
 PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
-PASS OffscreenCanvasRenderingContext2D interface: operation reset()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -384,9 +382,9 @@ PASS OffscreenCanvasRenderingContext2D interface: operation measureText(DOMStrin
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
+PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
+PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: attribute lineWidth
@@ -400,12 +398,6 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
-PASS OffscreenCanvasRenderingContext2D interface: attribute textLetterSpacing
-PASS OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
-PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
-PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)

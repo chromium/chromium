@@ -480,7 +480,7 @@ FAIL subtest_476 assert_true: (device-width >= 1279px) should apply expected tru
 PASS subtest_477
 PASS subtest_478
 PASS subtest_479
-FAIL subtest_480 assert_true: all and (device-height = 1024px) should apply expected true got false
+FAIL subtest_480 assert_true: all and (device-height = 800px) should apply expected true got false
 PASS subtest_481
 PASS subtest_482
 PASS subtest_483
@@ -495,16 +495,16 @@ PASS subtest_491
 PASS subtest_492
 PASS subtest_493
 PASS subtest_494
-FAIL subtest_495 assert_true: (device-height <= 1024px) should apply expected true got false
-FAIL subtest_496 assert_true: (device-height >= 1024px) should apply expected true got false
+FAIL subtest_495 assert_true: (device-height <= 800px) should apply expected true got false
+FAIL subtest_496 assert_true: (device-height >= 800px) should apply expected true got false
 PASS subtest_497
 PASS subtest_498
-FAIL subtest_499 assert_true: (device-height < 1025px) should apply expected true got false
-FAIL subtest_500 assert_true: (device-height <= 1025px) should apply expected true got false
+FAIL subtest_499 assert_true: (device-height < 801px) should apply expected true got false
+FAIL subtest_500 assert_true: (device-height <= 801px) should apply expected true got false
 PASS subtest_501
 PASS subtest_502
-FAIL subtest_503 assert_true: (device-height > 1023px) should apply expected true got false
-FAIL subtest_504 assert_true: (device-height >= 1023px) should apply expected true got false
+FAIL subtest_503 assert_true: (device-height > 799px) should apply expected true got false
+FAIL subtest_504 assert_true: (device-height >= 799px) should apply expected true got false
 PASS subtest_505
 PASS subtest_506
 PASS subtest_507

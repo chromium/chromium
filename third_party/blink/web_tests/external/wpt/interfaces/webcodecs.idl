@@ -20,11 +20,11 @@ interface AudioDecoder {
 };
 
 dictionary AudioDecoderInit {
-  required AudioFrameOutputCallback output;
+  required AudioDataOutputCallback output;
   required WebCodecsErrorCallback error;
 };
 
-callback AudioFrameOutputCallback = undefined(AudioFrame output);
+callback AudioDataOutputCallback = undefined(AudioData output);
 
 [Exposed=(Window,DedicatedWorker)]
 interface VideoDecoder {
@@ -57,7 +57,7 @@ interface AudioEncoder {
   readonly attribute long encodeQueueSize;
 
   undefined configure(AudioEncoderConfig config);
-  undefined encode(AudioFrame frame);
+  undefined encode(AudioData data);
   Promise<undefined> flush();
   undefined reset();
   undefined close();
@@ -212,26 +212,49 @@ enum EncodedVideoChunkType {
 };
 
 [Exposed=(Window,DedicatedWorker)]
-interface AudioFrame {
-  constructor(AudioFrameInit init);
+interface AudioData {
+  constructor(AudioDataInit init);
+
+  readonly attribute AudioSampleFormat sampleFormat;
+  readonly attribute float sampleRate;
+  readonly attribute unsigned long numberOfFrames;
+  readonly attribute unsigned long numberOfChannels;
+  readonly attribute unsigned long allocationSize;
+  readonly attribute unsigned long long duration;
   readonly attribute unsigned long long timestamp;
-  readonly attribute AudioBuffer? buffer;
+
+  undefined copyTo([AllowShared] BufferSource destination, unsigned long planeNumber);
+  AudioData clone();
   undefined close();
 };
 
-dictionary AudioFrameInit {
+dictionary AudioDataInit {
+  required AudioSampleFormat sampleFormat;
+  required float sampleRate;
+  required unsigned long numberOfFrames;
+  required unsigned long numberOfChannels;
   required unsigned long long timestamp;
-  required AudioBuffer buffer;
+  required BufferSource data;
+};
+
+enum AudioSampleFormat {
+  "U8",
+  "S16",
+  "S32",
+  "FLT",
+  "S16P",
+  "S32P",
+  "FLTP",
 };
 
 [Exposed=(Window,DedicatedWorker)]
 interface VideoFrame {
-  constructor(ImageBitmap imageBitmap, optional VideoFrameInit frameInit = {});
-  constructor(PixelFormat pixelFormat, sequence<(Plane or PlaneInit)> planes,
-              optional VideoFrameInit frameInit = {});
+  constructor(CanvasImageSource image, optional VideoFrameInit init = {});
+  constructor(sequence<(Plane or PlaneInit)> planes,
+              VideoFramePlaneInit init);
 
   readonly attribute PixelFormat format;
-  readonly attribute FrozenArray<Plane> planes;
+  readonly attribute FrozenArray<Plane>? planes;
   readonly attribute unsigned long codedWidth;
   readonly attribute unsigned long codedHeight;
   readonly attribute unsigned long cropLeft;
@@ -243,17 +266,19 @@ interface VideoFrame {
   readonly attribute unsigned long long? duration;
   readonly attribute unsigned long long? timestamp;
 
-  undefined destroy();
   VideoFrame clone();
-
-  Promise<ImageBitmap> createImageBitmap(
-    optional ImageBitmapOptions options = {});
-
+  undefined close();
 };
 
 dictionary VideoFrameInit {
-  unsigned long codedWidth;
-  unsigned long codedHeight;
+  unsigned long long duration;
+  unsigned long long timestamp;
+};
+
+dictionary VideoFramePlaneInit {
+  required PixelFormat format;
+  required unsigned long codedWidth;
+  required unsigned long codedHeight;
   unsigned long cropLeft;
   unsigned long cropTop;
   unsigned long cropWidth;
@@ -281,4 +306,59 @@ dictionary PlaneInit {
 
 enum PixelFormat {
   "I420"
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface ImageDecoder {
+  constructor(ImageDecoderInit init);
+
+  readonly attribute boolean complete;
+  readonly attribute Promise<undefined> completed;
+  readonly attribute ImageTrackList tracks;
+
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options = {});
+  undefined reset();
+  undefined close();
+
+  static Promise<boolean> isTypeSupported(DOMString type);
+};
+
+typedef (BufferSource or ReadableStream) ImageBufferSource;
+dictionary ImageDecoderInit {
+  required DOMString type;
+  required ImageBufferSource data;
+  PremultiplyAlpha premultiplyAlpha = "default";
+  ColorSpaceConversion colorSpaceConversion = "default";
+  unsigned long desiredWidth;
+  unsigned long desiredHeight;
+  boolean preferAnimation;
+};
+
+dictionary ImageDecodeOptions {
+  unsigned long frameIndex = 0;
+  boolean completeFramesOnly = true;
+};
+
+dictionary ImageDecodeResult {
+  required VideoFrame image;
+  required boolean complete;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface ImageTrackList {
+  getter ImageTrack (unsigned long index);
+
+  readonly attribute Promise<undefined> ready;
+  readonly attribute unsigned long length;
+  readonly attribute long selectedIndex;
+  readonly attribute ImageTrack? selectedTrack;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface ImageTrack : EventTarget {
+  readonly attribute boolean animated;
+  readonly attribute unsigned long frameCount;
+  readonly attribute unrestricted float repetitionCount;
+  attribute EventHandler onchange;
+  attribute boolean selected;
 };

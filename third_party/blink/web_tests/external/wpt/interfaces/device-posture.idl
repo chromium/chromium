@@ -3,9 +3,9 @@
 // (https://github.com/w3c/webref)
 // Source: Device Posture API (https://w3c.github.io/device-posture/)
 
-[SecureContext]
-partial interface Screen {
-  [SameObject] readonly attribute DevicePosture posture;
+[SecureContext, Exposed=(Window)]
+partial interface Navigator {
+  [SameObject] readonly attribute DevicePosture devicePosture;
 };
 
 [SecureContext, Exposed=(Window)]
