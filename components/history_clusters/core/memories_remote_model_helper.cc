@@ -28,7 +28,7 @@ proto::GetClustersRequest CreateRequestProto(
     const std::vector<history::AnnotatedVisit>& visits,
     base::Optional<DebugLoggerCallback> debug_logger) {
   proto::GetClustersRequest request;
-  request.set_experiment_name(ExperimentNameForRemoteModelEndpoint());
+  request.set_experiment_name(kRemoteModelEndpointExperimentName.Get());
 
   base::ListValue debug_visits_list;
   for (auto& visit : visits) {
@@ -143,7 +143,7 @@ MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 void MemoriesRemoteModelHelper::GetMemories(
     MemoriesCallback callback,
     const std::vector<history::AnnotatedVisit>& visits) {
-  const GURL endpoint(RemoteModelEndpointForDebugging());
+  const GURL endpoint(RemoteModelEndpoint());
   if (!endpoint.is_valid() || visits.empty()) {
     std::move(callback).Run({});
     return;

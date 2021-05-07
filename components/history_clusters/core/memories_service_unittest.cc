@@ -548,7 +548,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDb) {
       {
           {
               kMemories,
-              {{"MemoriesStoreVisitsInHistoryDb", "true"}},
+              {{"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
           },
           {
               kRemoteModelForDebugging,
@@ -617,7 +617,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDbWithPendingRequest) {
       {
           {
               kMemories,
-              {{"MemoriesStoreVisitsInHistoryDb", "true"}},
+              {{"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
           },
           {
               kRemoteModelForDebugging,

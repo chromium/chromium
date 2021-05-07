@@ -114,14 +114,10 @@ MemoriesService::MemoriesService(
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
-  base::Optional<DebugLoggerCallback> debug_logger;
-  if (DebugLoggingEnabled()) {
-    debug_logger = base::BindRepeating(&MemoriesService::NotifyDebugMessage,
-                                       weak_ptr_factory_.GetWeakPtr());
-  }
-
   remote_model_helper_ = std::make_unique<MemoriesRemoteModelHelper>(
-      url_loader_factory, debug_logger);
+      url_loader_factory,
+      base::BindRepeating(&MemoriesService::NotifyDebugMessage,
+                          weak_ptr_factory_.GetWeakPtr()));
   remote_model_helper_weak_factory_ =
       std::make_unique<base::WeakPtrFactory<MemoriesRemoteModelHelper>>(
           remote_model_helper_.get());
@@ -140,8 +136,6 @@ void MemoriesService::RemoveObserver(Observer* obs) {
 }
 
 void MemoriesService::NotifyDebugMessage(const std::string& message) const {
-  DCHECK(DebugLoggingEnabled()) << "Callers must ensure logging is enabled.";
-
   for (Observer& obs : observers_) {
     obs.OnMemoriesDebugMessage(message);
   }
@@ -175,7 +169,7 @@ void MemoriesService::CompleteVisitContextAnnotationsIfReady(int64_t nav_id) {
       (visit_context_annotations.status.ukm_page_end_signals ||
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
     if (base::FeatureList::IsEnabled(kMemories)) {
-      if (StoreVisitsInHistoryDb())
+      if (kPersistContextAnnotationsInHistoryDb.Get())
         history_service_->AddAnnotatedVisit(
             {visit_context_annotations.visit_row.visit_id,
              visit_context_annotations.context_annotations,
@@ -211,9 +205,9 @@ void MemoriesService::QueryMemories(
                                               std::move(query_params)))
                          .Then(std::move(callback)));
 
-  if (StoreVisitsInHistoryDb()) {
+  if (kPersistContextAnnotationsInHistoryDb.Get()) {
     history_service_->GetAnnotatedVisits(
-        MaxVisitsToCluster(),
+        kMaxVisitsToCluster.Get(),
         base::BindOnce(
             // This echo callback is necessary to copy the |AnnotatedVisit|
             // refs.

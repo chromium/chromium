@@ -91,7 +91,7 @@ void MemoriesHandler::QueryMemories(
   auto result_callback =
       base::BindOnce(&MemoriesHandler::OnMemoriesQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
-  if (history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
+  if (history_clusters::RemoteModelEndpoint().is_valid()) {
     // Cancel pending queries, if any.
     query_task_tracker_.TryCancelAll();
     auto* memory_service =

@@ -56,8 +56,7 @@ class MemoriesService : public KeyedService {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  // Notifies the observers of a debug message being available. Caller is
-  // responsible for checking that logging is enabled before calling this.
+  // Notifies the observers of a debug message being available.
   void NotifyDebugMessage(const std::string& message) const;
 
   // TODO(manukh) |MemoriesService| should be responsible for constructing the
@@ -97,8 +96,8 @@ class MemoriesService : public KeyedService {
   friend class MemoriesServiceTestApi;
 
   // If the Memories flag is enabled, this contains all the visits in-memory
-  // during the Profile lifetime. If the "MemoriesStoreVisitsInHistoryDb" param
-  // is true, this will be empty.
+  // during the Profile lifetime. If the `kPersistContextAnnotationsInHistoryDb`
+  // param is true, this will be empty.
   // TODO(tommycli): Hide this better behind a new debug flag.
   std::vector<history::AnnotatedVisit> visits_;
 

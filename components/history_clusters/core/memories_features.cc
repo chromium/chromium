@@ -8,41 +8,36 @@
 
 namespace history_clusters {
 
-GURL RemoteModelEndpointForDebugging() {
-  return GURL(base::GetFieldTrialParamValueByFeature(
-      kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint"));
+namespace {
+
+const base::FeatureParam<std::string> kRemoteModelEndpoint{
+    &kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint", ""};
+
+}  // namespace
+
+GURL RemoteModelEndpoint() {
+  return GURL(kRemoteModelEndpoint.Get());
 }
 
-std::string ExperimentNameForRemoteModelEndpoint() {
-  return base::GetFieldTrialParamValueByFeature(
-      kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName");
-}
+const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName{
+    &kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName", ""};
 
-bool DebugLoggingEnabled() {
-  // Do debug logging if the kDebug feature is enabled. Additionally, remote
-  // endpoint for debugging users are implied to be in debug mode.
-  return base::FeatureList::IsEnabled(kDebug) ||
-         RemoteModelEndpointForDebugging().is_valid();
-}
+const base::FeatureParam<bool> kPersistContextAnnotationsInHistoryDb{
+    &kMemories, "MemoriesPersistContextAnnotationsInHistoryDb", false};
 
-bool StoreVisitsInHistoryDb() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kMemories, "MemoriesStoreVisitsInHistoryDb", false);
-}
+const base::FeatureParam<int> kMaxVisitsToCluster{
+    &kMemories, "MemoriesMaxVisitsToCluster", 10};
 
-int MaxVisitsToCluster() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kMemories, "MemoriesMaxVisitsToCluster", 10);
-}
+const base::FeatureParam<int> kMaxDaysToCluster{&kMemories,
+                                                "MemoriesMaxDaysToCluster", 9};
 
-// Enables the Chrome Memories history clustering feature.
+const base::FeatureParam<bool> kPersistClustersInHistoryDb{
+    &kMemories, "MemoriesPersistClustersInHistoryDb", false};
+
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables debug info; e.g. shows visit metadata on chrome://history entries.
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables using a remote model endpoint for Memories clustering for debugging
-// purposes. This should not be ever enabled in production.
 const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
