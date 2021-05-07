@@ -47,6 +47,7 @@ const char kSecureKey[] = "secure";
 const char kNetworkIsolationKeyKey[] = "network_isolation_key";
 const char kExpirationKey[] = "expiration";
 const char kTtlKey[] = "ttl";
+const char kPinnedKey[] = "pinned";
 const char kNetworkChangesKey[] = "network_changes";
 const char kNetErrorKey[] = "net_error";
 const char kAddressesKey[] = "addresses";
@@ -238,6 +239,7 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       hostnames_(entry.hostnames()),
       experimental_results_(entry.experimental_results()),
       source_(entry.source()),
+      pinned_(entry.pinned()),
       ttl_(entry.ttl()),
       expires_(now + ttl),
       network_changes_(network_changes) {}
@@ -361,6 +363,9 @@ base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
                             NetLog::TickCountToString(expires()));
     entry_dict.SetIntKey(kTtlKey, ttl().InMilliseconds());
     entry_dict.SetIntKey(kNetworkChangesKey, network_changes());
+    // The "pinned" status is meaningful only if "network_changes" is also
+    // preserved.
+    entry_dict.SetBoolKey(kPinnedKey, pinned());
   } else {
     // Convert expiration time in TimeTicks to Time for serialization, using a
     // string because base::Value doesn't handle 64-bit integers.
@@ -534,9 +539,12 @@ void HostCache::Set(const Key& key,
   if (caching_is_disabled())
     return;
 
+  bool preserve_pin = false;
   bool result_changed = false;
   auto it = entries_.find(key);
   if (it != entries_.end()) {
+    preserve_pin = HasActivePin(it->second);
+
     base::Optional<AddressListDeltaType> addresses_delta;
     if (entry.addresses() || it->second.addresses()) {
       if (entry.addresses() && it->second.addresses()) {
@@ -594,11 +602,18 @@ void HostCache::Set(const Key& key,
     entries_.erase(it);
   } else {
     result_changed = true;
-    if (size() == max_entries_)
-      EvictOneEntry(now);
+    // This loop almost always runs at most once, for total runtime
+    // O(max_entries_).  It only runs more than once if the cache was over-full
+    // due to pinned entries, and this is the first call to Set() after
+    // Invalidate().  The amortized cost remains O(size()) per call to Set().
+    while (size() >= max_entries_ && EvictOneEntry(now)) {
+    }
   }
 
   Entry entry_for_cache(entry, now, ttl, network_changes_);
+  if (preserve_pin)
+    entry_for_cache.set_pinned(true);
+
   entry_for_cache.PrepareForCacheInsertion();
   AddEntry(key, std::move(entry_for_cache));
 
@@ -607,10 +622,8 @@ void HostCache::Set(const Key& key,
 }
 
 void HostCache::AddEntry(const Key& key, Entry&& entry) {
-  DCHECK_GT(max_entries_, size());
   DCHECK_EQ(0u, entries_.count(key));
   entries_.emplace(key, std::move(entry));
-  DCHECK_GE(max_entries_, size());
 }
 
 void HostCache::Invalidate() {
@@ -878,19 +891,38 @@ std::unique_ptr<HostCache> HostCache::CreateDefaultCache() {
   return std::make_unique<HostCache>(kDefaultMaxEntries);
 }
 
-void HostCache::EvictOneEntry(base::TimeTicks now) {
+bool HostCache::EvictOneEntry(base::TimeTicks now) {
   DCHECK_LT(0u, entries_.size());
 
-  auto oldest_it = entries_.begin();
+  base::Optional<net::HostCache::EntryMap::iterator> oldest_it;
   for (auto it = entries_.begin(); it != entries_.end(); ++it) {
-    if ((it->second.expires() < oldest_it->second.expires()) &&
-        (it->second.IsStale(now, network_changes_) ||
-         !oldest_it->second.IsStale(now, network_changes_))) {
+    const Entry& entry = it->second;
+    if (HasActivePin(entry)) {
+      continue;
+    }
+
+    if (!oldest_it) {
+      oldest_it = it;
+      continue;
+    }
+
+    const Entry& oldest = (*oldest_it)->second;
+    if ((entry.expires() < oldest.expires()) &&
+        (entry.IsStale(now, network_changes_) ||
+         !oldest.IsStale(now, network_changes_))) {
       oldest_it = it;
     }
   }
 
-  entries_.erase(oldest_it);
+  if (oldest_it) {
+    entries_.erase(*oldest_it);
+    return true;
+  }
+  return false;
+}
+
+bool HostCache::HasActivePin(const Entry& entry) {
+  return entry.pinned() && entry.network_changes() == network_changes();
 }
 
 const HostCache::Key* HostCache::GetMatchingKey(

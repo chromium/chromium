@@ -168,6 +168,8 @@ class NET_EXPORT HostCache {
         base::Optional<std::vector<bool>> experimental_results) {
       experimental_results_ = std::move(experimental_results);
     }
+    bool pinned() const { return pinned_; }
+    void set_pinned(bool pinned) { pinned_ = pinned; }
 
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
@@ -263,6 +265,10 @@ class NET_EXPORT HostCache {
     base::Optional<std::vector<bool>> experimental_results_;
     // Where results were obtained (e.g. DNS lookup, hosts file, etc).
     Source source_ = SOURCE_UNKNOWN;
+    // If true, this entry cannot be evicted from the cache until after the next
+    // network change.  When a pinned Entry is replaced, HostCache will copy
+    // this flag to the replacement.
+    bool pinned_ = false;
     // TTL obtained from the nameserver. Negative if unknown.
     base::TimeDelta ttl_ = base::TimeDelta::FromSeconds(-1);
 
@@ -414,7 +420,10 @@ class NET_EXPORT HostCache {
   // Returns true if this HostCache can contain no entries.
   bool caching_is_disabled() const { return max_entries_ == 0; }
 
-  void EvictOneEntry(base::TimeTicks now);
+  // Returns true if an entry was removed.
+  bool EvictOneEntry(base::TimeTicks now);
+  // Helper to check if an Entry is currently pinned in the cache.
+  bool HasActivePin(const Entry& entry);
   // Helper to insert an Entry into the cache.
   void AddEntry(const Key& key, Entry&& entry);
 
