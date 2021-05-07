@@ -950,12 +950,15 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   PA_DCHECK(IsValidSlotSpan(slot_span));
   auto* root = FromSlotSpan(slot_span);
 
-  // TODO(bikineev): Change the first condition to LIKELY once PCScan is enabled
-  // by default.
-  if (UNLIKELY(root->IsQuarantineEnabled()) &&
-      LIKELY(!slot_span->bucket->is_direct_mapped())) {
-    PCScan::MoveToQuarantine(ptr, slot_span->bucket->slot_size);
-    return;
+  // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
+  // default.
+  if (UNLIKELY(root->IsQuarantineEnabled())) {
+    // PCScan safepoint. Call before potentially scheduling scanning task.
+    PCScan::JoinScanIfNeeded();
+    if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
+      PCScan::MoveToQuarantine(ptr, slot_span->bucket->slot_size);
+      return;
+    }
   }
 
   root->FreeNoHooksImmediate(ptr, slot_span);
