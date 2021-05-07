@@ -32,14 +32,10 @@ const uint16_t kGameUsageNumber = 0x05;
 const uint16_t kMultiAxisUsageNumber = 0x08;
 
 NSDictionary* DeviceMatching(uint32_t usage_page, uint32_t usage) {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:usage_page],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsagePageKey)),
-                                   [NSNumber numberWithUnsignedInt:usage],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsageKey)),
-                                   nil];
+  return @{
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsagePageKey)) : @(usage_page),
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsageKey)) : @(usage)
+  };
 }
 
 }  // namespace

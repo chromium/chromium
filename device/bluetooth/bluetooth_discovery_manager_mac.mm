@@ -25,7 +25,8 @@ class BluetoothDiscoveryManagerMacClassic;
   device::BluetoothDiscoveryManagerMacClassic* _manager;  // weak
 }
 
-- (id)initWithManager:(device::BluetoothDiscoveryManagerMacClassic*)manager;
+- (instancetype)initWithManager:
+    (device::BluetoothDiscoveryManagerMacClassic*)manager;
 
 @end
 
@@ -201,8 +202,8 @@ BluetoothDiscoveryManagerMac* BluetoothDiscoveryManagerMac::CreateClassic(
 
 @implementation BluetoothDeviceInquiryDelegate
 
-- (id)initWithManager:
-          (device::BluetoothDiscoveryManagerMacClassic*)manager {
+- (instancetype)initWithManager:
+    (device::BluetoothDiscoveryManagerMacClassic*)manager {
   if ((self = [super init]))
     _manager = manager;
 

@@ -655,13 +655,13 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   // https://developer.apple.com/documentation/corebluetooth/cbadvertisementdataserviceuuidskey
   BluetoothDevice::UUIDList advertised_uuids;
   NSArray* service_uuids =
-      [advertisement_data objectForKey:CBAdvertisementDataServiceUUIDsKey];
+      advertisement_data[CBAdvertisementDataServiceUUIDsKey];
   for (CBUUID* uuid in service_uuids) {
     advertised_uuids.push_back(
         BluetoothAdapterMac::BluetoothUUIDWithCBUUID(uuid));
   }
-  NSArray* overflow_service_uuids = [advertisement_data
-      objectForKey:CBAdvertisementDataOverflowServiceUUIDsKey];
+  NSArray* overflow_service_uuids =
+      advertisement_data[CBAdvertisementDataOverflowServiceUUIDsKey];
   for (CBUUID* uuid in overflow_service_uuids) {
     advertised_uuids.push_back(
         BluetoothAdapterMac::BluetoothUUIDWithCBUUID(uuid));
@@ -672,9 +672,9 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   // https://developer.apple.com/documentation/corebluetooth/cbadvertisementdataservicedatakey
   BluetoothDevice::ServiceDataMap service_data_map;
   NSDictionary* service_data =
-      [advertisement_data objectForKey:CBAdvertisementDataServiceDataKey];
+      advertisement_data[CBAdvertisementDataServiceDataKey];
   for (CBUUID* uuid in service_data) {
-    NSData* data = [service_data objectForKey:uuid];
+    NSData* data = service_data[uuid];
     const uint8_t* bytes = static_cast<const uint8_t*>([data bytes]);
     size_t length = [data length];
     service_data_map.emplace(BluetoothAdapterMac::BluetoothUUIDWithCBUUID(uuid),
@@ -690,7 +690,7 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   //
   BluetoothDevice::ManufacturerDataMap manufacturer_data_map;
   NSData* manufacturer_data =
-      [advertisement_data objectForKey:CBAdvertisementDataManufacturerDataKey];
+      advertisement_data[CBAdvertisementDataManufacturerDataKey];
   const uint8_t* bytes = static_cast<const uint8_t*>([manufacturer_data bytes]);
   size_t length = [manufacturer_data length];
   if (length > 1) {
@@ -704,13 +704,11 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   //  0xXX: -127 to +127 dBm"
   // Core Specification Supplement (CSS) v7, Part 1.5
   // https://developer.apple.com/documentation/corebluetooth/cbadvertisementdatatxpowerlevelkey
-  NSNumber* tx_power =
-      [advertisement_data objectForKey:CBAdvertisementDataTxPowerLevelKey];
+  NSNumber* tx_power = advertisement_data[CBAdvertisementDataTxPowerLevelKey];
   int8_t clamped_tx_power = BluetoothDevice::ClampPower([tx_power intValue]);
 
   // Get the Advertising name
-  NSString* local_name =
-      [advertisement_data objectForKey:CBAdvertisementDataLocalNameKey];
+  NSString* local_name = advertisement_data[CBAdvertisementDataLocalNameKey];
 
   for (auto& observer : observers_) {
     base::Optional<std::string> device_name_opt = device_mac->GetName();

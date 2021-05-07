@@ -60,9 +60,10 @@ class BluetoothLowEnergyCentralManagerBridge {
 
 @implementation BluetoothLowEnergyCentralManagerDelegate
 
-- (id)initWithDiscoveryManager:
-          (device::BluetoothLowEnergyDiscoveryManagerMac*)discovery_manager
-                    andAdapter:(device::BluetoothAdapterMac*)adapter {
+- (instancetype)initWithDiscoveryManager:
+                    (device::BluetoothLowEnergyDiscoveryManagerMac*)
+                        discovery_manager
+                              andAdapter:(device::BluetoothAdapterMac*)adapter {
   if ((self = [super init])) {
     _bridge = std::make_unique<device::BluetoothLowEnergyCentralManagerBridge>(
         discovery_manager, adapter);

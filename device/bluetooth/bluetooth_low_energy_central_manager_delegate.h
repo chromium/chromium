@@ -29,9 +29,10 @@ class BluetoothLowEnergyDiscoveryManagerMac;
   std::unique_ptr<device::BluetoothLowEnergyCentralManagerBridge> _bridge;
 }
 
-- (id)initWithDiscoveryManager:
-          (device::BluetoothLowEnergyDiscoveryManagerMac*)discovery_manager
-                    andAdapter:(device::BluetoothAdapterMac*)adapter;
+- (instancetype)initWithDiscoveryManager:
+                    (device::BluetoothLowEnergyDiscoveryManagerMac*)
+                        discovery_manager
+                              andAdapter:(device::BluetoothAdapterMac*)adapter;
 
 @end
 

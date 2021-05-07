@@ -61,27 +61,24 @@ scoped_nsobject<NSDictionary> CreateAdvertisementData(
       }]);
 
   if (name) {
-    [advertisement_data setObject:name forKey:CBAdvertisementDataLocalNameKey];
+    advertisement_data[CBAdvertisementDataLocalNameKey] = name;
   }
 
   if (uuids) {
-    [advertisement_data setObject:uuids
-                           forKey:CBAdvertisementDataServiceUUIDsKey];
+    advertisement_data[CBAdvertisementDataServiceUUIDsKey] = uuids;
   }
 
   if (service_data) {
-    [advertisement_data setObject:service_data
-                           forKey:CBAdvertisementDataServiceDataKey];
+    advertisement_data[CBAdvertisementDataServiceDataKey] = service_data;
   }
 
   if (service_data) {
-    [advertisement_data setObject:manufacturer_data
-                           forKey:CBAdvertisementDataManufacturerDataKey];
+    advertisement_data[CBAdvertisementDataManufacturerDataKey] =
+        manufacturer_data;
   }
 
   if (tx_power) {
-    [advertisement_data setObject:tx_power
-                           forKey:CBAdvertisementDataTxPowerLevelKey];
+    advertisement_data[CBAdvertisementDataTxPowerLevelKey] = tx_power;
   }
 
   return scoped_nsobject<NSDictionary>(advertisement_data,
@@ -623,7 +620,7 @@ void BluetoothTestMac::SimulateGattDescriptorReadNSStringMac(
 void BluetoothTestMac::SimulateGattDescriptorReadNSNumberMac(
     BluetoothRemoteGattDescriptor* descriptor,
     short value) {
-  NSNumber* number = [NSNumber numberWithShort:value];
+  NSNumber* number = @(value);
   [GetCBMockDescriptor(descriptor) simulateReadWithValue:number error:nil];
 }
 

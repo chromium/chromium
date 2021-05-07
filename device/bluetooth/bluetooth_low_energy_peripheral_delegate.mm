@@ -69,7 +69,7 @@ class BluetoothLowEnergyPeripheralBridge {
 
 @implementation BluetoothLowEnergyPeripheralDelegate
 
-- (id)initWithBluetoothLowEnergyDeviceMac:
+- (instancetype)initWithBluetoothLowEnergyDeviceMac:
     (device::BluetoothLowEnergyDeviceMac*)device_mac {
   if ((self = [super init])) {
     _bridge = std::make_unique<device::BluetoothLowEnergyPeripheralBridge>(

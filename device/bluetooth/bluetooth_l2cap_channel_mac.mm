@@ -18,13 +18,13 @@
   device::BluetoothL2capChannelMac* _channel;  // weak
 }
 
-- (id)initWithChannel:(device::BluetoothL2capChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel;
 
 @end
 
 @implementation BluetoothL2capChannelDelegate
 
-- (id)initWithChannel:(device::BluetoothL2capChannelMac*)channel {
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel {
   if ((self = [super init]))
     _channel = channel;
 

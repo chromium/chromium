@@ -46,10 +46,10 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   std::unique_ptr<device::BluetoothLowEnergyPeripheralManagerBridge> _bridge;
 }
 
-- (id)initWithAdvertisementManager:
-          (device::BluetoothLowEnergyAdvertisementManagerMac*)
-              advertisementManager
-                        andAdapter:(device::BluetoothAdapterMac*)adapter {
+- (instancetype)
+    initWithAdvertisementManager:
+        (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager
+                      andAdapter:(device::BluetoothAdapterMac*)adapter {
   if ((self = [super init])) {
     _bridge =
         std::make_unique<device::BluetoothLowEnergyPeripheralManagerBridge>(

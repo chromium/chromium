@@ -27,7 +27,7 @@ class BluetoothLowEnergyPeripheralBridge;
   std::unique_ptr<device::BluetoothLowEnergyPeripheralBridge> _bridge;
 }
 
-- (id)initWithBluetoothLowEnergyDeviceMac:
+- (instancetype)initWithBluetoothLowEnergyDeviceMac:
     (device::BluetoothLowEnergyDeviceMac*)device_mac;
 
 @end

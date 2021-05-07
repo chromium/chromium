@@ -18,13 +18,13 @@
   device::BluetoothRfcommChannelMac* _channel;  // weak
 }
 
-- (id)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;
 
 @end
 
 @implementation BluetoothRfcommChannelDelegate
 
-- (id)initWithChannel:(device::BluetoothRfcommChannelMac*)channel {
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel {
   if ((self = [super init]))
     _channel = channel;
 

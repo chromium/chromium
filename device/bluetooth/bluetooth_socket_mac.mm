@@ -50,20 +50,22 @@ using device::BluetoothSocket;
   IOBluetoothDevice* _device;  // weak
 }
 
-- (id)initWithSocket:(scoped_refptr<device::BluetoothSocketMac>)socket
-              device:(IOBluetoothDevice*)device
-    success_callback:(base::OnceClosure)success_callback
-      error_callback:(BluetoothSocket::ErrorCompletionCallback)error_callback;
+- (instancetype)initWithSocket:(scoped_refptr<device::BluetoothSocketMac>)socket
+                        device:(IOBluetoothDevice*)device
+              success_callback:(base::OnceClosure)success_callback
+                error_callback:
+                    (BluetoothSocket::ErrorCompletionCallback)error_callback;
 - (void)sdpQueryComplete:(IOBluetoothDevice*)device status:(IOReturn)status;
 
 @end
 
 @implementation SDPQueryListener
 
-- (id)initWithSocket:(scoped_refptr<device::BluetoothSocketMac>)socket
-              device:(IOBluetoothDevice*)device
-    success_callback:(base::OnceClosure)success_callback
-      error_callback:(BluetoothSocket::ErrorCompletionCallback)error_callback {
+- (instancetype)initWithSocket:(scoped_refptr<device::BluetoothSocketMac>)socket
+                        device:(IOBluetoothDevice*)device
+              success_callback:(base::OnceClosure)success_callback
+                error_callback:
+                    (BluetoothSocket::ErrorCompletionCallback)error_callback {
   if ((self = [super init])) {
     _socket = socket;
     _device = device;
@@ -94,8 +96,8 @@ using device::BluetoothSocket;
   IOBluetoothUserNotification* _rfcommNewChannelNotification;  // weak
 }
 
-- (id)initWithSocket:(device::BluetoothSocketMac*)socket
-           channelID:(BluetoothRFCOMMChannelID)channelID;
+- (instancetype)initWithSocket:(device::BluetoothSocketMac*)socket
+                     channelID:(BluetoothRFCOMMChannelID)channelID;
 - (void)rfcommChannelOpened:(IOBluetoothUserNotification*)notification
                     channel:(IOBluetoothRFCOMMChannel*)rfcommChannel;
 
@@ -103,8 +105,8 @@ using device::BluetoothSocket;
 
 @implementation BluetoothRfcommConnectionListener
 
-- (id)initWithSocket:(device::BluetoothSocketMac*)socket
-           channelID:(BluetoothRFCOMMChannelID)channelID {
+- (instancetype)initWithSocket:(device::BluetoothSocketMac*)socket
+                     channelID:(BluetoothRFCOMMChannelID)channelID {
   if ((self = [super init])) {
     _socket = socket;
 
@@ -156,8 +158,8 @@ using device::BluetoothSocket;
   IOBluetoothUserNotification* _l2capNewChannelNotification;  // weak
 }
 
-- (id)initWithSocket:(device::BluetoothSocketMac*)socket
-                 psm:(BluetoothL2CAPPSM)psm;
+- (instancetype)initWithSocket:(device::BluetoothSocketMac*)socket
+                           psm:(BluetoothL2CAPPSM)psm;
 - (void)l2capChannelOpened:(IOBluetoothUserNotification*)notification
                    channel:(IOBluetoothL2CAPChannel*)l2capChannel;
 
@@ -165,8 +167,8 @@ using device::BluetoothSocket;
 
 @implementation BluetoothL2capConnectionListener
 
-- (id)initWithSocket:(device::BluetoothSocketMac*)socket
-                 psm:(BluetoothL2CAPPSM)psm {
+- (instancetype)initWithSocket:(device::BluetoothSocketMac*)socket
+                           psm:(BluetoothL2CAPPSM)psm {
   if ((self = [super init])) {
     _socket = socket;
 
@@ -257,18 +259,17 @@ NSDictionary* BuildServiceDefinition(const BluetoothUUID& uuid,
     const int kServiceNameKey =
         kEnglishLanguageBase + kBluetoothSDPAttributeIdentifierServiceName;
     NSString* service_name = base::SysUTF8ToNSString(*name);
-    [service_definition setObject:service_name
-                           forKey:IntToNSString(kServiceNameKey)];
+    service_definition[IntToNSString(kServiceNameKey)] = service_name;
   }
 
   const int kUUIDsKey = kBluetoothSDPAttributeIdentifierServiceClassIDList;
   NSArray* uuids = @[GetIOBluetoothSDPUUID(uuid)];
-  [service_definition setObject:uuids forKey:IntToNSString(kUUIDsKey)];
+  service_definition[IntToNSString(kUUIDsKey)] = uuids;
 
   const int kProtocolDefinitionsKey =
       kBluetoothSDPAttributeIdentifierProtocolDescriptorList;
-  [service_definition setObject:protocol_definition
-                         forKey:IntToNSString(kProtocolDefinitionsKey)];
+  service_definition[IntToNSString(kProtocolDefinitionsKey)] =
+      protocol_definition;
 
   return service_definition;
 }
