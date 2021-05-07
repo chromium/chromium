@@ -22,7 +22,6 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
     const IntPoint& offset)
     : DisplayItem(client,
                   type,
-                  sizeof(*this),
                   IntRect(offset, IntSize(layer->bounds()))),
       layer_(std::move(layer)) {
   DCHECK(IsForeignLayerType(type));

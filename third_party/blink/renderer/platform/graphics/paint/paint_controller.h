@@ -15,7 +15,6 @@
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/graphics/contiguous_container.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -132,15 +131,6 @@ class PLATFORM_EXPORT PaintController {
 
   template <typename DisplayItemClass, typename... Args>
   void CreateAndAppend(Args&&... args) {
-    static_assert(WTF::IsSubclass<DisplayItemClass, DisplayItem>::value,
-                  "Can only createAndAppend subclasses of DisplayItem.");
-    static_assert(
-        sizeof(DisplayItemClass) <= kMaximumDisplayItemSize,
-        "DisplayItem subclass is larger than kMaximumDisplayItemSize.");
-    static_assert(kDisplayItemAlignment % alignof(DisplayItemClass) == 0,
-                  "DisplayItem subclass alignment is not a factor of "
-                  "kDisplayItemAlignment.");
-
     DisplayItemClass& display_item =
         new_paint_artifact_->GetDisplayItemList()
             .AllocateAndConstruct<DisplayItemClass>(

@@ -7,7 +7,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/graphics/contiguous_container.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -157,14 +156,12 @@ class PLATFORM_EXPORT DisplayItem {
   // later paint cycles when |client| may have been destroyed.
   DisplayItem(const DisplayItemClient& client,
               Type type,
-              wtf_size_t derived_size,
               const IntRect& visual_rect,
               bool draws_content = false)
       : client_(&client),
         visual_rect_(visual_rect),
         fragment_(0),
         type_(type),
-        derived_size_(derived_size),
         raster_effect_outset_(
             static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
         draws_content_(draws_content),
@@ -172,10 +169,6 @@ class PLATFORM_EXPORT DisplayItem {
         is_tombstone_(false),
         known_to_be_opaque_is_set_(false),
         known_to_be_opaque_(false) {
-    // |derived_size| must fit in |derived_size_|.
-    // If it doesn't, enlarge |derived_size_| and fix this assert.
-    SECURITY_DCHECK(derived_size == derived_size_);
-    SECURITY_DCHECK(derived_size >= sizeof(*this));
     DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
               GetRasterEffectOutset());
   }
@@ -213,12 +206,6 @@ class PLATFORM_EXPORT DisplayItem {
   }
 
   Type GetType() const { return static_cast<Type>(type_); }
-
-  // Size of this object in memory, used to move it with memcpy.
-  // This is not sizeof(*this), because it needs to account for the size of
-  // the derived class (i.e. runtime type). Derived classes are expected to
-  // supply this to the DisplayItem constructor.
-  wtf_size_t DerivedSize() const { return derived_size_; }
 
   // The fragment is part of the id, to uniquely identify display items in
   // different fragments for the same client and type.
@@ -264,7 +251,7 @@ class PLATFORM_EXPORT DisplayItem {
     // Failure of this DCHECK would cause bad casts in subclasses.
     SECURITY_CHECK(!is_tombstone_);
     return client_ == other.client_ && type_ == other.type_ &&
-           fragment_ == other.fragment_ && derived_size_ == other.derived_size_;
+           fragment_ == other.fragment_;
   }
 
   // True if this DisplayItem is the tombstone/"dead display item" as part of
@@ -281,16 +268,14 @@ class PLATFORM_EXPORT DisplayItem {
 #endif
 
  private:
-  template <typename T, wtf_size_t alignment>
-  friend class ContiguousContainer;
   friend class DisplayItemList;
 
-  // The default DisplayItem constructor is only used by ContiguousContainer::
-  // AppendByMoving() where a tombstone DisplayItem is constructed at the source
-  // location. Only set draws_content_ to false and is_tombstone_ to true,
-  // leaving other fields as-is so that we can get their original values.
-  // |visual_rect_| and |raster_effect_outset_| are special, see
-  // DisplayItemList::AppendByMoving().
+  // The default DisplayItem constructor is only used by DisplayItemList::
+  // AppendByMoving() and ReplaceLastByMoving() where a tombstone DisplayItem is
+  // constructed at the source location. Only set draws_content_ to false and
+  // is_tombstone_ to true, leaving other fields as-is so that we can get their
+  // original values. |visual_rect_| and |raster_effect_outset_| are special,
+  // see DisplayItemList::AppendByMoving().
   DisplayItem() : draws_content_(false), is_tombstone_(true) {}
 
   const DisplayItemClient* client_;
@@ -299,7 +284,6 @@ class PLATFORM_EXPORT DisplayItem {
   static_assert(kTypeLast < (1 << 8),
                 "DisplayItem::Type should fit in uint8_t");
   unsigned type_ : 8;
-  unsigned derived_size_ : 8;  // size of the actual derived class
   unsigned raster_effect_outset_ : 2;
   unsigned draws_content_ : 1;
   unsigned is_cacheable_ : 1;
