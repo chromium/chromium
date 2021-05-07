@@ -234,7 +234,7 @@ class OsIntegrationManager {
                                DeleteShortcutsCallback callback);
   virtual void UnregisterFileHandlers(const AppId& app_id,
                                       std::unique_ptr<ShortcutInfo> info,
-                                      base::OnceCallback<void()> callback);
+                                      base::OnceCallback<void(bool)> callback);
   virtual void UnregisterProtocolHandlers(const AppId& app_id);
   virtual void UnregisterUrlHandlers(const AppId& app_id);
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
