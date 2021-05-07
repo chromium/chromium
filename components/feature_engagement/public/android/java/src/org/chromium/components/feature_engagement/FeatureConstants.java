@@ -234,7 +234,7 @@ public @interface FeatureConstants {
     /**
      * An IPH feature to inform users that installing a PWA is an option.
      */
-    String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailable";
+    String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailableFeature";
 
     /**
      * An IPH feature to inform about changing permissions in PageInfo.

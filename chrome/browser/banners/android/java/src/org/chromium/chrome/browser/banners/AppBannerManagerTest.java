@@ -453,6 +453,7 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
+    @CommandLineFlags.Add({"disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
     public void testAppInstalledEventModalWebAppBannerBrowserTab() throws Exception {
         // Sets the overridden factory to observer splash screen update.
         final TestDataStorageFactory dataStorageFactory = new TestDataStorageFactory();
@@ -847,8 +848,10 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
-    public void testAppInstalledEventBottomSheet() throws Exception {
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET,
+            "disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
+    public void
+    testAppInstalledEventBottomSheet() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
