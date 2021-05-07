@@ -8,10 +8,13 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/web_apps_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -31,40 +34,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/services/app_service/public/cpp/share_target.h"
-#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
-
-namespace {
-
-// Only supporting important permissions for now.
-const ContentSettingsType kSupportedPermissionTypes[] = {
-    ContentSettingsType::MEDIASTREAM_MIC,
-    ContentSettingsType::MEDIASTREAM_CAMERA,
-    ContentSettingsType::GEOLOCATION,
-    ContentSettingsType::NOTIFICATIONS,
-};
-
-apps::mojom::InstallSource GetHighestPriorityInstallSource(
-    const web_app::WebApp* web_app) {
-  switch (web_app->GetHighestPrioritySource()) {
-    case web_app::Source::kSystem:
-      return apps::mojom::InstallSource::kSystem;
-    case web_app::Source::kPolicy:
-      return apps::mojom::InstallSource::kPolicy;
-    case web_app::Source::kWebAppStore:
-      return apps::mojom::InstallSource::kUser;
-    case web_app::Source::kSync:
-      return apps::mojom::InstallSource::kUser;
-    case web_app::Source::kDefault:
-      return apps::mojom::InstallSource::kDefault;
-  }
-}
-
-}  // namespace
 
 namespace apps {
 
@@ -125,33 +98,8 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   // TODO(loyso): Plumb uninstall source (reason) here.
   app->readiness = apps::mojom::Readiness::kUninstalledByUser;
 
-  SetShowInFields(app, web_app);
+  apps_util::SetWebAppShowInFields(app, web_app);
   Publish(std::move(app), subscribers_);
-}
-
-apps::mojom::AppPtr WebAppsBase::ConvertImpl(const web_app::WebApp* web_app,
-                                             apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      app_type_, web_app->app_id(), readiness, web_app->name(),
-      GetHighestPriorityInstallSource(web_app));
-
-  app->description = web_app->description();
-  app->additional_search_terms = web_app->additional_search_terms();
-  app->last_launch_time = web_app->last_launch_time();
-  app->install_time = web_app->install_time();
-
-  // Web App's publisher_id the start url.
-  app->publisher_id = web_app->start_url().spec();
-
-  // app->version is left empty here.
-  PopulatePermissions(web_app, &app->permissions);
-
-  SetShowInFields(app, web_app);
-
-  // Get the intent filters for PWAs.
-  apps_util::PopulateWebAppIntentFilters(*web_app, app->intent_filters);
-
-  return app;
 }
 
 IconEffects WebAppsBase::GetIconEffects(const web_app::WebApp* web_app) {
@@ -361,7 +309,7 @@ void WebAppsBase::SetPermission(const std::string& app_id,
 
   ContentSettingsType permission_type =
       static_cast<ContentSettingsType>(permission->permission_id);
-  if (!base::Contains(kSupportedPermissionTypes, permission_type)) {
+  if (!apps_util::IsSupportedWebAppPermissionType(permission_type)) {
     return;
   }
 
@@ -404,7 +352,7 @@ void WebAppsBase::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   // If content_type is not one of the supported permissions, do nothing.
-  if (!base::Contains(kSupportedPermissionTypes, content_type)) {
+  if (!apps_util::IsSupportedWebAppPermissionType(content_type)) {
     return;
   }
 
@@ -424,7 +372,8 @@ void WebAppsBase::OnContentSettingChanged(
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = app_type_;
       app->app_id = web_app.app_id();
-      PopulatePermissions(&web_app, &app->permissions);
+      apps_util::PopulateWebAppPermissions(profile_, &web_app,
+                                           &app->permissions);
 
       Publish(std::move(app), subscribers_);
     }
@@ -469,73 +418,6 @@ void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
   Publish(std::move(app), subscribers_);
 }
 
-void WebAppsBase::SetShowInFields(apps::mojom::AppPtr& app,
-                                  const web_app::WebApp* web_app) {
-  if (web_app->chromeos_data().has_value()) {
-    auto& chromeos_data = web_app->chromeos_data().value();
-    app->show_in_launcher = chromeos_data.show_in_launcher
-                                ? apps::mojom::OptionalBool::kTrue
-                                : apps::mojom::OptionalBool::kFalse;
-    app->show_in_shelf = app->show_in_search =
-        chromeos_data.show_in_search ? apps::mojom::OptionalBool::kTrue
-                                     : apps::mojom::OptionalBool::kFalse;
-    app->show_in_management = chromeos_data.show_in_management
-                                  ? apps::mojom::OptionalBool::kTrue
-                                  : apps::mojom::OptionalBool::kFalse;
-    return;
-  }
-
-  // Show the app everywhere by default.
-  auto show = apps::mojom::OptionalBool::kTrue;
-  app->show_in_launcher = show;
-  app->show_in_shelf = show;
-  app->show_in_search = show;
-  app->show_in_management = show;
-}
-
-void WebAppsBase::PopulatePermissions(
-    const web_app::WebApp* web_app,
-    std::vector<mojom::PermissionPtr>* target) {
-  const GURL url = web_app->start_url();
-
-  auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  DCHECK(host_content_settings_map);
-
-  for (ContentSettingsType type : kSupportedPermissionTypes) {
-    ContentSetting setting =
-        host_content_settings_map->GetContentSetting(url, url, type);
-
-    // Map ContentSettingsType to an apps::mojom::TriState value
-    apps::mojom::TriState setting_val;
-    switch (setting) {
-      case CONTENT_SETTING_ALLOW:
-        setting_val = apps::mojom::TriState::kAllow;
-        break;
-      case CONTENT_SETTING_ASK:
-        setting_val = apps::mojom::TriState::kAsk;
-        break;
-      case CONTENT_SETTING_BLOCK:
-        setting_val = apps::mojom::TriState::kBlock;
-        break;
-      default:
-        setting_val = apps::mojom::TriState::kAsk;
-    }
-
-    content_settings::SettingInfo setting_info;
-    host_content_settings_map->GetWebsiteSetting(url, url, type, &setting_info);
-
-    auto permission = apps::mojom::Permission::New();
-    permission->permission_id = static_cast<uint32_t>(type);
-    permission->value_type = apps::mojom::PermissionValueType::kTriState;
-    permission->value = static_cast<uint32_t>(setting_val);
-    permission->is_managed =
-        setting_info.source == content_settings::SETTING_SOURCE_POLICY;
-
-    target->push_back(std::move(permission));
-  }
-}
-
 void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
                                  std::vector<apps::mojom::AppPtr>* apps_out) {
   const web_app::WebAppRegistrar* registrar = GetRegistrar();
@@ -561,24 +443,6 @@ void WebAppsBase::StartPublishingWebApps(
                      true /* should_notify_initialized */);
 
   subscribers_.Add(std::move(subscriber));
-}
-
-// static.
-webapps::WebappUninstallSource
-WebAppsBase::ConvertUninstallSourceToWebAppUninstallSource(
-    apps::mojom::UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case apps::mojom::UninstallSource::kAppList:
-      return webapps::WebappUninstallSource::kAppList;
-    case apps::mojom::UninstallSource::kAppManagement:
-      return webapps::WebappUninstallSource::kAppManagement;
-    case apps::mojom::UninstallSource::kShelf:
-      return webapps::WebappUninstallSource::kShelf;
-    case apps::mojom::UninstallSource::kMigration:
-      return webapps::WebappUninstallSource::kMigration;
-    case apps::mojom::UninstallSource::kUnknown:
-      return webapps::WebappUninstallSource::kUnknown;
-  }
 }
 
 }  // namespace apps

@@ -3430,6 +3430,8 @@ static_library("browser") {
       "apps/app_service/publishers/web_apps.h",
       "apps/app_service/publishers/web_apps_base.cc",
       "apps/app_service/publishers/web_apps_base.h",
+      "apps/app_service/web_apps_utils.cc",
+      "apps/app_service/web_apps_utils.h",
       "apps/intent_helper/apps_navigation_throttle.cc",
       "apps/intent_helper/apps_navigation_throttle.h",
       "apps/intent_helper/apps_navigation_types.cc",

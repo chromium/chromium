@@ -70,9 +70,6 @@ class WebAppsBase : public apps::PublisherBase,
       const std::string& app_id,
       const base::Time& last_launch_time) override;
 
-  apps::mojom::AppPtr ConvertImpl(const web_app::WebApp* web_app,
-                                  apps::mojom::Readiness readiness);
-
   IconEffects GetIconEffects(const web_app::WebApp* web_app);
 
   content::WebContents* LaunchAppWithIntentImpl(
@@ -99,10 +96,6 @@ class WebAppsBase : public apps::PublisherBase,
   const web_app::WebAppRegistrar* GetRegistrar() const;
 
   apps::mojom::AppType app_type() { return app_type_; }
-
-  static webapps::WebappUninstallSource
-  ConvertUninstallSourceToWebAppUninstallSource(
-      apps::mojom::UninstallSource uninstall_source);
 
  private:
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
@@ -146,10 +139,6 @@ class WebAppsBase : public apps::PublisherBase,
   void OnWebAppLocallyInstalledStateChanged(const web_app::AppId& app_id,
                                             bool is_locally_installed) override;
 
-  void SetShowInFields(apps::mojom::AppPtr& app,
-                       const web_app::WebApp* web_app);
-  void PopulatePermissions(const web_app::WebApp* web_app,
-                           std::vector<mojom::PermissionPtr>* target);
   virtual apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
                                       apps::mojom::Readiness readiness) = 0;
   void ConvertWebApps(apps::mojom::Readiness readiness,

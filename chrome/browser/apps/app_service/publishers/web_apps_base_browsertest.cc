@@ -32,10 +32,6 @@
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
-using apps::mojom::Condition;
-using apps::mojom::ConditionType;
-using apps::mojom::PatternMatchType;
-
 namespace apps {
 
 class WebAppsBaseBrowserTest : public InProcessBrowserTest {

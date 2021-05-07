@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/web_apps_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
@@ -180,7 +181,7 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
   DCHECK(provider());
   DCHECK(provider()->install_finalizer().CanUserUninstallWebApp(app_id));
   webapps::WebappUninstallSource webapp_uninstall_source =
-      WebAppsBase::ConvertUninstallSourceToWebAppUninstallSource(
+      apps_util::ConvertUninstallSourceToWebAppUninstallSource(
           uninstall_source);
   provider()->install_finalizer().UninstallWebApp(
       app_id, webapp_uninstall_source, base::DoNothing());
@@ -419,9 +420,11 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
   // Sometimes OnWebAppDisabledStateChanged is called but
   // WebApp::chromos_data().is_disabled isn't updated yet, that's why here we
   // depend only on |is_disabled|.
-  apps::mojom::AppPtr app = WebAppsBase::ConvertImpl(
-      web_app, is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                           : apps::mojom::Readiness::kReady);
+  apps::mojom::Readiness readiness =
+      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
+                  : apps::mojom::Readiness::kReady;
+  apps::mojom::AppPtr app =
+      apps_util::ConvertWebApp(profile(), web_app, app_type(), readiness);
   app->icon_key = icon_key_factory().MakeIconKey(
       GetIconEffects(web_app, paused_apps_.IsPaused(app_id), is_disabled));
 
@@ -669,8 +672,8 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const web_app::WebApp* web_app,
                                              apps::mojom::Readiness readiness) {
   DCHECK(web_app->chromeos_data().has_value());
   bool is_disabled = web_app->chromeos_data()->is_disabled;
-  apps::mojom::AppPtr app = WebAppsBase::ConvertImpl(
-      web_app,
+  apps::mojom::AppPtr app = apps_util::ConvertWebApp(
+      profile(), web_app, app_type(),
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
   if (is_disabled) {
     UpdateAppDisabledMode(app);

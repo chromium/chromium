@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps.h"
 
 #include "base/callback_helpers.h"
+#include "chrome/browser/apps/app_service/web_apps_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -36,7 +37,7 @@ void WebApps::UninstallImpl(Profile* profile,
       web_app_ui_manager->dialog_manager();
   if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
     webapps::WebappUninstallSource webapp_uninstall_source =
-        WebAppsBase::ConvertUninstallSourceToWebAppUninstallSource(
+        apps_util::ConvertUninstallSourceToWebAppUninstallSource(
             uninstall_source);
     web_app_dialog_manager.UninstallWebApp(app_id, webapp_uninstall_source,
                                            parent_window, base::DoNothing());
@@ -45,7 +46,8 @@ void WebApps::UninstallImpl(Profile* profile,
 
 apps::mojom::AppPtr WebApps::Convert(const web_app::WebApp* web_app,
                                      apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app = ConvertImpl(web_app, readiness);
+  apps::mojom::AppPtr app =
+      apps_util::ConvertWebApp(profile(), web_app, app_type(), readiness);
 
   app->icon_key = icon_key_factory().MakeIconKey(GetIconEffects(web_app));
 
