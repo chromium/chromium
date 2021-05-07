@@ -1326,7 +1326,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Check the event sequence seen in the prerendered page.
   EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
-  for (auto& result : results.ExtractList())
+  const base::Value resultsList = results.ExtractList();
+  for (auto& result : resultsList.GetList())
     eventsSeen.push_back(result.GetString());
   EXPECT_THAT(eventsSeen,
               testing::ElementsAreArray(
