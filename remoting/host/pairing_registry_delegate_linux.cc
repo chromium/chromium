@@ -98,13 +98,13 @@ PairingRegistry::Pairing PairingRegistryDelegateLinux::Load(
     return PairingRegistry::Pairing();
   }
 
-  base::DictionaryValue* pairing_dictionary;
-  if (!pairing->GetAsDictionary(&pairing_dictionary)) {
+  if (!pairing->is_dict()) {
     LOG(WARNING) << "Failed to parse pairing information: not a dictionary.";
     return PairingRegistry::Pairing();
   }
 
-  return PairingRegistry::Pairing::CreateFromValue(*pairing_dictionary);
+  return PairingRegistry::Pairing::CreateFromValue(
+      base::Value::AsDictionaryValue(*pairing));
 }
 
 bool PairingRegistryDelegateLinux::Save(

@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "remoting/host/host_extension_session.h"
 
 namespace base {
-class DictionaryValue;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -48,9 +48,10 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
 
  private:
   // These methods process specific security key extension message types.
-  void ProcessControlMessage(base::DictionaryValue* message_data) const;
-  void ProcessDataMessage(base::DictionaryValue* message_data) const;
-  void ProcessErrorMessage(base::DictionaryValue* message_data) const;
+  void ProcessControlMessage(
+      const base::Value::DictStorage& message_data) const;
+  void ProcessDataMessage(const base::Value::DictStorage& message_data) const;
+  void ProcessErrorMessage(const base::Value::DictStorage& message_data) const;
 
   void SendMessageToClient(int connection_id, const std::string& data) const;
 
