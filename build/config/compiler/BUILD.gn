@@ -46,6 +46,17 @@ if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
 
+lld_path = ""
+if (!is_clang) {
+  declare_args() {
+    # This allows overriding the location of lld.
+    lld_path = rebase_path("$clang_base_path/bin", root_build_dir)
+  }
+} else {
+  # clang looks for lld next to it, no need for -B.
+  lld_path = ""
+}
+
 declare_args() {
   # Normally, Android builds are lightly optimized, even for debug builds, to
   # keep binary size down. Setting this flag to true disables such optimization
@@ -330,6 +341,9 @@ config("compiler") {
 
     if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
+      if (lld_path != "") {
+        ldflags += [ "-B$lld_path" ]
+      }
     }
 
     # Linker warnings.
