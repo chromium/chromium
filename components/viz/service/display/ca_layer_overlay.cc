@@ -51,7 +51,7 @@ enum CALayerResult {
   CA_LAYER_FAILED_PICTURE_CONTENT = 12,
   // CA_LAYER_FAILED_RENDER_PASS = 13,
   CA_LAYER_FAILED_SURFACE_CONTENT = 14,
-  CA_LAYER_FAILED_YUV_VIDEO_CONTENT = 15,
+  // CA_LAYER_FAILED_YUV_VIDEO_CONTENT = 15,
   CA_LAYER_FAILED_DIFFERENT_CLIP_SETTINGS = 16,
   CA_LAYER_FAILED_DIFFERENT_VERTEX_OPACITIES = 17,
   // CA_LAYER_FAILED_RENDER_PASS_FILTER_SCALE = 18,
@@ -64,6 +64,8 @@ enum CALayerResult {
   CA_LAYER_FAILED_QUAD_ROUNDED_CORNER_CLIP_MISMATCH = 25,
   CA_LAYER_FAILED_QUAD_ROUNDED_CORNER_NOT_UNIFORM = 26,
   CA_LAYER_FAILED_TOO_MANY_QUADS = 27,
+  CA_LAYER_FAILED_YUV_NOT_CANDIDATE = 28,
+  CA_LAYER_FAILED_Y_UV_TEXCOORD_MISMATCH = 29,
   CA_LAYER_FAILED_COUNT,
 };
 
@@ -164,6 +166,31 @@ CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
   }
   ca_layer_overlay->shared_state->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->filter = quad->nearest_neighbor ? GL_NEAREST : GL_LINEAR;
+  return CA_LAYER_SUCCESS;
+}
+
+CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
+                               const YUVVideoDrawQuad* quad,
+                               CALayerOverlay* ca_layer_overlay) {
+  // For YUVVideoDrawQuads, the Y and UV planes alias the same underlying
+  // IOSurface. Ensure all planes are overlays and have the same contents
+  // rect. Then use the Y plane as the resource for the overlay.
+  ResourceId y_resource_id = quad->y_plane_resource_id();
+  if (!resource_provider->IsOverlayCandidate(y_resource_id) ||
+      !resource_provider->IsOverlayCandidate(quad->u_plane_resource_id()) ||
+      !resource_provider->IsOverlayCandidate(quad->v_plane_resource_id())) {
+    return CA_LAYER_FAILED_YUV_NOT_CANDIDATE;
+  }
+  gfx::RectF ya_contents_rect =
+      gfx::ScaleRect(quad->ya_tex_coord_rect, 1.f / quad->ya_tex_size.width(),
+                     1.f / quad->ya_tex_size.height());
+  gfx::RectF uv_contents_rect =
+      gfx::ScaleRect(quad->uv_tex_coord_rect, 1.f / quad->uv_tex_size.width(),
+                     1.f / quad->uv_tex_size.height());
+  if (ya_contents_rect != uv_contents_rect)
+    return CA_LAYER_FAILED_Y_UV_TEXCOORD_MISMATCH;
+  ca_layer_overlay->contents_resource_id = y_resource_id;
+  ca_layer_overlay->contents_rect = ya_contents_rect;
   return CA_LAYER_SUCCESS;
 }
 
@@ -279,7 +306,9 @@ class CALayerOverlayProcessorInternal {
       case DrawQuad::Material::kSurfaceContent:
         return CA_LAYER_FAILED_SURFACE_CONTENT;
       case DrawQuad::Material::kYuvVideoContent:
-        return CA_LAYER_FAILED_YUV_VIDEO_CONTENT;
+        return FromYUVVideoQuad(resource_provider,
+                                YUVVideoDrawQuad::MaterialCast(quad),
+                                ca_layer_overlay);
       default:
         break;
     }
