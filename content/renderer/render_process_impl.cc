@@ -137,6 +137,18 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(features::kWebAssemblyBaseline, "--liftoff");
   SetV8FlagIfNotFeature(features::kWebAssemblyBaseline, "--no-liftoff");
 
+  SetV8FlagIfFeature(features::kWebAssemblyCodeProtection,
+                     "--wasm-write-protect-code-memory");
+  SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtection,
+                        "--no-wasm-write-protect-code-memory");
+
+#if defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
+  SetV8FlagIfFeature(features::kWebAssemblyCodeProtectionPku,
+                     "--wasm-memory-protection-keys");
+  SetV8FlagIfNotFeature(features::kWebAssemblyCodeProtectionPku,
+                        "--no-wasm-memory-protection-keys");
+#endif  // defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
+
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
                      "--wasm-lazy-compilation");
   SetV8FlagIfNotFeature(features::kWebAssemblyLazyCompilation,

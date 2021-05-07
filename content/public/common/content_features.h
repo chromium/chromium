@@ -209,6 +209,10 @@ CONTENT_EXPORT extern const base::Feature kVideoPlaybackQuality;
 CONTENT_EXPORT extern const base::Feature kV8VmFuture;
 CONTENT_EXPORT extern const base::Feature kWebAppWindowControlsOverlay;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyBaseline;
+CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtection;
+#if defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
+CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
+#endif  // defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
 CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyThreads;
