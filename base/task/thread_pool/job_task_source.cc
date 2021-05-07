@@ -229,12 +229,16 @@ size_t JobTaskSource::GetRemainingConcurrency() const {
   // It is safe to read |state_| without a lock since this variable is atomic,
   // and no other state is synchronized with GetRemainingConcurrency().
   const auto state = TS_UNCHECKED_READ(state_).Load();
+  recordreplay::Assert("JobTaskSource::GetRemainingConcurrency START %d %d",
+                       state.is_canceled(), state.worker_count());
   if (state.is_canceled())
     return 0;
   const size_t max_concurrency = GetMaxConcurrency(state.worker_count());
   // Avoid underflows.
   if (state.worker_count() > max_concurrency)
     return 0;
+  recordreplay::Assert("JobTaskSource::GetRemainingConcurrency #1 %lu %lu",
+                       max_concurrency, state.worker_count());
   return max_concurrency - state.worker_count();
 }
 

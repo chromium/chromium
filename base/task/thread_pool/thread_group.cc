@@ -138,6 +138,7 @@ ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired()
                                 TaskPriority::USER_BLOCKING);
   if (num_queued == 0 ||
       !task_tracker_->CanRunPriority(TaskPriority::HIGHEST)) {
+    recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #1");
     return 0U;
   }
   auto priority = priority_queue_.PeekSortKey().priority();
@@ -145,10 +146,15 @@ ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired()
       priority == TaskPriority::USER_BLOCKING) {
     // Assign the correct number of workers for the top TaskSource (-1 for the
     // worker that is already accounted for in |num_queued|).
+    recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #2 %lu %lu",
+                         num_queued,
+                         priority_queue_.PeekTaskSource()->GetRemainingConcurrency());
     return std::max<size_t>(
         1, num_queued +
                priority_queue_.PeekTaskSource()->GetRemainingConcurrency() - 1);
   }
+  recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #3 %lu",
+                       num_queued);
   return num_queued;
 }
 
@@ -200,13 +206,17 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
 
   auto run_status = priority_queue_.PeekTaskSource().WillRunTask();
 
+  recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource Start %d", run_status);
+
   if (run_status == TaskSource::RunStatus::kDisallowed) {
     executor->ScheduleReleaseTaskSource(priority_queue_.PopTaskSource());
     return nullptr;
   }
 
-  if (run_status == TaskSource::RunStatus::kAllowedSaturated)
+  if (run_status == TaskSource::RunStatus::kAllowedSaturated) {
+    recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #1");
     return priority_queue_.PopTaskSource();
+  }
 
   // If the TaskSource isn't saturated, check whether TaskTracker allows it to
   // remain in the PriorityQueue.
@@ -218,8 +228,11 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
   // otherwise.
   RegisteredTaskSource task_source =
       task_tracker_->RegisterTaskSource(priority_queue_.PeekTaskSource().get());
-  if (!task_source)
+  if (!task_source) {
+    recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #2");
     return priority_queue_.PopTaskSource();
+  }
+  recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #3");
   // Replace the top task_source and then update the queue.
   std::swap(priority_queue_.PeekTaskSource(), task_source);
   if (!disable_fair_scheduling_) {

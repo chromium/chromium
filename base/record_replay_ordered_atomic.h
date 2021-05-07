@@ -31,6 +31,11 @@ class OrderedAtomic {
     return value_.load(memory_order);
   }
 
+  void store(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
+    AutoOrderedLock ordered(ordered_lock_id_);
+    value_.store(v, memory_order);
+  }
+
   T fetch_add(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
     AutoOrderedLock ordered(ordered_lock_id_);
     return value_.fetch_add(v, memory_order);
@@ -39,6 +44,22 @@ class OrderedAtomic {
   T fetch_sub(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
     AutoOrderedLock ordered(ordered_lock_id_);
     return value_.fetch_sub(v, memory_order);
+  }
+
+  T fetch_or(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
+    AutoOrderedLock ordered(ordered_lock_id_);
+    return value_.fetch_or(v, memory_order);
+  }
+
+  T fetch_and(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
+    AutoOrderedLock ordered(ordered_lock_id_);
+    return value_.fetch_and(v, memory_order);
+  }
+
+  bool compare_exchange_weak(T& a, T b,
+                             std::memory_order memory_order = std::memory_order_seq_cst) {
+    AutoOrderedLock ordered(ordered_lock_id_);
+    return value_.compare_exchange_weak(a, b, memory_order);
   }
 
  private:

@@ -1021,6 +1021,13 @@ size_t ThreadGroupImpl::GetDesiredNumAwakeWorkersLockRequired() const {
   const size_t workers_for_foreground_task_sources =
       num_running_or_queued_foreground_task_sources;
 
+  recordreplay::Assert("ThreadGroupImpl::GetDesiredNumAwakeWorkersLockRequired %lu %lu %lu %lu %lu",
+                       workers_for_best_effort_task_sources,
+                       workers_for_foreground_task_sources,
+                       max_tasks_,
+                       num_running_tasks_,
+                       num_running_best_effort_tasks_);
+
   return std::min({workers_for_best_effort_task_sources +
                        workers_for_foreground_task_sources,
                    max_tasks_, kMaxNumberOfWorkers});
@@ -1034,9 +1041,14 @@ void ThreadGroupImpl::DidUpdateCanRunPolicy() {
 
 void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
     BaseScopedCommandsExecutor* base_executor) {
+  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired Start %lu",
+                       max_tasks_);
+
   // Don't do anything if the thread group isn't started.
-  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_))
+  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_)) {
+    recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #1");
     return;
+  }
 
   ScopedCommandsExecutor* executor =
       static_cast<ScopedCommandsExecutor*>(base_executor);
@@ -1044,6 +1056,9 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
   const size_t desired_num_awake_workers =
       GetDesiredNumAwakeWorkersLockRequired();
   const size_t num_awake_workers = GetNumAwakeWorkersLockRequired();
+
+  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #1.1 %lu %lu",
+                       desired_num_awake_workers, num_awake_workers);
 
   size_t num_workers_to_wake_up =
       ClampSub(desired_num_awake_workers, num_awake_workers);
@@ -1053,6 +1068,9 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
              WakeUpStrategy::kSerializedWakeUps) {
     num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(1U));
   }
+
+  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #2 %lu",
+                       num_workers_to_wake_up);
 
   // Wake up the appropriate number of workers.
   for (size_t i = 0; i < num_workers_to_wake_up; ++i) {
@@ -1075,6 +1093,8 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
 
   // Ensure that the number of workers is periodically adjusted if needed.
   MaybeScheduleAdjustMaxTasksLockRequired(executor);
+
+  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired Done");
 }
 
 void ThreadGroupImpl::AdjustMaxTasks() {

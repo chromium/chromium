@@ -15,6 +15,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/record_replay_ordered_atomic.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
@@ -126,7 +127,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
     Value Load() const;
 
    private:
-    std::atomic<uint32_t> value_{0};
+    recordreplay::OrderedAtomic<uint32_t> value_{0};
   };
 
   // Atomic flag that indicates if the joining thread is currently waiting on

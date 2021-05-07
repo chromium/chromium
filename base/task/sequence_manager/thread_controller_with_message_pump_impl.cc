@@ -408,8 +408,8 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       continuation_lazy_now, select_task_option);
   DCHECK_GE(do_work_delay, TimeDelta());
 
-  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Done %.2f",
-                       do_work_delay.InSecondsF());
+  //recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Done %.2f",
+  //                     do_work_delay.InSecondsF());
   return do_work_delay;
 }
 
