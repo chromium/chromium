@@ -73,11 +73,6 @@ class LocalNetworkCollectorImplTest : public testing::Test {
     on_get_all_syncable_networks_count_ = 0;
   }
 
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    testing::Test::TearDown();
-  }
-
   void OnGetAllSyncableNetworks(
       std::vector<std::string> expected,
       std::vector<sync_pb::WifiConfigurationSpecifics> result) {

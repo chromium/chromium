@@ -24,6 +24,8 @@ class User;
 
 namespace chromeos {
 
+class NetworkHandlerTestHelper;
+
 namespace sync_wifi {
 
 // Helper for tests which need to have fake network classes configured.
@@ -60,6 +62,7 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
       managed_network_configuration_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
   const user_manager::User* primary_user_;

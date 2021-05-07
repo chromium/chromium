@@ -44,11 +44,6 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
             /* network_connection_handler */ nullptr);
   }
 
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    testing::Test::TearDown();
-  }
-
   void SimulateConnectionFailure(std::string error) {
     const NetworkState* network = CreateNetwork(/*from_sync=*/true);
     SetNetworkProperty(network->path(), shill::kStateProperty,

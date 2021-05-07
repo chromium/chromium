@@ -191,11 +191,6 @@ class WifiConfigurationBridgeTest : public testing::Test {
     init_callback_ = std::move(callback);
   }
 
-  void TearDown() override {
-    // TODO(cvandermerwe) Put the shutdown logic into network_test_helper.
-    NetworkHandler::Shutdown();
-  }
-
   void DisableBridge() {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(false));
   }

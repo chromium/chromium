@@ -94,11 +94,6 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
         timer_factory_.get(), metrics_logger_.get());
   }
 
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    testing::Test::TearDown();
-  }
-
   network_config::mojom::ManagedPropertiesPtr GetManagedProperties(
       const std::string& guid) {
     network_config::mojom::ManagedPropertiesPtr result;
