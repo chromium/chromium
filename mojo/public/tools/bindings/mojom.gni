@@ -226,18 +226,6 @@ if (enable_scrambled_message_ids) {
 #       A list of extra configs to apply to the Blink variant of generated C++
 #       bindings.
 #
-#   mojom_source_deps (optional)
-#       A list of mojoms this target depends upon. This is equivalent to
-#       public_deps except that the C++ bindings depend on each of the named
-#       "foo" targets' "foo_cpp_sources" rather than on foo's
-#       `cpp_proxy_target`. It only makes sense to use this for dependencies
-#       that set `cpp_proxy_target`, and only when the dependent mojom() would
-#       otherwise have circular dependencies with that proxy target.
-#
-#   mojom_blink_source_deps (optional)
-#       Same as above but depends on "foo_blink_cpp_sources" and is used for
-#       dependencies that specify a `blink_cpp_proxy_target`.
-#
 #   generate_java (optional)
 #       If set to true, Java bindings are generated for Android builds. If
 #       |cpp_only| is set to true, it overrides this to prevent generation of
@@ -515,22 +503,12 @@ template("mojom") {
       !invoker.disallow_interfaces
 
   all_deps = []
-  mojom_cpp_deps = []
   if (defined(invoker.deps)) {
     all_deps += invoker.deps
-    mojom_cpp_deps += invoker.deps
   }
   if (defined(invoker.public_deps)) {
     all_deps += invoker.public_deps
-    mojom_cpp_deps += invoker.public_deps
   }
-  if (defined(invoker.mojom_source_deps)) {
-    all_deps += invoker.mojom_source_deps
-  }
-  if (defined(invoker.mojom_blink_source_deps)) {
-    all_deps += invoker.mojom_blink_source_deps
-  }
-  not_needed([ "mojom_deps" ])
 
   if (defined(invoker.component_macro_prefix)) {
     assert(defined(invoker.component_output_prefix))
@@ -1088,7 +1066,6 @@ template("mojom") {
     extra_configs = []
     output_visibility = []
     output_visibility = [ "*" ]
-    cpp_source_deps = []
     if (defined(bindings_configuration.for_blink) &&
         bindings_configuration.for_blink) {
       if (defined(invoker.blink_cpp_typemaps)) {
@@ -1109,9 +1086,6 @@ template("mojom") {
         output_visibility = []
         output_visibility = invoker.visibility_blink
       }
-      if (defined(invoker.mojom_blink_source_deps)) {
-        cpp_source_deps = invoker.mojom_blink_source_deps
-      }
     } else {
       if (defined(invoker.cpp_typemaps)) {
         cpp_typemap_configs = invoker.cpp_typemaps
@@ -1131,15 +1105,8 @@ template("mojom") {
         output_visibility = []
         output_visibility = invoker.visibility
       }
-      if (defined(invoker.mojom_source_deps)) {
-        cpp_source_deps = invoker.mojom_source_deps
-      }
     }
     not_needed([ "cpp_typemap_configs" ])
-    if (proxy_target != "") {
-      group("${target_name}${variant_suffix}__has_cpp_proxy") {
-      }
-    }
 
     if (!export_defines_overridden && defined(invoker.component_macro_prefix)) {
       output_name_override =
@@ -1516,19 +1483,12 @@ template("mojom") {
       if (sources_list != []) {
         public_deps += [ ":$generator_target_name" ]
       }
-      foreach(d, mojom_cpp_deps) {
+      foreach(d, all_deps) {
         # Resolve the name, so that a target //mojo/something becomes
         # //mojo/something:something and we can append variant_suffix to
         # get the cpp dependency name.
-        full_name = get_label_info(d, "label_no_toolchain")
+        full_name = get_label_info("$d", "label_no_toolchain")
         public_deps += [ "${full_name}${variant_suffix}" ]
-      }
-      foreach(d, cpp_source_deps) {
-        full_name = get_label_info(d, "label_no_toolchain")
-        public_deps += [
-          "${full_name}${variant_suffix}__has_cpp_proxy",
-          "${full_name}${variant_suffix}_cpp_sources",
-        ]
       }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink) {

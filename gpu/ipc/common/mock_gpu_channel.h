@@ -22,8 +22,6 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD1(Flush, void(FlushCallback));
   MOCK_METHOD2(ScheduleImageDecode,
                void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
-  MOCK_METHOD1(FlushDeferredRequests,
-               void(std::vector<mojom::DeferredRequestPtr>));
 };
 
 }  // namespace gpu
