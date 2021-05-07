@@ -140,6 +140,7 @@ const char kSpotifyAppId[] = "pjibgclleladliembfgfagdaldikeohf";
 const char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
 const char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 const char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
+const char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.

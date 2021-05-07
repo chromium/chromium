@@ -255,6 +255,9 @@ extern const char kClipchampAppId[];
 // The extension id of the GeForce NOW PWA.
 extern const char kGeForceNowAppId[];
 
+// The extension id of the Zoom PWA.
+extern const char kZoomAppId[];
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];

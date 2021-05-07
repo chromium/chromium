@@ -77,9 +77,10 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kBeFunky = 36,
     kClipchamp = 37,
     kGeForceNow = 38,
+    kZoom = 39,
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kGeForceNow,
+    kMaxValue = kZoom,
   };
 
   // The recorder will create a normal timer by default. Tests should provide a
