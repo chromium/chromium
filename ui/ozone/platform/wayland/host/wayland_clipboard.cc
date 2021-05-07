@@ -84,11 +84,10 @@ class ClipboardImpl final : public Clipboard,
   bool Read(const std::string& mime_type,
             ui::PlatformClipboard::RequestDataClosure callback) final {
     requested_mime_type_ = mime_type;
-    if (GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type))) {
-      read_clipboard_closure_ = std::move(callback);
+    read_clipboard_closure_ = std::move(callback);
+    if (GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type)))
       return true;
-    }
-    SetData(base::MakeRefCounted<base::RefCountedBytes>(), mime_type);
+    DeliverData(nullptr, mime_type);
     return false;
   }
 
@@ -152,8 +151,8 @@ class ClipboardImpl final : public Clipboard,
     return mime_type;
   }
 
-  void SetData(ui::PlatformClipboard::Data contents,
-               const std::string& mime_type) {
+  void DeliverData(ui::PlatformClipboard::Data contents,
+                   const std::string& mime_type) {
     CHECK_EQ(GetMimeTypeForRequest(requested_mime_type_), mime_type);
     if (!read_clipboard_closure_.is_null())
       std::move(read_clipboard_closure_).Run(contents);
@@ -165,16 +164,13 @@ class ClipboardImpl final : public Clipboard,
     if (IsSelectionOwner())
       return;
 
-    if (!offer)
-      SetData({}, {});
-
     if (!clipboard_changed_callback_.is_null())
       clipboard_changed_callback_.Run(buffer_);
   }
 
   void OnSelectionDataReceived(const std::string& mime_type,
                                ui::PlatformClipboard::Data contents) final {
-    SetData(contents, mime_type);
+    DeliverData(contents, mime_type);
   }
 
   // WaylandDataSource::Delegate:

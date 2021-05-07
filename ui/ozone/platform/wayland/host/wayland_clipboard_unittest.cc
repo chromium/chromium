@@ -162,12 +162,9 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
 TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // When no data offer is advertised and client requests clipboard data
   // from the server, the response callback should be gracefully called with
-  // an empty string.
-  auto callback = base::BindOnce([](const PlatformClipboard::Data& data) {
-    ASSERT_TRUE(data.get());
-    std::string string_data(data->front_as<const char>(), data->size());
-    EXPECT_EQ("", string_data);
-  });
+  // null data.
+  auto callback = base::BindOnce(
+      [](const PlatformClipboard::Data& data) { ASSERT_FALSE(data); });
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
                                    kMimeTypeTextUtf8, std::move(callback));
 }
