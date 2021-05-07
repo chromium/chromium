@@ -28,7 +28,9 @@ class OmniboxPedalImplementationsTest : public testing::Test {
 
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxPedalsBatch2);
+  feature_list.InitWithFeatures(
+      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
+      {});
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client, true);
   const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
@@ -47,7 +49,9 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
 TEST_F(OmniboxPedalImplementationsTest,
        UnorderedSynonymExpressionsAreConceptMatches) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxPedalsBatch2);
+  feature_list.InitWithFeatures(
+      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
+      {});
   const std::vector<std::vector<const char*>> literal_concept_expressions = {
       // clang-format off
       // Note: The lists below are auto-generated from raw synonym group data.

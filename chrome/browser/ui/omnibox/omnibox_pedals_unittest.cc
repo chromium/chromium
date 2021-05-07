@@ -23,7 +23,9 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxPedalsBatch2);
+  feature_list.InitWithFeatures(
+      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
+      {});
 
   struct TestCase {
     std::string locale;

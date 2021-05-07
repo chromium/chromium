@@ -8,6 +8,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
@@ -185,6 +186,12 @@ void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
 }
 
 void OmniboxPedalProvider::LoadPedalConcepts() {
+  // The locale is a two-letter language code, possibly followed by a dash and
+  // country code. English locales include "en", "en-US", and "en-GB" while
+  // non-English locales never start with "en".
+  const bool locale_is_english =
+      base::i18n::GetConfiguredLocale().substr(0, 2) == "en";
+
   // Load concept data then parse to base::Value in order to construct Pedals.
   std::string uncompressed_data =
       ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceString(
@@ -225,10 +232,13 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
-    // These IDs are the first and last for batch 2.
+    // These IDs are the first and last for batch 2. Skip loading if batch 2 is
+    // not enabled for the current locale.
     if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
         id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
-        !OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
+        !(OmniboxFieldTrial::IsPedalsBatch2Enabled() &&
+          (locale_is_english ||
+           OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()))) {
       continue;
     }
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
