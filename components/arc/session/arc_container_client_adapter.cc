@@ -37,18 +37,18 @@ ToLoginManagerPackageCacheMode(UpgradeParams::PackageCacheMode mode) {
 }
 
 // Converts ArcSupervisionTransition into login_manager's.
-login_manager::UpgradeArcContainerRequest_SupervisionTransition
-ToLoginManagerSupervisionTransition(ArcSupervisionTransition transition) {
+login_manager::UpgradeArcContainerRequest_ManagementTransition
+ToLoginManagerManagementTransition(ArcSupervisionTransition transition) {
   switch (transition) {
     case ArcSupervisionTransition::NO_TRANSITION:
       return login_manager::
-          UpgradeArcContainerRequest_SupervisionTransition_NONE;
+          UpgradeArcContainerRequest_ManagementTransition_NONE;
     case ArcSupervisionTransition::CHILD_TO_REGULAR:
       return login_manager::
-          UpgradeArcContainerRequest_SupervisionTransition_CHILD_TO_REGULAR;
+          UpgradeArcContainerRequest_ManagementTransition_CHILD_TO_REGULAR;
     case ArcSupervisionTransition::REGULAR_TO_CHILD:
       return login_manager::
-          UpgradeArcContainerRequest_SupervisionTransition_REGULAR_TO_CHILD;
+          UpgradeArcContainerRequest_ManagementTransition_REGULAR_TO_CHILD;
   }
 }
 
@@ -154,8 +154,8 @@ class ArcContainerClientAdapter
     request.set_locale(params.locale);
     for (const auto& language : params.preferred_languages)
       request.add_preferred_languages(language);
-    request.set_supervision_transition(
-        ToLoginManagerSupervisionTransition(params.supervision_transition));
+    request.set_management_transition(
+        ToLoginManagerManagementTransition(params.supervision_transition));
 
     chromeos::SessionManagerClient::Get()->UpgradeArcContainer(
         request, std::move(callback));
