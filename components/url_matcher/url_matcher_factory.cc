@@ -248,7 +248,7 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
     return nullptr;
   }
 
-  for (const auto& entry : *value_list) {
+  for (const auto& entry : value_list->GetList()) {
     const base::ListValue* range = nullptr;
     if (entry.is_int()) {
       ranges.push_back(URLMatcherPortFilter::CreateRange(entry.GetInt()));
