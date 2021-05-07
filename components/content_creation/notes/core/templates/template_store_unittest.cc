@@ -4,12 +4,14 @@
 
 #include "components/content_creation/notes/core/templates/template_store.h"
 
+#include <unordered_set>
 #include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
+#include "components/content_creation/notes/core/templates/template_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_creation {
@@ -18,6 +20,20 @@ class TemplateStoreTest : public testing::Test {
   void SetUp() override { template_store_ = std::make_unique<TemplateStore>(); }
 
  protected:
+  void ValidateTemplates(const std::vector<NoteTemplate>& note_templates) {
+    std::unordered_set<NoteTemplateIds> ids_set;
+    for (const NoteTemplate& note_template : note_templates) {
+      EXPECT_LT(NoteTemplateIds::kUnknown, note_template.id());
+      EXPECT_GE(NoteTemplateIds::kMaxValue, note_template.id());
+      EXPECT_FALSE(note_template.localized_name().empty());
+      EXPECT_FALSE(note_template.text_style().font_name().empty());
+
+      // There should be no duplicated IDs.
+      EXPECT_TRUE(ids_set.find(note_template.id()) == ids_set.end());
+      ids_set.insert(note_template.id());
+    }
+  }
+
   // Have to use TaskEnvironment since the TemplateStore posts tasks to the
   // thread pool.
   base::test::TaskEnvironment task_environment_{
@@ -26,12 +42,17 @@ class TemplateStoreTest : public testing::Test {
   std::unique_ptr<TemplateStore> template_store_;
 };
 
+// Tests that the store does return templates, and also validates the templates'
+// information.
 TEST_F(TemplateStoreTest, GetTemplatesSuccess) {
   base::RunLoop run_loop;
 
   template_store_->GetTemplates(base::BindLambdaForTesting(
-      [&run_loop](std::vector<NoteTemplate> templates) {
+      [&run_loop, this](std::vector<NoteTemplate> templates) {
         EXPECT_EQ(1U, templates.size());
+
+        ValidateTemplates(templates);
+
         run_loop.Quit();
       }));
 

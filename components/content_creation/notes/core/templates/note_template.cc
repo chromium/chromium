@@ -6,7 +6,15 @@
 
 namespace content_creation {
 
-NoteTemplate::NoteTemplate(const std::string& localized_name)
-    : localized_name_(localized_name) {}
+NoteTemplate::NoteTemplate(NoteTemplateIds id,
+                           const std::string& localized_name,
+                           const Background& main_background,
+                           const TextStyle& text_style,
+                           const FooterStyle& footer_style)
+    : id_(id),
+      localized_name_(localized_name),
+      main_background_(main_background),
+      text_style_(text_style),
+      footer_style_(footer_style) {}
 
 }  // namespace content_creation

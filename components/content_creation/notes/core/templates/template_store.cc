@@ -12,6 +12,24 @@
 
 namespace content_creation {
 
+namespace {
+
+const char kSourceSerifProFontName[] = "Source Serif Pro";
+
+const ARGBColor kDarkGrayColor = 0xFF202124;
+const ARGBColor kWhiteColor = 0xFFFFFFFF;
+const ARGBColor kSlightlyTransparentWhiteColor = 0xB3FFFFFF;
+
+NoteTemplate GetClassicTemplate() {
+  return NoteTemplate(
+      /*id=*/NoteTemplateIds::kClassic, "Classic",
+      Background(/*color=*/kDarkGrayColor),
+      TextStyle(kSourceSerifProFontName, kWhiteColor, /*all_caps=*/false),
+      /*footer_style=*/{kSlightlyTransparentWhiteColor});
+}
+
+}  // namespace
+
 TemplateStore::TemplateStore()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})) {}
@@ -27,7 +45,8 @@ void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
 }
 
 std::vector<NoteTemplate> TemplateStore::BuildTemplates() {
-  return {NoteTemplate(/*localized_name=*/"Test Name")};
+  // TODO (crbug.com/1194168): Use localized names.
+  return {GetClassicTemplate()};
 }
 
 void TemplateStore::OnTemplatesReceived(

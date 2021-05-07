@@ -5,19 +5,42 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_NOTE_TEMPLATE_H_
 
 #include <string>
+#include <vector>
+
+#include "components/content_creation/notes/core/templates/template_types.h"
 
 namespace content_creation {
 
 // Contains the information required to be able to render a note.
 class NoteTemplate {
  public:
-  explicit NoteTemplate(const std::string& localized_name);
+  explicit NoteTemplate(NoteTemplateIds id,
+                        const std::string& localized_name,
+                        const Background& background,
+                        const TextStyle& text_style,
+                        const FooterStyle& footer_style);
 
+  NoteTemplateIds id() const { return id_; }
   const std::string localized_name() const { return localized_name_; }
+  const Background main_background() const { return main_background_; }
+  const TextStyle text_style() const { return text_style_; }
+  const FooterStyle footer_style() const { return footer_style_; }
 
  private:
+  // The template's identifier.
+  NoteTemplateIds id_;
+
   // Name of the template to be shown to the users.
   std::string localized_name_;
+
+  // Styling of the main background.
+  Background main_background_;
+
+  // Styling of the main text.
+  TextStyle text_style_;
+
+  // Styling of the footer part.
+  FooterStyle footer_style_;
 };
 
 }  // namespace content_creation

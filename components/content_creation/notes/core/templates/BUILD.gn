@@ -8,6 +8,8 @@ static_library("templates") {
     "note_template.h",
     "template_store.cc",
     "template_store.h",
+    "template_types.cc",
+    "template_types.h",
   ]
 
   deps = [ "//base" ]
