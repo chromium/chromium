@@ -16,6 +16,7 @@ namespace blink {
 
 class DOMArrayBuffer;
 class GPUBufferDescriptor;
+class ExecutionContext;
 class ScriptPromiseResolver;
 
 class GPUBuffer : public DawnObject<WGPUBuffer> {
@@ -40,9 +41,11 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                          uint64_t offset,
                          uint64_t size,
                          ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(uint64_t offset,
+  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+                                 uint64_t offset,
                                  ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(uint64_t offset,
+  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+                                 uint64_t offset,
                                  uint64_t size,
                                  ExceptionState& exception_state);
   void unmap(ScriptState* script_state);
@@ -56,13 +59,16 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                              ExceptionState& exception_state);
   DOMArrayBuffer* GetMappedRangeImpl(uint64_t offset,
                                      base::Optional<uint64_t> size,
+                                     ExecutionContext* execution_context,
                                      ExceptionState& exception_state);
 
   void OnMapAsyncCallback(ScriptPromiseResolver* resolver,
                           WGPUBufferMapAsyncStatus status);
 
-  DOMArrayBuffer* CreateArrayBufferForMappedData(void* data,
-                                                 size_t data_length);
+  DOMArrayBuffer* CreateArrayBufferForMappedData(
+      void* data,
+      size_t data_length,
+      ExecutionContext* execution_context);
   void ResetMappingState(ScriptState* script_state);
 
   uint64_t size_;

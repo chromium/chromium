@@ -13,12 +13,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_callback.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -102,15 +104,18 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
   return MapAsyncImpl(script_state, mode, offset, size, exception_state);
 }
 
-DOMArrayBuffer* GPUBuffer::getMappedRange(uint64_t offset,
+DOMArrayBuffer* GPUBuffer::getMappedRange(ExecutionContext* execution_context,
+                                          uint64_t offset,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(offset, base::nullopt, exception_state);
+  return GetMappedRangeImpl(offset, base::nullopt, execution_context,
+                            exception_state);
 }
 
-DOMArrayBuffer* GPUBuffer::getMappedRange(uint64_t offset,
+DOMArrayBuffer* GPUBuffer::getMappedRange(ExecutionContext* execution_context,
+                                          uint64_t offset,
                                           uint64_t size,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(offset, size, exception_state);
+  return GetMappedRangeImpl(offset, size, execution_context, exception_state);
 }
 
 void GPUBuffer::unmap(ScriptState* script_state) {
@@ -165,9 +170,11 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
   return promise;
 }
 
-DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(uint64_t offset,
-                                              base::Optional<uint64_t> size,
-                                              ExceptionState& exception_state) {
+DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(
+    uint64_t offset,
+    base::Optional<uint64_t> size,
+    ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
   // Compute the defaulted size which is "until the end of the buffer" or 0 if
   // offset is past the end of the buffer.
   uint64_t size_defaulted = 0;
@@ -241,7 +248,8 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(uint64_t offset,
       const_cast<uint8_t*>(static_cast<const uint8_t*>(map_data_const));
 
   mapped_ranges_.push_back(std::make_pair(range_offset, range_end));
-  return CreateArrayBufferForMappedData(map_data, range_size);
+  return CreateArrayBufferForMappedData(map_data, range_size,
+                                        execution_context);
 }
 
 void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
@@ -277,8 +285,10 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
   }
 }
 
-DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(void* data,
-                                                          size_t data_length) {
+DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
+    void* data,
+    size_t data_length,
+    ExecutionContext* execution_context) {
   DCHECK(data);
   DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxLength);
 
@@ -291,20 +301,43 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(void* data,
   // To prevent this issue we make the ArrayBuffer keep a reference to the
   // WGPUBuffer, by referencing the buffer and then have a custom deleter for
   // the v8 backing store that releases that reference.
+  //
+  // V8 can call the ArrayBuffer deleter on any thread but dawn_wire and the
+  // rest of the WebGPU implementation expect to be used on a single thread at
+  // the moment. To fix this we keep a reference to the task runner for the
+  // execution context that called getMappedRange and do a deletion on a task
+  // posted to it.
   struct ArrayBufferStrongRefs {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
     scoped_refptr<DawnControlClientHolder> dawn_control_client;
     WGPUBuffer dawn_buffer;
   };
 
   GetProcs().bufferReference(GetHandle());
-  ArrayBufferStrongRefs* refs =
-      new ArrayBufferStrongRefs{GetDawnControlClient(), GetHandle()};
+  ArrayBufferStrongRefs* refs = new ArrayBufferStrongRefs{
+      execution_context->GetTaskRunner(TaskType::kWebGPU),
+      GetDawnControlClient(), GetHandle()};
 
   v8::BackingStore::DeleterCallback deleter = [](void*, size_t,
                                                  void* userdata) {
     ArrayBufferStrongRefs* refs = static_cast<ArrayBufferStrongRefs*>(userdata);
-    refs->dawn_control_client->GetProcs().bufferRelease(refs->dawn_buffer);
-    delete refs;
+
+    // Happy case, we happen to be called on the correct thread. Release the
+    // buffer immediately.
+    if (refs->task_runner->BelongsToCurrentThread()) {
+      refs->dawn_control_client->GetProcs().bufferRelease(refs->dawn_buffer);
+      delete refs;
+      return;
+    }
+
+    refs->task_runner->PostTask(
+        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+                       [](ArrayBufferStrongRefs* refs) {
+                         refs->dawn_control_client->GetProcs().bufferRelease(
+                             refs->dawn_buffer);
+                         delete refs;
+                       },
+                       WTF::CrossThreadUnretained(refs))));
   };
 
   ArrayBufferContents contents(
