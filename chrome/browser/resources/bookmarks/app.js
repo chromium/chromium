@@ -12,59 +12,74 @@ import './list.js';
 import './router.js';
 import './shared_vars.js';
 import './strings.m.js';
-import './toolbar.js';
+import './command_manager.js';
 
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {setSearchResults} from './actions.js';
 import {destroy as destroyApiListener, init as initApiListener} from './api_listener.js';
-import {CommandManager} from './command_manager.js';
 import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
 import {DNDManager} from './dnd_manager.js';
 import {MouseFocusBehavior} from './mouse_focus_behavior.js';
 import {Store} from './store.js';
-import {StoreClient} from './store_client.js';
-import {FolderOpenState} from './types.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {BookmarksToolbarElement} from './toolbar.js';
+import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
 
-Polymer({
-  is: 'bookmarks-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ * @implements {FindShortcutBehaviorInterface}
+ */
+const BookmarksAppElementBase = mixinBehaviors(
+    [StoreClient, MouseFocusBehavior, FindShortcutBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class BookmarksAppElement extends BookmarksAppElementBase {
+  static get is() {
+    return 'bookmarks-app';
+  }
 
-  behaviors: [
-    MouseFocusBehavior,
-    StoreClient,
-    FindShortcutBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private */
-    searchTerm_: {
-      type: String,
-      observer: 'searchTermChanged_',
-    },
+  static get properties() {
+    return {
+      /** @private */
+      searchTerm_: {
+        type: String,
+        observer: 'searchTermChanged_',
+      },
 
-    /** @type {FolderOpenState} */
-    folderOpenState_: {
-      type: Object,
-      observer: 'folderOpenStateChanged_',
-    },
+      /** @type {FolderOpenState} */
+      folderOpenState_: {
+        type: Object,
+        observer: 'folderOpenStateChanged_',
+      },
 
-    /** @private */
-    sidebarWidth_: String,
-  },
+      /** @private */
+      sidebarWidth_: String,
+    };
+  }
 
-  /** @private{?function(!Event)} */
-  boundUpdateSidebarWidth_: null,
+  constructor() {
+    super();
 
-  /** @private {DNDManager} */
-  dndManager_: null,
+    /** @private{?function(!Event)} */
+    this.boundUpdateSidebarWidth_ = null;
 
-  /** @override */
-  created() {
+    /** @private {DNDManager} */
+    this.dndManager_ = null;
+
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
     const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
@@ -72,10 +87,12 @@ Polymer({
     if (path !== '/') {  // Only queries are supported, not subpages.
       window.history.replaceState(undefined /* stateObject */, '', '/');
     }
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
 
     this.watch('searchTerm_', function(state) {
@@ -115,13 +132,15 @@ Polymer({
 
     this.dndManager_ = new DNDManager();
     this.dndManager_.init();
-  },
+  }
 
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     window.removeEventListener('resize', this.boundUpdateSidebarWidth_);
     this.dndManager_.destroy();
     destroyApiListener();
-  },
+  }
 
   /**
    * Set up the splitter and set the initial width from localStorage.
@@ -147,19 +166,22 @@ Polymer({
 
     splitter.addEventListener('dragmove', this.boundUpdateSidebarWidth_);
     window.addEventListener('resize', this.boundUpdateSidebarWidth_);
-  },
+  }
 
   /** @private */
   updateSidebarWidth_() {
     this.sidebarWidth_ =
         /** @type {string} */ (getComputedStyle(this.$.sidebar).width);
-  },
+  }
 
   /** @private */
   searchTermChanged_(newValue, oldValue) {
     if (oldValue !== undefined && !newValue) {
-      this.fire(
-          'iron-announce', {text: loadTimeData.getString('searchCleared')});
+      this.dispatchEvent(new CustomEvent('iron-announce', {
+        bubbles: true,
+        composed: true,
+        detail: {text: loadTimeData.getString('searchCleared')}
+      }));
     }
 
     if (!this.searchTerm_) {
@@ -171,36 +193,49 @@ Polymer({
         return node.id;
       });
       this.dispatch(setSearchResults(ids));
-      this.fire('iron-announce', {
-        text: ids.length > 0 ?
-            loadTimeData.getStringF('searchResults', this.searchTerm_) :
-            loadTimeData.getString('noSearchResults')
-      });
+      this.dispatchEvent(new CustomEvent('iron-announce', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          text: ids.length > 0 ?
+              loadTimeData.getStringF('searchResults', this.searchTerm_) :
+              loadTimeData.getString('noSearchResults')
+        }
+      }));
     });
-  },
+  }
 
   /** @private */
   folderOpenStateChanged_() {
     window.localStorage[LOCAL_STORAGE_FOLDER_STATE_KEY] =
         JSON.stringify(Array.from(this.folderOpenState_));
-  },
+  }
 
   // Override FindShortcutBehavior methods.
+  /** @override */
   handleFindShortcut(modalContextOpen) {
     if (modalContextOpen) {
       return false;
     }
-    this.$$('bookmarks-toolbar').searchField.showAndFocus();
+    /** @type {!BookmarksToolbarElement} */ (
+        this.shadowRoot.querySelector('bookmarks-toolbar'))
+        .searchField.showAndFocus();
     return true;
-  },
+  }
 
   // Override FindShortcutBehavior methods.
+  /** @override */
   searchInputHasFocus() {
-    return this.$$('bookmarks-toolbar').searchField.isSearchFocused();
-  },
+    return /** @type {!BookmarksToolbarElement} */ (
+               this.shadowRoot.querySelector('bookmarks-toolbar'))
+        .searchField.isSearchFocused();
+  }
 
   /** @private */
   onUndoClick_() {
-    this.fire('command-undo');
-  },
-});
+    this.dispatchEvent(
+        new CustomEvent('command-undo', {bubbles: true, composed: true}));
+  }
+}
+
+customElements.define(BookmarksAppElement.is, BookmarksAppElement);

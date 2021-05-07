@@ -121,3 +121,28 @@ export const FindShortcutBehavior = {
     assertNotReached();
   },
 };
+
+/** @interface */
+export class FindShortcutBehaviorInterface {
+  constructor() {
+    /**
+     * @type {boolean}
+     * @protected
+     */
+    this.findShortcutListenOnAttach = true;
+  }
+
+  becomeActiveFindShortcutListener() {}
+
+  /**
+   * If handled, return true.
+   * @param {boolean} modalContextOpen
+   * @return {boolean}
+   */
+  handleFindShortcut(modalContextOpen) {}
+
+  removeSelfAsFindShortcutListener() {}
+
+  /** @return {boolean} */
+  searchInputHasFocus() {}
+}

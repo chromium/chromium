@@ -11,88 +11,127 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectItem} from './actions.js';
-import {CommandManager} from './command_manager.js';
+import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {StoreClient} from './store_client.js';
-import {BookmarkNode} from './types.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {BookmarkNode, BookmarksPageState} from './types.js';
 
-Polymer({
-  is: 'bookmarks-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ */
+const BookmarksItemElementBase = mixinBehaviors(StoreClient, PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class BookmarksItemElement extends BookmarksItemElementBase {
+  static get is() {
+    return 'bookmarks-item';
+  }
 
-  behaviors: [
-    StoreClient,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    itemId: {
-      type: String,
-      observer: 'onItemIdChanged_',
-    },
+  static get properties() {
+    return {
+      itemId: {
+        type: String,
+        observer: 'onItemIdChanged_',
+      },
 
-    ironListTabIndex: Number,
+      ironListTabIndex: Number,
 
-    /** @private {BookmarkNode} */
-    item_: {
-      type: Object,
-      observer: 'onItemChanged_',
-    },
+      /** @private {BookmarkNode} */
+      item_: {
+        type: Object,
+        observer: 'onItemChanged_',
+      },
 
-    /** @private */
-    isSelectedItem_: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      isSelectedItem_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    isMultiSelect_: Boolean,
+      /** @private */
+      isMultiSelect_: Boolean,
 
-    /** @private */
-    isFolder_: Boolean,
+      /** @private */
+      isFolder_: Boolean,
 
-    /** @private */
-    lastTouchPoints_: Number,
-  },
+      /** @private */
+      lastTouchPoints_: Number,
+    };
+  }
 
-  observers: [
-    'updateFavicon_(item_.url)',
-  ],
+  static get observers() {
+    return [
+      'updateFavicon_(item_.url)',
+    ];
+  }
 
-  listeners: {
-    'click': 'onClick_',
-    'dblclick': 'onDblClick_',
-    'contextmenu': 'onContextMenu_',
-    'keydown': 'onKeydown_',
-    'auxclick': 'onMiddleClick_',
-    'mousedown': 'cancelMiddleMouseBehavior_',
-    'mouseup': 'cancelMiddleMouseBehavior_',
-    'touchstart': 'onTouchStart_',
-  },
+  ready() {
+    super.ready();
 
-  /** @override */
-  attached() {
+    this.addEventListener(
+        'click',
+        e => this.onClick_(
+            /** @type {!MouseEvent} */ (e)));
+    this.addEventListener(
+        'dblclick',
+        e => this.onDblClick_(
+            /** @type {!MouseEvent} */ (e)));
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+    this.addEventListener(
+        'keydown',
+        e => this.onKeydown_(
+            /** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener(
+        'auxclick',
+        e => this.onMiddleClick_(
+            /** @type {!MouseEvent} */ (e)));
+    this.addEventListener(
+        'mousedown',
+        e => this.cancelMiddleMouseBehavior_(
+            /** @type {!MouseEvent} */ (e)));
+    this.addEventListener(
+        'mouseup',
+        e => this.cancelMiddleMouseBehavior_(
+            /** @type {!MouseEvent} */ (e)));
+    this.addEventListener(
+        'touchstart',
+        e => this.onTouchStart_(
+            /** @type {!TouchEvent} */ (e)));
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
     this.watch('item_', store => store.nodes[this.itemId]);
     this.watch(
         'isSelectedItem_', store => store.selection.items.has(this.itemId));
     this.watch('isMultiSelect_', store => store.selection.items.size > 1);
 
     this.updateFromStore();
-  },
+  }
 
   focusMenuButton() {
     focusWithoutInk(this.$.menuButton);
-  },
+  }
 
   /** @return {BookmarksItemElement} */
   getDropTarget() {
     return this;
-  },
+  }
 
   /**
    * @param {Event} e
@@ -114,13 +153,17 @@ Polymer({
       this.selectThisItem_();
     }
 
-    this.fire('open-command-menu', {
-      x: e.clientX,
-      y: e.clientY,
-      source: MenuSource.ITEM,
-      targetId: this.itemId,
-    });
-  },
+    this.dispatchEvent(new CustomEvent('open-command-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        x: e.clientX,
+        y: e.clientY,
+        source: MenuSource.ITEM,
+        targetId: this.itemId,
+      }
+    }));
+  }
 
   /**
    * @param {Event} e
@@ -135,12 +178,16 @@ Polymer({
       this.selectThisItem_();
     }
 
-    this.fire('open-command-menu', {
-      targetElement: e.target,
-      source: MenuSource.ITEM,
-      targetId: this.itemId,
-    });
-  },
+    this.dispatchEvent(new CustomEvent('open-command-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        targetElement: e.target,
+        source: MenuSource.ITEM,
+        targetId: this.itemId,
+      }
+    }));
+  }
 
   /** @private */
   selectThisItem_() {
@@ -149,7 +196,7 @@ Polymer({
       range: false,
       toggle: false,
     }));
-  },
+  }
 
   /** @private */
   onItemIdChanged_() {
@@ -157,7 +204,7 @@ Polymer({
     // for real users.
     assert(this.getState().nodes[this.itemId]);
     this.updateFromStore();
-  },
+  }
 
   /** @private */
   onItemChanged_() {
@@ -166,7 +213,7 @@ Polymer({
         'aria-label',
         this.item_.title || this.item_.url ||
             loadTimeData.getString('folderLabel'));
-  },
+  }
 
   /**
    * @param {MouseEvent} e
@@ -185,7 +232,7 @@ Polymer({
     }
     e.stopPropagation();
     e.preventDefault();
-  },
+  }
 
   /**
    * @private
@@ -203,7 +250,7 @@ Polymer({
         toggle: true,
       }));
     }
-  },
+  }
 
   /**
    * @param {MouseEvent} e
@@ -214,12 +261,12 @@ Polymer({
       this.selectThisItem_();
     }
 
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     const itemSet = this.getState().selection.items;
     if (commandManager.canExecute(Command.OPEN, itemSet)) {
       commandManager.handle(Command.OPEN, itemSet);
     }
-  },
+  }
 
   /**
    * @param {MouseEvent} e
@@ -235,13 +282,13 @@ Polymer({
       return;
     }
 
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     const itemSet = this.getState().selection.items;
     const command = e.shiftKey ? Command.OPEN : Command.OPEN_NEW_TAB;
     if (commandManager.canExecute(command, itemSet)) {
       commandManager.handle(command, itemSet);
     }
-  },
+  }
 
   /**
    * @param {TouchEvent} e
@@ -249,7 +296,7 @@ Polymer({
    */
   onTouchStart_(e) {
     this.lastTouchPoints_ = e.touches.length;
-  },
+  }
 
   /**
    * Prevent default middle-mouse behavior. On Windows, this prevents autoscroll
@@ -261,7 +308,7 @@ Polymer({
     if (e.button === 1) {
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * @param {string} url
@@ -271,7 +318,7 @@ Polymer({
     this.$.icon.className = url ? 'website-icon' : 'folder-icon';
     this.$.icon.style.backgroundImage =
         url ? getFaviconForPageURL(url, false) : '';
-  },
+  }
 
   /**
    * @return {string}
@@ -288,7 +335,7 @@ Polymer({
 
     return loadTimeData.getStringF(
         'moreActionsButtonAxLabel', this.item_.title);
-  },
+  }
 
   /**
    * This item is part of a group selection.
@@ -297,5 +344,7 @@ Polymer({
    */
   isMultiSelectMenu_() {
     return this.isSelectedItem_ && this.isMultiSelect_;
-  },
-});
+  }
+}
+
+customElements.define(BookmarksItemElement.is, BookmarksItemElement);

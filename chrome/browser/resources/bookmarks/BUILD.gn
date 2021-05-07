@@ -285,6 +285,7 @@ js_library("folder_node") {
     ":types",
     ":util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

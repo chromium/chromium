@@ -24,7 +24,7 @@
    * @param {function(!Object): (!Object|string)} identityGetter
    * @param {!Array<!Object>} updatedList
    * @param {boolean=} identityBasedUpdate
-   * @returns {boolean} True if notifySplices was called.
+   * @return {boolean} True if notifySplices was called.
    */
   updateList(
       propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {
@@ -77,6 +77,18 @@
     instance.notifySplices(propertyPath, splices);
   }
   return updated;
+}
+
+/* #export */ class ListPropertyUpdateBehaviorInterface {
+  /**
+   * @param {string} propertyPath
+   * @param {function(!Object): (!Object|string)} identityGetter
+   * @param {!Array<!Object>} updatedList
+   * @param {boolean=} identityBasedUpdate
+   * @return {boolean} True if notifySplices was called.
+   */
+  updateList(
+      propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {}
 }
 
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

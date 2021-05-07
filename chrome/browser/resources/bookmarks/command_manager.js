@@ -19,63 +19,87 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectFolder} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROOT_NODE_ID} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
-import {StoreClient} from './store_client.js';
-import {BookmarkNode} from './types.js';
+import {BookmarksEditDialogElement} from './edit_dialog.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {BookmarkNode, BookmarksPageState} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
 
-export const CommandManager = Polymer({
-  is: 'bookmarks-command-manager',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ */
+const BookmarksCommandManagerElementBase =
+    mixinBehaviors([StoreClient], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @type {?BookmarksCommandManagerElement} */
+let instance = null;
 
-  behaviors: [
-    StoreClient,
-  ],
+/** @polymer */
+export class BookmarksCommandManagerElement extends
+    BookmarksCommandManagerElementBase {
+  static get is() {
+    return 'bookmarks-command-manager';
+  }
 
-  properties: {
-    /** @private {!Array<Command>} */
-    menuCommands_: {
-      type: Array,
-      computed: 'computeMenuCommands_(menuSource_)',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {Set<string>} */
-    menuIds_: Object,
+  static get properties() {
+    return {
+      /** @private {!Array<Command>} */
+      menuCommands_: {
+        type: Array,
+        computed: 'computeMenuCommands_(menuSource_)',
+      },
 
-    /**
-     * Indicates where the context menu was opened from. Will be NONE if
-     * menu is not open, indicating that commands are from keyboard shortcuts
-     * or elsewhere in the UI.
-     * @private {MenuSource}
-     */
-    menuSource_: {
-      type: Number,
-      value: MenuSource.NONE,
-    },
+      /** @private {Set<string>} */
+      menuIds_: Object,
 
-    /** @private */
-    canPaste_: Boolean,
+      /**
+       * Indicates where the context menu was opened from. Will be NONE if
+       * menu is not open, indicating that commands are from keyboard shortcuts
+       * or elsewhere in the UI.
+       * @private {MenuSource}
+       */
+      menuSource_: {
+        type: Number,
+        value: MenuSource.NONE,
+      },
 
-    /** @private */
-    globalCanEdit_: Boolean,
-  },
+      /** @private */
+      canPaste_: Boolean,
 
-  /** @private {?Function} */
-  confirmOpenCallback_: null,
+      /** @private */
+      globalCanEdit_: Boolean,
+    };
+  }
 
-  attached() {
-    assert(CommandManager.instance_ === null);
-    CommandManager.instance_ = this;
+  constructor() {
+    super();
+    /** @private {?Function} */
+    this.confirmOpenCallback_ = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    assert(instance === null);
+    instance = this;
 
     /** @private {!BrowserProxy} */
     this.browserProxy_ = BrowserProxy.getInstance();
@@ -138,14 +162,15 @@ export const CommandManager = Polymer({
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
     });
-  },
+  }
 
-  detached() {
-    CommandManager.instance_ = null;
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    instance = null;
     this.boundListeners_.forEach(
         (handler, eventName) =>
             document.removeEventListener(eventName, handler));
-  },
+  }
 
   /**
    * Display the command context menu at (|x|, |y|) in window coordinates.
@@ -168,7 +193,7 @@ export const CommandManager = Polymer({
         dropdown.getDialog(), function() {
           dropdown.showAtPosition({top: y, left: x});
         });
-  },
+  }
 
   /**
    * Display the command context menu positioned to cover the |target|
@@ -188,13 +213,13 @@ export const CommandManager = Polymer({
         dropdown.getDialog(), function() {
           dropdown.showAt(target);
         });
-  },
+  }
 
   closeCommandMenu() {
     this.menuIds_ = new Set();
     this.menuSource_ = MenuSource.NONE;
     /** @type {!CrActionMenuElement} */ (this.$.dropdown.get()).close();
-  },
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // Command handlers:
@@ -232,7 +257,7 @@ export const CommandManager = Polymer({
         return this.isCommandVisible_(command, itemIds) &&
             this.isCommandEnabled_(command, itemIds);
     }
-  },
+  }
 
   /**
    * @param {Command} command
@@ -272,7 +297,7 @@ export const CommandManager = Polymer({
         return true;
     }
     return assert(false);
-  },
+  }
 
   /**
    * @param {Command} command
@@ -308,7 +333,7 @@ export const CommandManager = Polymer({
       default:
         return true;
     }
-  },
+  }
 
   /**
    * Returns whether the currently displayed bookmarks list can be changed.
@@ -319,7 +344,7 @@ export const CommandManager = Polymer({
     const state = this.getState();
     return state.search.term === '' &&
         canReorderChildren(state, state.selectedFolder);
-  },
+  }
 
   /**
    * @param {Command} command
@@ -360,7 +385,8 @@ export const CommandManager = Polymer({
         this.dispatch(
             selectFolder(assert(state.nodes[id].parentId), state.nodes));
         DialogFocusManager.getInstance().clearFocus();
-        this.fire('highlight-items', [id]);
+        this.dispatchEvent(new CustomEvent(
+            'highlight-items', {bubbles: true, composed: true, detail: [id]}));
         break;
       }
       case Command.DELETE: {
@@ -408,9 +434,11 @@ export const CommandManager = Polymer({
       case Command.DESELECT_ALL:
         this.dispatch(deselectItems());
         IronA11yAnnouncer.requestAvailability();
-        this.fire('iron-announce', {
-          text: loadTimeData.getString('itemsUnselected'),
-        });
+        this.dispatchEvent(new CustomEvent('iron-announce', {
+          bubbles: true,
+          composed: true,
+          detail: {text: loadTimeData.getString('itemsUnselected')}
+        }));
         break;
       case Command.CUT:
         chrome.bookmarkManagerPrivate.cut(Array.from(itemIds));
@@ -450,7 +478,7 @@ export const CommandManager = Polymer({
     }
     this.recordCommandHistogram_(
         itemIds, 'BookmarkManager.CommandExecuted', command);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -473,7 +501,7 @@ export const CommandManager = Polymer({
     }
 
     return false;
-  },
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // Private functions:
@@ -489,7 +517,7 @@ export const CommandManager = Polymer({
   addShortcut_(command, shortcut, macShortcut) {
     shortcut = (isMac && macShortcut) ? macShortcut : shortcut;
     this.shortcuts_.set(command, new KeyboardShortcutList(shortcut));
-  },
+  }
 
   /**
    * Minimize the set of |itemIds| by removing any node which has an ancestor
@@ -514,7 +542,7 @@ export const CommandManager = Polymer({
       minimizedSet.add(itemId);
     });
     return minimizedSet;
-  },
+  }
 
   /**
    * Open the given |urls| in response to a |command|. May show a confirmation
@@ -558,7 +586,7 @@ export const CommandManager = Polymer({
         loadTimeData.getStringF('openDialogBody', urls.length);
 
     DialogFocusManager.getInstance().showDialog(this.$.openDialog.get());
-  },
+  }
 
   /**
    * Returns all URLs in the given set of nodes and their immediate children.
@@ -588,7 +616,7 @@ export const CommandManager = Polymer({
     });
 
     return urls;
-  },
+  }
 
   /**
    * @param {!Set<string>} itemIds
@@ -602,7 +630,7 @@ export const CommandManager = Polymer({
     return Array.from(itemIds).some(function(id) {
       return predicate(nodes[id]);
     });
-  },
+  }
 
   /**
    * @param {!Set<string>} itemIds
@@ -615,7 +643,7 @@ export const CommandManager = Polymer({
         this.containsMatchingNode_(itemIds, function(node) {
           return !!node.url;
         });
-  },
+  }
 
   /**
    * @param {!Set<string>} itemIds
@@ -625,7 +653,7 @@ export const CommandManager = Polymer({
   isFolder_(itemIds) {
     return itemIds.size === 1 &&
         this.containsMatchingNode_(itemIds, node => !node.url);
-  },
+  }
 
   /**
    * @param {Command} command
@@ -704,7 +732,7 @@ export const CommandManager = Polymer({
 
     assertNotReached();
     return '';
-  },
+  }
 
   /**
    * @param {string} case0 String ID for the case of zero URLs.
@@ -727,7 +755,7 @@ export const CommandManager = Polymer({
     }
 
     return loadTimeData.getStringF(caseOther, urls.length);
-  },
+  }
 
   /**
    * @param {Command} command
@@ -746,7 +774,7 @@ export const CommandManager = Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /** @private */
   computeMenuCommands_() {
@@ -788,7 +816,7 @@ export const CommandManager = Polymer({
         return [];
     }
     assert(false);
-  },
+  }
 
   /**
    * @param {Command} command
@@ -808,7 +836,7 @@ export const CommandManager = Polymer({
         return this.globalCanEdit_ || this.isSingleBookmark_(itemIds);
     }
     return false;
-  },
+  }
 
   /**
    * @param {!Set<string>} itemIds
@@ -823,7 +851,7 @@ export const CommandManager = Polymer({
     }
 
     this.browserProxy_.recordInHistogram(histogram, command, Command.MAX_VALUE);
-  },
+  }
 
   /**
    * Show a toast with a bookmark |title| inserted into a label, with the
@@ -834,7 +862,7 @@ export const CommandManager = Polymer({
    * @param {boolean} canUndo If true, shows an undo button in the toast.
    * @private
    */
-  showTitleToast_: async function(labelPromise, title, canUndo) {
+  async showTitleToast_(labelPromise, title, canUndo) {
     const label = await labelPromise;
     const pieces =
         loadTimeData.getSubstitutedStringPieces(label, title).map(function(p) {
@@ -844,7 +872,7 @@ export const CommandManager = Polymer({
         });
     getToastManager().querySelector('dom-if').if = canUndo;
     getToastManager().showForStringPieces(pieces);
-  },
+  }
 
   /**
    * @param {number} targetId
@@ -857,7 +885,7 @@ export const CommandManager = Polymer({
         resolve();
       });
     });
-  },
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // Event handlers:
@@ -866,7 +894,7 @@ export const CommandManager = Polymer({
    * @param {Event} e
    * @private
    */
-  onOpenCommandMenu_: async function(e) {
+  async onOpenCommandMenu_(e) {
     if (e.detail.targetId) {
       await this.updateCanPaste_(e.detail.targetId);
     }
@@ -878,7 +906,7 @@ export const CommandManager = Polymer({
     this.browserProxy_.recordInHistogram(
         'BookmarkManager.CommandMenuOpened', e.detail.source,
         MenuSource.NUM_VALUES);
-  },
+  }
 
   /**
    * @param {Event} e
@@ -890,7 +918,7 @@ export const CommandManager = Polymer({
             Number(e.currentTarget.getAttribute('command'))),
         assert(this.menuIds_));
     this.closeCommandMenu();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -906,7 +934,7 @@ export const CommandManager = Polymer({
         !DialogFocusManager.getInstance().hasOpenDialog()) {
       this.handleKeyEvent(e, this.getState().selection.items);
     }
-  },
+  }
 
   /**
    * Close the menu on mousedown so clicks can propagate to the underlying UI.
@@ -921,24 +949,24 @@ export const CommandManager = Polymer({
     }
 
     this.closeCommandMenu();
-  },
+  }
 
   /** @private */
   onOpenCancelTap_() {
     this.$.openDialog.get().cancel();
-  },
+  }
 
   /** @private */
   onOpenConfirmTap_() {
     this.confirmOpenCallback_();
     this.$.openDialog.get().close();
-  },
-});
+  }
 
-/** @private {CommandManager} */
-CommandManager.instance_ = null;
+  /** @return {!BookmarksCommandManagerElement} */
+  static getInstance() {
+    return assert(instance);
+  }
+}
 
-/** @return {!CommandManager} */
-CommandManager.getInstance = function() {
-  return assert(CommandManager.instance_);
-};
+customElements.define(
+    BookmarksCommandManagerElement.is, BookmarksCommandManagerElement);

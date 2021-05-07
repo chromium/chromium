@@ -6,7 +6,7 @@ import './app.js';
 
 export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, selectItem, setSearchResults, setSearchTerm, updateAnchor} from './actions.js';
 export {BrowserProxy} from './browser_proxy.js';
-export {CommandManager} from './command_manager.js';
+export {BookmarksCommandManagerElement} from './command_manager.js';
 export {Command, DropPosition, IncognitoAvailability, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MenuSource, ROOT_NODE_ID} from './constants.js';
 export {DialogFocusManager} from './dialog_focus_manager.js';
 export {DragInfo} from './dnd_manager.js';

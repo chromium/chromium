@@ -134,6 +134,33 @@ cr.define('cr.ui', function() {
     },
   };
 
+  /* #export */ class StoreClientInterface {
+    /**
+     * Helper to dispatch an action to the store, which will update the store
+     * data and then (possibly) flow through to the UI.
+     * @param {?cr.ui.Action} action
+     */
+    dispatch(action) {}
+
+    /**
+     * Helper to dispatch a DeferredAction to the store, which will
+     * asynchronously perform updates to the store data and UI.
+     * @param {cr.ui.DeferredAction} action
+     */
+    dispatchAsync(action) {}
+
+    /** @param {Object} newState */
+    onStateChanged(newState) {}
+
+    updateFromStore() {}
+
+    watch(localProperty, valueGetter) {}
+
+    getState() {}
+
+    getStore() {}
+  }
+
   // #cr_define_end
   console.warn('crbug/1173575, non-JS module files deprecated.');
   return {

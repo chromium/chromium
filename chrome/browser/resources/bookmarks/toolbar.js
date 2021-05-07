@@ -11,55 +11,71 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, setSearchTerm} from './actions.js';
-import {CommandManager} from './command_manager.js';
+import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
-import {StoreClient} from './store_client.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {BookmarksPageState} from './types.js';
 
-Polymer({
-  is: 'bookmarks-toolbar',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ */
+const BookmarksToolbarElementBase = mixinBehaviors(StoreClient, PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
+  static get is() {
+    return 'bookmarks-toolbar';
+  }
 
-  behaviors: [
-    StoreClient,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    sidebarWidth: {
-      type: String,
-      observer: 'onSidebarWidthChanged_',
-    },
+  static get properties() {
+    return {
+      sidebarWidth: {
+        type: String,
+        observer: 'onSidebarWidthChanged_',
+      },
 
-    showSelectionOverlay: {
-      type: Boolean,
-      computed: 'shouldShowSelectionOverlay_(selectedItems_, globalCanEdit_)',
-      readOnly: true,
-    },
+      showSelectionOverlay: {
+        type: Boolean,
+        computed: 'shouldShowSelectionOverlay_(selectedItems_, globalCanEdit_)',
+        readOnly: true,
+      },
 
-    /** @private */
-    narrow_: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      narrow_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    searchTerm_: {
-      type: String,
-      observer: 'onSearchTermChanged_',
-    },
+      /** @private */
+      searchTerm_: {
+        type: String,
+        observer: 'onSearchTermChanged_',
+      },
 
-    /** @private {!Set<string>} */
-    selectedItems_: Object,
+      /** @private {!Set<string>} */
+      selectedItems_: Object,
 
-    /** @private */
-    globalCanEdit_: Boolean,
-  },
+      /** @private */
+      globalCanEdit_: Boolean,
+    };
+  }
 
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.watch('searchTerm_', function(state) {
       return state.search.term;
     });
@@ -70,40 +86,45 @@ Polymer({
       return state.prefs.canEdit;
     });
     this.updateFromStore();
-  },
+  }
 
   /** @return {CrToolbarSearchFieldElement} */
   get searchField() {
-    return /** @type {CrToolbarElement} */ (this.$$('cr-toolbar'))
+    return /** @type {CrToolbarElement} */ (
+               this.shadowRoot.querySelector('cr-toolbar'))
         .getSearchField();
-  },
+  }
 
   /**
    * @param {Event} e
    * @private
    */
   onMenuButtonOpenTap_(e) {
-    this.fire('open-command-menu', {
-      targetElement: e.target,
-      source: MenuSource.TOOLBAR,
-    });
-  },
+    this.dispatchEvent(new CustomEvent('open-command-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        targetElement: e.target,
+        source: MenuSource.TOOLBAR,
+      }
+    }));
+  }
 
   /** @private */
   onDeleteSelectionTap_() {
     const selection = this.selectedItems_;
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(commandManager.canExecute(Command.DELETE, selection));
     commandManager.handle(Command.DELETE, selection);
-  },
+  }
 
   /** @private */
   onClearSelectionTap_() {
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     assert(
         commandManager.canExecute(Command.DESELECT_ALL, this.selectedItems_));
     commandManager.handle(Command.DESELECT_ALL, this.selectedItems_);
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -113,17 +134,17 @@ Polymer({
     if (e.detail !== this.searchTerm_) {
       this.dispatch(setSearchTerm(e.detail));
     }
-  },
+  }
 
   /** @private */
   onSidebarWidthChanged_() {
     this.style.setProperty('--sidebar-width', this.sidebarWidth);
-  },
+  }
 
   /** @private */
   onSearchTermChanged_() {
     this.searchField.setValue(this.searchTerm_ || '');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -131,7 +152,7 @@ Polymer({
    */
   shouldShowSelectionOverlay_() {
     return this.selectedItems_.size > 1 && this.globalCanEdit_;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -139,9 +160,9 @@ Polymer({
    */
   canDeleteSelection_() {
     return this.showSelectionOverlay &&
-        CommandManager.getInstance().canExecute(
+        BookmarksCommandManagerElement.getInstance().canExecute(
             Command.DELETE, this.selectedItems_);
-  },
+  }
 
   /**
    * @return {string}
@@ -149,5 +170,7 @@ Polymer({
    */
   getItemsSelectedString_() {
     return loadTimeData.getStringF('itemsSelected', this.selectedItems_.size);
-  },
-});
+  }
+}
+
+customElements.define(BookmarksToolbarElement.is, BookmarksToolbarElement);

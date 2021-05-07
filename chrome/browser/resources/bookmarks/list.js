@@ -4,81 +4,102 @@
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './item.js';
 import './shared_style.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
-import {CommandManager} from './command_manager.js';
+import {BookmarksCommandManagerElement} from './command_manager.js';
 import {MenuSource} from './constants.js';
-import {StoreClient} from './store_client.js';
+import {BookmarksItemElement} from './item.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarksPageState} from './types.js';
 import {canReorderChildren, getDisplayedList} from './util.js';
 
-Polymer({
-  is: 'bookmarks-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ */
+const BookmarksListElementBase =
+    mixinBehaviors([StoreClient, ListPropertyUpdateBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class BookmarksListElement extends BookmarksListElementBase {
+  static get is() {
+    return 'bookmarks-list';
+  }
 
-  behaviors: [
-    StoreClient,
-    ListPropertyUpdateBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * A list of item ids wrapped in an Object. This is necessary because
-     * iron-list is unable to distinguish focusing index 6 from focusing id '6'
-     * so the item we supply to iron-list needs to be non-index-like.
-     * @private {Array<{id: string}>}
-     */
-    displayedList_: {
-      type: Array,
-      value() {
-        // Use an empty list during initialization so that the databinding to
-        // hide #list takes effect.
-        return [];
+  static get properties() {
+    return {
+      /**
+       * A list of item ids wrapped in an Object. This is necessary because
+       * iron-list is unable to distinguish focusing index 6 from focusing id
+       * '6' so the item we supply to iron-list needs to be non-index-like.
+       * @private {Array<{id: string}>}
+       */
+      displayedList_: {
+        type: Array,
+        value() {
+          // Use an empty list during initialization so that the databinding to
+          // hide #list takes effect.
+          return [];
+        },
       },
-    },
 
-    /** @private {Array<string>} */
-    displayedIds_: {
-      type: Array,
-      observer: 'onDisplayedIdsChanged_',
-    },
+      /** @private {Array<string>} */
+      displayedIds_: {
+        type: Array,
+        observer: 'onDisplayedIdsChanged_',
+      },
 
-    /** @private */
-    searchTerm_: {
-      type: String,
-      observer: 'onDisplayedListSourceChange_',
-    },
+      /** @private */
+      searchTerm_: {
+        type: String,
+        observer: 'onDisplayedListSourceChange_',
+      },
 
-    /** @private */
-    selectedFolder_: {
-      type: String,
-      observer: 'onDisplayedListSourceChange_',
-    },
+      /** @private */
+      selectedFolder_: {
+        type: String,
+        observer: 'onDisplayedListSourceChange_',
+      },
 
-    /** @private {Set<string>} */
-    selectedItems_: Object,
-  },
+      /** @private {Set<string>} */
+      selectedItems_: Object,
+    };
+  }
 
-  listeners: {
-    'click': 'deselectItems_',
-    'contextmenu': 'onContextMenu_',
-    'open-command-menu': 'onOpenCommandMenu_',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('click', () => this.deselectItems_());
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+    this.addEventListener(
+        'open-command-menu',
+        e => this.onOpenCommandMenu_(
+            /** @type {!CustomEvent<{source: !MenuSource}>} */ (e)));
+  }
 
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     const list = /** @type {IronListElement} */ (this.$.list);
     list.scrollTarget = this;
 
@@ -104,17 +125,19 @@ Polymer({
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
     });
-  },
+  }
 
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     document.removeEventListener(
         'highlight-items', this.boundOnHighlightItems_);
-  },
+  }
 
   /** @return {HTMLElement} */
   getDropTarget() {
     return /** @type {!HTMLDivElement} */ (this.$.message);
-  },
+  }
 
   /**
    * Updates `displayedList_` using splices to be equivalent to `newValue`. This
@@ -123,7 +146,7 @@ Polymer({
    * @param {Array<string>} newValue
    * @param {Array<string>} oldValue
    */
-  onDisplayedIdsChanged_: async function(newValue, oldValue) {
+  async onDisplayedIdsChanged_(newValue, oldValue) {
     const updatedList = newValue.map(id => ({id: id}));
     let skipFocus = false;
     let selectIndex = -1;
@@ -143,10 +166,13 @@ Polymer({
     this.updateList('displayedList_', item => item.id, updatedList);
     // Trigger a layout of the iron list. Otherwise some elements may render
     // as blank entries. See https://crbug.com/848683
-    this.$.list.fire('iron-resize');
+    this.$.list.dispatchEvent(
+        new CustomEvent('iron-resize', {bubbles: true, composed: true}));
     const label = await PluralStringProxyImpl.getInstance().getPluralString(
         'listChanged', this.displayedList_.length);
-    this.fire('iron-announce', {text: label});
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce',
+        {bubbles: true, composed: true, detail: {text: label}}));
 
     if (!skipFocus && selectIndex > -1) {
       setTimeout(() => {
@@ -158,12 +184,12 @@ Polymer({
         }
       });
     }
-  },
+  }
 
   /** @private */
   onDisplayedListSourceChange_() {
     this.scrollTop = 0;
-  },
+  }
 
   /**
    * Scroll the list so that |itemId| is visible, if it is not already.
@@ -177,7 +203,7 @@ Polymer({
         index > list.lastVisibleIndex) {
       list.scrollToIndex(index);
     }
-  },
+  }
 
   /** @private */
   emptyListMessage_() {
@@ -189,17 +215,17 @@ Polymer({
           'emptyUnmodifiableList';
     }
     return loadTimeData.getString(emptyListMessage);
-  },
+  }
 
   /** @private */
   isEmptyList_() {
     return this.displayedList_.length === 0;
-  },
+  }
 
   /** @private */
   deselectItems_() {
     this.dispatch(deselectItems());
-  },
+  }
 
   /**
    * @param{HTMLElement} el
@@ -207,7 +233,7 @@ Polymer({
    */
   getIndexForItemElement_(el) {
     return this.$.list.modelForElement(el).index;
-  },
+  }
 
   /**
    * @param {!CustomEvent<{source: !MenuSource}>} e
@@ -219,7 +245,7 @@ Polymer({
       this.scrollToId_(
           /** @type {BookmarksItemElement} */ (e.composedPath()[0]).itemId);
     }
-  },
+  }
 
   /**
    * Highlight a list of items by selecting them, scrolling them into view and
@@ -242,13 +268,13 @@ Polymer({
     this.dispatch(selectAll(toHighlight, this.getState(), leadId));
 
     // Allow iron-list time to render additions to the list.
-    this.async(function() {
+    microTask.run(() => {
       this.scrollToId_(leadId);
       const leadIndex = this.displayedIds_.indexOf(leadId);
       assert(leadIndex !== -1);
       this.$.list.focusItem(leadIndex);
     });
-  },
+  }
 
   /**
    * @param {Event} e
@@ -322,14 +348,14 @@ Polymer({
     }
 
     if (!handled) {
-      handled = CommandManager.getInstance().handleKeyEvent(
+      handled = BookmarksCommandManagerElement.getInstance().handleKeyEvent(
           e, this.getState().selection.items);
     }
 
     if (handled) {
       e.stopPropagation();
     }
-  },
+  }
 
   /**
    * @param {Event} e
@@ -339,12 +365,16 @@ Polymer({
     e.preventDefault();
     this.deselectItems_();
 
-    this.fire('open-command-menu', {
-      x: e.clientX,
-      y: e.clientY,
-      source: MenuSource.LIST,
-    });
-  },
+    this.dispatchEvent(new CustomEvent('open-command-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        x: e.clientX,
+        y: e.clientY,
+        source: MenuSource.LIST,
+      }
+    }));
+  }
 
   /**
    * Returns a 1-based index for aria-rowindex.
@@ -354,7 +384,7 @@ Polymer({
    */
   getAriaRowindex_(index) {
     return index + 1;
-  },
+  }
 
   /**
    * @param {string} id
@@ -362,5 +392,7 @@ Polymer({
    */
   getAriaSelected_(id) {
     return this.selectedItems_.has(id);
-  },
-});
+  }
+}
+
+customElements.define(BookmarksListElement.is, BookmarksListElement);

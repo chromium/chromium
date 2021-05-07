@@ -5,62 +5,86 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
 import {BOOKMARKS_BAR_ID} from './constants.js';
-import {StoreClient} from './store_client.js';
+import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
+import {BookmarksPageState} from './types.js';
 
-Polymer({
-  /**
-   * This element is a one way bound interface that routes the page URL to
-   * the searchTerm and selectedId. Clients must initialize themselves by
-   * reading the router's fields after attach.
-   */
-  is: 'bookmarks-router',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
+ * @implements {StoreObserver<BookmarksPageState>}
+ */
+const BookmarksRouterElementBase = mixinBehaviors(StoreClient, PolymerElement);
 
-  _template: html`{__html_template__}`,
+/**
+ * This element is a one way bound interface that routes the page URL to
+ * the searchTerm and selectedId. Clients must initialize themselves by
+ * reading the router's fields after attach.
+ * @polymer
+ */
+export class BookmarksRouterElement extends BookmarksRouterElementBase {
+  static get is() {
+    return 'bookmarks-router';
+  }
 
-  behaviors: [
-    StoreClient,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Parameter q is routed to the searchTerm.
-     * Parameter id is routed to the selectedId.
-     * @private
-     */
-    queryParams_: Object,
+  static get properties() {
+    return {
+      /**
+       * Parameter q is routed to the searchTerm.
+       * Parameter id is routed to the selectedId.
+       * @private
+       */
+      queryParams_: Object,
 
-    /** @private {string} */
-    query_: {
-      type: String,
-      observer: 'onQueryChanged_',
-    },
+      /** @private {string} */
+      query_: {
+        type: String,
+        observer: 'onQueryChanged_',
+      },
 
-    /** @private {string} */
-    urlQuery_: {
-      type: String,
-      observer: 'onUrlQueryChanged_',
-    },
+      /** @private {string} */
+      urlQuery_: {
+        type: String,
+        observer: 'onUrlQueryChanged_',
+      },
 
-    /** @private */
-    searchTerm_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      searchTerm_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {?string} */
-    selectedId_: String,
-  },
+      /** @private {?string} */
+      selectedId_: String,
+    };
+  }
 
-  observers: [
-    'onQueryParamsChanged_(queryParams_)',
-    'onStateChanged_(searchTerm_, selectedId_)',
-  ],
+  static get observers() {
+    return [
+      'onQueryParamsChanged_(queryParams_)',
+      'onStateChanged_(searchTerm_, selectedId_)',
+    ];
+  }
 
-  attached() {
+  constructor() {
+    super();
+    /** @private {Debouncer} */
+    this.debounceJob_;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
     this.watch('selectedId_', function(state) {
       return state.selectedFolder;
     });
@@ -68,7 +92,7 @@ Polymer({
       return state.search.term;
     });
     this.updateFromStore();
-  },
+  }
 
   /** @private */
   onQueryParamsChanged_() {
@@ -91,7 +115,7 @@ Polymer({
         dispatch(selectFolder(selectedId, this.getState().nodes));
       });
     }
-  },
+  }
 
   /**
    * @param {?string} current Current value of the query.
@@ -102,17 +126,18 @@ Polymer({
     if (previous !== undefined) {
       this.urlQuery_ = this.query_;
     }
-  },
+  }
 
   /** @private */
   onUrlQueryChanged_() {
     this.query_ = this.urlQuery_;
-  },
+  }
 
   /** @private */
   onStateChanged_() {
-    this.debounce('updateQueryParams', this.updateQueryParams_.bind(this));
-  },
+    this.debounceJob_ = Debouncer.debounce(
+        this.debounceJob_, microTask, () => this.updateQueryParams_());
+  }
 
   /** @private */
   updateQueryParams_() {
@@ -123,5 +148,7 @@ Polymer({
     } else {
       this.queryParams_ = {};
     }
-  },
-});
+  }
+}
+
+customElements.define(BookmarksRouterElement.is, BookmarksRouterElement);

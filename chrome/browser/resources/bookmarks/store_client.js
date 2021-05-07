@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {StoreClient as CrUiStoreClient} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {StoreClient as CrUiStoreClient, StoreClientInterface as CrUiStoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
 
 import {Store} from './store.js';
 import {BookmarksPageState} from './types.js';
@@ -40,8 +40,24 @@ const BookmarksStoreClientImpl = {
   },
 };
 
+export class BookmarksStoreClientInterface {
+  /**
+   * @param {string} localProperty
+   * @param {function(Object)} valueGetter
+   */
+  watch(localProperty, valueGetter) {}
+
+  /** @return {BookmarksPageState} */
+  getState() {}
+
+  /** @return {Store} */
+  getStore() {}
+}
+
 /**
  * @polymerBehavior
+ * @implements {BookmarksStoreClientInterface}
+ * @implements {CrUiStoreClientInterface}
  * @implements {StoreObserver<BookmarksPageState>}
  */
 export const StoreClient = [CrUiStoreClient, BookmarksStoreClientImpl];

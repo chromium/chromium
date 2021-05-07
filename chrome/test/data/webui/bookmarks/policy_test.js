@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, Command, CommandManager, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksCommandManagerElement, BrowserProxy, Command, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {TestBookmarksBrowserProxy} from 'chrome://test/bookmarks/test_browser_proxy.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
@@ -35,7 +35,7 @@ suite('Bookmarks policies', function() {
   });
 
   test('incognito availability updates when changed', async function() {
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     // Incognito is disabled during testGenPreamble(). Wait for the front-end to
     // load the config.
     const whenIncognitoSet = await Promise.all([
@@ -57,7 +57,7 @@ suite('Bookmarks policies', function() {
   });
 
   test('canEdit updates when changed', async function() {
-    const commandManager = CommandManager.getInstance();
+    const commandManager = BookmarksCommandManagerElement.getInstance();
     const whenCanEditSet = await Promise.all([
       testBrowserProxy.whenCalled('getCanEditBookmarks'),
       store.waitForAction('set-can-edit')
