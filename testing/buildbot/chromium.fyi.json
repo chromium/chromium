@@ -52530,7 +52530,7 @@
   },
   "linux-lacros-version-skew-fyi": {
     "additional_compile_targets": [
-      "chromiumos_preflight"
+      "chrome"
     ],
     "gtest_tests": [
       {
