@@ -9,9 +9,11 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/metrics_service.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
@@ -22,7 +24,11 @@
 
 namespace tracing {
 
-BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() {
+BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() = default;
+BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
+
+void BackgroundTracingMetricsProvider::Init() {
+  // TODO(ssid): SetupBackgroundTracingFieldTrial() should be called here.
 #if defined(OS_WIN)
   // AV metrics provider is initialized asynchronously. It might not be
   // initialized when reporting metrics, in which case it'll just not add any AV
@@ -31,18 +37,17 @@ BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() {
       std::make_unique<AntiVirusMetricsProvider>());
   av_metrics_provider_ = system_profile_providers_.back().get();
 #endif  // defined(OS_WIN)
+  variations::SyntheticTrialRegistry* registry = nullptr;
+  if (g_browser_process->metrics_service() != nullptr) {
+    registry = g_browser_process->metrics_service()->synthetic_trial_registry();
+  }
   system_profile_providers_.emplace_back(
-      std::make_unique<variations::FieldTrialsProvider>(nullptr,
+      std::make_unique<variations::FieldTrialsProvider>(registry,
                                                         base::StringPiece()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::CPUMetricsProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::GPUMetricsProvider>());
-}
-BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() {}
-
-void BackgroundTracingMetricsProvider::Init() {
-  // TODO(ssid): SetupBackgroundTracingFieldTrial() should be called here.
 }
 
 #if defined(OS_WIN)
