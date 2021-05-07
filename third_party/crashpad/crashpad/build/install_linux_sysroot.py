@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2018 The Crashpad Authors. All rights reserved.
 #
@@ -21,7 +21,7 @@ import os
 import shutil
 import subprocess
 import sys
-import urllib2
+import urllib.request
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,16 +45,16 @@ def main():
             if s.read() == url:
                 return
 
-    print 'Installing Debian root image from %s' % url
+    print('Installing Debian root image from %s' % url)
 
     if os.path.isdir(sysroot):
         shutil.rmtree(sysroot)
     os.mkdir(sysroot)
     tarball = os.path.join(sysroot, FILENAME)
-    print 'Downloading %s' % url
+    print('Downloading %s' % url)
 
     for _ in range(3):
-        response = urllib2.urlopen(url)
+        response = urllib.request.urlopen(url)
         with open(tarball, 'wb') as f:
             f.write(response.read())
         break

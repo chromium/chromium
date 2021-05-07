@@ -16,12 +16,8 @@ import("../build/crashpad_buildconfig.gni")
 
 static_library("handler") {
   sources = [
-    "crash_report_upload_thread.cc",
-    "crash_report_upload_thread.h",
     "handler_main.cc",
     "handler_main.h",
-    "minidump_to_upload_parameters.cc",
-    "minidump_to_upload_parameters.h",
     "prune_crash_reports_thread.cc",
     "prune_crash_reports_thread.h",
     "user_stream_data_source.cc",
@@ -34,8 +30,6 @@ static_library("handler") {
       "mac/crash_report_exception_handler.h",
       "mac/exception_handler_server.cc",
       "mac/exception_handler_server.h",
-      "mac/file_limit_annotation.cc",
-      "mac/file_limit_annotation.h",
     ]
   }
 
@@ -67,12 +61,14 @@ static_library("handler") {
   public_configs = [ "..:crashpad_config" ]
 
   public_deps = [
+    ":common",
     "../client",
     "../third_party/mini_chromium:base",
     "../util",
   ]
 
   deps = [
+    ":common",
     "../minidump",
     "../snapshot",
     "../third_party/mini_chromium:chromeos_buildflags",
@@ -91,6 +87,34 @@ if (crashpad_is_android) {
     sources = [ "crashpad_handler_main.cc" ]
 
     deps = [ ":handler" ]
+  }
+}
+
+static_library("common") {
+  sources = [
+    "crash_report_upload_thread.cc",
+    "crash_report_upload_thread.h",
+    "minidump_to_upload_parameters.cc",
+    "minidump_to_upload_parameters.h",
+  ]
+  if (crashpad_is_mac || crashpad_is_ios) {
+    sources += [
+      "mac/file_limit_annotation.cc",
+      "mac/file_limit_annotation.h",
+    ]
+  }
+  public_configs = [ "..:crashpad_config" ]
+  public_deps = [
+    "../third_party/mini_chromium:base",
+    "../util",
+  ]
+  deps = [
+    "../client:common",
+    "../snapshot",
+    "../util",
+  ]
+  if (crashpad_is_win) {
+    cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 }
 

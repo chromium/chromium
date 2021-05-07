@@ -561,11 +561,17 @@ TEST(FileIO, MultipleSharedLocks) {
 
   auto handle1 = ScopedFileHandle(LoggingOpenFileForRead(shared_file));
   ASSERT_NE(handle1, kInvalidFileHandle);
-  EXPECT_TRUE(LoggingLockFile(handle1.get(), FileLocking::kShared));
+  EXPECT_EQ(
+      LoggingLockFile(
+          handle1.get(), FileLocking::kShared, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   auto handle2 = ScopedFileHandle(LoggingOpenFileForRead(shared_file));
   ASSERT_NE(handle1, kInvalidFileHandle);
-  EXPECT_TRUE(LoggingLockFile(handle2.get(), FileLocking::kShared));
+  EXPECT_EQ(
+      LoggingLockFile(
+          handle2.get(), FileLocking::kShared, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   EXPECT_TRUE(LoggingUnlockFile(handle1.get()));
   EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
@@ -590,7 +596,9 @@ class LockingTestThread : public Thread {
  private:
   void ThreadMain() override {
     for (int i = 0; i < iterations_; ++i) {
-      EXPECT_TRUE(LoggingLockFile(file_.get(), lock_type_));
+      EXPECT_EQ(LoggingLockFile(
+                    file_.get(), lock_type_, FileLockingBlocking::kBlocking),
+                FileLockingResult::kSuccess);
       base::subtle::NoBarrier_AtomicIncrement(actual_iterations_, 1);
       EXPECT_TRUE(LoggingUnlockFile(file_.get()));
     }
@@ -624,7 +632,9 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
                                     FileWriteMode::kReuseOrCreate,
                                     FilePermissions::kOwnerOnly));
   ASSERT_NE(initial, kInvalidFileHandle);
-  ASSERT_TRUE(LoggingLockFile(initial.get(), main_lock));
+  EXPECT_EQ(
+      LoggingLockFile(initial.get(), main_lock, FileLockingBlocking::kBlocking),
+      FileLockingResult::kSuccess);
 
   base::subtle::Atomic32 actual_iterations = 0;
 
@@ -669,6 +679,43 @@ TEST(FileIO, ExclusiveVsShareds) {
 
 TEST(FileIO, SharedVsExclusives) {
   LockingTest(FileLocking::kShared, FileLocking::kExclusive);
+}
+
+TEST(FileIO, ExclusiveVsExclusivesNonBlocking) {
+  ScopedTempDir temp_dir;
+  base::FilePath exclusive_file =
+      temp_dir.path().Append(FILE_PATH_LITERAL("file_to_lock"));
+
+  {
+    // Create an empty file to lock.
+    ScopedFileHandle create(
+        LoggingOpenFileForWrite(exclusive_file,
+                                FileWriteMode::kCreateOrFail,
+                                FilePermissions::kOwnerOnly));
+  }
+
+  auto handle1 = ScopedFileHandle(LoggingOpenFileForRead(exclusive_file));
+  ASSERT_NE(handle1, kInvalidFileHandle);
+  EXPECT_EQ(LoggingLockFile(handle1.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kBlocking),
+            FileLockingResult::kSuccess);
+
+  // Non-blocking lock should fail.
+  auto handle2 = ScopedFileHandle(LoggingOpenFileForRead(exclusive_file));
+  ASSERT_NE(handle2, kInvalidFileHandle);
+  EXPECT_EQ(LoggingLockFile(handle2.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kNonBlocking),
+            FileLockingResult::kWouldBlock);
+
+  // After unlocking, non-blocking lock should succeed.
+  EXPECT_TRUE(LoggingUnlockFile(handle1.get()));
+  EXPECT_EQ(LoggingLockFile(handle2.get(),
+                            FileLocking::kExclusive,
+                            FileLockingBlocking::kNonBlocking),
+            FileLockingResult::kSuccess);
+  EXPECT_TRUE(LoggingUnlockFile(handle2.get()));
 }
 
 #endif  // !OS_FUCHSIA

@@ -182,19 +182,26 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
   return file;
 }
 
-bool LoggingLockFile(FileHandle file, FileLocking locking) {
+FileLockingResult LoggingLockFile(FileHandle file,
+                                  FileLocking locking,
+                                  FileLockingBlocking blocking) {
   DWORD flags =
       (locking == FileLocking::kExclusive) ? LOCKFILE_EXCLUSIVE_LOCK : 0;
+  if (blocking == FileLockingBlocking::kNonBlocking)
+    flags |= LOCKFILE_FAIL_IMMEDIATELY;
 
   // Note that the `Offset` fields of overlapped indicate the start location for
   // locking (beginning of file in this case), and `hEvent` must be also be set
   // to 0.
   OVERLAPPED overlapped = {0};
   if (!LockFileEx(file, flags, 0, MAXDWORD, MAXDWORD, &overlapped)) {
+    if (GetLastError() == ERROR_LOCK_VIOLATION) {
+      return FileLockingResult::kWouldBlock;
+    }
     PLOG(ERROR) << "LockFileEx";
-    return false;
+    return FileLockingResult::kFailure;
   }
-  return true;
+  return FileLockingResult::kSuccess;
 }
 
 bool LoggingUnlockFile(FileHandle file) {

@@ -113,7 +113,6 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googletest/test/googletest-message-test.cc",
       "$googletest_dir/googletest/test/googletest-options-test.cc",
       "$googletest_dir/googletest/test/googletest-port-test.cc",
-      "$googletest_dir/googletest/test/googletest-printers-test.cc",
       "$googletest_dir/googletest/test/googletest-test-part-test.cc",
       "$googletest_dir/googletest/test/gtest-typed-test2_test.cc",
       "$googletest_dir/googletest/test/gtest-typed-test_test.cc",
@@ -126,6 +125,15 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googletest/test/production.cc",
       "$googletest_dir/googletest/test/production.h",
     ]
+
+    if (!crashpad_is_win) {
+      # TODO: Fix error C2015: too many characters in constant. As this error
+      # cannot be suppressed, removing the test on Windows. See
+      # https://chromium-review.googlesource.com/c/crashpad/crashpad/+/2855854/2
+      # for details.
+      sources +=
+          [ "$googletest_dir/googletest/test/googletest-printers-test.cc" ]
+    }
     configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googletest_private_config" ]
     deps = [
@@ -259,7 +267,6 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googlemock/include/gmock/gmock-actions.h",
       "$googletest_dir/googlemock/include/gmock/gmock-cardinalities.h",
       "$googletest_dir/googlemock/include/gmock/gmock-function-mocker.h",
-      "$googletest_dir/googlemock/include/gmock/gmock-generated-actions.h",
       "$googletest_dir/googlemock/include/gmock/gmock-matchers.h",
       "$googletest_dir/googlemock/include/gmock/gmock-more-actions.h",
       "$googletest_dir/googlemock/include/gmock/gmock-more-matchers.h",
@@ -302,8 +309,6 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googlemock/test/gmock-actions_test.cc",
       "$googletest_dir/googlemock/test/gmock-cardinalities_test.cc",
       "$googletest_dir/googlemock/test/gmock-function-mocker_test.cc",
-      "$googletest_dir/googlemock/test/gmock-generated-actions_test.cc",
-      "$googletest_dir/googlemock/test/gmock-generated-matchers_test.cc",
       "$googletest_dir/googlemock/test/gmock-internal-utils_test.cc",
       "$googletest_dir/googlemock/test/gmock-matchers_test.cc",
       "$googletest_dir/googlemock/test/gmock-more-actions_test.cc",
@@ -331,6 +336,12 @@ if (crashpad_is_in_chromium) {
         "-Wno-unused-private-field",
       ]
     }
+
+    if (crashpad_is_win) {
+      # TODO: Correct SDK in vc\tools\msvc\14.14.26428\include\functional
+      cflags = [ "/wd4789" ]  # VAR of size N bytes will be overrun
+    }
+
   }
 
   test("gmock_link_test") {

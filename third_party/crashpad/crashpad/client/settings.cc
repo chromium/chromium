@@ -207,8 +207,11 @@ Settings::ScopedLockedFileHandle Settings::MakeScopedLockedFileHandle(
   return ScopedLockedFileHandle(scoped.release(), base::FilePath());
 #else
   if (scoped.is_valid()) {
-    if (!LoggingLockFile(scoped.get(), locking))
+    if (LoggingLockFile(
+            scoped.get(), locking, FileLockingBlocking::kBlocking) !=
+        FileLockingResult::kSuccess) {
       scoped.reset();
+    }
   }
   return ScopedLockedFileHandle(scoped.release());
 #endif

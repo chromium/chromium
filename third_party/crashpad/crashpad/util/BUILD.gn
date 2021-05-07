@@ -384,6 +384,10 @@ crashpad_static_library("util") {
       "ios/exception_processor.mm",
       "ios/ios_system_data_collector.h",
       "ios/ios_system_data_collector.mm",
+      "ios/raw_logging.cc",
+      "ios/raw_logging.h",
+      "ios/scoped_vm_read.cc",
+      "ios/scoped_vm_read.h",
     ]
   }
 
@@ -787,7 +791,10 @@ source_set("util_test") {
   }
 
   if (crashpad_is_ios) {
-    sources += [ "ios/exception_processor_test.mm" ]
+    sources += [
+      "ios/exception_processor_test.mm",
+      "ios/scoped_vm_read_test.cc",
+    ]
 
     sources -= [
       "process/process_memory_range_test.cc",

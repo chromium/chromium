@@ -16,27 +16,14 @@ import("../build/crashpad_buildconfig.gni")
 
 crashpad_static_library("client") {
   sources = [
-    "annotation.cc",
-    "annotation.h",
-    "annotation_list.cc",
-    "annotation_list.h",
-    "crash_report_database.cc",
-    "crash_report_database.h",
     "crashpad_client.h",
-    "crashpad_info.cc",
-    "crashpad_info.h",
     "prune_crash_reports.cc",
     "prune_crash_reports.h",
-    "settings.cc",
-    "settings.h",
-    "simple_address_range_bag.h",
-    "simple_string_dictionary.h",
     "simulate_crash.h",
   ]
 
   if (crashpad_is_mac) {
     sources += [
-      "crash_report_database_mac.mm",
       "crashpad_client_mac.cc",
       "simulate_crash_mac.cc",
       "simulate_crash_mac.h",
@@ -45,7 +32,6 @@ crashpad_static_library("client") {
 
   if (crashpad_is_ios) {
     sources += [
-      "crash_report_database_mac.mm",
       "crashpad_client_ios.cc",
       "simulate_crash_ios.h",
     ]
@@ -62,13 +48,11 @@ crashpad_static_library("client") {
     sources += [
       "client_argv_handling.cc",
       "client_argv_handling.h",
-      "crashpad_info_note.S",
     ]
   }
 
   if (crashpad_is_win) {
     sources += [
-      "crash_report_database_win.cc",
       "crashpad_client_win.cc",
       "simulate_crash_win.h",
     ]
@@ -78,18 +62,18 @@ crashpad_static_library("client") {
     sources += [ "crashpad_client_fuchsia.cc" ]
   }
 
-  if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
-    sources += [ "crash_report_database_generic.cc" ]
-  }
-
   public_configs = [ "..:crashpad_config" ]
 
   public_deps = [
+    ":common",
     "../third_party/mini_chromium:base",
     "../util",
   ]
 
-  deps = [ "../third_party/mini_chromium:chromeos_buildflags" ]
+  deps = [
+    ":common",
+    "../third_party/mini_chromium:chromeos_buildflags",
+  ]
 
   if (crashpad_is_win) {
     libs = [ "rpcrt4.lib" ]
@@ -99,6 +83,7 @@ crashpad_static_library("client") {
   # TODO(justincohen): Temporary dependency to bring up the iOS client.
   if (crashpad_is_ios) {
     deps += [
+      "../handler:common",
       "../minidump",
       "../snapshot",
     ]
@@ -114,6 +99,43 @@ crashpad_static_library("client") {
       deps += [ "//sdk/lib/fdio" ]
     }
   }
+}
+
+static_library("common") {
+  sources = [
+    "annotation.cc",
+    "annotation.h",
+    "annotation_list.cc",
+    "annotation_list.h",
+    "crash_report_database.cc",
+    "crash_report_database.h",
+    "crashpad_info.cc",
+    "crashpad_info.h",
+    "settings.cc",
+    "settings.h",
+    "simple_address_range_bag.h",
+    "simple_string_dictionary.h",
+  ]
+
+  if (crashpad_is_mac || crashpad_is_ios) {
+    sources += [ "crash_report_database_mac.mm" ]
+  }
+  if (crashpad_is_win) {
+    sources += [ "crash_report_database_win.cc" ]
+  }
+  if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
+    sources += [
+      "crash_report_database_generic.cc",
+      "crashpad_info_note.S",
+    ]
+  }
+
+  public_configs = [ "..:crashpad_config" ]
+  public_deps = [
+    "../third_party/mini_chromium:base",
+    "../util",
+  ]
+  deps = [ "../util" ]
 }
 
 source_set("client_test") {
