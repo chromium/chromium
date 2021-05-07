@@ -3309,6 +3309,36 @@ TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
   EXPECT_EQ(Color::kWhite, light_document->View()->BaseBackgroundColor());
 }
 
+TEST_F(StyleEngineSimTest, ColorSchemeBaseBackgroundWhileRenderBlocking) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest css_resource("https://example.com/slow.css",
+                                     "text/css");
+
+  LoadURL("https://example.com");
+
+  main_resource.Write(R"HTML(
+    <!doctype html>
+    <meta name="color-scheme" content="dark">
+    <link rel="stylesheet" href="slow.css">
+    Some content
+  )HTML");
+
+  css_resource.Start();
+  test::RunPendingTasks();
+
+  // No rendering updates should have happened yet.
+  ASSERT_TRUE(GetDocument().documentElement());
+  ASSERT_FALSE(GetDocument().documentElement()->GetComputedStyle());
+  EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
+
+  // The dark color-scheme meta should affect the canvas color.
+  EXPECT_EQ(Color(0x12, 0x12, 0x12),
+            GetDocument().View()->BaseBackgroundColor());
+
+  main_resource.Finish();
+  css_resource.Finish();
+}
+
 namespace {
 
 void SetDependsOnContainerQueries(Element& element) {

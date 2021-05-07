@@ -2290,6 +2290,7 @@ void StyleEngine::SetColorSchemeFromMeta(const CSSValue* color_scheme) {
       kLocalStyleChange, StyleChangeReasonForTracing::Create(
                              style_change_reason::kPlatformColorChange));
   UpdateColorScheme();
+  UpdateColorSchemeBackground();
 }
 
 void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
