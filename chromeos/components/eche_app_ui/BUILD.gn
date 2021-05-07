@@ -43,6 +43,7 @@ static_library("eche_app_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
     "//chromeos/components/eche_app_ui/mojom",
     "//chromeos/components/eche_app_ui/proto",
     "//chromeos/components/multidevice:multidevice",

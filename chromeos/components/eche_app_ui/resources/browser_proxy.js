@@ -19,6 +19,13 @@ const systemInfo = chromeos.echeApp.mojom.SystemInfoProvider.getRemote();
 // Returns a remote for UidGenerator interface which gets an uid from the
 // browser.
 const uidGenerator = chromeos.echeApp.mojom.UidGenerator.getRemote();
+// An object which receives request messages for the SystemInfoObserver
+// mojom interface and dispatches them as callbacks.
+const systemInfoObserverRouter =
+    new chromeos.echeApp.mojom.SystemInfoObserverCallbackRouter();
+// Set up a message pipe to the browser process to monitor screen state.
+systemInfo.setSystemInfoObserver(
+    systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
 
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new class {
@@ -42,6 +49,11 @@ const EcheApiBindingImpl = new class {
   getLocalUid() {
     return uidGenerator.getUid();
   }
+
+  onScreenBacklightStateChanged(callback) {
+    systemInfoObserverRouter.onScreenBacklightStateChanged.addListener(
+        callback);
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -58,4 +70,6 @@ echeapi.system.getLocalUid =
     EcheApiBindingImpl.getLocalUid.bind(EcheApiBindingImpl);
 echeapi.system.getSystemInfo =
     EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
+echeapi.system.registerScreenBacklightState =
+    EcheApiBindingImpl.onScreenBacklightStateChanged.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;

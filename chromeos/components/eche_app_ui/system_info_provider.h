@@ -6,7 +6,9 @@
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_SYSTEM_INFO_PROVIDER_H_
 
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace eche_app {
@@ -18,7 +20,8 @@ class SystemInfo;
 
 // Provides the system information likes board/device names for EcheApp and
 // exposes the interface via mojoa.
-class SystemInfoProvider : public mojom::SystemInfoProvider {
+class SystemInfoProvider : public mojom::SystemInfoProvider,
+                           public ash::ScreenBacklightObserver {
  public:
   explicit SystemInfoProvider(std::unique_ptr<SystemInfo> system_info);
   ~SystemInfoProvider() override;
@@ -29,11 +32,17 @@ class SystemInfoProvider : public mojom::SystemInfoProvider {
   // mojom::SystemInfoProvider:
   void GetSystemInfo(
       base::OnceCallback<void(const std::string&)> callback) override;
+  void SetSystemInfoObserver(
+      mojo::PendingRemote<mojom::SystemInfoObserver> observer) override;
 
   void Bind(mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
 
  private:
+  // ash::ScreenBacklightObserver overrides;
+  void OnScreenStateChanged(ash::ScreenState screen_state) override;
+
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
+  mojo::Remote<mojom::SystemInfoObserver> observer_remote_;
   std::unique_ptr<SystemInfo> system_info_;
 };
 

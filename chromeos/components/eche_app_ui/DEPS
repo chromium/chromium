@@ -1,5 +1,6 @@
 include_rules = [
   # Do not add chrome here (use a delegate instead).
+  "+ash/public/cpp",
   "+chromeos/grit/chromeos_sample_system_web_app_resources.h",
   "+components/keyed_service/core/keyed_service.h",
   "+components/prefs",
