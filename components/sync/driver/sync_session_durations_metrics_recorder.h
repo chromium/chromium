@@ -76,6 +76,9 @@ class SyncSessionDurationsMetricsRecorder
   // refresh token in the identity manager.
   FeatureState DeterminePrimaryAccountStatus() const;
 
+  // Determines the syns status..
+  FeatureState DetermineSyncStatus() const;
+
   SyncService* const sync_service_;
   signin::IdentityManager* const identity_manager_;
 

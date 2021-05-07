@@ -186,6 +186,10 @@ bool SyncSessionDurationsMetricsRecorder::ShouldLogUpdate(
 void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
     FeatureState new_sync_status,
     FeatureState new_account_status) {
+  DVLOG(1) << "UpdateSyncAndAccountStatus:"
+           << " new_sync_status: " << static_cast<int>(new_sync_status)
+           << " new_account_status: " << static_cast<int>(new_account_status);
+
   // |new_sync_status| may be unknown when there is a primary account, but
   // the sync engine has not yet started.
   DCHECK_NE(FeatureState::UNKNOWN, new_account_status);
@@ -198,28 +202,8 @@ void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
 }
 
 void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
-  if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
-    // Only the account status needs to be updated when sync is off.
-    UpdateSyncAndAccountStatus(FeatureState::OFF,
-                               DeterminePrimaryAccountStatus());
-    return;
-  }
-
-  // Sync has potential to turn on, or get into account error state.
-  if (sync_service_->GetAuthError().state() ==
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    // Sync is enabled, but we have an account issue.
-    UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::OFF);
-  } else if (sync_service_->IsSyncFeatureActive() &&
-             sync_service_->HasCompletedSyncCycle()) {
-    // Sync is on and running, we must have an account too.
-    UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::ON);
-  } else {
-    // This branch corresponds to the case when the sync engine is initializing.
-    // The sync state may already be set to ON/OFF based on the heuristics
-    // above. Keep the current sync status.
-    UpdateSyncAndAccountStatus(sync_status_, DeterminePrimaryAccountStatus());
-  }
+  UpdateSyncAndAccountStatus(DetermineSyncStatus(),
+                             DeterminePrimaryAccountStatus());
 }
 
 // static
@@ -285,8 +269,9 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
 
 SyncSessionDurationsMetricsRecorder::FeatureState
 SyncSessionDurationsMetricsRecorder::DeterminePrimaryAccountStatus() const {
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+  }
 
   CoreAccountId primary_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -295,6 +280,37 @@ SyncSessionDurationsMetricsRecorder::DeterminePrimaryAccountStatus() const {
               primary_account_id))
              ? SyncSessionDurationsMetricsRecorder::FeatureState::ON
              : SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+}
+
+SyncSessionDurationsMetricsRecorder::FeatureState
+SyncSessionDurationsMetricsRecorder::DetermineSyncStatus() const {
+  if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
+    return FeatureState::OFF;
+  }
+
+  if (sync_service_->GetTransportState() ==
+      SyncService::TransportState::PAUSED) {
+    // Sync is considered to be ON even when paused.
+    return FeatureState::ON;
+  }
+
+  if (sync_service_->IsSyncFeatureActive() &&
+      sync_service_->HasCompletedSyncCycle()) {
+    return FeatureState::ON;
+  }
+
+  // This branch corresponds to the case when the sync engine is initializing.
+  //
+  // The sync state may already be set to ON/OFF if updated previously. Return
+  // the current sync status.
+  //
+  // Note: It is possible for |sync_status_| to be ON/OFF at this point. This
+  // corresponds to sync state transitions that can happen if a turns sync on
+  // or off. For example if during browser startup there is no signed-in user,
+  /// then |sync_state_| is OFF. When the user turns on Sync, the sync state
+  // is essentially unknown for a while - the current implementation keeps
+  // previous |sync_state_|.
+  return sync_status_;
 }
 
 }  // namespace syncer
