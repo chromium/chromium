@@ -162,7 +162,7 @@ crbug.com/735483 conformance2/rendering/texture-switch-performance.html [ Skip ]
 crbug.com/979444 [ linux ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ mac no-asan no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ win ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/979444 [ android angle-disabled no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/979444 [ android angle-disabled ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 
 # Flaky timeouts on Intel Windows, Linux and Mac
 crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Failure ]
@@ -631,21 +631,10 @@ crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/inte
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
 # Video tests are flaky. Sometimes the video is black.
-crbug.com/948894 [ android no-passthrough ] conformance/textures/video/* [ RetryOnFailure ]
-crbug.com/948894 [ android no-passthrough ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/948894 [ android no-passthrough ] conformance2/textures/video/* [ RetryOnFailure ]
-crbug.com/948894 [ android no-passthrough ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-
-# These video tests crash on passthrough Pixel 2 and Pixel 4
-crbug.com/1205418 [ android passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/image_bitmap_from_video/* [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance/textures/video/* [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance2/textures/image_bitmap_from_video/* [ Failure ]
-crbug.com/1205418 [ android passthrough ] conformance2/textures/video/* [ Failure ]
+crbug.com/948894 [ android ] conformance/textures/video/* [ RetryOnFailure ]
+crbug.com/948894 [ android ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/948894 [ android ] conformance2/textures/video/* [ RetryOnFailure ]
+crbug.com/948894 [ android ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 
 crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
@@ -710,13 +699,13 @@ crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gle
 crbug.com/1179432 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/texturespecification/basic_teximage2d_2d_01.html [ RetryOnFailure ]
 crbug.com/1179432 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/transformfeedback/* [ RetryOnFailure ]
 
-crbug.com/1191030 [ android android-pixel-4 no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1191030 [ android android-pixel-4 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Android ANGLE GLES
 # TODO(crbug.com/979444): once this is passing on the passthrough
 # command decoder, simplify the RetryOnFailure expectation at the top
 # of this file to just not declare any OS.
-# crbug.com/979444 [ android angle-opengles ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/979444 [ android angle-opengles ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 crbug.com/967410 [ android angle-opengles ] conformance2/textures/misc/npot-video-sizing.html [ Failure ]
