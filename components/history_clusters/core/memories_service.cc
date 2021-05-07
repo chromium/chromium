@@ -32,8 +32,8 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
   // Extract query nodes from the query string.
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(
-      base::UTF8ToUTF16(query), query_parser::MatchingAlgorithm::DEFAULT,
-      &query_nodes);
+      base::UTF8ToUTF16(query),
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
 
   std::vector<history::Cluster> matching_clusters;
   base::ranges::copy_if(clusters, std::back_inserter(matching_clusters),

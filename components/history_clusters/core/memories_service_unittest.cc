@@ -214,139 +214,99 @@ class MemoriesServiceTest : public testing::Test {
 // Useless, but required by the C++14 standard. Please deliver us, C++17.
 constexpr char MemoriesServiceTest::kFakeEndpoint[];
 
-TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
+TEST_F(MemoriesServiceTest, QueryMemoriesVariousQueries) {
   std::string experiment_name = "someExperiment";
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
 
   AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
   AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  memories_service_->QueryMemories(
-      mojom::QueryParams::New(),
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting(
-          [&](MemoriesService::QueryMemoriesResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            ASSERT_EQ(response.clusters.size(), 2u);
-            EXPECT_FALSE(response.clusters[0]->id.is_empty());
-            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 2);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
-                      "https://google.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, IntToTime(2));
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
-                      "Google title");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 4);
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
-                      "https://github.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, IntToTime(4));
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
-                      "Github title");
-            ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->keywords[0], u"apples");
-            EXPECT_EQ(response.clusters[0]->keywords[1], u"Red Oranges");
-            EXPECT_FALSE(response.clusters[1]->id.is_empty());
-            ASSERT_EQ(response.clusters[1]->top_visits.size(), 1u);
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->id, 4);
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->url,
-                      "https://github.com/");
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->time, IntToTime(4));
-            EXPECT_EQ(response.clusters[1]->top_visits[0]->page_title,
-                      "Github title");
-            EXPECT_TRUE(response.clusters[1]->keywords.empty());
-            run_loop_quit_.Run();
-          }),
-      &task_tracker_);
+  struct TestData {
+    std::string query;
+    const bool expect_first_cluster;
+    const bool expect_second_cluster;
+  } test_data[] = {
+      // Empty query should get both.
+      {"", true, true},
+      // Non matching query should get none.
+      {"non_matching_query", false, false},
+      // Query matching one cluster.
+      {"oran", true, false},
+      // This verifies the memory doesn't flicker away as the user is typing
+      // out: "red oran" one key at a time. Also tests out multi-term queries.
+      {"red", true, false},
+      {"red ", true, false},
+      {"red o", true, false},
+      {"red or", true, false},
+      {"red ora", true, false},
+      {"red oran", true, false},
+  };
 
-  VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
-  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
+  for (size_t i = 0; i < base::size(test_data); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case i=%d, query=%s", int(i),
+                                    test_data[i].query.c_str()));
 
-  // Verify the callback is invoked.
-  run_loop_.Run();
-}
+    base::RunLoop run_loop;
+    auto run_loop_quit = run_loop.QuitClosure();
 
-TEST_F(MemoriesServiceTest, QueryMemoriesMatchingNonEmptyQuery) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+    test_url_loader_factory_.ClearResponses();
+    ASSERT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
+    auto query_params = mojom::QueryParams::New();
+    query_params->query = test_data[i].query;
+    memories_service_->QueryMemories(
+        std::move(query_params),
+        // This "expect" block is not run until after the fake response is sent
+        // further down in this method.
+        base::BindLambdaForTesting(
+            [&](MemoriesService::QueryMemoriesResponse response) {
+              // Verify that the continuation query params is nullptr.
+              ASSERT_FALSE(!!response.query_params);
 
-  auto query_params = mojom::QueryParams::New();
-  // Verify that we can match against the "Red Oranges" uppercase keyword.
-  query_params->query = "orang";
+              size_t expected_size = int(test_data[i].expect_first_cluster) +
+                                     int(test_data[i].expect_second_cluster);
+              ASSERT_EQ(response.clusters.size(), expected_size);
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  memories_service_->QueryMemories(
-      std::move(query_params),
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting(
-          [&](MemoriesService::QueryMemoriesResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            ASSERT_EQ(response.clusters.size(), 1u);
-            EXPECT_FALSE(response.clusters[0]->id.is_empty());
-            ASSERT_EQ(response.clusters[0]->top_visits.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->id, 2);
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->url,
-                      "https://google.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->time, IntToTime(2));
-            EXPECT_EQ(response.clusters[0]->top_visits[0]->page_title,
-                      "Google title");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->id, 4);
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->url,
-                      "https://github.com/");
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->time, IntToTime(4));
-            EXPECT_EQ(response.clusters[0]->top_visits[1]->page_title,
-                      "Github title");
-            ASSERT_EQ(response.clusters[0]->keywords.size(), 2u);
-            EXPECT_EQ(response.clusters[0]->keywords[0], u"apples");
-            EXPECT_EQ(response.clusters[0]->keywords[1], u"Red Oranges");
-            run_loop_quit_.Run();
-          }),
-      &task_tracker_);
+              if (test_data[i].expect_first_cluster) {
+                const auto& cluster = response.clusters[0];
+                EXPECT_FALSE(cluster->id.is_empty());
+                ASSERT_EQ(cluster->top_visits.size(), 2u);
+                EXPECT_EQ(cluster->top_visits[0]->id, 2);
+                EXPECT_EQ(cluster->top_visits[0]->url, "https://google.com/");
+                EXPECT_EQ(cluster->top_visits[0]->time, IntToTime(2));
+                EXPECT_EQ(cluster->top_visits[0]->page_title, "Google title");
+                EXPECT_EQ(cluster->top_visits[1]->id, 4);
+                EXPECT_EQ(cluster->top_visits[1]->url, "https://github.com/");
+                EXPECT_EQ(cluster->top_visits[1]->time, IntToTime(4));
+                EXPECT_EQ(cluster->top_visits[1]->page_title, "Github title");
+                ASSERT_EQ(cluster->keywords.size(), 2u);
+                EXPECT_EQ(cluster->keywords[0], u"apples");
+                EXPECT_EQ(cluster->keywords[1], u"Red Oranges");
+              }
 
-  VerifyHardcodedTestDataInUrlLoaderRequest();
-  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
+              if (test_data[i].expect_second_cluster) {
+                const auto& cluster = test_data[i].expect_first_cluster
+                                          ? response.clusters[1]
+                                          : response.clusters[0];
+                EXPECT_FALSE(cluster->id.is_empty());
+                ASSERT_EQ(cluster->top_visits.size(), 1u);
+                EXPECT_EQ(cluster->top_visits[0]->id, 4);
+                EXPECT_EQ(cluster->top_visits[0]->url, "https://github.com/");
+                EXPECT_EQ(cluster->top_visits[0]->time, IntToTime(4));
+                EXPECT_EQ(cluster->top_visits[0]->page_title, "Github title");
+                EXPECT_TRUE(cluster->keywords.empty());
+              }
 
-  // Verify the callback is invoked.
-  run_loop_.Run();
-}
+              run_loop_quit.Run();
+            }),
+        &task_tracker_);
 
-TEST_F(MemoriesServiceTest, QueryMemoriesNonMatchingNonEmptyQuery) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+    VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
+    InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
 
-  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
-  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
-
-  auto query_params = mojom::QueryParams::New();
-  query_params->query = "should_not_match_anything";
-
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  memories_service_->QueryMemories(
-      std::move(query_params),
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting(
-          [&](MemoriesService::QueryMemoriesResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
-      &task_tracker_);
-
-  VerifyHardcodedTestDataInUrlLoaderRequest();
-  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
-
-  // Verify the callback is invoked.
-  run_loop_.Run();
+    // Verify the callback is invoked.
+    run_loop.Run();
+  }
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
