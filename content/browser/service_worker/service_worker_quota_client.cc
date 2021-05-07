@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -49,8 +50,9 @@ void ServiceWorkerQuotaClient::GetOriginUsage(const url::Origin& origin,
                                               GetOriginUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->registry()->GetStorageUsageForOrigin(
-      origin, base::BindOnce(&FindUsageForOrigin, std::move(callback)));
+  context_->registry()->GetStorageUsageForStorageKey(
+      storage::StorageKey(origin),
+      base::BindOnce(&FindUsageForOrigin, std::move(callback)));
 }
 
 void ServiceWorkerQuotaClient::GetOriginsForType(

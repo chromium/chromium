@@ -23,6 +23,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -772,6 +773,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
   }
   context_core_->registry()->FindRegistrationForClientUrl(
       net::SimplifyUrlForRequest(document_url),
+      storage::StorageKey(url::Origin::Create(document_url)),
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint,
           this, std::move(callback_with_recording_metrics)));
@@ -894,6 +896,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForClientUrl(
   }
   context_core_->registry()->FindRegistrationForClientUrl(
       net::SimplifyUrlForRequest(client_url),
+      storage::StorageKey(url::Origin::Create(client_url)),
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
           /*include_installing_version=*/false, std::move(callback)));
@@ -911,6 +914,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForScope(
   const bool include_installing_version = false;
   context_core_->registry()->FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
           include_installing_version, std::move(callback)));
@@ -936,7 +940,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForId(
     return;
   }
   context_core_->registry()->FindRegistrationForId(
-      registration_id, origin,
+      registration_id, storage::StorageKey(origin),
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
           /*include_installing_version=*/false, std::move(callback)));
@@ -984,8 +988,8 @@ void ServiceWorkerContextWrapper::GetRegistrationsForOrigin(
             std::vector<scoped_refptr<ServiceWorkerRegistration>>()));
     return;
   }
-  context_core_->registry()->GetRegistrationsForOrigin(origin,
-                                                       std::move(callback));
+  context_core_->registry()->GetRegistrationsForStorageKey(
+      storage::StorageKey(origin), std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetRegistrationUserData(
@@ -1127,7 +1131,8 @@ void ServiceWorkerContextWrapper::StoreRegistrationUserDataOnUIThread(
     return;
   }
   context_core_->registry()->StoreUserData(
-      registration_id, origin, key_value_pairs, std::move(callback));
+      registration_id, storage::StorageKey(origin), key_value_pairs,
+      std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::ClearRegistrationUserData(
@@ -1309,6 +1314,7 @@ void ServiceWorkerContextWrapper::StartActiveServiceWorker(
   }
   context_core_->registry()->FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&DidFindRegistrationForStartActiveWorker,
                      std::move(callback)));
 }
@@ -1319,6 +1325,7 @@ void ServiceWorkerContextWrapper::SkipWaitingWorker(const GURL& scope) {
     return;
   context_core_->registry()->FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce([](blink::ServiceWorkerStatusCode status,
                         scoped_refptr<ServiceWorkerRegistration> registration) {
         if (status != blink::ServiceWorkerStatusCode::kOk ||
@@ -1336,6 +1343,7 @@ void ServiceWorkerContextWrapper::UpdateRegistration(const GURL& scope) {
     return;
   context_core_->registry()->FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerContextWrapper::DidFindRegistrationForUpdate,
                      this));
 }
@@ -1384,6 +1392,7 @@ void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
   }
   context_core_->registry()->FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope),
+      storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
           include_installing_version, std::move(callback)));

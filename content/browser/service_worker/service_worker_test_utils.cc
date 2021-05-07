@@ -384,6 +384,8 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   return registration;
 }
 
+// TODO(http://crbug.com/1199077): Update after ServiceWorkerVersion supports
+// StorageKey.
 scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
     ServiceWorkerRegistry* registry,
     scoped_refptr<ServiceWorkerRegistration> registration,
@@ -395,6 +397,7 @@ scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewVersion(
       std::move(registration), script_url, script_type,
+      storage::StorageKey(url::Origin::Create(script_url)),
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerVersion> new_version) {
             version = std::move(new_version);

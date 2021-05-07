@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -564,8 +565,8 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
 void ServiceWorkerContextCore::DeleteForOrigin(const url::Origin& origin,
                                                StatusCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  registry()->GetRegistrationsForOrigin(
-      origin,
+  registry()->GetRegistrationsForStorageKey(
+      storage::StorageKey(origin),
       base::BindOnce(
           &ServiceWorkerContextCore::DidGetRegistrationsForDeleteForOrigin,
           AsWeakPtr(), origin, std::move(callback)));
@@ -592,7 +593,8 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForOrigin(
   // unload.
   std::vector<scoped_refptr<ServiceWorkerRegistration>>
       uninstalling_registrations =
-          registry()->GetUninstallingRegistrationsForOrigin(origin);
+          registry()->GetUninstallingRegistrationsForStorageKey(
+              storage::StorageKey(origin));
   for (const auto& uninstalling_registration : uninstalling_registrations) {
     job_coordinator_->Abort(uninstalling_registration->scope());
     uninstalling_registration->DeleteAndClearImmediately();
@@ -839,9 +841,10 @@ void ServiceWorkerContextCore::CheckHasServiceWorker(
     const GURL& url,
     ServiceWorkerContext::CheckHasServiceWorkerCallback callback) {
   registry()->FindRegistrationForClientUrl(
-      url, base::BindOnce(&ServiceWorkerContextCore::
-                              DidFindRegistrationForCheckHasServiceWorker,
-                          AsWeakPtr(), std::move(callback)));
+      url, storage::StorageKey(url::Origin::Create(url)),
+      base::BindOnce(&ServiceWorkerContextCore::
+                         DidFindRegistrationForCheckHasServiceWorker,
+                     AsWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerContextCore::CheckOfflineCapability(

@@ -21,6 +21,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
@@ -854,10 +855,10 @@ class ServiceWorkerRegistrationObjectHostTest
 
   blink::ServiceWorkerStatusCode FindRegistrationInStorage(
       int64_t registration_id,
-      const GURL& scope) {
+      const storage::StorageKey& key) {
     base::Optional<blink::ServiceWorkerStatusCode> status;
     registry()->FindRegistrationForId(
-        registration_id, url::Origin::Create(scope),
+        registration_id, key,
         base::AdaptCallbackForRepeating(base::BindOnce(
             [](base::Optional<blink::ServiceWorkerStatusCode>* out_status,
                blink::ServiceWorkerStatusCode status,
@@ -1178,13 +1179,17 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, Unregister_Success) {
   info->receiver.reset();
   info->waiting->receiver.reset();
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationInStorage(registration_id, kScope));
+  EXPECT_EQ(
+      blink::ServiceWorkerStatusCode::kOk,
+      FindRegistrationInStorage(
+          registration_id, storage::StorageKey(url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNone,
             CallUnregister(registration_host.get()));
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationInStorage(registration_id, kScope));
+  EXPECT_EQ(
+      blink::ServiceWorkerStatusCode::kErrorNotFound,
+      FindRegistrationInStorage(
+          registration_id, storage::StorageKey(url::Origin::Create(kScope))));
   EXPECT_EQ(blink::mojom::ServiceWorkerErrorType::kNotFound,
             CallUnregister(registration_host.get()));
 }

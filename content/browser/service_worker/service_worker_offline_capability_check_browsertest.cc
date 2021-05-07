@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -229,8 +230,10 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
   void SetupFetchEventDispatchTargetVersionOnCoreThread(
       base::OnceClosure done) {
     DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    GURL url = embedded_test_server()->GetURL("/service_worker/");
+    storage::StorageKey key = storage::StorageKey(url::Origin::Create(url));
     wrapper()->context()->registry()->FindRegistrationForScope(
-        embedded_test_server()->GetURL("/service_worker/"),
+        embedded_test_server()->GetURL("/service_worker/"), key,
         base::BindOnce(&ServiceWorkerOfflineCapabilityCheckBrowserTest::
                            DidFindRegistration,
                        base::Unretained(this), std::move(done)));

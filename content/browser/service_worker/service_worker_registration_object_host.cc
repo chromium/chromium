@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -285,7 +286,7 @@ void ServiceWorkerRegistrationObjectHost::EnableNavigationPreload(
   }
 
   context_->registry()->UpdateNavigationPreloadEnabled(
-      registration_->id(), registration_->scope().GetOrigin(), enable,
+      registration_->id(), storage::StorageKey(registration_->origin()), enable,
       base::AdaptCallbackForRepeating(base::BindOnce(
           &ServiceWorkerRegistrationObjectHost::
               DidUpdateNavigationPreloadEnabled,
@@ -335,7 +336,7 @@ void ServiceWorkerRegistrationObjectHost::SetNavigationPreloadHeader(
   }
 
   context_->registry()->UpdateNavigationPreloadHeader(
-      registration_->id(), registration_->scope().GetOrigin(), value,
+      registration_->id(), storage::StorageKey(registration_->origin()), value,
       base::AdaptCallbackForRepeating(base::BindOnce(
           &ServiceWorkerRegistrationObjectHost::
               DidUpdateNavigationPreloadHeader,

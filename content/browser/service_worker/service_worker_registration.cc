@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -334,7 +335,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
   }
 
   context_->registry()->DeleteRegistration(
-      this, scope().GetOrigin(),
+      this, storage::StorageKey(origin()),
       AdaptCallbackForRepeating(
           base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this)));
 
@@ -346,7 +347,7 @@ void ServiceWorkerRegistration::DeleteAndClearImmediately() {
   DCHECK(context_);
   if (!is_deleted()) {
     context_->registry()->DeleteRegistration(
-        this, scope().GetOrigin(),
+        this, storage::StorageKey(origin()),
         AdaptCallbackForRepeating(base::BindOnce(
             &ServiceWorkerRegistration::OnDeleteFinished, this)));
   }
@@ -588,7 +589,7 @@ void ServiceWorkerRegistration::ForceDelete() {
   // Delete the registration and its state from storage.
   if (status() == Status::kIntact) {
     context_->registry()->DeleteRegistration(
-        this, scope().GetOrigin(),
+        this, storage::StorageKey(origin()),
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
   }
   DCHECK(is_uninstalling());
@@ -681,7 +682,7 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
   // "Run the Update State algorithm passing registration's active worker and
   // 'activated' as the arguments."
   activating_version->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  context_->registry()->UpdateToActiveState(id(), scope().GetOrigin(),
+  context_->registry()->UpdateToActiveState(id(), storage::StorageKey(origin()),
                                             base::DoNothing());
 }
 

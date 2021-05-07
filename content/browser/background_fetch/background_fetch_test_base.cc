@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -130,7 +131,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   {
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-        service_worker_registration_id, origin,
+        service_worker_registration_id, storage::StorageKey(origin),
         base::BindOnce(&DidFindServiceWorkerRegistration,
                        &service_worker_registration, run_loop.QuitClosure()));
 

@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/devtools/devtools_background_services.pb.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/public/browser/content_browser_client.h"
@@ -231,7 +232,7 @@ class DevToolsBackgroundServicesContextTest
     {
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-          service_worker_registration_id, origin_,
+          service_worker_registration_id, storage::StorageKey(origin_),
           base::BindOnce(&DidFindServiceWorkerRegistration,
                          &service_worker_registration_,
                          run_loop.QuitClosure()));

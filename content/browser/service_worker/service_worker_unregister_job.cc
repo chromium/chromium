@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -35,8 +36,9 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 
 void ServiceWorkerUnregisterJob::Start() {
   context_->registry()->FindRegistrationForScope(
-      scope_, base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
-                             weak_factory_.GetWeakPtr()));
+      scope_, storage::StorageKey(url::Origin::Create(scope_)),
+      base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerUnregisterJob::Abort() {

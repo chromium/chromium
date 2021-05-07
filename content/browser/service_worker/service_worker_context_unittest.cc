@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -639,7 +640,7 @@ TEST_F(ServiceWorkerContextTest, Register) {
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -689,7 +690,7 @@ TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
   EXPECT_EQ(registration_id, notifications_[0].registration_id);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
@@ -740,7 +741,7 @@ TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
   EXPECT_EQ(registration_id, notifications_[1].registration_id);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -774,7 +775,7 @@ TEST_F(ServiceWorkerContextTest, Unregister) {
   ASSERT_TRUE(called);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
@@ -873,23 +874,23 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
   ASSERT_TRUE(called);
 
   context()->registry()->FindRegistrationForId(
-      registration_id1, url::Origin::Create(origin1_s1),
+      registration_id1, storage::StorageKey(url::Origin::Create(origin1_s1)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
   context()->registry()->FindRegistrationForId(
-      registration_id2, url::Origin::Create(origin1_s2),
+      registration_id2, storage::StorageKey(url::Origin::Create(origin1_s2)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, false /* expect_active */));
   context()->registry()->FindRegistrationForId(
-      registration_id3, url::Origin::Create(origin2_s1),
+      registration_id3, storage::StorageKey(url::Origin::Create(origin2_s1)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
 
   context()->registry()->FindRegistrationForId(
-      registration_id4, url::Origin::Create(origin3_s1),
+      registration_id4, storage::StorageKey(url::Origin::Create(origin3_s1)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -1146,7 +1147,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   EXPECT_TRUE(called);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
@@ -1157,7 +1158,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   // The storage is disabled while the recovery process is running, so the
   // operation should be aborted.
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorAbort,
                      false /* expect_waiting */, true /* expect_active */));
@@ -1166,7 +1167,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   // The context started over and the storage was re-initialized, so the
   // registration should not be found.
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, true /* expect_active */));
@@ -1182,7 +1183,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   EXPECT_TRUE(called);
 
   context()->registry()->FindRegistrationForId(
-      registration_id, url::Origin::Create(scope),
+      registration_id, storage::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));

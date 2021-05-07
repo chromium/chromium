@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -503,14 +504,14 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   }
 
   void FindRegistrationForId(int64_t id,
-                             const url::Origin& origin,
+                             const storage::StorageKey& key,
                              blink::ServiceWorkerStatusCode expected_status) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     blink::ServiceWorkerStatusCode status =
         blink::ServiceWorkerStatusCode::kErrorFailed;
     base::RunLoop run_loop;
     wrapper()->context()->registry()->FindRegistrationForId(
-        id, origin,
+        id, key,
         CreateFindRegistrationReceiver(BrowserThread::UI,
                                        run_loop.QuitClosure(), &status));
     run_loop.Run();
@@ -868,7 +869,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, ReadResourceFailure) {
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version_->status());
 
   // The registration should be deleted from storage.
-  FindRegistrationForId(registration_->id(), registration_->origin(),
+  FindRegistrationForId(registration_->id(),
+                        storage::StorageKey(registration_->origin()),
                         blink::ServiceWorkerStatusCode::kErrorNotFound);
   EXPECT_TRUE(registration_->is_uninstalled());
 }
@@ -910,7 +912,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
 
   // The whole registration should be deleted from storage even though the
   // waiting version was not the broken one.
-  FindRegistrationForId(registration_->id(), registration_->origin(),
+  FindRegistrationForId(registration_->id(),
+                        storage::StorageKey(registration_->origin()),
                         blink::ServiceWorkerStatusCode::kErrorNotFound);
   EXPECT_TRUE(registration_->is_uninstalled());
 }

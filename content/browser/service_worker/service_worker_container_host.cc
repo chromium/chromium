@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -240,7 +241,7 @@ void ServiceWorkerContainerHost::GetRegistration(
                            "ServiceWorkerContainerHost::GetRegistration",
                            trace_id, "Client URL", client_url.spec());
   context_->registry()->FindRegistrationForClientUrl(
-      client_url,
+      client_url, storage::StorageKey(url::Origin::Create(client_url)),
       base::AdaptCallbackForRepeating(base::BindOnce(
           &ServiceWorkerContainerHost::GetRegistrationComplete,
           weak_factory_.GetWeakPtr(), std::move(callback), trace_id)));
@@ -271,8 +272,8 @@ void ServiceWorkerContainerHost::GetRegistrations(
   TRACE_EVENT_ASYNC_BEGIN0("ServiceWorker",
                            "ServiceWorkerContainerHost::GetRegistrations",
                            trace_id);
-  context_->registry()->GetRegistrationsForOrigin(
-      url::Origin::Create(url_),
+  context_->registry()->GetRegistrationsForStorageKey(
+      storage::StorageKey(url::Origin::Create(url_)),
       base::AdaptCallbackForRepeating(base::BindOnce(
           &ServiceWorkerContainerHost::GetRegistrationsComplete,
           weak_factory_.GetWeakPtr(), std::move(callback), trace_id)));

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -41,8 +42,8 @@ void ServiceWorkerScriptCacheMap::NotifyStartedCaching(const GURL& url,
     return;  // Our storage has been wiped via DeleteAndStartOver.
   resource_map_[url] =
       storage::mojom::ServiceWorkerResourceRecord::New(resource_id, url, -1);
-  context_->registry()->StoreUncommittedResourceId(resource_id,
-                                                   owner_->scope().GetOrigin());
+  context_->registry()->StoreUncommittedResourceId(
+      resource_id, storage::StorageKey(url::Origin::Create(owner_->scope())));
 }
 
 void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(

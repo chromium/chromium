@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/test/browser_task_environment.h"
@@ -86,7 +87,7 @@ class NotificationStorageTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       helper_->context()->registry()->FindRegistrationForId(
-          service_worker_registration_id_, origin_,
+          service_worker_registration_id_, storage::StorageKey(origin_),
           base::BindOnce(
               &NotificationStorageTest::DidFindServiceWorkerRegistration,
               base::Unretained(this), &service_worker_registration,

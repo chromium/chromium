@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
@@ -85,11 +86,13 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   }
 
   // Wrapper for ServiceWorkerRegistry::FindRegistrationForScope.
-  blink::ServiceWorkerStatusCode FindRegistrationForScope(const GURL& scope) {
+  blink::ServiceWorkerStatusCode FindRegistrationForScope(
+      const GURL& scope,
+      const storage::StorageKey& key) {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode status;
     context()->registry()->FindRegistrationForScope(
-        scope,
+        scope, key,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode result_status,
                 scoped_refptr<ServiceWorkerRegistration> result_registration) {
@@ -192,6 +195,7 @@ TEST_F(ServiceWorkerContextCoreTest, FailureInfo) {
 TEST_F(ServiceWorkerContextCoreTest, DeleteForOrigin) {
   const GURL script("https://www.example.com/a/sw.js");
   const GURL scope("https://www.example.com/a");
+  const storage::StorageKey key(url::Origin::Create(scope));
   const url::Origin origin = url::Origin::Create(scope);
 
   // Register a service worker.
@@ -205,7 +209,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForOrigin) {
 
   // The registration should be deleted.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForScope(scope));
+            FindRegistrationForScope(scope, key));
 }
 
 TEST_F(ServiceWorkerContextCoreTest, DeleteForOriginAbortsQueuedJobs) {
