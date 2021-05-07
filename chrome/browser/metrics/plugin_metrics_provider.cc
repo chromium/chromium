@@ -141,7 +141,7 @@ void PluginMetricsProvider::ProvideStabilityMetrics(
 
   metrics::SystemProfileProto::Stability* stability =
       system_profile_proto->mutable_stability();
-  for (const auto& value : *plugin_stats_list) {
+  for (const auto& value : plugin_stats_list->GetList()) {
     const base::DictionaryValue* plugin_dict;
     if (!value.GetAsDictionary(&plugin_dict)) {
       NOTREACHED();
@@ -207,7 +207,7 @@ void PluginMetricsProvider::RecordCurrentState() {
   base::ListValue* plugins = update.Get();
   DCHECK(plugins);
 
-  for (auto& value : *plugins) {
+  for (auto& value : plugins->GetList()) {
     base::DictionaryValue* plugin_dict;
     if (!value.GetAsDictionary(&plugin_dict)) {
       NOTREACHED();
