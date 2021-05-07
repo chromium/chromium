@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -90,7 +91,8 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       // 2. Bookmarks (maybe ancient legacy bookmarks only?) use/used |name| to
       //    encode the title.
       data->is_folder = node->is_folder();
-      data->unique_position = metadata->unique_position();
+      data->unique_position =
+          syncer::UniquePosition::FromProto(metadata->unique_position());
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
       data->specifics = CreateSpecificsFromBookmarkNode(

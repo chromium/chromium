@@ -16,7 +16,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/unique_position.pb.h"
 
 namespace base {
 class GUID;
@@ -30,6 +29,7 @@ class BookmarkNode;
 namespace syncer {
 class ClientTagHash;
 struct EntityData;
+class UniquePosition;
 }  // namespace syncer
 
 namespace sync_bookmarks {
@@ -154,7 +154,7 @@ class SyncedBookmarkTracker {
                     const std::string& sync_id,
                     int64_t server_version,
                     base::Time creation_time,
-                    const sync_pb::UniquePosition& unique_position,
+                    const syncer::UniquePosition& unique_position,
                     const sync_pb::EntitySpecifics& specifics);
 
   // Updates the sync metadata for a tracked entity. |entity| must be owned by
@@ -162,7 +162,7 @@ class SyncedBookmarkTracker {
   void Update(const Entity* entity,
               int64_t server_version,
               base::Time modification_time,
-              const sync_pb::UniquePosition& unique_position,
+              const syncer::UniquePosition& unique_position,
               const sync_pb::EntitySpecifics& specifics);
 
   // Updates the server version of an existing entity. |entity| must be owned by

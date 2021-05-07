@@ -84,7 +84,7 @@ bool SyncedBookmarkTracker::Entity::MatchesDataIgnoringParent(
     return metadata_->is_deleted() == data.is_deleted();
   }
   if (!syncer::UniquePosition::FromProto(metadata_->unique_position())
-           .Equals(syncer::UniquePosition::FromProto(data.unique_position))) {
+           .Equals(data.unique_position)) {
     return false;
   }
   return MatchesSpecificsHash(data.specifics);
@@ -256,7 +256,7 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
     const std::string& sync_id,
     int64_t server_version,
     base::Time creation_time,
-    const sync_pb::UniquePosition& unique_position,
+    const syncer::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
   DCHECK(bookmark_node);
@@ -273,7 +273,7 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
   metadata->set_modification_time(syncer::TimeToProtoTime(creation_time));
   metadata->set_sequence_number(0);
   metadata->set_acked_sequence_number(0);
-  metadata->mutable_unique_position()->CopyFrom(unique_position);
+  *metadata->mutable_unique_position() = unique_position.ToProto();
   metadata->set_client_tag_hash(client_tag_hash.value());
   HashSpecifics(specifics, metadata->mutable_specifics_hash());
   metadata->set_bookmark_favicon_hash(
@@ -298,7 +298,7 @@ void SyncedBookmarkTracker::Update(
     const Entity* entity,
     int64_t server_version,
     base::Time modification_time,
-    const sync_pb::UniquePosition& unique_position,
+    const syncer::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
   DCHECK(entity);
@@ -307,7 +307,8 @@ void SyncedBookmarkTracker::Update(
   mutable_entity->metadata()->set_server_version(server_version);
   mutable_entity->metadata()->set_modification_time(
       syncer::TimeToProtoTime(modification_time));
-  *mutable_entity->metadata()->mutable_unique_position() = unique_position;
+  *mutable_entity->metadata()->mutable_unique_position() =
+      unique_position.ToProto();
   HashSpecifics(specifics,
                 mutable_entity->metadata()->mutable_specifics_hash());
   mutable_entity->metadata()->set_bookmark_favicon_hash(

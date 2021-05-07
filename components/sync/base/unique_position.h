@@ -76,6 +76,12 @@ class UniquePosition {
   // Creates an empty, invalid value.
   UniquePosition();
 
+  // Type is copyable and movable.
+  UniquePosition(const UniquePosition&) = default;
+  UniquePosition(UniquePosition&&) = default;
+  UniquePosition& operator=(const UniquePosition&) = default;
+  UniquePosition& operator=(UniquePosition&&) = default;
+
   bool LessThan(const UniquePosition& other) const;
   bool Equals(const UniquePosition& other) const;
 

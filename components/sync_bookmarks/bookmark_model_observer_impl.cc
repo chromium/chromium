@@ -60,8 +60,8 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
 
   const std::string& sync_id = entity->metadata()->server_id();
   const base::Time modification_time = base::Time::Now();
-  const sync_pb::UniquePosition unique_position =
-      ComputePosition(*new_parent, new_index, sync_id).ToProto();
+  const syncer::UniquePosition unique_position =
+      ComputePosition(*new_parent, new_index, sync_id);
 
   sync_pb::EntitySpecifics specifics =
       CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true);
@@ -88,13 +88,8 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // Should be removed after figuring out the reason for the crash.
   CHECK(parent_entity);
 
-  // Assign a temp server id for the entity. Will be overriden by the actual
-  // server id upon receiving commit response.
-  // Local bookmark creations should have used a random GUID so it's safe to
-  // use it as originator client item ID, without the risk for collision.
-  const sync_pb::UniquePosition unique_position =
-      ComputePosition(*parent, index, node->guid().AsLowercaseString())
-          .ToProto();
+  const syncer::UniquePosition unique_position =
+      ComputePosition(*parent, index, node->guid().AsLowercaseString());
 
   sync_pb::EntitySpecifics specifics =
       CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true);
@@ -294,7 +289,7 @@ void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
         child.get(), model, /*force_favicon_load=*/true);
 
     bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
-                              modification_time, position.ToProto(), specifics);
+                              modification_time, position, specifics);
     // Mark the entity that it needs to be committed.
     bookmark_tracker_->IncrementSequenceNumber(entity);
   }
@@ -383,9 +378,11 @@ void BookmarkModelObserverImpl::ProcessUpdate(
     return;
   }
 
-  bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
-                            /*modification_time=*/base::Time::Now(),
-                            entity->metadata()->unique_position(), specifics);
+  bookmark_tracker_->Update(
+      entity, entity->metadata()->server_version(),
+      /*modification_time=*/base::Time::Now(),
+      syncer::UniquePosition::FromProto(entity->metadata()->unique_position()),
+      specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   nudge_for_commit_closure_.Run();

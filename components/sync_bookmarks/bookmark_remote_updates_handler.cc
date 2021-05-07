@@ -108,13 +108,10 @@ syncer::UniquePosition ComputeUniquePositionForTrackedBookmarkNode(
 }
 
 size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
-                             const sync_pb::UniquePosition& unique_position,
+                             const syncer::UniquePosition& position,
                              const SyncedBookmarkTracker* bookmark_tracker) {
   DCHECK(parent);
   DCHECK(bookmark_tracker);
-
-  const syncer::UniquePosition position =
-      syncer::UniquePosition::FromProto(unique_position);
 
   auto iter = std::partition_point(
       parent->children().begin(), parent->children().end(),
@@ -233,8 +230,7 @@ void BookmarkRemoteUpdatesHandler::Process(
         LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
         continue;
       }
-      if (!syncer::UniquePosition::FromProto(update_entity.unique_position)
-               .IsValid()) {
+      if (!update_entity.unique_position.IsValid()) {
         // Ignore updates with invalid unique position.
         DLOG(ERROR) << "Couldn't process an update bookmark with an invalid "
                        "unique position.";
@@ -371,7 +367,7 @@ BookmarkRemoteUpdatesHandler::ReorderUpdatesForTest(
 // static
 size_t BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
     const bookmarks::BookmarkNode* parent,
-    const sync_pb::UniquePosition& unique_position,
+    const syncer::UniquePosition& unique_position,
     const SyncedBookmarkTracker* bookmark_tracker) {
   return ComputeChildNodeIndex(parent, unique_position, bookmark_tracker);
 }

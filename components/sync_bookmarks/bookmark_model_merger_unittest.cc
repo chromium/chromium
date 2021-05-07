@@ -81,7 +81,7 @@ class UpdateResponseDataBuilder {
                             const syncer::UniquePosition& unique_position) {
     data_.id = server_id;
     data_.parent_id = parent_id;
-    data_.unique_position = unique_position.ToProto();
+    data_.unique_position = unique_position;
     data_.is_folder = true;
 
     sync_pb::BookmarkSpecifics* bookmark_specifics =

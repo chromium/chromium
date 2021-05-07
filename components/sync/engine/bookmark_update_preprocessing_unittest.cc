@@ -40,8 +40,7 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldPropagateUniquePosition) {
   EntityData entity_data;
   AdaptUniquePositionForBookmark(entity, &entity_data);
 
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(entity_data.unique_position).IsValid());
+  EXPECT_TRUE(entity_data.unique_position.IsValid());
 }
 
 TEST(BookmarkUpdatePreprocessingTest,
@@ -54,8 +53,7 @@ TEST(BookmarkUpdatePreprocessingTest,
   EntityData entity_data;
   AdaptUniquePositionForBookmark(entity, &entity_data);
 
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(entity_data.unique_position).IsValid());
+  EXPECT_TRUE(entity_data.unique_position.IsValid());
 }
 
 TEST(BookmarkUpdatePreprocessingTest,
@@ -68,8 +66,7 @@ TEST(BookmarkUpdatePreprocessingTest,
   EntityData entity_data;
   AdaptUniquePositionForBookmark(entity, &entity_data);
 
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(entity_data.unique_position).IsValid());
+  EXPECT_TRUE(entity_data.unique_position.IsValid());
 }
 
 // Tests that AdaptGuidForBookmark() propagates GUID in specifics if the field

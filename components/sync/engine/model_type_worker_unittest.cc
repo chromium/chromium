@@ -1563,8 +1563,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(data.unique_position).IsValid());
+  EXPECT_TRUE(data.unique_position.IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -1582,8 +1581,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(data.unique_position).IsValid());
+  EXPECT_TRUE(data.unique_position.IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -1601,8 +1599,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(
-      syncer::UniquePosition::FromProto(data.unique_position).IsValid());
+  EXPECT_TRUE(data.unique_position.IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -1622,8 +1619,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_FALSE(
-      syncer::UniquePosition::FromProto(data.unique_position).IsValid());
+  EXPECT_FALSE(data.unique_position.IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, NonBookmarkWithNoPosition) {
@@ -1638,8 +1634,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, NonBookmarkWithNoPosition) {
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), PREFERENCES, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_FALSE(
-      syncer::UniquePosition::FromProto(data.unique_position).IsValid());
+  EXPECT_FALSE(data.unique_position.IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {

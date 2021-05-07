@@ -138,8 +138,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
         /*sync_id=*/kBookmarkBarId,
         /*server_version=*/0, /*creation_time=*/base::Time::Now(),
         syncer::UniquePosition::InitialPosition(
-            syncer::UniquePosition::RandomSuffix())
-            .ToProto(),
+            syncer::UniquePosition::RandomSuffix()),
         specifics);
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
         kOtherBookmarksTag);
@@ -148,8 +147,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
         /*sync_id=*/kOtherBookmarksId,
         /*server_version=*/0, /*creation_time=*/base::Time::Now(),
         syncer::UniquePosition::InitialPosition(
-            syncer::UniquePosition::RandomSuffix())
-            .ToProto(),
+            syncer::UniquePosition::RandomSuffix()),
         specifics);
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
         kMobileBookmarksTag);
@@ -158,8 +156,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
         /*sync_id=*/kMobileBookmarksId,
         /*server_version=*/0, /*creation_time=*/base::Time::Now(),
         syncer::UniquePosition::InitialPosition(
-            syncer::UniquePosition::RandomSuffix())
-            .ToProto(),
+            syncer::UniquePosition::RandomSuffix()),
         specifics);
   }
 
@@ -574,8 +571,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
       /*sync_id=*/kBookmarkBarId,
       /*server_version=*/0, /*creation_time=*/base::Time::Now(),
       syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())
-          .ToProto(),
+          syncer::UniquePosition::RandomSuffix()),
       specifics);
   specifics.mutable_bookmark()->set_legacy_canonicalized_title(
       kOtherBookmarksTag);
@@ -584,8 +580,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
       /*sync_id=*/kOtherBookmarksId,
       /*server_version=*/0, /*creation_time=*/base::Time::Now(),
       syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())
-          .ToProto(),
+          syncer::UniquePosition::RandomSuffix()),
       specifics);
   specifics.mutable_bookmark()->set_legacy_canonicalized_title(
       kMobileBookmarksTag);
@@ -594,8 +589,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
       /*sync_id=*/kMobileBookmarksId,
       /*server_version=*/0, /*creation_time=*/base::Time::Now(),
       syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())
-          .ToProto(),
+          syncer::UniquePosition::RandomSuffix()),
       specifics);
   BookmarkModelObserverImpl observer(
       nudge_for_commit_closure()->Get(),
@@ -647,8 +641,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
       /*sync_id=*/kBookmarkBarId,
       /*server_version=*/0, /*creation_time=*/base::Time::Now(),
       syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())
-          .ToProto(),
+          syncer::UniquePosition::RandomSuffix()),
       specifics);
 
   // Build this structure:
@@ -817,8 +810,7 @@ TEST_F(BookmarkModelObserverImplTest,
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker()->Add(
       bookmark_node, "id", /*server_version=*/1, base::Time::Now(),
       syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())
-          .ToProto(),
+          syncer::UniquePosition::RandomSuffix()),
       specifics);
   bookmark_tracker()->IncrementSequenceNumber(entity);
 

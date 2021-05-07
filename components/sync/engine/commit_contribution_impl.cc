@@ -224,15 +224,11 @@ void CommitContributionImpl::PopulateCommitProto(
     if (type == BOOKMARKS) {
       // position_in_parent field is set only for legacy reasons.  See comments
       // in sync.proto for more information.
-      const UniquePosition unique_position =
-          UniquePosition::FromProto(entity_data.unique_position);
+      const UniquePosition& unique_position = entity_data.unique_position;
       if (unique_position.IsValid()) {
         commit_proto->set_position_in_parent(unique_position.ToInt64());
       }
-      commit_proto->mutable_unique_position()->CopyFrom(
-          entity_data.unique_position);
-      // TODO(mamir): check if parent_id_string needs to be populated for
-      // non-deletions.
+      *commit_proto->mutable_unique_position() = unique_position.ToProto();
       if (!entity_data.parent_id.empty()) {
         commit_proto->set_parent_id_string(entity_data.parent_id);
       }

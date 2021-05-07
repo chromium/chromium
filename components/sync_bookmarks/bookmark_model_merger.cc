@@ -317,8 +317,7 @@ bool IsValidUpdate(const UpdateResponseData& update) {
   DCHECK(!update_entity.is_deleted());
   DCHECK(update_entity.server_defined_unique_tag.empty());
 
-  if (!syncer::UniquePosition::FromProto(update_entity.unique_position)
-           .IsValid()) {
+  if (!update_entity.unique_position.IsValid()) {
     // Ignore updates with invalid positions.
     DLOG(ERROR)
         << "Remote update with invalid position: "
@@ -411,11 +410,7 @@ void BookmarkModelMerger::RemoteTreeNode::EmplaceSelfAndDescendantsByGUID(
 bool BookmarkModelMerger::RemoteTreeNode::UniquePositionLessThan(
     const RemoteTreeNode& lhs,
     const RemoteTreeNode& rhs) {
-  const syncer::UniquePosition a_pos =
-      syncer::UniquePosition::FromProto(lhs.entity().unique_position);
-  const syncer::UniquePosition b_pos =
-      syncer::UniquePosition::FromProto(rhs.entity().unique_position);
-  return a_pos.LessThan(b_pos);
+  return lhs.entity().unique_position.LessThan(rhs.entity().unique_position);
 }
 
 // static
@@ -866,7 +861,7 @@ void BookmarkModelMerger::ProcessLocalCreation(
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
       node, bookmark_model_, /*force_favicon_load=*/true);
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
-      node, sync_id, server_version, creation_time, pos.ToProto(), specifics);
+      node, sync_id, server_version, creation_time, pos, specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   for (size_t i = 0; i < node->children().size(); ++i) {

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/sync.pb.h"
 
 // TODO(crbug.com/947443): Code outside components/sync depends on this file
@@ -85,7 +86,7 @@ struct EntityData {
 
   // Unique position of an entity among its siblings. This is supposed to be
   // set only for datatypes that support positioning (e.g. Bookmarks).
-  sync_pb::UniquePosition unique_position;
+  UniquePosition unique_position;
 
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its

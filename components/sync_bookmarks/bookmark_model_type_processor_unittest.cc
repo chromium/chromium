@@ -66,7 +66,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   data.id = bookmark_info.server_id;
   data.parent_id = bookmark_info.parent_id;
   data.server_defined_unique_tag = bookmark_info.server_tag;
-  data.unique_position = unique_position.ToProto();
+  data.unique_position = unique_position;
   data.originator_client_item_id = guid.AsLowercaseString();
 
   sync_pb::BookmarkSpecifics* bookmark_specifics =

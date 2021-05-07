@@ -112,9 +112,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   data->name = "Name:";
   data->parent_id = "ParentOf:";
   data->is_folder = true;
-  syncer::UniquePosition uniquePosition = syncer::UniquePosition::FromInt64(
+  data->unique_position = syncer::UniquePosition::FromInt64(
       10, syncer::UniquePosition::RandomSuffix());
-  data->unique_position = uniquePosition.ToProto();
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
