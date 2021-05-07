@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
@@ -60,26 +59,12 @@ std::string BootTypeToString(mojom::BootType boot_type) {
   return "";
 }
 
-// Singleton factory for ArcMetricsService.
-class ArcMetricsServiceFactory
-    : public internal::ArcBrowserContextKeyedServiceFactoryBase<
-          ArcMetricsService,
-          ArcMetricsServiceFactory> {
- public:
-  // Factory name used by ArcBrowserContextKeyedServiceFactoryBase.
-  static constexpr const char* kName = "ArcMetricsServiceFactory";
-
-  static ArcMetricsServiceFactory* GetInstance() {
-    return base::Singleton<ArcMetricsServiceFactory>::get();
-  }
-
- private:
-  friend base::DefaultSingletonTraits<ArcMetricsServiceFactory>;
-  ArcMetricsServiceFactory() = default;
-  ~ArcMetricsServiceFactory() override = default;
-};
-
 }  // namespace
+
+// static
+ArcMetricsServiceFactory* ArcMetricsServiceFactory::GetInstance() {
+  return base::Singleton<ArcMetricsServiceFactory>::get();
+}
 
 // static
 ArcMetricsService* ArcMetricsService::GetForBrowserContext(

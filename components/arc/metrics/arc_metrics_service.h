@@ -18,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/process.mojom.h"
@@ -253,6 +254,23 @@ class ArcMetricsService : public KeyedService,
   base::WeakPtrFactory<ArcMetricsService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcMetricsService);
+};
+
+// Singleton factory for ArcMetricsService.
+class ArcMetricsServiceFactory
+    : public internal::ArcBrowserContextKeyedServiceFactoryBase<
+          ArcMetricsService,
+          ArcMetricsServiceFactory> {
+ public:
+  // Factory name used by ArcBrowserContextKeyedServiceFactoryBase.
+  static constexpr const char* kName = "ArcMetricsServiceFactory";
+
+  static ArcMetricsServiceFactory* GetInstance();
+
+ private:
+  friend base::DefaultSingletonTraits<ArcMetricsServiceFactory>;
+  ArcMetricsServiceFactory() = default;
+  ~ArcMetricsServiceFactory() override = default;
 };
 
 }  // namespace arc
