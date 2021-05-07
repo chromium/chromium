@@ -1378,6 +1378,10 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
+void RenderThreadImpl::SetIsDirectSocketEnabled(bool value) {
+  blink::SetIsDirectSocketEnabled(value);
+}
+
 bool RenderThreadImpl::GetRendererMemoryMetrics(
     RendererMemoryMetrics* memory_metrics) const {
   DCHECK(memory_metrics);

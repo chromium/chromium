@@ -193,6 +193,16 @@ bool IsCrossOriginIsolated() {
   return Agent::IsCrossOriginIsolated();
 }
 
+// Function defined in third_party/blink/public/web/blink.h.
+void SetIsDirectSocketEnabled(bool value) {
+  Agent::SetIsDirectSocketEnabled(value);
+}
+
+// Function defined in third_party/blink/public/web/blink.h.
+bool IsDirectSocketEnabled() {
+  return Agent::IsDirectSocketEnabled();
+}
+
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   ModulesInitializer::RegisterInterfaces(binders);
   Thread* main_thread = Thread::MainThread();

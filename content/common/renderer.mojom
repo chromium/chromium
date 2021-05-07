@@ -161,6 +161,14 @@ interface Renderer {
   // This property is process global because we ensure that a renderer process
   // host only cross-origin isolated agents or only non-cross-origin isolated
   // agents, not both.
-  // This is called at most once. This is called earlier than any frame commit.
+  // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
+
+  // Direct sockets require isolation above and beyond what "cross-origin
+  // isolation" provides. This flag corresponds to that set of restrictions.
+  // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
+  // process global, and called at most once, prior to committing a navigation.
+  //
+  // TODO(crbug.com/1206150): We need a specification for this restriction.
+  SetIsDirectSocketEnabled(bool value);
 };

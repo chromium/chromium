@@ -12,9 +12,11 @@ namespace blink {
 
 namespace {
 bool is_cross_origin_isolated = false;
+bool is_direct_socket_potentially_available = false;
 
 #if DCHECK_IS_ON()
 bool is_cross_origin_isolated_set = false;
+bool is_direct_socket_potentially_available_set = false;
 #endif
 }  // namespace
 
@@ -50,6 +52,21 @@ void Agent::SetIsCrossOriginIsolated(bool value) {
   is_cross_origin_isolated_set = true;
 #endif
   is_cross_origin_isolated = value;
+}
+
+// static
+bool Agent::IsDirectSocketEnabled() {
+  return is_direct_socket_potentially_available;
+}
+
+// static
+void Agent::SetIsDirectSocketEnabled(bool value) {
+#if DCHECK_IS_ON()
+  if (is_direct_socket_potentially_available_set)
+    DCHECK_EQ(is_direct_socket_potentially_available, value);
+  is_direct_socket_potentially_available_set = true;
+#endif
+  is_direct_socket_potentially_available = value;
 }
 
 bool Agent::IsOriginKeyed() {

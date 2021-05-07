@@ -3086,6 +3086,9 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
   GetRendererInterface()->SetIsCrossOriginIsolated(
       process_lock.web_exposed_isolation_info().is_isolated());
 
+  GetRendererInterface()->SetIsDirectSocketEnabled(
+      process_lock.web_exposed_isolation_info().is_isolated_application());
+
   if (!process_lock.IsASiteOrOrigin())
     return;
 
