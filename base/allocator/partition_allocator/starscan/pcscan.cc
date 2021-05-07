@@ -533,6 +533,9 @@ class PCScanInternal final {
   PCScanInternal(const PCScanInternal&) = delete;
   PCScanInternal& operator=(const PCScanInternal&) = delete;
 
+  void Initialize();
+  bool is_initialized() const { return is_initialized_; }
+
   TaskHandle CurrentPCScanTask() const {
     std::lock_guard<std::mutex> lock(current_task_mutex_);
     return current_task_;
@@ -596,6 +599,8 @@ class PCScanInternal final {
 
   const char* process_name_ = nullptr;
   const SimdSupport simd_support_;
+
+  bool is_initialized_ = false;
 };
 
 void PCScanInternal::Roots::Add(Root* root) {
@@ -638,11 +643,16 @@ void CommitQuarantineBitmaps(PCScan::Root& root) {
   }
 }
 
-PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {
+PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {}
+
+void PCScanInternal::Initialize() {
+  PA_DCHECK(!is_initialized_);
   CommitCardTable();
+  is_initialized_ = true;
 }
 
 void PCScanInternal::RegisterScannableRoot(Root* root) {
+  PA_DCHECK(is_initialized());
   PA_DCHECK(root);
   PA_CHECK(root->IsQuarantineAllowed());
   typename Root::ScopedGuard guard(root->lock_);
@@ -656,6 +666,7 @@ void PCScanInternal::RegisterScannableRoot(Root* root) {
 }
 
 void PCScanInternal::RegisterNonScannableRoot(Root* root) {
+  PA_DCHECK(is_initialized());
   PA_DCHECK(root);
   PA_CHECK(root->IsQuarantineAllowed());
   typename Root::ScopedGuard guard(root->lock_);
@@ -667,12 +678,14 @@ void PCScanInternal::RegisterNonScannableRoot(Root* root) {
 }
 
 void PCScanInternal::SetProcessName(const char* process_name) {
+  PA_DCHECK(is_initialized());
   PA_DCHECK(process_name);
   PA_DCHECK(!process_name_);
   process_name_ = process_name;
 }
 
 size_t PCScanInternal::CalculateTotalHeapSize() const {
+  PA_DCHECK(is_initialized());
   const auto acc = [](size_t size, Root* root) {
     return size + root->get_total_size_of_committed_pages();
   };
@@ -729,7 +742,8 @@ void PCScanInternal::ClearRootsForTesting() {
 }
 
 void PCScanInternal::ReinitForTesting() {
-  CommitCardTable();
+  is_initialized_ = false;
+  Initialize();
 }
 
 class PCScanSnapshot final {
@@ -1632,6 +1646,7 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
   const auto& internal = PCScanInternal::Instance();
   const auto& scannable_roots = internal.scannable_roots();
   const auto& nonscannable_roots = internal.nonscannable_roots();
+  PA_DCHECK(internal.is_initialized());
   PA_DCHECK(scannable_roots.size() > 0);
   PA_DCHECK(std::all_of(scannable_roots.begin(), scannable_roots.end(),
                         [](Root* root) { return root->IsScanEnabled(); }));
@@ -1700,6 +1715,10 @@ void PCScan::FinishScanForTesting() {
   auto current_task = internal.CurrentPCScanTask();
   PA_CHECK(current_task.get());
   current_task->RunFromScanner();
+}
+
+void PCScan::Initialize() {
+  PCScanInternal::Instance().Initialize();
 }
 
 void PCScan::RegisterScannableRoot(Root* root) {

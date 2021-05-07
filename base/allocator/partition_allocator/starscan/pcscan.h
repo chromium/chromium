@@ -58,6 +58,9 @@ class BASE_EXPORT PCScan final {
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
+  // Initializes PCScan and prepares internal data structures.
+  static void Initialize();
+
   // Registers a root for scanning.
   static void RegisterScannableRoot(Root* root);
   // Registers a root that doesn't need to be scanned but still contains
@@ -85,7 +88,8 @@ class BASE_EXPORT PCScan final {
   static void DisableStackScanning();
   static bool IsStackScanningEnabled();
 
-  // Notify PCScan that a new thread was created/destroyed.
+  // Notify PCScan that a new thread was created/destroyed. Can be called for
+  // uninitialized PCScan (before Initialize()).
   static void NotifyThreadCreated(void* stack_top);
   static void NotifyThreadDestroyed();
 
