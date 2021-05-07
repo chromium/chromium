@@ -1266,8 +1266,10 @@ void UserSessionManager::InitProfilePreferences(
     SetFirstLoginPrefs(profile, user_context.GetPublicSessionLocale(),
                        user_context.GetPublicSessionInputMethod());
 
+    // Kiosks do not have onboarding.
     if (user_manager->GetPrimaryUser() == user &&
-        !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId())) {
+        !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId()) &&
+        !user->IsKioskType()) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->SetAuthSessionForOnboarding(user_context);
