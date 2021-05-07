@@ -55,8 +55,8 @@ class StrikeDatabaseIntegratorBase {
   void ClearAllStrikes();
 
  protected:
-  // Removes all strikes in which it has been longer than GetExpiryTimeMicros()
-  // past |last_update_timestamp|.
+  // Removes one strike for each key where it has been longer than
+  // GetExpiryTimeMicros() since |last_update_timestamp|.
   void RemoveExpiredStrikes();
 
  private:
