@@ -373,6 +373,8 @@ fuchsia_package_runner("web_engine_with_webui_installer") {
 source_set("browsertest_core") {
   testonly = true
   sources = [
+    "test/frame_test_helper.cc",
+    "test/frame_test_helper.h",
     "test/test_data.cc",
     "test/test_data.h",
     "test/web_engine_browser_test.cc",
@@ -385,6 +387,7 @@ source_set("browsertest_core") {
     ":web_engine_core",
     "//content/public/browser",
     "//content/test:test_support",
+    "//fuchsia/base:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
