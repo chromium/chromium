@@ -274,6 +274,7 @@
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
               initWithStyle:CollectionViewControllerStyleDefault
                      offset:offset
+                feedVisible:[self isFeedVisible]
       refactoredFeedVisible:[self isRefactoredFeedVisible]];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
@@ -653,8 +654,7 @@
 }
 
 - (void)reload {
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() &&
-      [self isDiscoverFeedVisible]) {
+  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
     ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
   }
   [self.contentSuggestionsMediator.dataSink reloadAllData];
@@ -837,10 +837,10 @@
       recordDiscoverFeedVisibilityChanged:visible];
 }
 
-// YES if the Discover feed is currently visible.
+// YES if the NTP feed is currently visible.
 // TODO(crbug.com/1173610): Move this to the NTPCoordinator so all of the
 // visibility logic lives in there.
-- (BOOL)isDiscoverFeedVisible {
+- (BOOL)isFeedVisible {
   return self.contentSuggestionsEnabled &&
          [self.contentSuggestionsExpanded value] &&
          !tests_hook::DisableDiscoverFeed();

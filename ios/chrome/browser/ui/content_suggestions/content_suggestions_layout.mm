@@ -18,22 +18,24 @@
 @interface ContentSuggestionsLayout ()
 
 // YES if the Discover Feed is currently visible.
-@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+@property(nonatomic, assign, getter=isRefactoredFeedVisible)
+    BOOL refactoredFeedVisible;
 
 @end
 
 @implementation ContentSuggestionsLayout
 
-- (instancetype)initWithOffset:(CGFloat)offset feedVisible:(BOOL)visible {
+- (instancetype)initWithOffset:(CGFloat)offset
+         refactoredFeedVisible:(BOOL)visible {
   if (self = [super init]) {
-    _feedVisible = visible;
+    _refactoredFeedVisible = visible;
     _offset = offset;
   }
   return self;
 }
 
 - (CGSize)collectionViewContentSize {
-  if ([self isFeedVisible]) {
+  if ([self isRefactoredFeedVisible]) {
     // In the refactored NTP and when the Feed is visible, we don't want to
     // extend the view height beyond its content.
     return [super collectionViewContentSize];
@@ -123,7 +125,7 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
       indexPath.section == 0) {
     CGFloat contentOffset;
-    if ([self isFeedVisible]) {
+    if ([self isRefactoredFeedVisible]) {
       contentOffset = self.parentCollectionView.contentOffset.y +
                       self.collectionView.contentSize.height;
     } else {
@@ -144,13 +146,13 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
             [UIApplication sharedApplication].preferredContentSizeCategory) -
         self.collectionView.safeAreaInsets.top;
 
-    if ([self isFeedVisible]) {
+    if ([self isRefactoredFeedVisible]) {
       minY = [self.omniboxPositioner stickyOmniboxHeight];
     }
     // TODO(crbug.com/1114792): Remove mentioned of "refactored" from the
     // variable name once this launches.
     BOOL hasScrolledIntoRefactoredDiscoverFeed =
-        [self isFeedVisible] && self.isScrolledIntoFeed;
+        [self isRefactoredFeedVisible] && self.isScrolledIntoFeed;
     if (contentOffset > minY && !hasScrolledIntoRefactoredDiscoverFeed) {
       origin.y = contentOffset - minY;
     }

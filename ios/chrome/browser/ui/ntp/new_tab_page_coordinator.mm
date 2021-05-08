@@ -226,13 +226,17 @@
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
 
+  DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+
   if (IsDiscoverFeedEnabled()) {
     // Creating the DiscoverFeedService will start the DiscoverFeed.
     DiscoverFeedService* discoverFeedService =
         DiscoverFeedServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    self.contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
+    discoverFeedMetricsRecorder =
         discoverFeedService->GetDiscoverFeedMetricsRecorder();
+    self.contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
+        discoverFeedMetricsRecorder;
   }
 
   // Requests a Discover feed here if the correct flags and prefs are enabled.
@@ -259,6 +263,8 @@
     self.ntpViewController.contentSuggestionsViewController =
         self.contentSuggestionsCoordinator.viewController;
     self.ntpViewController.panGestureHandler = self.panGestureHandler;
+    self.ntpViewController.discoverFeedMetricsRecorder =
+        discoverFeedMetricsRecorder;
     self.ntpMediator.ntpViewController = self.ntpViewController;
 
     self.discoverFeedWrapperViewController =

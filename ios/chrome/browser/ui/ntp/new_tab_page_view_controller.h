@@ -12,6 +12,7 @@
 
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
+@class DiscoverFeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
@@ -52,6 +53,10 @@
 // the Google doodle.
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsViewController;
+
+// Discover Feed metrics recorder.
+@property(nonatomic, strong)
+    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

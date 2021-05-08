@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
@@ -67,6 +68,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // navigating away and back), and |NO| if it is the top of the NTP.
 @property(nonatomic, assign, getter=isInitialOffsetFromSavedState)
     BOOL initialOffsetFromSavedState;
+
+// The scroll position when a scrolling event starts.
+@property(nonatomic, assign) int scrollStartPosition;
 
 @end
 
@@ -352,7 +356,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
   [self.panGestureHandler scrollViewWillBeginDragging:scrollView];
-  // TODO(crbug.com/1114792): Add metrics recorder.
+  self.scrollStartPosition = scrollView.contentOffset.y;
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
@@ -373,6 +377,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
                                               willDecelerate:decelerate];
   [self.panGestureHandler scrollViewDidEndDragging:scrollView
                                     willDecelerate:decelerate];
+  [self.discoverFeedMetricsRecorder
+      recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {

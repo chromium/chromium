@@ -42,6 +42,7 @@
   _suggestionViewController = [[ContentSuggestionsViewController alloc]
               initWithStyle:CollectionViewControllerStyleDefault
                      offset:0
+                feedVisible:YES
       refactoredFeedVisible:NO];
   _suggestionViewController.collectionView.accessibilityIdentifier =
       kContentSuggestionsCollectionIdentifier;
