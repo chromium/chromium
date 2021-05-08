@@ -12,7 +12,7 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AccountInfo, DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 
@@ -56,6 +56,14 @@ Polymer({
         this.handleParametersChanged_.bind(this));
     this.diceWebSigninInterceptBrowserProxy_.pageLoaded().then(
         parameters => this.handleParametersChanged_(parameters));
+    afterNextRender(this, () => {
+      // |showGuestOption| is constant during the lifetime of this bubble,
+      // therefore it's safe to set the listener only during initialization.
+      if (this.interceptionParameters_.showGuestOption) {
+        this.$$('#footer-description a')
+            .addEventListener('click', () => this.onGuest_());
+      }
+    });
   },
 
   /** @private */

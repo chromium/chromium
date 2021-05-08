@@ -164,13 +164,13 @@
       </cr-button>
     </div>
   </div>
-  <!-- TODO(https://crbug.com/1157764): Change to make only link clickable. -->
   <template is="dom-if" if="[[interceptionParameters_.showGuestOption]]"
       restamp>
     <div slot="footer">
       <div class="divider"></div>
-      <div id="footer-description" on-click="onGuest_"
-          inner-h-t-m-l="[[guestLink_]]"></div>
+      <div id="footer-description"
+          inner-h-t-m-l="[[guestLink_]]">
+      </div>
     </div>
   </template>
 </div>

@@ -102,7 +102,7 @@ suite('DiceWebSigninInterceptTest', function() {
     const spinner = app.$$('paper-spinner-lite');
     const acceptButton = app.$$('#acceptButton');
     const cancelButton = app.$$('#cancelButton');
-    const guestLink = app.$$('#footer-description');
+    const guestLink = app.$$('#footer-description a');
     assertFalse(spinner.active);
     assertFalse(acceptButton.disabled);
     assertFalse(cancelButton.disabled);
