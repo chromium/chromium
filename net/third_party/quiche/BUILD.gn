@@ -695,6 +695,7 @@ if (is_linux || is_chromeos) {
   }
 
   source_set("epoll_quic_tools_core") {
+    testonly = true
     sources = [
       "src/quic/core/quic_default_packet_writer.cc",
       "src/quic/core/quic_default_packet_writer.h",
@@ -726,6 +727,7 @@ if (is_linux || is_chromeos) {
   }
 
   executable("epoll_quic_client") {
+    testonly = true
     sources = [
       "src/quic/tools/quic_client_bin.cc",
       "src/quic/tools/quic_epoll_client_factory.cc",
@@ -738,12 +740,14 @@ if (is_linux || is_chromeos) {
       "//net",
       "//net:epoll_quic_tools",
       "//net:epoll_server",
+      "//net:quic_test_tools",
       "//net:simple_quic_tools",
       "//third_party/boringssl",
     ]
   }
 
   executable("epoll_quic_server") {
+    testonly = true
     sources = [
       "src/quic/tools/quic_epoll_server_factory.cc",
       "src/quic/tools/quic_epoll_server_factory.h",
@@ -773,6 +777,7 @@ if (is_linux || is_chromeos) {
   }
 
   source_set("masque_tools") {
+    testonly = true
     sources = [
       "src/quic/masque/masque_client_session.cc",
       "src/quic/masque/masque_client_session.h",
@@ -807,6 +812,7 @@ if (is_linux || is_chromeos) {
   }
 
   executable("masque_client") {
+    testonly = true
     sources = [ "src/quic/masque/masque_client_bin.cc" ]
     deps = [
       ":masque_tools",
@@ -819,6 +825,7 @@ if (is_linux || is_chromeos) {
   }
 
   executable("masque_server") {
+    testonly = true
     sources = [ "src/quic/masque/masque_server_bin.cc" ]
     deps = [
       ":masque_tools",
@@ -1101,12 +1108,14 @@ source_set("simple_quic_tools_core") {
 }
 
 source_set("quic_client_core") {
+  testonly = true
   sources = [
     "src/quic/tools/quic_toy_client.cc",
     "src/quic/tools/quic_toy_client.h",
   ]
   deps = [
     "//net",
+    "//net:quic_test_tools",
     "//net:simple_quic_tools",
   ]
 }

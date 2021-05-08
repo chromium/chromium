@@ -2447,6 +2447,7 @@ if (is_linux || is_chromeos) {
   }
 
   source_set("epoll_quic_tools") {
+    testonly = true
     sources = [
       "quic/platform/impl/quic_epoll_clock.cc",
       "quic/platform/impl/quic_epoll_clock.h",
@@ -2649,6 +2650,7 @@ source_set("simple_quic_tools") {
 
 if (!is_ios) {
   executable("quic_client") {
+    testonly = true
     sources = [ "tools/quic/quic_simple_client_bin.cc" ]
     deps = [
       ":net",

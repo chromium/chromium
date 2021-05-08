@@ -60,7 +60,8 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
       uint16_t port,
       quic::ParsedQuicVersionVector versions,
       const quic::QuicConfig& config,
-      std::unique_ptr<quic::ProofVerifier> verifier) override {
+      std::unique_ptr<quic::ProofVerifier> verifier,
+      std::unique_ptr<quic::SessionCache> /*session_cache*/) override {
     net::AddressList addresses;
     int rv = net::SynchronousHostResolver::Resolve(host_for_lookup, &addresses);
     if (rv != net::OK) {
