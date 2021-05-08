@@ -34,16 +34,17 @@ static void RecordReplayAssert(const char* aFormat, ...) {
 
 static void (*gRecordReplayRegisterPointerFn)(void*);
 
-static void RecordReplayRegisterPointer(void* ptr) {
+static bool RecordReplayRegisterPointer(void* ptr) {
   if (!gRecordReplayRegisterPointerFn) {
     void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayRegisterPointer");
     if (!fnptr) {
-      return;
+      return false;
     }
     gRecordReplayRegisterPointerFn = reinterpret_cast<void(*)(void*)>(fnptr);
   }
 
   gRecordReplayRegisterPointerFn(ptr);
+  return true;
 }
 
 static void (*gRecordReplayUnregisterPointerFn)(void*);
@@ -119,7 +120,12 @@ bool TaskRunner::PostTaskAndReply(const Location& from_here,
 }
 
 TaskRunner::TaskRunner() {
-  RecordReplayRegisterPointer(this);
+  if (RecordReplayRegisterPointer(this)) {
+    // Leak task runners when recording/replaying, as they can be destroyed at
+    // non-deterministic points and this is simpler than ordering uses of their
+    // reference count.
+    AddRef();
+  }
 }
 
 TaskRunner::~TaskRunner() {
