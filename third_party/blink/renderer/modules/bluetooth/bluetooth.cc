@@ -161,6 +161,12 @@ static void CanonicalizeFilter(
           return;
         }
 
+        if (data_prefix_buffer.ByteLength() == 0) {
+          exception_state.ThrowTypeError(
+              "'dataPrefix', if present, must be non-empty.");
+          return;
+        }
+
         // Iterate by index here since we're iterating through two arrays.
         for (wtf_size_t i = 0; i < data_prefix_buffer.ByteLength(); ++i) {
           uint8_t data = data_prefix_buffer.Bytes()[i];
