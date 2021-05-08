@@ -149,6 +149,7 @@ enum Setting {
   kAssistantNotifications = 605,
   kAssistantVoiceInput = 606,
   kTrainAssistantVoiceModel = 607,
+  kQuickAnswersOnOff = 608,
 
   // Apps section.
   kManageAndroidPreferences = 700,

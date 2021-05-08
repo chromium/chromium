@@ -66,6 +66,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       // Search and Assistant section.
       chromeos::settings::mojom::kSearchAndAssistantSectionPath,
       chromeos::settings::mojom::kAssistantSubpagePath,
+      chromeos::settings::mojom::kSearchSubpagePath,
 
       // Apps section.
       chromeos::settings::mojom::kAppsSectionPath,

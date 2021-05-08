@@ -180,6 +180,8 @@ cr.define('settings', function() {
         Section.kSearchAndAssistant);
     r.GOOGLE_ASSISTANT = createSubpage(
         r.OS_SEARCH, mojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
+    r.SEARCH_SUBPAGE =
+        createSubpage(r.OS_SEARCH, mojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
 
     // Apps section.
     r.APPS = createSection(r.BASIC, mojom.APPS_SECTION_PATH, Section.kApps);

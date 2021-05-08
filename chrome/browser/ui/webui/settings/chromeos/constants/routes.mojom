@@ -85,6 +85,7 @@ enum Subpage {
 
   // Search and Assistant section.
   kAssistant = 600,
+  kSearch = 601,
 
   // Apps section.
   kAppManagement = 700,
@@ -197,6 +198,7 @@ const string kAmbientModeArtGalleryAlbumSubpagePath =
 // Search and Assistant section.
 const string kSearchAndAssistantSectionPath = "osSearch";
 const string kAssistantSubpagePath = "googleAssistant";
+const string kSearchSubpagePath = "osSearch/search";
 
 // Apps section.
 const string kAppsSectionPath = "apps";

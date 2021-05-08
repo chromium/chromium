@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -42,6 +43,22 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPreferredSearchEngine}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS,
+       mojom::kSearchSubpagePath,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kQuickAnswersOnOff},
+       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT1,
+        IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT2,
+        IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT3,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -128,6 +145,20 @@ bool IsVoiceMatchAllowed() {
   return !assistant::features::IsVoiceMatchDisabled();
 }
 
+bool ShouldShowQuickAnswersSettings() {
+  return ash::features::IsQuickAnswersStandaloneSettingsEnabled();
+}
+
+void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"quickAnswersEnable", IDS_SETTINGS_QUICK_ANSWERS_ENABLE},
+      {"quickAnswersEnableDescription",
+       IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"googleAssistantPageTitle", IDS_SETTINGS_GOOGLE_ASSISTANT},
@@ -176,6 +207,9 @@ SearchSection::SearchSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetSearchPageSearchConcepts());
 
+  if (ShouldShowQuickAnswersSettings())
+    updater.AddSearchTags(GetQuickAnswersSearchConcepts());
+
   ash::AssistantState* assistant_state = ash::AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
     updater.AddSearchTags(GetAssistantSearchConcepts());
@@ -195,6 +229,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
       {"osSearchEngineButtonLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_BUTTON_LABEL},
+      {"searchSubpageTitle", IDS_SETTINGS_SEARCH_SUBPAGE_TITLE},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},
       {"searchGoogleAssistantEnabled",
        IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
@@ -205,6 +240,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddBoolean("shouldShowQuickAnswersSettings",
+                          ShouldShowQuickAnswersSettings());
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",
@@ -215,6 +252,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          ui::SubstituteChromeOSDeviceType(
                              IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION));
 
+  AddQuickAnswersStrings(html_source);
   AddGoogleAssistantStrings(html_source);
 }
 
@@ -250,6 +288,17 @@ bool SearchSection::LogMetric(mojom::Setting setting,
 
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
+
+  // Search.
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_SEARCH_SUBPAGE_TITLE, mojom::Subpage::kSearch,
+      mojom::SearchResultIcon::kMagnifyingGlass,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kSearchSubpagePath);
+  static constexpr mojom::Setting kSearchSettings[] = {
+      mojom::Setting::kQuickAnswersOnOff,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kSearch, kSearchSettings,
+                            generator);
 
   // Assistant.
   generator->RegisterTopLevelSubpage(

@@ -134,6 +134,7 @@ js_modulizer("modulize") {
     "quick_unlock_authenticate_browsertest_chromeos.js",
     "lock_screen_tests.js",
     "personalization_page_test.js",
+    "search_subpage_test.js",
     "smart_inputs_page_test.js",
     "smb_shares_page_tests.js",
     "switch_access_action_assignment_dialog_test.js",

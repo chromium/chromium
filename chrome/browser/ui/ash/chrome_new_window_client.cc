@@ -163,6 +163,7 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
      {ChromePage::POINTEROVERLAY,
       chromeos::settings::mojom::kPointersSubpagePath},
      {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
+     {ChromePage::SEARCHSUBPAGE, chromeos::settings::mojom::kSearchSubpagePath},
      {ChromePage::SMARTLOCKSETTINGS,
       chromeos::settings::mojom::kSmartLockSubpagePath},
      {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},

@@ -772,6 +772,17 @@
     Search and Assistant
   </message>
 
+  <!-- Search subpage (OS settings) -->
+  <message name="IDS_SETTINGS_SEARCH_SUBPAGE_TITLE" desc="Name of the settings subpage for Search.">
+    Search
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE" desc="Title for a toggle that controls the Quick Answers feature.">
+    Quick Answers
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers toggle.">
+    With a right-click or long press, show related info for your text selection
+  </message>
+
   <!-- Files Page (OS settings) -->
   <message name="IDS_OS_SETTINGS_FILES" desc="Name of the settings page which displays file preferences.">
     Files

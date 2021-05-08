@@ -444,6 +444,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::KERBEROSACCOUNTSV2,
       base_url.Resolve(
           chromeos::settings::mojom::kKerberosAccountsV2SubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::SEARCHSUBPAGE,
+      base_url.Resolve(chromeos::settings::mojom::kSearchSubpagePath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

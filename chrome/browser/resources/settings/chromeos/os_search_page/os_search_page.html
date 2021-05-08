@@ -20,6 +20,7 @@
 <link rel="import" href="../../settings_vars_css.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../google_assistant_page/google_assistant_page.html">
+<link rel="import" href="search_subpage.html">
 <link rel="import" href="../os_route.html">
 
 <dom-module id="os-settings-search-page">
@@ -79,7 +80,14 @@
             </extension-controlled-indicator>
           </template>
         </div>
-
+        <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
+          <cr-link-row id="search"
+              id="searchSubpageTrigger"
+              label="$i18n{searchSubpageTitle}"
+              on-click="onSearchTap_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
         <!-- Google Assistant -->
         <template is="dom-if" if="[[isAssistantAllowed_]]">
           <cr-link-row
@@ -93,6 +101,16 @@
           </cr-link-row>
         </template>
       </div>
+      <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
+        <template is="dom-if" route-path="/osSearch/search">
+          <settings-subpage
+              associated-control="[[$$('#searchSubpageTrigger')]]"
+              page-title="$i18n{searchSubpageTitle}">
+            <settings-search-subpage prefs="{{prefs}}">
+            </settings-search-subpage>
+          </settings-subpage>
+        </template>
+      </template>
       <template is="dom-if" if="[[isAssistantAllowed_]]">
         <template is="dom-if" route-path="/googleAssistant">
           <settings-subpage

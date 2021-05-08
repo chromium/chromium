@@ -27,6 +27,14 @@ Polymer({
     /** @type {?Map<string, string>} */
     focusConfig_: Object,
 
+    /** @private */
+    shouldShowQuickAnswersSettings_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('shouldShowQuickAnswersSettings');
+      },
+    },
+
     /** @private Can be disallowed due to flag, policy, locale, etc. */
     isAssistantAllowed_: {
       type: Boolean,
@@ -64,10 +72,10 @@ Polymer({
     cr.addWebUIListener('search-engines-changed', updateCurrentSearchEngine);
 
     this.focusConfig_ = new Map();
-    if (settings.routes.GOOGLE_ASSISTANT) {
-      this.focusConfig_.set(
-          settings.routes.GOOGLE_ASSISTANT.path, '#assistantSubpageTrigger');
-    }
+    this.focusConfig_.set(
+        settings.routes.SEARCH_SUBPAGE.path, '#searchSubpageTrigger');
+    this.focusConfig_.set(
+        settings.routes.GOOGLE_ASSISTANT.path, '#assistantSubpageTrigger');
   },
 
   /**
@@ -97,6 +105,11 @@ Polymer({
   onSearchSelectionDialogClose_() {
     this.showSearchSelectionDialog_ = false;
     cr.ui.focusWithoutInk(assert(this.$.searchSelectionDialogButton));
+  },
+
+  /** @private */
+  onSearchTap_() {
+    settings.Router.getInstance().navigateTo(settings.routes.SEARCH_SUBPAGE);
   },
 
   /** @private */
