@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ActionManager} from './action_manager.js';
-import {FocusRingManager} from './focus_ring_manager.js';
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
 import {SwitchAccessMenuAction} from './switch_access_constants.js';
@@ -68,7 +67,6 @@ export class MenuManager {
 
   /** Exits the menu. */
   static close() {
-    FocusRingManager.clearAll();
     MenuManager.instance.isMenuOpen_ = false;
     MenuManager.instance.actionNode_ = null;
     MenuManager.instance.displayedActions_ = null;

@@ -4,7 +4,6 @@
 
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
-import {SAConstants} from './switch_access_constants.js';
 
 /**
  * Class to handle auto-scan behavior.
@@ -131,7 +130,7 @@ export class AutoScanManager {
    */
   start_() {
     if (this.primaryScanTime_ === AutoScanManager.NOT_INITIALIZED ||
-        this.intervalID_ || SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+        this.intervalID_) {
       return;
     }
 
@@ -142,13 +141,8 @@ export class AutoScanManager {
       currentScanTime = this.keyboardScanTime_;
     }
 
-    this.intervalID_ = window.setInterval(() => {
-      if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
-        AutoScanManager.instance.stop_();
-        return;
-      }
-      Navigator.byItem.moveForward();
-    }, currentScanTime);
+    this.intervalID_ = window.setInterval(
+        Navigator.byItem.moveForward.bind(Navigator.byItem), currentScanTime);
   }
 
   /**

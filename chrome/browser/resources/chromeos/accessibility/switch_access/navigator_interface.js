@@ -95,12 +95,6 @@ export class ItemNavigatorInterface {
    */
   moveToValidNode() {}
 
-  /**
-   * Restarts item scanning from the last point chosen by point scanning.
-   * @abstract
-   */
-  restart() {}
-
   // =============== Getter Methods ==============
 
   /**

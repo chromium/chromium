@@ -91,19 +91,11 @@ export class ActionManager {
    * @param {!SwitchAccessMenuAction} action
    */
   static performAction(action) {
-    switch (action) {
-      case SwitchAccessMenuAction.LEFT_CLICK:
-      case SwitchAccessMenuAction.RIGHT_CLICK:
-        // Exit menu, then click (so the action will hit the desired target,
-        // instead of the menu).
-        ActionManager.exitCurrentMenu();
-        ActionManager.instance.handlePointScanActions_(action);
-        return;
-      default:
-        ActionManager.instance.handleGlobalActions_(action) ||
-            ActionManager.instance.performActionOnCurrentNode_(action);
-        ActionManager.exitCurrentMenu();
-    }
+    const manager = ActionManager.instance;
+    manager.handleGlobalActions_(action) ||
+        manager.handlePointScanActions_(action) ||
+        manager.performActionOnCurrentNode_(action);
+    ActionManager.exitCurrentMenu();
   }
 
 
@@ -262,7 +254,7 @@ export class ActionManager {
         Navigator.byPoint.start();
         return true;
       case SwitchAccessMenuAction.ITEM_SCAN:
-        Navigator.byItem.restart();
+        Navigator.byPoint.stop();
         return true;
       default:
         return false;
