@@ -75,6 +75,7 @@ include_rules = [
     "+services/device/public/mojom/wake_lock.mojom-blink.h",
     "+services/metrics/public",
     "+services/network/public/cpp/cors/cors_error_status.h",
+    "+services/network/public/cpp/cross_origin_embedder_policy.h",
     "+services/network/public/cpp/features.h",
     "+services/network/public/cpp/ip_address_space_util.h",
     "+services/network/public/cpp/is_potentially_trustworthy.h",

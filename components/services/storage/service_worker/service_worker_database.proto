@@ -35,6 +35,7 @@ message ServiceWorkerRegistrationData {
   enum CrossOriginEmbedderPolicyValue {
     NONE_OR_NOT_EXIST = 0;
     REQUIRE_CORP = 1;
+    CREDENTIALLESS = 2;
   }
 
   required int64 registration_id = 1;

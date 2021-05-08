@@ -1630,11 +1630,19 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   if (data.has_cross_origin_embedder_policy_value()) {
-    (*out)->cross_origin_embedder_policy.value =
-        data.cross_origin_embedder_policy_value() ==
-                ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST
-            ? network::mojom::CrossOriginEmbedderPolicyValue::kNone
-            : network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    switch (data.cross_origin_embedder_policy_value()) {
+      case ServiceWorkerRegistrationData::REQUIRE_CORP:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        break;
+      case ServiceWorkerRegistrationData::CREDENTIALLESS:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        break;
+      default:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    }
   }
 
   if (data.has_cross_origin_embedder_policy_reporting_endpoint()) {
@@ -1643,11 +1651,19 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   if (data.has_cross_origin_embedder_policy_report_only_value()) {
-    (*out)->cross_origin_embedder_policy.report_only_value =
-        data.cross_origin_embedder_policy_report_only_value() ==
-                ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST
-            ? network::mojom::CrossOriginEmbedderPolicyValue::kNone
-            : network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    switch (data.cross_origin_embedder_policy_report_only_value()) {
+      case ServiceWorkerRegistrationData::REQUIRE_CORP:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        break;
+      case ServiceWorkerRegistrationData::CREDENTIALLESS:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        break;
+      default:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    }
   }
 
   if (data.has_cross_origin_embedder_policy_report_only_reporting_endpoint()) {
@@ -1712,20 +1728,36 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           ServiceWorkerRegistrationData_ServiceWorkerUpdateViaCacheType>(
           registration.update_via_cache));
 
-  data.set_cross_origin_embedder_policy_value(
-      registration.cross_origin_embedder_policy.value ==
-              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp
-          ? ServiceWorkerRegistrationData::REQUIRE_CORP
-          : ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+  switch (registration.cross_origin_embedder_policy.value) {
+    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      data.set_cross_origin_embedder_policy_value(
+          ServiceWorkerRegistrationData::REQUIRE_CORP);
+      break;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+      data.set_cross_origin_embedder_policy_value(
+          ServiceWorkerRegistrationData::CREDENTIALLESS);
+      break;
+    default:
+      data.set_cross_origin_embedder_policy_value(
+          ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+  }
   if (registration.cross_origin_embedder_policy.reporting_endpoint) {
     data.set_cross_origin_embedder_policy_reporting_endpoint(
         registration.cross_origin_embedder_policy.reporting_endpoint.value());
   }
-  data.set_cross_origin_embedder_policy_report_only_value(
-      registration.cross_origin_embedder_policy.report_only_value ==
-              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp
-          ? ServiceWorkerRegistrationData::REQUIRE_CORP
-          : ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+  switch (registration.cross_origin_embedder_policy.report_only_value) {
+    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      data.set_cross_origin_embedder_policy_report_only_value(
+          ServiceWorkerRegistrationData::REQUIRE_CORP);
+      break;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+      data.set_cross_origin_embedder_policy_report_only_value(
+          ServiceWorkerRegistrationData::CREDENTIALLESS);
+      break;
+    default:
+      data.set_cross_origin_embedder_policy_report_only_value(
+          ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+  }
   if (registration.cross_origin_embedder_policy
           .report_only_reporting_endpoint) {
     data.set_cross_origin_embedder_policy_report_only_reporting_endpoint(

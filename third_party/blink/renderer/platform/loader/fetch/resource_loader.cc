@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -982,8 +983,8 @@ void ResourceLoader::DidReceiveResponseInternal(
   // https://wicg.github.io/cross-origin-embedder-policy/#integration-html
   // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
   if (options.reject_coep_unsafe_none &&
-      response.GetCrossOriginEmbedderPolicy() !=
-          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
+      !network::CompatibleWithCrossOriginIsolated(
+          response.GetCrossOriginEmbedderPolicy()) &&
       !response.CurrentRequestUrl().ProtocolIsData() &&
       !response.CurrentRequestUrl().ProtocolIs("blob")) {
     DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));

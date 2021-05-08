@@ -492,11 +492,16 @@ ResourceResponse::GetCrossOriginEmbedderPolicy() const {
   const std::string value = HttpHeaderField(kHeaderName).Utf8();
   using Item = net::structured_headers::Item;
   const auto item = net::structured_headers::ParseItem(value);
-  if (!item || item->item.Type() != Item::kTokenType ||
-      item->item.GetString() != "require-corp") {
+  if (!item || item->item.Type() != Item::kTokenType) {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
-  return network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  if (item->item.GetString() == "require-corp") {
+    return network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  } else if (item->item.GetString() == "credentialless") {
+    return network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+  } else {
+    return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+  }
 }
 
 STATIC_ASSERT_ENUM(WebURLResponse::kHTTPVersionUnknown,

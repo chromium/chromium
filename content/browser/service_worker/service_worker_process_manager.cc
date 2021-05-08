@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -125,8 +126,8 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
           : script_url;
   const bool is_coop_coep_cross_origin_isolated =
       !is_guest && cross_origin_embedder_policy.has_value() &&
-      (cross_origin_embedder_policy->value ==
-       network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
+      network::CompatibleWithCrossOriginIsolated(
+          cross_origin_embedder_policy->value);
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context_, service_worker_url,

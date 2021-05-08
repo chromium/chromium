@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -235,8 +236,7 @@ void DedicatedWorker::OnHostCreated(
     const network::CrossOriginEmbedderPolicy& parent_coep) {
   DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   const RejectCoepUnsafeNone reject_coep_unsafe_none(
-      parent_coep.value ==
-      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp);
+      network::CompatibleWithCrossOriginIsolated(parent_coep));
   if (options_->type() == "classic") {
     // Legacy code path (to be deprecated, see https://crbug.com/835717):
     // A worker thread will start after scripts are fetched on the current

@@ -105,6 +105,12 @@ network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyRequireCorp() {
   return out;
 }
 
+network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyCredentialless() {
+  network::CrossOriginEmbedderPolicy out;
+  out.value = network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+  return out;
+}
+
 std::vector<mojom::ServiceWorkerUserDataPtr> CreateUserData(
     int64_t registration_id,
     const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
@@ -538,7 +544,8 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
   data4.script_response_time = base::Time::FromJsTime(4200);
-  data4.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data4.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -610,6 +617,8 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
+  data3.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2314,6 +2323,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     store_and_restore(policy);
     policy.value = network::mojom::CrossOriginEmbedderPolicyValue::kNone;
     store_and_restore(policy);
+    policy.value =
+        network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+    store_and_restore(policy);
   }
 
   {
@@ -2329,6 +2341,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     store_and_restore(policy);
     policy.report_only_value =
         network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    store_and_restore(policy);
+    policy.report_only_value =
+        network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
     store_and_restore(policy);
   }
 
