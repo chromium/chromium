@@ -182,7 +182,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   const base::DictionaryValue* file_systems = NULL;
   ASSERT_TRUE(extensions->GetDictionaryWithoutPathExpansion(
       kProviderId.ToString(), &file_systems));
-  EXPECT_EQ(1u, file_systems->size());
+  EXPECT_EQ(1u, file_systems->DictSize());
 
   const base::Value* file_system_value = NULL;
   const base::DictionaryValue* file_system = NULL;
@@ -302,7 +302,7 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   const base::DictionaryValue* file_systems = NULL;
   ASSERT_TRUE(extensions->GetDictionaryWithoutPathExpansion(
       kProviderId.ToString(), &file_systems));
-  EXPECT_EQ(1u, file_systems->size());
+  EXPECT_EQ(1u, file_systems->DictSize());
 
   const base::Value* file_system_value = NULL;
   const base::DictionaryValue* file_system = NULL;
