@@ -320,7 +320,7 @@ enum definition. By default, values are based at zero and increment by
 1 sequentially.
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages)
+target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
 
 ### Constants
 
@@ -346,7 +346,7 @@ struct Employee {
 ```
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages)
+target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
 
 ### Interfaces
 
@@ -579,7 +579,8 @@ struct Employee {
 };
 ```
 
-and you would like to add birthday and nickname fields. You can do:
+and you would like to add birthday and nickname fields. You can add them as
+optional types with a `MinVersion` like so:
 
 ``` cpp
 struct Employee {
@@ -589,6 +590,12 @@ struct Employee {
   [MinVersion=1] string? nickname;
 };
 ```
+
+*** note
+**NOTE:** Mojo object or handle types added with a `MinVersion` **MUST** be
+optional (nullable). See [Primitive Types](#Primitive-Types) for details on
+nullable values.
+***
 
 By default, fields belong to version 0. New fields must be appended to the
 struct definition (*i.e*., existing fields must not change **ordinal value**)
@@ -634,11 +641,6 @@ struct Employee {
   [MinVersion=1] string? nickname@3;
 };
 ```
-
-*** note
-**NOTE:** Newly added fields of Mojo object or handle types MUST be nullable.
-See [Primitive Types](#Primitive-Types).
-***
 
 ### Versioned Interfaces
 
