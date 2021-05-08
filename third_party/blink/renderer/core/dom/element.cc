@@ -2872,7 +2872,7 @@ void Element::RecalcStyleForTraversalRootAncestor() {
 
 void Element::RecalcStyle(const StyleRecalcChange change,
                           const StyleRecalcContext& style_recalc_context) {
-  recordreplay::Assert("Element::RecalcStyle Start");
+  recordreplay::Assert("Element::RecalcStyle Start %lu", recordreplay::PointerId(this));
 
   DCHECK(InActiveDocument());
   DCHECK(GetDocument().InStyleRecalc());
@@ -2939,6 +2939,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   if (child_change.TraverseChildren(*this)) {
     SelectorFilterParentScope filter_scope(*this);
     if (ShadowRoot* root = GetShadowRoot()) {
+      recordreplay::Assert("Element::RecalcStyle #2");
       root->RecalcDescendantStyles(child_change, child_recalc_context);
       // Sad panda. This is only to clear ensured ComputedStyles for elements
       // outside the flat tree for getComputedStyle() in the cases where we
@@ -2946,12 +2947,14 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       // make sure we clear out-of-date ComputedStyles outside the flat tree
       // in Element::EnsureComputedStyle().
       if (child_change.RecalcDescendants()) {
+        recordreplay::Assert("Element::RecalcStyle #3");
         RecalcDescendantStyles(StyleRecalcChange::kClearEnsured,
                                child_recalc_context);
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
       slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
+      recordreplay::Assert("Element::RecalcStyle #4");
       RecalcDescendantStyles(child_change, child_recalc_context);
     }
   }
