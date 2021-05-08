@@ -1045,6 +1045,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   int budget = max_tokenization_budget_;
 
   while (!should_yield) {
+    recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #0");
+
     const auto next_token_status = CanTakeNextToken();
     if (next_token_status == NoTokens) {
       // No tokens left to process in this pump, so break
@@ -1072,15 +1074,19 @@ bool HTMLDocumentParser::PumpTokenizer() {
     }
     ConstructTreeFromHTMLToken();
     if (!should_run_until_completion && !IsPaused()) {
+      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #2");
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
       should_yield = budget <= 0;
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
+      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #3");
     } else {
       should_yield = false;
     }
     DCHECK(IsStopped() || Token().IsUninitialized());
   }
+
+  recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #4");
 
   if (IsStopped())
     return false;
