@@ -54,11 +54,11 @@ class ChromeDataUseMeasurementBrowsertestBase : public InProcessBrowserTest {
     return local_state()
                ->GetDictionary(
                    data_use_measurement::prefs::kDataUsedUserForeground)
-               ->size() +
+               ->DictSize() +
            local_state()
                ->GetDictionary(
                    data_use_measurement::prefs::kDataUsedUserBackground)
-               ->size();
+               ->DictSize();
   }
 
   void RetryUntilUserInitiatedDataUsePrefHasEntry() {
