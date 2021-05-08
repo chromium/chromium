@@ -2275,7 +2275,7 @@ void TestRunner::WorkQueue::ReplicateStates(
 }
 
 void TestRunner::WorkQueue::OnStatesChanged() {
-  if (states_.changed_values().empty())
+  if (states_.changed_values().DictEmpty())
     return;
 
   controller_->GetWebTestControlHostRemote()->WorkQueueStatesChanged(
@@ -3242,7 +3242,7 @@ void TestRunner::OnWebTestRuntimeFlagsChanged() {
   // web flag changes in SetTestConfiguration().
   if (!test_is_running_)
     return;
-  if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
+  if (web_test_runtime_flags_.tracked_dictionary().changed_values().DictEmpty())
     return;
 
   GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(
