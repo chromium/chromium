@@ -17,7 +17,7 @@ class JsEventDetailsTest : public testing::Test {};
 
 TEST_F(JsEventDetailsTest, EmptyList) {
   JsEventDetails details;
-  EXPECT_TRUE(details.Get().empty());
+  EXPECT_TRUE(details.Get().DictEmpty());
   EXPECT_EQ("{}", details.ToString());
 }
 
@@ -31,7 +31,7 @@ TEST_F(JsEventDetailsTest, FromDictionary) {
   JsEventDetails details(&dict);
 
   // |details| should take over |dict|'s data.
-  EXPECT_TRUE(dict.empty());
+  EXPECT_TRUE(dict.DictEmpty());
   EXPECT_TRUE(details.Get().Equals(&dict_copy));
 }
 
