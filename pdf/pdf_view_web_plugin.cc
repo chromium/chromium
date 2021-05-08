@@ -302,6 +302,10 @@ blink::WebString PdfViewWebPlugin::SelectionAsMarkup() const {
   return selected_text_;
 }
 
+bool PdfViewWebPlugin::CanEditText() const {
+  return engine()->CanEditText();
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }

@@ -336,7 +336,7 @@ class PDFEngine {
 
   virtual std::string GetSelectedText() = 0;
   // Returns true if focus is within an editable form text area.
-  virtual bool CanEditText() = 0;
+  virtual bool CanEditText() const = 0;
   // Returns true if focus is within an editable form text area and the text
   // area has text.
   virtual bool HasEditableText() = 0;

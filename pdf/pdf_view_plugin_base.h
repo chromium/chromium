@@ -131,6 +131,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // their destructor to ensure the engine is destroyed first.
   void DestroyEngine();
 
+  const PDFiumEngine* engine() const { return engine_.get(); }
   PDFiumEngine* engine() { return engine_.get(); }
 
   PaintManager& paint_manager() { return paint_manager_; }

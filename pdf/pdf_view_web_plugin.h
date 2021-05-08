@@ -77,6 +77,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool HasSelection() const override;
   blink::WebString SelectionAsText() const override;
   blink::WebString SelectionAsMarkup() const override;
+  bool CanEditText() const override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
   // PdfViewPluginBase:

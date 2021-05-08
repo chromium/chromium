@@ -115,7 +115,7 @@ class PDFiumEngine : public PDFEngine,
   gfx::Size ApplyDocumentLayout(
       const DocumentLayout::Options& options) override;
   std::string GetSelectedText() override;
-  bool CanEditText() override;
+  bool CanEditText() const override;
   bool HasEditableText() override;
   void ReplaceSelection(const std::string& text) override;
   bool CanUndo() override;

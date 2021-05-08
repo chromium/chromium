@@ -2210,7 +2210,7 @@ std::string PDFiumEngine::GetSelectedText() {
   return base::UTF16ToUTF8(result);
 }
 
-bool PDFiumEngine::CanEditText() {
+bool PDFiumEngine::CanEditText() const {
   return editable_form_text_area_;
 }
 
