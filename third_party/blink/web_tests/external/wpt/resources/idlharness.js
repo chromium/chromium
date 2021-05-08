@@ -2626,9 +2626,6 @@ IdlInterface.prototype.test_object = function(desc)
     {
         // Result of [[IsHTMLDDA]] slot
         expected_typeof = "undefined";
-    } else if (this.members.some(function(member) { return member.legacycaller; }))
-    {
-        expected_typeof = "function";
     }
     else
     {
