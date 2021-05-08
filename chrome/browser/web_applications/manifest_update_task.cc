@@ -278,7 +278,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI) &&
+  if (os_integration_manager_.IsFileHandlingAPIAvailable(app_id_) &&
       HaveFileHandlersChanged(
           /*old_handlers=*/registrar_.GetAppFileHandlers(app_id_),
           /*new_handlers=*/web_application_info_->file_handlers)) {

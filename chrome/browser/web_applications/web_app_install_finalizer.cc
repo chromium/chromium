@@ -641,8 +641,9 @@ FileHandlerUpdateAction WebAppInstallFinalizer::DoFileHandlersNeedOsUpdate(
     const AppId app_id,
     const WebApplicationInfo& web_app_info,
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI))
+  if (!os_integration_manager().IsFileHandlingAPIAvailable(app_id))
     return FileHandlerUpdateAction::kNoUpdate;
+
   // TODO(https://crbug.com/1197013): Consider trying to re-use
   // HaveFileHandlersChanged() results from the ManifestUpdateTask.
   if (!HaveFileHandlersChanged(
