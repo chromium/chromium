@@ -452,7 +452,7 @@ base::Optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& k_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
   base::Optional<base::DictionaryValue> dict = GetJwkDictionary(json);
-  if (!dict.has_value() || dict.value().empty())
+  if (!dict.has_value() || dict.value().DictEmpty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
   // ---- k
@@ -479,7 +479,7 @@ base::Optional<base::DictionaryValue> GetJwkDictionary(
     const std::string& e_expected_hex,
     blink::WebCryptoKeyUsageMask use_mask_expected) {
   base::Optional<base::DictionaryValue> dict = GetJwkDictionary(json);
-  if (!dict.has_value() || dict.value().empty())
+  if (!dict.has_value() || dict.value().DictEmpty())
     return ::testing::AssertionFailure() << "JSON parsing failed";
 
   // ---- n
