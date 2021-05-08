@@ -577,7 +577,8 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   ink_drop()->SetCreateRippleCallback(base::BindRepeating(
       [](InkDropHostView* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
-            host->size(), host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
+            host->GetPreferredSize(),
+            host->ink_drop()->GetInkDropCenterBasedOnLastEvent(),
             host->ink_drop()->GetBaseColor(),
             host->ink_drop()->GetVisibleOpacity());
       },
