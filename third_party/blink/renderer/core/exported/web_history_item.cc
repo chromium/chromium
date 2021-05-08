@@ -239,6 +239,14 @@ void WebHistoryItem::SetAppHistoryId(const WebString& id) {
   private_->SetAppHistoryId(id);
 }
 
+WebSerializedScriptValue WebHistoryItem::GetAppHistoryState() const {
+  return WebSerializedScriptValue(private_->GetAppHistoryState());
+}
+
+void WebHistoryItem::SetAppHistoryState(const WebSerializedScriptValue& state) {
+  private_->SetAppHistoryState(state);
+}
+
 WebHistoryItem::WebHistoryItem(HistoryItem* item) : private_(item) {}
 
 WebHistoryItem& WebHistoryItem::operator=(HistoryItem* item) {

@@ -838,6 +838,13 @@ void DocumentLoader::SetHistoryItemStateForCommit(
     history_item_->SetAppHistoryKey(old_item->GetAppHistoryKey());
   }
 
+  // AppHistory's state is stickier than the legacy History state. It always
+  // propagates by default to a same-document navigation.
+  if (navigation_type == HistoryNavigationType::kFragment ||
+      IsReloadLoadType(load_type)) {
+    history_item_->SetAppHistoryState(old_item->GetAppHistoryState());
+  }
+
   // Don't propagate state from the old item if this is a different-document
   // navigation, unless the before and after pages are logically related. This
   // means they have the same url (ignoring fragment) and the new item was

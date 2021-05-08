@@ -56,6 +56,7 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
   uint64_t scroll_anchor_simhash = 0;
   base::Optional<std::u16string> app_history_key;
   base::Optional<std::u16string> app_history_id;
+  base::Optional<std::u16string> app_history_state;
   std::vector<ExplodedFrameState> children;
 
   ExplodedFrameState();

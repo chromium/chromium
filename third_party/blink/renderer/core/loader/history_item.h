@@ -126,6 +126,11 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   const String& GetAppHistoryId() const { return app_history_id_; }
   void SetAppHistoryId(const String& id) { app_history_id_ = id; }
 
+  void SetAppHistoryState(scoped_refptr<SerializedScriptValue>);
+  SerializedScriptValue* GetAppHistoryState() {
+    return app_history_state_.get();
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -162,6 +167,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
   String app_history_key_;
   String app_history_id_;
+  scoped_refptr<SerializedScriptValue> app_history_state_;
 };  // class HistoryItem
 
 }  // namespace blink

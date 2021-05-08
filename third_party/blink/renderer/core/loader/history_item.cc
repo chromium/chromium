@@ -149,6 +149,11 @@ EncodedFormData* HistoryItem::FormData() {
   return form_data_.get();
 }
 
+void HistoryItem::SetAppHistoryState(
+    scoped_refptr<SerializedScriptValue> value) {
+  app_history_state_ = std::move(value);
+}
+
 ResourceRequest HistoryItem::GenerateResourceRequest(
     mojom::FetchCacheMode cache_mode) {
   ResourceRequest request(url_string_);

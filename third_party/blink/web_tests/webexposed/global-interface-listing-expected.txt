@@ -248,6 +248,7 @@ interface AppHistoryEntry : EventTarget
     getter sameDocument
     getter url
     method constructor
+    method getState
 interface AppHistoryNavigateEvent : Event
     attribute @@toStringTag
     getter canRespond

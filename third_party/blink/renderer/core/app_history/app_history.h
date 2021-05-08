@@ -87,6 +87,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
 
   Member<AppHistoryNavigateEvent> ongoing_navigate_event_;
   Member<ScriptPromiseResolver> navigate_method_call_promise_resolver_;
+  scoped_refptr<SerializedScriptValue> navigate_serialized_state_;
 
   ScriptValue navigate_event_info_;
 };

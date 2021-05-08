@@ -127,6 +127,9 @@ class WebHistoryItem {
   BLINK_EXPORT WebString GetAppHistoryId() const;
   BLINK_EXPORT void SetAppHistoryId(const WebString&);
 
+  BLINK_EXPORT WebSerializedScriptValue GetAppHistoryState() const;
+  BLINK_EXPORT void SetAppHistoryState(const WebSerializedScriptValue&);
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebHistoryItem(HistoryItem*);
   BLINK_EXPORT WebHistoryItem& operator=(HistoryItem*);

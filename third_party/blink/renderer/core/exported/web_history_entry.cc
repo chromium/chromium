@@ -104,6 +104,10 @@ void GenerateFrameStateFromItem(const WebHistoryItem& item,
   state->app_history_key =
       WebString::ToOptionalString16(item.GetAppHistoryKey());
   state->app_history_id = WebString::ToOptionalString16(item.GetAppHistoryId());
+  if (!item.GetAppHistoryState().IsNull()) {
+    state->app_history_state =
+        WebString::ToOptionalString16(item.GetAppHistoryState().ToString());
+  }
 }
 
 void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
@@ -143,6 +147,11 @@ void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
     item.SetAppHistoryKey(WebString::FromUTF16(state.app_history_key));
   if (state.app_history_id)
     item.SetAppHistoryId(WebString::FromUTF16(state.app_history_id));
+
+  if (state.app_history_state) {
+    item.SetAppHistoryState(WebSerializedScriptValue::FromString(
+        WebString::FromUTF16(*state.app_history_state)));
+  }
 
   item.SetHTTPContentType(
       WebString::FromUTF16(state.http_body.http_content_type));

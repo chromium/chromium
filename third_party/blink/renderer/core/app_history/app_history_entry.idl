@@ -12,9 +12,9 @@
   readonly attribute USVString url;
   // readonly attribute long long index;
   // readonly attribute boolean finished;
-   readonly attribute boolean sameDocument;
+  readonly attribute boolean sameDocument;
 
-  // any getState();
+  any getState();
 
   // attribute EventHandler onnavigateto;
   // attribute EventHandler onnavigatefrom;

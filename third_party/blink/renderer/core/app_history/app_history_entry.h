@@ -15,6 +15,7 @@
 namespace blink {
 
 class HistoryItem;
+class ScriptValue;
 
 class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
                                           public ExecutionContextClient {
@@ -28,6 +29,8 @@ class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
   String id() const;
   KURL url();
   bool sameDocument() const;
+
+  ScriptValue getState() const;
 
   HistoryItem* GetItem() { return item_; }
 

@@ -32,6 +32,14 @@ bool AppHistoryEntry::sameDocument() const {
          item_->DocumentSequenceNumber();
 }
 
+ScriptValue AppHistoryEntry::getState() const {
+  SerializedScriptValue* state = item_->GetAppHistoryState();
+  if (!DomWindow() || !state)
+    return ScriptValue();
+  v8::Isolate* isolate = DomWindow()->GetIsolate();
+  return ScriptValue(isolate, state->Deserialize(isolate));
+}
+
 const AtomicString& AppHistoryEntry::InterfaceName() const {
   return event_target_names::kAppHistoryEntry;
 }

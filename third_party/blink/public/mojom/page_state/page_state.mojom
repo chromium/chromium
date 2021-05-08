@@ -40,7 +40,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // presubmit check.
 //
 // Update the below value if your change introduces fields using it.
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 // Next Ordinal: 4
 // FileSystemFile is no longer supported.
@@ -105,7 +105,7 @@ struct ViewState {
   [MinVersion=1] uint64 scroll_anchor_simhash@5 = 0;
 };
 
-// Next Ordinal: 15
+// Next Ordinal: 16
 [Stable, RenamedFrom="content.history.mojom.FrameState"]
 struct FrameState {
   mojo_base.mojom.String16? url_string@0;
@@ -123,6 +123,7 @@ struct FrameState {
   [MinVersion=2] string? initiator_origin@12;
   [MinVersion=3] mojo_base.mojom.String16? app_history_key@13;
   [MinVersion=3] mojo_base.mojom.String16? app_history_id@14;
+  [MinVersion=4] mojo_base.mojom.String16? app_history_state@15;
 };
 
 // Next Ordinal: 2
