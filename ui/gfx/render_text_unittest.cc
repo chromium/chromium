@@ -1499,7 +1499,7 @@ const TextIndexConversionCase kTextIndexConversionCases[] = {
     {"emoji_asc", u"😨1234"},
     {"emoji_asc_obscured0", u"😨1234"},
     {"emoji_asc_obscured2", u"😨1234"},
-    {"picto_title", u"x☛"},
+    {"picto_title", u"xx☛"},
     {"simple_mixed", u"aaڭڭcc"},
     {"simple_rtl", u"أسكي"},
 };
