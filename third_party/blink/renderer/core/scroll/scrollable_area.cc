@@ -256,6 +256,8 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
                                      mojom::blink::ScrollBehavior behavior,
                                      ScrollCallback on_finish) {
+  recordreplay::Assert("ScrollableArea::SetScrollOffset Start");
+
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -264,12 +266,14 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
 
   if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
     if (sequencer->FilterNewScrollOrAbortCurrent(scroll_type)) {
+      recordreplay::Assert("ScrollableArea::SetScrollOffset #1");
       return;
     }
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
   if (clamped_offset == GetScrollOffset()) {
+    recordreplay::Assert("ScrollableArea::SetScrollOffset #2");
     return;
   }
 
@@ -309,6 +313,8 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     default:
       NOTREACHED();
   }
+
+  recordreplay::Assert("ScrollableArea::SetScrollOffset Done");
 }
 
 void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
