@@ -5139,20 +5139,56 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       GetCrossOriginIsolationStatus) {
+                       GetWebExposedIsolationLevel) {
+  // Not isolated:
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated,
-            root_frame_host()->GetCrossOriginIsolationStatus());
+  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
 
+  // Cross-Origin Isolated:
   EXPECT_TRUE(NavigateToURL(shell(),
                             embedded_test_server()->GetURL(
                                 "/set-header?"
                                 "Cross-Origin-Opener-Policy: same-origin&"
                                 "Cross-Origin-Embedder-Policy: require-corp")));
   // Status can be kIsolated or kMaybeIsolated.
-  EXPECT_NE(RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated,
-            root_frame_host()->GetCrossOriginIsolationStatus());
+  EXPECT_LT(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_GT(
+      RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication,
+      root_frame_host()->GetWebExposedIsolationLevel());
+}
+
+class RenderFrameHostImplBrowserTestWithDirectSockets
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplBrowserTestWithDirectSockets() {
+    feature_list_.InitAndEnableFeature(features::kDirectSockets);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithDirectSockets,
+                       GetWebExposedIsolationLevel) {
+  // Not isolated:
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
+
+  // Isolated Application:
+
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/set-header?"
+                                "Cross-Origin-Opener-Policy: same-origin&"
+                                "Cross-Origin-Embedder-Policy: require-corp")));
+  // Status can be kIsolatedApplication or kMaybeIsolatedApplication.
+  EXPECT_LT(RenderFrameHost::WebExposedIsolationLevel::kIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

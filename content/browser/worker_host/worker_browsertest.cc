@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
       shell()->web_contents()->GetMainFrame());
   auto page_lock = page_rfh->GetSiteInstance()->GetProcessLock();
   EXPECT_TRUE(page_lock.web_exposed_isolation_info().is_isolated());
-  EXPECT_NE(page_rfh->GetCrossOriginIsolationStatus(),
-            RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated);
+  EXPECT_GT(page_rfh->GetWebExposedIsolationLevel(),
+            RenderFrameHost::WebExposedIsolationLevel::kNotIsolated);
 
   // Create a shared worker from the cross-origin-isolated page.
   // The worker must be in a different process because shared workers isn't

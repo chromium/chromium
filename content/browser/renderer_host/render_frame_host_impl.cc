@@ -1875,18 +1875,23 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
   return GetSiteInstance() != parent_->GetSiteInstance();
 }
 
-RenderFrameHost::CrossOriginIsolationStatus
-RenderFrameHostImpl::GetCrossOriginIsolationStatus() {
+RenderFrameHost::WebExposedIsolationLevel
+RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
-  if (process_lock.is_invalid() ||
-      !process_lock.web_exposed_isolation_info().is_isolated()) {
-    // Cross-origin isolated frames must be hosted in cross-origin isolated
-    // processes.
-    return RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated;
+  if (process_lock.is_invalid())
+    return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
+
+  WebExposedIsolationInfo info = process_lock.web_exposed_isolation_info();
+  if (info.is_isolated_application()) {
+    // TODO(crbug.com/1159832): Check the document policy once it's available to
+    // find out if this frame is actually isolated.
+    return RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  } else if (info.is_isolated()) {
+    // TODO(crbug.com/1159832): Check the document policy once it's available to
+    // find out if this frame is actually isolated.
+    return RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolated;
   }
-  // TODO(crbug.com/1159832): Check the document policy once it's available to
-  // find out if this frame is actually isolated.
-  return RenderFrameHost::CrossOriginIsolationStatus::kMaybeIsolated;
+  return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() {

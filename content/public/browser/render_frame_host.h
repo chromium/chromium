@@ -334,60 +334,77 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if the frame is out of process relative to its parent.
   virtual bool IsCrossProcessSubframe() = 0;
 
-  // Indicates whether this frame is in a cross-origin isolated agent cluster.
-  // See [1] and [2] for a description of what this means for web content.
-  // Specifically, an agent cluster may be cross-origin isolated if:
-  // - its top-level document has "Cross-Origin-Opener-Policy: same-origin" and
-  //   "Cross-Origin-Embedder-Policy: require-corp" HTTP headers; or,
-  // - its top-level worker script has a
-  //   "Cross-Origin-Embedder-Policy: require-corp" HTTP header.
+  // Reflects the web-exposed isolation properties of a given frame, which
+  // depends both on the process in which the frame lives, as well as the agent
+  // cluster into which it has been placed.
   //
-  // In practice this means that the frame is guaranteed to be hosted in a
-  // process that is isolated to the frame's origin. The process may also host
-  // cross-origin frames and workers only if they have opted in to being
-  // embedded with CORS or CORP headers.
+  // Three broad categories are possible:
   //
-  // Certain advanced web platform APIs are gated behind this property. It will
-  // correspond to the value returned by accessing
-  // "WindowOrWorkerGlobalScope.crossOriginIsolated" in Javascript.
+  // 1.  The frame may not be isolated in a web-facing way.
   //
-  // NOTE: some of the information needed to fully determine a frame's
-  // cross-isolation status is currently not available in the browser process.
-  // Access to web platform API's must be checked in the renderer, with the
-  // CrossOriginIsolationStatus on the browser side only used as a backup to
-  // catch misbehaving renderers.
+  // 2.  The frame may be "cross-origin isolated", corresponding to the value
+  //     returned by `WorkerOrWindowGlobalScope.crossOriginIsolated`, and gating
+  //     the set of APIs which specify [CrossOriginIsolated] attributes. The
+  //     requirements for this level of isolation are described in [1] and [2]
+  //     below.
+  //
+  //     In practice this means that the frame is guaranteed to be hosted in a
+  //     process that is isolated to the frame's origin. The process may also
+  //     host cross-origin frames and workers only if they have opted in to
+  //     being embedded by asserting CORS or CORP headers.
+  //
+  // 3.  The frame may be an "isolated application", corresponding to a mostly
+  //     TBD set of restrictions we're exploring in https://crbug.com/1206150,
+  //     and which currently gate the set of APIs which specify
+  //     [DirectSocketEnabled] attributes.
+  //
+  // The enum below is ordered from least-isolated to most-isolated.
   //
   // [1]
   // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
   // [2] https://w3c.github.io/webappsec-permissions-policy/
-  enum class CrossOriginIsolationStatus {
-    // The frame is in a cross-origin isolated process and agent cluster.
-    // It is allowed to call web platform API's gated behind the
-    // crossOriginIsolated property.
-    kIsolated,
-
-    // The frame is not in a cross-origin isolated agent cluster. It may be
-    // hosted in a cross-origin isolated process but it is not allowed to call
-    // web platform API's gated behind the crossOriginIsolated property.
+  //
+  // NOTE: some of the information needed to fully determine a frame's
+  // isolation status is currently not available in the browser process.
+  // Access to web platform API's must be checked in the renderer, with the
+  // WebExposedIsolationLevel on the browser side only used as a backup to
+  // catch misbehaving renderers.
+  enum class WebExposedIsolationLevel {
+    // The frame is not in a cross-origin isolated agent cluster. It may not
+    // meet the requirements for such isolation in itself, or it may be
+    // hosted in a process capable of supporting cross-origin isolation or
+    // application isolation, but barred from using those capabilities by
+    // its embedder.
     kNotIsolated,
 
-    // The frame is in a cross-origin isolated process, but it's not possible
-    // to determine whether it's in a cross-origin isolated agent cluster. The
-    // browser process should not prevent it from calling web platform API's
-    // gated behind the crossOriginIsolated property because it may be allowed.
-    // TODO(clamy): Remove this status once the document policy is available on
-    // the browser side.
+    // The frame is in a cross-origin isolated process and agent cluster,
+    // allowed to access web platform APIs gated on [CrossOriginIsolated].
+    //
+    // TODO(clamy): Remove this "maybe" status once it is possible to determine
+    // conclusively whether the document is capable of calling cross-origin
+    // isolated APIs by examining the active document policy.
     kMaybeIsolated,
+    kIsolated,
+
+    // The frame is in a cross-origin isolated process and agent cluster that
+    // supports application isolation, allowing access to web platform APIs
+    // gated on both [CrossOriginIsolated] and [DirectSocketEnabled].
+    //
+    // TODO(clamy): Remove this "maybe" status once it is possible to determine
+    // conclusively whether the document is capable of calling cross-origin
+    // isolated APIs by examining the active document policy.
+    kMaybeIsolatedApplication,
+    kIsolatedApplication
   };
 
-  // Returns whether the frame is in a cross-origin isolated agent cluster.
+  // Returns the web-exposed isolation level of a frame's agent cluster.
   //
   // Note that this is a property of the document so can change as the frame
   // navigates.
   //
   // TODO(https://936696): Once RenderDocument ships this should be exposed as
   // an invariant of the document host.
-  virtual CrossOriginIsolationStatus GetCrossOriginIsolationStatus() = 0;
+  virtual WebExposedIsolationLevel GetWebExposedIsolationLevel() = 0;
 
   // Returns the last committed URL of this RenderFrameHost. This will be empty
   // until the first commit in this RenderFrameHost.

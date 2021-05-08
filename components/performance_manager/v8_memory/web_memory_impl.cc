@@ -78,8 +78,8 @@ void CheckIsCrossOriginIsolatedOnUISeq(
     // Frame was deleted before the task ran.
     return;
   }
-  if (rfh->GetCrossOriginIsolationStatus() ==
-          content::RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated &&
+  if (rfh->GetWebExposedIsolationLevel() ==
+          content::RenderFrameHost::WebExposedIsolationLevel::kNotIsolated &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
     std::move(bad_message_callback)

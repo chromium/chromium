@@ -287,6 +287,12 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     OpenTcpSocketCallback callback) {
+  if (!frame_host_ || frame_host_->GetWebExposedIsolationLevel() <
+                          RenderFrameHost::WebExposedIsolationLevel::
+                              kMaybeIsolatedApplication) {
+    mojo::ReportBadMessage("Insufficient isolation to open socket.");
+    return;
+  }
   if (!options) {
     mojo::ReportBadMessage("Invalid request to open socket");
     return;
@@ -314,6 +320,12 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback) {
+  if (!frame_host_ || frame_host_->GetWebExposedIsolationLevel() <
+                          RenderFrameHost::WebExposedIsolationLevel::
+                              kMaybeIsolatedApplication) {
+    mojo::ReportBadMessage("Insufficient isolation to open socket.");
+    return;
+  }
   if (!options) {
     mojo::ReportBadMessage("Invalid request to open socket");
     return;
