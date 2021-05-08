@@ -19,7 +19,7 @@ testing::AssertionResult HasArg(const base::ListValue* args,
   const base::DictionaryValue* arg;
 
   for (size_t i = 0; i < args->GetSize(); ++i) {
-    if (!args->GetDictionary(i, &arg) || arg->size() != 1)
+    if (!args->GetDictionary(i, &arg) || arg->DictSize() != 1)
       return testing::AssertionFailure() << " malformed argument for index "
                                          << i;
 
