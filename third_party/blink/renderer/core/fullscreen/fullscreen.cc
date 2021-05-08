@@ -283,16 +283,25 @@ bool AllowedToRequestFullscreen(Document& document) {
   //
   // The current implementation of WebXR's "dom-overlay" mode internally uses
   // the Fullscreen API to show a single DOM element based on configuration at
-  // XR session start. The WebXR API doesn't support changing elements during
-  // the session, so to avoid inconsistencies between implementations we need
-  // to block changes via Fullscreen API while the XR session is active, while
-  // still allowing the XR code to set up fullscreen mode on session start.
+  // XR session start. In addition, for WebXR sessions without "dom-overlay"
+  // the renderer may need to force the page to fullscreen to ensure that
+  // browser UI hides/responds accordingly. In either case, requesting a WebXR
+  // Session does require a user gesture, but it has likely expired by the time
+  // the renderer actually gets the XR session from the device and attempts
+  // to fullscreen the page.
   if (ScopedAllowFullscreen::FullscreenAllowedReason() ==
-      ScopedAllowFullscreen::kXrOverlay) {
-    DVLOG(1) << __func__
-             << ": allowing fullscreen element setup for XR DOM overlay";
+          ScopedAllowFullscreen::kXrOverlay ||
+      ScopedAllowFullscreen::FullscreenAllowedReason() ==
+          ScopedAllowFullscreen::kXrSession) {
+    DVLOG(1) << __func__ << ": allowing fullscreen element setup for XR";
     return true;
   }
+
+  // The WebXR API doesn't support changing elements during the session if the
+  // dom-overlay feature is in use (indicated by the IsXrOverlay property). To
+  // avoid inconsistencies between implementations we need to block changes via
+  // Fullscreen API while the XR session is active, while still allowing the XR
+  // code to set up fullscreen mode on session start.
   if (document.IsXrOverlay()) {
     DVLOG(1) << __func__
              << ": rejecting change of fullscreen element for XR DOM overlay";

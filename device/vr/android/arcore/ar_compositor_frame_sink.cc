@@ -357,7 +357,13 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   // First the DOM, if it's enabled
   if (should_composite_dom_overlay_) {
     auto dom_surface_id = xr_frame_sink_client_->GetDOMSurface();
-    if (dom_surface_id && dom_surface_id->is_valid()) {
+    bool can_composite_dom_overlay =
+        dom_surface_id && dom_surface_id->is_valid();
+    DVLOG(3)
+        << __func__
+        << " Attempting to composite DOMOverlay, can_composite_dom_overlay="
+        << can_composite_dom_overlay;
+    if (can_composite_dom_overlay) {
       viz::SharedQuadState* dom_quad_state =
           render_pass->CreateAndAppendSharedQuadState();
       dom_quad_state->SetAll(
