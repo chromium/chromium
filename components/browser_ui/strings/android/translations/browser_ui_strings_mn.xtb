@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" />-д таны байршилд хандахыг зөвшөөрөхийн тулд байршлыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="8447861592752582886">Төхөөрөмжийн зөвшөөрлийг хүчингүй болгох</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 күүки ашиглаж байна}other{# 1 күүки ашиглаж байна}}</translation>
-<translation id="8463851957836045671">Сайт хурдан</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Томруулж харах</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Энэ төхөөрөмж дээр NFC унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Android-н тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
-<translation id="8929372349074745002">Энэ сайт ихэнх хүнд хурдан нээгдэж, хариулдаг</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Күүкиг тодорхой сайтад хориглоно уу.</translation>
 <translation id="8959122750345127698">Навигацтай холбогдох боломжгүй байна: <ph name="URL" /></translation>

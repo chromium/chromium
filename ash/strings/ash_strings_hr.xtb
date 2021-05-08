@@ -21,6 +21,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1104621072296271835">Vaši uređaji funkcioniraju još bolje zajedno</translation>
 <translation id="1119348796022671382">Način boje teme upotrebljava boje izdvojene iz vaše pozadine kako bi blago obojio sučelje.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
+<translation id="1148499908455722006">Otvorite dijalog podataka o računu <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Da bi se primijenilo ažuriranje, potrebno je ponovo pokrenuti uređaj.</translation>
 <translation id="1175572348579024023">Pomicanje</translation>
@@ -437,7 +438,9 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4577274620589681794">Vrijeme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578906031062871102">Otvoren je izbornik postavki</translation>
+<translation id="4581047786858252841">Mikrofon je uključen</translation>
 <translation id="4585337515783392668">Zaustavite emitiranje na nepoznatom prijamniku</translation>
+<translation id="4587299710837179226">Mikrofon je isključen</translation>
 <translation id="4596144739579517758">Tamna je tema isključena</translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="4623167406982293031">Potvrdite račun</translation>
@@ -569,6 +572,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5777841717266010279">Prekinuti dijeljenje zaslona?</translation>
 <translation id="5779721926447984944">Prikvačene datoteke</translation>
 <translation id="5790085346892983794">Uspjeh</translation>
+<translation id="5805809050170488595">Kliknite da biste aktivirali mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">OS Chromium</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavite <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>

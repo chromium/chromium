@@ -21,6 +21,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1104621072296271835">Uređaji zajedno funkcionišu još bolje</translation>
 <translation id="1119348796022671382">Režim tematskih boja koristi boje izvedene iz pozadine da bi se blago obojio intefejs.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
+<translation id="1148499908455722006">Otvara dijalog sa informacijama za korisnika <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Restartujte uređaj da biste primenili ažuriranje.</translation>
 <translation id="1175572348579024023">Pomeraj</translation>
@@ -437,7 +438,9 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4577274620589681794">Vreme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaži preglede</translation>
 <translation id="4578906031062871102">Meni Podešavanja je otvoren</translation>
+<translation id="4581047786858252841">Mikrofon je uključen</translation>
 <translation id="4585337515783392668">Zaustavi prebacivanje na nepoznati prijemnik</translation>
+<translation id="4587299710837179226">Mikrofon je isključen</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4611292653554630842">Prijavi me</translation>
 <translation id="4623167406982293031">Verifikujte nalog</translation>
@@ -569,6 +572,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5777841717266010279">Želite li da prekinete deljenje ekrana?</translation>
 <translation id="5779721926447984944">Zakačeni fajlovi</translation>
 <translation id="5790085346892983794">Uspešno</translation>
+<translation id="5805809050170488595">Kliknite da biste aktivirali <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Podešavanja povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>

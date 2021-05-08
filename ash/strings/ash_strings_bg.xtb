@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
 <translation id="1119348796022671382">Тематичният цветови режим придава лек оттенък на интерфейса с помощта на цветове, извлечени от тапета ви.</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
+<translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1165712434476988950">Устройството трябва да се рестартира, за да се приложи актуализацията.</translation>
 <translation id="1175572348579024023">Превъртане</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">Времето изтече   <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Показване на визуализации</translation>
 <translation id="4578906031062871102">Менюто за настройки е отворено</translation>
+<translation id="4581047786858252841">Микрофонът е включен</translation>
 <translation id="4585337515783392668">Спиране на предаването към неизвестен приемник</translation>
+<translation id="4587299710837179226">Микрофонът е изключен</translation>
 <translation id="4596144739579517758">Тъмната тема е изключена</translation>
 <translation id="4611292653554630842">Вход</translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">Да се спре ли споделянето на екрана?</translation>
 <translation id="5779721926447984944">Фиксирани файлове</translation>
 <translation id="5790085346892983794">Успех</translation>
+<translation id="5805809050170488595">Кликнете за активиране на <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>

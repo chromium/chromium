@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Označit vše jako přečtené</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="1690731385917361335">Žádné položky</translation>
-<translation id="1691390244342876227">Chrome vaše informace nemohl ověřit</translation>
 <translation id="1692118695553449118">Synchronizace je zapnuta</translation>
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
@@ -430,6 +429,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5508435575041083207">Odhlásit se a vymazat z tohoto zařízení data</translation>
 <translation id="5513681519188741830">Před <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Vytvořit heslovou frázi</translation>
+<translation id="5532698011560297095">Přihlášení se nezdařilo</translation>
 <translation id="5548760955356983418">Handoff umožňuje začít web procházet v tomto zařízení a poté snadno pokračovat na počítači Mac. Akutální otevřený web se zobrazí v doku vašeho počítače Mac.
 
 Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zařízení musejí používat stejný účet iCloud.</translation>
@@ -635,7 +635,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="734758817008927353">Možnosti uložení karty</translation>
 <translation id="7348502496356775519">Záložka</translation>
-<translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353432112255316844">Ověřte svou totožnost</translation>
 <translation id="7383797227493018512">Seznam četby</translation>
 <translation id="7398893703713203428">Vytvořit odkaz</translation>
@@ -764,7 +763,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8680787084697685621">Přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="8706588385081740091">Hesla</translation>
 <translation id="8717864919010420084">Kopírovat odkaz</translation>
-<translation id="8721206573513844242">Omlouváme se, identifikační údaje se nepodařilo ověřit</translation>
 <translation id="8721297211384281569">Nabídka Nástroje</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8730621377337864115">Hotovo</translation>

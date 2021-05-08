@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
 <translation id="1119348796022671382">အပြင်အဆင်အရောင်မုဒ်သည် အင်တာဖေ့စ်ကို လင်းသည့်အရောင်ထည့်ရန် သင့်နောက်ခံမှ ထုတ်ယူထားသော အရောင်များကိုသုံးသည်။</translation>
 <translation id="112308213915226829">အလိုအလျောက် ဝှက်သည့် စင်</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ ဖွင့်ပါ</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="1165712434476988950">အပ်ဒိတ်ထည့်သွင်းရန် ကိရိယာကို ပြန်စရပါမည်။</translation>
 <translation id="1175572348579024023">လှိမ့်ရန်</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">အချိန်စေ့ပါပြီ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">အစမ်းကြည့်ရှုမှုများ ပြရန်</translation>
 <translation id="4578906031062871102">ဆက်တင်များမီနူး ဖွင့်ထားသည်</translation>
+<translation id="4581047786858252841">မိုက်ခရိုဖုန်း ဖွင့်ထားသည်</translation>
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
+<translation id="4587299710837179226">မိုက်ခရိုဖုန်း ပိတ်ထားသည်</translation>
 <translation id="4596144739579517758">မှောင်သည့်အပြင်အဆင် ပိတ်ထားသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
 <translation id="4623167406982293031">အကောင့်ကို အတည်ပြုရန်</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">မျက်နှာပြင် ဝေမျှနေခြင်း ရပ်လိုပါသလား?</translation>
 <translation id="5779721926447984944">ပင်ထိုးထားသော ဖိုင်များ</translation>
 <translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>

@@ -21,6 +21,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1104621072296271835">Laitteesi toimivat entistä paremmin yhdessä</translation>
 <translation id="1119348796022671382">Teemoihin jaettu väritila käyttää taustakuvasta poimittuja värejä käyttöliittymän kevyeen väritykseen.</translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
+<translation id="1148499908455722006">Avaa tietoikkuna: <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Laiteparit</translation>
 <translation id="1165712434476988950">Laite on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="1175572348579024023">Vieritä</translation>
@@ -437,7 +438,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4577274620589681794">Aika loppui · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Näytä esikatselut</translation>
 <translation id="4578906031062871102">Asetusvalikko avattu</translation>
+<translation id="4581047786858252841">Mikrofoni on päällä</translation>
 <translation id="4585337515783392668">Lopeta suoratoisto tuntemattomaan kohteeseen</translation>
+<translation id="4587299710837179226">Mikrofoni on poissa päältä</translation>
 <translation id="4596144739579517758">Tumma teema on pois päältä</translation>
 <translation id="4611292653554630842">Kirjaudu sisään</translation>
 <translation id="4623167406982293031">Vahvista tili</translation>
@@ -569,6 +572,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5777841717266010279">Lopetetaanko näytön jakaminen?</translation>
 <translation id="5779721926447984944">Kiinnitetyt tiedostot</translation>
 <translation id="5790085346892983794">Onnistui</translation>
+<translation id="5805809050170488595">Aktivoi <ph name="NETWORK_NAME" /> klikkaamalla</translation>
 <translation id="5820394555380036790">Chromium-käyttöjärjestelmä</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>

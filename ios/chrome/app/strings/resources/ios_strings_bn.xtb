@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1690731385917361335">কোনো আইটেম নেই</translation>
-<translation id="1691390244342876227">Chrome আপনার তথ্য যাচাই করতে পারেনি</translation>
 <translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">সাইন-আউট করুন এবং এই ডিভাইসে থাকা ডেটা মুছে ফেলুন</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
 <translation id="5525269841082836315">পাসফ্রেজ তৈরি করুন</translation>
+<translation id="5532698011560297095">প্রবেশ করুন করা যচ্ছে না</translation>
 <translation id="5548760955356983418">Handoff এই ডিভাইসে একটি ওয়েবসাইট ব্রাউজ করা শুরু করতে দেয় এবং পরে সহজেই আপনার Mac-এ অবিরত করতে দেয়৷ সাম্প্রতিক খোলা ওয়েবসাইটটি আপনার Mac-এ ডক-এ প্রদর্শিত হবে৷
 
 
@@ -636,7 +636,6 @@
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="734758817008927353">কার্ড সেভ করার বিকল্প দেখার বোতাম</translation>
 <translation id="7348502496356775519">বুকমার্ক</translation>
-<translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7353432112255316844">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="7383797227493018512">পড়ার সূচি খুলুন</translation>
 <translation id="7398893703713203428">লিঙ্ক তৈরি করুন</translation>
@@ -765,7 +764,6 @@
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="8706588385081740091">পাসওয়ার্ড</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
-<translation id="8721206573513844242">আমরা আপনার ক্রেডেনশিয়াল যাচাই করতে পারিনি</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

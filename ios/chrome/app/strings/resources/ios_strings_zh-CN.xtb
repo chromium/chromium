@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">选择文件夹</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="1282311502488501110">不登录</translation>
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1690731385917361335">没有书签</translation>
-<translation id="1691390244342876227">Chrome 无法验证您的信息</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2116625576999540962">移动了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
+<translation id="214201757571129614">登录…</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2198757192731523470">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索、广告和其他 Google 服务。</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">翻译网页</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4636930964841734540">信息</translation>
+<translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
 <translation id="4659126640776004816">当您登录自己的 Google 帐号后，系统即会启用此功能。</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
 <translation id="46614316059270592">保存密码</translation>
@@ -427,6 +429,7 @@
 <translation id="5508435575041083207">退出帐号并清除此设备中的数据</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5525269841082836315">创建密码</translation>
+<translation id="5532698011560297095">无法登录</translation>
 <translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
 另外，您必须在“设置”的“常规”部分启用 Handoff 功能，并且您的设备必须使用同一个 iCloud 帐号。</translation>
@@ -632,7 +635,6 @@
 <translation id="7346909386216857016">知道了</translation>
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7348502496356775519">添加书签</translation>
-<translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="7383797227493018512">阅读清单</translation>
 <translation id="7398893703713203428">创建链接</translation>
@@ -761,7 +763,6 @@
 <translation id="8680787084697685621">帐号登录详细信息已过期。</translation>
 <translation id="8706588385081740091">密码</translation>
 <translation id="8717864919010420084">复制链接</translation>
-<translation id="8721206573513844242">抱歉，我们无法验证您的凭据</translation>
 <translation id="8721297211384281569">工具菜单</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>

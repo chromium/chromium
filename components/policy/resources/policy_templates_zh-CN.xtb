@@ -359,17 +359,6 @@
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试检测某台服务器是否在内网上，确认在内网后才会响应它发出的 IWA 请求。如果检测到某台服务器是在互联网上，<ph name="PRODUCT_NAME" /> 将会忽略这台服务器发出的 IWA 请求。
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
-<translation id="1491015714523410492">在用户通过锁定屏幕登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
-
-      如果未设置或值设为 -1，此政策不会强制在锁定屏幕上执行在线身份验证，而是会允许用户离线验证身份，除非有此政策之外的其他理由强制要求在线验证身份。
-
-      如果值设为 0，此政策将一律要求在线验证身份。
-
-      如果设为任何其他值，此政策即是指定了从上次在线验证身份到下次必须再次在锁定屏幕上通过在线验证身份进行登录的天数。
-
-      此政策仅会影响那些使用 SAML 验证身份的用户。
-
-      此政策的值应以天为单位。</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
 <translation id="150857982247452081">让您能够设置一个协议列表，并为每份协议设置一个关联列表，包含允许的来源格式，使协议无需提示用户就能启动外部应用。罗列协议时不应添加结尾分隔符，因此请罗列“skype”而非“skype:”或“skype://”。
 
@@ -2297,6 +2286,7 @@
 
       如果此政策已停用或未设置，系统便不会为相应设备开启 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
+<translation id="3977304360459208438">在 TLS 中使用 3DES 加密套件的默认设置</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3984028218719007910">确定 <ph name="PRODUCT_OS_NAME" />是否要在退出后保留本地帐号数据。如果将此政策设置为 true，<ph name="PRODUCT_OS_NAME" />就不会持续保留帐号，且会在退出后舍弃用户会话中的所有数据。如果未配置此政策或将其设置为 false，设备就会保留（经过加密的）本地用户数据。</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
@@ -2787,6 +2777,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
+<translation id="4768446404233019970">在 TLS 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
 
@@ -2905,6 +2896,7 @@
 
       此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。</translation>
 <translation id="4923806312383904642">允许 WebDriver 替换与之冲突的政策</translation>
+<translation id="4924377847308623325">阻止其他 DNS 查询类型</translation>
 <translation id="4927214690104703256">通过设置此政策，您可以指定哪些扩展程序能够使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数进行远程认证。只有添加到此列表中的扩展程序才能使用该 API。
 
       如果扩展程序不在此列表中或者此列表未设置，则会导致无法调用该 API 并返回错误代码。</translation>
@@ -4410,6 +4402,32 @@
 <translation id="6907778402784621686">禁止在这些网站上显示不安全内容</translation>
 <translation id="6908640907898649429">配置默认搜索服务提供商。您可以指定用户会使用的默认搜索服务提供商，或选择停用默认搜索。</translation>
 <translation id="6913068954484253496">允许 <ph name="PRODUCT_NAME" /> 连接到位于所有 IP 地址的 Cast 设备。</translation>
+<translation id="6922498040906800267">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
+      复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
+
+      每条规则均应包含以下内容：
+      - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制。
+      - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
+      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制针对任何来源的截屏操作。
+      - 控制针对任何来源的打印操作。
+      - 在任何来源可见时控制隐私保护屏幕。
+      - 控制针对任何来源的屏幕共享操作。
+
+      限制级别可设为 BLOCK、ALLOW 或 REPORT。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告被禁止的操作。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
+      - 如果限制级别设为 REPORT 并且 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告该操作。
+
+      注意：
+      - PRIVACY_SCREEN 限制不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
+      - 如果限制列表中含有 CLIPBOARD，目的地便不能为空，但它们对其余的限制没有任何影响。
+      - 所列网址必须采用这种格式 ( https://www.chromium.org/administrators/url-blocklist-filter-format )。
+
+      如果此政策未设置，系统将不会应用任何限制。</translation>
 <translation id="6922884955650325312">禁止 <ph name="FLASH_PLUGIN_NAME" /> 插件运行</translation>
 <translation id="6923731550900440989">在登录屏幕上启用“插入符号突出显示”</translation>
 <translation id="6924223708804692571">强制停用语言拼写检查。该列表中未识别的语言将被忽略。
@@ -4544,6 +4562,7 @@
 <translation id="7030205756530739128">如果 <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> 设为<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，您便可通过设置 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 根据电池充电百分比自定义电池开始充电的时间。此值必须比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 低至少 5 个百分点。
 
       如果您未设置此政策，系统会采用标准电池充电模式。</translation>
+<translation id="7030407698292813622">允许针对其他 DNS 记录类型发出 DNS 查询</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
 <translation id="7033778618670823541">通过设置此政策，您能以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名格式（例如 *.example.com）。组织可为无法部署传输层安全协议 (TLS) 的旧版应用指定来源，或设置用于内部网络开发的临时服务器，这样开发者无需在临时服务器上部署 TLS 就能测试需要安全上下文的功能。此政策还可防止来源被在地址栏中标记为“不安全”。
 
@@ -4974,6 +4993,7 @@
 <translation id="7612157962821894603">在 <ph name="PRODUCT_NAME" /> 启动时应用于整个系统的设置</translation>
 <translation id="7613115815080726221">系统应在设备闲置多久（以毫秒为单位）后采取闲置操作</translation>
 <translation id="7614663184588396421">已停用协议架构的列表</translation>
+<translation id="7616631530432070402">TLS 中将启用 3DES 加密套件</translation>
 <translation id="7620869951155758729">此政策可指定用于生成和验证家长访问码的配置。
 
       |current_config| 始终用于生成访问码，并且只有当无法使用 |future_config| 验证访问码时，才能使用此配置进行验证。
@@ -5421,6 +5441,12 @@
 <translation id="8217664958939773083">如果此政策设为 <ph name="ENABLED" /> 或未设置，即意味着允许使用无头模式。如果此政策设为 <ph name="DISABLED" />，则意味着禁止使用无头模式。</translation>
 <translation id="8220023426952118761">所需的下载速率，以 kb/s 为单位。</translation>
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
+<translation id="8234316309673661069">警告：我们将从 <ph name="PRODUCT_NAME" /> 的 95 版（将于 2021 年 10 月左右推出）中彻底移除 3DES。届时，此政策将不再有效。
+
+      如果此政策设为 true，系统将在 TLS 中启用 3DES 加密套件。如果此政策设为 false，系统将在 TLS 中停用 3DES 加密套件。如果此政策未设置，目前系统会默认启用 3DES 加密套件，但在 <ph name="PRODUCT_NAME" /> 93 版中，系统将默认停用 3DES 加密套件。
+
+      在 <ph name="PRODUCT_NAME" /> 92 版中，此政策可用于预览更改和测试不兼容性。在 <ph name="PRODUCT_NAME" /> 93 版及更高版本中，此政策可用于暂时保持与过时服务器的兼容性。这只是一种权宜之计，正确的做法是重新配置服务器。
+      </translation>
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
@@ -5812,17 +5838,6 @@
 
       如果未设置，此政策会处于开启状态，而且无法被用户关闭。</translation>
 <translation id="8789338675663014675">配置与扩展程序相关的政策。用户无法安装任何已被屏蔽的扩展程序（除非它们已被加入白名单）。您也可以在 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 中指定某些扩展程序，从而强制 <ph name="PRODUCT_NAME" /> 自动安装这些扩展程序。强制安装的扩展程序均会被安装（无论它们是否包含在屏蔽名单内）。</translation>
-<translation id="8796924197496002727">在用户通过锁定屏幕登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
-
-      如果未设置或值设为 -1，此政策不会强制在锁定屏幕上执行在线身份验证，而是会允许用户离线验证身份，除非有此政策之外的其他理由强制要求在线验证身份。
-
-      如果值设为 0，此政策将一律要求在线验证身份。
-
-      如果设为任何其他值，此政策即是指定了从上次在线验证身份到下次必须再次在锁定屏幕上通过在线验证身份进行登录的天数。
-
-      此政策会影响那些使用 GAIA（不使用 SAML）验证身份的用户。
-
-      此政策的值应以天为单位。</translation>
 <translation id="879697755145469671">不检测被遮挡的窗口</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8799492680917278474">如果您设置了此政策，当会话时长达到此政策中指定的分钟数之后，远程访问连接将会自动断开。这不会阻止客户端在达到会话时长上限后重新建立连接。如果您为此政策指定的值不在下限值/上限值范围内，主机可能会因此无法启动。此政策不影响远程支持场景。
@@ -5858,6 +5873,7 @@
 
        请注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
 <translation id="8827366480126575426">协议处理程序所对应的协议。</translation>
+<translation id="8827417642396462482">允许其他 DNS 查询类型</translation>
 <translation id="8831911834413504983">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以运行 JavaScript。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -6136,6 +6152,13 @@
 
       请注意，消费者设备和企业设备的默认行为有所不同：系统会在受管设备上启用点对点技术，而在非受管设备上停用该技术。</translation>
 <translation id="9164656078867027374">定义允许访问 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 的网域</translation>
+<translation id="9166670902476893480">此政策旨在控制 <ph name="PRODUCT_NAME" /> 能否在发出不安全的 DNS 请求时查询其他 DNS 记录类型。此政策对通过安全 DNS 进行的 DNS 查询没有影响，这类查询始终都能查询其他 DNS 类型。
+
+      如果此政策已启用或未设置，即意味着除了能查询 <ph name="DNS_TYPE_A" />（DNS 类型 1）和 <ph name="DNS_TYPE_AAAA" />（DNS 类型 28）之外，还能查询其他类型，例如 <ph name="DNS_TYPE_HTTPS" />（DNS 类型 65）。
+
+      如果此政策已停用，则意味着只能针对 <ph name="DNS_TYPE_A" />（DNS 类型 1）和/或 <ph name="DNS_TYPE_AAAA" />（DNS 类型 28）进行 DNS 查询。
+
+      此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。移除此政策后，<ph name="PRODUCT_NAME" /> 将始终都能查询其他 DNS 类型。</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>
 <translation id="9190456586252617675">此政策旨在控制 Google 助理新手入门体验的模式。
@@ -6165,6 +6188,7 @@
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不允许全新安装（以及更新）此类扩展程序。此政策对 <ph name="PRODUCT_NAME" /> 78 及更高版本没有任何影响。
 
       如果此政策未设置，它将在 <ph name="PRODUCT_NAME" /> 73 到 75 中处于启用状态，并将在 <ph name="PRODUCT_NAME" /> 76 和 77 中处于停用状态。</translation>
+<translation id="93985900824506396">TLS 中将停用 3DES 加密套件</translation>
 <translation id="940706688964479124">应在下载完毕后自动打开的文件类型的列表</translation>
 <translation id="943865157632139008">可让您配置安装 <ph name="PRODUCT_FRAME_NAME" />时默认使用的 HTML 渲染程序。
       默认设置是允许托管浏览器执行渲染操作，不过您可以视情况替换此设置，并默认让 <ph name="PRODUCT_FRAME_NAME" />渲染 HTML 网页。</translation>

@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a helyadatokhoz, a helyadatokat az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie van használatban}other{# cookie van használatban}}</translation>
-<translation id="8463851957836045671">A webhely gyors</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="851751545965956758">Az eszközökhöz való csatlakozás megtiltása a webhelyeknek</translation>
 <translation id="8525306231823319788">Teljes képernyő</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Az NFC ki van kapcsolva ezen az eszközön. Kapcsolja be az <ph name="BEGIN_LINK" />Android Beállítások alkalmazásában<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Ez a webhely gyorsan megnyílik és reagál a legtöbb felhasználó számára</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Adott webhely cookie-jainak letiltása.</translation>
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>

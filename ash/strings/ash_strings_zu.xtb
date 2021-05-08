@@ -21,6 +21,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1104621072296271835">Amadivayisi akho asebenza kangcono uma ehlangene</translation>
 <translation id="1119348796022671382">Imodi yombala wetimu isebenzisa imibala ekhishwe esithombeni sakho sangemuva ukuze ikhanyise umbala wesixhumi esibonakalayo.</translation>
 <translation id="112308213915226829">Fihla ngokuzenzakalela ishelufu</translation>
+<translation id="1148499908455722006">Vula ibhokisi lolwazi lwe-<ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Amadivaysi abhanqene</translation>
 <translation id="1165712434476988950">Ukuqala kabusha idivayisi kudingekile ukuze usebenzise isibuyekezo.</translation>
 <translation id="1175572348579024023">Skrola</translation>
@@ -437,7 +438,9 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4577274620589681794">Isikhathi siphelile · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Bonisa ukubuka kuqala</translation>
 <translation id="4578906031062871102">Imenyu yamasethingi ivuliwe</translation>
+<translation id="4581047786858252841">Imakrofoni ivuliwe</translation>
 <translation id="4585337515783392668">Misa ukusakaza kumamukeli ongaziwa</translation>
+<translation id="4587299710837179226">Imakrofoni ivaliwe</translation>
 <translation id="4596144739579517758">Itimu emnyama ivaliwe</translation>
 <translation id="4611292653554630842">Ngena ngemvume</translation>
 <translation id="4623167406982293031">Qinisekisa i-akhawunti</translation>
@@ -569,6 +572,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5777841717266010279">Misa ukwabelana kwesikrini?</translation>
 <translation id="5779721926447984944">Amafayela aphiniwe</translation>
 <translation id="5790085346892983794">Impumelelo</translation>
+<translation id="5805809050170488595">Chofoza ukuze usebenzise i-<ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">I-Chromium OS</translation>
 <translation id="5825969630400862129">Izilungiselelo zamadivayisi axhunyiwe</translation>
 <translation id="5837036133683224804">Misa i-<ph name="ROUTE_TITLE" /> ku-<ph name="RECEIVER_NAME" /></translation>

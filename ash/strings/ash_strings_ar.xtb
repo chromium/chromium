@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">تعمل أجهزتك بشكل أفضل وهي مرتبطة معًا</translation>
 <translation id="1119348796022671382">يستخدم وضع "الألوان" التلقائي ألوانًا مُستخرَجة من الخلفية لتلوين الواجهة قليلاً.</translation>
 <translation id="112308213915226829">الإخفاء التلقائي للرف</translation>
+<translation id="1148499908455722006">فتح مربع حوار المعلومات لـ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">الأجهزة المقترنة</translation>
 <translation id="1165712434476988950">عليك إعادة تشغيل الجهاز لتطبيق التحديث.</translation>
 <translation id="1175572348579024023">التمرير</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">انتهى الوقت · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">عرض المعاينات</translation>
 <translation id="4578906031062871102">تم فتح قائمة الإعدادات.</translation>
+<translation id="4581047786858252841">الميكروفون مفعّل.</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
+<translation id="4587299710837179226">الميكروفون غير مفعّل.</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
 <translation id="4623167406982293031">يجب إثبات ملكية الحساب</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">هل ترغب في إيقاف مشاركة الشاشة؟</translation>
 <translation id="5779721926447984944">الملفات التي تم تثبيتها</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
+<translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
 <translation id="5820394555380036790">‏نظام التشغيل Chromium</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>

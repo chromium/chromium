@@ -362,17 +362,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als je het beleid niet instelt, probeert <ph name="PRODUCT_NAME" /> te detecteren of er een server op het intranet is. Alleen dan reageert het product op IWA-verzoeken. Als een server wordt gedetecteerd als internet, worden IWA-verzoeken ervan genegeerd door <ph name="PRODUCT_NAME" />.
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
-<translation id="1491015714523410492">Als je inlogt via het vergrendelscherm, kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren via een server (online) of door gebruik te maken van een wachtwoord in het cachegeheugen (offline).
-
-      Als je dit beleid niet instelt of instelt op de waarde -1, dwingt dit beleid geen online verificatie op het vergrendelscherm af en kan de gebruiker offline verificatie gebruiken, tenzij een andere reden dan dit beleid een online verificatie afdwingt.
-
-      Als je dit beleid instelt op de waarde 0, is online verificatie altijd vereist.
-
-      Als je dit beleid instelt op een andere waarde, bepaalt het beleid het aantal dagen sinds de laatste online verificatie waarna de gebruiker opnieuw online verificatie moet gebruiken om weer in te loggen via het vergrendelscherm.
-
-      Dit beleid is van toepassing op gebruikers die zijn geverifieerd met SAML.
-
-      De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="1502843533062797703">Injectie van software van derden blokkeren</translation>
 <translation id="150857982247452081">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane oorsprongpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
 
@@ -2301,6 +2290,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 
       Als je het beleid niet toepast of niet instelt, is <ph name="PLUGIN_VM_NAME" /> niet aangezet voor het apparaat.</translation>
 <translation id="3973371701361892765">Archief nooit automatisch verbergen</translation>
+<translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3984028218719007910">Bepaalt of <ph name="PRODUCT_OS_NAME" /> na het afmelden lokale accountgegevens bewaart. Als dit is ingesteld op 'true', bewaart <ph name="PRODUCT_OS_NAME" /> geen bestaande accounts en worden alle gegevens over de gebruikerssessie na het afmelden gewist. Als dit beleid is ingesteld op 'false' of niet is geconfigureerd, bewaart het apparaat mogelijk (gecodeerde) lokale gebruikersgegevens.</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
@@ -2790,6 +2780,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie voor monogeluid in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+<translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
 <translation id="4770334626033858263">De configuratie die is gebruikt om de toegangscode voor ouders te genereren en te verifiëren.</translation>
 <translation id="4787763197941188108">Hiermee overschrijf je het standaardformaat voor de afdrukpagina.
 
@@ -4414,6 +4405,32 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6907778402784621686">Niet-beveiligde content op deze sites blokkeren</translation>
 <translation id="6908640907898649429">Hiermee wordt de standaard zoekprovider ingesteld. Je kunt de standaard zoekprovider opgeven die de gebruiker gaat gebruiken, of je kunt ervoor kiezen de standaard zoekfunctie uit te zetten.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> toestaan om verbinding te maken met Cast-apparaten op alle IP-adressen.</translation>
+<translation id="6922498040906800267">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
+      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
+
+Elke regel bevat het volgende:
+- Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
+      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
+      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
+      - Bepalen of er bronnen mogen worden afgedrukt.
+      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
+      - Bepalen of de bronnen het scherm mogen delen.
+
+      Het beperkingsniveau kan worden ingesteld op BLOCK, ALLOW of REPORT.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan. Als <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op waar, wordt de geblokkeerde actie gemeld aan de beheerder.
+      - Als het beperkingsniveau is ingesteld op ALLOW, is de actie toegestaan.
+      - Als het beperkingsniveau is ingesteld op REPORT en <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op waar, wordt de actie gemeld aan de beheerder.
+
+      Opmerkingen:
+- Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm aan te zetten maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
+      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
+      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format).
+
+Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="6922884955650325312">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren</translation>
 <translation id="6923731550900440989">Markering van het caret-teken op het inlogscherm aanzetten</translation>
 <translation id="6924223708804692571">Spellingcontrole van talen wordt verplicht uitgezet. Niet-herkende talen in de lijst worden genegeerd.
@@ -4979,6 +4996,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="7612157962821894603">Markeringen voor het hele systeem die worden toegepast bij het starten van <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">De tijdsduur zonder gebruikersinvoer waarna de actie voor inactiviteit wordt ondernomen (in milliseconden)</translation>
 <translation id="7614663184588396421">Lijst met uitgezette protocolschema's</translation>
+<translation id="7616631530432070402">3DES cipher suites worden aangezet in TLS</translation>
 <translation id="7620869951155758729">Dit beleid specificeert de configuratie die wordt gebruikt om de toegangscode voor ouders te genereren en te verifiëren.
 
       |current_config| wordt altijd gebruikt om de toegangscode te genereren en moet alleen worden gebruikt om de toegangscode te valideren wanneer deze niet kan worden gevalideerd met |future_config|.
@@ -5431,6 +5449,12 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8217664958939773083">Als je het beleid instelt op <ph name="ENABLED" /> of niet instelt, sta je het gebruik van de stand zonder interface toe. Als je het beleid instelt op <ph name="DISABLED" />, sta je het gebruik van de stand zonder interface niet toe.</translation>
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
+<translation id="8234316309673661069">Waarschuwing: 3DES wordt volledig verwijderd uit <ph name="PRODUCT_NAME" /> vanaf versie 95 (rond oktober 2021). Dit beleid werkt dan niet meer.
+
+      Als je het beleid instelt op True, worden 3DES cipher suites in TLS aangezet. Als je het beleid instelt op False, worden ze uitgezet. Als je het beleid niet instelt, worden 3DES cipher suites momenteel standaard aangezet. In <ph name="PRODUCT_NAME" /> 93 worden ze standaard uitgezet.
+
+      In <ph name="PRODUCT_NAME" /> 92 kun je dit beleid gebruiken om een voorbeeld van de verandering te bekijken en te testen op incompatibiliteiten. In <ph name="PRODUCT_NAME" /> 93 en later kun je dit beleid gebruiken om de compatibiliteit met een verouderde server te behouden. Dit is slechts een noodoplossing. De server moet opnieuw worden ingesteld.
+      </translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
@@ -5822,17 +5846,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Als je het beleid niet instelt, wordt het beleid toegepast en kunnen gebruikers dit niet veranderen.</translation>
 <translation id="8789338675663014675">Stelt aan extensies gerelateerd beleid in. De gebruiker mag geen geblokkeerde extensies installeren, tenzij ze op de toelatingslijst worden gezet. Je kunt <ph name="PRODUCT_NAME" /> ook dwingen extensies automatisch te installeren door ze in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> op te geven. Afgedwongen geïnstalleerde extensies worden geïnstalleerd, ongeacht of ze op de blokkeringslijst zijn gezet.</translation>
-<translation id="8796924197496002727">Als je inlogt via het vergrendelscherm, kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren via een server (online) of door gebruik te maken van een wachtwoord in het cachegeheugen (offline).
-
-      Als je dit beleid niet instelt of instelt op de waarde -1, dwingt dit beleid geen online verificatie op het vergrendelscherm af en kan de gebruiker offline verificatie gebruiken, tenzij een andere reden dan dit beleid een online verificatie afdwingt.
-
-      Als je dit beleid instelt op de waarde 0, is online verificatie altijd vereist.
-
-      Als je dit beleid instelt op een andere waarde, bepaalt het beleid het aantal dagen sinds de laatste online verificatie waarna de gebruiker opnieuw online verificatie moet gebruiken om weer in te loggen via het vergrendelscherm.
-
-      Dit beleid is van toepassing op gebruikers die zijn geverifieerd via GAIA zonder SAML.
-
-      De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="879697755145469671">Bedekt venster niet detecteren</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8799492680917278474">Als je dit beleid aanzet, worden verbindingen voor externe toegang automatisch verbroken nadat het aantal minuten dat in het beleid wordt gedefinieerd, is verstreken. Hierdoor wordt niet voorkomen dat de client opnieuw verbinding maakt nadat de maximale sessieduur is bereikt. Als je het beleid instelt op een waarde die niet binnen het minimale/maximale bereik ligt, kan de host misschien niet worden gestart. Dit beleid heeft geen effect op scenario's voor support op afstand.
@@ -6190,6 +6203,7 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je dit beleid niet toepast, staat <ph name="PRODUCT_NAME" /> geen nieuwe installatie van (en updates voor) dergelijke extensies toe. Dit beleid heeft geen invloed op <ph name="PRODUCT_NAME" /> 78 en hoger.
 
       Als je dit beleid niet instelt, is het beleid toegepast in <ph name="PRODUCT_NAME" /> 73 tot en met 75 en niet toegepast in <ph name="PRODUCT_NAME" /> 76 en 77.</translation>
+<translation id="93985900824506396">3DES cipher suites worden uitgezet in TLS</translation>
 <translation id="940706688964479124">Lijst met bestandstypen die automatisch moeten worden geopend nadat ze zijn gedownload</translation>
 <translation id="943865157632139008">Hiermee kun je het standaard HTML-weergaveprogramma configureren wanneer <ph name="PRODUCT_FRAME_NAME" /> is geïnstalleerd.
       De standaardinstelling is om de hostbrowser de weergave te laten regelen, maar je kunt dit aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard laten weergeven.</translation>

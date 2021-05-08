@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chromium</translation>
 <translation id="1929939181775079593">Chromium блокира. Да се стартира ли отново сега?</translation>
 <translation id="1966382378801805537">Chromium не може да определи или зададе браузъра по подразбиране</translation>
+<translation id="1981611865800294956">Повторно стартиране за актуализиране на &amp;Chromium OS</translation>
 <translation id="2008474315282236005">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chromium като <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ви пароли не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chromium<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Персонализиране на Chromium</translation>
@@ -117,6 +118,7 @@
 <translation id="4788777615168560705">Chromium не може да провери паролите ви. Опитайте отново след 24 часа или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Използва се същата услуга за проверка на правописа като в Google Търсене. Текстът, който въвеждате в браузъра, се изпраща до Google. Винаги можете да промените това поведение от настройките.</translation>
 <translation id="4888717733111232871">Правило за Chromium за допускане на входящия трафик за mDNS.</translation>
+<translation id="4893347770495441059">Повторно стартиране за актуализиране на &amp;Chromium</translation>
 <translation id="4943838377383847465">Chromium работи на заден план.</translation>
 <translation id="4987820182225656817">Гостите могат да използват Chromium, без да оставят следи.</translation>
 <translation id="4994636714258228724">Добавяне на вас към Chromium</translation>
@@ -267,6 +269,7 @@
 <translation id="91086099826398415">Отваряне на връзката в нов &amp;раздел на Chromium</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
 <translation id="9158494823179993217">Системният ви администратор е конфигурирал Chromium да отваря алтернативен браузър за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9185526690718004400">Повторно стартиране за актуализиране на &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="9214764063801632699">Система Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>

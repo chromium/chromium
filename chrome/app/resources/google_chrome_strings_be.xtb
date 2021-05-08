@@ -13,6 +13,7 @@
 <translation id="1125124144982679672">Хто выкарыстоўвае Chrome?</translation>
 <translation id="1142745911746664600">Не ўдаецца абнавіць Chrome</translation>
 <translation id="1154147086299354128">&amp;Адкрыць у браўзеры Chrome</translation>
+<translation id="1278833599417554002">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> патрабуе ад вас прачытаць і прыняць наступныя Умовы выкарыстання, перш чым пачаць карыстацца прыладай. Гэтыя ўмовы не пашыраюць, не змяняюць і не абмяжоўваюць Умовы выкарыстання Google Chrome OS.</translation>
 <translation id="1302523850133262269">Пачакайце, пакуль Chrome усталюе апошнія абнаўленні сістэмы.</translation>
 <translation id="137466361146087520">Google Chrome (бэта-версія)</translation>
@@ -49,6 +50,7 @@
 <translation id="2063848847527508675">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS.</translation>
 <translation id="2094919256425865063">Усё роўна выйсці з Chrome?</translation>
 <translation id="2120620239521071941">З гэтай прылады будзе выдалена наступная колькасць элементаў: <ph name="ITEMS_COUNT" />. Каб потым атрымаць свае даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
+<translation id="2121284319307530122">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="2123055963409958220">Дапамажыце палепшыць Chrome, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Перазапусціце Chrome</translation>
 <translation id="2246246234298806438">Google Chrome не можа паказаць перадпрагляд друку: убудаваны сродак прагляду PDF адсутнічае.</translation>
@@ -242,6 +244,7 @@
 <translation id="7629695634924605473">Chrome апавяшчае вас у выпадку ўзлому вашых пароляў</translation>
 <translation id="7641148173327520642">Ваш сістэмны адміністратар наладзіў Google Chrome так, каб для доступу да <ph name="TARGET_URL_HOSTNAME" /> адкрываць <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7651907282515937834">Лагатып Chrome Enterprise</translation>
+<translation id="7665553140559834626">Перазапусціць, каб абнавіць &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Усталёўшчыку не ўдалося стварыць часовы каталог. Праверце, ці ёсць вольнае месца на дыску і дазвол на ўсталяванне праграмнага забеспячэння.</translation>
 <translation id="7761834446675418963">Каб адкрыць Chrome і пачаць прагляд вэб-старонак, націсніце на сваё імя.</translation>
 <translation id="7777080907402804672">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>

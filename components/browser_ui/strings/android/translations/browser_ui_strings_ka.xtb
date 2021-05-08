@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" />-მა თქვენი მდებარეობით რომ ისარგებლოს, გაააქტიურეთ მდებარეობაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">მოწყობილობაზე წვდომის ნებართვის გაუქმება</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{გამოიყენება 1 ქუქი-ჩანაწერი}other{გამოიყენება # ქუქი-ჩანაწერი}}</translation>
-<translation id="8463851957836045671">საიტი სწრაფია</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
 <translation id="851751545965956758">საიტებისთვის მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC გამორთულია ამ მოწყობილობისთვის. მისი ჩართვა შეგიძლიათ <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">მომხმარებელთა უმეტესობისთვის ეს საიტი სწრაფად იხსნება და რეაგირებს</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ქუქი-ჩანაწერების დაბლოკვა კონკრეტული საიტისთვის.</translation>
 <translation id="8959122750345127698">ნავიგაცია მიუწვდომელია: <ph name="URL" /></translation>

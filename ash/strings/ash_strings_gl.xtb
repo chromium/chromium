@@ -21,6 +21,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
 <translation id="1119348796022671382">O modo de cor con tema usa cores extraídas do fondo de pantalla para colorear lixeiramente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
+<translation id="1148499908455722006">Abrir cadro de diálogo de información para <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1165712434476988950">É necesario reiniciar o dispositivo para que se aplique a actualización.</translation>
 <translation id="1175572348579024023">Desprazarse</translation>
@@ -438,7 +439,9 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
 <translation id="4578906031062871102">Abriuse o menú de configuración</translation>
+<translation id="4581047786858252841">O micrófono está activado</translation>
 <translation id="4585337515783392668">Deter emisión nun receptor descoñecido</translation>
+<translation id="4587299710837179226">O micrófono está desactivado</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
 <translation id="4623167406982293031">Verificar conta</translation>
@@ -570,6 +573,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5777841717266010279">Queres deter o uso compartido da pantalla?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5790085346892983794">Correcto</translation>
+<translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Pažymėti visus kaip skaitytus</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1690731385917361335">Nėra jokių elementų</translation>
-<translation id="1691390244342876227">„Chrome“ nepavyko patvirtinti jūsų informacijos</translation>
 <translation id="1692118695553449118">Sinchronizavimas įjungtas</translation>
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
@@ -430,6 +429,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5508435575041083207">Atsijungimas ir duomenų išvalymas iš šio įrenginio</translation>
 <translation id="5513681519188741830">Prieš <ph name="TIME" /> val.</translation>
 <translation id="5525269841082836315">Kurti slaptafrazę</translation>
+<translation id="5532698011560297095">Nepavyksta prisijungti</translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
 Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įrenginiuose turi būti naudojama ta pati „iCloud“ paskyra.</translation>
@@ -635,7 +635,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="734758817008927353">Kortelės išsaugojimo parinktys</translation>
 <translation id="7348502496356775519">Žymėti</translation>
-<translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7353432112255316844">Tapatybės patvirtinimas</translation>
 <translation id="7383797227493018512">Skaitymo sąrašas</translation>
 <translation id="7398893703713203428">Kurti nuorodą</translation>
@@ -764,7 +763,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8680787084697685621">Išsami prisijungimo prie paskyros informacija pasenusi.</translation>
 <translation id="8706588385081740091">Slaptažodžiai</translation>
 <translation id="8717864919010420084">Kopijuoti nuorodą</translation>
-<translation id="8721206573513844242">Deja, nepavyko patvirtinti jūsų prisijungimo duomenų</translation>
 <translation id="8721297211384281569">Įrankių meniu</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>

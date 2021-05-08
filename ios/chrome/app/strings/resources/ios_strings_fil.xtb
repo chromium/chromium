@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Markahan ang Lahat Bilang Nabasa Na</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1690731385917361335">Walang mga item</translation>
-<translation id="1691390244342876227">Hindi ma-verify ng Chrome ang iyong impormasyon</translation>
 <translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
@@ -430,6 +429,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5508435575041083207">Mag-sign Out at I-clear ang Data sa Device na ito</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
+<translation id="5532698011560297095">Hindi Makapag-sign In</translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
 
 Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at ang iyong mga device ay dapat gumagamit ng parehong iCloud account.</translation>
@@ -635,7 +635,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="734758817008927353">Mga opsyon para Mag-save ng Card</translation>
 <translation id="7348502496356775519">Bookmark</translation>
-<translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353432112255316844">I-verify na Ikaw Ito</translation>
 <translation id="7383797227493018512">Listahan ng Babasahin</translation>
 <translation id="7398893703713203428">Gumawa ng Link</translation>
@@ -764,7 +763,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8680787084697685621">Wala sa panahon ang mga detalye sa pag-sign-in sa account.</translation>
 <translation id="8706588385081740091">Mga Password</translation>
 <translation id="8717864919010420084">Kopyahin ang Link</translation>
-<translation id="8721206573513844242">Paumanhin, hindi namin ma-validate ang iyong mga kredensyal</translation>
 <translation id="8721297211384281569">Menu ng Mga Tool</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8730621377337864115">Tapos na</translation>

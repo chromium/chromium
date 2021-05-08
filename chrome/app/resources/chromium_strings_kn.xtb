@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">ಇದನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ, ನೀವು Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡದೆಯೇ Gmail ನಂತಹ Google ಸೈಟ್‌ಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು</translation>
 <translation id="1929939181775079593">Chromium ಸ್ಪಂದಿಸುತ್ತಿಲ್ಲ. ಇದೀಗ ಮರುಪ್ರಾರಂಭಿಸುವುದೇ?</translation>
 <translation id="1966382378801805537">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ಧರಿಸಲು ಅಥವಾ ಹೊಂದಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
+<translation id="1981611865800294956">&amp;Chromium OS ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2008474315282236005">ಈ ಸಾಧನದಿಂದ 1 ಐಟಂ ಅನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ. ನಂತರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು, <ph name="USER_EMAIL" /> ನಂತೆ Chromium ಗೆ ಸೈನ್‌ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2020032459870799438">ನಿಮ್ಮ ಇತರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮತ್ತು ಇತರ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು, <ph name="BEGIN_LINK" />Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -117,6 +118,7 @@
 <translation id="4788777615168560705">Chromium ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. 24 ಗಂಟೆಗಳ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">ಇದು Google ಹುಡುಕಾಟದಲ್ಲಿ ಬಳಸಲಾದ ಅದೇ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸುತ್ತದೆ. ನೀವು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡುವ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಈ ವರ್ತನೆಯನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="4888717733111232871">mDNS ಟ್ರಾಫಿಕ್‌ಗೆ ಅನುಮತಿಸುವ ನಿಟ್ಟಿನಲ್ಲಿ Chromium ಗೆ ಒಳಬರುವ ನಿಯಮ.</translation>
+<translation id="4893347770495441059">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4943838377383847465">Chromium ಹಿನ್ನೆಲೆ ಮೋಡ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="4987820182225656817">ಅತಿಥಿಗಳು ಏನನ್ನೂ ಉಳಿಸದೆಯೇ Chromium ಬಳಸಬಹುದು.</translation>
 <translation id="4994636714258228724">ನೀವಾಗಿಯೇ Chromium ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
@@ -266,6 +268,7 @@
 <translation id="91086099826398415">ಹೊಸ Chromium &amp;ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶಿಸಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Chromium ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
+<translation id="9185526690718004400">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS ಸಿಸ್ಟಂ</translation>
 <translation id="93478295209880648">Windows XP ಅಥವಾ Windows Vista ದಲ್ಲಿ Chromium ಗೆ ಈಗ ಬೆಂಬಲವಿಲ್ಲದೇ ಇರುವುದರಿಂದ ಅದು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>

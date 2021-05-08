@@ -362,17 +362,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si no se define esta política, <ph name="PRODUCT_NAME" /> intentará detectar si un servidor está en la intranet y solo en ese caso responderá a las solicitudes de IWA. Si se detecta que un servidor está en Internet, <ph name="PRODUCT_NAME" /> ignorará las solicitudes de IWA que procedan de dicho servidor.
 
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
-<translation id="1491015714523410492">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
-
-      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
-
-      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
-
-      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
-
-      Esta política afecta a los usuarios que se hayan autenticado mediante SAML.
-
-      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="150857982247452081">Permite definir una lista de protocolos y una lista asociada de patrones de origen permitidos para cada uno de los protocolos, que pueden abrir una aplicación externa sin pedir permiso al usuario. No se debe incluir el separador del final al añadir el protocolo a la lista, así que añade "skype" en lugar de "skype:" o "skype://".
 
@@ -2339,6 +2328,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
+<translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
 <translation id="3984028218719007910">Permite determinar si <ph name="PRODUCT_OS_NAME" /> mantiene los datos de cuenta locales tras cerrar la sesión. Si el valor se establece en "true", <ph name="PRODUCT_OS_NAME" /> no conservará ninguna cuenta de forma permanente y todos los datos de la sesión del usuario se descartarán al cerrar la sesión. Si esta política no se configura o el valor correspondiente se establece en "false", el dispositivo puede guardar datos de usuario locales (encriptados).</translation>
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
@@ -2829,6 +2819,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el audio en mono se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">Configuración que se utiliza para generar y verificar códigos de acceso parental.</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
 
@@ -4491,6 +4482,32 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6907778402784621686">Permite bloquear el contenido no seguro en estos sitios web</translation>
 <translation id="6908640907898649429">Permite configurar el proveedor de búsquedas predeterminadas. Puedes especificar el proveedor de búsquedas predeterminadas que utilizarán los usuarios o inhabilitar las búsquedas predeterminadas.</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos de transmisión de todas las direcciones IP.</translation>
+<translation id="6922498040906800267">Configura una lista de reglas para evitar las filtraciones de datos en <ph name="PRODUCT_OS_NAME" />.
+      Las filtraciones de datos se pueden producir cuando se copia y pega información, se transfieren archivos, se imprime, se comparte pantalla, se hacen capturas de pantalla, etc.
+
+      Cada regla se compone de lo siguiente:
+      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se consideran confidenciales y se les aplicarán las restricciones.
+      - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
+      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
+
+      Se pueden añadir reglas para:
+      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
+      - Controlar que se puedan hacer capturas de pantalla de cualquiera de las fuentes.
+      - Controlar la impresión de cualquiera de las fuentes.
+      - Controlar la pantalla de privacidad cuando se esté visualizando alguna de las fuentes.
+      - Controlar la pantalla compartida de cualquiera de las fuentes.
+
+      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, ALLOW o REPORT.
+      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción bloqueada al administrador.
+      - Si se asigna el valor ALLOW al nivel de restricción, la acción se permitirá.
+      - Si se asigna el valor REPORT al nivel de restricción y se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción al administrador.
+
+      Notas:
+      - La restricción PRIVACY_SCREEN no bloquea la opción de activar la pantalla de privacidad, sino que la requiere cuando la clase de la restricción tiene el valor BLOCK.
+      - Los destinos no pueden estar vacíos en caso de que alguna de las restricciones sea CLIPBOARD, pero no afectan al resto de las restricciones.
+      - Los patrones de URL deben tener el formato que se indica en esta página: https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Habilita el resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión</translation>
 <translation id="6924223708804692571">Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.
@@ -5059,6 +5076,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7612157962821894603">Opciones que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
 <translation id="7613115815080726221">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se entre en modo de inactividad</translation>
 <translation id="7614663184588396421">Lista de esquemas de protocolo inhabilitados</translation>
+<translation id="7616631530432070402">Se habilitarán los paquetes de cifrado 3DES en TLS</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se utiliza para generar y verificar códigos de acceso parental.
 
       |current_config| siempre se utiliza para generar un código de acceso y solo se debe utilizar para validarlo cuando no se pueda validar con |future_config|.
@@ -5512,6 +5530,12 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8217664958939773083">Si a esta política se le asigna el valor <ph name="ENABLED" /> o no se le asigna ninguno, se podrá utilizar el modo sin interfaz gráfica. Si se le asigna el valor <ph name="DISABLED" />, no se podrá utilizar el modo sin interfaz gráfica.</translation>
 <translation id="8220023426952118761">Velocidad de descarga deseada en kilobits por segundo.</translation>
 <translation id="8220156281401380422">Configurar la lista de permitidos de mensajes nativos</translation>
+<translation id="8234316309673661069">Advertencia: 3DES se eliminará totalmente en la versión 95 de <ph name="PRODUCT_NAME" /> (en torno a octubre del 2021) y esta política dejará de funcionar en ese momento.
+
+      Si se asigna el valor true a esta política, se habilitarán los paquetes de cifrado 3DES en TLS. Si se le asigna el valor false, se inhabilitarán estos paquetes. Si no se le asigna ningún valor, los paquetes de cifrado 3DES estarán habilitados de forma predeterminada. Estos paquetes estarán inhabilitados de forma predeterminada en la versión 93 de <ph name="PRODUCT_NAME" />.
+
+      En la versión 92 de <ph name="PRODUCT_NAME" />, esta política se puede usar para previsualizar el cambio y comprobar si existen incompatibilidades. En la versión 93 y versiones posteriores de <ph name="PRODUCT_NAME" />, esta política se puede usar para mantener temporalmente la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.
+      </translation>
 <translation id="8238421250255592181">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocompletar.</translation>
 <translation id="8244171102276095471">Habilita los conjuntos de cifrado de RC4 en TLS</translation>
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
@@ -5907,17 +5931,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
 <translation id="8789338675663014675">Configura políticas relacionadas con extensiones. Los usuarios no pueden instalar extensiones bloqueadas, a menos que se incluyan en la lista de permitidas. Puedes hacer que <ph name="PRODUCT_NAME" /> realice automáticamente instalaciones forzadas de extensiones especificándolas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones de instalación forzada se instalarán, independientemente de si están incluidas o no en la lista de bloqueadas.</translation>
-<translation id="8796924197496002727">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
-
-      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
-
-      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
-
-      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
-
-      Esta política afecta a los usuarios que se hayan autenticado mediante GAIA sin SAML.
-
-      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="879697755145469671">No detectar ventanas tapadas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.
@@ -6278,6 +6291,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se le asigna el valor "Inhabilitada", <ph name="PRODUCT_NAME" /> no permitirá la instalación ni las actualizaciones de esas extensiones. Esta política no tiene ningún efecto en la versión 78 de <ph name="PRODUCT_NAME" /> ni en las versiones posteriores.
 
       Si no se le asigna ningún valor, se asignará el valor "Habilitada" en las versiones de <ph name="PRODUCT_NAME" /> que van de la 73 a la 75 y se asignará el valor "Inhabilitada" en las versiones 76 y 77 de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="93985900824506396">Se inhabilitarán los paquetes de cifrado 3DES en TLS</translation>
 <translation id="940706688964479124">Lista de tipos de archivo que deberían abrirse automáticamente al descargarse</translation>
 <translation id="943865157632139008">Permite configurar el procesador de HTML predeterminado si se ha instalado <ph name="PRODUCT_FRAME_NAME" />.
       De forma predeterminada, se permite que el navegador del host muestre las páginas HTML, pero puedes anular esta opción para que <ph name="PRODUCT_FRAME_NAME" /> muestre las páginas HTML de forma predeterminada.</translation>

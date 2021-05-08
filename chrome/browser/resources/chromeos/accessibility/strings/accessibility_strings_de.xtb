@@ -180,6 +180,7 @@
 <translation id="2216790501338699346">Link-URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Ein Zeichen zurück</translation>
 <translation id="2220529011494928058">Problem melden</translation>
+<translation id="2243633977138166243">Mit Links- und Rechtspfeil navigieren; mit Eingabetaste aktivieren</translation>
 <translation id="224426591676115802">Für diese Sprache ist keine Stimme verfügbar: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Der Lernmodus wird beendet</translation>
 <translation id="225732394367814946">Sprechgeschwindigkeit erhöhen</translation>
@@ -240,6 +241,7 @@
 <translation id="2675533876313964202">Hellgrün</translation>
 <translation id="2684412629217766642">ChromeVox-Anleitung schließen</translation>
 <translation id="2697408785920771974">autoinl</translation>
+<translation id="2697786971245905543">Vorschlag für Textumwandlung</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{runde Klammer auf}other{# runde Klammern auf}}</translation>
 <translation id="270523456882008230">Hinweis: Tippen Sie mit einem Finger doppelt, um das aktuelle Element zu aktivieren.</translation>
 <translation id="2705875883745373140">Nicht gedrückt</translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1690731385917361335">Нічого немає</translation>
-<translation id="1691390244342876227">Веб-переглядачу Chrome не вдалося перевірити ваші дані</translation>
 <translation id="1692118695553449118">Синхронізацію ввімкнено</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">Вийти й видалити дані з цього пристрою</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> год тому</translation>
 <translation id="5525269841082836315">Створити парол.фразу</translation>
+<translation id="5532698011560297095">Не можна ввійти</translation>
 <translation id="5548760955356983418">За допомогою Handoff можна почати переглядати веб-сайт на цьому пристрої, а потім легко продовжити на пристрої Mac. Відкритий веб-сайт з’явиться на панелі Dock на пристрої Mac.
 
 Для цього потрібно ввімкнути Handoff у розділі "Загальні" в Налаштуваннях, а також увійти в той самий обліковий запис iCloud на пристроях.</translation>
@@ -635,7 +635,6 @@
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">Опції збереження картки</translation>
 <translation id="7348502496356775519">Закладка</translation>
-<translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="7353432112255316844">Підтвердьте свою особу</translation>
 <translation id="7383797227493018512">Список читання</translation>
 <translation id="7398893703713203428">Створити посилання</translation>
@@ -764,7 +763,6 @@
 <translation id="8680787084697685621">Дані для входу в обліковий запис застаріли.</translation>
 <translation id="8706588385081740091">Паролі</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
-<translation id="8721206573513844242">На жаль, нам не вдалося перевірити ваші облікові дані</translation>
 <translation id="8721297211384281569">Меню інструментів</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8730621377337864115">Готово</translation>

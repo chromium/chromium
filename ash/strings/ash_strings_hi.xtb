@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
 <translation id="1119348796022671382">थीम कलर मोड, इंटरफ़ेस को हल्के रंग से रंगने के लिए, आपके वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल करता है.</translation>
 <translation id="112308213915226829">अलमारी कोअपने-आपछिपाएं</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> के लिए, जानकारी वाला डायलॉग खोलें</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
 <translation id="1165712434476988950">अपडेट लागू करने के लिए डिवाइस को रीस्टार्ट करना ज़रूरी है.</translation>
 <translation id="1175572348579024023">स्क्रोल करें</translation>
@@ -438,7 +439,9 @@
 <translation id="4577274620589681794">समय खत्म हुआ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">झलक दिखाएं</translation>
 <translation id="4578906031062871102">सेटिंग मेन्यू खोला गया</translation>
+<translation id="4581047786858252841">माइक्रोफ़ोन चालू है</translation>
 <translation id="4585337515783392668">ऐसे रिसीवर पर कास्ट करना बंद करें जिसकी जानकारी नहीं है</translation>
+<translation id="4587299710837179226">माइक्रोफ़ोन बंद है</translation>
 <translation id="4596144739579517758">गहरे रंग वाली थीम बंद है</translation>
 <translation id="4611292653554630842">लॉग इन करें</translation>
 <translation id="4623167406982293031">खाते की पुष्टि करें</translation>
@@ -570,6 +573,7 @@
 <translation id="5777841717266010279">स्‍क्रीन साझाकरण बंद करें?</translation>
 <translation id="5779721926447984944">पिन की गई फ़ाइलें</translation>
 <translation id="5790085346892983794">सफलता</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> को चालू करने के लिए क्लिक करें</translation>
 <translation id="5820394555380036790">क्रोमियम OS</translation>
 <translation id="5825969630400862129">जुड़े हुए डिवाइस की सेटिंग</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>

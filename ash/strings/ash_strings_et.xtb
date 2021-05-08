@@ -21,6 +21,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1104621072296271835">Teie seadmed töötavad koos veelgi paremini</translation>
 <translation id="1119348796022671382">Temaatiline värvirežiim kasutab taustapildist tuletatud värve, et liidest kergelt toonida.</translation>
 <translation id="112308213915226829">Riiuli automaatne peitmine</translation>
+<translation id="1148499908455722006">Avage konto <ph name="USER_NAME" /> teabedialoog</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
 <translation id="1165712434476988950">Värskenduse rakendamiseks tuleb seade taaskäivitada.</translation>
 <translation id="1175572348579024023">Keri</translation>
@@ -438,7 +439,9 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4577274620589681794">Aeg on läbi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Kuva eelvaated</translation>
 <translation id="4578906031062871102">Seadete menüü on avatud</translation>
+<translation id="4581047786858252841">Mikrofon on sisse lülitatud</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
+<translation id="4587299710837179226">Mikrofon on välja lülitatud</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
@@ -570,6 +573,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5777841717266010279">Kas peatada ekraani jagamine?</translation>
 <translation id="5779721926447984944">Kinnitatud failid</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
+<translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>

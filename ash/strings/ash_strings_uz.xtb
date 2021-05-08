@@ -21,6 +21,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1104621072296271835">Qurilmalaringiz birgalikda yaxshiroq ishlaydi</translation>
 <translation id="1119348796022671382">Mavzuli ranglar rejimida interfeys fonga mos ranglarda biroz bezatiladi.</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> axborot oynasini ochish</translation>
 <translation id="1153356358378277386">Ulangan qurilmalar</translation>
 <translation id="1165712434476988950">Yangilanishni tatbiq qilish uchun qurilmani oʻchirib yoqing.</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
@@ -437,7 +438,9 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4577274620589681794">Vaqt tugadi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Razm solishni yoqish</translation>
 <translation id="4578906031062871102">Sozlamalar menyusi ochildi</translation>
+<translation id="4581047786858252841">Mikrofon yoniq</translation>
 <translation id="4585337515783392668">Ekranni notanish qurilmaga translatsiya qilinishi to‘xtatilsin</translation>
+<translation id="4587299710837179226">Mikrofon yoqilmagan</translation>
 <translation id="4596144739579517758">Tungi mavzu yoqilmagan</translation>
 <translation id="4611292653554630842">Kirish</translation>
 <translation id="4623167406982293031">Hisobni tasdiqlang</translation>
@@ -569,6 +572,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5777841717266010279">Ekrandan foydalanish ruxsati to‘xtatilsinmi?</translation>
 <translation id="5779721926447984944">Mahkamlangan fayllar</translation>
 <translation id="5790085346892983794">Bajarildi</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> nomli tarmoqni faollashtirish uchun bosing</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ulangan qurilmalar sozlamalari</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinishi to‘xtatilsin</translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1690731385917361335">لا توجد عناصر</translation>
-<translation id="1691390244342876227">‏تعذّر على متصفِّح Chrome التحقُّق من معلوماتك.</translation>
 <translation id="1692118695553449118">المزامنة مفعَّلة</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">تسجيل الخروج ومحو البيانات من هذ الجهاز</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
+<translation id="5532698011560297095">تعذر تسجيل الدخول</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
 
 لابد من تفعيل Handoff كذلك في القسم العام من الإعدادات، ولابد من استخدام أجهزتك لنفس حساب iCloud.</translation>
@@ -635,7 +635,6 @@
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="734758817008927353">خيارات حفظ البطاقة</translation>
 <translation id="7348502496356775519">إشارة مرجعية</translation>
-<translation id="7352651011704765696">حدث خطأ ما</translation>
 <translation id="7353432112255316844">إثبات هويّتك</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
 <translation id="7398893703713203428">إنشاء رابط</translation>
@@ -764,7 +763,6 @@
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
 <translation id="8706588385081740091">كلمات المرور</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
-<translation id="8721206573513844242">تعذَّر التحقُّق من صحة بيانات الاعتماد.</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8730621377337864115">تم</translation>

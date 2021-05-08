@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Eszközei együtt még jobban működnek</translation>
 <translation id="1119348796022671382">A témán alapuló színmód a háttérképen alapuló színeket alkalmazva finoman kiszínezi a kezelőfelületet.</translation>
 <translation id="112308213915226829">Polc automatikus elrejtése</translation>
+<translation id="1148499908455722006">Információs párbeszédpanel, <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
 <translation id="1165712434476988950">A frissítés alkalmazásához az eszköz újraindítása szükséges.</translation>
 <translation id="1175572348579024023">Görgetés</translation>
@@ -438,7 +439,9 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4577274620589681794">Az idő lejárt · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Előnézetek megjelenítése</translation>
 <translation id="4578906031062871102">Beállítások menü megnyitva</translation>
+<translation id="4581047786858252841">A mikrofon be van kapcsolva</translation>
 <translation id="4585337515783392668">Ismeretlen fogadó eszközre történő átküldés leállítása</translation>
+<translation id="4587299710837179226">A mikrofon ki van kapcsolva</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
 <translation id="4611292653554630842">Bejelentkezés</translation>
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
@@ -570,6 +573,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5777841717266010279">Leállítja a képernyőmegosztást?</translation>
 <translation id="5779721926447984944">Kitűzött fájlok</translation>
 <translation id="5790085346892983794">Siker</translation>
+<translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>

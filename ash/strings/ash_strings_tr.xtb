@@ -21,6 +21,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
 <translation id="1119348796022671382">Temalı renk modu, arayüzü hafifçe renklendirmek için duvar kağıdınızdan çıkarılan renkleri kullanır.</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
 <translation id="1165712434476988950">Güncellemenin uygulanması için cihazın yeniden başlatılması gerekiyor.</translation>
 <translation id="1175572348579024023">Kaydır</translation>
@@ -437,7 +438,9 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4577274620589681794">Süre doldu · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önizlemeleri göster</translation>
 <translation id="4578906031062871102">Ayarlar menüsü açıldı</translation>
+<translation id="4581047786858252841">Mikrofon açık</translation>
 <translation id="4585337515783392668">Bilinmeyen bir alıcıya yayını durdur</translation>
+<translation id="4587299710837179226">Mikrofon kapalı</translation>
 <translation id="4596144739579517758">Koyu tema kapalı</translation>
 <translation id="4611292653554630842">Giriş yap</translation>
 <translation id="4623167406982293031">Hesabı doğrulama</translation>
@@ -569,6 +572,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5777841717266010279">Ekran paylaşma durdurulsun mu?</translation>
 <translation id="5779721926447984944">Sabitlenmiş dosyalar</translation>
 <translation id="5790085346892983794">Başarılı</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>

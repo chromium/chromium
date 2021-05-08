@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Tout marquer comme lu</translation>
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1690731385917361335">Aucun élément</translation>
-<translation id="1691390244342876227">Chrome n'a pas pu vérifier vos renseignements</translation>
 <translation id="1692118695553449118">La synchronisation est activée</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> sélectionnés</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
@@ -634,7 +633,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
-<translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7353432112255316844">Confirmer que c'est bien vous</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
 <translation id="7398893703713203428">Créer un lien</translation>
@@ -763,7 +761,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8680787084697685621">L'information de connexion au compte n'est plus à jour.</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
-<translation id="8721206573513844242">Désolés, nous n'avons pas pu valider vos authentifiants</translation>
 <translation id="8721297211384281569">Menu outils</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">Terminé</translation>

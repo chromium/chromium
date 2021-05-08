@@ -651,11 +651,9 @@
 <translation id="1688935057616748272">文字を入力してください</translation>
 <translation id="168991973552362966">近くのプリンタを追加</translation>
 <translation id="1689945336726856614">URL をコピー(&amp;U)</translation>
-<translation id="1690248886740053041">モバイル ネットワークに接続できません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="1692115862433274081">別のアカウントを使用</translation>
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
-<translation id="169279809881363536">プロファイルは検出されませんでした。ネットワークを設定するには、QR コードをデバイスのカメラでスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
 <translation id="1697150536837697295">アート</translation>
 <translation id="1697686431566694143">ファイルを編集</translation>
@@ -1224,6 +1222,7 @@
 <translation id="2299941608784654630">debugd で収集したすべてのログファイルを個別のアーカイブとして含める。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> のカスタマイズと制御</translation>
+<translation id="2300578660547687840">検索キーワードのキーボード ショートカット</translation>
 <translation id="2301382460326681002">拡張機能のルート ディレクトリが無効です。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」が追加の許可をリクエストしています。</translation>
 <translation id="2303282178633578561">SIM カードをロック</translation>
@@ -3080,6 +3079,7 @@
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4366138410738374926">印刷を開始しました</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
+<translation id="4373966964907728675">デスクトップをキャスト中</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
 <translation id="4375035964737468845">ダウンロードしたファイルを開く</translation>
 <translation id="4376226992615520204">位置情報は OFF です</translation>
@@ -3121,7 +3121,6 @@
 <translation id="4410545552906060960">パスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="4411578466613447185">コードの署名者</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
-<translation id="4413088271097062326">どのアプリケーションを使用しますか？</translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
@@ -3334,6 +3333,7 @@
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
 <translation id="4635427303840967665">プロファイルに接続しています。これには 30 秒ほどかかります。</translation>
 <translation id="4635444580397524003">Linux のバックアップが復元されました。</translation>
+<translation id="4636682061478263818">ドライブのファイル</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4637083375689622795">その他の操作（<ph name="EMAIL" />）</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{テキスト}other{# 件のテキスト}}</translation>
@@ -5883,6 +5883,7 @@
 <translation id="7531779363494549572">[設定] &gt; [アプリと通知] &gt; [通知] の順に選択します。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> から応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7537451260744431038">サイトは、Cookie を使用してブラウジングの利便性を改善できません（ログイン状態の維持、ショッピング カートの中身の保存などが行えません）</translation>
+<translation id="753769905878158714">アドレスバーに、検索したいウェブサイトのキーワードを入力してください。その後、キーボード ショートカットを使って続行してください。</translation>
 <translation id="7540972813190816353">更新の確認中にエラーが発生しました: <ph name="ERROR" /></translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> アプリで <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">アカウントの他のデバイスと同期しています。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -6331,6 +6332,7 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> によるクリップボードへのアクセスを常に許可する</translation>
+<translation id="8006630792898017994">スペースキーまたは Tab キー</translation>
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
 <translation id="8012647001091218357">現在、保護者にたずねることができません。もう一度お試しください。</translation>

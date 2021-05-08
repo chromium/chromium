@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به مکانتان دسترسی پیدا کند، مکان را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="8447861592752582886">لغو مجوز دستگاه</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{۱ کوکی درحال استفاده است}one{# کوکی درحال استفاده است}other{# کوکی درحال استفاده است}}</translation>
-<translation id="8463851957836045671">سایت سریع است</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏NFC برای این دستگاه خاموش است. در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> آن را روشن کنید.</translation>
-<translation id="8929372349074745002">این سایت برای اکثر افراد سریع باز می‌شود و پاسخ می‌دهد</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">کوکی‌ها را برای سایت خاصی مسدود کنید.</translation>
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>

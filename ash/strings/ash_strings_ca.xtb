@@ -21,6 +21,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1104621072296271835">Els teus dispositius funcionen encara millor junts</translation>
 <translation id="1119348796022671382">El mode de color temàtic utilitza colors extrets del fons de pantalla per acolorir lleugerament la interfície.</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
+<translation id="1148499908455722006">Obre el quadre de diàleg d'informació per a <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
 <translation id="1165712434476988950">Cal reiniciar el dispositiu per aplicar l'actualització.</translation>
 <translation id="1175572348579024023">Desplaça</translation>
@@ -437,7 +438,9 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4577274620589681794">El temps s'ha esgotat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostra les previsualitzacions</translation>
 <translation id="4578906031062871102">El menú de configuració s'ha obert</translation>
+<translation id="4581047786858252841">El micròfon està activat</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
+<translation id="4587299710837179226">El micròfon està desactivat</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
 <translation id="4611292653554630842">Inicia la sessió</translation>
 <translation id="4623167406982293031">Verifica el compte</translation>
@@ -569,6 +572,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
+<translation id="5805809050170488595">Fes clic per activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>

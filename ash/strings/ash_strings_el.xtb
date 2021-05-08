@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Οι συσκευές σας λειτουργούν ακόμα καλύτερα συνδυαστικά</translation>
 <translation id="1119348796022671382">Η λειτουργία χρώματος με θέμα χρησιμοποιεί χρώματα που έχουν εξαχθεί από την ταπετσαρία για να χρωματίσει ελαφρώς τη διεπαφή.</translation>
 <translation id="112308213915226829">Αυτόματη απόκρυψη ραφιού</translation>
+<translation id="1148499908455722006">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Συσκευές σε σύζευξη</translation>
 <translation id="1165712434476988950">Απαιτείται επανεκκίνηση της συσκευής για την εφαρμογή της ενημέρωσης.</translation>
 <translation id="1175572348579024023">Κύλιση</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">Ο χρόνος τελείωσε · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Εμφάνιση προεπισκοπήσεων</translation>
 <translation id="4578906031062871102">Το μενού Ρυθμίσεις άνοιξε.</translation>
+<translation id="4581047786858252841">Το μικρόφωνο είναι ενεργοποιημένο</translation>
 <translation id="4585337515783392668">Διακοπή μετάδοσης σε άγνωστο δέκτη</translation>
+<translation id="4587299710837179226">Το μικρόφωνο είναι απενεργοποιημένο</translation>
 <translation id="4596144739579517758">Το Σκούρο θέμα είναι απενεργοποιημένο.</translation>
 <translation id="4611292653554630842">Σύνδεση</translation>
 <translation id="4623167406982293031">Επαλήθευση λογαριασμού</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">Θέλετε να σταματήσετε να μοιράζεστε την οθόνη;</translation>
 <translation id="5779721926447984944">Καρφιτσωμένα αρχεία</translation>
 <translation id="5790085346892983794">Επιτυχία</translation>
+<translation id="5805809050170488595">Κλικ για ενεργοποίηση <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>

@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Untuk membolehkan <ph name="APP_NAME" /> mengakses lokasi anda, hidupkan juga lokasi dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Batalkan kebenaran peranti</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki sedang digunakan}other{# kuki sedang digunakan}}</translation>
-<translation id="8463851957836045671">Tapak laju</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Zum masuk</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Tapak ini dibuka dan memberikan respons dengan pantas untuk kebanyakan orang</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Sekat kuki untuk tapak tertentu.</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>

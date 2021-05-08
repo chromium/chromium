@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Mark All Read</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1690731385917361335">No items</translation>
-<translation id="1691390244342876227">Chrome couldn't verify your information</translation>
 <translation id="1692118695553449118">Sync is on</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
@@ -430,6 +429,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5508435575041083207">Sign out and clear data from this device</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
+<translation id="5532698011560297095">Can't Sign In</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
@@ -635,7 +635,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="734758817008927353">Options to save card</translation>
 <translation id="7348502496356775519">Bookmark</translation>
-<translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353432112255316844">Verify that it's you</translation>
 <translation id="7383797227493018512">Reading List</translation>
 <translation id="7398893703713203428">Create link</translation>
@@ -764,7 +763,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
 <translation id="8706588385081740091">Passwords</translation>
 <translation id="8717864919010420084">Copy link</translation>
-<translation id="8721206573513844242">Sorry we couldn't validate your credentials</translation>
 <translation id="8721297211384281569">Tools Menu</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>

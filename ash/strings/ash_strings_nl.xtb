@@ -21,6 +21,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1104621072296271835">Je apparaten werken samen nog beter</translation>
 <translation id="1119348796022671382">De kleurenmodus 'Met een thema' stelt de kleuren van de interface af op de kleuren van je achtergrond.</translation>
 <translation id="112308213915226829">Plank automatisch verbergen</translation>
+<translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
 <translation id="1165712434476988950">Start het apparaat opnieuw op om de update toe te passen.</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -437,7 +438,9 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4577274620589681794">De tijd is om · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
 <translation id="4578906031062871102">Menu Instellingen geopend</translation>
+<translation id="4581047786858252841">Microfoon staat aan</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
+<translation id="4587299710837179226">Microfoon staat uit</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4611292653554630842">Inloggen</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
@@ -569,6 +572,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5777841717266010279">Stoppen met scherm delen?</translation>
 <translation id="5779721926447984944">Vastgezette bestanden</translation>
 <translation id="5790085346892983794">Geslaagd</translation>
+<translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te activeren</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>

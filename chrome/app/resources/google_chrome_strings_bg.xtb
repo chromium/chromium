@@ -11,6 +11,7 @@
 <translation id="1125124144982679672">Кой използва Chrome?</translation>
 <translation id="1142745911746664600">Chrome не може да се актуализира</translation>
 <translation id="1154147086299354128">&amp;Отваряне в Chrome</translation>
+<translation id="1278833599417554002">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google Chrome OS.</translation>
 <translation id="1302523850133262269">Моля, изчакайте, докато Chrome инсталира най-новите системни актуализации.</translation>
 <translation id="137466361146087520">Google Chrome бета</translation>
@@ -48,6 +49,7 @@
 <translation id="2063848847527508675">Chrome OS трябва да се рестартира, за да приложи актуализацията.</translation>
 <translation id="2094919256425865063">Искате ли да затворите Chrome въпреки това?</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> елемента ще се изтрият от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
+<translation id="2121284319307530122">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете за подобряването на Chrome, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Моля, рестартирайте Chrome сега</translation>
 <translation id="2246246234298806438">Google Chrome не може да покаже визуализацията за печат, когато вграденият визуализатор на PDF файлове липсва.</translation>
@@ -236,6 +238,7 @@
 <translation id="7629695634924605473">Chrome ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="7641148173327520642">Системният ви администратор е конфигурирал Google Chrome да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
+<translation id="7665553140559834626">Повторно стартиране за актуализиране на &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Инсталационната програма не можа да създаде временна директория. Моля, проверете дали има свободно дисково пространство и разрешение за инсталиране на софтуер.</translation>
 <translation id="7761834446675418963">Кликнете върху името си, за да отворите Chrome и да започнете да сърфирате.</translation>
 <translation id="7777080907402804672">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>

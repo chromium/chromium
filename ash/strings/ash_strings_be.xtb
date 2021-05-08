@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Разам вашы прылады працуюць яшчэ лепей</translation>
 <translation id="1119348796022671382">Рэжым колеру "З тэмай" бярэ колеры са шпалер і злёгку расфарбоўвае імі інтэрфейс.</translation>
 <translation id="112308213915226829">Аўтаматычна хаваць паліцу</translation>
+<translation id="1148499908455722006">Адкрыць дыялогавае акно інфармацыі аб уліковым запісе "<ph name="USER_NAME" />"</translation>
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
 <translation id="1165712434476988950">Каб прымяніць абнаўленне, трэба перазапусціць прыладу.</translation>
 <translation id="1175572348579024023">Прагартаць</translation>
@@ -437,8 +438,11 @@
 <translation id="4577274620589681794">Час выйшаў · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Уключыць перадпрагляд</translation>
 <translation id="4578906031062871102">Меню налад адкрыта</translation>
+<translation id="4581047786858252841">Мікрафон уключаны</translation>
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
+<translation id="4587299710837179226">Мікрафон выключаны</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
+<translation id="4611292653554630842">Увайсці</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4628757576491864469">Прылады</translation>
 <translation id="4642092649622328492">Зрабіць здымак часткі экрана</translation>
@@ -568,6 +572,7 @@
 <translation id="5777841717266010279">Спыніць абагульванне экрана?</translation>
 <translation id="5779721926447984944">Замацаваныя файлы</translation>
 <translation id="5790085346892983794">Выканана</translation>
+<translation id="5805809050170488595">Націсніце, каб актываваць сетку <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Налады падключаных прылад</translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>

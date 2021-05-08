@@ -21,6 +21,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1104621072296271835">Kopā jūsu ierīces darbojas vēl labāk</translation>
 <translation id="1119348796022671382">Motīva krāsu režīmā vieglai saskarnes iekrāsošanai tiek izmantotas fona tapetes krāsas.</translation>
 <translation id="112308213915226829">Automātiski slēpt plauktu</translation>
+<translation id="1148499908455722006">Atvērt lietotāja <ph name="USER_NAME" /> informācijas dialoglodziņu</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
 <translation id="1165712434476988950">Lai lietotu atjauninājumu, ir jārestartē ierīce.</translation>
 <translation id="1175572348579024023">Ritināt</translation>
@@ -437,7 +438,9 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4577274620589681794">Laiks ir beidzies! · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Rādīt priekšskatījumus</translation>
 <translation id="4578906031062871102">Iestatījumu izvēlne ir atvērta</translation>
+<translation id="4581047786858252841">Mikrofons ir ieslēgts</translation>
 <translation id="4585337515783392668">Pārtraukt apraidi nezināmā uztvērējā</translation>
+<translation id="4587299710837179226">Mikrofons ir izslēgts</translation>
 <translation id="4596144739579517758">Tumšais motīvs ir izslēgts.</translation>
 <translation id="4611292653554630842">Pieteikties</translation>
 <translation id="4623167406982293031">Verificēt kontu</translation>
@@ -569,6 +572,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5777841717266010279">Vai apturēt ekrāna koplietošanu?</translation>
 <translation id="5779721926447984944">Piespraustie faili</translation>
 <translation id="5790085346892983794">Veiksmīgi pabeigts</translation>
+<translation id="5805809050170488595">Noklikšķiniet, lai aktivizētu tīklu <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>

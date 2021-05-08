@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="1265739287306757398">ఎలాగో తెలుసుకోండి</translation>
 <translation id="1272079795634619415">ఆపు</translation>
+<translation id="1282311502488501110">సైన్ ఇన్ చేయవద్దు</translation>
 <translation id="1283524564873030414">గత 24 గంటలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1321993286294231467">ఇమేజ్‌ని సేవ్ చేయడంలో ఎర్రర్ ఏర్పడింది.</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">అన్నీ చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1690731385917361335">అంశాలు లేవు</translation>
-<translation id="1691390244342876227">Chrome మీ సమాచారాన్ని వెరిఫై చేయలేకపోయింది</translation>
 <translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">history.google.com తెరువు</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తరలించబడ్డాయి</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
+<translation id="214201757571129614">సైన్ ఇన్ చేయి…</translation>
 <translation id="2149973817440762519">బుక్‌మార్క్‌ను సవరించు</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
 <translation id="2198757192731523470">శోధన, ప్రకటనలు మరియు ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ చరిత్రను ఉపయోగించవచ్చు</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">పేజీలను అనువదించు</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
 <translation id="4636930964841734540">సమాచారం</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" />గా కొనసాగించు</translation>
 <translation id="4659126640776004816">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది.</translation>
 <translation id="4659667755519643272">ట్యాబ్ స్విచర్‌లోకి ప్రవేశించు</translation>
 <translation id="46614316059270592">పాస్‌వర్డ్‌ను సేవ్ చేయి</translation>
@@ -427,6 +429,7 @@
 <translation id="5508435575041083207">సైన్ అవుట్ చేసి, ఈ పరికరం నుండి డేటాను క్లియర్ చేయండి</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> గం. క్రితం</translation>
 <translation id="5525269841082836315">రహస్య పదబంధాన్ని సృష్టించండి</translation>
+<translation id="5532698011560297095">సైన్ ఇన్ చెయ్యలేరు</translation>
 <translation id="5548760955356983418">ఈ పరికరంలో వెబ్‌సైట్‌ను బ్రౌజ్ చేయడాన్ని ప్రారంభించి, ఆ తర్వాత దాన్ని మీ Macలో సులభంగా కొనసాగించడానికి హ్యాండ్‌ఆఫ్ మిమ్మల్ని అనుమతిస్తుంది. ప్రస్తుతం తెరిచిన వెబ్‌సైట్ మీ Mac డాక్‌లో కనిపిస్తుంది.
 
 హ్యాండ్‌ఆఫ్‌ను తప్పనిసరిగా సాధారణ సెట్టింగ్‌ల విభాగంలో కూడా ప్రారంభించాలి. మీ పరికరాలు తప్పనిసరిగా ఒకే iCloud ఖాతాను ఉపయోగించాలి.</translation>
@@ -632,7 +635,6 @@
 <translation id="7346909386216857016">సరే, అర్థమైంది</translation>
 <translation id="734758817008927353">కార్డ్‌ను సేవ్ చేయడానికి ఎంపికలు</translation>
 <translation id="7348502496356775519">బుక్‌‍మార్క్</translation>
-<translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7353432112255316844">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="7383797227493018512">పఠన జాబితా</translation>
 <translation id="7398893703713203428">లింక్‌ను క్రియేట్ చేయండి</translation>
@@ -761,7 +763,6 @@
 <translation id="8680787084697685621">ఖాతా సైన్-ఇన్ వివరాల గడువు తేదీ ముగిసింది.</translation>
 <translation id="8706588385081740091">పాస్‌వర్డ్‌లు</translation>
 <translation id="8717864919010420084">లింక్‌ని కాపీ చేయి</translation>
-<translation id="8721206573513844242">క్షమించండి, మేము మీ ఆధారాలను వాలిడేట్ చేయలేకపోయాము</translation>
 <translation id="8721297211384281569">సాధనాల మెనూ</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>

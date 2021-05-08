@@ -24,6 +24,7 @@
 <translation id="1911763535808217981">Бұл функцияны өшіріп, Chromium браузеріне кірместен Gmail сияқты Google сайттарын пайдалана беруіңізге болады</translation>
 <translation id="1929939181775079593">Chromium жауап бермейді. Қазір қайта іске қосасыз ба?</translation>
 <translation id="1966382378801805537">Chromium әдепкі браузерді анықтай не орната алмайды</translation>
+<translation id="1981611865800294956">&amp;Chromium OS жүйесін жаңарту үшін қайта іске қосу</translation>
 <translation id="2008474315282236005">Құрылғыдан 1 элемент жойылады. Деректерді кейінірек алу үшін Chromium браузеріне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="2020032459870799438">Басқа құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chromium браузеріне кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromium-ді реттеу</translation>
@@ -121,6 +122,7 @@
 <translation id="4788777615168560705">Chromium сіздің құпия сөздеріңізді тексере алмай жатыр. 24 сағаттан кейін қайталап көріңіз немесе <ph name="BEGIN_LINK" />құпия сөздерді Google есептік жазбасынан тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Google Search қызметіндегі емле тексеру құралы пайдаланылады. Браузерде терілген мәтін Google-ға жіберіледі. Мұны параметрлерде өзгертуіңізге болады.</translation>
 <translation id="4888717733111232871">mDNS трафигіне рұқсат беретін Chromium кіріс ережесі.</translation>
+<translation id="4893347770495441059">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
 <translation id="4943838377383847465">Chromium фондық режимде.</translation>
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
@@ -275,6 +277,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="91086099826398415">Сілтемені жаңа Chromium қойындысында ашу</translation>
 <translation id="911206726377975832">Сонымен қатар шолу деректеріңізді жоясыз ба?</translation>
 <translation id="9158494823179993217">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> сілтемесіне қосымша браузер арқылы кіре алатындай етіп конфигурациялады.</translation>
+<translation id="9185526690718004400">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS жүйесі</translation>
 <translation id="93478295209880648">Chromium дұрыс жұмыс істемеуі мүмкін, себебі оған Windows XP не Windows Vista жүйелерінде қолдау көрсетілмейді</translation>

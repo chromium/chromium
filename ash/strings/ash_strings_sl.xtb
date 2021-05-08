@@ -21,6 +21,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1104621072296271835">Naprave delujejo še bolje skupaj</translation>
 <translation id="1119348796022671382">Barvni način na podlagi teme uporablja barve, pridobljene iz zaslonskega ozadja, za rahlo obarvanje vmesnika.</translation>
 <translation id="112308213915226829">Samodejno skrivanje police</translation>
+<translation id="1148499908455722006">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
 <translation id="1165712434476988950">Če želite uveljaviti posodobitev, morate znova zagnati napravo.</translation>
 <translation id="1175572348579024023">Drseče pomikanje</translation>
@@ -437,7 +438,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4577274620589681794">Čas je potekel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Prikaz predogledov</translation>
 <translation id="4578906031062871102">Meni z nastavitvami je odprt</translation>
+<translation id="4581047786858252841">Mikrofon je vklopljen.</translation>
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
+<translation id="4587299710837179226">Mikrofon je izklopljen.</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4611292653554630842">Prijava</translation>
 <translation id="4623167406982293031">Preveri račun</translation>
@@ -569,6 +572,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
 <translation id="5779721926447984944">Pripete datoteke</translation>
 <translation id="5790085346892983794">Uspešno</translation>
+<translation id="5805809050170488595">Kliknite, če želite aktivirati omrežje <ph name="NETWORK_NAME" />.</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>

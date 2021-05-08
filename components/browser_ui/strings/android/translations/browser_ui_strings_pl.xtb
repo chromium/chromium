@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do lokalizacji, musisz ją też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 plik cookie w użyciu}few{# pliki cookie w użyciu}many{# plików cookie w użyciu}other{# pliku cookie w użyciu}}</translation>
-<translation id="8463851957836045671">Strona jest szybka</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Powiększ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkcja NFC na tym urządzeniu jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">U większości użytkowników ta strona szybko się otwiera i umożliwia płynną interakcję</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokuj pliki cookie z określonej strony internetowej.</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>

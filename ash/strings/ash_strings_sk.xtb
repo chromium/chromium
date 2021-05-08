@@ -21,6 +21,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1104621072296271835">Vaše zariadenia fungujú spoločne ešte lepšie</translation>
 <translation id="1119348796022671382">Farebný režim na základe motívu používa farby získané z tapety, ktorými jemne sfarbí rozhranie.</translation>
 <translation id="112308213915226829">Automatické skrývanie poličky</translation>
+<translation id="1148499908455722006">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Spárované zariadenia</translation>
 <translation id="1165712434476988950">Uplatnenie aktualizácie vyžaduje reštartovanie zariadenia.</translation>
 <translation id="1175572348579024023">Posúvanie</translation>
@@ -437,7 +438,9 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4577274620589681794">Čas vypršal · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Zobraziť ukážky</translation>
 <translation id="4578906031062871102">Bola otvorená ponuka Nastavenia</translation>
+<translation id="4581047786858252841">Mikrofón je zapnutý</translation>
 <translation id="4585337515783392668">Zastaviť prenos do neznámeho zariadenia</translation>
+<translation id="4587299710837179226">Mikrofón je vypnutý</translation>
 <translation id="4596144739579517758">Tmavý motív je vypnutý</translation>
 <translation id="4611292653554630842">Prihlásiť sa</translation>
 <translation id="4623167406982293031">Overiť účet</translation>
@@ -569,6 +572,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5777841717266010279">Chcete ukončiť zdieľanie obrazovky?</translation>
 <translation id="5779721926447984944">Pripnuté súbory</translation>
 <translation id="5790085346892983794">Úspešné</translation>
+<translation id="5805809050170488595">Kliknutím aktivujte <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavenia pripojených zariadení</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>

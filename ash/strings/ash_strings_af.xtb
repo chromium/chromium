@@ -21,6 +21,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1104621072296271835">Jou toestelle werk selfs nog beter saam</translation>
 <translation id="1119348796022671382">Die temakleurmodus gebruik kleure wat van jou muurpapier onttrek word om die koppelvlak ligweg 'n kleur te gee.</translation>
 <translation id="112308213915226829">Outoversteek rak</translation>
+<translation id="1148499908455722006">Maak inligtingdialoog oop vir <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Saamgebinde toestelle</translation>
 <translation id="1165712434476988950">Die toestel moet herbegin word om die opdatering toe te pas.</translation>
 <translation id="1175572348579024023">Rollees</translation>
@@ -438,7 +439,9 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Wys voorskoue</translation>
 <translation id="4578906031062871102">Instellingskieslys is oopgemaak</translation>
+<translation id="4581047786858252841">Mikrofoon is aan</translation>
 <translation id="4585337515783392668">Hou op om op 'n onbekende ontvanger uit te saai</translation>
+<translation id="4587299710837179226">Mikrofoon is af</translation>
 <translation id="4596144739579517758">Donkertema is af</translation>
 <translation id="4611292653554630842">Meld aan</translation>
 <translation id="4623167406982293031">Verifieer rekening</translation>
@@ -570,6 +573,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5777841717266010279">Stop skermdeling?</translation>
 <translation id="5779721926447984944">Vasgespelde lêers</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
+<translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te aktiveer</translation>
 <translation id="5820394555380036790">Chromium-bedryfstelsel</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>

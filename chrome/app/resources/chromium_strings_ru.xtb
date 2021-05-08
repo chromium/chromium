@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">Отключив эту функцию, вы сможете входить в систему на сайтах Google (например, Gmail) без необходимости выполнять вход в Chromium.</translation>
 <translation id="1929939181775079593">Chromium не отвечает. Перезапустить сейчас?</translation>
 <translation id="1966382378801805537">Chromium не удалось определить или задать браузер по умолчанию</translation>
+<translation id="1981611865800294956">Перезапустить для обновления &amp;Chromium OS</translation>
 <translation id="2008474315282236005">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chromium как <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Чтобы проверить, защищены ли другие ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chromium<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Настроить Chromium</translation>
@@ -117,6 +118,7 @@
 <translation id="4788777615168560705">Не удается проверить пароли в Chromium. Повторите попытку через 24 часа или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Используется та же технология проверки правописания, что и в Google Поиске. Текст, который вы введете в браузере, будет отправлен в Google. Этот параметр можно изменить в настройках.</translation>
 <translation id="4888717733111232871">Разрешить в Chromium передачу входящего трафика по протоколу mDNS</translation>
+<translation id="4893347770495441059">Перезапустить для обновления &amp;Chromium</translation>
 <translation id="4943838377383847465">Chromium работает в фоновом режиме</translation>
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
@@ -268,6 +270,7 @@
 <translation id="91086099826398415">Открыть ссылку в новой вкладке браузера Chromium</translation>
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
 <translation id="9158494823179993217">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать альтернативный браузер для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9185526690718004400">Перезапустить для обновления &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>

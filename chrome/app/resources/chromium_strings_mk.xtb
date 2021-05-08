@@ -24,6 +24,7 @@
 <translation id="1911763535808217981">Ако го исклучите ова, може да се најавувате на сајтови на Google, како што е Gmail, без да се најавите на Chromium</translation>
 <translation id="1929939181775079593">Chromium не реагира. Да се рестартира сега?</translation>
 <translation id="1966382378801805537">Chromium не може да го одреди или постави стандардниот прелистувач</translation>
+<translation id="1981611865800294956">Рестартирајте за да се ажурира &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Приспособете го Chromium</translation>
@@ -121,6 +122,7 @@
 <translation id="4788777615168560705">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Услугава ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google. Ваквото однесување може да го смените во поставки во секое време.</translation>
 <translation id="4888717733111232871">Дојдовно правило за Chromium да дозволи mDNS сообраќај.</translation>
+<translation id="4893347770495441059">Рестартирајте за да се ажурира &amp;Chromium</translation>
 <translation id="4943838377383847465">Chromium е во заднински режим.</translation>
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
@@ -276,6 +278,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="91086099826398415">Отвори го линкот во нова &amp;картичка на Chromium</translation>
 <translation id="911206726377975832">Да се избришат ли и вашите податоци од пребарувањата?</translation>
 <translation id="9158494823179993217">Администраторот на системот го конфигурирал Chromium да отвора друг прелистувач за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9185526690718004400">Рестартирајте за да се ажурира &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Систем Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно затоа што веќе не е поддржан на Windows XP или Windows Vista</translation>

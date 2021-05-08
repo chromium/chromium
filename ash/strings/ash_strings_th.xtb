@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
 <translation id="1119348796022671382">โหมดสีที่มีธีมใช้สีที่ดึงมาจากวอลเปเปอร์เพื่อเติมสีให้อินเทอร์เฟซเล็กน้อย</translation>
 <translation id="112308213915226829">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
+<translation id="1148499908455722006">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
 <translation id="1165712434476988950">ต้องรีสตาร์ทอุปกรณ์เพื่อใช้การอัปเดต</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
+<translation id="4581047786858252841">ไมโครโฟนเปิดอยู่</translation>
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
+<translation id="4587299710837179226">ไมโครโฟนปิดอยู่</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">ต้องการหยุดแชร์หน้าจอไหม</translation>
 <translation id="5779721926447984944">ไฟล์ที่ตรึงไว้</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
+<translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>

@@ -42,6 +42,7 @@
 <translation id="4736424910885271643">Ihr Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, Ihre Chromium-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="4787850887676698916">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chromium geöffnet haben.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
+<translation id="4852878756222711218">Wenn Sie Chromium optimal nutzen möchten, melden Sie sich mit Ihrem Google-Konto an</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4999538639245140991">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
@@ -67,6 +68,7 @@
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal.</translation>
 <translation id="6827294685447036764">Wenn Sie zulassen, dass Chromium Ihren Standort ermittelt, sendet der Browser diesen an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen wie Geschäfte in der Nähe oder Nachrichten für Sie haben.</translation>
 <translation id="7018284295775193585">Chromium kann nicht aktualisiert werden</translation>
+<translation id="7045244423563602563">Chromium personalisieren</translation>
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
 <translation id="7118091470949186573">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7208566199746267865">Mit Chromium sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>

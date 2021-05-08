@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Որպեսզի ձեր տեղադրությունը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8447861592752582886">Արգելել սարքի օգտագործումը</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 օգտագործվող քուքի}one{# օգտագործվող քուքի}other{# օգտագործվող քուքի}}</translation>
-<translation id="8463851957836045671">Կայքը բեռնվում է արագ</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Սարքի NFC-ն անջատված է։ Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
-<translation id="8929372349074745002">Այս կայքը հիմնականում բեռնվում և արձագանքում է արագ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավիգացիան անհասանելի է՝ <ph name="URL" /></translation>

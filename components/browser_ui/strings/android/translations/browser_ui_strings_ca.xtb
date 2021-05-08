@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Perquè <ph name="APP_NAME" /> pugui accedir a la teva ubicació, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca el permís d'accés al dispositiu</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 galeta en ús}other{# galetes en ús}}</translation>
-<translation id="8463851957836045671">El lloc web és ràpid</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Amplia</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">L'NFC està desactivada en aquest dispositiu. Activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Aquest lloc web s'obre i respon ràpidament per a la majoria de persones</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloqueja les galetes d'un lloc web concret.</translation>
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">סימון הכול כ'נקרא'</translation>
 <translation id="1689333818294560261">כינוי</translation>
 <translation id="1690731385917361335">אין פריטים</translation>
-<translation id="1691390244342876227">‏Chrome לא הצליח לאמת את הפרטים שלך</translation>
 <translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1740468249224277719">יש להקיש פעמיים כדי להתקין.</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">יציאה וניקוי נתונים מהמכשיר הזה</translation>
 <translation id="5513681519188741830">לפני <ph name="TIME" /> שעות</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
+<translation id="5532698011560297095">לא מצליח להיכנס</translation>
 <translation id="5548760955356983418">‏Handoff מאפשר לך להתחיל לגלוש באתר מסוים במכשיר הזה ולאחר מכן להמשיך בקלות ב-Mac. האתר הפתוח הנוכחי יופיע ב-Dock של ה-Mac שלך.
 
 יש להפעיל את Handoff גם בקטע 'כללי' ב'הגדרות', ועל המכשירים להשתמש באותו חשבון iCloud.</translation>
@@ -635,7 +635,6 @@
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="734758817008927353">אפשרויות לשמירת כרטיס</translation>
 <translation id="7348502496356775519">הוספה לסימניות</translation>
-<translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7353432112255316844">אימות הזהות שלך</translation>
 <translation id="7383797227493018512">רשימת קריאה</translation>
 <translation id="7398893703713203428">יצירת קישור</translation>
@@ -764,7 +763,6 @@
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
 <translation id="8706588385081740091">סיסמאות</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
-<translation id="8721206573513844242">מצטערים, לא הצלחנו לאמת את פרטי הכניסה שלך</translation>
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>

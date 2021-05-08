@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit přístup ke své poloze, zapněte polohu také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Je používán 1 soubor cookie}few{Jsou používány # soubory cookie}many{Je používáno # souboru cookie}other{Je používáno # souborů cookie}}</translation>
-<translation id="8463851957836045671">Web je rychlý</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkce NFC je v tomto zařízení vypnutá. Zapnete ji v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Tato stránka se pro většinu uživatelů rychle otevírá a rychle reaguje</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokovat soubory cookie pro konkrétní web.</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>

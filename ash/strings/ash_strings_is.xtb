@@ -21,6 +21,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1104621072296271835">Tækin þín virka enn betur saman</translation>
 <translation id="1119348796022671382">Litastilling með þema notar liti sem dregnir eru úr veggfóðrinu til að gefa viðmótinu léttan litablæ.</translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
+<translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
 <translation id="1165712434476988950">Endurræsa þarf tækið til að nota uppfærsluna.</translation>
 <translation id="1175572348579024023">Fletta</translation>
@@ -437,7 +438,9 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4577274620589681794">Tíminn er liðinn · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Sýna forskoðun</translation>
 <translation id="4578906031062871102">Stillingavalmynd opnuð</translation>
+<translation id="4581047786858252841">Kveikt er á hljóðnema</translation>
 <translation id="4585337515783392668">Hætta að senda út í óþekkt tæki</translation>
+<translation id="4587299710837179226">Slökkt er á hljóðnemanum</translation>
 <translation id="4596144739579517758">Slökkt er á dökku þema</translation>
 <translation id="4611292653554630842">Skrá inn</translation>
 <translation id="4623167406982293031">Staðfesta reikning</translation>
@@ -569,6 +572,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5777841717266010279">Stöðva skjádeilingu?</translation>
 <translation id="5779721926447984944">Festar skrár</translation>
 <translation id="5790085346892983794">Tókst</translation>
+<translation id="5805809050170488595">Smelltu til að kveikja á <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>

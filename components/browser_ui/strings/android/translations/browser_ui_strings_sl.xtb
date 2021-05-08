@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do lokacije, lokacijo vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Umik dovoljenja za dostop do naprave</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 piškotek v uporabi}one{# piškotek v uporabi}two{# piškotka v uporabi}few{# piškotki v uporabi}other{# piškotkov v uporabi}}</translation>
-<translation id="8463851957836045671">Spletno mesto je hitro</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
 <translation id="851751545965956758">Spletnim mestom prepreči povezovanje z napravami</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Povečaj</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Tehnologija NFC je izklopljena za to napravo. Vklopite jo v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">To spletno mesto se odpre in odzove hitro za večino uporabnikov</translation>
 <translation id="8941729603749328384">www.primer.si</translation>
 <translation id="8958424370300090006">Blokiranje piškotkov za določeno spletno mesto.</translation>
 <translation id="8959122750345127698">Krmarjenje ni dosegljivo: <ph name="URL" /></translation>

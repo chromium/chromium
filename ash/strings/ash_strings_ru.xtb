@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
 <translation id="1119348796022671382">Интерфейс будет окрашен в оттенки ваших обоев.</translation>
 <translation id="112308213915226829">Автоматически скрывать панель запуска</translation>
+<translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1165712434476988950">Чтобы применить обновление, необходимо перезапустить устройство.</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
@@ -418,7 +419,7 @@
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
-<translation id="4472575034687746823">Начало работы</translation>
+<translation id="4472575034687746823">Начать</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
 <translation id="4477892968187500306">На устройстве могут быть приложения, не проверенные Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
 <translation id="4578906031062871102">Меню настроек открыто</translation>
+<translation id="4581047786858252841">Микрофон включен.</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
+<translation id="4587299710837179226">Микрофон отключен.</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4611292653554630842">Войти</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">Закрыть доступ к экрану?</translation>
 <translation id="5779721926447984944">Закрепленные файлы</translation>
 <translation id="5790085346892983794">Выполнено</translation>
+<translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>

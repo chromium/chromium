@@ -654,11 +654,9 @@
 <translation id="1688935057616748272">Nhập một chữ cái</translation>
 <translation id="168991973552362966">Thêm máy in ở gần</translation>
 <translation id="1689945336726856614">Sao chép &amp;URL</translation>
-<translation id="1690248886740053041">Không thể kết nối với một mạng di động. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="1692115862433274081">Sử dụng một tài khoản khác</translation>
 <translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1692210323591458290">Tím đậm</translation>
-<translation id="169279809881363536">Không phát hiện thấy hồ sơ nào. Để thiết lập một mạng mới, hãy quét mã QR bằng máy ảnh của thiết bị hoặc nhập mã kích hoạt do nhà mạng cung cấp.</translation>
 <translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
 <translation id="1697150536837697295">Nghệ thuật</translation>
 <translation id="1697686431566694143">Chỉnh sửa tệp</translation>
@@ -1239,6 +1237,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2299941608784654630">Thêm tất cả tệp nhật ký thu thập được trong quá trình gỡ lỗi dưới dạng một mục lưu trữ riêng.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
+<translation id="2300578660547687840">Phím tắt cho từ khóa tìm kiếm</translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
 <translation id="2303282178633578561">Khóa thẻ SIM</translation>
@@ -3095,6 +3094,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4364830672918311045">Hiển thị thông báo</translation>
 <translation id="4366138410738374926">Đã bắt đầu in</translation>
 <translation id="4370975561335139969">Email và mật khẩu bạn nhập không khớp</translation>
+<translation id="4373966964907728675">Đang truyền màn hình</translation>
 <translation id="4374831787438678295">Trình cài đặt Linux</translation>
 <translation id="4375035964737468845">Mở các tệp đã tải xuống</translation>
 <translation id="4376226992615520204">Đã tắt dịch vụ vị trí</translation>
@@ -3136,7 +3136,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4410545552906060960">Dùng một số (mã PIN) thay cho mật khẩu để mở khóa thiết bị. Để đặt mã PIN vào thời điểm khác, hãy chuyển đến mục Cài đặt.</translation>
 <translation id="4411578466613447185">Trình ký mã</translation>
 <translation id="4412698727486357573">Trung tâm trợ giúp</translation>
-<translation id="4413088271097062326">Bạn muốn dùng ứng dụng nào?</translation>
 <translation id="44141919652824029">Cho phép "<ph name="APP_NAME" />" nhận danh sách các thiết bị USB đính kèm?</translation>
 <translation id="4414232939543644979">Cửa sổ ẩn &amp;danh mới</translation>
 <translation id="4414515549596849729">cookie và dữ liệu trang web</translation>
@@ -3350,6 +3349,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4635398712689569051">Người dùng khách không thể sử dụng <ph name="PAGE_NAME" />.</translation>
 <translation id="4635427303840967665">Đang kết nối hồ sơ. Quá trình này có thể mất tối đa 30 giây.</translation>
 <translation id="4635444580397524003">Đã khôi phục thành công bản sao lưu Linux.</translation>
+<translation id="4636682061478263818">Tệp trên Drive</translation>
 <translation id="4636930964841734540">Thông tin</translation>
 <translation id="4637083375689622795">Thao tác khác, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Văn bản}other{# văn bản}}</translation>
@@ -5899,6 +5899,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7531779363494549572">Chuyển đến Cài đặt &gt; Ứng dụng và thông báo &gt; Thông báo.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> hiện không phản hồi. Hãy chọn "Buộc đóng" để đóng ứng dụng.</translation>
 <translation id="7537451260744431038">Các trang web không thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mục có trong giỏ hàng</translation>
+<translation id="753769905878158714">Trong thanh địa chỉ, hãy nhập từ khóa cho trang web mà bạn muốn tìm kiếm. Sau đó, dùng một phím tắt để tiếp tục.</translation>
 <translation id="7540972813190816353">Đã xảy ra lỗi khi kiểm tra cập nhật: <ph name="ERROR" /></translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> bằng ứng dụng <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Đã đồng bộ hóa với các thiết bị khác trên tài khoản của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -6347,6 +6348,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> không sử dụng được nữa</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8005600846065423578">Luôn cho phép <ph name="HOST" /> xem bảng nhớ tạm</translation>
+<translation id="8006630792898017994">Phím cách hoặc phím Tab</translation>
 <translation id="8008356846765065031">Internet đã bị ngắt kết nối. Vui lòng kiểm tra kết nối Internet của bạn.</translation>
 <translation id="8009225694047762179">Quản lý mật khẩu</translation>
 <translation id="8012647001091218357">Chúng tôi không thể liên lạc với cha mẹ của bạn vào thời điểm này. Vui lòng thử lại.</translation>

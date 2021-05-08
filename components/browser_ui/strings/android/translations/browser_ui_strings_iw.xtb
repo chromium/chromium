@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקום, צריך להפעיל את המיקום גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">שלילת הרשאות מכשיר</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{‏קובץ cookie אחד נמצא בשימוש}two{‏# קובצי cookie נמצאים בשימוש}many{‏# קובצי cookie נמצאים בשימוש}other{‏# קובצי cookie נמצאים בשימוש}}</translation>
-<translation id="8463851957836045671">האתר הזה מהיר</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏קישוריות ה-NFC מושבתת במכשיר הזה. ניתן להפעיל אותה דרך <ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">רוב האנשים מדווחים שהאתר נפתח ומגיב במהירות</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">‏חסימת קובצי Cookie של אתר מסוים.</translation>
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>

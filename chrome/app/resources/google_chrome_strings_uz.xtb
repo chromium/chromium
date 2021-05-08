@@ -11,6 +11,7 @@
 <translation id="1125124144982679672">Chromeni kim ochdi?</translation>
 <translation id="1142745911746664600">Chromeni yangilab bo‘lmadi</translation>
 <translation id="1154147086299354128">Chrome brauzerida &amp;ochish</translation>
+<translation id="1278833599417554002">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini o‘qib, qabul qilishingizni talab qiladi. Bu shartlar Google Chrome OS shartlarini kengaytirmaydi, o‘zgartirmaydi yoki cheklamaydi.</translation>
 <translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -47,6 +48,7 @@
 <translation id="2063848847527508675">Yangilov o‘rnatilishi uchun Chrome OS qaytadan ishga tushirilishi kerak.</translation>
 <translation id="2094919256425865063">Chrome baribir yopilsinmi?</translation>
 <translation id="2120620239521071941">Ushbu qurilmadagi <ph name="ITEMS_COUNT" /> ta element butunlay o‘chiriladi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
+<translation id="2121284319307530122">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="2123055963409958220">Chrome brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
 <translation id="2151406531797534936">Chromeni hozir qayta ishga tushiring</translation>
 <translation id="2246246234298806438">Agar ichki PDF hujjatlarini ko‘rish dasturi mavjud bo‘lmasa, Google Chrome‘da oldindan ko‘rsatish imkoniyati bo‘lmaydi.</translation>
@@ -240,6 +242,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7629695634924605473">Parollaringiz oshkor etilsa, Chrome bu haqida xabar qiladi</translation>
 <translation id="7641148173327520642">Tizim administratori tomonidan Google Chrome brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotipi</translation>
+<translation id="7665553140559834626">&amp;Chrome OS tizimini yangilash uchun qayta ishga tushiring</translation>
 <translation id="7747138024166251722">O‘rnatish dasturi vaqtinchalik katalog yarata olmadi. Sizda ilovalar o‘rnatish uchun yetarli vakolat yoki disk yetarli bo‘sh joy yo‘q bo‘lsa kerak.</translation>
 <translation id="7761834446675418963">Chrome‘ga kirish uchun o‘z ismingiz ustiga bosing va kezishni boshlang.</translation>
 <translation id="7777080907402804672">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi. Bu sozlamani istalgan vaqtda faolsizlantirish mumkin.</translation>

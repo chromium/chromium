@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="1265739287306757398">কেনেকৈ কৰিব জানক</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
+<translation id="1282311502488501110">ছাইন ইন নকৰিব</translation>
 <translation id="1283524564873030414">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1321993286294231467">প্ৰতিচ্ছবি ছেভ কৰোঁতে আঁসোৱাহ হৈছে।</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">সকলো পঢ়া হ‘ল বুলি চিহ্নিত কৰক</translation>
 <translation id="1689333818294560261">উপনাম</translation>
 <translation id="1690731385917361335">কোনো বস্তু নাই</translation>
-<translation id="1691390244342876227">Chromeএ আপোনাৰ তথ্য সত্যাপন কৰিব নোৱাৰিলে</translation>
 <translation id="1692118695553449118">ছিংক অন হৈ আছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
 <translation id="1740468249224277719">ইনষ্টল কৰিবলৈ দুবাৰ টিপক।</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">history.google.com খোলক</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টা বস্তু স্থানান্তৰ কৰা হ’ল</translation>
 <translation id="2139867232736819575">আপুনি প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
+<translation id="214201757571129614">ছাইন ইন কৰক…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="2198757192731523470">Googleএ Search, বিজ্ঞাপন আৰু অন্য Google সেৱা ব্যক্তিকৃত কৰিবলৈ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">পৃষ্ঠাবোৰ অনুবাদ কৰক</translation>
 <translation id="4634124774493850572">পাছৱৰ্ড দিয়ক</translation>
 <translation id="4636930964841734540">তথ্য</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="4659126640776004816">আপুনি Google একাউণ্টত ছাইন ইন কৰিলে এই সুবিধাটো অন কৰা হয়।</translation>
 <translation id="4659667755519643272">টেব সলনি কৰোঁতালৈ যাওক</translation>
 <translation id="46614316059270592">পাছৱৰ্ড ছেভ কৰক</translation>
@@ -631,7 +633,6 @@
 <translation id="7346909386216857016">ঠিক আছে, বুজি পালোঁ</translation>
 <translation id="734758817008927353">কার্ড ছেভ কৰাৰ বিকল্পসমূহ</translation>
 <translation id="7348502496356775519">বুকমাৰ্ক কৰক</translation>
-<translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7353432112255316844">এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="7383797227493018512">পঢ়াৰ সূচী</translation>
 <translation id="7398893703713203428">লিংক সৃষ্টি কৰক</translation>
@@ -758,7 +759,6 @@
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
 <translation id="8706588385081740091">পাছৱৰ্ডসমূহ</translation>
 <translation id="8717864919010420084">লিংকটো প্ৰতিলিপি কৰক</translation>
-<translation id="8721206573513844242">ক্ষমা কৰিব, আমি আপোনাৰ ক্ৰিডেনশ্বিয়েলৰ মান্যতা নিৰূপণ কৰিব নোৱাৰিলোঁ</translation>
 <translation id="8721297211384281569">সঁজুলিৰ মেনু</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>

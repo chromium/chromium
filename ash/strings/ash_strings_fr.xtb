@@ -21,6 +21,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
 <translation id="1119348796022671382">Le mode couleur thématique applique une légère teinte à l'interface en se basant sur les couleurs de votre fond d'écran.</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
+<translation id="1148499908455722006">Ouvrir la boîte de dialogue d'infos pour <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1165712434476988950">Vous devez redémarrer l'appareil pour appliquer la mise à jour.</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
@@ -437,7 +438,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4577274620589681794">Temps écoulé · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Afficher les aperçus</translation>
 <translation id="4578906031062871102">Menu "Paramètres" ouvert</translation>
+<translation id="4581047786858252841">Micro activé</translation>
 <translation id="4585337515783392668">Arrêter la diffusion vers un destinataire inconnu</translation>
+<translation id="4587299710837179226">Micro désactivé</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé.</translation>
 <translation id="4611292653554630842">Connexion</translation>
 <translation id="4623167406982293031">Vérifiez le compte</translation>
@@ -569,6 +572,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5790085346892983794">Succès</translation>
+<translation id="5805809050170488595">Cliquer pour activer <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>

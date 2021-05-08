@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> लाई आफ्नो स्थान प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई स्थानसम्बन्धी सेवा पनि अन गर्नुहोस्।</translation>
 <translation id="8447861592752582886">यन्त्र सम्बन्धी अनुमतिलाई उल्टाउनुहोस्</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एउटा कुकी प्रयोग भइरहेको छ}other{# वटा कुकी प्रयोग भइरहेका छन्}}</translation>
-<translation id="8463851957836045671">साइट द्रूत छ</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
 <translation id="851751545965956758">साइटहरूलाई यन्त्रमा जडान गर्नबाट रोक लगाउनुहोस्</translation>
 <translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">जुम इन</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
-<translation id="8929372349074745002">यो साइट धेरै जसो मान्छेका यन्त्रमा छिट्टै खुल्छ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>
 <translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>

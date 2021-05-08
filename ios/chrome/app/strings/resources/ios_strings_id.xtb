@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Tandai Semua Sudah Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1690731385917361335">Tidak ada item</translation>
-<translation id="1691390244342876227">Chrome tidak dapat memverifikasi informasi Anda</translation>
 <translation id="1692118695553449118">Sinkronisasi aktif</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
@@ -430,6 +429,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5508435575041083207">Logout dan Hapus Data dari Perangkat ini</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> j lalu</translation>
 <translation id="5525269841082836315">Buat Frasa Sandi</translation>
+<translation id="5532698011560297095">Tidak Dapat Login</translation>
 <translation id="5548760955356983418">Handoff memungkinkan Anda memulai penjelajahan situs web pada perangkat ini dan melanjutkan di Mac dengan mudah. Situs web yang saat ini terbuka akan muncul di Dock pada Mac Anda.
 
 Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat Anda harus menggunakan akun iCloud yang sama.</translation>
@@ -635,7 +635,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7346909386216857016">Oke, mengerti</translation>
 <translation id="734758817008927353">Opsi untuk Menyimpan Kartu</translation>
 <translation id="7348502496356775519">Bookmark</translation>
-<translation id="7352651011704765696">Ada yang tidak beres</translation>
 <translation id="7353432112255316844">Verifikasi Diri Anda</translation>
 <translation id="7383797227493018512">Daftar Bacaan</translation>
 <translation id="7398893703713203428">Buat Link</translation>
@@ -764,7 +763,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="8706588385081740091">Sandi</translation>
 <translation id="8717864919010420084">Salin Link</translation>
-<translation id="8721206573513844242">Maaf, kami tidak dapat memvalidasi kredensial Anda</translation>
 <translation id="8721297211384281569">Menu Alat</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>

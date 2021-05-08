@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu atrašanās vietas datiem, ieslēdziet atrašanās vietas noteikšanu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Atsaukt ierīces atļauju</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Tiek izmantots viens sīkfails}zero{Tiek izmantoti # sīkfaili}one{Tiek izmantots # sīkfails}other{Tiek izmantoti # sīkfaili}}</translation>
-<translation id="8463851957836045671">Ātra vietnes darbība</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
 <translation id="851751545965956758">Neļaut vietnēm izveidot savienojumu ar ierīci</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Tuvināt</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Šajā ierīcē tehnoloģija NFC ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Lielākajai daļai lietotāju šī vietne atveras un reaģē ātri.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloķēt sīkfailus konkrētai vietnei.</translation>
 <translation id="8959122750345127698">Navigācija nav sasniedzama: <ph name="URL" /></translation>

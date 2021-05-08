@@ -21,6 +21,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
 <translation id="1119348796022671382">The themed colour mode uses colours extracted from your wallpaper to lightly colourise the interface.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
+<translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Paired devices</translation>
 <translation id="1165712434476988950">Device restart is required to apply the update.</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -437,7 +438,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Show previews</translation>
 <translation id="4578906031062871102">Settings menu opened</translation>
+<translation id="4581047786858252841">Microphone is on</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
+<translation id="4587299710837179226">Microphone is off</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>
 <translation id="4623167406982293031">Verify account</translation>
@@ -569,6 +572,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5779721926447984944">Pinned files</translation>
 <translation id="5790085346892983794">Success</translation>
+<translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>

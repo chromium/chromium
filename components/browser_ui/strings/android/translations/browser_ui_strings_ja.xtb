@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 個の Cookie が使用中です}other{# 個の Cookie が使用中です}}</translation>
-<translation id="8463851957836045671">サイトは高速です</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">拡大する</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">このデバイスでは NFC がオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
-<translation id="8929372349074745002">このサイトは、ほとんどの環境ですばやく表示され応答しています</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">特定のサイトの Cookie をブロックします。</translation>
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>

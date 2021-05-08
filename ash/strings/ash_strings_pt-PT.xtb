@@ -21,6 +21,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
+<translation id="1148499908455722006">Abrir a caixa de diálogo de informações de <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
 <translation id="1175572348579024023">Deslocar</translation>
@@ -437,7 +438,9 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4577274620589681794">Acabou o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar pré-visualizações</translation>
 <translation id="4578906031062871102">Menu de definições aberto</translation>
+<translation id="4581047786858252841">O microfone está ativado</translation>
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
+<translation id="4587299710837179226">O microfone está desativado</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
 <translation id="4623167406982293031">Validar conta</translation>
@@ -569,6 +572,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5777841717266010279">Parar a partilha do ecrã?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5790085346892983794">Sucesso</translation>
+<translation id="5805809050170488595">Clicar para ativar <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">SO Chromium</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>

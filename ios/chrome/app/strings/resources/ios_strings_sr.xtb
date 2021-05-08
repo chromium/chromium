@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Означи све као прочитано</translation>
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="1690731385917361335">Нема ставки</translation>
-<translation id="1691390244342876227">Chrome није успео да потврди податке</translation>
 <translation id="1692118695553449118">Синхронизација је укључена</translation>
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">Одјавите се и обришите податке са овог уређаја</translation>
 <translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
 <translation id="5525269841082836315">Прављење приступне фразе</translation>
+<translation id="5532698011560297095">Не могу да се пријавим</translation>
 <translation id="5548760955356983418">Handoff вам омогућава да започнете прегледање веб-сајта на овом уређају, па да једноставно наставите на Mac-у. Веб-сајт који је тренутно отворен приказаће се на доку на Mac-у.
 
 Handoff треба да се омогући у одељку General (Опште) у менију Settings (Подешавања), а уређаји морају да користе исти iCloud налог.</translation>
@@ -635,7 +635,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7346909386216857016">Важи</translation>
 <translation id="734758817008927353">Опције за чување картице</translation>
 <translation id="7348502496356775519">Означи</translation>
-<translation id="7352651011704765696">Нешто није у реду</translation>
 <translation id="7353432112255316844">Потврдите свој идентитет</translation>
 <translation id="7383797227493018512">Листа за читање</translation>
 <translation id="7398893703713203428">Create Link (Направи линк)</translation>
@@ -764,7 +763,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
 <translation id="8706588385081740091">Лозинке</translation>
 <translation id="8717864919010420084">Копирај линк</translation>
-<translation id="8721206573513844242">Жао нам је, нисмо успели да проверимо акредитиве</translation>
 <translation id="8721297211384281569">Мени Алатке</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8730621377337864115">Готово</translation>

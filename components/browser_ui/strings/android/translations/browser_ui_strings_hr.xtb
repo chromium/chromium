@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi odobrenje uređaja</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Koristi se jedan kolačić}one{Koristi se # kolačić}few{Koriste se # kolačića}other{Koristi se # kolačića}}</translation>
-<translation id="8463851957836045671">Web-lokacija je brza</translation>
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli zaslon</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Povećaj</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Za većinu ljudi ova se web-lokacija brzo otvara i reagira</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokiraj kolačiće za određenu web-lokaciju.</translation>
 <translation id="8959122750345127698">Otvaranje je nedostupno: <ph name="URL" /></translation>

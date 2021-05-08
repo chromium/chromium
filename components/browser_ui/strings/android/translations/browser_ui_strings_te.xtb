@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">మీ లొకేషన్‌ని యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా లొకేషన్‌ని ఆన్ చేయండి.</translation>
 <translation id="8447861592752582886">పరికర అనుమతిని ఉపసంహరిస్తుంది</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 కుక్కీ ఉపయోగంలో ఉంది}other{# కుక్కీలు ఉపయోగంలో ఉన్నాయి}}</translation>
-<translation id="8463851957836045671">సైట్ వేగంగా లోడ్ అవుతుంది</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="851751545965956758">పరికరాలకు కనెక్ట్ కాకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="8525306231823319788">పూర్తి స్క్రీన్</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ఈ పరికరంలో NFC ఆఫ్ చేయబడింది. <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో దాన్ని ఆన్ చేయండి.</translation>
-<translation id="8929372349074745002">చాలా మందికి ఈ సైట్ వేగంగా తెరుచుకుంటుంది, అలాగే వేగంగా స్పందిస్తుంది</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ఏదైనా ఒక నిర్దిష్ట సైట్‌లో కుక్కీలను బ్లాక్ చేయండి.</translation>
 <translation id="8959122750345127698">దీనికి నావిగేట్ చేయడం సాధ్యపడదు: <ph name="URL" /></translation>

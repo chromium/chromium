@@ -651,11 +651,9 @@
 <translation id="1688935057616748272">請輸入英文字母</translation>
 <translation id="168991973552362966">新增鄰近印表機</translation>
 <translation id="1689945336726856614">複製網址(&amp;U)</translation>
-<translation id="1690248886740053041">無法連線到行動網路。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
 <translation id="1692118695553449118">同步功能已啟用</translation>
 <translation id="1692210323591458290">深紫色</translation>
-<translation id="169279809881363536">找不到任何設定檔。如要設定新網路，請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼。</translation>
 <translation id="169675691788639886">裝置有設定好的 SSH 伺服器。請勿使用敏感帳戶登入。</translation>
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
@@ -1224,6 +1222,7 @@
 <translation id="2299941608784654630">單獨封存 debugd 收集的所有記錄檔。</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">自訂及控制 <ph name="APP_NAME" /></translation>
+<translation id="2300578660547687840">搜尋關鍵字的鍵盤快速鍵</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="2303282178633578561">鎖定 SIM 卡</translation>
@@ -3078,6 +3077,7 @@
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">已開始列印</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
+<translation id="4373966964907728675">正在投放桌面</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案。</translation>
 <translation id="4376226992615520204">已關閉定位功能</translation>
@@ -3119,7 +3119,6 @@
 <translation id="4410545552906060960">你可以使用一組數字 (PIN 碼) 來解鎖裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
 <translation id="4412698727486357573">說明中心</translation>
-<translation id="4413088271097062326">要使用哪個應用程式？</translation>
 <translation id="44141919652824029">要允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕式視窗(&amp;I)</translation>
 <translation id="4414515549596849729">Cookie 和網站資料</translation>
@@ -3332,6 +3331,7 @@
 <translation id="4635398712689569051">訪客使用者無法使用<ph name="PAGE_NAME" />。</translation>
 <translation id="4635427303840967665">正在連線至設定檔。這項作業最多可能需要 30 秒才能完成。</translation>
 <translation id="4635444580397524003">已成功復原 Linux 備份資料。</translation>
+<translation id="4636682061478263818">雲端硬碟檔案</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多動作 (<ph name="EMAIL" />)</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
@@ -5881,6 +5881,7 @@
 <translation id="7531779363494549572">依序輕觸 [設定] &gt; [應用程式和通知] &gt; [通知]。</translation>
 <translation id="7532009420053991888">「<ph name="LINUX_APP_NAME" />」沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7537451260744431038">網站無法使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
+<translation id="753769905878158714">在網址列中針對想搜尋的網站輸入關鍵字，然後使用鍵盤快速鍵繼續操作。</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">已與你帳戶中的其他裝置同步。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6329,6 +6330,7 @@
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8005600846065423578">一律允許 <ph name="HOST" /> 讀取剪貼簿</translation>
+<translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
 <translation id="8008356846765065031">網路連線中斷，請檢查你的網際網路連線。</translation>
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8012647001091218357">我們暫時無法與您的家長聯絡，請再試一次。</translation>

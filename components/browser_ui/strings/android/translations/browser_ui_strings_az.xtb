@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> tətbiqinə məkanınıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> məkanı da aktiv edin.</translation>
 <translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki istifadə olunur}other{# kuki istifadə olunur}}</translation>
-<translation id="8463851957836045671">Sayt sürətlidir</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC bu cihazda deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> onu aktiv edin.</translation>
-<translation id="8929372349074745002">Bu sayt əksər insanlar üçün sürətli açılır və işləyir</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Xüsusi sayt üçün kukiləri blok edin.</translation>
 <translation id="8959122750345127698">Naviqasiya əlçatmazdır: <ph name="URL" /></translation>

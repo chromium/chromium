@@ -282,7 +282,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" />ক আপোনাৰ অৱস্থান এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো অৱস্থান অন কৰক।</translation>
 <translation id="8447861592752582886">ডিভাইচৰ অনুমতি প্ৰত্যাহাৰ কৰক</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১ টা কুকি ব্যৱহাৰ হৈ আছে}one{# টা কুকি ব্যৱহাৰ হৈ আছে}other{# টা কুকি ব্যৱহাৰ হৈ আছে}}</translation>
-<translation id="8463851957836045671">ছাইটটো দ্ৰুত</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
@@ -302,7 +301,6 @@
 <translation id="8903921497873541725">জুম ইন কৰক</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">এই ডিভাইচটোৰ বাবে NFC অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
-<translation id="8929372349074745002">সৰহভাগ লোকৰ বাবে এই ছাইটটো খোল খায় তথা সেইটোৱে দ্ৰুতভাৱে সঁহাৰি দিয়ে</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">কোনো বিশেষ ছাইটৰ বাবে কুকিসমূহ অৱৰোধ কৰক।</translation>
 <translation id="8959122750345127698">ইয়ালৈ নেভিগেশ্বন পাব পৰা অৱস্থাত নাই: <ph name="URL" /></translation>

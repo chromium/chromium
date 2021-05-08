@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Til að veita <ph name="APP_NAME" /> aðgang að staðsetningu þinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Afturkalla tækjaheimild</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 fótspor í notkun}one{# fótspor í notkun}other{# fótspor í notkun}}</translation>
-<translation id="8463851957836045671">Vefsvæðið er hratt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="851751545965956758">Ekki leyfa vefsvæðum að tengjast tækjum</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Auka aðdrátt</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Slökkt er á NFC fyrir þetta tæki. Kveiktu á því í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Þetta vefsvæði opnast fljótt og svarar hratt fyrir flesta notendur</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Lokaðu á fótspor fyrir tiltekið vefsvæði.</translation>
 <translation id="8959122750345127698">Ekki næst samband: <ph name="URL" /></translation>

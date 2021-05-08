@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">ឧបករណ៍​របស់អ្នក​ដំណើរការ​កាន់តែល្អ​ពេលប្រើ​រួមគ្នា</translation>
 <translation id="1119348796022671382">មុខងារពណ៌រចនាប័ទ្មប្រើពណ៌ដែលបានយកចេញពីផ្ទាំង​រូបភាពរបស់អ្នក ដើម្បីប្រើជាពណ៌ស្រាលៗនៅលើផ្ទៃ។</translation>
 <translation id="112308213915226829">លាក់ធ្នើដោយស្វ័យប្រវត្តិ</translation>
+<translation id="1148499908455722006">បើក​ប្រអប់ព័ត៌មាន​សម្រាប់ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">ឧបករណ៍​ដែល​បាន​ផ្គូផ្គង</translation>
 <translation id="1165712434476988950">តម្រូវឱ្យ​ចាប់ផ្ដើម​ឧបករណ៍​ឡើងវិញ ដើម្បី​អនុវត្ត​កំណែថ្មី​។</translation>
 <translation id="1175572348579024023">រំកិល</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">ដល់​ម៉ោងហើយ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">បង្ហាញ​ការមើល​សាកល្បង</translation>
 <translation id="4578906031062871102">បានបើកម៉ឺនុយការ​កំណត់</translation>
+<translation id="4581047786858252841">មីក្រូហ្វូន​ត្រូវ​បាន​បើក</translation>
 <translation id="4585337515783392668">ឈប់បញ្ជូន​​ទៅឧបករណ៍ទទួលដែល​មិនស្គាល់</translation>
+<translation id="4587299710837179226">មីក្រូហ្វូន​ត្រូវបានបិទ</translation>
 <translation id="4596144739579517758">​រចនាប័ទ្ម​ងងឹតបានបិទ</translation>
 <translation id="4611292653554630842">ចូល</translation>
 <translation id="4623167406982293031">ផ្ទៀងផ្ទាត់​គណនី</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">បញ្ឈប់ការចែករំលែកអេក្រង់?</translation>
 <translation id="5779721926447984944">​ឯកសារដែលបាន​ខ្ទាស់</translation>
 <translation id="5790085346892983794">ជោគជ័យ</translation>
+<translation id="5805809050170488595">ចុចដើម្បីបើកដំណើរការ <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>

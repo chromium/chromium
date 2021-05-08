@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">全部標示為已閱讀</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1690731385917361335">沒有任何項目</translation>
-<translation id="1691390244342876227">Chrome 無法驗證您的資料</translation>
 <translation id="1692118695553449118">同步處理已開啟</translation>
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="1740468249224277719">輕按兩下即可安裝。</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">登出並清除此裝置上的資料</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="5525269841082836315">建立通關密語</translation>
+<translation id="5532698011560297095">無法登入</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
 此外，您必須在 [設定] 的「一般設定」部分中啟用 Handoff，且您的裝置必須使用同一個 iCloud 帳戶。</translation>
@@ -633,7 +633,6 @@
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="734758817008927353">付款卡儲存選項</translation>
 <translation id="7348502496356775519">加入書籤</translation>
-<translation id="7352651011704765696">發生問題</translation>
 <translation id="7353432112255316844">驗證身分</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="7398893703713203428">建立連結</translation>
@@ -762,7 +761,6 @@
 <translation id="8680787084697685621">帳戶登入詳情已過期。</translation>
 <translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>
-<translation id="8721206573513844242">很抱歉，我們無法驗證您的憑證</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>

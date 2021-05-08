@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">നിങ്ങളുടെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ലൊക്കേഷൻ ഓണാക്കുക.</translation>
 <translation id="8447861592752582886">ഉപകരണ അനുമതി റദ്ദാക്കുക</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ഒരു കുക്കി ഉപയോഗത്തിലാണ്}other{# കുക്കികൾ ഉപയോഗത്തിലാണ്}}</translation>
-<translation id="8463851957836045671">വളരെ വേഗതയുള്ള സൈറ്റ്</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>
 <translation id="851751545965956758">ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ഈ ഉപകരണത്തിനുള്ള NFC ഓഫാണ്. ഇത് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> ഓണാക്കുക.</translation>
-<translation id="8929372349074745002">കൂടുതൽ ആളുകൾക്കും ഈ സൈറ്റ് വേഗത്തിൽ തുറക്കുകയും പ്രതികരിക്കുകയും ചെയ്യുന്നു</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ഒരു പ്രത്യേക സൈറ്റിനായി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക.</translation>
 <translation id="8959122750345127698">നാവിഗേഷൻ ലഭ്യമല്ല: <ph name="URL" /></translation>

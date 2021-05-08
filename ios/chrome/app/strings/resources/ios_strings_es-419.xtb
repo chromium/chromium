@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Marcar todas como leídas</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="1690731385917361335">Sin elementos</translation>
-<translation id="1691390244342876227">Chrome no pudo verificar tu información.</translation>
 <translation id="1692118695553449118">La sincronización está activada.</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
@@ -430,6 +429,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5508435575041083207">Salir y borrar los datos de este dispositivo</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase contras.</translation>
+<translation id="5532698011560297095">No es posible acceder</translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
 Handoff también debe estar habilitado en la sección General de la configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
@@ -635,7 +635,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7348502496356775519">Agregar a favoritos</translation>
-<translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353432112255316844">Verificar tu identidad</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
 <translation id="7398893703713203428">Crear vínculo</translation>
@@ -764,7 +763,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8680787084697685621">Los datos de inicio de cuenta están desactualizados</translation>
 <translation id="8706588385081740091">Contraseñas</translation>
 <translation id="8717864919010420084">Copiar vínculo</translation>
-<translation id="8721206573513844242">No pudimos validar las credenciales.</translation>
 <translation id="8721297211384281569">Menú "Herramientas"</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8730621377337864115">Listo</translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">सर्व वाचले चिन्हांकित करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1690731385917361335">कोणतेही आयटम नाहीत</translation>
-<translation id="1691390244342876227">Chrome ला तुमच्या माहितीची पडताळणी करता आली नाही</translation>
 <translation id="1692118695553449118">सिंक सुरू आहे</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
@@ -431,6 +430,7 @@
 <translation id="5508435575041083207">या डिव्हाइसमधून साइन आउट करा आणि डेटा साफ करा</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
+<translation id="5532698011560297095">साइन इन करणे शक्य नाही</translation>
 <translation id="5548760955356983418">Handoff तुम्हाला या डिव्हाइसवर ब्राउझिंग सुरू करू आणि त्यानंतर आपल्या Mac वर सहजपणे सुरू ठेऊ देते. वर्तमान उघडलेली वेबसाइट आपल्या Mac च्या डॉकवर दिसून येईल.
 
 सेटिंग्जच्या सामान्य विभागामध्ये Handoff सक्षम केलेले असणे आवश्यक आहे आणि आपल्या डिव्हाइसेसने समान iCloud खाते वापरणे आवश्यक आहे.</translation>
@@ -637,7 +637,6 @@
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="734758817008927353">कार्ड सेव्ह करण्यासाठी पर्याय</translation>
 <translation id="7348502496356775519">बुकमार्क करा</translation>
-<translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353432112255316844">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="7383797227493018512">वाचन सूची</translation>
 <translation id="7398893703713203428">लिंक तयार करा</translation>
@@ -766,7 +765,6 @@
 <translation id="8680787084697685621">खाते साइन-इन तपशील कालबाह्य झाला.</translation>
 <translation id="8706588385081740091">पासवर्ड</translation>
 <translation id="8717864919010420084">लिंक कॉपी करा</translation>
-<translation id="8721206573513844242">सॉरी, आम्हाला तुमच्या क्रेडेंशियलची पडताळणी करता आली नाही</translation>
 <translation id="8721297211384281569">साधने मेनू</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>

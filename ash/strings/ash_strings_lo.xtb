@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">ອຸປະກອນຂອງທ່ານໃຊ້ໄດ້ດີຍິ່ງຂຶ້ນຮ່ວມກັນ</translation>
 <translation id="1119348796022671382">ໂໝດສີທີ່ມີຮູບແບບສີສັນໃຊ້ສີທີ່ດຶງມາຈາກຮູບພື້ນຫຼັງເພື່ອເຕີມສີໃຫ້ໜ້າຈໍສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ເລັກນ້ອຍ.</translation>
 <translation id="112308213915226829">ເຊື່ອງຖ້ານອັດຕະໂນມັດ</translation>
+<translation id="1148499908455722006">ເປີດກ່ອງໂຕ້​ຕອບຂໍ້ມູນສຳລັບ <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">ອຸປະກອນທີ່ຈັບຄູ່ກັນແລ້ວ</translation>
 <translation id="1165712434476988950">ຈຳເປັນຕ້ອງຣິສະຕາດອຸປະກອນເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
 <translation id="1175572348579024023">ເລື່ອນ</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">ໝົດເວລາແລ້ວ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ສະແດງຕົວຢ່າງ</translation>
 <translation id="4578906031062871102">ເປີດເມນູການຕັ້ງຄ່າແລ້ວ</translation>
+<translation id="4581047786858252841">ໄມໂຄຣໂຟນເປີດຢູ່</translation>
 <translation id="4585337515783392668">ຢຸດການສົ່ງສັນຍານໃນເຄື່ອງຮັບທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="4587299710837179226">ໄມໂຄຣໂຟນປິດຢູ່</translation>
 <translation id="4596144739579517758">ຮູບແບບສີສັນມືດປິດຢູ່</translation>
 <translation id="4611292653554630842">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="4623167406982293031">ຢັ້ງຢືນບັນຊີ</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">ຢຸດການແຊຣ໌ຫນ້າ​ຈໍບໍ​?</translation>
 <translation id="5779721926447984944">ໄຟລ໌ທີ່ປັກໝຸດໄວ້</translation>
 <translation id="5790085346892983794">ສໍາ​ເລັດ</translation>
+<translation id="5805809050170488595">ຄລິກເພື່ອເປີດໃຊ້ <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">ການຕັ້ງຄ່າອຸປະກອນທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="5837036133683224804">ຢຸດ <ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>

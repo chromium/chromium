@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">फोल्डर रोज्नुहोस्</translation>
 <translation id="1265739287306757398">कसरी गर्ने भनी सिक्नुहोस्</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
+<translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1283524564873030414">पछिल्ला २४ घन्टा</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="1321993286294231467">फोटो सुरक्षित गर्ने क्रममा त्रुटि भयो।</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">सबै पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="1689333818294560261">उपनाम</translation>
 <translation id="1690731385917361335">कुनै वस्तुहरू छैन</translation>
-<translation id="1691390244342876227">Chrome ले तपाईंको जानकारी पुष्टि गर्न सकेन</translation>
 <translation id="1692118695553449118">सिंक खुला छ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
 <translation id="1740468249224277719">स्थापना गर्न डबल ट्याप गर्नुहोस्।</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">history.google.com लाई खोल्नुहोस्</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> वस्तुहरू सारियो</translation>
 <translation id="2139867232736819575">तपाईंले प्रतिलिपि गरेको पाठको खोजी गर्नुहोस्</translation>
+<translation id="214201757571129614">साइन इन गर्नुहोस्…</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2198757192731523470">Google ले खोज, विज्ञापनहरू र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ।</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">पृष्ठहरू अनुवाद गर्नुहोस्</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4636930964841734540">जानकारी</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="4659126640776004816">तपाईंले आफ्नो Google खातामा साइन इन गर्दा यो सुविधा सक्रिय गरिन्छ।</translation>
 <translation id="4659667755519643272">ट्याब स्विचर प्रविष्टि गर्नुहोस्</translation>
 <translation id="46614316059270592">पासवर्ड सेभ गर्नुहोस्</translation>
@@ -632,7 +634,6 @@
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="734758817008927353">कार्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="7348502496356775519">पुस्तक चिन्ह लगाउनुहोस्</translation>
-<translation id="7352651011704765696">केही गल्ती भयो</translation>
 <translation id="7353432112255316844">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="7383797227493018512">अध्ययन सूची</translation>
 <translation id="7398893703713203428">लिंक सिर्जना गर्नुहोस्</translation>
@@ -761,7 +762,6 @@
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
 <translation id="8706588385081740091">पासवर्डहरू</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
-<translation id="8721206573513844242">माफ गर्नुहोला, हामीले तपाईंका युजरनेम, पासवर्ड आदि पुष्टि गर्न सकेनौँ</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>

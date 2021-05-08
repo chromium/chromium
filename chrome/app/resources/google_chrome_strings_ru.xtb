@@ -11,6 +11,7 @@
 <translation id="1125124144982679672">Кто использует Chrome?</translation>
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
+<translation id="1278833599417554002">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="1293325835983155583">Согласно действующим правилам (источник правил: <ph name="MANAGER" />), до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS.</translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
 <translation id="137466361146087520">Google Chrome (бета)</translation>
@@ -45,6 +46,7 @@
 <translation id="2063848847527508675">Перезагрузите Chrome OS, чтобы установить обновление.</translation>
 <translation id="2094919256425865063">Завершить работу Chrome?</translation>
 <translation id="2120620239521071941">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
+<translation id="2121284319307530122">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="2123055963409958220">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chrome<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
 <translation id="2246246234298806438">Если отсутствует встроенный просмотрщик PDF, предварительный просмотр в Google Chrome невозможен.</translation>
@@ -233,6 +235,7 @@
 <translation id="7629695634924605473">Chrome сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="7641148173327520642">Ваш системный администратор задал настройки, согласно которым Google Chrome должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Логотип Chrome Enterprise</translation>
+<translation id="7665553140559834626">Перезапустить для обновления &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Программе установки не удалось создать временный каталог. Возможно, у вас нет прав на установку приложений или недостаточно места на диске.</translation>
 <translation id="7761834446675418963">Нажмите на свое имя, чтобы войти в Chrome.</translation>
 <translation id="7777080907402804672">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>

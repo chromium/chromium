@@ -24,6 +24,7 @@
 <translation id="1911763535808217981">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chromium'суз кире аласыз</translation>
 <translation id="1929939181775079593">Chromium жооп бербей жатат. Өчүрүп кайра ишке киргизесизби?</translation>
 <translation id="1966382378801805537">Chromium демейки серепчини аныктап же коё албай жатат</translation>
+<translation id="1981611865800294956">&amp;Chromium OS тутумун жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="2008474315282236005">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2020032459870799438">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromium'ду ыңгайлаштыруу</translation>
@@ -121,6 +122,7 @@
 <translation id="4788777615168560705">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайра аракет кылыңыз же <ph name="BEGIN_LINK" />Google аккаунтуңуздагы сырсөздөрдү текшериңиз<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Ал Google Издөөдө колдонулган орфографияны текшерүүчү программаны колдонот. Серепчиде терилген текстти Google кызматтарына жөнөтүп турат. Бул параметрди каалаган убакта жөндөөлөргө өтүп, өзгөртүп койсоңуз болот.</translation>
 <translation id="4888717733111232871">mDNS трафигине уруксат берүү үчүн Chromium'дун кирүү эрежеси.</translation>
+<translation id="4893347770495441059">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="4943838377383847465">Chromium фондук режимде.</translation>
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
@@ -276,6 +278,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="91086099826398415">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>
 <translation id="911206726377975832">Серептөө дайын-даректериңизди өчүрөсүзбү?</translation>
 <translation id="9158494823179993217">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> шилтемесин кошумча серепчиде ачылгыдай кылып конфигурациялады.</translation>
+<translation id="9185526690718004400">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS тутуму</translation>
 <translation id="93478295209880648">Chromium туура эмес иштеши мүмкүн, себеби ал Windows XP же Windows Vista'да мындан ары колдоого алынбайт.</translation>

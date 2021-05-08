@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Para permitir que <ph name="APP_NAME" /> acceda a tu ubicación, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revocar permiso para el dispositivo</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie en uso}other{# cookies en uso}}</translation>
-<translation id="8463851957836045671">El sitio es rápido</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="851751545965956758">Impedir que los sitios se conecten a los dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">La tecnología NFC está desactivada en este dispositivo. Actívala en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Este sitio se abre y responde rápidamente para la mayoría de las personas</translation>
 <translation id="8941729603749328384">www.ejemplo.com</translation>
 <translation id="8958424370300090006">Bloquea las cookies en un sitio específico.</translation>
 <translation id="8959122750345127698">Navegación inaccesible: <ph name="URL" /></translation>

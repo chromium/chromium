@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">Ordner wählen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1272079795634619415">Stoppen</translation>
+<translation id="1282311502488501110">Nicht anmelden</translation>
 <translation id="1283524564873030414">Letzte 24 Stunden</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
 <translation id="1321993286294231467">Beim Speichern des Bilds ist ein Fehler aufgetreten.</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">Alle als gelesen markieren</translation>
 <translation id="1689333818294560261">Alias</translation>
 <translation id="1690731385917361335">Keine Elemente</translation>
-<translation id="1691390244342876227">Chrome konnte Ihre Daten nicht bestätigen</translation>
 <translation id="1692118695553449118">Synchronisierung ist aktiviert</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ausgewählt</translation>
 <translation id="1740468249224277719">Tippen Sie hier doppelt, um die Installation zu starten.</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen verschoben</translation>
 <translation id="2139867232736819575">Nach von Ihnen kopiertem Text suchen</translation>
+<translation id="214201757571129614">Anmelden…</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2198757192731523470">Mithilfe Ihres Verlaufs kann Google die Google Suche, Werbung und andere Google-Dienste personalisieren.</translation>
@@ -343,6 +344,7 @@ Gehen Sie so vor:</translation>
 <translation id="4630540211544979320">Seiten übersetzen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet.</translation>
 <translation id="4659667755519643272">Tab-Wechsler starten</translation>
 <translation id="46614316059270592">Passwort speichern</translation>
@@ -427,6 +429,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5508435575041083207">Abmelden und Daten von diesem Gerät löschen</translation>
 <translation id="5513681519188741830">Vor <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
+<translation id="5532698011560297095">Anmeldung nicht möglich</translation>
 <translation id="5548760955356983418">Mit Handoff können Sie auf diesem Gerät auf einer Website stöbern und dann einfach auf Ihrem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock Ihres Macs angezeigt.
 
 Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein und Ihre Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
@@ -632,7 +635,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7346909386216857016">Ok</translation>
 <translation id="734758817008927353">Optionen zum Speichern von Karten</translation>
 <translation id="7348502496356775519">Lesezeichen</translation>
-<translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7353432112255316844">Identität bestätigen</translation>
 <translation id="7383797227493018512">Leseliste</translation>
 <translation id="7398893703713203428">Link erstellen</translation>
@@ -761,7 +763,6 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
 <translation id="8706588385081740091">Passwörter</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
-<translation id="8721206573513844242">Ihre Anmeldedaten konnten nicht bestätigt werden</translation>
 <translation id="8721297211384281569">Menü "Tools"</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8730621377337864115">Fertig</translation>

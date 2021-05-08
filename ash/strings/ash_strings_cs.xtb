@@ -21,6 +21,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
 <translation id="1119348796022671382">Režim barvy podle motivu používá barvy z tapety k lehkému zabarvení rozhraní.</translation>
 <translation id="112308213915226829">Automaticky skrývat poličku</translation>
+<translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
 <translation id="1165712434476988950">K použití aktualizace je potřeba restartovat zařízení.</translation>
 <translation id="1175572348579024023">Posunout</translation>
@@ -437,7 +438,9 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4577274620589681794">Čas vypršel · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Zobrazit náhledy</translation>
 <translation id="4578906031062871102">Byla otevřena nabídka nastavení</translation>
+<translation id="4581047786858252841">Mikrofon je zapnutý</translation>
 <translation id="4585337515783392668">Ukončit odesílání do neznámého přijímače</translation>
+<translation id="4587299710837179226">Mikrofon je vypnutý</translation>
 <translation id="4596144739579517758">Tmavý motiv je vypnutý</translation>
 <translation id="4611292653554630842">Přihlásit se</translation>
 <translation id="4623167406982293031">Ověřit účet</translation>
@@ -569,6 +572,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5777841717266010279">Ukončit sdílení obrazovky?</translation>
 <translation id="5779721926447984944">Připnuté soubory</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
+<translation id="5805809050170488595">Kliknutím aktivujete síť <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>

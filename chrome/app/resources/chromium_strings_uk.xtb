@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chromium</translation>
 <translation id="1929939181775079593">Chromium не відповідає. Перезапустити зараз?</translation>
 <translation id="1966382378801805537">Chromium не може визначити чи встановити веб-переглядач за умовчанням</translation>
+<translation id="1981611865800294956">Перезапустити, щоб оновити &amp;ОС Chromium</translation>
 <translation id="2008474315282236005">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Налаштувати Chromium</translation>
@@ -119,6 +120,7 @@
 <translation id="4788777615168560705">Chromium не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>
 <translation id="4888717733111232871">Вхідне правило для Chromium дозволяє трафік mDNS.</translation>
+<translation id="4893347770495441059">Перезапустити, щоб оновити &amp;Chromium</translation>
 <translation id="4943838377383847465">Chromium у фоновому режимі.</translation>
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
@@ -274,6 +276,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="91086099826398415">Відкрити посилання в новій &amp;вкладці Chromium</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
 <translation id="9158494823179993217">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>
+<translation id="9185526690718004400">Перезапустити, щоб оновити &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">ОС Chromium</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>

@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
 <translation id="1119348796022671382">تھیم کردہ رنگ وضع انٹرفیس کو ہلکا رنگ دینے کے لیے آپ کے وال پیپر سے ایکسٹریکٹ کیے گئے رنگوں کا استعمال کرتی ہے۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> کیلئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="1153356358378277386">جوڑا بنائے ہوئے آلات</translation>
 <translation id="1165712434476988950">اپ ڈیٹ لاگو کرنے کیلئے آلے کو ری سٹارٹ کرنا درکار ہے۔</translation>
 <translation id="1175572348579024023">اسکرول کریں</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">پیش مناظر دکھائیں</translation>
 <translation id="4578906031062871102">ترتیبات کا مینو کھولا گیا</translation>
+<translation id="4581047786858252841">مائیکروفون آن ہے</translation>
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
+<translation id="4587299710837179226">مائیکروفون آف ہے</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4611292653554630842">لاگ ان کریں</translation>
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5779721926447984944">فائلز کو پن کیا گیا</translation>
 <translation id="5790085346892983794">کامیاب</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>

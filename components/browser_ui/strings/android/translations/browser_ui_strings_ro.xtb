@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze locația, activează locația și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revocă permisiunea de accesare a dispozitivului</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Un cookie folosit}few{# cookie-uri folosite}other{# de cookie-uri folosite}}</translation>
-<translation id="8463851957836045671">Site-ul este rapid</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Mărește</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Site-ul se deschide și reacționează rapid în majoritatea cazurilor.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blochează cookie-urile pentru un anumit site.</translation>
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>

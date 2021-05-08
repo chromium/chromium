@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">Με την απενεργοποίηση αυτής της λειτουργίας, μπορείτε να συνδεθείτε σε ιστοτόπους Google, όπως το Gmail, χωρίς να συνδεθείτε στο Chromium</translation>
 <translation id="1929939181775079593">Το Chromium δεν ανταποκρίνεται. Να γίνει επανεκκίνηση τώρα;</translation>
 <translation id="1966382378801805537">Το Chromium δεν μπορεί να καθορίσει ή να ορίσει το προεπιλεγμένο πρόγραμμα περιήγησης</translation>
+<translation id="1981611865800294956">Επανεκκίνηση για ενημέρωση του &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Με αυτήν την ενέργεια θα διαγραφεί 1 στοιχείο από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chromium ως <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Για να ελέγξετε αν οι άλλοι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chromium<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Προσαρμογή του Chromium</translation>
@@ -119,6 +120,7 @@
 <translation id="4788777615168560705">Το Chromium δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας. Δοκιμάστε ξανά μετά από 24 ώρες ή <ph name="BEGIN_LINK" />ελέγξτε τους κωδικούς πρόσβασης στον Λογαριασμό σας Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Αυτό χρησιμοποιεί τον ίδιο ορθογραφικό έλεγχο που χρησιμοποιείται στην Αναζήτηση Google. Το κείμενο που πληκτρολογείτε στο πρόγραμμα περιήγησης αποστέλλεται στην Google. Μπορείτε ανά πάσα στιγμή να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις.</translation>
 <translation id="4888717733111232871">Εισερχόμενος κανόνας για το Chromium για να επιτρέπεται η κυκλοφορία του mDNS.</translation>
+<translation id="4893347770495441059">Επανεκκίνηση για ενημέρωση του &amp;Chromium</translation>
 <translation id="4943838377383847465">Το Chromium εκτελείται στο παρασκήνιο.</translation>
 <translation id="4987820182225656817">Οι επισκέπτες μπορούν να χρησιμοποιούν το Chromium χωρίς να αφήνουν κανένα ίχνος.</translation>
 <translation id="4994636714258228724">Προσθήκη του εαυτού σας στο Chromium</translation>
@@ -274,6 +276,7 @@
 <translation id="91086099826398415">Άνοιγμα Συνδέσμου σε Νέα καρτέ&amp;λα Chromium</translation>
 <translation id="911206726377975832">Να γίνει διαγραφή και των δεδομένων περιήγησης;</translation>
 <translation id="9158494823179993217">Ο διαχειριστής συστήματος έχει διαμορφώσει το Chromium έτσι ώστε να ανοίγει άλλο πρόγραμμα περιήγησης για την πρόσβαση στη διεύθυνση <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9185526690718004400">Επανεκκίνηση για ενημέρωση του &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Σύστημα Chromium OS</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>

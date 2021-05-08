@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar permissão do dispositivo</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie em uso}one{# cookie em uso}other{# cookies em uso}}</translation>
-<translation id="8463851957836045671">O site é rápido</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="851751545965956758">Impedir que sites se conectem a dispositivos</translation>
 <translation id="8525306231823319788">Tela cheia</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">A NFC está desativada neste dispositivo. Ative-a nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Este site abre e responde rapidamente para a maioria das pessoas</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloqueie cookies de um site específico.</translation>
 <translation id="8959122750345127698">A Navegação GPS está inacessível: <ph name="URL" /></translation>

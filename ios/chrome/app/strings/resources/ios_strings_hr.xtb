@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Označi sve kao pročitano</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1690731385917361335">Nema stavki</translation>
-<translation id="1691390244342876227">Chrome nije uspio potvrditi vaše podatke</translation>
 <translation id="1692118695553449118">Sinkronizacija je uključena</translation>
 <translation id="1700629756560807968">Broj odabranih oznaka: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
@@ -430,6 +429,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5508435575041083207">Odjavite se i izbrišite podatke s ovog uređaja</translation>
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Stvaranje zaporke</translation>
+<translation id="5532698011560297095">Ne mogu se prijaviti</translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
 Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaji moraju upotrebljavati isti iCloud račun.</translation>
@@ -635,7 +635,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
 <translation id="734758817008927353">Opcije spremanja kartice</translation>
 <translation id="7348502496356775519">Označi</translation>
-<translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353432112255316844">Potvrđivanje identiteta</translation>
 <translation id="7383797227493018512">Popis za čitanje</translation>
 <translation id="7398893703713203428">Izradi vezu</translation>
@@ -764,7 +763,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8680787084697685621">Pojedinosti prijave na račun su zastarjele.</translation>
 <translation id="8706588385081740091">Zaporke</translation>
 <translation id="8717864919010420084">Kopiraj vezu</translation>
-<translation id="8721206573513844242">Nismo uspjeli potvrditi vaše vjerodajnice</translation>
 <translation id="8721297211384281569">Izbornik alata</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>

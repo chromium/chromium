@@ -21,6 +21,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
 <translation id="1119348796022671382">Temalı rəng rejimi interfeysi azca rəngləndirmək üçün divar kağızından çıxarılmış rəngləri istifadə edir.</translation>
 <translation id="112308213915226829">Rəfi avtomatik gizlədin</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> üçün məlumat dialoqunu açın</translation>
 <translation id="1153356358378277386">Birləşmiş cihazlar</translation>
 <translation id="1165712434476988950">Güncəlləməni tətbiq etmək üçün cihazı yenidən başlatmaq tələb olunur.</translation>
 <translation id="1175572348579024023">Sürüşdürün</translation>
@@ -437,7 +438,9 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4577274620589681794">Vaxt bitdi · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Önbaxışları göstərin</translation>
 <translation id="4578906031062871102">Ayarlar menyusu açılıb</translation>
+<translation id="4581047786858252841">Mikrofon aktivdir</translation>
 <translation id="4585337515783392668">Naməlum alıcının yayımını dayandırın</translation>
+<translation id="4587299710837179226">Mikrofon deaktivdir</translation>
 <translation id="4596144739579517758">Tünd tema deaktivdir</translation>
 <translation id="4611292653554630842">Daxil olun</translation>
 <translation id="4623167406982293031">Hesabı doğrulayın</translation>
@@ -569,6 +572,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
 <translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5790085346892983794">Uğur</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> şəbəkəsini aktiv etmək üçün toxunun</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Qoşulmuş cihazların ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>

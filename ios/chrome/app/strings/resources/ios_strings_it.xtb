@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1690731385917361335">Nessun elemento</translation>
-<translation id="1691390244342876227">Impossibile verificare le tue informazioni in Chrome</translation>
 <translation id="1692118695553449118">La sincronizzazione è attiva</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
@@ -430,6 +429,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5508435575041083207">Esci e cancella i dati da questo dispositivo</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h fa</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
+<translation id="5532698011560297095">Impossibile eseguire l'accesso</translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
 La funzione Handoff deve anche essere attivata nella sezione Generali di Impostazioni e sui dispositivi deve essere in uso lo stesso account iCloud.</translation>
@@ -635,7 +635,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">Opzioni per salvare la carta</translation>
 <translation id="7348502496356775519">Aggiungi ai preferiti</translation>
-<translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353432112255316844">Verifica la tua identità</translation>
 <translation id="7383797227493018512">Elenco di lettura</translation>
 <translation id="7398893703713203428">Crea link</translation>
@@ -764,7 +763,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8706588385081740091">Password</translation>
 <translation id="8717864919010420084">Copia link</translation>
-<translation id="8721206573513844242">Spiacenti, impossibile convalidare le credenziali</translation>
 <translation id="8721297211384281569">Menu Strumenti</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>

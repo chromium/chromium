@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> колдонмосуна жайгашкан жериңизге кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Жөндөөлөрүнөн<ph name="END_LINK" /> жайгашкан жер кызматын күйгүзүңүз.</translation>
 <translation id="8447861592752582886">Түзмөккө болгон уруксатты жоюу</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie файлы колдонулууда}other{# cookie файлы колдонулууда}}</translation>
-<translation id="8463851957836045671">Сайт тез жүктөлөт</translation>
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="851751545965956758">Сайттардын түзмөктөргө туташуусун бөгөттөө</translation>
 <translation id="8525306231823319788">Толук экран</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Чоңойтуу</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC бул түзмөктө өчүрүлгөн. <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, аны күйгүзүңүз.</translation>
-<translation id="8929372349074745002">Адатта бул сайт тез ачылат</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Белгилүү бир сайттын cookie файлдарын бөгөттөө.</translation>
 <translation id="8959122750345127698">Чабыттоо жеткиликсиз: <ph name="URL" /></translation>

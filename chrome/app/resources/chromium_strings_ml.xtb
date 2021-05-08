@@ -24,6 +24,7 @@
 <translation id="1911763535808217981">ഇത് ഓഫാക്കുന്നതിലൂടെ, Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യാതെ തന്നെ Gmail പോലുള്ള Google സൈറ്റുകളിൽ നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനാവും</translation>
 <translation id="1929939181775079593">Chromium പ്രതികരിക്കുന്നില്ല. ഇപ്പോൾ വീണ്ടും സമാരംഭിക്കണോ?</translation>
 <translation id="1966382378801805537">Chromium-ത്തിന് ഡിഫോൾട്ട് ബ്രൗസർ നിർണ്ണയിക്കാനോ സജ്ജമാക്കാനോ കഴിയില്ല</translation>
+<translation id="1981611865800294956">&amp;Chromium OS അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="2008474315282236005">ഇത് ഈ ഉപകരണത്തിൽ നിന്നും ഒരിനം ഇല്ലാതാക്കും. പിന്നീട് നിങ്ങളുടെ വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2020032459870799438">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ മറ്റ് പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chromium-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromium ഇഷ്ടാനുസൃതമാക്കുക</translation>
@@ -121,6 +122,7 @@
 <translation id="4788777615168560705">Chromium-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. 24 മണിക്കൂറിന് ശേഷം വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ പരിശോധിക്കുക<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്പെൽ ചെക്കർ ഇത് ഉപയോഗിക്കുന്നു. ബ്രൗസറിൽ നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു. ക്രമീകരണത്തിൽ എപ്പോഴും ഈ രീതി മാറ്റാനാകും.</translation>
 <translation id="4888717733111232871">mDNS ട്രാഫിക്ക് അനുവദിക്കാൻ Chromium-നുള്ള ഇൻബൗണ്ട് നയം.</translation>
+<translation id="4893347770495441059">&amp;Chromium അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="4943838377383847465">Chromium പശ്ചാത്തല മോഡിലാണ്.</translation>
 <translation id="4987820182225656817">അതിഥികൾക്ക് ഒന്നും ശേഷിപ്പിക്കാതെ തന്നെ Chromium ഉപയോഗിക്കാനാകും.</translation>
 <translation id="4994636714258228724">Chromium-ലേക്ക് സ്വയം ചേരുക</translation>
@@ -276,6 +278,7 @@
 <translation id="91086099826398415">പുതിയ Chromium &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="911206726377975832">നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റയും ഇതോടൊപ്പം ഇല്ലാതാക്കണോ?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ആക്‌സസ് ചെയ്യാൻ ഇതര ബ്രൗസർ തുറക്കുന്നതിനായി നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിൻ Chromium കോൺഫിഗർ ചെയ്‌തു.</translation>
+<translation id="9185526690718004400">&amp;Chromium അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS സിസ്‌റ്റം</translation>
 <translation id="93478295209880648">ഇനിയങ്ങോട്ട് Windows XP-യും Windows Vista-യും പിന്തുണയ്‌ക്കാത്തതിനാൽ Chromium ശരിയായി പ്രവർത്തിച്ചേക്കില്ല</translation>

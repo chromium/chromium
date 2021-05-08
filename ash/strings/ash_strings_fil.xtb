@@ -21,6 +21,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1104621072296271835">Gagana nang mas maayos ang iyong mga device kung magkakasama</translation>
 <translation id="1119348796022671382">Gumagamit ang themed color mode ng mga kulay na na-extract mula sa iyong wallpaper para kulayan nang kaunti ang interface.</translation>
 <translation id="112308213915226829">Awtomatikong itago ang shelf</translation>
+<translation id="1148499908455722006">Buksan ang dialog ng impormasyon para sa <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
 <translation id="1165712434476988950">Kailangang mag-restart ng device para mailapat ang update.</translation>
 <translation id="1175572348579024023">Mag-scroll</translation>
@@ -437,7 +438,9 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4577274620589681794">Oras na · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Magpakita ng mga preview</translation>
 <translation id="4578906031062871102">Binuksan ang menu ng Mga Setting</translation>
+<translation id="4581047786858252841">Naka-on ang mikropono</translation>
 <translation id="4585337515783392668">Ihinto ang pag-cast sa isang hindi pa natutukoy na tagatanggap</translation>
+<translation id="4587299710837179226">Naka-off ang mikropono</translation>
 <translation id="4596144739579517758">Naka-off ang Madilim na tema</translation>
 <translation id="4611292653554630842">Mag-log in</translation>
 <translation id="4623167406982293031">I-verify ang account</translation>
@@ -569,6 +572,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5777841717266010279">Itigil ang screen sharing?</translation>
 <translation id="5779721926447984944">Mga naka-pin na file</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
+<translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>

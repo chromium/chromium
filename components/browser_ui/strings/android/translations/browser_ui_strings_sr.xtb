@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Да бисте дозволили да <ph name="APP_NAME" /> приступа локацији, укључите локацију и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Опозови дозволу за уређај</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Користи се 1 колачић}one{Користи се # колачић}few{Користе се # колачића}other{Користи се # колачића}}</translation>
-<translation id="8463851957836045671">Сајт је брз</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Увећавање</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Овај сајт се брзо отвара и брзо реагује за већину људи</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блокирајте колачиће за одређени сајт.</translation>
 <translation id="8959122750345127698">Навигација је недоступна: <ph name="URL" /></translation>

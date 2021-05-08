@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> uygulamasının konumunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da konumu açın.</translation>
 <translation id="8447861592752582886">Cihaz iznini iptal et</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 çerez kullanımda}other{# çerez kullanımda}}</translation>
-<translation id="8463851957836045671">Site hızlı yükleniyor</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC bu cihazda kapalı. Bu özelliği <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda açın.</translation>
-<translation id="8929372349074745002">Bu site, çoğu kullanıcı için hızlı açılıp yanıt veriyor</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Belirli bir site için çerezleri engelleyin.</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>

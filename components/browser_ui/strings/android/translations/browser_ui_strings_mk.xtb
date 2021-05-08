@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата локација, вклучете ја дозволата за локацијата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Отповикај ја дозволата за пристап до уредот</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Се користи 1 колаче}one{Се користи # колаче}other{Се користат # колачиња}}</translation>
-<translation id="8463851957836045671">Сајтот е брз</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC е исклучена за уредов. Вклучете ја во <ph name="BEGIN_LINK" />„Поставки за Android“<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Сајтов се отвора и реагира брзо за повеќето луѓе</translation>
 <translation id="8941729603749328384">www.primer.com</translation>
 <translation id="8958424370300090006">Блокирајте колачиња за одреден сајт.</translation>
 <translation id="8959122750345127698">Навигацијата е недостапна: <ph name="URL" /></translation>

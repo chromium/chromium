@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Om <ph name="APP_NAME" /> toegang tot jou ligging te gee, moet jy ligging ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 webkoekie word tans gebruik}other{# webkoekies word tans gebruik}}</translation>
-<translation id="8463851957836045671">Werf is vinnig</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="851751545965956758">Keer dat werwe aan toestelle koppel</translation>
 <translation id="8525306231823319788">Volskerm</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Zoem in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC is af vir hierdie toestel. Skakel dit aan in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Hierdie werf maak vinnig oop en reageer vinnig vir die meeste mense</translation>
 <translation id="8941729603749328384">www.voorbeeld.com</translation>
 <translation id="8958424370300090006">Blokkeer webkoekies vir 'n spesifieke werf.</translation>
 <translation id="8959122750345127698">Navigasie is onbereikbaar: <ph name="URL" /></translation>

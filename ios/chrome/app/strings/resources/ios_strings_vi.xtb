@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Đánh dấu tất cả là đã đọc</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
 <translation id="1690731385917361335">Không có mục nào</translation>
-<translation id="1691390244342876227">Chrome không thể xác minh thông tin của bạn</translation>
 <translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1700629756560807968">Đã chọn <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang</translation>
 <translation id="1740468249224277719">Nhấn đúp để cài đặt.</translation>
@@ -430,6 +429,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5508435575041083207">Đăng xuất và xóa dữ liệu khỏi thiết bị này</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> giờ trước</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
+<translation id="5532698011560297095">Không thể Đăng nhập</translation>
 <translation id="5548760955356983418">Tính năng tiếp nối cho phép bạn bắt đầu duyệt web trên thiết bị này và sau đó dễ dàng tiếp tục trên máy Mac của mình. Trang web hiện đang mở sẽ xuất hiện trong thanh Dock trên máy Mac của bạn.
 
 Đồng thời, bạn phải bật tính năng tiếp nối trong phần Chung của cài đặt và thiết bị của bạn phải sử dụng cùng một tài khoản iCloud.</translation>
@@ -635,7 +635,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7346909386216857016">Ok</translation>
 <translation id="734758817008927353">Các tùy chọn lưu thẻ</translation>
 <translation id="7348502496356775519">Đánh dấu trang</translation>
-<translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7353432112255316844">Xác minh danh tính của bạn</translation>
 <translation id="7383797227493018512">Danh sách đọc</translation>
 <translation id="7398893703713203428">Tạo đường liên kết</translation>
@@ -764,7 +763,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
 <translation id="8706588385081740091">Mật khẩu</translation>
 <translation id="8717864919010420084">Sao chép đường liên kết</translation>
-<translation id="8721206573513844242">Rất tiếc, chúng tôi không thể xác thực thông tin đăng nhập của bạn</translation>
 <translation id="8721297211384281569">Menu công cụ</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>

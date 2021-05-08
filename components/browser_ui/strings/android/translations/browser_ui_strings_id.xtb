@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Untuk mengizinkan <ph name="APP_NAME" /> mengakses lokasi Anda, aktifkan juga lokasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cabut izin perangkat</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie sedang digunakan}other{# cookie sedang digunakan}}</translation>
-<translation id="8463851957836045671">Situs ini cepat</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="851751545965956758">Blokir situs agar tidak terhubung ke perangkat</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Perbesar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC dinonaktifkan di perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Situs ini membuka dan merespons dengan cepat bagi sebagian besar orang</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokir cookie untuk situs tertentu.</translation>
 <translation id="8959122750345127698">Navigasi tidak dapat dijangkau: <ph name="URL" /></translation>

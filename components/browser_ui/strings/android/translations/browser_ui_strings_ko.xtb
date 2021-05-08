@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" />에서 위치 정보에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 위치를 사용 설정하세요.</translation>
 <translation id="8447861592752582886">기기 액세스 권한 취소</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{쿠키 1개 사용 중}other{쿠키 #개 사용 중}}</translation>
-<translation id="8463851957836045671">사이트 속도 빠름</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">확대</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">기기에서 NFC가 사용 중지되어 있습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 NFC를 사용 설정하세요.</translation>
-<translation id="8929372349074745002">이 사이트는 대부분의 사용자를 대상으로 빠르게 열리고 응답합니다.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">특정 사이트의 쿠키를 차단합니다.</translation>
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>

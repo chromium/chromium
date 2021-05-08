@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="1690731385917361335">Закладок нет</translation>
-<translation id="1691390244342876227">Браузеру Chrome не удалось проверить ваши данные.</translation>
 <translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">Выйти из аккаунта и удалить данные с этого устройства</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
+<translation id="5532698011560297095">Не удается войти</translation>
 <translation id="5548760955356983418">Функция Handoff позволит начать просмотр веб-сайта на одном устройстве и продолжить на другом. Открытый сайт появится на панели Dock вашего компьютера Mac.
 
 Функцию Handoff нужно включить не только в Chrome, но и в настройках устройства (см. раздел "Общие"). Все ваши устройства должны синхронизироваться с одним и тем же аккаунтом iCloud.</translation>
@@ -635,7 +635,6 @@
 <translation id="7346909386216857016">ОК</translation>
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7348502496356775519">Закладка</translation>
-<translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
 <translation id="7383797227493018512">Список для чтения</translation>
 <translation id="7398893703713203428">Создать ссылку</translation>
@@ -764,7 +763,6 @@
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копировать ссылку</translation>
-<translation id="8721206573513844242">Не удалось проверить ваши учетные данные.</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>

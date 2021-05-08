@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಸ್ಥಳವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="8447861592752582886">ಸಾಧನ ಅನುಮತಿಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ಕುಕಿ ಬಳಕೆಯಲ್ಲಿದೆ}one{# ಕುಕೀಗಳು ಬಳಕೆಯಲ್ಲಿವೆ}other{# ಕುಕೀಗಳು ಬಳಕೆಯಲ್ಲಿವೆ}}</translation>
-<translation id="8463851957836045671">ಸೈಟ್ ವೇಗವಾಗಿದೆ</translation>
 <translation id="8487700953926739672">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="851751545965956758">ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸದಂತೆ, ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="8525306231823319788">ಪೂರ್ಣ ಪರದೆ</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ಈ ಸಾಧನದಲ್ಲಿ NFC ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ತೆರೆಯಿರಿ.</translation>
-<translation id="8929372349074745002">ಈ ಸೈಟ್ ಸಾಕಷ್ಟು ಜನರಿಗೆ ತ್ವರಿತವಾಗಿ ತೆರೆಯುತ್ತದೆ ಮತ್ತು ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತದೆ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ ಒಂದಕ್ಕೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="8959122750345127698">ನ್ಯಾವಿಗೇಶನ್‌ ತಲುಪಲಾಗುವುದಿಲ್ಲ: <ph name="URL" /></translation>

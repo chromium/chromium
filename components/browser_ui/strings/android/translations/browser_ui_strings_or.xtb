@@ -283,7 +283,6 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ ଲୋକେସନ୍ ଆକ୍ସେସ୍ ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ ଲୋକେସନ୍ ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="8447861592752582886">ଡିଭାଇସ୍ ଅନୁମତି କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}other{#ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}}</translation>
-<translation id="8463851957836045671">ସାଇଟ୍ ଶୀଘ୍ର ଲୋଡ୍ ହୁଏ</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="851751545965956758">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ ହେବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ଏହି ଡିଭାଇସ୍ ପାଇଁ NFC ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="8929372349074745002">ଏହି ସାଇଟ୍ ଅଧିକାଂଶ ଲୋକଙ୍କ ପାଇଁ ଶୀଘ୍ର ଖୋଲିଥାଏ ଏବଂ ଶୀଘ୍ର ବ୍ୟବହାର ପାଇଁ ପ୍ରସ୍ତୁତ ଥାଏ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅବରୋଧ କରନ୍ତୁ।</translation>
 <translation id="8959122750345127698">ନାଭିଗେସନ୍‌ରେ ପହଞ୍ଚି ହେଉନାହିଁ: <ph name="URL" /></translation>

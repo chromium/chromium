@@ -21,6 +21,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
 <translation id="1119348796022671382">Gaikako kolore moduak horma-paperetik ateratako koloreak erabiltzen ditu interfazea pixka bat koloreztatzeko.</translation>
 <translation id="112308213915226829">Ezkutatu apala automatikoki</translation>
+<translation id="1148499908455722006">Ireki <ph name="USER_NAME" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="1153356358378277386">Parekatutako gailuak</translation>
 <translation id="1165712434476988950">Gailua berrabiarazi egin behar da eguneratzea aplikatzeko.</translation>
 <translation id="1175572348579024023">Egin gora edo behera</translation>
@@ -438,7 +439,9 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4577274620589681794">Agortu egin da denbora · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Erakutsi aurrebistak</translation>
 <translation id="4578906031062871102">Ezarpenen menua ireki da</translation>
+<translation id="4581047786858252841">Aktibatu da mikrofonoa</translation>
 <translation id="4585337515783392668">Utzi hargailu ezezagun batera igortzeari</translation>
+<translation id="4587299710837179226">Desaktibatuta da mikrofonoa</translation>
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
 <translation id="4611292653554630842">Hasi saioa</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
@@ -570,6 +573,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5777841717266010279">Pantaila-partekatzea gelditu nahi duzu?</translation>
 <translation id="5779721926447984944">Ainguratutako fitxategiak</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
+<translation id="5805809050170488595">Sakatu hau <ph name="NETWORK_NAME" /> aktibatzeko</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Konektatutako gailuen ezarpenak</translation>
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>

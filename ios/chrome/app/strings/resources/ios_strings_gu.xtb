@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
+<translation id="1282311502488501110">સાઇન ઇન કરશો નહીં</translation>
 <translation id="1283524564873030414">છેલ્લા 24 કલાક</translation>
 <translation id="1285320974508926690">આ સાઇટનું ક્યારેય ભાષાંતર કરશો નહીં</translation>
 <translation id="1321993286294231467">છબી સાચવવામાં ભૂલ.</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="1690731385917361335">કોઈ આઇટમ નથી</translation>
-<translation id="1691390244342876227">Chrome તમારી માહિતી ચકાસી શક્યું નથી</translation>
 <translation id="1692118695553449118">સમન્વયન ચાલુ છે</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">history.google.com ખોલો</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> આઇટમ ખસેડી</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
+<translation id="214201757571129614">સાઇન ઇન કરો…</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2198757192731523470">શોધ, જાહેરાતો અને અન્ય Google સેવાઓને મનગમતી બનાવવા માટે Google, તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">પેજનો અનુવાદ કરો</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="4636930964841734540">માહિતી</translation>
+<translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> તરીકે આગળ વધો</translation>
 <translation id="4659126640776004816">જ્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો છો, ત્યારે આ સુવિધા ચાલુ કરવામાં આવે છે.</translation>
 <translation id="4659667755519643272">ટેબ સ્વિચરમાં દાખલ થાઓ</translation>
 <translation id="46614316059270592">પાસવર્ડ સાચવો</translation>
@@ -427,6 +429,7 @@
 <translation id="5508435575041083207">સાઇન આઉટ કરો અને આ ડિવાઇસમાંથી ડેટા સાફ કરો</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
 <translation id="5525269841082836315">પાસફ્રેઝ બનાવો</translation>
+<translation id="5532698011560297095">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
 
 સેટિંગના સામાન્ય વિભાગમાં હેન્ડઓફ ચાલુ હોવું પણ જરૂરી છે અને તમારા ડિવાઇસ, સમાન iCloud એકાઉન્ટનો ઉપયોગ કરતાં હોવા જરૂરી છે.</translation>
@@ -632,7 +635,6 @@
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
 <translation id="734758817008927353">કાર્ડ સાચવવા માટેના વિકલ્પો</translation>
 <translation id="7348502496356775519">બુકમાર્ક કરો</translation>
-<translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7353432112255316844">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="7383797227493018512">વાંચન સૂચિ</translation>
 <translation id="7398893703713203428">લિંક બનાવો</translation>
@@ -761,7 +763,6 @@
 <translation id="8680787084697685621">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે.</translation>
 <translation id="8706588385081740091">પાસવર્ડ</translation>
 <translation id="8717864919010420084">લિંકની કૉપિ કરો</translation>
-<translation id="8721206573513844242">માફ કરજો, અમે તમારી લૉગ ઇન વિગતો માન્ય કરી શક્યા નથી</translation>
 <translation id="8721297211384281569">સાધન મેનૂ</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>

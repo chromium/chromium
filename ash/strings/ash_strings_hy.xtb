@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
 <translation id="1119348796022671382">Թեմատիկ գույների ռեժիմում միջերեսը թեթև գունավորվում է ձեր պաստառի գույներով։</translation>
 <translation id="112308213915226829">Ինքնաթաքցնել դարակը</translation>
+<translation id="1148499908455722006">Բացել <ph name="USER_NAME" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
 <translation id="1165712434476988950">Թարմացումը կիրառելու համար անհրաժեշտ է վերագործարկել սարքը։</translation>
 <translation id="1175572348579024023">Ոլորել</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">Ժամանակը սպառվել է · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Միացնել նախադիտումը</translation>
 <translation id="4578906031062871102">Կարգավորումների ընտրացանկը բացված է</translation>
+<translation id="4581047786858252841">Խոսափողը միացված է</translation>
 <translation id="4585337515783392668">Դադարեցնել հեռարձակումը անհայտ սարքին</translation>
+<translation id="4587299710837179226">Խոսափողն անջատված է</translation>
 <translation id="4596144739579517758">Մուգ թեման անջատված է</translation>
 <translation id="4611292653554630842">Մուտք</translation>
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
 <translation id="5779721926447984944">Ամրացված ֆայլեր</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
+<translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>

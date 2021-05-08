@@ -654,11 +654,9 @@
 <translation id="1688935057616748272">문자를 입력하세요</translation>
 <translation id="168991973552362966">근처 프린터 추가</translation>
 <translation id="1689945336726856614">&amp;URL 복사</translation>
-<translation id="1690248886740053041">모바일 네트워크에 연결할 수 없습니다. 기술 지원이 필요하면 이동통신사에 문의하세요.</translation>
 <translation id="1692115862433274081">다른 계정 사용</translation>
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1692210323591458290">진한 보라색</translation>
-<translation id="169279809881363536">발견된 프로필이 없습니다. 새 네트워크를 설정하려면 기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697150536837697295">예술</translation>
 <translation id="1697686431566694143">파일 수정</translation>
@@ -1239,6 +1237,7 @@
 <translation id="2299941608784654630">debugd로 수집된 모든 로그 파일을 별도의 보관 파일로 포함합니다.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> 맞춤설정 및 제어</translation>
+<translation id="2300578660547687840">검색 키워드 단축키</translation>
 <translation id="2301382460326681002">확장 프로그램 루트 디렉터리가 잘못되었습니다.</translation>
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
 <translation id="2303282178633578561">SIM 카드 잠금</translation>
@@ -3093,6 +3092,7 @@
 <translation id="4364830672918311045">알림 표시</translation>
 <translation id="4366138410738374926">인쇄 시작됨</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
+<translation id="4373966964907728675">바탕화면 전송</translation>
 <translation id="4374831787438678295">Linux 설치 프로그램</translation>
 <translation id="4375035964737468845">다운로드한 파일 열기</translation>
 <translation id="4376226992615520204">위치 사용 중지됨</translation>
@@ -3134,7 +3134,6 @@
 <translation id="4410545552906060960">기기를 잠금 해제하려면 비밀번호 대신 번호(PIN)를 사용하세요. 나중에 PIN을 설정하려면 설정으로 이동하세요.</translation>
 <translation id="4411578466613447185">코드 서명자</translation>
 <translation id="4412698727486357573">고객센터</translation>
-<translation id="4413088271097062326">어떤 애플리케이션을 사용하시겠습니까?</translation>
 <translation id="44141919652824029">'<ph name="APP_NAME" />'이(가) 연결된 USB 기기의 목록을 읽도록 허용하시겠습니까?</translation>
 <translation id="4414232939543644979">새 시크릿 창(&amp;I)</translation>
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
@@ -3347,6 +3346,7 @@
 <translation id="4635398712689569051">게스트 사용자는 <ph name="PAGE_NAME" />을(를) 사용할 수 없음</translation>
 <translation id="4635427303840967665">프로필에 연결하는 중입니다. 최대 30초가 걸릴 수 있습니다.</translation>
 <translation id="4635444580397524003">Linux 백업이 복원되었습니다.</translation>
+<translation id="4636682061478263818">Drive 파일</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4637083375689622795">추가 작업, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{텍스트}other{텍스트 #개}}</translation>
@@ -5896,6 +5896,7 @@
 <translation id="7531779363494549572">설정 &gt; 앱 및 알림 &gt; 알림으로 이동합니다.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 앱이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7537451260744431038">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 없습니다.</translation>
+<translation id="753769905878158714">검색하려는 웹사이트에 관한 검색어를 주소 표시줄에 입력하세요. 그런 다음 단축키를 사용해 계속합니다.</translation>
 <translation id="7540972813190816353">업데이트를 확인하는 동안 오류가 발생했습니다. <ph name="ERROR" /></translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> 앱으로 <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">계정에 연결된 다른 기기와 동기화되어 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -6344,6 +6345,7 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />을(를) 더 이상 사용할 수 없습니다.</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8005600846065423578"><ph name="HOST" />에서 클립보드를 볼 수 있도록 항상 허용</translation>
+<translation id="8006630792898017994">스페이스바 또는 Tab</translation>
 <translation id="8008356846765065031">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인하세요.</translation>
 <translation id="8009225694047762179">비밀번호 관리</translation>
 <translation id="8012647001091218357">현재 부모님께 연락할 수 없습니다. 나중에 다시 시도해 주세요.</translation>

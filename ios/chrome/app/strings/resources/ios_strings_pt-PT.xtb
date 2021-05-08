@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Marcar tudo como lido</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1690731385917361335">Sem itens</translation>
-<translation id="1691390244342876227">O Chrome não conseguiu validar as suas informações</translation>
 <translation id="1692118695553449118">A sincronização está ativada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
@@ -430,6 +429,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5508435575041083207">Terminar sessão e limpar dados deste dispositivo</translation>
 <translation id="5513681519188741830">Há <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Criar Frase de Acesso</translation>
+<translation id="5532698011560297095">Não é possível iniciar sessão</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
 A Entrega também tem de estar ativada na secção Geral das Definições e os seus dispositivos têm de utilizar a mesma conta iCloud.</translation>
@@ -635,7 +635,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7346909386216857016">OK, compreendi</translation>
 <translation id="734758817008927353">Opções para guardar o cartão</translation>
 <translation id="7348502496356775519">Adicionar aos marcadores</translation>
-<translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353432112255316844">Validar identidade</translation>
 <translation id="7383797227493018512">Lista de leitura</translation>
 <translation id="7398893703713203428">Criar link</translation>
@@ -764,7 +763,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
 <translation id="8706588385081740091">Palavras-passe</translation>
 <translation id="8717864919010420084">Copiar link</translation>
-<translation id="8721206573513844242">Lamentamos, mas não foi possível validar as suas credenciais</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>

@@ -180,6 +180,7 @@
 <translation id="2216790501338699346">URL du lien : <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Déplacer d'un caractère vers l'arrière</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
+<translation id="2243633977138166243">Pour passer d'un menu à l'autre, appuyez sur la flèche vers la gauche ou vers la droite, puis sur Entrée pour activer l'élément en surbrillance</translation>
 <translation id="224426591676115802">Aucune voix n'est proposée pour cette langue : <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Arrêt du mode Apprentissage</translation>
 <translation id="225732394367814946">Augmenter le débit de la parole</translation>
@@ -240,7 +241,7 @@
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Fermer le tutoriel de ChromeVox</translation>
 <translation id="2697408785920771974">saisie semi-automatique alignement</translation>
-<translation id="2697786971245905543">Candidat pour conversion de texte</translation>
+<translation id="2697786971245905543">Candidat pour la conversion de texte</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouvrante}one{# parenthèse ouvrante}other{# parenthèses ouvrantes}}</translation>
 <translation id="270523456882008230">Astuce : Touchez deux fois l'écran avec un doigt pour activer l'élément actuel.</translation>
 <translation id="2705875883745373140">Non appuyé</translation>

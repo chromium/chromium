@@ -356,17 +356,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Wenn die Richtlinie nicht konfiguriert ist, versucht <ph name="PRODUCT_NAME" /> zu ermitteln, ob sich ein Server im Intranet befindet. Es reagiert nur dann auf IWA-Anfragen. Wenn der Server sich dagegen im Internet befindet, werden dessen IWA-Anfragen von <ph name="PRODUCT_NAME" /> ignoriert.
 
       Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
-<translation id="1491015714523410492">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
-
-      Wenn diese Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
-
-      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
-
-      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
-
-      Diese Richtlinie betrifft Nutzer, die sich über SAML authentifizieren.
-
-      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
 <translation id="150857982247452081">Ermöglicht das Erstellen einer Liste mit Protokollen und für jedes Protokoll eine verknüpfte Liste mit zugelassenen Quellmustern, die eine externe App starten können, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen sollte beim Aufführen des Protokolls nicht mit angegeben werden. Geben Sie also beispielsweise „skype“ ein, statt „skype:“ oder „skype://“.
 
@@ -2310,6 +2299,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät nicht aktiviert.</translation>
 <translation id="3973371701361892765">Ablage nie automatisch ausblenden</translation>
+<translation id="3977304360459208438">Standardeinstellung für Cipher Suites von 3DES in TLS verwenden</translation>
 <translation id="3979738908158213640">URLs, die während der SAML-Authentifizierung Zugriff zur Durchführung der Geräteattestierung erhalten</translation>
 <translation id="3984028218719007910">Legt fest, ob lokale Kontodaten nach der Abmeldung in <ph name="PRODUCT_OS_NAME" /> gespeichert werden. Bei Einstellung auf "true" werden Konten nicht dauerhaft in <ph name="PRODUCT_OS_NAME" /> gespeichert und alle Daten der Nutzersitzung werden nach der Abmeldung verworfen. Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, können (verschlüsselte) lokale Nutzerdaten auf dem Gerät verbleiben.</translation>
 <translation id="398884292557092447">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Vorschläge zum automatischen Ausfüllen für Kreditkarten in der UI steuern.
@@ -2800,6 +2790,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist "Mono-Audio" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
 <translation id="4770334626033858263">Konfigurationseinstellungen, die bestimmen, wie der Eltern-Zugangscode generiert und bestätigt wird.</translation>
 <translation id="4787763197941188108">Überschreibt die standardmäßige Druckseitengröße.
 
@@ -2918,6 +2909,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">WebDriver erlauben, nicht kompatible Richtlinien zu überschreiben</translation>
+<translation id="4924377847308623325">Zusätzliche DNS-Abfragetypen verhindern</translation>
 <translation id="4927214690104703256">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen die <ph name="ENTERPRISE_PLATFORM_KEYS_API" />-Funktionen für die Remote-Attestierung nutzen können. Damit eine Erweiterung die API verwenden darf, muss sie in dieser Liste enthalten sein.
 
       Wenn eine Erweiterung nicht in der Liste enthalten ist oder keine Liste festgelegt wurde, schlägt der API-Aufruf fehl und ein Fehlercode wird angezeigt.</translation>
@@ -4447,6 +4439,32 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="6907778402784621686">Unsichere Inhalte auf diesen Websites blockieren</translation>
 <translation id="6908640907898649429">Konfiguriert die Standardsuchmaschine. Sie können die Standardsuchmaschine für die Nutzer auswählen oder die Standardsuche deaktivieren.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> erlauben, eine Verbindung zu Übertragungsgeräten unter allen IP-Adressen herzustellen.</translation>
+<translation id="6922498040906800267">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
+      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
+
+Jede Regel hat folgende Bestandteile:
+– Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
+      – Eine Liste von Zielen, die als URLs oder Komponenten definiert sind und für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
+      – Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Die Aufnahme von Screenshots der Quellen.
+      – Das Drucken von Quellen.
+      – Die Privatsphärefunktion, wenn eine der Quellen sichtbar ist.
+      – Die Bildschirmfreigabe, wenn eine der Quellen sichtbar ist.
+
+      Die Einschränkungsebene kann mit BLOCK, ALLOW oder REPORT festgelegt werden.
+      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen. Wenn <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> auf „true“ gesetzt ist, wird die blockierte Aktion dem Administrator gemeldet.
+      – Wenn die Einschränkungsebene auf ALLOW gesetzt ist, wird die Aktion zugelassen.
+      – Wenn die Einschränkungsebene auf REPORT und <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> auf „true“ gesetzt ist, wird die Aktion dem Administrator gemeldet.
+
+      Hinweise:
+– Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
+      – Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD lautet. Sie wirken sich jedoch nicht auf andere Einschränkungen aus.
+      – Formatieren Sie die URL-Muster entsprechend dem Format https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>
 <translation id="6923731550900440989">Hiermit wird die Funktion "Textcursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="6924223708804692571">Damit wird die Deaktivierung von Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in dieser Liste, die nicht erkannt werden, werden ignoriert.
@@ -4581,6 +4599,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7030205756530739128">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang startet. Der Wert muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
+<translation id="7030407698292813622">DNS-Abfragen für zusätzliche DNS-Eintragstypen erlauben</translation>
 <translation id="7032813174556919004">DoH (DNS over HTTPS) deaktivieren</translation>
 <translation id="7033778618670823541">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für ältere Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als "Nicht sicher" gekennzeichnet wird.
 
@@ -5009,6 +5028,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7612157962821894603">Systemweite Parameter, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden</translation>
 <translation id="7613115815080726221">Zeitraum ohne Nutzereingabe, nach dem das Gerät in den Inaktivitätsmodus wechselt, angegeben in Millisekunden.</translation>
 <translation id="7614663184588396421">Liste der deaktivierten Protokollschemas</translation>
+<translation id="7616631530432070402">Cipher Suites von 3DES werden in TLS aktiviert</translation>
 <translation id="7620869951155758729">Anhand der in dieser Richtlinie angegebenen Konfiguration werden Elternzugriffscodes generiert und überprüft.
 
       |current_config| wird immer zum Generieren von Zugriffscodes verwendet und sollte nur für die Validierung verwendet werden, wenn dies mit |future_config| nicht möglich ist.
@@ -5456,6 +5476,12 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 <translation id="8217664958939773083">Wenn die Richtlinie auf <ph name="ENABLED" /> gesetzt oder nicht konfiguriert ist, kann der monitorlose Modus verwendet werden. Ist sie auf <ph name="DISABLED" /> gesetzt ist, kann der monitorlose Modus nicht verwendet werden.</translation>
 <translation id="8220023426952118761">Gewünschte Download-Rate in kbit/s.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>
+<translation id="8234316309673661069">Achtung: 3DES wird in Version 95 vollständig aus <ph name="PRODUCT_NAME" /> entfernt (ungefähr im Oktober 2021) und diese Richtlinie funktioniert danach nicht mehr.
+
+      Wenn die Richtlinie auf „true“ gesetzt ist, werden Cipher Suites von 3DES in TLS aktiviert. Ist die Richtlinie auf „false“ festgelegt, werden die Cipher Suites von 3DES deaktiviert. Falls die Richtlinie nicht konfiguriert ist, sind Cipher Suites von 3DES aktuell standardmäßig aktiviert. Ab Version 93 von <ph name="PRODUCT_NAME" /> sind sie standardmäßig deaktiviert.
+
+      In Version 92 von <ph name="PRODUCT_NAME" /> kann diese Richtlinie verwendet werden, um eine Vorschau der Änderung zu erzeugen und diese auf mangelnde Kompatibilität zu testen. In Version 93 von <ph name="PRODUCT_NAME" /> und danach kann sie verwendet werden, um vorübergehend eine Kompatibilität mit einem veralteten Server herzustellen. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
+      </translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
 <translation id="8244171102276095471">RC4-Verschlüsselungssammlungen in TLS aktivieren</translation>
 <translation id="8244525275280476362">Maximale Abrufverzögerung nach der Außerkraftsetzung einer Richtlinie</translation>
@@ -5847,17 +5873,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist die Richtlinie nicht konfiguriert, ist sie aktiviert und kann von Nutzern nicht deaktiviert werden.</translation>
 <translation id="8789338675663014675">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Blockierte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn Sie die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchten, können Sie die Erweiterungen in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie blockiert sind.</translation>
-<translation id="8796924197496002727">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
-
-      Wenn diese Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
-
-      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
-
-      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
-
-      Diese Richtlinie betrifft Nutzer, die sich über GAIA ohne SAML authentifizieren.
-
-      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="879697755145469671">Überdeckte Fenster nicht erkennen</translation>
 <translation id="8798099450830957504">Standardeinstellung</translation>
 <translation id="8799492680917278474">Wenn diese Richtlinie konfiguriert wird, werden Verbindungen per Remotezugriff automatisch nach Ablauf der in der Richtlinie festgelegten Dauer (in Minuten) getrennt. Der Client wird nicht daran gehindert, eine neue Verbindung herzustellen, nachdem die maximale Sitzungsdauer überschritten wurde. Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten. Diese Richtlinie wirkt sich nicht auf die Remote-Unterstützung aus.
@@ -5893,6 +5908,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
        Hinweis: Diese Richtlinie gilt nicht für den Inkognitomodus. Informationen zum Hosting von Erweiterungen finden Sie unter https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8827366480126575426">Protokoll für den Protokoll-Handler.</translation>
+<translation id="8827417642396462482">Zusätzliche DNS-Abfragetypen erlauben</translation>
 <translation id="8831911834413504983">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites JavaScript ausführen dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -6174,6 +6190,13 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
 
       HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbrauchergerät oder ein Unternehmensgerät handelt: Auf verwalteten Geräten ist P2P aktiviert, auf nicht verwalteten Geräten ist P2P dagegen deaktiviert.</translation>
 <translation id="9164656078867027374">Domains festlegen, die auf <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> zugreifen dürfen</translation>
+<translation id="9166670902476893480">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> zusätzliche DNS-Eintragstypen abfragen darf, wenn der Browser unsichere DNS-Anfragen sendet. Diese Richtlinie hat keine Auswirkungen auf DNS-Abfragen, die über die Funktion „Sicheres DNS“ getätigt werden, die immer zusätzliche DNS-Typen abfragen darf.
+
+      Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können zusätzliche Typen wie <ph name="DNS_TYPE_HTTPS" /> (DNS-Typ 65) abgefragt werden, zusätzlich zu <ph name="DNS_TYPE_A" /> (DNS-Typ 1) und <ph name="DNS_TYPE_AAAA" /> (DNS-Typ 28).
+
+      Ist die Richtlinie deaktiviert, wird das DNS nur für <ph name="DNS_TYPE_A" /> (DNS-Typ 1) und/oder <ph name="DNS_TYPE_AAAA" /> (DNS-Typ 28) abgefragt.
+
+      Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
@@ -6203,6 +6226,7 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Ist diese Richtlinie deaktiviert, erlaubt <ph name="PRODUCT_NAME" /> die Neuinstallation und Aktualisierung solcher Erweiterungen nicht. Diese Richtlinie hat keine Auswirkung auf <ph name="PRODUCT_NAME" /> 78 und höher.
 
       Wenn sie nicht konfiguriert wird, ist sie in <ph name="PRODUCT_NAME" /> 73 bis 75 aktiviert und in <ph name="PRODUCT_NAME" /> 76 bis 77 deaktiviert.</translation>
+<translation id="93985900824506396">Cipher Suites von 3DES werden in TLS deaktiviert</translation>
 <translation id="940706688964479124">Liste von Dateitypen, die nach dem Download automatisch geöffnet werden sollen</translation>
 <translation id="943865157632139008">Mit dieser Richtlinie können Sie den standardmäßigen HTML-Renderer konfigurieren, wenn <ph name="PRODUCT_FRAME_NAME" /> installiert ist.
       Bei der Standardeinstellung übernimmt der Host-Browser das Rendering. Sie können dies jedoch wahlweise überschreiben und festlegen, dass HTML-Seiten standardmäßig mithilfe von <ph name="PRODUCT_FRAME_NAME" /> gerendert werden sollen.</translation>

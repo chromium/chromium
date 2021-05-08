@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Markér alle som læste</translation>
 <translation id="1689333818294560261">Kaldenavn</translation>
 <translation id="1690731385917361335">Ingen elementer</translation>
-<translation id="1691390244342876227">Chrome kunne ikke bekræfte dine oplysninger</translation>
 <translation id="1692118695553449118">Synkronisering er slået til</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valgt</translation>
 <translation id="1740468249224277719">Tryk to gange for at installere.</translation>
@@ -430,6 +429,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5508435575041083207">Log ud, og ryd data fra denne enhed</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t. siden</translation>
 <translation id="5525269841082836315">Opret adgangssætning</translation>
+<translation id="5532698011560297095">Kan ikke logge ind</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynde at se på et website på denne enhed og derefter nemt fortsætte på din Mac. Det website, du har åbent, vises i docken på din Mac.
 
 Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enheder skal benytte den samme iCloud-konto.</translation>
@@ -635,7 +635,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">Valgmuligheder for at gemme kort</translation>
 <translation id="7348502496356775519">Tilføj bogmærke</translation>
-<translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7353432112255316844">Bekræft din identitet</translation>
 <translation id="7383797227493018512">Læseliste</translation>
 <translation id="7398893703713203428">Opret link</translation>
@@ -764,7 +763,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="8706588385081740091">Adgangskoder</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
-<translation id="8721206573513844242">Vi kunne ikke bekræfte dine loginoplysninger</translation>
 <translation id="8721297211384281569">Menuen Værktøjer</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>

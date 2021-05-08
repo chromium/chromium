@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
 <translation id="8447861592752582886">撤銷裝置權限</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{目前使用 1 個 Cookie}other{目前使用 # 個 Cookie}}</translation>
-<translation id="8463851957836045671">這個網站的載入速度很快</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">這部裝置的 NFC 功能已關閉。請前往 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />開啟這項功能。</translation>
-<translation id="8929372349074745002">對大多數人而言，這個網站的開啟和回應速度都很快</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">封鎖特定網站的 Cookie。</translation>
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>

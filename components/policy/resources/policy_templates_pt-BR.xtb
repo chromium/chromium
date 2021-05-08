@@ -358,17 +358,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> tentará detectar se um servidor está na intranet. Só então ele responderá às solicitações IWA. Se um servidor for detectado como Internet, o <ph name="PRODUCT_NAME" /> ignorará as solicitações IWA dele.
 
       Observação: separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
-<translation id="1491015714523410492">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
-
-      Quando esta política é definida com um valor -1 ou é deixada sem definição, ela não exige a autenticação on-line na tela de bloqueio, permitindo que o usuário faça uma autenticação off-line até que um motivo diferente aplique a on-line.
-
-      Se a política for definida com um valor 0, a autenticação on-line sempre será exigida.
-
-      Quando é definida com qualquer outro valor, a política especifica o número de dias entre a última autenticação on-line e o momento em que o usuário precisará fazer outra autenticação on-line no próximo login pela tela de bloqueio.
-
-      Esta política afeta usuários que fizeram a autenticação com SAML.
-
-      O valor da política precisa ser especificado em dias.</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
 <translation id="150857982247452081">Permite definir uma lista de protocolos e, para cada protocolo, uma lista associada de padrões de origem com permissão para inicializar um aplicativo externo sem notificar o usuário. O separador à direita não pode ser incluído ao listar o protocolo, então liste "skype" em vez de "skype:" ou "skype://".
 
@@ -2323,6 +2312,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automaticamente a estante</translation>
+<translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3984028218719007910">Determina se o <ph name="PRODUCT_OS_NAME" /> deve manter os dados locais da conta após a saída. Se for configurada como true, nenhuma conta persistente será mantida pelo <ph name="PRODUCT_OS_NAME" /> e todos os dados da sessão do usuário serão descartados após a saída. Se esta política for configurada como false ou não for configurada, o dispositivo poderá manter os dados locais do usuário (criptografados).</translation>
 <translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
@@ -2813,6 +2803,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
 <translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso de pai/mãe.</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
 
@@ -4462,6 +4453,32 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6907778402784621686">Bloquear conteúdo não seguro nesses sites</translation>
 <translation id="6908640907898649429">Configura o provedor de pesquisa padrão. É possível especificar o provedor de pesquisa padrão que será usado ou escolhido pelo usuário para desativar a pesquisa padrão.</translation>
 <translation id="6913068954484253496">Permitir que o <ph name="PRODUCT_NAME" /> conecte-se a dispositivos de transmissão em todos os endereços IP.</translation>
+<translation id="6922498040906800267">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
+      Vazamentos de dados podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela, etc.
+
+      Cada regra consiste no seguinte:
+      - Uma lista de origens definidas como URLs. Qualquer dado nas origens será considerado confidencial, e as restrições serão aplicadas a eles.
+      - Uma lista de destinos definidos como URLs ou componentes, em que os dados confidenciais terão permissão ou não para serem compartilhados.
+      - Uma lista de restrições a serem aplicadas aos dados das origens.
+
+      As regras podem ser aplicadas para:
+      - controlar os dados na área de transferência compartilhados entre as origens e os destinos;
+      - controlar as capturas de telas de qualquer uma das origens;
+      - controlar a impressão de qualquer uma das origens;
+      - controlar a tela de privacidade quando qualquer uma das origens estiver visível.
+      - controlar o compartilhamento de tela de qualquer uma das origens.
+
+      O nível de restrição pode ser definido como BLOCK, ALLOW ou REPORT (bloquear, autorizar ou denunciar).
+      - Se a restrição for definida como BLOCK, a ação não será autorizada. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como "Verdadeira", a ação bloqueada será denunciada para o administrador.
+      - Se a restrição for definida como ALLOW, a ação será autorizada.
+      - Se a restrição for definida como REPORT e <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como "Verdadeira", a ação será denunciada para o administrador.
+
+      Observações:
+      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
+      - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD, mas eles não afetarão as outras restrições.
+      - Formate os padrões do URL de acordo com este formato (https://www.chromium.org/administrators/url-blocklist-filter-format, link em inglês).
+
+      Se a política não for definida, nenhuma restrição será aplicada.</translation>
 <translation id="6922884955650325312">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Ativar o destaque de circunflexos na tela de login</translation>
 <translation id="6924223708804692571">Força a desativação da verificação ortográfica de idiomas. Os idiomas não reconhecidos incluídos na lista serão ignorados.
@@ -5027,6 +5044,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7612157962821894603">Sinalizações amplas do sistema que devem ser aplicadas na inicialização do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">O tempo, em milissegundos, sem entrada do usuário após o qual a ação de inatividade é tomada.</translation>
 <translation id="7614663184588396421">Lista dos esquemas de protocolo desativados</translation>
+<translation id="7616631530432070402">Os pacotes de criptografia 3DES serão ativados em TLS</translation>
 <translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso dos pais.
 
       A |current_config| sempre é usada para gerar o código de acesso e precisa ser usada para a validação dele apenas quando o código não pode ser validado com |future_config|.
@@ -5475,6 +5493,12 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8217664958939773083">Se esta política for definida como <ph name="ENABLED" /> ou for deixada sem definição, o modo headless poderá ser usado. Se ela for definida como <ph name="DISABLED" />, o uso do modo headless será negado.</translation>
 <translation id="8220023426952118761">Velocidade de download desejada, em kbits/s.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
+<translation id="8234316309673661069">Aviso: o padrão 3DES será completamente removido na versão 95 do <ph name="PRODUCT_NAME" /> por volta de outubro de 2021 e esta política só funcionará até essa data.
+
+      Se esta política for definida como "verdadeira", os pacotes de criptografia 3DES em TLS serão ativados. Se for definida como "falsa", eles serão desativados. Se a política não estiver definida, os pacotes de criptografia 3DES ficarão ativados por padrão. Eles serão desativadas por padrão na versão 93 do <ph name="PRODUCT_NAME" />.
+
+      Na versão 92 do <ph name="PRODUCT_NAME" />, esta política pode ser usada para visualizar a mudança e testar incompatibilidades. Na versão 93 do <ph name="PRODUCT_NAME" /> e mais recentes, ela pode ser usada para oferecer compatibilidade temporariamente com um servidor desatualizado. Esta é uma medida temporária e o servidor precisará ser reconfigurado.
+      </translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>
 <translation id="8244171102276095471">Ativar pacotes de criptografia RC4 em TLS</translation>
 <translation id="8244525275280476362">Atraso máximo de busca após a invalidação de uma política</translation>
@@ -5870,17 +5894,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política não for definida, ela será ativada e não poderá ser desativada pelos usuários.</translation>
 <translation id="8789338675663014675">Configura políticas relacionadas a extensões. O usuário não tem permissão para instalar extensões bloqueadas, a menos que tenham sido colocadas na lista de permissões. Você também pode forçar o <ph name="PRODUCT_NAME" /> a instalar extensões automaticamente especificando-as na <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Extensões de instalação forçada são instaladas independentemente de estarem ou não na lista de bloqueio.</translation>
-<translation id="8796924197496002727">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
-
-      Quando esta política é definida com um valor -1 ou é deixada sem definição, ela não exige a autenticação on-line na tela de bloqueio, permitindo que o usuário faça uma autenticação off-line até que um motivo diferente aplique a on-line.
-
-      Se a política for definida com um valor 0, a autenticação on-line sempre será exigida.
-
-      Quando é definida com qualquer outro valor, a política especifica o número de dias entre a última autenticação on-line e o momento em que o usuário precisará fazer outra autenticação on-line no próximo login pela tela de bloqueio.
-
-      Esta política afeta usuários que fizeram a autenticação usando GAIA sem SAML.
-
-      O valor da política precisa ser especificado em dias.</translation>
 <translation id="879697755145469671">Não detectar janelas cobertas</translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8799492680917278474">Se esta política for definida, as conexões de acesso remoto serão encerradas automaticamente quando o número de minutos definido na política for excedido. Isso não impede que o cliente se reconecte após a duração máxima da sessão ter sido alcançada. Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado. Esta política não afeta situações de suporte remoto.
@@ -6231,6 +6244,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> não permitirá a instalação ou atualizações dessas extensões. A política não afeta o <ph name="PRODUCT_NAME" /> 78 ou versões mais recentes.
 
       Se a política não for definida, será considerada ativada no <ph name="PRODUCT_NAME" /> 73 a 75 e desativada no <ph name="PRODUCT_NAME" /> 76 e 77.</translation>
+<translation id="93985900824506396">Os pacotes de criptografia 3DES serão desativados em TLS</translation>
 <translation id="940706688964479124">Lista de tipos de arquivo que devem ser abertos automaticamente após o download</translation>
 <translation id="943865157632139008">Permite configurar o renderizador padrão de HTML quando o <ph name="PRODUCT_FRAME_NAME" /> estiver instalado.
 A configuração padrão é permitir que o navegador do host faça a renderização, mas você pode modificá-la, se quiser, e fazer com que o <ph name="PRODUCT_FRAME_NAME" /> renderize páginas HTML por padrão.</translation>

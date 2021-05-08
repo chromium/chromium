@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Marchează-le pe toate ca citite</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1690731385917361335">Niciun element</translation>
-<translation id="1691390244342876227">Chrome nu a putut verifica informațiile</translation>
 <translation id="1692118695553449118">Sincronizarea este activată</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
 <translation id="1740468249224277719">Atinge de două ori pentru a instala.</translation>
@@ -430,6 +429,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5508435575041083207">Deconectează-te și șterge datele de pe dispozitiv</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
+<translation id="5532698011560297095">Nu se poate conecta</translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.
 
 Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitivele trebuie să folosească același cont iCloud.</translation>
@@ -635,7 +635,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="734758817008927353">Opțiuni pentru a salva cardul</translation>
 <translation id="7348502496356775519">Marchează</translation>
-<translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7353432112255316844">Confirmă-ți identitatea</translation>
 <translation id="7383797227493018512">Listă de lectură</translation>
 <translation id="7398893703713203428">Creează un link</translation>
@@ -764,7 +763,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8680787084697685621">Datele de conectare la cont au expirat.</translation>
 <translation id="8706588385081740091">Parole</translation>
 <translation id="8717864919010420084">Copiază linkul</translation>
-<translation id="8721206573513844242">Nu ți-am putut valida datele de conectare</translation>
 <translation id="8721297211384281569">Meniul Instrumente</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>

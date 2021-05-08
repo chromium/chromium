@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Բոլորը նշել որպես կարդացված</translation>
 <translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="1690731385917361335">Տարրեր չկան</translation>
-<translation id="1691390244342876227">Chrome-ին չհաջողվեց հաստատել ձեր տեղեկությունները</translation>
 <translation id="1692118695553449118">Համաժամացումը միացված է</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
@@ -635,7 +634,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="734758817008927353">Քարտը պահելու կարգավորումներ</translation>
 <translation id="7348502496356775519">Էջանիշ</translation>
-<translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7353432112255316844">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="7383797227493018512">Ընթերցանության ցանկ</translation>
 <translation id="7398893703713203428">Ստեղծել հղում</translation>
@@ -764,7 +762,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8680787084697685621">Հաշվի մուտքի տվյալները հնացած են:</translation>
 <translation id="8706588385081740091">Գաղտնաբառեր</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
-<translation id="8721206573513844242">Չհաջողվեց հաստատել ձեր տվյալները</translation>
 <translation id="8721297211384281569">Գործիքների ընտրացանկ</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

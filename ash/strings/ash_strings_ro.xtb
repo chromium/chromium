@@ -21,6 +21,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1104621072296271835">Dispozitivele funcționează și mai bine împreună</translation>
 <translation id="1119348796022671382">Modul de culoare cu temă folosește culori extrase din imaginea de fundal pentru a colora ușor interfața.</translation>
 <translation id="112308213915226829">Ascundeți automat raftul</translation>
+<translation id="1148499908455722006">Deschide fereastra de dialog cu informații pentru <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
 <translation id="1165712434476988950">Pentru aplicarea actualizării este necesară repornirea dispozitivului.</translation>
 <translation id="1175572348579024023">Derulează</translation>
@@ -437,7 +438,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4577274620589681794">Timpul a expirat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Afișează previzualizările</translation>
 <translation id="4578906031062871102">Meniul Setări deschis</translation>
+<translation id="4581047786858252841">Microfonul este activat</translation>
 <translation id="4585337515783392668">Nu mai proiecta pe un receiver necunoscut</translation>
+<translation id="4587299710837179226">Microfonul este dezactivat</translation>
 <translation id="4596144739579517758">Tema întunecată este dezactivată</translation>
 <translation id="4611292653554630842">Conectează-te</translation>
 <translation id="4623167406982293031">Confirmă contul</translation>
@@ -569,6 +572,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
 <translation id="5779721926447984944">Fișiere fixate</translation>
 <translation id="5790085346892983794">Ai reușit</translation>
+<translation id="5805809050170488595">Dă clic pentru a activa <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Sistemul de operare Chromium</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>

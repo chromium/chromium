@@ -21,6 +21,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1104621072296271835">Enhetene fungerer enda bedre sammen</translation>
 <translation id="1119348796022671382">Temafargemodusen bruker farger som er hentet fra bakgrunnen din, til å fargelegge grensesnittet lett.</translation>
 <translation id="112308213915226829">Skjul hyllen automatisk</translation>
+<translation id="1148499908455722006">Åpne dialogboksen for informasjon om <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
 <translation id="1165712434476988950">Enheten må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="1175572348579024023">Rull</translation>
@@ -437,7 +438,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Innstillinger-menyen er åpnet</translation>
+<translation id="4581047786858252841">Mikrofonen er på</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
+<translation id="4587299710837179226">Mikrofonen er av</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4611292653554630842">Logg på</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
@@ -569,6 +572,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5779721926447984944">Festede filer</translation>
 <translation id="5790085346892983794">Fullført</translation>
+<translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>

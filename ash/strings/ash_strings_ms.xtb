@@ -21,6 +21,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1104621072296271835">Peranti anda akan berfungsi lebih baik bersama-sama</translation>
 <translation id="1119348796022671382">Mod warna bertema menggunakan warna yang diekstrak daripada kertas dinding anda untuk mewarnakan sedikit antara muka tersebut.</translation>
 <translation id="112308213915226829">Autosembunyi rak</translation>
+<translation id="1148499908455722006">Buka dialog maklumat untuk <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Peranti digandingkan</translation>
 <translation id="1165712434476988950">Peranti perlu dimulakan semula untuk memasang kemaskinian.</translation>
 <translation id="1175572348579024023">Tatal</translation>
@@ -438,7 +439,9 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4577274620589681794">Masa tamat · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tunjukkan pratonton</translation>
 <translation id="4578906031062871102">Menu tetapan dibuka</translation>
+<translation id="4581047786858252841">Mikrofon dihidupkan</translation>
 <translation id="4585337515783392668">Berhenti menghantar pada penerima yang tidak diketahui</translation>
+<translation id="4587299710837179226">Mikrofon dimatikan</translation>
 <translation id="4596144739579517758">Tema gelap dimatikan</translation>
 <translation id="4611292653554630842">Log masuk</translation>
 <translation id="4623167406982293031">Sahkan akaun</translation>
@@ -570,6 +573,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5777841717266010279">Hentikan perkongsian skrin?</translation>
 <translation id="5779721926447984944">Fail disemat</translation>
 <translation id="5790085346892983794">Berjaya</translation>
+<translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>

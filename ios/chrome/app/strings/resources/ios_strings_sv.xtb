@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">Markera alla som lästa</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1690731385917361335">Det finns inga objekt</translation>
-<translation id="1691390244342876227">Chrome kunde inte verifiera uppgifterna</translation>
 <translation id="1692118695553449118">Synkronisering är på</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
@@ -430,6 +429,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5508435575041083207">Logga ut och rensa data från enheten</translation>
 <translation id="5513681519188741830">För <ph name="TIME" /> timmar sedan</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
+<translation id="5532698011560297095">Det går inte att logga in</translation>
 <translation id="5548760955356983418">Med Handoff kan du börja visa en webbplats på den här enheten och sedan enkelt fortsätta på din Mac. Den aktuella öppna webbplatsen visas i Dock på din Mac.
 
 Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och samma iCloud-konto måste användas på enheterna.</translation>
@@ -635,7 +635,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7346909386216857016">Ok, jag förstår</translation>
 <translation id="734758817008927353">Alternativ för att spara kort</translation>
 <translation id="7348502496356775519">Bokmärke</translation>
-<translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7353432112255316844">Verifiera din identitet</translation>
 <translation id="7383797227493018512">Läslista</translation>
 <translation id="7398893703713203428">Skapa länk</translation>
@@ -764,7 +763,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8680787084697685621">Inloggningsuppgifterna för kontot är inte aktuella.</translation>
 <translation id="8706588385081740091">Lösenord</translation>
 <translation id="8717864919010420084">Kopiera länk</translation>
-<translation id="8721206573513844242">Vi kunde tyvärr inte validera dina användaruppgifter</translation>
 <translation id="8721297211384281569">Verktyg</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>

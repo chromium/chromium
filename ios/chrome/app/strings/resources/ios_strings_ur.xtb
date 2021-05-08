@@ -36,6 +36,7 @@
 <translation id="1254117744268754948">فولڈر کا انتخاب کریں</translation>
 <translation id="1265739287306757398">طریقہ جانیں</translation>
 <translation id="1272079795634619415">روکیں</translation>
+<translation id="1282311502488501110">سائن ان نہ کریں</translation>
 <translation id="1283524564873030414">گزشتہ 24 گھنٹے</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
@@ -83,7 +84,6 @@
 <translation id="1687475363370981210">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1689333818294560261">عرفی نام</translation>
 <translation id="1690731385917361335">کوئی آئٹمز نہیں ہیں</translation>
-<translation id="1691390244342876227">‏Chrome آپ کی معلومات کی تصدیق نہیں کر سکا</translation>
 <translation id="1692118695553449118">مطابقت پذیری آن ہے</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> کو منتخب کیا گیا</translation>
 <translation id="1740468249224277719">انسٹال کرنے کیلئے دو بار تھپتھپائیں۔</translation>
@@ -114,6 +114,7 @@
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
+<translation id="214201757571129614">سائن ان کریں…</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2198757192731523470">‏تلاش، اشتہارات اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کے لیے Google آپ کی سرگزشت کا استعمال کر سکتا ہے۔</translation>
@@ -343,6 +344,7 @@
 <translation id="4630540211544979320">صفحات کا ترجمہ کریں</translation>
 <translation id="4634124774493850572">پاس ورڈ استعمال کریں</translation>
 <translation id="4636930964841734540">معلومات</translation>
+<translation id="4650125387981512669">بطور <ph name="FIRST_RUN_ACCOUNT_NAME" /> جاری رکھیں</translation>
 <translation id="4659126640776004816">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے۔</translation>
 <translation id="4659667755519643272">ٹیب سوئچ کنندہ میں داخل ہوں</translation>
 <translation id="46614316059270592">پاس ورڈ محفوظ کریں</translation>
@@ -632,7 +634,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="734758817008927353">کارڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="7348502496356775519">بُک مارک کریں</translation>
-<translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7353432112255316844">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="7383797227493018512">پڑھنے کی فہرست</translation>
 <translation id="7398893703713203428">لنک تخلیق کریں</translation>
@@ -761,7 +762,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8680787084697685621">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔</translation>
 <translation id="8706588385081740091">پاس ورڈز</translation>
 <translation id="8717864919010420084">لنک کاپی کریں</translation>
-<translation id="8721206573513844242">معذرت، ہم آپ کی اسناد کی توثیق نہیں کر سکیں</translation>
 <translation id="8721297211384281569">ٹولز مینو</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

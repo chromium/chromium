@@ -24,6 +24,7 @@
 <translation id="1911763535808217981">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chromium-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1929939181775079593">Chromium ажиллахгүй байна. Дахин эхлүүлэх үү?</translation>
 <translation id="1966382378801805537">Chromium нь өгөгдмөл хөтчийг тодорхойлох эсвэл тохируулах боломжгүй</translation>
+<translation id="1981611865800294956">&amp;Chromium OS-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2008474315282236005">Энэ нь төхөөрөмжөөс 1 зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2020032459870799438">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chromium-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromium-г өөрчлөх</translation>
@@ -119,6 +120,7 @@
 <translation id="4788777615168560705">Chromium таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу эсвэл <ph name="BEGIN_LINK" />өөрийн Google Бүртгэл дэх нууц үгсийг шалгана уу<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Энэ нь Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг. Та энэ ажиллах төлөвийг хүссэн үедээ тохиргоонд өөрчилж болно</translation>
 <translation id="4888717733111232871">MDNS урсгалыг зөвшөөрөхийн тулд Chromium-д зориулсан хөндлөнгийн дүрэм.</translation>
+<translation id="4893347770495441059">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="4943838377383847465">Chromium нь суурь горимд байна.</translation>
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
@@ -272,6 +274,7 @@
 <translation id="91086099826398415">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>
 <translation id="9158494823179993217">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
+<translation id="9185526690718004400">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium үйлдлийн систем</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>

@@ -84,7 +84,6 @@
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1690731385917361335">هیچ موردی وجود ندارد</translation>
-<translation id="1691390244342876227">‏Chrome نتوانست اطلاعاتتان را تأیید کند</translation>
 <translation id="1692118695553449118">همگام‌سازی روشن است</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
@@ -430,6 +429,7 @@
 <translation id="5508435575041083207">خروج از سیستم و پاک کردن داده‌ها در این دستگاه</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ساعت قبل</translation>
 <translation id="5525269841082836315">ایجاد گذرعبارت</translation>
+<translation id="5532698011560297095">ورود به سیستم ممکن نیست</translation>
 <translation id="5548760955356983418">‏با Handoff می‌توانید شروع به مرور وب‌سایت در این دستگاه کنید و سپس به‌آسانی در دستگاه Mac خود به مرور ادامه دهید. وب‌سایتی که اکنون باز است در Dock (لنگرگاه) شما در Mac نمایان می‌شود.
 
 Handoff باید در بخش عمومی تنظیمات نیز فعال شود و دستگاه‌های شما باید از یک حساب iCloud استفاده کنند.</translation>
@@ -635,7 +635,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="734758817008927353">گزینه‌های ذخیره کارت</translation>
 <translation id="7348502496356775519">نشانک</translation>
-<translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353432112255316844">تأیید هویت</translation>
 <translation id="7383797227493018512">فهرست خواندن</translation>
 <translation id="7398893703713203428">ایجاد پیوند</translation>
@@ -764,7 +763,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
 <translation id="8706588385081740091">گذرواژه‌ها</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
-<translation id="8721206573513844242">متأسفیم، نتوانستیم اطلاعات کاربری شما را تأیید کنیم</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>

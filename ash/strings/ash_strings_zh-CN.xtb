@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
 <translation id="1119348796022671382">带主题背景的颜色模式会使用从您壁纸中提取的颜色为界面略施粉黛。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
+<translation id="1148499908455722006">打开与“<ph name="USER_NAME" />”对应的信息对话框</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
 <translation id="1165712434476988950">必须重启设备，才能应用这项更新。</translation>
 <translation id="1175572348579024023">滚动</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
+<translation id="4581047786858252841">麦克风已开启</translation>
 <translation id="4585337515783392668">停止投射至不明接收器</translation>
+<translation id="4587299710837179226">麦克风已关闭</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="4623167406982293031">验证帐号</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
 <translation id="5779721926447984944">已固定的文件</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
 <translation id="5820394555380036790">Chromium 操作系统</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>

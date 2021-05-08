@@ -283,7 +283,6 @@
 <translation id="8444433999583714703">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην τοποθεσία σας, ενεργοποιήστε επίσης την τοποθεσία στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Ανάκληση άδειας συσκευής</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Χρησιμοποιείται 1 cookie}other{Χρησιμοποιούνται # cookie}}</translation>
-<translation id="8463851957836045671">Ο ιστότοπος είναι γρήγορος</translation>
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="851751545965956758">Αποκλεισμός ιστοτόπων από τη σύνδεση σε συσκευές</translation>
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
@@ -303,7 +302,6 @@
 <translation id="8903921497873541725">Μεγέθυνση</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Το NFC είναι ανενεργό για αυτήν τη συσκευή. Ενεργοποιήστε το στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
-<translation id="8929372349074745002">Αυτός ο ιστότοπος ανοίγει και αποκρίνεται γρήγορα για τους περισσότερους χρήστες.</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>

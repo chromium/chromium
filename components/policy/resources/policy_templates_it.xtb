@@ -362,17 +362,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su Internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da tale server.
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
-<translation id="1491015714523410492">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
-
-      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
-
-      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
-
-      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
-
-      Questo criterio viene applicato per gli utenti che si sono autenticati tramite SAML.
-
-      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
 <translation id="150857982247452081">Consente di impostare un elenco di protocolli, e per ogni protocollo un elenco associato di pattern di origini consentite, che possono lanciare un'applicazione esterna senza chiedere conferma all'utente. Il separatore finale non deve essere incluso nell'elenco di protocolli, quindi usa "skype" anziché "skype:" o "skype://".
 
@@ -660,7 +649,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="1888871729456797026">Il token di registrazione della norma relativa alla cloud su desktop</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="1897365952389968758">Consenti l'esecuzione di JavaScript in tutti i siti</translation>
-<translation id="1902043648529789224">Controlla la posizione della shelf</translation>
+<translation id="1902043648529789224">Controlla la posizione della barra delle app</translation>
 <translation id="1904323733389537794">Se il criterio è impostato su true, vengono eseguiti i controlli online di <ph name="OCSP_CRL_LABEL" />.
 
       Se il criterio è impostato su false o non viene configurato, <ph name="PRODUCT_NAME" /> non eseguirà i controlli delle revoche online in <ph name="PRODUCT_NAME" /> 19 e versioni successive.
@@ -897,7 +886,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2201555246697292490">Configura whitelist messaggi nativi</translation>
 <translation id="2202787915587511214">Attiva NTLMv2</translation>
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
-<translation id="2204753382813641270">Controlla la visualizzazione automatica dello shelf</translation>
+<translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
 
@@ -1165,7 +1154,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
-<translation id="2498238926436517902">Nascondi sempre automaticamente lo shelf</translation>
+<translation id="2498238926436517902">Nascondi sempre automaticamente la barra delle app</translation>
 <translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
 
       Se il criterio non viene configurato, i Termini di servizio non vengono visualizzati.
@@ -1547,7 +1536,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione).
 
-      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sullo shelf di <ph name="PRODUCT_OS_NAME" />.</translation>
+      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sulla barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2985097017239074272">Google News (supportato dalla versione 91)</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
@@ -2315,7 +2304,8 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su True e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
-<translation id="3973371701361892765">Non nascondere mai automaticamente lo shelf</translation>
+<translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
+<translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -2335,7 +2325,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Tieni presente che questa norma non influisce sull'eliminazione o meno dei dati utenti locali sul dispositivo.</translation>
 <translation id="4010738624545340900">Consenti richiamo di finestre di dialogo di selezione file</translation>
-<translation id="401260868452018796">Posiziona la shelf nella parte inferiore dello schermo</translation>
+<translation id="401260868452018796">Posiziona la barra delle app nella parte inferiore dello schermo</translation>
 <translation id="4012737788880122133">Se questa norma viene impostata su True, gli aggiornamenti automatici vengono disattivati.
 
 Se questa norma non viene configurata o viene impostata su False, i dispositivi <ph name="PRODUCT_OS_NAME" /> controllano automaticamente la disponibilità di aggiornamenti.
@@ -2372,7 +2362,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai rapporti sugli arresti anomali.</translation>
-<translation id="4075675819066819571">Posiziona la shelf sul lato sinistro dello schermo</translation>
+<translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
 <translation id="408029843066770167">Consenti query a un servizio orario di Google</translation>
 <translation id="408076456549153854">Attiva accesso al browser</translation>
 <translation id="4081127242481747676">Impostazioni dei sensori</translation>
@@ -2807,6 +2797,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
 <translation id="4770334626033858263">La configurazione usata per generare e verificare il codice accesso genitori.</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
 
@@ -2818,9 +2809,9 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4802905909524200151">Configura il comportamento di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Riavvia sempre all'uscita dell'utente.</translation>
 <translation id="4807950475297505572">Gli utenti utilizzati meno di recente vengono rimossi fino alla disponibilità di spazio libero sufficiente</translation>
-<translation id="4812270373673968774">Se il criterio è impostato su Always, lo shelf <ph name="PRODUCT_OS_NAME" /> viene nascosto automaticamente. Se il criterio è impostato su Never, lo shelf non viene mai nascosto automaticamente.
+<translation id="4812270373673968774">Se il criterio è impostato su Always, la barra delle app <ph name="PRODUCT_OS_NAME" /> viene nascosta automaticamente. Se il criterio è impostato su Never, la barra delle app non viene mai nascosta automaticamente.
 
-      Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se lo shelf viene nascosto automaticamente.</translation>
+      Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se la barra delle app viene nascosta automaticamente.</translation>
 <translation id="4812714598405913256">Configura il messaggio della scadenza dell'aggiornamento automatico per il criterio DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Consenti all'utente aziendale di essere l'utente principale e secondario (comportamento predefinito per gli utenti non gestiti)</translation>
 <translation id="4818228398115369966">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Google News ed Esplora da disattivare</translation>
@@ -3108,7 +3099,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5177260184597743704">Criterio di configurazione per il connettore OnSecurityEvent di Chrome Enterprise</translation>
 <translation id="5178479074002209469">Un flag booleano che indica se le sessioni utente non gestite devono ricevere o meno notifiche e forzare o meno l'uscita dall'account in caso di aggiornamento obbligatorio, in base a questo criterio.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="5182483318861266793">Posiziona la shelf sul lato destro dello schermo</translation>
+<translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
 <translation id="5190426551516379357">La configurazione del criterio applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se il criterio viene impostato su:
 
@@ -4444,6 +4435,32 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6907778402784621686">Blocca contenuti non sicuri su questi siti</translation>
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
+<translation id="6922498040906800267">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
+      La fuga di dati può verificarsi, ad esempio, tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione dello schermo o l'acquisizione di screenshot.
+
+      Ogni regola prevede quanto segue:
+      - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
+      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o non consentita.
+      - Un elenco di limitazioni da applicare ai dati delle origini.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare l'acquisizione di screenshot di tutte le origini.
+      - Controllare la stampa di tutte le origini.
+      - Controllare la Schermata privata quando una delle origini è visibile.
+      - Controllare la condivisione schermo di tutte le origini.
+
+      Il livello di limitazione può essere impostato su BLOCK, su ALLOW o su REPORT.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su Vero, l'azione bloccata sarà segnalata all'amministratore.
+      - Se il livello di limitazione è impostato su ALLOW, l'azione sarà consentita.
+      - Se il livello di limitazione è impostato su REPORT e <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su Vero, l'azione sarà segnalata all'amministratore.
+
+      Note:
+      - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la Schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
+      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma questo non fa alcuna differenza per le altre limitazioni.
+      - I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Attiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.
@@ -4590,17 +4607,17 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene configurato, viene utilizzato <ph name="BLOCK_PLUGINS_POLICY_NAME" /> e gli utenti possono cambiare l'impostazione.
 
       Nota: la riproduzione automatica è consentita soltanto per i domini espressamente elencati nel criterio <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Per attivare la riproduzione automatica per tutti i siti, aggiungi http://* e https://* a questo elenco.</translation>
-<translation id="7037812781389976160">Consente di controllare la posizione della shelf di <ph name="PRODUCT_OS_NAME" />.
+<translation id="7037812781389976160">Consente di controllare la posizione della barra delle app di <ph name="PRODUCT_OS_NAME" />.
 
-      Se per questo criterio viene impostato il valore "In basso", la shelf viene posizionata nella parte inferiore dello schermo.
+      Se per questo criterio viene impostato il valore "In basso", la barra delle app viene posizionata nella parte inferiore dello schermo.
 
-      Se per questo criterio viene impostato il valore "A sinistra", la shelf viene posizionata sul lato sinistro dello schermo.
+      Se per questo criterio viene impostato il valore "A sinistra", la barra delle app viene posizionata sul lato sinistro dello schermo.
 
-      Se per questo criterio viene impostato il valore "A destra", la shelf viene posizionata sul lato destro dello schermo.
+      Se per questo criterio viene impostato il valore "A destra", la barra delle app viene posizionata sul lato destro dello schermo.
 
       Se imposti questo criterio come obbligatorio, gli utenti non potranno modificarlo o ignorarlo.
 
-      Se il criterio non viene impostato, la shelf verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
+      Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7060497964524144376">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
@@ -5010,6 +5027,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7612157962821894603">Contrassegni a livello di sistema da applicare all'avvio di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene compiuta l'azione stabilita per l'inattività.</translation>
 <translation id="7614663184588396421">Elenco degli schemi di protocollo disabilitati</translation>
+<translation id="7616631530432070402">Le suite di crittografia 3DES saranno attivate in TLS</translation>
 <translation id="7620869951155758729">Questa norma consente di specificare la configurazione utilizzata per generare e verificare il codice di accesso genitori.
 
       La configurazione |current_config| viene sempre utilizzata per generare un codice di accesso e deve essere utilizzata per convalidare il codice di accesso solo quando non può essere convalidato con |future_config|.
@@ -5459,6 +5477,12 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8217664958939773083">Se questo criterio viene impostato su <ph name="ENABLED" /> o se non viene configurato, è possibile usare la modalità headless. Se questo criterio viene impostato su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
+<translation id="8234316309673661069">Attenzione: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (circa a ottobre 2021) e questo criterio smetterà di funzionare per allora.
+
+      Se il criterio è impostato su vero, le suite di crittografia 3DES in TLS saranno attivate. Se è impostato su falso, saranno disattivate. Se il criterio non viene impostato, al momento le suite di crittografia 3DES sono attivate per impostazione predefinita. Saranno disattivate per impostazione predefinita in <ph name="PRODUCT_NAME" /> 93.
+
+      In <ph name="PRODUCT_NAME" /> 92, questo criterio potrebbe essere usato per visualizzare in anteprima la modifica e testare le eventuali incompatibilità. In <ph name="PRODUCT_NAME" /> 93 e versioni successive, potrebbe essere usato per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
+      </translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
@@ -5850,17 +5874,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio non viene configurato viene considerato attivo e gli utenti non possono disattivarlo.</translation>
 <translation id="8789338675663014675">Consente di configurare i criteri relativi alle estensioni. L'utente non può installare estensioni bloccate, a meno che non vengano autorizzate. Puoi anche forzare <ph name="PRODUCT_NAME" /> a installare automaticamente le estensioni, specificandole nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni con installazione forzata vengono installate indipendentemente dalla loro presenza nella lista bloccata.</translation>
-<translation id="8796924197496002727">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
-
-      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
-
-      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
-
-      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
-
-      Questo criterio viene applicato per gli utenti che si sono autenticati tramite GAIA senza SAML.
-
-      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="879697755145469671">La finestra coperta non viene rilevata</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8799492680917278474">Se questo criterio viene configurato, le connessioni di accesso remoto si disconnettono automaticamente una volta trascorsi i minuti specificati nel criterio stesso. Questo non impedisce al client di riconnettersi una volta raggiunta la durata massima della sessione. Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato. Questo criterio non influisce sugli scenari di assistenza remota
@@ -6176,11 +6189,11 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       NOTA: il comportamento predefinito per i dispositivi di utenti e aziende è diverso perché sui dispositivi gestiti viene attivato P2P, che invece non viene attivato sui dispositivi non gestiti.</translation>
 <translation id="9164656078867027374">Definisci i domini autorizzati ad accedere a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
-<translation id="9166670902476893480">Questo criterio consente di stabilire se <ph name="PRODUCT_NAME" /> può eseguire query su tipi di record DNS aggiuntivi quando fa richieste DNS non sicure. Questo criterio non viene applicato per query DNS effettuate tramite DNS sicuro, che potrebbe sempre eseguire query su tipi DNS aggiuntivi.
+<translation id="9166670902476893480">Questo criterio consente di stabilire se <ph name="PRODUCT_NAME" /> può eseguire query su tipi di record DNS aggiuntivi quando fa richieste DNS non sicure. Questo criterio non viene applicato per query DNS effettuate tramite DNS sicuro, che può sempre eseguire query su tipi DNS aggiuntivi.
 
-      Se questo criterio non viene configurato o se viene impostato su Attivato, è possibile eseguire query su tipi aggiuntivi quali <ph name="DNS_TYPE_HTTPS" /> (tipo DNS 65) oltre che su <ph name="DNS_TYPE_A" /> (tipo DNS 1) e <ph name="DNS_TYPE_AAAA" /> (tipo DNS 28).
+      Se questo criterio non viene configurato o se viene impostato su Attivato, è possibile eseguire query su tipi aggiuntivi quali <ph name="DNS_TYPE_HTTPS" /> (DNS tipo 65) oltre che su <ph name="DNS_TYPE_A" /> (DNS tipo 1) e <ph name="DNS_TYPE_AAAA" /> (DNS tipo 28).
 
-      Se questo criterio viene impostato su Disattivato, al DNS verranno inviate query soltanto per <ph name="DNS_TYPE_A" /> (tipo DNS 1) e/o <ph name="DNS_TYPE_AAAA" /> (tipo DNS 28).
+      Se questo criterio viene impostato su Disattivato, al DNS verranno inviate query soltanto per <ph name="DNS_TYPE_A" /> (DNS tipo 1) e/o <ph name="DNS_TYPE_AAAA" /> (DNS tipo 28).
 
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -6212,6 +6225,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> non consente una nuova installazione delle estensioni né il loro aggiornamento. Il criterio non ha effetti su <ph name="PRODUCT_NAME" /> 78 e successivi.
 
       Se il criterio non viene impostato, è attivato per <ph name="PRODUCT_NAME" /> da 73 a 75 e disattivato per <ph name="PRODUCT_NAME" /> 76 e 77.</translation>
+<translation id="93985900824506396">Le suite di crittografia 3DES saranno disattivate in TLS</translation>
 <translation id="940706688964479124">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download</translation>
 <translation id="943865157632139008">Consente di configurare il renderer HTML predefinito quando è installato <ph name="PRODUCT_FRAME_NAME" />.
       Per impostazione predefinita, l'host browser esegue il rendering, ma in alternativa è possibile sostituire questa impostazione e far sì che <ph name="PRODUCT_FRAME_NAME" /> esegua il rendering delle pagine HTML per impostazione predefinita.</translation>
