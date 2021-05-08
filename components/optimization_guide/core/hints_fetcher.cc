@@ -364,11 +364,11 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 
   // Ensure there is enough space in the dictionary pref for the
   // most recent set of hosts to be stored.
-  if (hosts_fetched_list->size() + hosts_fetched_.size() >
+  if (hosts_fetched_list->DictSize() + hosts_fetched_.size() >
       features::MaxHostsForRecordingSuccessfullyCovered()) {
     entries_to_remove.clear();
     size_t num_entries_to_remove =
-        hosts_fetched_list->size() + hosts_fetched_.size() -
+        hosts_fetched_list->DictSize() + hosts_fetched_.size() -
         features::MaxHostsForRecordingSuccessfullyCovered();
     for (const auto& it : hosts_fetched_list->DictItems()) {
       if (entries_to_remove.size() >= num_entries_to_remove)
@@ -387,7 +387,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
         HashHostForDictionary(host),
         host_invalid_time.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
-  DCHECK_LE(hosts_fetched_list->size(),
+  DCHECK_LE(hosts_fetched_list->DictSize(),
             features::MaxHostsForRecordingSuccessfullyCovered());
   hosts_fetched_.clear();
 }

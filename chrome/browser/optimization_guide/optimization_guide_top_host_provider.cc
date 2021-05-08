@@ -165,7 +165,7 @@ void OptimizationGuideTopHostProvider::
   for (const auto& detail : engagement_details) {
     if (!detail.origin.SchemeIsHTTPOrHTTPS())
       continue;
-    if (top_host_blocklist->size() >=
+    if (top_host_blocklist->DictSize() >=
         optimization_guide::features::MaxHintsFetcherTopHostBlocklistSize()) {
       // Set the minimum engagement score to the score of the host that
       // could not be added to  |top_host_blocklist|. Add a small epsilon value
@@ -186,7 +186,7 @@ void OptimizationGuideTopHostProvider::
   UMA_HISTOGRAM_COUNTS_1000(
       "OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize."
       "OnInitialize",
-      top_host_blocklist->size());
+      top_host_blocklist->DictSize());
 
   pref_service_->Set(optimization_guide::prefs::kHintsFetcherTopHostBlocklist,
                      *top_host_blocklist);
@@ -294,10 +294,10 @@ std::vector<std::string> OptimizationGuideTopHostProvider::GetTopHosts() {
     UMA_HISTOGRAM_COUNTS_1000(
         "OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize."
         "OnRequest",
-        top_host_blocklist->size());
+        top_host_blocklist->DictSize());
     // This check likely should not be needed as the process of removing hosts
     // from the blocklist should check and update the pref state.
-    if (top_host_blocklist->size() == 0) {
+    if (top_host_blocklist->DictSize() == 0) {
       UpdateCurrentBlocklistState(
           pref_service_,
           optimization_guide::prefs::HintsFetcherTopHostBlocklistState::kEmpty);

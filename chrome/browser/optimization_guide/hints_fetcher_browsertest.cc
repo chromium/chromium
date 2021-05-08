@@ -282,7 +282,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     const base::DictionaryValue* top_host_blocklist =
         pref_service->GetDictionary(
             optimization_guide::prefs::kHintsFetcherTopHostBlocklist);
-    return top_host_blocklist->size();
+    return top_host_blocklist->DictSize();
   }
 
   // Adds |host_count| HTTPS origins to site engagement service.
