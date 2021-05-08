@@ -71,8 +71,16 @@ if (crashpad_is_mac || crashpad_is_ios) {
         import("//build/config/mac/mac_sdk.gni")
         clang_path =
             rebase_path("$clang_base_path/bin/", root_build_dir) + "clang"
-        mig_path = "$mac_bin_path" + "mig"
-        migcom_path = "$mac_bin_path" + "../libexec/migcom"
+        if (host_os == "mac") {
+          mig_path = "$mac_bin_path" + "mig"
+          migcom_path = "$mac_bin_path" + "../libexec/migcom"
+        } else if (host_os == "linux") {
+          mig_path = rebase_path("//third_party/mig/bin/mig", root_build_dir)
+          migcom_path =
+              rebase_path("//third_party/mig/bin/migcom", root_build_dir)
+        } else {
+          assert(false, "don't know how to mig on $host_os")
+        }
 
         args += [
           "--clang-path",
