@@ -4139,7 +4139,6 @@ virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-
 
 ### Tests failing with LayoutNGGrid enabled:
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-align-justify-overflow.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-align-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-justify-001.html [ Failure ]

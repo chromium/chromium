@@ -2563,13 +2563,19 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
     LayoutUnit available_size,
     LayoutUnit start_border_scrollbar_padding,
     LayoutUnit grid_gap) {
+  const OverflowAlignment overflow = content_alignment.Overflow();
   // Determining the free-space is typically unnecessary, i.e. if there is
   // default alignment. Only compute this on-demand.
-  auto FreeSpace = [&track_collection, &available_size,
-                    &grid_gap]() -> LayoutUnit {
-    return available_size - ComputeTotalTrackSize(track_collection, grid_gap);
+  auto FreeSpace = [&]() -> LayoutUnit {
+    LayoutUnit free_space =
+        available_size - ComputeTotalTrackSize(track_collection, grid_gap);
+    // If overflow is 'safe', we have to make sure we don't overflow the
+    // 'start' edge (potentially cause some data loss as the overflow is
+    // unreachable).
+    return (overflow == OverflowAlignment::kSafe)
+               ? free_space.ClampNegativeToZero()
+               : free_space;
   };
-
   // The default alignment, perform adjustments on top of this.
   TrackAlignmentGeometry geometry = {start_border_scrollbar_padding, grid_gap};
 
@@ -2752,14 +2758,21 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
                            LayoutUnit margin_start,
                            LayoutUnit margin_end,
                            LayoutUnit baseline_offset,
-                           AxisEdge axis_edge) {
+                           AxisEdge axis_edge,
+                           OverflowAlignment overflow) {
+  LayoutUnit free_space = container_size - size - margin_start - margin_end;
+  // If overflow is 'safe', we have to make sure we don't overflow the
+  // 'start' edge (potentially cause some data loss as the overflow is
+  // unreachable).
+  if (overflow == OverflowAlignment::kSafe)
+    free_space = free_space.ClampNegativeToZero();
   switch (axis_edge) {
     case AxisEdge::kStart:
       return margin_start;
     case AxisEdge::kCenter:
-      return (container_size - size + margin_start - margin_end) / 2;
+      return margin_start + (free_space / 2);
     case AxisEdge::kEnd:
-      return container_size - margin_end - size;
+      return margin_start + free_space;
     case AxisEdge::kBaseline:
       return baseline_offset;
   }
@@ -2931,16 +2944,18 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     // Apply the grid-item's alignment (if any).
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
+    const auto& container_style = Style();
     containing_grid_area.offset += LogicalOffset(
         AlignmentOffset(containing_grid_area.size.inline_size,
                         fragment.InlineSize(), margins.inline_start,
                         margins.inline_end, inline_baseline_offset,
-                        grid_item.inline_axis_alignment),
+                        grid_item.inline_axis_alignment,
+                        container_style.AlignItems().Overflow()),
         AlignmentOffset(containing_grid_area.size.block_size,
                         fragment.BlockSize(), margins.block_start,
                         margins.block_end, block_baseline_offset,
-                        grid_item.block_axis_alignment));
-
+                        grid_item.block_axis_alignment,
+                        container_style.JustifyItems().Overflow()));
     // Grid is special in that %-based offsets resolve against the grid-area.
     // Determine the relative offset here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
