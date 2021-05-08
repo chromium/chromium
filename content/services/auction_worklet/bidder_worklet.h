@@ -149,13 +149,13 @@ class BidderWorklet {
   BidderWorklet& operator=(const BidderWorklet&) = delete;
   ~BidderWorklet();
 
-  // Calls reportWin(), and returns reporting information. May only be called
-  // once the worklet has successfully loaded.
-  ReportWinResult ReportWin(
-      const std::string& seller_signals_json,
-      const GURL& browser_signal_render_url,
-      const std::string& browser_signal_ad_render_fingerprint,
-      double browser_signal_bid);
+  // Calls reportWin(), and asynchronously invokes `callback` with reporting
+  // information. May only be called once the worklet has successfully loaded.
+  void ReportWin(const std::string& seller_signals_json,
+                 const GURL& browser_signal_render_url,
+                 const std::string& browser_signal_ad_render_fingerprint,
+                 double browser_signal_bid,
+                 base::OnceCallback<void(ReportWinResult)> callback);
 
  private:
   void OnScriptDownloaded(

@@ -173,9 +173,17 @@ class BidderWorkletTest : public testing::Test {
     auto bidder_worket = CreateWorkletAndGenerateBid();
     ASSERT_TRUE(bidder_worket);
 
-    BidderWorklet::ReportWinResult actual_result = bidder_worket->ReportWin(
+    BidderWorklet::ReportWinResult actual_result;
+    base::RunLoop run_loop;
+    bidder_worket->ReportWin(
         seller_signals_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bid_);
+        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+        base::BindLambdaForTesting(
+            [&run_loop, &actual_result](BidderWorklet::ReportWinResult result) {
+              actual_result = result;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     EXPECT_EQ(!expected_report_url.is_empty(), actual_result.success);
     EXPECT_EQ(expected_report_url, actual_result.report_url);
     EXPECT_EQ(expected_error_msg.has_value(),
@@ -1171,9 +1179,17 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   ASSERT_TRUE(bidder_worket);
 
   for (int i = 0; i < 3; ++i) {
-    BidderWorklet::ReportWinResult actual_result = bidder_worket->ReportWin(
+    BidderWorklet::ReportWinResult actual_result;
+    base::RunLoop run_loop;
+    bidder_worket->ReportWin(
         seller_signals_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bid_);
+        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+        base::BindLambdaForTesting(
+            [&run_loop, &actual_result](BidderWorklet::ReportWinResult result) {
+              actual_result = result;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     EXPECT_TRUE(actual_result.success);
     EXPECT_EQ(GURL("https://23.test/"), actual_result.report_url);
     EXPECT_FALSE(actual_result.error_msg);

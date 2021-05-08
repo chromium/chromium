@@ -47,6 +47,17 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
   return true;
 }
 
+// Temporary utility to run callback asynchronously, to imitate behavior once
+// this class starts implementing a Mojo API.
+//
+// TODO(mmenke): Remove once this class switches over to using Mojo.
+void InvokeReportWinCallbackAsync(
+    base::OnceCallback<void(BidderWorklet::ReportWinResult)> callback,
+    BidderWorklet::ReportWinResult result) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
 }  // namespace
 
 BidderWorklet::BidResult::BidResult() = default;
@@ -154,11 +165,14 @@ BidderWorklet::BidderWorklet(
 
 BidderWorklet::~BidderWorklet() = default;
 
-BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
+void BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     const std::string& browser_signal_ad_render_fingerprint,
-    double browser_signal_bid) {
+    double browser_signal_bid,
+    base::OnceCallback<void(ReportWinResult)> callback) {
+  callback = base::BindOnce(&InvokeReportWinCallbackAsync, std::move(callback));
+
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
   v8::Isolate* isolate = v8_helper_->isolate();
 
@@ -177,7 +191,8 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
       !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    return ReportWinResult();
+    std::move(callback).Run(ReportWinResult());
+    return;
   }
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
@@ -194,7 +209,8 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid)) {
-    return ReportWinResult();
+    std::move(callback).Run(ReportWinResult());
+    return;
   }
   args.push_back(browser_signals);
 
@@ -205,13 +221,16 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
           ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args,
                       error_msg_out)
           .IsEmpty()) {
-    return ReportWinResult(std::move(error_msg_out));
+    std::move(callback).Run(ReportWinResult(std::move(error_msg_out)));
+    return;
   }
 
-  if (!report_bindings.report_url().is_valid())
-    return ReportWinResult();
+  if (!report_bindings.report_url().is_valid()) {
+    std::move(callback).Run(ReportWinResult());
+    return;
+  }
 
-  return ReportWinResult(report_bindings.report_url());
+  std::move(callback).Run(ReportWinResult(report_bindings.report_url()));
 }
 
 void BidderWorklet::OnScriptDownloaded(

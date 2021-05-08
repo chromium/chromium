@@ -81,22 +81,32 @@ class AuctionRunner {
   void OnSellerWorkletLoaded(bool load_result,
                              base::Optional<std::string> error_msg);
 
-  // Lets the seller score a single outstanding bid, if any, and then either
-  // re-queues itself on event loop if there is more to check, or proceeds to
-  // selecting the winner and running reporting worklets.
+  // Calls into the seller to asynchronously each of outstanding bids, in
+  // series. Once there are no outstanding bids, proceeds to selecting the
+  // winner and running the Worklets reporting methods.
   //
   // Destroys `this` (indirectly), upon wrapping up the auction if all bids have
   // been scored (including if there were none).
   void ScoreOne();
-  SellerWorklet::ScoreResult ScoreBid(const BidState* state);
+  void ScoreBid(const BidState* state);
+  // Callback from ScoreBid().
+  void OnBidScored(SellerWorklet::ScoreResult score_result);
+
   std::string AdRenderFingerprint(const BidState* state);
   base::Optional<std::string> PerBuyerSignals(const BidState* state);
 
-  void CompleteAuction();  // Indirectly deletes `this`.
-  SellerWorklet::Report ReportSellerResult(const BidState* state);
-  BidderWorklet::ReportWinResult ReportBidWin(
-      const BidState* state,
-      const SellerWorklet::Report& seller_report);
+  void CompleteAuction();  // Indirectly deletes `this`, if there's no winner.
+
+  // Sequence of asynchronous methods to call into the bidder/seller results to
+  // report a a win, Will ultimately invoke ReportSuccess(), which will delete
+  // the auction.
+  void ReportSellerResult(const BidState* state);
+  void OnReportSellerResultComplete(const BidState* best_bid,
+                                    SellerWorklet::Report seller_report);
+  void ReportBidWin(const BidState* state, SellerWorklet::Report seller_report);
+  void OnReportBidWinComplete(const BidState* best_bid,
+                              SellerWorklet::Report seller_report,
+                              BidderWorklet::ReportWinResult bidder_report);
 
   // Destroys `this`.
   void FailAuction();

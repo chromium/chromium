@@ -112,27 +112,30 @@ class SellerWorklet {
   SellerWorklet& operator=(const SellerWorklet&) = delete;
   ~SellerWorklet();
 
-  // Calls scoreAd(), and returns resulting score. May only be called once the
-  // worklet has successfully completed loaded. No data is leaked between
-  // consecutive invocations of this method, or between invocations of this
-  // method and ReportResult().
-  ScoreResult ScoreAd(const std::string& ad_metadata_json,
-                      double bid,
-                      const blink::mojom::AuctionAdConfig& auction_config,
-                      const std::string& browser_signal_top_window_hostname,
-                      const url::Origin& browser_signal_interest_group_owner,
-                      const std::string& browser_signal_ad_render_fingerprint,
-                      base::TimeDelta browser_signal_bidding_duration);
+  // Calls scoreAd(), and invokes passed in callback asynchronously with the
+  // resulting score. May only be called once the worklet has successfully
+  // completed loaded. No data is leaked between consecutive invocations of this
+  // method, or between invocations of this method and ReportResult().
+  void ScoreAd(const std::string& ad_metadata_json,
+               double bid,
+               const blink::mojom::AuctionAdConfig& auction_config,
+               const std::string& browser_signal_top_window_hostname,
+               const url::Origin& browser_signal_interest_group_owner,
+               const std::string& browser_signal_ad_render_fingerprint,
+               base::TimeDelta browser_signal_bidding_duration,
+               base::OnceCallback<void(ScoreResult)> callback);
 
-  // Calls reportResult(), and returns reporting information. May only be
-  // called once the worklet has successfully loaded.
-  Report ReportResult(const blink::mojom::AuctionAdConfig& auction_config,
-                      const std::string& browser_signal_top_window_hostname,
-                      const url::Origin& browser_signal_interest_group_owner,
-                      const GURL& browser_signal_render_url,
-                      const std::string& browser_signal_ad_render_fingerprint,
-                      double browser_signal_bid,
-                      double browser_signal_desirability);
+  // Calls reportResult(), and invokes passed in callback asynchronously with
+  // the reporting information. May only be called once the worklet has
+  // successfully loaded.
+  void ReportResult(const blink::mojom::AuctionAdConfig& auction_config,
+                    const std::string& browser_signal_top_window_hostname,
+                    const url::Origin& browser_signal_interest_group_owner,
+                    const GURL& browser_signal_render_url,
+                    const std::string& browser_signal_ad_render_fingerprint,
+                    double browser_signal_bid,
+                    double browser_signal_desirability,
+                    base::OnceCallback<void(Report)> callback);
 
  private:
   void OnDownloadComplete(

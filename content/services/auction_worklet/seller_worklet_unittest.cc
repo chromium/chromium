@@ -115,12 +115,19 @@ class SellerWorkletTest : public testing::Test {
     auto seller_worket = CreateWorklet();
     ASSERT_TRUE(seller_worket);
 
-    SellerWorklet::ScoreResult actual_result =
-        seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
-                               browser_signal_top_window_hostname_,
-                               browser_signal_interest_group_owner_,
-                               browser_signal_ad_render_fingerprint_,
-                               browser_signal_bidding_duration_);
+    base::RunLoop run_loop;
+    SellerWorklet::ScoreResult actual_result;
+    seller_worket->ScoreAd(
+        ad_metadata_, bid_, *auction_config_,
+        browser_signal_top_window_hostname_,
+        browser_signal_interest_group_owner_,
+        browser_signal_ad_render_fingerprint_, browser_signal_bidding_duration_,
+        base::BindLambdaForTesting(
+            [&run_loop, &actual_result](SellerWorklet::ScoreResult result) {
+              actual_result = result;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     EXPECT_EQ(expected_score > 0, actual_result.success);
     EXPECT_EQ(expected_score, actual_result.score);
     EXPECT_EQ(expected_error_msg.has_value(),
@@ -157,11 +164,19 @@ class SellerWorkletTest : public testing::Test {
     auto seller_worket = CreateWorklet();
     ASSERT_TRUE(seller_worket);
 
-    SellerWorklet::Report actual_result = seller_worket->ReportResult(
+    SellerWorklet::Report actual_result;
+    base::RunLoop run_loop;
+    seller_worket->ReportResult(
         *auction_config_, browser_signal_top_window_hostname_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
-        browser_signal_desireability_);
+        browser_signal_desireability_,
+        base::BindLambdaForTesting(
+            [&run_loop, &actual_result](SellerWorklet::Report result) {
+              actual_result = result;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     EXPECT_EQ(expected_report.success, actual_result.success);
     EXPECT_EQ(expected_report.signals_for_winner,
               actual_result.signals_for_winner);
@@ -635,24 +650,40 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     // function is run sequentially, and when one function is run after the
     // other.
     for (int j = 0; j < 2; ++j) {
-      SellerWorklet::ScoreResult score_result =
-          seller_worket->ScoreAd(ad_metadata_, bid_, *auction_config_,
-                                 browser_signal_top_window_hostname_,
-                                 browser_signal_interest_group_owner_,
-                                 browser_signal_ad_render_fingerprint_,
-                                 browser_signal_bidding_duration_);
+      SellerWorklet::ScoreResult score_result;
+      base::RunLoop run_loop;
+      seller_worket->ScoreAd(
+          ad_metadata_, bid_, *auction_config_,
+          browser_signal_top_window_hostname_,
+          browser_signal_interest_group_owner_,
+          browser_signal_ad_render_fingerprint_,
+          browser_signal_bidding_duration_,
+          base::BindLambdaForTesting(
+              [&run_loop, &score_result](SellerWorklet::ScoreResult result) {
+                score_result = result;
+                run_loop.Quit();
+              }));
+      run_loop.Run();
       EXPECT_TRUE(score_result.success);
       EXPECT_EQ(2, score_result.score);
     }
 
     for (int j = 0; j < 2; ++j) {
-      SellerWorklet::Report report = seller_worket->ReportResult(
+      SellerWorklet::Report actual_report;
+      base::RunLoop run_loop;
+      seller_worket->ReportResult(
           *auction_config_, browser_signal_top_window_hostname_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,
-          browser_signal_desireability_);
-      EXPECT_TRUE(report.success);
-      EXPECT_EQ("2", report.signals_for_winner);
+          browser_signal_desireability_,
+          base::BindLambdaForTesting(
+              [&run_loop, &actual_report](SellerWorklet::Report report) {
+                actual_report = report;
+                run_loop.Quit();
+              }));
+      run_loop.Run();
+      EXPECT_TRUE(actual_report.success);
+      EXPECT_EQ("2", actual_report.signals_for_winner);
     }
   }
 }
