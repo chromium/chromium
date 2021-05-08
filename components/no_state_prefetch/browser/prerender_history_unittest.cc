@@ -26,7 +26,7 @@ bool ListEntryMatches(base::ListValue* list,
   base::DictionaryValue* dict = nullptr;
   if (!list->GetDictionary(index, &dict))
     return false;
-  if (dict->size() != 4u)
+  if (dict->DictSize() != 4u)
     return false;
   std::string url;
   if (!dict->GetString("url", &url))
