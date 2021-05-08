@@ -18,6 +18,8 @@ namespace base {
 class FilePath;
 }
 
+class GURL;
+
 namespace extensions {
 class Extension;
 
@@ -75,6 +77,13 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // LoadOptions.
   bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
 
+  // Opens the given |url| and waits for the next result from the
+  // chrome.test API. If |open_in_incognito| is true, the URL is opened
+  // in an off-the-record browser profile. This API is different from
+  // RunExtensionTest as it doesn't load an extension.
+  bool OpenTestURL(const GURL& url,
+                   bool open_in_incognito = false) WARN_UNUSED_RESULT;
+
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().
   bool StartEmbeddedTestServer();
@@ -129,6 +138,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   std::string message_;
 
  private:
+  void OpenURL(const GURL& url, bool open_in_incognito);
+
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
   std::unique_ptr<base::DictionaryValue> test_config_;

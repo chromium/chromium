@@ -190,7 +190,7 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
     extension_test_util::SetGalleryUpdateURL(crx_url);
 
     GURL page_url = GetTestServerURL(page);
-    return RunExtensionTest({.page_url = page_url.spec().c_str()});
+    return OpenTestURL(page_url);
   }
 
   content::WebContents* GetWebContents() {
@@ -316,13 +316,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, AppInstallBubble) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsInIncognitoMode) {
   GURL page_url = GetTestServerURL("incognito.html");
-  ASSERT_TRUE(RunExtensionTest(
-      {.page_url = page_url.spec().c_str(), .open_in_incognito = true}));
+  ASSERT_TRUE(OpenTestURL(page_url, /*open_in_incognito=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsNotInIncognitoMode) {
   GURL page_url = GetTestServerURL("not_incognito.html");
-  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
+  ASSERT_TRUE(OpenTestURL(page_url));
 }
 
 // Tests using the iconUrl parameter to the install function.
@@ -635,7 +634,7 @@ class ExtensionWebstorePrivateGetReferrerChainApiTest
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
                        GetReferrerChain) {
   GURL page_url = GetTestServerURLWithReferrers("referrer_chain.html");
-  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
+  ASSERT_TRUE(OpenTestURL(page_url));
 }
 
 // Tests that the GetReferrerChain API returns an empty string for profiles
@@ -648,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
   pref_service->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
   GURL page_url = GetTestServerURLWithReferrers("empty_referrer_chain.html");
-  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
+  ASSERT_TRUE(OpenTestURL(page_url));
 }
 
 class ExtensionWebstorePrivateApiAllowlistEnforcementTest

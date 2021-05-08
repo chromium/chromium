@@ -100,8 +100,7 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
                                         const LoadOptions& load_options) {
   // Do some sanity checks for options that are mutually exclusive or
   // only valid with other options.
-  CHECK(run_options.name || run_options.page_url)
-      << "Must specify either 'name' or 'page_url'";
+  CHECK(run_options.name) << "Must specify 'name'";
   CHECK(!(run_options.extension_url && run_options.page_url))
       << "'extension_url' and 'page_url' are mutually exclusive.";
   CHECK(!run_options.open_in_incognito || run_options.page_url)
@@ -114,38 +113,27 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
 
   ResultCatcher catcher;
 
-  const Extension* extension = nullptr;
-  if (run_options.name) {
-    const base::FilePath& root_path = run_options.use_extensions_root_dir
-                                          ? shared_test_data_dir_
-                                          : test_data_dir_;
-    base::FilePath extension_path = root_path.AppendASCII(run_options.name);
-    extension = LoadExtension(extension_path, load_options);
-    if (!extension) {
-      message_ = "Failed to load extension.";
-      return false;
-    }
+  const base::FilePath& root_path = run_options.use_extensions_root_dir
+                                        ? shared_test_data_dir_
+                                        : test_data_dir_;
+  base::FilePath extension_path = root_path.AppendASCII(run_options.name);
+  const Extension* extension = LoadExtension(extension_path, load_options);
+  if (!extension) {
+    message_ = "Failed to load extension.";
+    return false;
   }
 
   // If there is a page_url to load, navigate it.
-  // TODO(https://crbug.com/1171429): Separate page_url into page_url and
-  // extension_url.
   if (run_options.page_url) {
     GURL url(run_options.page_url);
 
     // Note: We use is_valid() here in the expectation that the provided url
     // may lack a scheme & host and thus be a relative url within the loaded
     // extension.
-    if (!url.is_valid()) {
-      DCHECK(run_options.name) << "Relative page_url given with no name";
-
+    if (!url.is_valid())
       url = extension->GetResourceURL(run_options.page_url);
-    }
 
-    if (run_options.open_in_incognito)
-      OpenURLOffTheRecord(browser()->profile(), url);
-    else
-      ui_test_utils::NavigateToURL(browser(), url);
+    OpenURL(url, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
     apps::AppLaunchParams params(
         extension->id(), LaunchContainer::kLaunchContainerNone,
@@ -155,6 +143,29 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
         ->BrowserAppLauncher()
         ->LaunchAppWithParams(std::move(params));
   }
+
+  if (!catcher.GetNextResult()) {
+    message_ = catcher.message();
+    return false;
+  }
+
+  return true;
+}
+
+void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
+  if (open_in_incognito) {
+    OpenURLOffTheRecord(browser()->profile(), url);
+  } else {
+    ui_test_utils::NavigateToURL(browser(), url);
+  }
+}
+
+bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
+  DCHECK(url.is_valid());
+
+  ResultCatcher catcher;
+
+  OpenURL(url, open_in_incognito);
 
   if (!catcher.GetNextResult()) {
     message_ = catcher.message();
