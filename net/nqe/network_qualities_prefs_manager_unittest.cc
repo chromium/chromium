@@ -34,7 +34,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   ~TestPrefDelegate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     value_->Clear();
-    EXPECT_EQ(0U, value_->size());
+    EXPECT_EQ(0U, value_->DictSize());
   }
 
   void SetDictionaryValue(const base::DictionaryValue& value) override {
@@ -42,7 +42,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
 
     write_count_++;
     value_.reset(value.DeepCopy());
-    ASSERT_EQ(value.size(), value_->size());
+    ASSERT_EQ(value.DictSize(), value_->DictSize());
   }
 
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {

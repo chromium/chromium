@@ -117,7 +117,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
 
     base::DictionaryValue* report;
     ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->size());
+    EXPECT_EQ(5u, report->DictSize());
 
     ExpectDictIntegerValue(0, *report, "age");
     ExpectDictStringValue(kType_, *report, "type");
@@ -163,7 +163,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
 
     base::DictionaryValue* report;
     ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->size());
+    EXPECT_EQ(5u, report->DictSize());
 
     ExpectDictIntegerValue(0, *report, "age");
     ExpectDictStringValue(kType_, *report, "type");
@@ -243,7 +243,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
 
     base::DictionaryValue* report;
     ASSERT_TRUE(list->GetDictionary(0, &report));
-    EXPECT_EQ(5u, report->size());
+    EXPECT_EQ(5u, report->DictSize());
 
     ExpectDictIntegerValue(0, *report, "age");
     ExpectDictStringValue(kType_, *report, "type");
