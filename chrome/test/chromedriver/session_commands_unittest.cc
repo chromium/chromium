@@ -122,7 +122,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Empty) {
                        std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 }
 
 TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
@@ -140,7 +140,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
                        std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 
   // Invalid "alwaysMatch"
   params.SetInteger("capabilities.alwaysMatch.browserName", 10);
@@ -190,7 +190,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   list_ptr->Set(0, std::make_unique<base::DictionaryValue>());
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(result.empty());
+  ASSERT_TRUE(result.DictEmpty());
 
   // Invalid entry
   base::DictionaryValue* entry_ptr;

@@ -621,7 +621,7 @@ TEST(ParseInspectorMessage, CommandNoErrorOrResult) {
   ASSERT_TRUE(
       internal::ParseInspectorMessage("{\"id\":1,\"sessionId\":\"AB2AF3C\"}", 0,
                                       &session_id, &type, &event, &response));
-  ASSERT_TRUE(response.result->empty());
+  ASSERT_TRUE(response.result->DictEmpty());
   EXPECT_EQ("AB2AF3C", session_id);
 }
 
