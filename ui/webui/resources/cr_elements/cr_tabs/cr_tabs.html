@@ -11,6 +11,11 @@
         user-select: none;
       }
 
+      :host([new-material]) {
+        cursor: auto;
+        justify-content: space-around;
+      }
+
       .tab {
         align-items: center;
         color: var(--cr-secondary-text-color);
@@ -20,6 +25,12 @@
         justify-content: center;
         opacity: .8;
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
+      }
+
+      :host([new-material]) .tab {
+        cursor: pointer;
+        flex: 0;
+        white-space: nowrap;
       }
 
       :host(:not(.keyboard-focus)) .tab {
@@ -54,6 +65,22 @@
         transform: scale(0);
         transform-origin: left center;
         transition: transform;
+      }
+
+      :host([new-material]) #selectionBar {
+        background: var(--google-blue-600);
+        border: none;
+        border-radius: 3px 3px 0 0;
+        height: 3px;
+        opacity: 0;
+        overflow: hidden;
+        transform: none;
+      }
+
+      :host([new-material]) #selectionBar.initiated {
+        opacity: 1;
+        transition: transform 250ms cubic-bezier(.4, 0, .2, 1),
+            width 250ms cubic-bezier(.4, 0, .2, 1);
       }
 
       @media (prefers-color-scheme: dark) {
