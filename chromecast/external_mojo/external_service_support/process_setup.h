@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_PROCESS_SETUP_H_
 #define CHROMECAST_EXTERNAL_MOJO_EXTERNAL_SERVICE_SUPPORT_PROCESS_SETUP_H_
 
-#include <string>
-
 namespace chromecast {
 namespace external_service_support {
 

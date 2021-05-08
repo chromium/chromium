@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_PROXY_AUDIO_CHANNEL_PUSH_BUFFER_HANDLER_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_AUDIO_CHANNEL_PUSH_BUFFER_HANDLER_H_
 
-#include <memory>
-
 #include "base/optional.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"

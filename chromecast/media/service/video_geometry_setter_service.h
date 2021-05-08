@@ -5,9 +5,6 @@
 #ifndef CHROMECAST_MEDIA_SERVICE_VIDEO_GEOMETRY_SETTER_SERVICE_H_
 #define CHROMECAST_MEDIA_SERVICE_VIDEO_GEOMETRY_SETTER_SERVICE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"

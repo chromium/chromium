@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 #define CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"

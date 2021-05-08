@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_NOTIFICATIONS_NOTIFICATIONS_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_NOTIFICATIONS_NOTIFICATIONS_API_H_
 
-#include <string>
-
 #include "chromecast/common/extensions_api/notifications.h"
 #include "extensions/browser/extension_function.h"
 

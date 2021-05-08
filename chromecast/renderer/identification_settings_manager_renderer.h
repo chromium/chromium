@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_RENDERER_H_
 #define CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_RENDERER_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
 #include "chromecast/common/identification_settings_manager.h"
 #include "content/public/renderer/render_frame_observer.h"

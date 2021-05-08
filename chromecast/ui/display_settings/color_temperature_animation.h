@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_UI_DISPLAY_SETTINGS_COLOR_TEMPERATURE_ANIMATION_H_
 #define CHROMECAST_UI_DISPLAY_SETTINGS_COLOR_TEMPERATURE_ANIMATION_H_
 
-#include <vector>
-
 #include "chromecast/ui/display_settings_manager.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"

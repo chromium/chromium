@@ -5,9 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_TTS_TTS_EXTENSION_API_CONSTANTS_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_TTS_TTS_EXTENSION_API_CONSTANTS_H_
 
-#include <string>
-
-
 namespace tts_extension_api_constants {
 
 extern const char kCharIndexKey[];

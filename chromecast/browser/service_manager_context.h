@@ -5,9 +5,6 @@
 #ifndef CHROMECAST_BROWSER_SERVICE_MANAGER_CONTEXT_H_
 #define CHROMECAST_BROWSER_SERVICE_MANAGER_CONTEXT_H_
 
-#include <map>
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

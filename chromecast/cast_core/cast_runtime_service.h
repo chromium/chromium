@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_CAST_CORE_CAST_RUNTIME_SERVICE_H_
 #define CHROMECAST_CAST_CORE_CAST_RUNTIME_SERVICE_H_
 
-#include <memory>
-
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_endpoint_manager.h"
 #include "chromecast/service/cast_service.h"
 

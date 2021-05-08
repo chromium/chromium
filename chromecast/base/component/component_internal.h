@@ -5,10 +5,6 @@
 #ifndef CHROMECAST_BASE_COMPONENT_COMPONENT_INTERNAL_H_
 #define CHROMECAST_BASE_COMPONENT_COMPONENT_INTERNAL_H_
 
-#include <set>
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/macros.h"

@@ -8,8 +8,6 @@
 #ifndef CHROMECAST_GRAPHICS_ACCESSIBILITY_FOCUS_RING_LAYER_H_
 #define CHROMECAST_GRAPHICS_ACCESSIBILITY_FOCUS_RING_LAYER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"

@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_DISPLAY_CONFIGURATOR_OBSERVER_H_
 #define CHROMECAST_BROWSER_DISPLAY_CONFIGURATOR_OBSERVER_H_
 
-#include <memory>
-
 #include "chromecast/browser/cast_display_configurator.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
 
