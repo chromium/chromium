@@ -538,7 +538,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
       !template_url_service->GetDefaultSearchProvider()) {
-    return dictionary->size() > 0;
+    return dictionary->DictSize() > 0;
   }
 
   for (const auto& element : *dictionary) {
@@ -601,7 +601,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
         navigation_url,
         std::make_pair(GURL(prefetch_url), last_update.value()));
   }
-  return dictionary->size() > prefetch_cache_.size();
+  return dictionary->DictSize() > prefetch_cache_.size();
 }
 
 void SearchPrefetchService::SaveToPrefs() const {
