@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -58,6 +61,8 @@ void SaveAddressProfileMessageController::DisplayMessage(
   message_->SetTitle(GetTitle());
   message_->SetDescription(GetDescription());
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
+  message_->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS);

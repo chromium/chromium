@@ -6,7 +6,10 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -125,7 +128,7 @@ SaveAddressProfileMessageControllerTest::GetMessageWrapper() {
 }
 
 // Tests that the save message properties (title, description with profile
-// details, primary button text) are set correctly.
+// details, primary button text, icon) are set correctly.
 TEST_F(SaveAddressProfileMessageControllerTest, SaveMessageContent) {
   EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
 
@@ -133,12 +136,14 @@ TEST_F(SaveAddressProfileMessageControllerTest, SaveMessageContent) {
   EXPECT_EQ(u"Save…", GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
             GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
+            GetMessageWrapper()->GetIconResourceId());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that the update message properties (title, description with original
-// profile details, primary button text) are set correctly.
+// profile details, primary button text, icon) are set correctly.
 TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
@@ -147,6 +152,8 @@ TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
   EXPECT_EQ(u"Update…", GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(u"For Jane A. Smith — 123 Main Street",
             GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
+            GetMessageWrapper()->GetIconResourceId());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
