@@ -1564,7 +1564,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   // Check the preferences.
   pref_data =
       local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
-  EXPECT_TRUE(pref_data->empty());
+  EXPECT_TRUE(pref_data->DictEmpty());
 }
 
 }  // namespace ash

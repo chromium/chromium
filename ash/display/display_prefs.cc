@@ -675,7 +675,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
           base::NumberToString(association_info.first),
           association_info_value->Clone());
     }
-    if (association_info_map_value.empty())
+    if (association_info_map_value.DictEmpty())
       continue;
 
     // Move the already serialized entry of AssociationInfoMap from
