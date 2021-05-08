@@ -219,10 +219,10 @@ void AuctionRunner::ReportBidWin(const BidState* best_bid,
 void AuctionRunner::OnReportBidWinComplete(
     const BidState* best_bid,
     SellerWorklet::Report seller_report,
-    BidderWorklet::ReportWinResult bidder_report) {
-  if (bidder_report.error_msg.has_value())
-    errors_.push_back(std::move(bidder_report.error_msg).value());
-  ReportSuccess(best_bid, bidder_report, seller_report);
+    const base::Optional<GURL>& bidder_report_url,
+    const std::vector<std::string>& error_msgs) {
+  errors_.insert(errors_.end(), error_msgs.begin(), error_msgs.end());
+  ReportSuccess(best_bid, seller_report, bidder_report_url);
 }
 
 void AuctionRunner::FailAuction() {
@@ -235,15 +235,16 @@ void AuctionRunner::FailAuction() {
 
 void AuctionRunner::ReportSuccess(
     const BidState* state,
-    const BidderWorklet::ReportWinResult& bidder_report,
-    const SellerWorklet::Report& seller_report) {
+    const SellerWorklet::Report& seller_report,
+    const base::Optional<GURL>& bidder_report_url) {
   DCHECK(state->bid_result);
 
   std::move(callback_).Run(
       state->bid_result->render_url, state->bidder->group->owner,
       state->bidder->group->name,
-      mojom::WinningBidderReport::New(bidder_report.success,
-                                      bidder_report.report_url),
+      mojom::WinningBidderReport::New(
+          bidder_report_url.has_value(),
+          bidder_report_url.has_value() ? *bidder_report_url : GURL()),
       mojom::SellerReport::New(seller_report.success,
                                seller_report.signals_for_winner,
                                seller_report.report_url),

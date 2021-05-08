@@ -52,11 +52,11 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
 // this class starts implementing a Mojo API.
 //
 // TODO(mmenke): Remove once this class switches over to using Mojo.
-void InvokeReportWinCallbackAsync(
-    base::OnceCallback<void(BidderWorklet::ReportWinResult)> callback,
-    BidderWorklet::ReportWinResult result) {
+void InvokeReportWinCallbackAsync(BidderWorklet::ReportWinCallback callback,
+                                  const base::Optional<GURL>& report_url,
+                                  const std::vector<std::string>& error_msgs) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+      FROM_HERE, base::BindOnce(std::move(callback), report_url, error_msgs));
 }
 
 }  // namespace
@@ -78,27 +78,6 @@ BidderWorklet::Bid::Bid(Bid&& other) = default;
 BidderWorklet::Bid::~Bid() = default;
 BidderWorklet::Bid& BidderWorklet::Bid::operator=(const Bid&) = default;
 BidderWorklet::Bid& BidderWorklet::Bid::operator=(Bid&&) = default;
-
-BidderWorklet::ReportWinResult::ReportWinResult() = default;
-
-BidderWorklet::ReportWinResult::ReportWinResult(GURL report_url)
-    : success(true), report_url(std::move(report_url)) {
-  DCHECK(this->report_url.is_valid());
-}
-
-BidderWorklet::ReportWinResult::ReportWinResult(
-    base::Optional<std::string> error_msg)
-    : error_msg(std::move(error_msg)) {}
-
-BidderWorklet::ReportWinResult::ReportWinResult(const ReportWinResult& other) =
-    default;
-BidderWorklet::ReportWinResult::ReportWinResult(ReportWinResult&& other) =
-    default;
-BidderWorklet::ReportWinResult::~ReportWinResult() = default;
-BidderWorklet::ReportWinResult& BidderWorklet::ReportWinResult::operator=(
-    const ReportWinResult&) = default;
-BidderWorklet::ReportWinResult& BidderWorklet::ReportWinResult::operator=(
-    ReportWinResult&&) = default;
 
 BidderWorklet::BidderWorklet(
     network::mojom::URLLoaderFactory* url_loader_factory,
@@ -153,7 +132,7 @@ void BidderWorklet::ReportWin(
     const GURL& browser_signal_render_url,
     const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
-    base::OnceCallback<void(ReportWinResult)> callback) {
+    ReportWinCallback callback) {
   callback = base::BindOnce(&InvokeReportWinCallbackAsync, std::move(callback));
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
@@ -174,7 +153,8 @@ void BidderWorklet::ReportWin(
       !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    std::move(callback).Run(ReportWinResult());
+    std::move(callback).Run(base::nullopt /* report_url */,
+                            std::vector<std::string>() /* error_msgs */);
     return;
   }
 
@@ -192,7 +172,8 @@ void BidderWorklet::ReportWin(
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid)) {
-    std::move(callback).Run(ReportWinResult());
+    std::move(callback).Run(base::nullopt /* report_url */,
+                            std::vector<std::string>() /* error_msgs */);
     return;
   }
   args.push_back(browser_signals);
@@ -204,16 +185,21 @@ void BidderWorklet::ReportWin(
           ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args,
                       error_msg_out)
           .IsEmpty()) {
-    std::move(callback).Run(ReportWinResult(std::move(error_msg_out)));
+    std::vector<std::string> error_msgs;
+    if (error_msg_out)
+      error_msgs.push_back(std::move(error_msg_out).value());
+    std::move(callback).Run(base::nullopt /* report_url */, error_msgs);
     return;
   }
 
   if (!report_bindings.report_url().is_valid()) {
-    std::move(callback).Run(ReportWinResult());
+    std::move(callback).Run(base::nullopt /* report_url */,
+                            std::vector<std::string>() /* error_msgs */);
     return;
   }
 
-  std::move(callback).Run(ReportWinResult(report_bindings.report_url()));
+  std::move(callback).Run(report_bindings.report_url(),
+                          std::vector<std::string>() /* error_msgs */);
 }
 
 void BidderWorklet::OnScriptDownloaded(

@@ -70,38 +70,6 @@ class BidderWorklet {
     base::TimeDelta bid_duration;
   };
 
-  struct ReportWinResult {
-    // Constructor for when there is a failure of some sort, or no URL to report
-    // to.
-    ReportWinResult();
-
-    // Constructor when a report was requested.
-    explicit ReportWinResult(GURL report_url);
-
-    // Constructor when there is some sort of a falire for which an error
-    // message may be available.
-    explicit ReportWinResult(base::Optional<std::string> error_msg);
-
-    ReportWinResult(const ReportWinResult& other);
-    ReportWinResult(ReportWinResult&& other);
-
-    ~ReportWinResult();
-
-    ReportWinResult& operator=(const ReportWinResult&);
-    ReportWinResult& operator=(ReportWinResult&&);
-
-    // `success` will be false on any type of failure. Neither lack or reporting
-    // function nor lack of report URL is considered an error.
-    bool success = false;
-
-    // Report URL, if one is provided. Empty on failure, or if no report URL is
-    // provided.
-    GURL report_url;
-
-    // Error message for debugging.
-    base::Optional<std::string> error_msg;
-  };
-
   // If no bid is generated, `bid` is null.
   //
   // `error_msgs` contains error messages for debugging. This isn't guaranteed
@@ -113,6 +81,14 @@ class BidderWorklet {
   using LoadScriptAndGenerateBidCallback =
       base::OnceCallback<void(base::Optional<Bid> bid,
                               std::vector<std::string> error_msgs)>;
+
+  // `report_url` is the URL to request to report displaying the ad. It is
+  // nullopt on error or if report is requested. `error_msgs` is a list of
+  // errors that occurred, if any. `error_msgs` may be non-empty on success, or
+  // empty on failure.
+  using ReportWinCallback =
+      base::OnceCallback<void(const base::Optional<GURL>& report_url,
+                              const std::vector<std::string>& error_msgs)>;
 
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
@@ -141,7 +117,7 @@ class BidderWorklet {
                  const GURL& browser_signal_render_url,
                  const std::string& browser_signal_ad_render_fingerprint,
                  double browser_signal_bid,
-                 base::OnceCallback<void(ReportWinResult)> callback);
+                 ReportWinCallback callback);
 
  private:
   void OnScriptDownloaded(

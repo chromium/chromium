@@ -150,51 +150,49 @@ class BidderWorkletTest : public testing::Test {
   // specified body. Then runs the script, expecting the provided result.
   void RunReportWinWithFunctionBodyExpectingResult(
       const std::string& function_body,
-      const GURL& expected_report_url,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const base::Optional<GURL>& expected_report_url,
+      const std::vector<std::string>& expected_error_msgs =
+          std::vector<std::string>()) {
     RunReportWinWithJavascriptExpectingResult(
         CreateReportWinScript(function_body), expected_report_url,
-        std::move(expected_error_msg));
+        expected_error_msgs);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
   // specified Javascript. Then runs the script, expecting the provided result.
   void RunReportWinWithJavascriptExpectingResult(
       const std::string& javascript,
-      const GURL& expected_report_url,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const base::Optional<GURL>& expected_report_url,
+      const std::vector<std::string>& expected_error_msgs =
+          std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunReportWinExpectingResult(expected_report_url,
-                                std::move(expected_error_msg));
+    RunReportWinExpectingResult(expected_report_url, expected_error_msgs);
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
   // supplied result.
   void RunReportWinExpectingResult(
-      const GURL& expected_report_url,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const base::Optional<GURL>& expected_report_url,
+      const std::vector<std::string>& expected_error_msgs =
+          std::vector<std::string>()) {
     auto bidder_worket = CreateWorkletAndGenerateBid();
     ASSERT_TRUE(bidder_worket);
 
-    BidderWorklet::ReportWinResult actual_result;
     base::RunLoop run_loop;
     bidder_worket->ReportWin(
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
-            [&run_loop, &actual_result](BidderWorklet::ReportWinResult result) {
-              actual_result = result;
+            [&run_loop, &expected_report_url, &expected_error_msgs](
+                const base::Optional<GURL>& report_url,
+                const std::vector<std::string>& error_msgs) {
+              EXPECT_EQ(expected_report_url, report_url);
+              EXPECT_EQ(expected_error_msgs, error_msgs);
               run_loop.Quit();
             }));
     run_loop.Run();
-    EXPECT_EQ(!expected_report_url.is_empty(), actual_result.success);
-    EXPECT_EQ(expected_report_url, actual_result.report_url);
-    EXPECT_EQ(expected_error_msg.has_value(),
-              actual_result.error_msg.has_value());
-    EXPECT_EQ(expected_error_msg.value_or("Not an error"),
-              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Create a BidderWorklet, waiting for the URLLoader to complete. Returns
@@ -938,9 +936,11 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
 }
 
 TEST_F(BidderWorkletTest, ReportWin) {
-  RunReportWinWithFunctionBodyExpectingResult("", GURL());
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(return "https://ignored.test/")", GURL());
+      "", base::nullopt /* expected_report_url */);
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(return "https://ignored.test/")",
+      base::nullopt /* expected_report_url */);
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test"))", GURL("https://foo.test/"));
@@ -948,31 +948,34 @@ TEST_F(BidderWorkletTest, ReportWin) {
       R"(sendReportTo("https://foo.test/bar"))", GURL("https://foo.test/bar"));
 
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("http://http.not.allowed.test"))", GURL(),
-      "https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
-      "valid HTTPS url.");
+      R"(sendReportTo("http://http.not.allowed.test"))",
+      base::nullopt /* expected_report_url */,
+      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+       "valid HTTPS url."});
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("file:///file.not.allowed.test"))", GURL(),
-      "https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
-      "valid HTTPS url.");
+      R"(sendReportTo("file:///file.not.allowed.test"))",
+      base::nullopt /* expected_report_url */,
+      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+       "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo(""))", GURL(),
-      "https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
-      "valid HTTPS url.");
+      R"(sendReportTo(""))", base::nullopt /* expected_report_url */,
+      {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
+       "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
-      GURL(),
-      "https://url.test/:9 Uncaught TypeError: sendReportTo may be called at "
-      "most once.");
+      base::nullopt /* expected_report_url */,
+      {"https://url.test/:9 Uncaught TypeError: sendReportTo may be called at "
+       "most once."});
 }
 
 // Make sure Date() is not available when running reportWin().
 TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo("https://foo.test/" + Date().toString()))", GURL(),
-      "https://url.test/:9 Uncaught ReferenceError: Date is not defined.");
+      R"(sendReportTo("https://foo.test/" + Date().toString()))",
+      base::nullopt /* expected_report_url */,
+      {"https://url.test/:9 Uncaught ReferenceError: Date is not defined."});
 }
 
 TEST_F(BidderWorkletTest, ReportWinParameters) {
@@ -990,54 +993,56 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     // Pointer to location at which the string can be modified.
     std::string* value_ptr;
 
-    // Whether to expect an error. This can be empty when call fails in case
-    // it's due to something like passing non-JSON to JSON parameter which user
-    // code should be unable to trigger, and for which we thus do not produce
-    // an error message.
-    base::Optional<std::string> expect_error_msg;
-    base::Optional<std::string> expect_error_msg_array;
+    // What error(s) to expect, if any. This can be empty when call fails in
+    // case it's due to something like passing non-JSON to JSON parameter which
+    // user code should be unable to trigger, and for which we thus do not
+    // produce an error message.
+    std::vector<std::string> expect_error_msgs;
+    std::vector<std::string> expect_error_msgs_array;
   } kStringTestCases[] = {
       {
           "auctionSignals",
           true /* is_json */,
           true /* passed_to_generate_bid */,
           &auction_signals_,
-          base::nullopt,
-          base::nullopt,
+          {},
+          {},
       },
       {
           "perBuyerSignals",
           true /* is_json */,
           true /* passed_to_generate_bid */,
           &per_buyer_signals_,
-          base::nullopt,
-          base::nullopt,
+          {},
+          {},
       },
       {
           "sellerSignals",
           true /* is_json */,
           false /* passed_to_generate_bid */,
           &seller_signals_,
-          base::nullopt,
-          base::nullopt,
+          {},
+          {},
       },
       {
           "browserSignals.interestGroupName",
           false /* is_json */,
           true /* passed_to_generate_bid */,
           &interest_group_name_,
-          base::nullopt,
-          "https://url.test/:9 Uncaught TypeError: sendReportTo must be passed "
-          "a valid HTTPS url.",
+          {},
+          {"https://url.test/:9 Uncaught TypeError: sendReportTo must be "
+           "passed "
+           "a valid HTTPS url."},
       },
       {
           "browserSignals.adRenderFingerprint",
           false /* is_json */,
           false /* passed_to_generate_bid */,
           &browser_signal_ad_render_fingerprint_,
-          base::nullopt,
-          "https://url.test/:9 Uncaught TypeError: sendReportTo must be passed "
-          "a valid HTTPS url.",
+          {},
+          {"https://url.test/:9 Uncaught TypeError: sendReportTo must be "
+           "passed "
+           "a valid HTTPS url."},
       },
   };
 
@@ -1048,8 +1053,9 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     if (!test_case.is_json || !test_case.passed_to_generate_bid) {
       RunReportWinWithFunctionBodyExpectingResult(
           base::StringPrintf("sendReportTo(%s)", test_case.name),
-          test_case.is_json ? GURL() : GURL("https://foo.test/"),
-          test_case.expect_error_msg);
+          test_case.is_json ? base::Optional<GURL>()
+                            : GURL("https://foo.test/"),
+          {test_case.expect_error_msgs});
     } else {
       // JSON values passed the generateBid() result in failures there, before
       // reportWin is called.
@@ -1060,8 +1066,8 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     *test_case.value_ptr = R"(["https://foo.test/"])";
     RunReportWinWithFunctionBodyExpectingResult(
         base::StringPrintf("sendReportTo(%s[0])", test_case.name),
-        test_case.is_json ? GURL("https://foo.test/") : GURL(),
-        test_case.expect_error_msg_array);
+        test_case.is_json ? GURL("https://foo.test/") : base::Optional<GURL>(),
+        {test_case.expect_error_msgs_array});
 
     SetDefaultParameters();
   }
@@ -1173,20 +1179,18 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   ASSERT_TRUE(bidder_worket);
 
   for (int i = 0; i < 3; ++i) {
-    BidderWorklet::ReportWinResult actual_result;
     base::RunLoop run_loop;
     bidder_worket->ReportWin(
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
-            [&run_loop, &actual_result](BidderWorklet::ReportWinResult result) {
-              actual_result = result;
+            [&run_loop](const base::Optional<GURL>& report_url,
+                        const std::vector<std::string>& error_msgs) {
+              EXPECT_EQ(GURL("https://23.test/"), report_url);
+              EXPECT_TRUE(error_msgs.empty());
               run_loop.Quit();
             }));
     run_loop.Run();
-    EXPECT_TRUE(actual_result.success);
-    EXPECT_EQ(GURL("https://23.test/"), actual_result.report_url);
-    EXPECT_FALSE(actual_result.error_msg);
   }
 }
 

@@ -107,15 +107,16 @@ class AuctionRunner {
   void ReportBidWin(const BidState* state, SellerWorklet::Report seller_report);
   void OnReportBidWinComplete(const BidState* best_bid,
                               SellerWorklet::Report seller_report,
-                              BidderWorklet::ReportWinResult bidder_report);
+                              const base::Optional<GURL>& bidder_report_url,
+                              const std::vector<std::string>& error_msgs);
 
   // Destroys `this`.
   void FailAuction();
 
   // Destroys `this`.
   void ReportSuccess(const BidState* state,
-                     const BidderWorklet::ReportWinResult& bidder_report,
-                     const SellerWorklet::Report& seller_report);
+                     const SellerWorklet::Report& seller_report,
+                     const base::Optional<GURL>& bidder_report_url);
 
   // `auction_v8_helper_` needs to be before the worklets, since they refer to
   // it.
