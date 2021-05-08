@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetOutputUserMute(bool mute_on) override;
   void SetInputNodeGain(uint64_t node_id, int32_t gain) override;
   void SetInputMute(bool mute_on) override;
+  void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
   void SetActiveOutputNode(uint64_t node_id) override;
   void SetActiveInputNode(uint64_t node_id) override;
   void SetHotwordModel(uint64_t node_id,

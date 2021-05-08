@@ -181,6 +181,9 @@ void FakeCrasAudioClient::SetInputMute(bool mute_on) {
     observer.InputMuteChanged(volume_state_.input_mute);
 }
 
+void FakeCrasAudioClient::SetNoiseCancellationEnabled(
+    bool noise_cancellation_on) {}
+
 void FakeCrasAudioClient::SetActiveOutputNode(uint64_t node_id) {
   if (active_output_node_id_ == node_id)
     return;

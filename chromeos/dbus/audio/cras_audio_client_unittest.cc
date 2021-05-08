@@ -1128,6 +1128,22 @@ TEST_F(CrasAudioClientTest, SetInputMute) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, SetNoiseCancellationEnabled) {
+  const bool kNoiseCancellationOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      cras::kSetNoiseCancellationEnabled,
+      base::BindRepeating(&ExpectBoolArgument, kNoiseCancellationOn),
+      response.get());
+  // Call method.
+  client()->SetNoiseCancellationEnabled(kNoiseCancellationOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(CrasAudioClientTest, SetActiveOutputNode) {
   const uint64_t kNodeId = 10004;
   // Create response.

@@ -133,6 +133,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets input mute state to |mute_on| value.
   virtual void SetInputMute(bool mute_on) = 0;
 
+  // Sets input noise cancellation state to |noise_cancellation_on| value.
+  virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
+
   // Sets the active output node to |node_id|.
   virtual void SetActiveOutputNode(uint64_t node_id) = 0;
 
