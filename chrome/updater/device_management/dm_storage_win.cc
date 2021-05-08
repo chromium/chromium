@@ -19,15 +19,6 @@ constexpr wchar_t kRegKeyCryptographyKey[] =
     L"SOFTWARE\\Microsoft\\Cryptography\\";
 constexpr wchar_t kRegValueMachineGuid[] = L"MachineGuid";
 
-// Registry for enrollment token.
-constexpr wchar_t kRegKeyCompanyCloudManagement[] =
-    COMPANY_POLICIES_KEY L"CloudManagement\\";
-constexpr wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
-
-// Registry for DM token.
-constexpr wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
-constexpr wchar_t kRegValueDmToken[] = L"dmtoken";
-
 class TokenService : public TokenServiceInterface {
  public:
   TokenService() = default;

@@ -113,7 +113,8 @@ void Clean(UpdaterScope scope) {
   for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_TRUE(DeleteRegKey(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
   }
-  for (const wchar_t* key : {COMPANY_POLICIES_KEY, UPDATER_POLICIES_KEY}) {
+  for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
+                             kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {
     EXPECT_TRUE(DeleteRegKey(HKEY_LOCAL_MACHINE, 0, key));
   }
   for (const CLSID& clsid : GetSideBySideServers()) {
@@ -148,7 +149,8 @@ void ExpectClean(UpdaterScope scope) {
   for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_FALSE(RegKeyExists(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
   }
-  for (const wchar_t* key : {COMPANY_POLICIES_KEY, UPDATER_POLICIES_KEY}) {
+  for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
+                             kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {
     EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, 0, key));
   }
   for (const CLSID& clsid : GetSideBySideServers()) {

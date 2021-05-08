@@ -22,6 +22,13 @@ const wchar_t kRegValueInstallerResultUIString[] = L"InstallerResultUIString";
 const wchar_t kRegValueInstallerSuccessLaunchCmdLine[] =
     L"InstallerSuccessLaunchCmdLine";
 
+const wchar_t kRegKeyCompanyCloudManagement[] =
+    COMPANY_POLICIES_KEY L"CloudManagement\\";
+const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
+
+const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
+const wchar_t kRegValueDmToken[] = L"dmtoken";
+
 const wchar_t kWindowsServiceName[] = L"UpdaterService";
 
 }  // namespace updater
