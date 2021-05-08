@@ -1255,6 +1255,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Response or error codes from SafeBrowsing real time URL lookups. Logged on
     each resource check for which a lookup request is sent to the server.
+    Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
+    actual HTTP response code.
   </summary>
 </histogram>
 
@@ -1491,14 +1493,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-05-07">
   <owner>vakh@google.com</owner>
   <owner>kcarattini@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes from the SafeBrowsing Pver4 service. Logged after a
     GetHash or request finishes to capture the response code or error code for
-    that call.
+    that call. Warning: this histogram was expired from M86 to M91. Data may be
+    missing. Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is
+    matched to the actual HTTP response code.
   </summary>
 </histogram>
 
@@ -1855,7 +1859,8 @@ and applied correctly. -->
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes when fetching updates from the SafeBrowsing PVer4
-    service.
+    service. Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is
+    matched to the actual HTTP response code.
   </summary>
 </histogram>
 

@@ -360,7 +360,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Response or error codes from the SafeBrowsing service. Logged after a
     request for the client side model finishes to capture the response code or
-    the error code for that HTTP request.
+    the error code for that HTTP request. Starting M92, the
+    ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the actual HTTP
+    response code.
   </summary>
 </histogram>
 
