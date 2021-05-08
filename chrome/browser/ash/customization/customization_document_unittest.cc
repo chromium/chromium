@@ -309,18 +309,18 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
 
   std::unique_ptr<base::DictionaryValue> default_apps(doc->GetDefaultApps());
   ASSERT_TRUE(default_apps);
-  EXPECT_EQ(default_apps->size(), 2u);
+  EXPECT_EQ(default_apps->DictSize(), 2u);
 
   const base::DictionaryValue* app_entry = nullptr;
   ASSERT_TRUE(default_apps->GetDictionary("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                                           &app_entry));
-  EXPECT_EQ(app_entry->size(), 1u);
+  EXPECT_EQ(app_entry->DictSize(), 1u);
   EXPECT_TRUE(
       app_entry->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
 
   ASSERT_TRUE(default_apps->GetDictionary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                                           &app_entry));
-  EXPECT_EQ(app_entry->size(), 2u);
+  EXPECT_EQ(app_entry->DictSize(), 2u);
   EXPECT_TRUE(
       app_entry->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
   EXPECT_TRUE(app_entry->HasKey(

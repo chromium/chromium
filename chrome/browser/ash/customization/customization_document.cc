@@ -208,7 +208,7 @@ class ServicesCustomizationExternalLoader
     }
 
     VLOG(1) << "ServicesCustomization extension loader publishing "
-            << apps_.size() << " apps.";
+            << apps_.DictSize() << " apps.";
     LoadFinished(apps_.CreateDeepCopy());
   }
 
