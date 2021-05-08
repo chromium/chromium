@@ -79,7 +79,6 @@ enum class ApiStatus {
   kNotAvailableDueToFlag,
   kNotAvailableDueToDetachedContext,
   kNotAvailableDueToCrossOriginContext,
-  kNotAvailableDueToCrossOriginIsolation,
   kNotAvailableDueToResourceCoordinator,
 };
 
@@ -95,10 +94,9 @@ ApiStatus CheckMeasureMemoryAvailability(LocalDOMWindow* window) {
   if (!local_frame) {
     return ApiStatus::kNotAvailableDueToDetachedContext;
   }
-  if (!window->CrossOriginIsolatedCapability() &&
-      local_frame->GetSettings()->GetWebSecurityEnabled()) {
-    return ApiStatus::kNotAvailableDueToCrossOriginIsolation;
-  }
+
+  DCHECK(window->CrossOriginIsolatedCapability() ||
+         local_frame->GetSettings()->GetWebSecurityEnabled());
 
   // We need DocumentResourceCoordinator to query PerformanceManager.
   if (!window->document()) {
@@ -135,11 +133,6 @@ ScriptPromise MeasureMemoryController::StartMeasurement(
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not supported"
           " in cross-origin iframes.");
-      return ScriptPromise();
-    case ApiStatus::kNotAvailableDueToCrossOriginIsolation:
-      exception_state.ThrowSecurityError(
-          "performance.measureUserAgentSpecificMemory requires"
-          " cross-origin isolation.");
       return ScriptPromise();
   }
   v8::Isolate* isolate = script_state->GetIsolate();

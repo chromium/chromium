@@ -5093,7 +5093,6 @@ interface Performance : EventTarget
     method getEntriesByType
     method mark
     method measure
-    method measureUserAgentSpecificMemory
     method now
     method setResourceTimingBufferSize
     method toJSON

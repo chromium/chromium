@@ -6163,7 +6163,6 @@ interface Performance : EventTarget
     method getEntriesByType
     method mark
     method measure
-    method measureUserAgentSpecificMemory
     method now
     method profile
     method setResourceTimingBufferSize
