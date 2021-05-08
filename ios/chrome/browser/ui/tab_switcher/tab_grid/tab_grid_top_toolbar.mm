@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_top_toolbar.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -26,7 +27,8 @@ const int kNewTabButtonTrailingSpace = 20;
   UIBarButtonItem* _centralItem;
   UIBarButtonItem* _spaceItem;
   UIBarButtonItem* _newTabButton;
-  UIBarButtonItem* _newTabButtonTrailingSpaceItem;
+  UIBarButtonItem* _fixedTrailingSpaceItem;
+  UIBarButtonItem* _selectTabsButton;
 }
 
 - (void)hide {
@@ -46,6 +48,15 @@ const int kNewTabButtonTrailingSpace = 20;
 
 - (void)setNewTabButtonEnabled:(BOOL)enabled {
   _newTabButton.enabled = enabled;
+}
+
+- (void)setSelectTabButtonTarget:(id)target action:(SEL)action {
+  _selectTabsButton.target = target;
+  _selectTabsButton.action = action;
+}
+
+- (void)setSelectTabsButtonEnabled:(BOOL)enabled {
+  _selectTabsButton.enabled = enabled;
 }
 
 #pragma mark - UIView
@@ -79,21 +90,35 @@ const int kNewTabButtonTrailingSpace = 20;
 - (void)setItemsForTraitCollection:(UITraitCollection*)traitCollection {
   if (traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-    [self setItems:@[ _spaceItem, _centralItem, _spaceItem ]];
-  } else {
-    // The new tab button is only used if the thumb strip is enabled. In other
-    // cases, there is a floating new tab button on the bottom.
-    if (ShowThumbStripInTraitCollection(traitCollection)) {
+    if (IsTabsBulkActionsEnabled()) {
       [self setItems:@[
-        _leadingButton, _spaceItem, _centralItem, _spaceItem, _newTabButton,
-        _newTabButtonTrailingSpaceItem, _trailingButton
+        _spaceItem, _spaceItem, _centralItem, _spaceItem, _selectTabsButton
       ]];
     } else {
-      [self setItems:@[
-        _leadingButton, _spaceItem, _centralItem, _spaceItem, _trailingButton
-      ]];
+      [self setItems:@[ _spaceItem, _centralItem, _spaceItem ]];
     }
+    return;
   }
+
+  // The new tab button is only used if the thumb strip is enabled. In other
+  // cases, there is a floating new tab button on the bottom.
+  if (ShowThumbStripInTraitCollection(traitCollection)) {
+    [self setItems:@[
+      _leadingButton, _spaceItem, _centralItem, _spaceItem, _newTabButton,
+      _fixedTrailingSpaceItem, _trailingButton
+    ]];
+    return;
+  }
+  if (IsTabsBulkActionsEnabled()) {
+    [self setItems:@[
+      _leadingButton, _spaceItem, _centralItem, _spaceItem, _selectTabsButton,
+      _fixedTrailingSpaceItem, _trailingButton
+    ]];
+    return;
+  }
+  [self setItems:@[
+    _leadingButton, _spaceItem, _centralItem, _spaceItem, _trailingButton
+  ]];
 }
 
 - (void)setupViews {
@@ -106,6 +131,10 @@ const int kNewTabButtonTrailingSpace = 20;
 
   _leadingButton = [[UIBarButtonItem alloc] init];
   _leadingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+
+  _selectTabsButton = [[UIBarButtonItem alloc] init];
+  _selectTabsButton.image = [UIImage imageNamed:@"select_tabs_toolbar_button"];
+  _selectTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
@@ -122,11 +151,11 @@ const int kNewTabButtonTrailingSpace = 20;
                            action:nil];
   _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
-  _newTabButtonTrailingSpaceItem = [[UIBarButtonItem alloc]
+  _fixedTrailingSpaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                            target:nil
                            action:nil];
-  _newTabButtonTrailingSpaceItem.width = kNewTabButtonTrailingSpace;
+  _fixedTrailingSpaceItem.width = kNewTabButtonTrailingSpace;
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace

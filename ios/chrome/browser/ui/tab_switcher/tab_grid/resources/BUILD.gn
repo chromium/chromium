@@ -88,6 +88,14 @@ imageset("page_control_remote_tabs_selected") {
   ]
 }
 
+imageset("select_tabs_toolbar_button") {
+  sources = [
+    "select_tabs_toolbar_button.imageset/Contents.json",
+    "select_tabs_toolbar_button.imageset/select_tabs_toolbar_button@2x.png",
+    "select_tabs_toolbar_button.imageset/select_tabs_toolbar_button@3x.png",
+  ]
+}
+
 imageset("tab_grid_incognito_tabs_empty") {
   sources = [
     "tab_grid_incognito_tabs_empty.imageset/Contents.json",
