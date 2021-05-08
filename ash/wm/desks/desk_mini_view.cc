@@ -280,6 +280,12 @@ void DeskMiniView::MaybeSwapHighlightedView(bool right) {
   desks_controller->UpdateDesksDefaultNames();
 }
 
+bool DeskMiniView::MaybeActivateHighlightedViewOnOverviewExit(
+    OverviewSession* overview_session) {
+  MaybeActivateHighlightedView();
+  return true;
+}
+
 void DeskMiniView::OnViewHighlighted() {
   UpdateBorderColor();
   owner_bar_->ScrollToShowMiniViewIfNecessary(this);

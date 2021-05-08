@@ -11,11 +11,15 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -368,6 +372,43 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
+// Tests that activate highlighted desk when using 3-finger swipes to exit
+// overview.
+TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
+  auto* desks_controller = DesksController::Get();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(InOverviewSession());
+
+  // Create a new desk (we have two desks now).
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  EXPECT_EQ(2u, desks_controller->desks().size());
+
+  // The current active desk is the first desk.
+  EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  // Move highlight to the second desk.
+  OverviewSession* overview_session = overview_controller->overview_session();
+  DeskMiniView* mini_view_1 =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+          ->desks_bar_view()
+          ->mini_views()[1];
+
+  overview_session->highlight_controller()->MoveHighlightToView(mini_view_1);
+  EXPECT_TRUE(mini_view_1->IsViewHighlighted());
+
+  // Exit overview with 3-fingers downward swipes.
+  DeskSwitchAnimationWaiter waiter;
+  const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+  Scroll(0, -long_scroll, 3);
+  waiter.Wait();
+  EXPECT_FALSE(InOverviewSession());
+
+  // Current active desk changes to the second desk.
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+}
+
 class ReverseGestureHandlerTest : public WmGestureHandlerTest {
  public:
   ReverseGestureHandlerTest() = default;
@@ -424,7 +465,7 @@ TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   ScrollToSwitchDesks(/*scroll_left=*/true);
   EXPECT_EQ(desk2, GetActiveDesk());
   // Scroll right to get previous desk.
-  ScrollToSwitchDesks(/*scroll_right=*/false);
+  ScrollToSwitchDesks(/*scroll_left=*/false);
   EXPECT_EQ(desk1, GetActiveDesk());
 }
 

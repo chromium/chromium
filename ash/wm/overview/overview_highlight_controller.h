@@ -42,6 +42,13 @@ class ASH_EXPORT OverviewHighlightController {
     // |DeskMiniView|).
     virtual void MaybeSwapHighlightedView(bool right) = 0;
 
+    // Activates highlighted view when exiting overview. Currently, it is only
+    // used for the case of exiting overview by using 3-finger vertical swipes.
+    // Note that not all the highlighted views support this behavior. Return
+    // true means the highlighted view is activated and the overview is exited.
+    virtual bool MaybeActivateHighlightedViewOnOverviewExit(
+        OverviewSession* overview_session);
+
     void SetHighlightVisibility(bool visible);
 
     // Returns true if this is the current highlighted view.
@@ -104,8 +111,11 @@ class ASH_EXPORT OverviewHighlightController {
   bool MaybeActivateHighlightedView();
   bool MaybeCloseHighlightedView();
 
-  // Swap the currently highlighted view with its neighbor views.
+  // Swaps the currently highlighted view with its neighbor views.
   bool MaybeSwapHighlightedView(bool right);
+
+  // Activates highlighted view when exiting overview mode.
+  bool MaybeActivateHighlightedViewOnOverviewExit();
 
   // Tries to get the item that is currently highlighted. Returns null if there
   // is no highlight, or if the highlight is on a desk view.

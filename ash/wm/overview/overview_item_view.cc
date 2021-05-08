@@ -287,6 +287,13 @@ void OverviewItemView::MaybeCloseHighlightedView() {
 
 void OverviewItemView::MaybeSwapHighlightedView(bool right) {}
 
+bool OverviewItemView::MaybeActivateHighlightedViewOnOverviewExit(
+    OverviewSession* overview_session) {
+  DCHECK(overview_session);
+  overview_session->SelectWindow(overview_item_);
+  return true;
+}
+
 void OverviewItemView::OnViewHighlighted() {
   UpdateBorderState(/*show=*/true);
 }

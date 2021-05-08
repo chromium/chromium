@@ -337,10 +337,8 @@ void OverviewSession::IncrementSelection(bool forward) {
 }
 
 bool OverviewSession::AcceptSelection() {
-  if (!highlight_controller_->GetHighlightedItem())
-    return false;
-  SelectWindow(highlight_controller_->GetHighlightedItem());
-  return true;
+  // Activate selected window or desk.
+  return highlight_controller_->MaybeActivateHighlightedViewOnOverviewExit();
 }
 
 void OverviewSession::SelectWindow(OverviewItem* item) {

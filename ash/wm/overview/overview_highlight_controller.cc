@@ -26,6 +26,12 @@ namespace ash {
 // -----------------------------------------------------------------------------
 // OverviewHighlightController::OverviewHighlightableView
 
+bool OverviewHighlightController::OverviewHighlightableView::
+    MaybeActivateHighlightedViewOnOverviewExit(
+        OverviewSession* overview_session) {
+  return false;
+}
+
 void OverviewHighlightController::OverviewHighlightableView::
     SetHighlightVisibility(bool visible) {
   if (visible == is_highlighted_)
@@ -171,6 +177,12 @@ bool OverviewHighlightController::MaybeSwapHighlightedView(bool right) {
 
   highlighted_view_->MaybeSwapHighlightedView(right);
   return true;
+}
+
+bool OverviewHighlightController::MaybeActivateHighlightedViewOnOverviewExit() {
+  return highlighted_view_ &&
+         highlighted_view_->MaybeActivateHighlightedViewOnOverviewExit(
+             overview_session_);
 }
 
 OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
