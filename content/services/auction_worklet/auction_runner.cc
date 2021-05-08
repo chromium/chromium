@@ -76,17 +76,18 @@ void AuctionRunner::StartBidding() {
                      base::Unretained(this)));
 }
 
-void AuctionRunner::OnGenerateBidComplete(BidState* state,
-                                          BidderWorklet::BidResult bid_result) {
+void AuctionRunner::OnGenerateBidComplete(
+    BidState* state,
+    base::Optional<BidderWorklet::Bid> bid,
+    std::vector<std::string> error_msgs) {
   DCHECK(!state->bid_generate_complete);
   DCHECK_GT(outstanding_bids_, 0);
 
   --outstanding_bids_;
 
-  errors_.insert(errors_.end(), bid_result.error_msgs.begin(),
-                 bid_result.error_msgs.end());
+  errors_.insert(errors_.end(), error_msgs.begin(), error_msgs.end());
   state->bid_generate_complete = true;
-  state->bid_result = bid_result;
+  state->bid_result = std::move(bid);
 
   if (ReadyToScore())
     ScoreOne();
@@ -117,7 +118,7 @@ void AuctionRunner::ScoreOne() {
     BidState* bid_state = &bid_states_[seller_considering_];
 
     // Skip over bidders that produced no valid bid.
-    if (!bid_state->bid_result.success) {
+    if (!bid_state->bid_result) {
       ++seller_considering_;
       continue;
     }
@@ -132,9 +133,9 @@ void AuctionRunner::ScoreOne() {
 
 void AuctionRunner::ScoreBid(const BidState* state) {
   seller_worklet_->ScoreAd(
-      state->bid_result.ad, state->bid_result.bid, *auction_config_,
+      state->bid_result->ad, state->bid_result->bid, *auction_config_,
       browser_signals_->top_frame_origin.host(), state->bidder->group->owner,
-      AdRenderFingerprint(state), state->bid_result.bid_duration,
+      AdRenderFingerprint(state), state->bid_result->bid_duration,
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this)));
 }
 
@@ -185,10 +186,11 @@ void AuctionRunner::CompleteAuction() {
 }
 
 void AuctionRunner::ReportSellerResult(const BidState* best_bid) {
+  DCHECK(best_bid->bid_result);
   seller_worklet_->ReportResult(
       *auction_config_, browser_signals_->top_frame_origin.host(),
-      best_bid->bidder->group->owner, best_bid->bid_result.render_url,
-      AdRenderFingerprint(best_bid), best_bid->bid_result.bid,
+      best_bid->bidder->group->owner, best_bid->bid_result->render_url,
+      AdRenderFingerprint(best_bid), best_bid->bid_result->bid,
       best_bid->score_result.score,
       base::BindOnce(&AuctionRunner::OnReportSellerResultComplete,
                      base::Unretained(this), best_bid));
@@ -204,10 +206,11 @@ void AuctionRunner::OnReportSellerResultComplete(
 
 void AuctionRunner::ReportBidWin(const BidState* best_bid,
                                  SellerWorklet::Report seller_report) {
+  DCHECK(best_bid->bid_result);
   std::string signals_for_winner = seller_report.signals_for_winner;
   best_bid->bidder_worklet->ReportWin(
-      signals_for_winner, best_bid->bid_result.render_url,
-      AdRenderFingerprint(best_bid), best_bid->bid_result.bid,
+      signals_for_winner, best_bid->bid_result->render_url,
+      AdRenderFingerprint(best_bid), best_bid->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      base::Unretained(this), best_bid,
                      std::move(seller_report)));
@@ -234,8 +237,10 @@ void AuctionRunner::ReportSuccess(
     const BidState* state,
     const BidderWorklet::ReportWinResult& bidder_report,
     const SellerWorklet::Report& seller_report) {
+  DCHECK(state->bid_result);
+
   std::move(callback_).Run(
-      state->bid_result.render_url, state->bidder->group->owner,
+      state->bid_result->render_url, state->bidder->group->owner,
       state->bidder->group->name,
       mojom::WinningBidderReport::New(bidder_report.success,
                                       bidder_report.report_url),

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -60,41 +61,23 @@ void InvokeReportWinCallbackAsync(
 
 }  // namespace
 
-BidderWorklet::BidResult::BidResult() = default;
-
-BidderWorklet::BidResult::BidResult(
-    std::string ad,
-    double bid,
-    GURL render_url,
-    base::TimeDelta bid_duration,
-    base::Optional<std::string> trusted_bidding_signals_error_msg)
-    : success(true),
-      ad(std::move(ad)),
+BidderWorklet::Bid::Bid(std::string ad,
+                        double bid,
+                        GURL render_url,
+                        base::TimeDelta bid_duration)
+    : ad(std::move(ad)),
       bid(bid),
       render_url(std::move(render_url)),
       bid_duration(bid_duration) {
   DCHECK_GT(this->bid, 0);
   DCHECK(this->render_url.is_valid());
-  if (trusted_bidding_signals_error_msg)
-    error_msgs.push_back(std::move(trusted_bidding_signals_error_msg).value());
 }
 
-BidderWorklet::BidResult::BidResult(
-    base::Optional<std::string> error_msg,
-    base::Optional<std::string> trusted_bidding_signals_error_msg) {
-  if (error_msg)
-    error_msgs.push_back(std::move(error_msg).value());
-  if (trusted_bidding_signals_error_msg)
-    error_msgs.push_back(std::move(trusted_bidding_signals_error_msg).value());
-}
-
-BidderWorklet::BidResult::BidResult(const BidResult& other) = default;
-BidderWorklet::BidResult::BidResult(BidResult&& other) = default;
-BidderWorklet::BidResult::~BidResult() = default;
-BidderWorklet::BidResult& BidderWorklet::BidResult::operator=(
-    const BidResult&) = default;
-BidderWorklet::BidResult& BidderWorklet::BidResult::operator=(BidResult&&) =
-    default;
+BidderWorklet::Bid::Bid(const Bid& other) = default;
+BidderWorklet::Bid::Bid(Bid&& other) = default;
+BidderWorklet::Bid::~Bid() = default;
+BidderWorklet::Bid& BidderWorklet::Bid::operator=(const Bid&) = default;
+BidderWorklet::Bid& BidderWorklet::Bid::operator=(Bid&&) = default;
 
 BidderWorklet::ReportWinResult::ReportWinResult() = default;
 
@@ -429,10 +412,15 @@ void BidderWorklet::GenerateBidIfReady() {
   // `render_url` must be in `ad_render_urls`.
   for (const auto& ad : *interest_group.ads) {
     if (render_url == ad->render_url) {
+      std::vector<std::string> error_msgs;
+      if (trusted_bidding_signals_error_msg_) {
+        error_msgs.emplace_back(
+            std::move(trusted_bidding_signals_error_msg_).value());
+      }
       std::move(load_script_and_generate_bid_callback_)
-          .Run(BidResult(std::move(ad_json), bid, std::move(render_url),
-                         base::TimeTicks::Now() - start /* bid_duration */,
-                         std::move(trusted_bidding_signals_error_msg_)));
+          .Run(Bid(std::move(ad_json), bid, std::move(render_url),
+                   base::TimeTicks::Now() - start /* bid_duration */),
+               std::move(error_msgs));
       return;
     }
   }
@@ -444,9 +432,15 @@ void BidderWorklet::GenerateBidIfReady() {
 
 void BidderWorklet::InvokeBidCallbackOnError(
     base::Optional<std::string> error_msg) {
+  std::vector<std::string> error_msgs;
+  if (error_msg)
+    error_msgs.emplace_back(std::move(error_msg).value());
+  if (trusted_bidding_signals_error_msg_) {
+    error_msgs.emplace_back(
+        std::move(trusted_bidding_signals_error_msg_).value());
+  }
   std::move(load_script_and_generate_bid_callback_)
-      .Run(BidResult(std::move(error_msg),
-                     std::move(trusted_bidding_signals_error_msg_)));
+      .Run(base::nullopt /* bid */, std::move(error_msgs));
 }
 
 }  // namespace auction_worklet

@@ -60,7 +60,7 @@ class AuctionRunner {
     bool bid_generate_complete = false;
 
     std::unique_ptr<BidderWorklet> bidder_worklet;
-    BidderWorklet::BidResult bid_result;
+    base::Optional<BidderWorklet::Bid> bid_result;
     SellerWorklet::ScoreResult score_result;
   };
 
@@ -74,7 +74,8 @@ class AuctionRunner {
 
   void StartBidding();
   void OnGenerateBidComplete(BidState* state,
-                             BidderWorklet::BidResult bid_result);
+                             base::Optional<BidderWorklet::Bid> bid,
+                             std::vector<std::string> errors_msgs);
 
   // True if all bid results and the seller script load are complete.
   bool ReadyToScore() const { return outstanding_bids_ == 0 && seller_loaded_; }

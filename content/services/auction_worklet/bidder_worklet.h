@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -40,57 +41,33 @@ class WorkletLoader;
 // interest group in different auctions.
 class BidderWorklet {
  public:
-  struct BidResult {
-    // Constructor for when there is no bid, either due to an error or the
-    // script not offering one.
-    BidResult();
+  // Structure containing information about a bid returned by invoking a
+  // worklet's generageBid() method. If no bid is made, no Bid is constructed.
+  struct Bid {
+    Bid(std::string ad,
+        double bid,
+        GURL render_url,
+        base::TimeDelta bid_duration);
 
-    // Constructor when a bid is made. `bid` must be > 0, and the URL must be
-    // valid.
-    BidResult(std::string ad,
-              double bid,
-              GURL render_url,
-              base::TimeDelta bid_duration,
-              base::Optional<std::string> trusted_bidding_signals_error_msg);
+    Bid(const Bid& other);
+    Bid(Bid&& other);
 
-    // Constructor when there is no bid due to an error and an error message
-    // may be available.
-    BidResult(base::Optional<std::string> error_msg,
-              base::Optional<std::string> trusted_bidding_signals_error_msg);
+    ~Bid();
 
-    BidResult(const BidResult& other);
-    BidResult(BidResult&& other);
-
-    ~BidResult();
-
-    BidResult& operator=(const BidResult&);
-    BidResult& operator=(BidResult&&);
-
-    // `success` will be false on any type of failure, and other values will be
-    // empty or 0. Inability to extract ad string, bid value, or valid render
-    // URL are all considered errors.
-    bool success = false;
+    Bid& operator=(const Bid&);
+    Bid& operator=(Bid&&);
 
     // JSON string to be passed to the scoring function.
     std::string ad;
 
-    // Bid. 0 if no bid is offered (even if underlying script returned a
-    // negative value).
-    double bid = 0;
+    // Offered bid value.
+    double bid;
 
     // Render URL, if any bid was made.
     GURL render_url;
 
-    // How long it took to run the script that generated the bid, if a bid was
-    // made.
+    // How long it took to run the script that generated the bid.
     base::TimeDelta bid_duration;
-
-    // Error messages for debugging. This isn't guaranteed to be produced for
-    // all failures, so don't check this instead of `success`. It's possible for
-    // there to be an error message on success, in the case the trusted bidding
-    // signals failed to load - auctions will still be run without it, but
-    // `error_msgs` will be populated with information about the load failure.
-    std::vector<std::string> error_msgs;
   };
 
   struct ReportWinResult {
@@ -125,8 +102,17 @@ class BidderWorklet {
     base::Optional<std::string> error_msg;
   };
 
+  // If no bid is generated, `bid` is null.
+  //
+  // `error_msgs` contains error messages for debugging. This isn't guaranteed
+  // to be produced for all failures, so should not be checked to identify
+  // bidding failures errors. It's also possible for there to be an error
+  // message on success, in the case the trusted bidding signals failed to load
+  // - auctions will still be run without it, but `error_msgs` will be populated
+  // with information about the load failure.
   using LoadScriptAndGenerateBidCallback =
-      base::OnceCallback<void(BidResult bid_result)>;
+      base::OnceCallback<void(base::Optional<Bid> bid,
+                              std::vector<std::string> error_msgs)>;
 
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
