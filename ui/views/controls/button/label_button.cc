@@ -60,12 +60,6 @@ LabelButton::LabelButton(PressedCallback callback,
 LabelButton::~LabelButton() = default;
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
-  if (!GetWidget()) {
-    // Getting an image requires colors from a NativeTheme and is only available
-    // when hosted.
-    return gfx::ImageSkia();
-  }
-
   for_state = ImageStateForState(for_state);
   return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
                                     GetNativeTheme());
@@ -423,7 +417,8 @@ ui::NativeTheme::State LabelButton::GetForegroundThemeState(
 }
 
 void LabelButton::UpdateImage() {
-  image_->SetImage(GetImage(GetVisualState()));
+  if (GetWidget())
+    image_->SetImage(GetImage(GetVisualState()));
 }
 
 void LabelButton::AddLayerBeneathView(ui::Layer* new_layer) {
@@ -569,8 +564,10 @@ Button::ButtonState LabelButton::GetVisualState() const {
 }
 
 void LabelButton::VisualStateChanged() {
-  UpdateImage();
-  UpdateBackgroundColor();
+  if (GetWidget()) {
+    UpdateImage();
+    UpdateBackgroundColor();
+  }
   label_->SetEnabled(GetVisualState() != STATE_DISABLED);
 }
 

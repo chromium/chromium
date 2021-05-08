@@ -66,7 +66,8 @@ FootnoteContainerView::~FootnoteContainerView() = default;
 
 void FootnoteContainerView::SetCornerRadius(float corner_radius) {
   corner_radius_ = corner_radius;
-  ResetBackground();
+  if (GetWidget())
+    ResetBackground();
 }
 
 void FootnoteContainerView::OnThemeChanged() {

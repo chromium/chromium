@@ -83,6 +83,14 @@ class TextExample::TextExampleView : public View {
     SchedulePaint();
   }
 
+ protected:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    SetBorder(CreateSolidBorder(
+        1, GetNativeTheme()->GetSystemColor(
+               ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+  }
+
  private:
   // The font used for drawing the text.
   gfx::FontList font_list_;
@@ -201,9 +209,6 @@ void TextExample::CreateExampleView(View* container) {
 
   layout->StartRow(1, 1);
   text_view_ = layout->AddView(std::make_unique<TextExampleView>());
-  text_view_->SetBorder(CreateSolidBorder(
-      1, text_view_->GetNativeTheme()->GetSystemColor(
-             ui::NativeTheme::kColorId_UnfocusedBorderColor)));
   layout->AddPaddingRow(0, 8);
 
   TextComboboxChanged();  // Sets initial text content.

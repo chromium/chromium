@@ -49,7 +49,8 @@ void MessageBoxExample::CreateExampleView(View* container) {
   button_panel->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(
           [](MessageBoxView* message_box) {
-            message_box->SetCheckBoxSelected(message_box->IsCheckBoxSelected());
+            message_box->SetCheckBoxSelected(
+                !message_box->IsCheckBoxSelected());
           },
           base::Unretained(message_box_view_)),
       GetStringUTF16(IDS_MESSAGE_TOGGLE_LABEL)));

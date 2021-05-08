@@ -32,6 +32,16 @@ constexpr int kLayoutExampleVerticalSpacing = 3;
 constexpr int kLayoutExampleLeftPadding = 8;
 constexpr gfx::Size kLayoutExampleDefaultChildSize(180, 90);
 
+class LayoutPanel : public View {
+ protected:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    SetBorder(CreateSolidBorder(
+        1, GetNativeTheme()->GetSystemColor(
+               ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+  }
+};
+
 // This View holds two other views which consists of a view on the left onto
 // which the BoxLayout is attached for demonstrating its features. The view
 // on the right contains all the various controls which allow the user to
@@ -241,10 +251,7 @@ void LayoutExampleBase::CreateExampleView(View* container) {
 
   auto* const manager = full_panel->SetLayoutManager(
       std::make_unique<BoxLayout>(views::BoxLayout::Orientation::kHorizontal));
-  layout_panel_ = full_panel->AddChildView(std::make_unique<View>());
-  layout_panel_->SetBorder(CreateSolidBorder(
-      1, layout_panel_->GetNativeTheme()->GetSystemColor(
-             ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+  layout_panel_ = full_panel->AddChildView(std::make_unique<LayoutPanel>());
   manager->SetFlexForView(layout_panel_, 3);
 
   control_panel_ = full_panel->AddChildView(std::make_unique<View>());
