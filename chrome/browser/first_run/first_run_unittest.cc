@@ -57,7 +57,7 @@ TEST_F(FirstRunTest,
   installer::InitialPreferences install_prefs(
       "{\"variations_compressed_seed\":\"xyz\","
       " \"variations_seed_signature\":\"abc\"}");
-  EXPECT_EQ(2U, install_prefs.initial_dictionary().size());
+  EXPECT_EQ(2U, install_prefs.initial_dictionary().DictSize());
 
   EXPECT_EQ("xyz", install_prefs.GetCompressedVariationsSeed());
   EXPECT_EQ("abc", install_prefs.GetVariationsSeedSignature());
