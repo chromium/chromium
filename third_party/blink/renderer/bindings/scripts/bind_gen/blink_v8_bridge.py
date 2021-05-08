@@ -144,18 +144,20 @@ def blink_type_info(idl_type, use_new_union=False):
                         clear_member_var_fmt="{} = String()")
 
     if real_type.is_array_buffer:
-        assert "AllowShared" not in real_type.extended_attributes
-        return TypeInfo(
-            'DOM{}'.format(real_type.keyword_typename),
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            const_ref_fmt="const {}*",
-            value_fmt="{}*",
-            has_null_value=True)
+        if "AllowShared" in idl_type.effective_annotations:
+            typename = "DOMSharedArrayBuffer"
+        else:
+            typename = "DOMArrayBuffer"
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True)
 
     if real_type.is_buffer_source_type:
-        if "FlexibleArrayBufferView" in real_type.extended_attributes:
-            assert "AllowShared" in real_type.extended_attributes
+        if "FlexibleArrayBufferView" in idl_type.effective_annotations:
+            assert "AllowShared" in idl_type.effective_annotations
             return TypeInfo(
                 "Flexible{}".format(real_type.keyword_typename),
                 member_fmt="void",
@@ -163,7 +165,7 @@ def blink_type_info(idl_type, use_new_union=False):
                 const_ref_fmt="const {}",
                 value_fmt="{}",
                 has_null_value=True)
-        elif "AllowShared" in real_type.extended_attributes:
+        elif "AllowShared" in idl_type.effective_annotations:
             return TypeInfo(
                 "MaybeShared<DOM{}>".format(real_type.keyword_typename),
                 has_null_value=True)
@@ -186,16 +188,15 @@ def blink_type_info(idl_type, use_new_union=False):
         assert False, "Blink does not support/accept IDL void type."
 
     if real_type.type_definition_object:
-        blink_impl_type = blink_class_name(real_type.type_definition_object)
+        typename = blink_class_name(real_type.type_definition_object)
         if real_type.is_enumeration:
-            return TypeInfo(blink_impl_type, clear_member_var_fmt="")
-        return TypeInfo(
-            blink_impl_type,
-            member_fmt="Member<{}>",
-            ref_fmt="{}*",
-            const_ref_fmt="const {}*",
-            value_fmt="{}*",
-            has_null_value=True)
+            return TypeInfo(typename, clear_member_var_fmt="")
+        return TypeInfo(typename,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=True)
 
     if (real_type.is_sequence or real_type.is_frozen_array
             or real_type.is_variadic):
@@ -220,9 +221,8 @@ def blink_type_info(idl_type, use_new_union=False):
             "ScriptPromise", ref_fmt="{}&", const_ref_fmt="const {}&")
 
     if real_type.is_union and use_new_union:
-        blink_impl_type = blink_class_name(
-            real_type.new_union_definition_object)
-        return TypeInfo(blink_impl_type,
+        typename = blink_class_name(real_type.new_union_definition_object)
+        return TypeInfo(typename,
                         member_fmt="Member<{}>",
                         ref_fmt="{}*",
                         const_ref_fmt="const {}*",
@@ -230,12 +230,11 @@ def blink_type_info(idl_type, use_new_union=False):
                         has_null_value=True)
 
     if real_type.is_union:
-        blink_impl_type = blink_class_name(real_type.union_definition_object)
-        return TypeInfo(
-            blink_impl_type,
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&",
-            has_null_value=True)
+        typename = blink_class_name(real_type.union_definition_object)
+        return TypeInfo(typename,
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True)
 
     if real_type.is_nullable:
         inner_type = blink_type_info(real_type.inner_type)
