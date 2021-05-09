@@ -177,9 +177,22 @@ ProcessId Process::Pid() const {
 }
 
 Time Process::CreationTime() const {
-  // TODO(https://crbug.com/726484): There is no syscall providing this data.
-  NOTIMPLEMENTED();
-  return Time();
+  zx_info_process_v2_t proc_info;
+  zx_status_t status =
+      zx_object_get_info(Handle(), ZX_INFO_PROCESS_V2, &proc_info,
+                         sizeof(proc_info), nullptr, nullptr);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "zx_process_get_info";
+    return Time();
+  }
+  if ((proc_info.flags & ZX_INFO_PROCESS_FLAG_STARTED) == 0) {
+    DLOG(WARNING) << "zx_process_get_info: Not started.";
+    return Time();
+  }
+  // Process creation times are expressed in ticks since system boot, so
+  // perform a best-effort translation from that to UTC "wall-clock" time.
+  return Time::Now() +
+         (TimeTicks::FromZxTime(proc_info.start_time) - TimeTicks::Now());
 }
 
 bool Process::is_current() const {
@@ -231,20 +244,20 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
     internal::AssertBaseSyncPrimitivesAllowed();
   }
 
-  zx_time_t deadline = timeout == TimeDelta::Max()
-                           ? ZX_TIME_INFINITE
-                           : (TimeTicks::Now() + timeout).ToZxTime();
+  zx::time deadline = timeout == TimeDelta::Max()
+                          ? zx::time::infinite()
+                          : zx::time((TimeTicks::Now() + timeout).ToZxTime());
   zx_signals_t signals_observed = 0;
-  zx_status_t status = zx_object_wait_one(process_.get(), ZX_TASK_TERMINATED,
-                                          deadline, &signals_observed);
+  zx_status_t status =
+      process_.wait_one(ZX_TASK_TERMINATED, deadline, &signals_observed);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_object_wait_one";
     return false;
   }
 
   zx_info_process_v2_t proc_info;
-  status = zx_object_get_info(process_.get(), ZX_INFO_PROCESS_V2, &proc_info,
-                              sizeof(proc_info), nullptr, nullptr);
+  status = process_.get_info(ZX_INFO_PROCESS_V2, &proc_info, sizeof(proc_info),
+                             nullptr, nullptr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_object_get_info";
     if (exit_code)
