@@ -22,7 +22,11 @@ ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
     // TODO: This must be the same as below and it's simpler.
     // Cleanup if this change sticks.
     auto* os_event = static_cast<ui::KeyEvent*>(event.os_event);
-    return ui::Accelerator(*os_event);
+
+    // If there is no |os_event| fall through to the default code path.
+    // This can occur when keys are injected from dev tools.
+    if (os_event)
+      return ui::Accelerator(*os_event);
   }
 #endif
   Accelerator::KeyState key_state =
