@@ -21,12 +21,73 @@ void Clone(apps::PreferredAppsList::PreferredApps& source,
   }
 }
 
+// Given an intent filter, decide if the filter matches the required parameters
+// that determine that a filter has a supported link.
+bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
+  bool scheme = false;
+  bool host = false;
+  for (auto& condition : intent_filter->conditions) {
+    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
+      for (auto& condition_value : condition->condition_values) {
+        if (condition_value->value == "http" ||
+            condition_value->value == "https") {
+          scheme = true;
+          break;
+        }
+      }
+    } else if (condition->condition_type == apps::mojom::ConditionType::kHost) {
+      host = true;
+    }
+
+    if (scheme && host) {
+      break;
+    }
+  }
+
+  return scheme && host;
+}
+
 }  // namespace
 
 namespace apps {
 
+PreferredAppsList::Observer::Observer(PreferredAppsList* list) {
+  Observe(list);
+}
+
+PreferredAppsList::Observer::Observer() = default;
+
+PreferredAppsList::Observer::~Observer() {
+  if (list_) {
+    list_->RemoveObserver(this);
+  }
+}
+
+void PreferredAppsList::Observer::Observe(PreferredAppsList* list) {
+  if (list == list_) {
+    // Early exit to avoid infinite loops if we're in the middle of a callback.
+    return;
+  }
+  if (list_) {
+    list_->RemoveObserver(this);
+  }
+  list_ = list;
+  if (list_) {
+    list_->AddObserver(this);
+  }
+}
+
 PreferredAppsList::PreferredAppsList() = default;
 PreferredAppsList::~PreferredAppsList() = default;
+
+void PreferredAppsList::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void PreferredAppsList::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 base::Optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
     const GURL& url) {
@@ -65,6 +126,12 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
   auto new_preferred_app =
       apps::mojom::PreferredApp::New(intent_filter->Clone(), app_id);
   preferred_apps_.push_back(std::move(new_preferred_app));
+
+  if (IsSupportedLink(intent_filter)) {
+    for (auto& obs : observers_) {
+      obs.OnPreferredAppChanged(app_id, true);
+    }
+  }
   return replaced_app_preferences;
 }
 
@@ -84,6 +151,13 @@ bool PreferredAppsList::DeletePreferredApp(
       iter++;
     }
   }
+
+  if (IsSupportedLink(intent_filter)) {
+    for (auto& obs : observers_) {
+      obs.OnPreferredAppChanged(app_id, false);
+    }
+  }
+
   return found;
 }
 
@@ -99,6 +173,11 @@ bool PreferredAppsList::DeleteAppId(const std::string& app_id) {
       iter++;
     }
   }
+
+  for (auto& obs : observers_) {
+    obs.OnPreferredAppChanged(app_id, false);
+  }
+
   return found;
 }
 

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -20,8 +22,46 @@ namespace apps {
 // an list of |intent_filter| vs. app_id.
 class PreferredAppsList {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnPreferredAppChanged(const std::string& app_id,
+                                       bool is_preferred_app) = 0;
+
+    // Called when the PreferredAppsList object (the thing that this observer
+    // observes) will be destroyed. In response, the observer, |this|, should
+    // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.
+    // via base::ScopedObservation::Remove or via Observe(nullptr)).
+    virtual void OnPreferredAppsListWillBeDestroyed(
+        PreferredAppsList* list) = 0;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+   protected:
+    // Use this constructor when the observer |this| is tied to a single
+    // PreferredAppsList for its entire lifetime, or until the observee (the
+    // PreferredAppsList) is destroyed, whichever comes first.
+    explicit Observer(PreferredAppsList* list);
+
+    // Use this constructor when the observer |this| wants to observe a
+    // PreferredAppsList for part of its lifetime. It can then call Observe() to
+    // start and stop observing.
+    Observer();
+    ~Observer() override;
+
+    // Start observing a different PreferredAppsList. |cache| may be nullptr,
+    // meaning to stop observing.
+    void Observe(PreferredAppsList* list);
+
+   private:
+    PreferredAppsList* list_ = nullptr;
+  };
+
   PreferredAppsList();
   ~PreferredAppsList();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   PreferredAppsList(const PreferredAppsList&) = delete;
   PreferredAppsList& operator=(const PreferredAppsList&) = delete;
@@ -67,6 +107,7 @@ class PreferredAppsList {
 
  private:
   PreferredApps preferred_apps_;
+  base::ObserverList<Observer> observers_;
   bool initialized_ = false;
 };
 
