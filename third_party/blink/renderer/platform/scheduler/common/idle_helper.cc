@@ -196,6 +196,8 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 }
 
 void IdleHelper::EndIdlePeriod() {
+  recordreplay::Assert("IdleHelper::EndIdlePeriod");
+
   if (is_shutdown_)
     return;
 
