@@ -255,6 +255,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       main_thread_only_(this,
                         helper_.GetClock(),
                         helper_.NowTicks()),
+      any_thread_lock_("MainThreadSchedulerImpl.any_thread_lock_"),
       any_thread_(this),
       policy_may_need_update_(&any_thread_lock_),
       notify_agent_strategy_task_posted_(&any_thread_lock_) {
