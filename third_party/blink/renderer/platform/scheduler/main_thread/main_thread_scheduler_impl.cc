@@ -1595,6 +1595,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   }
 
   if (new_policy_duration > base::TimeDelta()) {
+    recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked #3");
     main_thread_only().current_policy_expiration_time =
         now + new_policy_duration;
     delayed_update_policy_runner_.SetDeadline(FROM_HERE, new_policy_duration,
@@ -1724,6 +1725,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   Policy old_policy = main_thread_only().current_policy;
   main_thread_only().current_policy = new_policy;
 
+  recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked #10");
   UpdateCompositorTaskQueuePriority();
 
   UpdateStateForAllTaskQueues(old_policy);
