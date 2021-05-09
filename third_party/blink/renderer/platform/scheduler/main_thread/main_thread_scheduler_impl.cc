@@ -953,11 +953,14 @@ void MainThreadSchedulerImpl::WillBeginFrame(const viz::BeginFrameArgs& args) {
 }
 
 void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
+  recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor Start");
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidCommitFrameToCompositor");
   helper_.CheckOnValidThread();
-  if (helper_.IsShutdown())
+  if (helper_.IsShutdown()) {
+    recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor #1");
     return;
+  }
 
   base::TimeTicks now(helper_.NowTicks());
   if (now < main_thread_only().estimated_next_frame_begin) {
@@ -969,6 +972,7 @@ void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
   }
 
   main_thread_only().idle_time_estimator.DidCommitFrameToCompositor();
+  recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor Done");
 }
 
 void MainThreadSchedulerImpl::BeginFrameNotExpectedSoon() {
