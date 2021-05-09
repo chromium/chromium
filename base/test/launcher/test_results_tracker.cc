@@ -379,65 +379,64 @@ void TestResultsTracker::AddGlobalTag(const std::string& tag) {
 bool TestResultsTracker::SaveSummaryAsJSON(
     const FilePath& path,
     const std::vector<std::string>& additional_tags) const {
-  std::unique_ptr<DictionaryValue> summary_root(new DictionaryValue);
+  Value summary_root(Value::Type::DICTIONARY);
 
-  std::unique_ptr<ListValue> global_tags(new ListValue);
+  std::vector<Value> global_tags;
   for (const auto& global_tag : global_tags_) {
-    global_tags->AppendString(global_tag);
+    global_tags.emplace_back(global_tag);
   }
   for (const auto& tag : additional_tags) {
-    global_tags->AppendString(tag);
+    global_tags.emplace_back(tag);
   }
-  summary_root->Set("global_tags", std::move(global_tags));
+  summary_root.SetKey("global_tags", Value(std::move(global_tags)));
 
-  std::unique_ptr<ListValue> all_tests(new ListValue);
+  std::vector<Value> all_tests;
   for (const auto& test : all_tests_) {
-    all_tests->AppendString(test);
+    all_tests.emplace_back(test);
   }
-  summary_root->Set("all_tests", std::move(all_tests));
+  summary_root.SetKey("all_tests", Value(std::move(all_tests)));
 
-  std::unique_ptr<ListValue> disabled_tests(new ListValue);
+  std::vector<Value> disabled_tests;
   for (const auto& disabled_test : disabled_tests_) {
-    disabled_tests->AppendString(disabled_test);
+    disabled_tests.emplace_back(disabled_test);
   }
-  summary_root->Set("disabled_tests", std::move(disabled_tests));
+  summary_root.SetKey("disabled_tests", Value(std::move(disabled_tests)));
 
-  std::unique_ptr<ListValue> per_iteration_data(new ListValue);
+  std::vector<Value> per_iteration_data;
 
   // Even if we haven't run any tests, we still have the dummy iteration.
   int max_iteration = iteration_ < 0 ? 0 : iteration_;
 
   for (int i = 0; i <= max_iteration; i++) {
-    std::unique_ptr<DictionaryValue> current_iteration_data(
-        new DictionaryValue);
+    Value current_iteration_data(Value::Type::DICTIONARY);
 
     for (const auto& j : per_iteration_data_[i].results) {
-      std::unique_ptr<ListValue> test_results(new ListValue);
+      std::vector<Value> test_results;
 
       for (size_t k = 0; k < j.second.test_results.size(); k++) {
         const TestResult& test_result = j.second.test_results[k];
 
-        std::unique_ptr<DictionaryValue> test_result_value(new DictionaryValue);
+        Value test_result_value(Value::Type::DICTIONARY);
 
-        test_result_value->SetStringKey("status", test_result.StatusAsString());
-        test_result_value->SetInteger(
+        test_result_value.SetStringKey("status", test_result.StatusAsString());
+        test_result_value.SetIntKey(
             "elapsed_time_ms",
             static_cast<int>(test_result.elapsed_time.InMilliseconds()));
 
         bool lossless_snippet = false;
         if (IsStringUTF8(test_result.output_snippet)) {
-          test_result_value->SetString(
-              "output_snippet", test_result.output_snippet);
+          test_result_value.SetStringKey("output_snippet",
+                                         test_result.output_snippet);
           lossless_snippet = true;
         } else {
-          test_result_value->SetString(
+          test_result_value.SetStringKey(
               "output_snippet",
               "<non-UTF-8 snippet, see output_snippet_base64>");
         }
 
         // TODO(phajdan.jr): Fix typo in JSON key (losless -> lossless)
         // making sure not to break any consumers of this data.
-        test_result_value->SetBoolKey("losless_snippet", lossless_snippet);
+        test_result_value.SetBoolKey("losless_snippet", lossless_snippet);
 
         // Also include the raw version (base64-encoded so that it can be safely
         // JSON-serialized - there are no guarantees about character encoding
@@ -445,80 +444,81 @@ bool TestResultsTracker::SaveSummaryAsJSON(
         // debugging a test failure related to character encoding.
         std::string base64_output_snippet;
         Base64Encode(test_result.output_snippet, &base64_output_snippet);
-        test_result_value->SetStringKey("output_snippet_base64",
-                                        base64_output_snippet);
+        test_result_value.SetStringKey("output_snippet_base64",
+                                       base64_output_snippet);
         if (!test_result.links.empty()) {
-          auto links = std::make_unique<DictionaryValue>();
+          Value links(Value::Type::DICTIONARY);
           for (const auto& link : test_result.links) {
-            auto link_info = std::make_unique<DictionaryValue>();
-            link_info->SetStringKey("content", link.second);
-            links->Set(link.first, std::move(link_info));
+            Value link_info(Value::Type::DICTIONARY);
+            link_info.SetStringKey("content", link.second);
+            links.SetPath(link.first, std::move(link_info));
           }
-          test_result_value->Set("links", std::move(links));
+          test_result_value.SetKey("links", std::move(links));
         }
-        auto test_result_parts = std::make_unique<ListValue>();
+
+        std::vector<Value> test_result_parts;
         for (const TestResultPart& result_part :
              test_result.test_result_parts) {
-          std::unique_ptr<DictionaryValue> result_part_value(
-              new DictionaryValue);
-          result_part_value->SetStringKey("type", result_part.TypeAsString());
-          result_part_value->SetStringKey("file", result_part.file_name);
-          result_part_value->SetIntKey("line", result_part.line_number);
+          Value result_part_value(Value::Type::DICTIONARY);
+
+          result_part_value.SetStringKey("type", result_part.TypeAsString());
+          result_part_value.SetStringKey("file", result_part.file_name);
+          result_part_value.SetIntKey("line", result_part.line_number);
 
           bool lossless_summary = IsStringUTF8(result_part.summary);
           if (lossless_summary) {
-            result_part_value->SetStringKey("summary", result_part.summary);
+            result_part_value.SetStringKey("summary", result_part.summary);
           } else {
-            result_part_value->SetString(
+            result_part_value.SetStringKey(
                 "summary", "<non-UTF-8 snippet, see summary_base64>");
           }
-          result_part_value->SetBoolKey("lossless_summary", lossless_summary);
+          result_part_value.SetBoolKey("lossless_summary", lossless_summary);
 
           std::string encoded_summary;
           Base64Encode(result_part.summary, &encoded_summary);
-          result_part_value->SetStringKey("summary_base64", encoded_summary);
+          result_part_value.SetStringKey("summary_base64", encoded_summary);
 
           bool lossless_message = IsStringUTF8(result_part.message);
           if (lossless_message) {
-            result_part_value->SetStringKey("message", result_part.message);
+            result_part_value.SetStringKey("message", result_part.message);
           } else {
-            result_part_value->SetString(
+            result_part_value.SetStringKey(
                 "message", "<non-UTF-8 snippet, see message_base64>");
           }
-          result_part_value->SetBoolKey("lossless_message", lossless_message);
+          result_part_value.SetBoolKey("lossless_message", lossless_message);
 
           std::string encoded_message;
           Base64Encode(result_part.message, &encoded_message);
-          result_part_value->SetStringKey("message_base64", encoded_message);
+          result_part_value.SetStringKey("message_base64", encoded_message);
 
-          test_result_parts->Append(std::move(result_part_value));
+          test_result_parts.push_back(std::move(result_part_value));
         }
-        test_result_value->Set("result_parts", std::move(test_result_parts));
+        test_result_value.SetKey("result_parts",
+                                 Value(std::move(test_result_parts)));
 
-        test_results->Append(std::move(test_result_value));
+        test_results.push_back(std::move(test_result_value));
       }
 
-      current_iteration_data->SetWithoutPathExpansion(j.first,
-                                                      std::move(test_results));
+      current_iteration_data.SetKey(j.first, Value(std::move(test_results)));
     }
-    per_iteration_data->Append(std::move(current_iteration_data));
+    per_iteration_data.push_back(std::move(current_iteration_data));
   }
-  summary_root->Set("per_iteration_data", std::move(per_iteration_data));
+  summary_root.SetKey("per_iteration_data",
+                      Value(std::move(per_iteration_data)));
 
-  std::unique_ptr<DictionaryValue> test_locations(new DictionaryValue);
+  Value test_locations(Value::Type::DICTIONARY);
   for (const auto& item : test_locations_) {
     std::string test_name = item.first;
     CodeLocation location = item.second;
-    std::unique_ptr<DictionaryValue> location_value(new DictionaryValue);
-    location_value->SetStringKey("file", location.file);
-    location_value->SetIntKey("line", location.line);
-    test_locations->SetWithoutPathExpansion(test_name,
-                                            std::move(location_value));
+    Value location_value(Value::Type::DICTIONARY);
+    location_value.SetStringKey("file", location.file);
+    location_value.SetIntKey("line", location.line);
+    test_locations.SetKey(test_name, std::move(location_value));
   }
-  summary_root->Set("test_locations", std::move(test_locations));
+  summary_root.SetKey("test_locations", std::move(test_locations));
 
   std::string json;
-  if (!JSONWriter::Write(*summary_root, &json))
+  if (!JSONWriter::Write(summary_root, &json))
     return false;
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
