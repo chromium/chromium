@@ -19,6 +19,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -66,6 +69,9 @@
         "override_compile_targets": [
           "performance_webview_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -113,6 +119,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -158,6 +167,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -407,6 +419,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -461,6 +476,9 @@
         "override_compile_targets": [
           "performance_webview_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -511,6 +529,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -565,6 +586,9 @@
         "override_compile_targets": [
           "performance_weblayer_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -615,6 +639,9 @@
         "override_compile_targets": [
           "performance_webview_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -669,6 +696,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -715,6 +745,9 @@
         "override_compile_targets": [
           "performance_weblayer_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -761,6 +794,9 @@
         "override_compile_targets": [
           "performance_webview_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -808,6 +844,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1147,6 +1186,9 @@
         "override_compile_targets": [
           "performance_test_suite_eve"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1237,6 +1279,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1283,6 +1328,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1341,6 +1389,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1400,6 +1451,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1523,6 +1577,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1573,6 +1630,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1627,6 +1687,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1677,6 +1740,9 @@
         "override_compile_targets": [
           "performance_test_suite"
         ],
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [

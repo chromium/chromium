@@ -1459,8 +1459,9 @@ def generate_performance_test(tester_config, test, builder_name):
     ]
   }
 
-  # TODO(crbug.com/1104244) Enable Result DB on all platforms when verified.
-  if builder_name in FYI_BUILDERS:
+  # Enable Result DB on all perf test bots. Builders with names including
+  # "builder-perf" are used for compiling only, and do not run perf tests.
+  if 'builder-perf' not in builder_name:
     result['resultdb'] = {'enable': True}
 
   # For now we either get shards from the number of devices specified
