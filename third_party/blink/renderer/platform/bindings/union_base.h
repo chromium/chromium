@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ScriptState;
 
 namespace bindings {
@@ -32,8 +33,9 @@ class PLATFORM_EXPORT UnionBase : public GarbageCollected<UnionBase> {
   virtual void Trace(Visitor*) const {}
 
  protected:
-  static String ProduceUnionNameInIDL(
-      const base::span<const char* const>& member_names);
+  // Helper function to reduce the binary size of the generated bindings.
+  static void ThrowTypeErrorNotOfType(ExceptionState& exception_state,
+                                      const char* expected_type);
 
   UnionBase() = default;
 };

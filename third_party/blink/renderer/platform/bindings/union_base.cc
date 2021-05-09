@@ -4,28 +4,18 @@
 
 #include "third_party/blink/renderer/platform/bindings/union_base.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 namespace bindings {
 
 // static
-String UnionBase::ProduceUnionNameInIDL(
-    const base::span<const char* const>& member_names) {
-  DCHECK_GE(member_names.size(), 2u);
-
-  StringBuilder builder;
-
-  builder.Append("(");
-  builder.Append(member_names[0]);
-  for (size_t i = 1; i < member_names.size(); ++i) {
-    builder.Append(" or ");
-    builder.Append(member_names[i]);
-  }
-  builder.Append(")");
-
-  return builder.ToString();
+void UnionBase::ThrowTypeErrorNotOfType(ExceptionState& exception_state,
+                                        const char* expected_type) {
+  exception_state.ThrowTypeError(
+      ExceptionMessages::ValueNotOfType(expected_type));
 }
 
 }  // namespace bindings

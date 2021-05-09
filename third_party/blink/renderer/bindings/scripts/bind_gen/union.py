@@ -408,9 +408,8 @@ def make_factory_methods(cg_context):
     else:
         # 19. Throw a TypeError.
         body.append(
-            T("${exception_state}.ThrowTypeError("
-              "ExceptionMessages::ValueNotOfType("
-              "UnionNameInIDL().Ascii().c_str()));"))
+            T("ThrowTypeErrorNotOfType"
+              "(${exception_state}, UnionNameInIDL());"))
         body.append(T("return nullptr;"))
 
     return func_decl, func_def
@@ -701,23 +700,19 @@ def make_name_function(cg_context):
 
     func_def = CxxFuncDefNode(name="UnionNameInIDL",
                               arg_decls=[],
-                              return_type="String",
-                              static=True)
+                              return_type="const char*",
+                              static=True,
+                              constexpr=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
 
-    body.extend([
-        TextNode("static constexpr const char* const member_names[] = {"),
-        ListNode(list(
-            map(
-                lambda name: TextNode("\"{}\"".format(name)),
-                sorted(
-                    map(lambda idl_type: idl_type.syntactic_form,
-                        cg_context.union.flattened_member_types)))),
-                 separator=", "),
-        TextNode("};"),
-        TextNode("return ProduceUnionNameInIDL(member_names);"),
-    ])
+    member_type_names = sorted(
+        map(lambda idl_type: idl_type.syntactic_form,
+            cg_context.union.flattened_member_types))
+    body.append(
+        TextNode("return \"({}){}\";".format(
+            " or ".join(member_type_names),
+            "?" if cg_context.union.does_include_nullable_type else "")))
 
     return func_def, None
 
