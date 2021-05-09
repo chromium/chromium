@@ -54,10 +54,14 @@
 
 namespace blink {
 
-DedicatedWorkerObjectProxy::~DedicatedWorkerObjectProxy() = default;
+DedicatedWorkerObjectProxy::~DedicatedWorkerObjectProxy() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void DedicatedWorkerObjectProxy::PostMessageToWorkerObject(
     BlinkTransferableMessage message) {
+  recordreplay::Assert("DedicatedWorkerObjectProxy::PostMessageToWorkerObject %lu",
+                       recordreplay::PointerId(this));
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kPostedMessage),
       FROM_HERE,
@@ -123,7 +127,9 @@ DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(
     const DedicatedWorkerToken& token)
     : ThreadedObjectProxyBase(parent_execution_context_task_runners),
       token_(token),
-      messaging_proxy_weak_ptr_(messaging_proxy_weak_ptr) {}
+      messaging_proxy_weak_ptr_(messaging_proxy_weak_ptr) {
+  recordreplay::RegisterPointer(this);
+}
 
 CrossThreadWeakPersistent<ThreadedMessagingProxyBase>
 DedicatedWorkerObjectProxy::MessagingProxyWeakPtr() {

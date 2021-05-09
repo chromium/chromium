@@ -760,6 +760,9 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
 }
 
 void WorkerThread::PerformShutdownOnWorkerThread() {
+  recordreplay::Assert("WorkerThread::PerformShutdownOnWorkerThread %lu",
+                       recordreplay::PointerId(this));
+
   DCHECK(IsCurrentThread());
   {
     MutexLocker lock(mutex_);

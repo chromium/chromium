@@ -101,6 +101,7 @@ TaskQueueImpl::TaskRunner::~TaskRunner() {}
 bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
                                                 OnceClosure callback,
                                                 TimeDelta delay) {
+  recordreplay::Assert("TaskQueueImpl::TaskRunner::PostDelayedTask %lu", recordreplay::PointerId(this));
   return task_poster_->PostTask(PostedTask(this, std::move(callback), location,
                                            delay, Nestable::kNestable,
                                            task_type_));
