@@ -104,6 +104,13 @@ class Dictionary(UserDefinedType, WithExtendedAttributes,
 
         return tuple(collect_inherited_members(self))
 
+    @property
+    def has_required_member(self):
+        """
+        Returns True if the dictionary has any required dictionary members.
+        """
+        return bool(any(member.is_required for member in self.members))
+
     # UserDefinedType overrides
     @property
     def is_dictionary(self):

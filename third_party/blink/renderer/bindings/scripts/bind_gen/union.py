@@ -273,7 +273,16 @@ def make_factory_methods(cg_context):
     # 4.1. If types includes a dictionary type, ...
     member = find_by_type(lambda t: t.is_dictionary)
     if member:
-        dispatch_if("${v8_value}->IsNullOrUndefined()")
+        if member.idl_type.type_definition_object.has_required_member:
+            dispatch_if("${v8_value}->IsNullOrUndefined()")
+        else:
+            dispatch_if(
+                "${v8_value}->IsNullOrUndefined()",
+                # Shortcut to reduce the binary size
+                S("blink_value", (_format(
+                    "auto&& ${blink_value} = {}::Create(${isolate});",
+                    blink_class_name(
+                        member.idl_type.type_definition_object)))))
 
     # 5. If V is a platform object, then:
     # 5.1. If types includes an interface type that V implements, ...
@@ -292,7 +301,12 @@ def make_factory_methods(cg_context):
             member.idl_type.type_definition_object)
         dispatch_if(
             _format("{}::HasInstance(${isolate}, ${v8_value})",
-                    v8_bridge_name))
+                    v8_bridge_name),
+            # Shortcut to reduce the binary size
+            S("blink_value", (_format(
+                "auto&& ${blink_value} = "
+                "{}::ToWrappableUnsafe(${v8_value}.As<v8::Object>());",
+                v8_bridge_name))))
 
     # 6. If Type(V) is Object and V has an [[ArrayBufferData]] internal slot,
     #   then:
@@ -329,7 +343,13 @@ def make_factory_methods(cg_context):
     # 9.1. If types includes a callback function type, ...
     member = find_by_type(lambda t: t.is_callback_function)
     if member:
-        dispatch_if("${v8_value}->IsFunction()")
+        dispatch_if(
+            "${v8_value}->IsFunction()",
+            # Shortcut to reduce the binary size
+            S("blink_value", (_format(
+                "auto&& ${blink_value} = "
+                "{}::Create(${v8_value}.As<v8::Function>());",
+                blink_class_name(member.idl_type.type_definition_object)))))
 
     # 10. If Type(V) is Object, then:
     # 10.1. If types includes a sequence type, ...
@@ -355,13 +375,12 @@ def make_factory_methods(cg_context):
             def symbol_definition_constructor(symbol_node):
                 node = SymbolDefinitionNode(symbol_node)
                 node.extend([
-                    F(
-                        "auto&& ${blink_value} = "
-                        "bindings::CreateIDLSequenceFromIterator<{}>("
-                        "${isolate}, std::move(script_iterator), "
-                        "${exception_state});",
-                        native_value_tag(
-                            union_member.idl_type.unwrap().element_type)),
+                    F(("auto&& ${blink_value} = "
+                       "bindings::CreateIDLSequenceFromIterator<{}>("
+                       "${isolate}, std::move(script_iterator), "
+                       "${exception_state});"),
+                      native_value_tag(
+                          union_member.idl_type.unwrap().element_type)),
                     CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                                       body=T("return nullptr;")),
                 ])
@@ -378,18 +397,42 @@ def make_factory_methods(cg_context):
     # 10. If Type(V) is Object, then:
     # 10.3. If types includes a dictionary type, ...
     # 10.4. If types includes a record type, ...
-    # 10.5. If types includes a callback interface type, ...
-    # 10.6. If types includes object, ...
-    member = find_by_type(lambda t: t.is_dictionary or t.is_record or t.
-                          is_callback_interface or t.is_object)
+    member = find_by_type(lambda t: t.is_dictionary or t.is_record)
     if member:
         dispatch_if("${v8_value}->IsObject()")
+
+    # 10. If Type(V) is Object, then:
+    # 10.5. If types includes a callback interface type, ...
+    member = find_by_type(lambda t: t.is_callback_interface)
+    if member:
+        dispatch_if(
+            "${v8_value}->IsObject()",
+            # Shortcut to reduce the binary size
+            S("blink_value", (_format(
+                "auto&& ${blink_value} = "
+                "{}::Create(${v8_value}.As<v8::Object>();",
+                blink_class_name(member.idl_type.type_definition_object)))))
+
+    # 10. If Type(V) is Object, then:
+    # 10.6. If types includes object, ...
+    member = find_by_type(lambda t: t.is_object)
+    if member:
+        dispatch_if(
+            "${v8_value}->IsObject()",
+            # Shortcut to reduce the binary size
+            S("blink_value",
+              (_format("auto&& ${blink_value} = "
+                       "ScriptValue(${isolate}, ${v8_value});"))))
 
     # 11. If Type(V) is Boolean, then:
     # 11.1. If types includes boolean, ...
     member = find_by_type(lambda t: t.is_boolean)
     if member:
-        dispatch_if("${v8_value}->IsBoolean()")
+        dispatch_if(
+            "${v8_value}->IsBoolean()",
+            # Shortcut to reduce the binary size
+            S("blink_value", ("auto&& ${blink_value} = "
+                              "${v8_value}.As<v8::Boolean>()->Value();")))
 
     # 12. If Type(V) is Number, then:
     # 12.1. If types includes a numeric type, ...
