@@ -204,11 +204,49 @@ void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
   }
 }
 
+namespace {
+
+class CustomSpaceStatisticsReceiverImpl final
+    : public v8::CustomSpaceStatisticsReceiver {
+ public:
+  explicit CustomSpaceStatisticsReceiverImpl(
+      base::OnceCallback<void(size_t allocated_node_bytes,
+                              size_t allocated_css_bytes)> callback)
+      : callback_(std::move(callback)) {}
+
+  ~CustomSpaceStatisticsReceiverImpl() final {
+    DCHECK(node_bytes_.has_value());
+    DCHECK(css_bytes_.has_value());
+    std::move(callback_).Run(*node_bytes_, *css_bytes_);
+  }
+
+  void AllocatedBytes(cppgc::CustomSpaceIndex space_index, size_t bytes) final {
+    if (space_index.value == NodeSpace::kSpaceIndex.value) {
+      node_bytes_ = bytes;
+    } else {
+      DCHECK_EQ(space_index.value, CSSValueSpace::kSpaceIndex.value);
+      css_bytes_ = bytes;
+    }
+  }
+
+ private:
+  base::OnceCallback<void(size_t allocated_node_bytes,
+                          size_t allocated_css_bytes)>
+      callback_;
+  base::Optional<size_t> node_bytes_;
+  base::Optional<size_t> css_bytes_;
+};
+
+}  // anonymous namespace
+
 void ThreadState::CollectNodeAndCssStatistics(
     base::OnceCallback<void(size_t allocated_node_bytes,
                             size_t allocated_css_bytes)> callback) {
-  // TODO(1181269): Implement.
-  std::move(callback).Run(0u, 0u);
+  std::vector<cppgc::CustomSpaceIndex> spaces{NodeSpace::kSpaceIndex,
+                                              CSSValueSpace::kSpaceIndex};
+  cpp_heap().CollectCustomSpaceStatisticsAtLastGC(
+      std::move(spaces),
+      std::make_unique<CustomSpaceStatisticsReceiverImpl>(std::move(callback)));
 }
 
 void ThreadState::EnableDetachedGarbageCollectionsForTesting() {

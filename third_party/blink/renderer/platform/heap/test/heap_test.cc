@@ -3248,8 +3248,6 @@ struct SpaceTrait<blink::FakeNode> {
 namespace blink {
 #endif
 
-// TODO(1181269): Enable for the library once implemented.
-#if !BUILDFLAG(USE_V8_OILPAN)
 TEST_F(HeapTest, CollectNodeAndCssStatistics) {
   PreciselyCollectGarbage();
   size_t node_bytes_before, css_bytes_before;
@@ -3274,6 +3272,5 @@ TEST_F(HeapTest, CollectNodeAndCssStatistics) {
   EXPECT_LE(node_bytes_before + sizeof(FakeNode), node_bytes_after);
   EXPECT_LE(css_bytes_before + sizeof(FakeCSSValue), css_bytes_after);
 }
-#endif
 
 }  // namespace blink
