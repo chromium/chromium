@@ -300,7 +300,7 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   base::DictionaryValue shill_properties_to_update;
   policy_util::SetShillPropertiesForGlobalPolicy(
       entry_properties, global_network_config_, &shill_properties_to_update);
-  if (shill_properties_to_update.empty()) {
+  if (shill_properties_to_update.DictEmpty()) {
     VLOG(2) << "Ignore unmanaged entry.";
     // Calling a SetProperties of Shill with an empty dictionary is a no op.
     std::move(callback).Run();

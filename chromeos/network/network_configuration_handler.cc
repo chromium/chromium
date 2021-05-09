@@ -280,7 +280,7 @@ void NetworkConfigurationHandler::SetShillProperties(
     const base::DictionaryValue& shill_properties,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
-  if (shill_properties.empty()) {
+  if (shill_properties.DictEmpty()) {
     if (!callback.is_null())
       std::move(callback).Run();
     return;

@@ -952,7 +952,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
   // want information about all ipv4 and ipv6 IPConfig properties.
   base::Value ip_configs(base::Value::Type::LIST);
 
-  if (!device_state || device_state->ip_configs().empty()) {
+  if (!device_state || device_state->ip_configs().DictEmpty()) {
     // Shill may not provide IPConfigs for external Cellular devices/dongles
     // (https://crbug.com/739314) or VPNs, so build a dictionary of ipv4
     // properties from cached NetworkState properties .

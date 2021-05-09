@@ -705,7 +705,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     }
   }
 
-  if (!config_properties.empty()) {
+  if (!config_properties.DictEmpty()) {
     NET_LOG(EVENT) << "Configuring Network: " << NetworkPathId(service_path);
     configuration_handler_->SetShillProperties(
         service_path, config_properties,

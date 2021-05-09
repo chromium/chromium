@@ -762,7 +762,7 @@ void ShillToONCTranslator::TranslateAndAddNestedObject(
                                          network_state_);
   std::unique_ptr<base::DictionaryValue> nested_object =
       nested_translator.CreateTranslatedONCObject();
-  if (nested_object->empty())
+  if (nested_object->DictEmpty())
     return;
   onc_object_->SetKey(onc_field_name, std::move(*nested_object));
 }
@@ -797,7 +797,7 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
     std::unique_ptr<base::DictionaryValue> nested_object =
         nested_translator.CreateTranslatedONCObject();
     // If the nested object couldn't be parsed, simply omit it.
-    if (nested_object->empty())
+    if (nested_object->DictEmpty())
       continue;
     result.Append(std::move(*nested_object));
   }

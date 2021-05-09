@@ -122,7 +122,7 @@ class MergeListOfDictionaries {
             nested_dicts.push_back(nested_dict);
           }
           DictionaryPtr merged_dict(MergeNestedDictionaries(key, nested_dicts));
-          if (!merged_dict->empty())
+          if (!merged_dict->DictEmpty())
             merged_value = std::move(merged_dict);
         } else {
           std::vector<const base::Value*> values;
@@ -469,7 +469,7 @@ class MergeToAugmented : public MergeToEffective {
       augmented_value->SetKey(::onc::kAugmentationDeviceEditable,
                               base::Value(true));
     }
-    if (augmented_value->empty())
+    if (augmented_value->DictEmpty())
       augmented_value.reset();
     return std::move(augmented_value);
   }

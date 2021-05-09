@@ -86,7 +86,7 @@ class NetworkCertMigrator::MigrationTask
                                 base::Value::AsDictionaryValue(*properties),
                                 &new_properties);
 
-    if (new_properties.empty())
+    if (new_properties.DictEmpty())
       return;
     SendPropertiesToShill(service_path, new_properties);
   }
