@@ -4225,11 +4225,6 @@ void AXObject::ClearChildren() const {
                                    << ToString(true, true);
 
   for (const auto& child : children_) {
-    // Check parent first, as the child might be several levels down if there
-    // are unincluded nodes in between, in which case the cached parent will
-    // also be a descendant (unlike children_, parent_ does not skip levels).
-    // Another case where the parent is not the same is when the child has been
-    // reparented using aria-owns.
     if (child->CachedParentObject() == this)
       child->DetachFromParent();
   }
@@ -4239,16 +4234,23 @@ void AXObject::ClearChildren() const {
   if (!GetNode())
     return;
 
-  if (GetDocument()->IsFlatTreeTraversalForbidden() ||
-      GetDocument()->IsSlotAssignmentRecalcForbidden()) {
-    // Cannot use layout tree builder traversal now, will have to rely on
-    // RepairParent() at a later point.
-    return;
-  }
+  // <slot> content is always included in the tree, so there is no need to
+  // iterate through the nodes. This also protects us against slot use "after
+  // poison", where attempts to access assigned nodes triggers a DCHECK.
 
-  // Detach children that were not cleared from first loop.
-  // These must have been an unincluded node who's parent is this,
-  // although it may now be included since the children were last updated.
+  // Detailed explanation:
+  // <slot> elements are placeholders marking locations in a shadow tree where
+  // users of a web component can insert their own custom nodes. Inserted nodes
+  // (also known as distributed nodes) become children of their respective slots
+  // in the accessibility tree. In other words, the accessibility tree mirrors
+  // the flattened DOM tree or the layout tree, not the original DOM tree.
+  // Distributed nodes still maintain their parent relations and computed style
+  // information with their original location in the DOM. Therefore, we need to
+  // ensure that in the accessibility tree no remnant information from the
+  // unflattened DOM tree remains, such as the cached parent.
+  if (IsA<HTMLSlotElement>(GetNode()))
+    return;
+
   for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
@@ -4256,6 +4258,9 @@ void AXObject::ClearChildren() const {
     AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
+      // Child was not cleared from first loop.
+      // It must have been an unincluded node who's parent is this,
+      // although it may now be included since the children were last updated.
       // Check current parent first. It may be owned by another node.
       ax_child_from_node->DetachFromParent();
     }
