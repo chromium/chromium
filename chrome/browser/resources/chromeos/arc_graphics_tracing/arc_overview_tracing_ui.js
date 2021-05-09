@@ -131,6 +131,15 @@ function getModelTitle(model) {
 function addModelHeader(model) {
   var header = $('arc-overview-tracing-model-template').cloneNode(true);
   header.hidden = false;
+  var totalPowerElement =
+      header.getElementsByClassName('arc-tracing-app-power-total')[0];
+  var cpuPowerElement =
+      header.getElementsByClassName('arc-tracing-app-power-cpu')[0];
+  var gpuPowerElement =
+      header.getElementsByClassName('arc-tracing-app-power-gpu')[0];
+  var memoryPowerElement =
+      header.getElementsByClassName('arc-tracing-app-power-memory')[0];
+  totalPowerElement.parentNode.style.display = 'none';
 
   if (model.information.icon) {
     header.getElementsByClassName('arc-tracing-app-icon')[0].src =
@@ -162,6 +171,18 @@ function addModelHeader(model) {
       .textContent = renderQualityAndCommitDeviation[0].toFixed(1) + '%';
   header.getElementsByClassName('arc-tracing-app-commit-deviation')[0]
       .textContent = renderQualityAndCommitDeviation[1].toFixed(2) + 'ms';
+
+  var cpuPower = getAveragePower(model, 10 /* kCpuPower */);
+  var gpuPower = getAveragePower(model, 11 /* kGpuPower */);
+  var memoryPower = getAveragePower(model, 12 /* kMemoryPower */);
+  if (cpuPower != -1 && gpuPower != -1 && memoryPower != -1) {
+    totalPowerElement.parentNode.style.display = 'block';
+    totalPowerElement.textContent =
+        (cpuPower + gpuPower + memoryPower).toFixed(2);
+    cpuPowerElement.textContent = cpuPower.toFixed(2);
+    gpuPowerElement.textContent = gpuPower.toFixed(2);
+    memoryPowerElement.textContent = memoryPower.toFixed(2);
+  }
 
   // Handler to remove model from the view.
   header.getElementsByClassName('arc-tracing-close-button')[0].onclick =
@@ -210,7 +231,8 @@ function getAppCommitEvents(model) {
  * energy consumption and returns average power between first and last event.
  *
  * @param {object} model source model to analyze.
- * @param {number} eventType event type to match particular power counter.
+ * @param {number} eventType event type to match particular power counter
+ * @returns {number} average power in watts or -1 in case no events found.
  */
 function getAveragePower(model, eventType) {
   var events = new Events(model.system.memory, eventType);
@@ -226,7 +248,7 @@ function getAveragePower(model, eventType) {
   }
 
   if (!lastTimestamp) {
-    return 0;
+    return -1;
   }
 
   return totalEnergy / lastTimestamp;
@@ -478,11 +500,7 @@ function addDeltaView(parent, resolution, duration, appView) {
  * @param {number} eventType event type to match particular power counter.
  */
 function addPowerView(parent, title, resolution, duration, eventType) {
-  // power range from 0 to 10000 milli-watts.
-  // 200 milli-watts 1 pixel resolution. Each grid line 2 watts
-  bands = createChart(
-      parent, title, resolution, duration, 50 /* height */,
-      4 /* gridLinesCount */);
+  var bands = null;
   var attributesTemplate = {
     maxValue: 10000,
     minValue: 0,
@@ -491,11 +509,20 @@ function addPowerView(parent, title, resolution, duration, eventType) {
     width: 1.0
   };
   for (i = 0; i < models.length; i++) {
+    var events = new Events(models[i].system.memory, eventType, eventType);
+    if (events.getFirstEvent() < 0) {
+      continue;
+    }
+    if (bands === null) {
+      // power range from 0 to 10000 milli-watts.
+      // 200 milli-watts 1 pixel resolution. Each grid line 2 watts
+      bands = createChart(
+          parent, title, resolution, duration, 50 /* height */,
+          4 /* gridLinesCount */);
+    }
     var attributes = Object.assign({}, attributesTemplate);
     attributes.color = modelColors.get(models[i]);
-    bands.addChartSources(
-        [new Events(models[i].system.memory, eventType, eventType)],
-        false /* smooth */, attributes);
+    bands.addChartSources([events], false /* smooth */, attributes);
   }
 }
 
@@ -532,6 +559,13 @@ function refreshModels() {
   addDeltaView(parent, resolution, duration, true /* appView */);
   addFPSView(parent, resolution, duration, false /* appView */);
   addDeltaView(parent, resolution, duration, false /* appView */);
+  addPowerView(
+      parent, 'Package power constraint', resolution, duration,
+      13 /* eventType */);
+  addPowerView(parent, 'CPU Power', resolution, duration, 10 /* eventType */);
+  addPowerView(parent, 'GPU Power', resolution, duration, 11 /* eventType */);
+  addPowerView(
+      parent, 'Memory Power', resolution, duration, 12 /* eventType */);
 }
 
 /**

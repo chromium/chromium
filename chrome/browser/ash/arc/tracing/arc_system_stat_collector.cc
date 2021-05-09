@@ -196,6 +196,7 @@ struct OneValueReaderInfo {
   SystemReader reader = SystemReader::kTotal;
   int64_t* value = nullptr;
   int64_t default_value = 0;
+  bool error_reported = false;
 };
 
 struct ArcSystemStatCollector::SystemReadersContext {
@@ -255,6 +256,8 @@ struct ArcSystemStatCollector::SystemReadersContext {
       context->system_readers[reader].reset(
           open(counter_file_path.value().c_str(), O_RDONLY));
       if (!context->system_readers[reader].is_valid()) {
+        // TODO(b/182801299): Some intel-rapl files may not be opened from user
+        // process by design. Add support to access through debugd as root.
         LOG(ERROR) << "Failed to open power counter: " << domain_name << " as "
                    << counter_file_path.value();
       }
@@ -424,11 +427,16 @@ void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
       cpu_temperature.MaybeAdd(timestamp, sample.cpu_temperature);
     if (sample.cpu_frequency > 0)
       cpu_frequency.MaybeAdd(timestamp, sample.cpu_frequency);
-    package_power_constraint.MaybeAdd(timestamp,
-                                      sample.package_power_constraint);
-    cpu_power.MaybeAdd(timestamp, sample.cpu_power);
-    gpu_power.MaybeAdd(timestamp, sample.gpu_power);
-    memory_power.MaybeAdd(timestamp, sample.memory_power);
+    if (sample.package_power_constraint > 0) {
+      package_power_constraint.MaybeAdd(timestamp,
+                                        sample.package_power_constraint);
+    }
+    if (sample.cpu_power > 0)
+      cpu_power.MaybeAdd(timestamp, sample.cpu_power);
+    if (sample.gpu_power > 0)
+      gpu_power.MaybeAdd(timestamp, sample.gpu_power);
+    if (sample.memory_power > 0)
+      memory_power.MaybeAdd(timestamp, sample.memory_power);
   }
 
   // These are optional. Keep it if non-zero value is detected.
@@ -650,16 +658,16 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
 
   OneValueReaderInfo one_value_readers[] = {
       {SystemReader::kCpuTemperature, &context->current_frame.cpu_temperature,
-       std::numeric_limits<int>::min()},
-      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0},
+       std::numeric_limits<int>::min(), false},
+      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0,
+       false},
       {SystemReader::kPackagePowerConstraint,
-       &context->current_frame.package_power_constraint, 0},
-      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0},
-      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0},
-      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0},
+       &context->current_frame.package_power_constraint, 0, false},
+      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0, false},
+      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0, false},
+      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0,
+       false},
   };
-  static bool one_value_readers_error_reported[base::size(one_value_readers)] =
-      {0};
 
   for (size_t i = 0; i < base::size(one_value_readers); ++i) {
     if (!context->system_readers[one_value_readers[i].reader].is_valid() ||
@@ -667,11 +675,11 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
             context->system_readers[one_value_readers[i].reader].get(),
             kOneValueColumns, one_value_readers[i].value)) {
       *one_value_readers[i].value = one_value_readers[i].default_value;
-      if (one_value_readers_error_reported[i])
+      if (one_value_readers[i].error_reported)
         continue;
-      LOG(ERROR) << "Failed to read system stat "
+      LOG(ERROR) << "Failed to read one value system stat: "
                  << one_value_readers[i].reader;
-      one_value_readers_error_reported[i] = true;
+      one_value_readers[i].error_reported = true;
     }
   }
 

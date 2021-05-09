@@ -52,7 +52,7 @@ struct ArcValueEvent {
    * kCpuFrequency - khz
    * kCpuPower - milli-watts
    * kGpuPower - milli-watts
-   * kMemporyPower - milli-watts
+   * kMemoryPower - milli-watts
    * kPackagePowerConstraint - milli-watts
    */
   int value;
