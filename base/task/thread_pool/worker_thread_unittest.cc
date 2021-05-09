@@ -837,8 +837,11 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   Mock::VerifyAndClear(&observer);
 }
 
+// ThreadCache tests disabled  when ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL is
+// enabled, because the "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    defined(PA_THREAD_CACHE_SUPPORTED) &&       \
+    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 namespace {
 NOINLINE void FreeForTest(void* data) {
   free(data);
@@ -900,7 +903,8 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(PA_THREAD_CACHE_SUPPORTED)
+        // defined(PA_THREAD_CACHE_SUPPORTED) &&
+        // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 
 }  // namespace internal
 }  // namespace base
