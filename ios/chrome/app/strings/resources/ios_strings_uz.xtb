@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Barcha varaqlarni yopish</translation>
 <translation id="1229222343402087523">${searchPhrase} – Chrome orqali qidirish</translation>
 <translation id="1231733316453485619">Sinxronizatsiya yoqilsinmi?</translation>
+<translation id="1242044645101871359">Qaytadan kiring</translation>
 <translation id="1254117744268754948">Jildni tanlash</translation>
 <translation id="1265739287306757398">Batafsil axborot</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Mutolaa ro‘yxatiga qo‘shildi</translation>
 <translation id="1870148520156231997">Parolni ochish</translation>
 <translation id="1872096359983322073">Fonar</translation>
+<translation id="1894205589103145703">Hisobga kirishda nimadir xato ketdi.</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
 <translation id="1923342640370224680">So‘nggi soat</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
+<translation id="2086623437239112659">Kirishga oid saqlangan axborotingiz eskirgan.</translation>
 <translation id="209018056901015185">To‘liq versiya</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
@@ -400,6 +403,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="5140288047769711648">Chrome bu parolni eslab qoladi. Yodda tutishingiz shart emas.</translation>
 <translation id="5150492518600715772">Qurilmangizga yuborish</translation>
+<translation id="5168414296986405587">iPadOS uchun ishlab chiqilgan</translation>
 <translation id="5181140330217080051">Yuklab olinmoqda</translation>
 <translation id="5186185447130319458">Shaxsiy</translation>
 <translation id="5188482106078495165">Cookie sozlamalaringiz barcha varaqlarga tadbiq qilinadi. Yangi sozlamani tadbiq qilish uchun, varaqni ochib, uni yangilang.</translation>
@@ -429,6 +433,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5508435575041083207">Hisobdan chiqish va bu qurilmadagi maʼlumotlarni tozalash</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> soat oldin</translation>
 <translation id="5525269841082836315">Kodli ibora yaratish</translation>
+<translation id="5532698011560297095">Kirish amalga oshmadi</translation>
 <translation id="5548760955356983418">Handoff funksiyasi veb-saytni bir qurilmada ochib, boshqasida davom etish imkoniyatini beradi. Ochilgan sayt Mac kompyuteringizning Dock panelida paydo bo‘ladi.
 
 Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamalarida (“Umumiy” bo‘limida) ham yoqish kerak. Barcha qurilmalaringiz umumiy iCloud hisobida sinxronlanishi zarur.</translation>

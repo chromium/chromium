@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS tizimini yangilash zarur</translation>
 <translation id="1067048845568873861">Yaratilgan sanasi</translation>
 <translation id="1067922213147265141">Boshqa Google xizmatlari</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> nomli eSIM profilini olib tashlash</translation>
 <translation id="1070377999570795893">Kompyuteringizdagi boshqa dastur bitta kengaytma o‘rnatdi. U Chrome brauzerinig ishlash usulini o‘zgartirishi mumkin.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -356,6 +357,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="138784436342154190">Standart boshlang‘ich sahifa tiklansinmi?</translation>
 <translation id="1388253969141979417">Mikrofondan foydalanishga ruxsat berilgan</translation>
 <translation id="1388728792929436380">Yangilanishlar tugasa, <ph name="DEVICE_TYPE" /> qurilmasi qayta ishga tushiriladi.</translation>
+<translation id="138900021244932468">Hech qanday profil topilmadi. Yangi tarmoqni sozlash uchun qurilma kamerasi orqali QR kodni skanerlang yoki aloqa operatori taqdim qilgan aktivatsiya kodini kiriting.</translation>
 <translation id="139013308650923562">Qurilmangizga oʻrnatilgan shriftlardan foydalanishga ruxsat beradi</translation>
 <translation id="1390548061267426325">Oddiy ichki oynada ochish</translation>
 <translation id="1393283411312835250">Quyosh va bulutlar</translation>
@@ -983,6 +985,7 @@ Aks holda, hoziroq hisobdan chiqing va qurilmadagi sozlamalar oʻzgarmaydi.
 Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshqarishingiz mumkin.  Koʻrsatmalar email manzilingizga yuborildi.</translation>
 <translation id="2040460856718599782">Haqiqiylik tekshiruvini amalga oshirib bo‘lmadi. Hisob ma’lumotlarini tekshirib, qaytadan urinib ko‘ring.</translation>
 <translation id="2044014337866019681">Bu seansni qulfdan chiqarish uchun <ph name="ACCOUNT" /> hisobidan kiring.</translation>
+<translation id="2044023416777079300">Modem registratsiya qilinmagan</translation>
 <translation id="204497730941176055">Microsoft sertifikati andozasi nomi</translation>
 <translation id="2045117674524495717">Tezkor tugmalar yordamchisi</translation>
 <translation id="2045969484888636535">Cookie-fayllari saqlanishini doim bloklash</translation>
@@ -4086,6 +4089,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5486261815000869482">Parolni tasdiqlang</translation>
 <translation id="5486275809415469523">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga ekraningizdan foydalanishga ruxsat berdi.</translation>
 <translation id="5486561344817861625">Brauzerning qayta ishga tushishini simulyatsiyalash</translation>
+<translation id="5487460042548760727">Profil nomini bunga qayta nomlash: <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Tarixni tozalash</translation>
 <translation id="5488093641312826914">“<ph name="COPIED_ITEM_NAME" />” nusxa olindi</translation>
 <translation id="5488508217173274228">Sinxronizatsiyani shifrlash parametrlari</translation>
@@ -4827,6 +4831,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6308937455967653460">&amp;Havolani saqlash...</translation>
 <translation id="6309443618838462258">Bu klaviatura administrator tomonidan taqiqlangan</translation>
 <translation id="6309510305002439352">Mikrofon oʻchiq</translation>
+<translation id="6310141306111263820">eSIM profili oʻrnatilmadi. Yordam olish uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="6311220991371174222">Profilni ochib bo‘lmadi. Chrome’ni qaytadan ishga tushiring.</translation>
 <translation id="6312403991423642364">Noma’lum tarmoq xatoligi</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Xavfsizlik tekshiruvi 1 kun oldin bajarilgan}other{Xavfsizlik tekshiruvi {NUM_DAYS} kun oldin bajarilgan}}</translation>
@@ -5963,6 +5968,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7582582252461552277">Shu tarmoq afzal ko‘rilsin</translation>
 <translation id="7582844466922312471">Mobil internet modemi</translation>
 <translation id="7583948862126372804">Hisob</translation>
+<translation id="7586051298768394542">Avtomatik subtitr fayllarni yuklanmadi. Ovozingiz Googlega yuborilishi orqali ovoz bilan yozish davom etadi.</translation>
 <translation id="7586498138629385861">Chrome ilovalari yopilmaguncha brauzer ishlashda davom etadi.</translation>
 <translation id="7589461650300748890">Ehtiyot bo‘ling.</translation>
 <translation id="7593653750169415785">Bildirishnomalar bir necha marta yopilganligi uchun avtomatik bloklandi</translation>
@@ -6550,6 +6556,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8191230140820435481">Ilovalar, kengaytmalar va mavzularni boshqarish</translation>
 <translation id="8195027750202970175">Diskdagi hajmi</translation>
 <translation id="8198323535106903877">Sizga bu <ph name="NUMBER_OF_APPS" /> ta ilovani o‘rnatib beramiz</translation>
+<translation id="8198456017687137612">Translatsiya varagʻi</translation>
 <translation id="8199300056570174101">Tarmoq (xizmat) va qurilma parametrlari</translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8201717382574620700">Albom tanlash: <ph name="TOPIC_SOURCE" /></translation>
@@ -7134,6 +7141,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8847523528195140327">Muqova yopilganda hisobdan chiqish</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Yashirin</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> nomli eSIM profilini olib tashlashni bekor qilish</translation>
 <translation id="8850251000316748990">Yana...</translation>
 <translation id="885246833287407341">API funksiyasi argumentlari</translation>
 <translation id="8853586775156634952">Bu karta faqat shu qurilmada saqlanadi</translation>

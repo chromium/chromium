@@ -140,6 +140,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2079504693865562705">Ilovalar ishga tushirish panelida chiqmasin</translation>
 <translation id="2083190527011054446">Xayrli tun, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
+<translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
 <translation id="2127372758936585790">Kam quvvatli zaryadlovchi vosita</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
@@ -367,6 +368,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4021716437419160885">Pastga tushish</translation>
 <translation id="4028481283645788203">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Raqam tezkor tugmasi oʻzgardi. Funksiya tugmalaridan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + yuqori qatordagi kalitni bosing.</translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
 <translation id="4057003836560082631">Brauzerdagi <ph name="INDEX" />-varaq, jami <ph name="TOTAL_COUNT" /> ta. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Yoqilmagan, 1 ta ilova}other{Yoqilmagan, # ta ilova}}</translation>
@@ -392,6 +394,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="425364040945105958">SIM kartasiz</translation>
 <translation id="4261870227682513959">Bildirishnoma sozlamalarini ochish. Bildirishnomalar yoqilmagan</translation>
 <translation id="4269883910223712419">Bu qurilma administratorining vakolatlari:</translation>
+<translation id="4274537685965975248">Ctrl + Alt + Pastga strelka tezkor tugmasi oʻzgardi. End tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Oʻngga strelkani bosing.</translation>
 <translation id="4279490309300973883">Ekran nusxasini boshqa ekranga uzatish</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>
 <translation id="4294319844246081198">Xayrli tong, <ph name="GIVEN_NAME" /></translation>
@@ -400,6 +403,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4303223480529385476">Holat panelini yoyish</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Yuqori kontrastli rejim tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
+<translation id="4322742403972824594">Ctrl + Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Home tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Chapga strelkani bosing.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Bir nechta foydalanuvchi hisobiga kirganida Lacros ishlamaydi.</translation>
 <translation id="4338109981321384717">Lupa</translation>
@@ -417,6 +421,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4445159312344259901">Ochish uchun hisobga kiring</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ta muhim bildirishnoma}other{# ta muhim bildirishnoma}}</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
+<translation id="4451374464530248585">Alt + Pastga strelka tezkor tugmasi oʻzgardi. Page Down tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Pastga strelkani bosing.</translation>
 <translation id="445864333228800152">Xayrli kech,</translation>
 <translation id="4458688154122353284">Ekranni yozib olishni toʻxtatish</translation>
 <translation id="4472575034687746823">Boshlash</translation>
@@ -708,6 +713,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6961121602502368900">Telefon ish profilida sukut qilinmaydi</translation>
+<translation id="6961840794482373852">Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Page Up tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Tepaga strelkani bosing.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
