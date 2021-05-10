@@ -59,10 +59,7 @@ bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
   return is_using_https_as_default_scheme && handle->IsInMainFrame() &&
          !handle->IsSameDocument() &&
          handle->GetURL().SchemeIs(url::kHttpsScheme) &&
-         !handle->GetWebContents()->IsPortal() &&
-         ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
-                                      ui::PAGE_TRANSITION_TYPED) &&
-         ui::PageTransitionIsNewNavigation(handle->GetPageTransition());
+         !handle->GetWebContents()->IsPortal();
 }
 
 void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
