@@ -11,6 +11,7 @@
 
   const issuePromises = [dp.Audits.onceIssueAdded(), dp.Audits.onceIssueAdded()];
   await page.loadHTML(`
+    <!DOCTYPE html>
     <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect-invalid-data.php"></img>
     <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect-missing-data.php"></img>`);
   const issues = await Promise.all(issuePromises);

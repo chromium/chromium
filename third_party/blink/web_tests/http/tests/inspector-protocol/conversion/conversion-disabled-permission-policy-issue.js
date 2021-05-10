@@ -12,6 +12,7 @@
 
   const eventPromises = [dp.Network.onceRequestWillBeSent(), dp.Audits.onceIssueAdded()];
   await page.loadHTML(`
+    <!DOCTYPE html>
     <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php"></img>`);
 
   const [requestWillBeSent, issue] = await Promise.all(eventPromises);
