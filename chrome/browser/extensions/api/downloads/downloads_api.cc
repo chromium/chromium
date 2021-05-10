@@ -1901,12 +1901,13 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
         const base::Value* old_value = NULL;
         if (!data->json().HasKey(iter.key()) ||
             (data->json().Get(iter.key(), &old_value) &&
-             !iter.value().Equals(old_value))) {
+             iter.value() != *old_value)) {
           delta->Set(iter.key() + ".current",
                      base::Value::ToUniquePtrValue(iter.value().Clone()));
-          if (old_value)
+          if (old_value) {
             delta->Set(iter.key() + ".previous",
                        base::Value::ToUniquePtrValue(old_value->Clone()));
+          }
           changed = true;
         }
       }
