@@ -50,8 +50,9 @@ class UseAddressActionTest : public testing::Test {
     autofill::test::SetProfileInfo(&profile_, kFirstName, "", kLastName, kEmail,
                                    "", "", "", "", "", "", "", kPhoneNumber);
     // Store copies of |profile_| in |user_data_| and |user_model_|.
-    user_data_.selected_addresses_[kAddressName] =
-        std::make_unique<autofill::AutofillProfile>(profile_);
+    user_model_.SetSelectedAutofillProfile(
+        kAddressName, std::make_unique<autofill::AutofillProfile>(profile_),
+        &user_data_);
     auto profiles = std::make_unique<
         std::vector<std::unique_ptr<autofill::AutofillProfile>>>();
     profiles->emplace_back(
@@ -217,8 +218,12 @@ TEST_F(UseAddressActionTest, PreconditionFailedPopulatesUnexpectedErrorInfo) {
   InSequence seq;
 
   ActionProto action_proto = CreateUseAddressAction();
-  user_data_.selected_addresses_[kAddressName] = nullptr;
-  user_data_.selected_addresses_["one_more"] = nullptr;
+  user_model_.SetSelectedAutofillProfile(kAddressName, nullptr, &user_data_);
+  user_model_.SetSelectedAutofillProfile(
+      "one_more",
+      std::make_unique<autofill::AutofillProfile>(base::GenerateGUID(),
+                                                  "www.example.com"),
+      &user_data_);
 
   UseAddressAction action(&mock_action_delegate_, action_proto);
 
@@ -230,8 +235,7 @@ TEST_F(UseAddressActionTest, PreconditionFailedPopulatesUnexpectedErrorInfo) {
             processed_action.status());
   const auto& error_info =
       processed_action.status_details().autofill_error_info();
-  EXPECT_EQ(base::JoinString({kAddressName, "one_more"}, ","),
-            error_info.client_memory_address_key_names());
+  EXPECT_EQ("one_more", error_info.client_memory_address_key_names());
   EXPECT_EQ(kAddressName, error_info.address_key_requested());
   EXPECT_TRUE(error_info.address_pointee_was_null());
 }

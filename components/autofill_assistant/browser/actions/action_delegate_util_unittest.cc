@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -85,6 +86,7 @@ class ActionDelegateUtilTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   MockActionDelegate mock_action_delegate_;
   UserData user_data_;
+  UserModel user_model_;
   MockWebsiteLoginManager mock_website_login_manager_;
 };
 
@@ -317,7 +319,8 @@ TEST_F(ActionDelegateUtilTest, PerformWithAutofillValue) {
                                                   autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(contact.get(), "John", /* middle name */ "",
                                  "Doe", "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] = std::move(contact);
+  user_model_.SetSelectedAutofillProfile("contact", std::move(contact),
+                                         &user_data_);
 
   TextValue text_value;
   auto* autofill_value = text_value.mutable_autofill_value();

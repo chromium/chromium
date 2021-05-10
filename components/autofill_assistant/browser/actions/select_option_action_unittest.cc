@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -56,6 +57,7 @@ class SelectOptionActionTest : public testing::Test {
   base::MockCallback<Action::ProcessActionCallback> callback_;
   SelectOptionProto proto_;
   UserData user_data_;
+  UserModel user_model_;
 };
 
 TEST_F(SelectOptionActionTest, NoValueToSelectFails) {
@@ -148,8 +150,10 @@ TEST_F(SelectOptionActionTest, RequestUnknownDataFromProfile) {
   // Middle name is expected to be empty.
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
@@ -171,8 +175,9 @@ TEST_F(SelectOptionActionTest, SelectOptionFromProfileValue) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe", "", "", "", "",
                                  "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   InSequence sequence;
 
@@ -235,8 +240,9 @@ TEST_F(SelectOptionActionTest, EscapeRegularExpressionAutofillValue) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe", "", "", "", "",
                                  "", "", "", "", "+41791234567");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   InSequence sequence;
 

@@ -14,6 +14,7 @@ const char kFakeUrl[] = "https://www.example.com";
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::IsNull;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
@@ -364,6 +365,24 @@ TEST_F(UserModelTest, ClientSideOnlyNotifications) {
                   SimpleValue(1, /* is_client_side_only = */ true));
 
   EXPECT_TRUE(GetValues().at("identifier").is_client_side_only());
+}
+
+TEST_F(UserModelTest, SetSelectedAutofillProfile) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
+      "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+
+  UserData user_data;
+  model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(profile),
+      &user_data);
+  EXPECT_THAT(model_.GetSelectedAutofillProfile("contact")->Compare(profile),
+              Eq(0));
+  EXPECT_THAT(user_data.selected_address("contact")->Compare(profile), Eq(0));
+  model_.SetSelectedAutofillProfile("contact", nullptr, &user_data);
+  EXPECT_THAT(model_.GetSelectedAutofillProfile("contact"), IsNull());
+  EXPECT_THAT(user_data.selected_address("contact"), IsNull());
 }
 
 }  // namespace autofill_assistant

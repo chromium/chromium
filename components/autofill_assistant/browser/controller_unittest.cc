@@ -2089,8 +2089,9 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
       std::make_unique<autofill::CreditCard>(*credit_card),
       std::make_unique<autofill::AutofillProfile>(*billing_address));
   EXPECT_THAT(GetUserData()->selected_card_->Compare(*credit_card), Eq(0));
-  EXPECT_THAT(GetUserData()->selected_addresses_["billing_address"]->Compare(
-                  *billing_address),
+  EXPECT_THAT(GetUserData()
+                  ->selected_address("billing_address")
+                  ->Compare(*billing_address),
               Eq(0));
 }
 
@@ -2130,11 +2131,11 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
                                   Property(&UserAction::enabled, Eq(false)))))
       .Times(1);
   // Can be called by a PDM update.
-  controller_->WriteUserData(base::BindOnce(
-      [](UserData* user_data, UserData::FieldChange* field_change) {
-        auto it = user_data->selected_addresses_.find("selected_profile");
-        if (it != user_data->selected_addresses_.end()) {
-          user_data->selected_addresses_.erase(it);
+  controller_->WriteUserData(base::BindLambdaForTesting(
+      [this](UserData* user_data, UserData::FieldChange* field_change) {
+        if (user_data->has_selected_address("selected_profile")) {
+          controller_->GetUserModel()->SetSelectedAutofillProfile(
+              "selected_profile", nullptr, user_data);
           *field_change = UserData::FieldChange::CONTACT_PROFILE;
         }
       }));
@@ -2213,8 +2214,9 @@ TEST_F(ControllerTest, SetShippingAddress) {
       .Times(1);
   controller_->SetShippingAddress(
       std::make_unique<autofill::AutofillProfile>(*shipping_address));
-  EXPECT_THAT(GetUserData()->selected_addresses_["shipping_address"]->Compare(
-                  *shipping_address),
+  EXPECT_THAT(GetUserData()
+                  ->selected_address("shipping_address")
+                  ->Compare(*shipping_address),
               Eq(0));
 }
 

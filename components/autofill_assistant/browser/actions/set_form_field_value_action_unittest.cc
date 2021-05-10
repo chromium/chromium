@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -107,6 +108,7 @@ class SetFormFieldValueActionTest : public testing::Test {
   ActionProto proto_;
   SetFormFieldValueProto* set_form_field_proto_;
   UserData user_data_;
+  UserModel user_model_;
 };
 
 TEST_F(SetFormFieldValueActionTest, RequestedUsernameButNoLoginInClientMemory) {
@@ -721,8 +723,9 @@ TEST_F(SetFormFieldValueActionTest, RequestUnknownDataFromProfile) {
   // Middle name is expected to be empty.
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
   value->mutable_profile()->set_identifier("contact");
@@ -743,8 +746,9 @@ TEST_F(SetFormFieldValueActionTest, SetFieldFromProfileValue) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", "", "Doe", "", "", "", "",
                                  "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
   value->mutable_profile()->set_identifier("contact");

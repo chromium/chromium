@@ -23,6 +23,7 @@
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/google/core/common/google_util.h"
@@ -1588,13 +1589,8 @@ void Controller::SetProfile(
     return;
   }
 
-  auto it = user_data_->selected_addresses_.find(key);
-  if (it != user_data_->selected_addresses_.end()) {
-    user_data_->selected_addresses_.erase(it);
-  }
-  if (profile != nullptr) {
-    user_data_->selected_addresses_.emplace(key, std::move(profile));
-  }
+  user_model_.SetSelectedAutofillProfile(key, std::move(profile),
+                                         user_data_.get());
 
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_.get(), field_change);

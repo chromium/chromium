@@ -168,6 +168,32 @@ void UserModel::SetCurrentURL(GURL current_url) {
   current_url_ = current_url;
 }
 
+void UserModel::SetSelectedAutofillProfile(
+    const std::string& profile_name,
+    std::unique_ptr<autofill::AutofillProfile> profile,
+    UserData* user_data) {
+  // Set the profile in the UserModel.
+  auto user_model_it = selected_profiles_.find(profile_name);
+  if (user_model_it != selected_profiles_.end()) {
+    selected_profiles_.erase(user_model_it);
+  }
+  if (profile != nullptr) {
+    selected_profiles_.emplace(
+        profile_name, std::make_unique<autofill::AutofillProfile>(*profile));
+  }
+
+  // Set the profile in the UserData.
+  // TODO(b/187286050): migrate to UserModel so that we can avoid this
+  // duplication.
+  auto user_data_it = user_data->selected_addresses_.find(profile_name);
+  if (user_data_it != user_data->selected_addresses_.end()) {
+    user_data->selected_addresses_.erase(user_data_it);
+  }
+  if (profile != nullptr) {
+    user_data->selected_addresses_.emplace(profile_name, std::move(profile));
+  }
+}
+
 const autofill::CreditCard* UserModel::GetCreditCard(
     const std::string& guid) const {
   auto it = credit_cards_.find(guid);
@@ -181,6 +207,15 @@ const autofill::AutofillProfile* UserModel::GetProfile(
     const std::string& guid) const {
   auto it = profiles_.find(guid);
   if (it == profiles_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+const autofill::AutofillProfile* UserModel::GetSelectedAutofillProfile(
+    const std::string& profile_name) const {
+  auto it = selected_profiles_.find(profile_name);
+  if (it == selected_profiles_.end()) {
     return nullptr;
   }
   return it->second.get();

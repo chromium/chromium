@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -81,6 +82,7 @@ class GetElementStatusActionTest : public testing::Test {
   base::MockCallback<Action::ProcessActionCallback> callback_;
   GetElementStatusProto proto_;
   UserData user_data_;
+  UserModel user_model_;
   MockWebsiteLoginManager mock_website_login_manager_;
 };
 
@@ -597,8 +599,9 @@ TEST_F(GetElementStatusActionTest, SucceedsWithAutofillValue) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");

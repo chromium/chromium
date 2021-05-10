@@ -127,10 +127,6 @@ class UserData {
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
 
-  // The address key requested by the autofill action.
-  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
-      selected_addresses_;
-
   base::Optional<WebsiteLoginManager::Login> selected_login_;
 
   // Return true if address has been selected, otherwise return false.
@@ -156,6 +152,13 @@ class UserData {
   base::Optional<autofill::FormData> password_form_data_;
 
   std::string GetAllAddressKeyNames() const;
+
+ private:
+  friend class UserModel;
+  // The address key requested by the autofill action.
+  // Written by |UserModel| to ensure that it stays in sync
+  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+      selected_addresses_;
 };
 
 // Struct for holding the payment request options.

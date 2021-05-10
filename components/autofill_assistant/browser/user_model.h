@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/model.pb.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "url/gurl.h"
 
@@ -86,6 +87,14 @@ class UserModel {
       std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
           profiles);
 
+  // Sets the selected autofill profile for |profile_name|. A nullptr |profile|
+  // will clear the entry. The profile is also set in |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedAutofillProfile(
+      const std::string& profile_name,
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserData* user_data);
+
   void SetCurrentURL(GURL current_url);
 
   // Returns the credit card with |guid| or nullptr if there is no such card.
@@ -93,6 +102,11 @@ class UserModel {
 
   // Returns the profile with |guid| or nullptr if there is no such profile.
   const autofill::AutofillProfile* GetProfile(const std::string& guid) const;
+
+  // Returns the selected profile for the specified |profile_name| or nullptr if
+  // there is no such profile.
+  const autofill::AutofillProfile* GetSelectedAutofillProfile(
+      const std::string& profile_name) const;
 
   GURL GetCurrentURL() const;
 
@@ -113,8 +127,13 @@ class UserModel {
   friend class UserModelTest;
 
   std::map<std::string, ValueProto> values_;
+  // Guid to credit card map.
   std::map<std::string, std::unique_ptr<autofill::CreditCard>> credit_cards_;
+  // Guid to profile map.
   std::map<std::string, std::unique_ptr<autofill::AutofillProfile>> profiles_;
+  // Profile name to profile map.
+  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+      selected_profiles_;
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};

@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,6 +60,7 @@ class DetailsTest : public testing::Test {
   }
 
   UserData user_data_;
+  UserModel user_model_;
   CollectUserDataOptions user_data_options_;
 };
 
@@ -140,7 +142,8 @@ TEST_F(DetailsTest, UpdateFromContactDetailsNoUserDataOptions) {
 TEST_F(DetailsTest, UpdateFromContactDetailsNoContactInfoRequested) {
   ShowDetailsProto proto;
   proto.set_contact_details("contact");
-  user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
+  user_model_.SetSelectedAutofillProfile("contact", MakeAutofillProfile(),
+                                         &user_data_);
   user_data_options_.request_payer_name = false;
   user_data_options_.request_payer_email = false;
   EXPECT_FALSE(Details::UpdateFromContactDetails(proto, &user_data_,
@@ -150,7 +153,8 @@ TEST_F(DetailsTest, UpdateFromContactDetailsNoContactInfoRequested) {
 TEST_F(DetailsTest, UpdateFromContactDetails) {
   ShowDetailsProto proto;
   proto.set_contact_details("contact");
-  user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
+  user_model_.SetSelectedAutofillProfile("contact", MakeAutofillProfile(),
+                                         &user_data_);
   user_data_options_.request_payer_name = true;
   user_data_options_.request_payer_email = true;
 
@@ -167,7 +171,8 @@ TEST_F(DetailsTest, UpdateFromContactDetails) {
 TEST_F(DetailsTest, UpdateFromContactOnlyName) {
   ShowDetailsProto proto;
   proto.set_contact_details("contact");
-  user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
+  user_model_.SetSelectedAutofillProfile("contact", MakeAutofillProfile(),
+                                         &user_data_);
   user_data_options_.request_payer_name = true;
   user_data_options_.request_payer_email = false;
 
@@ -184,7 +189,8 @@ TEST_F(DetailsTest, UpdateFromContactOnlyName) {
 TEST_F(DetailsTest, UpdateFromContactOnlyEmail) {
   ShowDetailsProto proto;
   proto.set_contact_details("contact");
-  user_data_.selected_addresses_["contact"] = MakeAutofillProfile();
+  user_model_.SetSelectedAutofillProfile("contact", MakeAutofillProfile(),
+                                         &user_data_);
   user_data_options_.request_payer_name = false;
   user_data_options_.request_payer_email = true;
 
@@ -206,7 +212,8 @@ TEST_F(DetailsTest, UpdateFromShippingAddressNoAddressInMemory) {
 TEST_F(DetailsTest, UpdateFromShippingAddress) {
   ShowDetailsProto proto;
   proto.set_shipping_address("shipping");
-  user_data_.selected_addresses_["shipping"] = MakeAutofillProfile();
+  user_model_.SetSelectedAutofillProfile("shipping", MakeAutofillProfile(),
+                                         &user_data_);
 
   Details details;
   EXPECT_TRUE(Details::UpdateFromShippingAddress(proto, &user_data_, &details));

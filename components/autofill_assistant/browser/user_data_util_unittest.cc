@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -713,6 +714,7 @@ class UserDataUtilTextValueTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   MockActionDelegate mock_action_delegate_;
   UserData user_data_;
+  UserModel user_model_;
   MockWebsiteLoginManager mock_website_login_manager_;
 };
 
@@ -744,8 +746,9 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownProfile) {
   // Middle name is expected to be empty.
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
@@ -768,8 +771,9 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownDataFromKnownProfile) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
@@ -791,8 +795,9 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "Jo.h*n", /* middle name */ "",
                                  "Doe", "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   AutofillValueRegexp autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
@@ -949,8 +954,9 @@ TEST_F(UserDataUtilTextValueTest, TextValueAutofillValue) {
                                     autofill::test::kEmptyOrigin);
   autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
                                  "", "", "", "", "", "", "", "", "");
-  user_data_.selected_addresses_["contact"] =
-      std::make_unique<autofill::AutofillProfile>(contact);
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
 
   TextValue text_value;
   AutofillValue* autofill_value = text_value.mutable_autofill_value();

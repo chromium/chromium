@@ -606,7 +606,8 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   }
   for (const auto& profile_name :
        proto_.collect_user_data().clear_previous_profile_selection()) {
-    user_data->selected_addresses_.erase(profile_name);
+    delegate_->GetUserModel()->SetSelectedAutofillProfile(
+        profile_name, /* profile= */ nullptr, user_data);
   }
 
   // Add available profiles and start listening.
@@ -1279,11 +1280,9 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   }
 
   if (!found_profile && selected_profile != nullptr) {
-    auto it = user_data->selected_addresses_.find(
-        collect_user_data_options_->contact_details_name);
-    if (it != user_data->selected_addresses_.end()) {
-      user_data->selected_addresses_.erase(it);
-    }
+    delegate_->GetUserModel()->SetSelectedAutofillProfile(
+        collect_user_data_options_->contact_details_name,
+        /* profile= */ nullptr, user_data);
   }
 
   if (!user_data->has_selected_address(
@@ -1294,19 +1293,18 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     int default_selection = GetDefaultContactProfile(
         *collect_user_data_options_, user_data->available_profiles_);
     if (default_selection != -1) {
-      user_data->selected_addresses_.emplace(
+      delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->contact_details_name,
           MakeUniqueFromProfile(
-              *(user_data->available_profiles_[default_selection])));
+              *(user_data->available_profiles_[default_selection])),
+          user_data);
     }
   }
 
   if (!found_shipping_address && shipping_address != nullptr) {
-    auto it = user_data->selected_addresses_.find(
-        collect_user_data_options_->shipping_address_name);
-    if (it != user_data->selected_addresses_.end()) {
-      user_data->selected_addresses_.erase(it);
-    }
+    delegate_->GetUserModel()->SetSelectedAutofillProfile(
+        collect_user_data_options_->shipping_address_name,
+        /* profile= */ nullptr, user_data);
   }
   if (!user_data->has_selected_address(
           collect_user_data_options_->shipping_address_name) &&
@@ -1314,10 +1312,11 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     int default_selection = GetDefaultAddressProfile(
         *collect_user_data_options_, user_data->available_profiles_);
     if (default_selection != -1) {
-      user_data->selected_addresses_.emplace(
+      delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->shipping_address_name,
           MakeUniqueFromProfile(
-              *(user_data->available_profiles_[default_selection])));
+              *(user_data->available_profiles_[default_selection])),
+          user_data);
     }
   }
 
@@ -1367,11 +1366,9 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
 
   if (!found_card) {
     user_data->selected_card_.reset();
-    auto it = user_data->selected_addresses_.find(
-        collect_user_data_options_->billing_address_name);
-    if (it != user_data->selected_addresses_.end()) {
-      user_data->selected_addresses_.erase(it);
-    }
+    delegate_->GetUserModel()->SetSelectedAutofillProfile(
+        collect_user_data_options_->billing_address_name,
+        /* profile= */ nullptr, user_data);
   }
   if (user_data->selected_card_ == nullptr &&
       collect_user_data_options_->request_payment_method) {
@@ -1383,10 +1380,11 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
       user_data->selected_card_ = std::make_unique<autofill::CreditCard>(
           *(default_payment_instrument->card));
       if (default_payment_instrument->billing_address != nullptr) {
-        user_data->selected_addresses_.emplace(
+        delegate_->GetUserModel()->SetSelectedAutofillProfile(
             collect_user_data_options_->billing_address_name,
             std::make_unique<autofill::AutofillProfile>(
-                *(default_payment_instrument->billing_address)));
+                *(default_payment_instrument->billing_address)),
+            user_data);
       }
     }
   }
