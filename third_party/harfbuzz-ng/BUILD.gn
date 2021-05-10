@@ -198,6 +198,8 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-var-mvar-table.hh",
       "src/src/hb-ot-var.cc",
       "src/src/hb-pool.hh",
+      "src/src/hb-priority-queue.hh",
+      "src/src/hb-repacker.hh",
       "src/src/hb-sanitize.hh",
       "src/src/hb-serialize.hh",
       "src/src/hb-set-digest.hh",
