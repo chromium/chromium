@@ -135,9 +135,6 @@ public class AccountTrackerService {
         ThreadUtils.assertOnUiThread();
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        if (!accountManagerFacade.isGooglePlayServicesAvailable()) {
-            return;
-        }
         assert mAccountsSeedingStatus
                 != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;

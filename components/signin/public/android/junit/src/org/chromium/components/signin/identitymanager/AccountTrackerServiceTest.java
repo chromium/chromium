@@ -100,16 +100,6 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
-    public void testSeedAccountsWithoutGooglePlayServices() {
-        when(mFakeAccountManagerFacade.isGooglePlayServicesAvailable()).thenReturn(false);
-
-        mService.seedAccountsIfNeeded(mRunnableMock);
-
-        verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts(any());
-        verify(mRunnableMock, never()).run();
-    }
-
-    @Test
     public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
         mService.seedAccountsIfNeeded(mRunnableMock);
 
