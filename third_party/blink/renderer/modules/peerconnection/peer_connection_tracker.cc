@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -456,66 +457,64 @@ const char* GetTransceiverUpdatedReasonString(
   return nullptr;
 }
 
-// Builds a DictionaryValue from the StatsReport.
+// Builds a dictionary Value from the StatsReport.
 // Note:
 // The format must be consistent with what webrtc_internals.js expects.
 // If you change it here, you must change webrtc_internals.js as well.
-std::unique_ptr<base::DictionaryValue> GetDictValueStats(
-    const StatsReport& report) {
+base::Optional<base::Value> GetDictValueStats(const StatsReport& report) {
   if (report.values().empty())
-    return nullptr;
+    return base::nullopt;
 
-  auto values = std::make_unique<base::ListValue>();
+  base::Value values(base::Value::Type::LIST);
 
   for (const auto& v : report.values()) {
     const StatsReport::ValuePtr& value = v.second;
-    values->AppendString(value->display_name());
+    values.Append(value->display_name());
     switch (value->type()) {
       case StatsReport::Value::kInt:
-        values->AppendInteger(value->int_val());
+        values.Append(value->int_val());
         break;
       case StatsReport::Value::kFloat:
-        values->AppendDouble(value->float_val());
+        values.Append(value->float_val());
         break;
       case StatsReport::Value::kString:
-        values->AppendString(value->string_val());
+        values.Append(value->string_val());
         break;
       case StatsReport::Value::kStaticString:
-        values->AppendString(value->static_string_val());
+        values.Append(value->static_string_val());
         break;
       case StatsReport::Value::kBool:
-        values->AppendBoolean(value->bool_val());
+        values.Append(value->bool_val());
         break;
       case StatsReport::Value::kInt64:  // int64_t isn't supported, so use
                                         // string.
       case StatsReport::Value::kId:
       default:
-        values->AppendString(value->ToString());
+        values.Append(value->ToString());
         break;
     }
   }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetDouble("timestamp", report.timestamp());
-  dict->Set("values", std::move(values));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetDoubleKey("timestamp", report.timestamp());
+  dict.SetKey("values", std::move(values));
 
   return dict;
 }
 
-// Builds a DictionaryValue from the StatsReport.
-// The caller takes the ownership of the returned value.
-std::unique_ptr<base::DictionaryValue> GetDictValue(const StatsReport& report) {
-  std::unique_ptr<base::DictionaryValue> stats = GetDictValueStats(report);
+// Builds a dictionary Value from the StatsReport.
+base::Optional<base::Value> GetDictValue(const StatsReport& report) {
+  base::Optional<base::Value> stats = GetDictValueStats(report);
   if (!stats)
-    return nullptr;
+    return base::nullopt;
 
   // Note:
   // The format must be consistent with what webrtc_internals.js expects.
   // If you change it here, you must change webrtc_internals.js as well.
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->Set("stats", std::move(stats));
-  result->SetString("id", report.id()->ToString());
-  result->SetString("type", report.TypeToString());
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetKey("stats", std::move(stats).value());
+  result.SetStringKey("id", report.id()->ToString());
+  result.SetStringKey("type", report.TypeToString());
 
   return result;
 }
@@ -545,9 +544,9 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
   void OnComplete(const StatsReports& reports) override {
     auto list = std::make_unique<base::ListValue>();
     for (const auto* r : reports) {
-      std::unique_ptr<base::DictionaryValue> report = GetDictValue(*r);
+      base::Optional<base::Value> report = GetDictValue(*r);
       if (report)
-        list->Append(std::move(report));
+        list->Append(std::move(report).value());
     }
 
     if (!list->empty()) {
@@ -625,51 +624,47 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     for (const auto& stats : *report) {
       // The format of "stats_subdictionary" is:
       // {timestamp:<milliseconds>, values: [<key-value pairs>]}
-      auto stats_subdictionary = std::make_unique<base::DictionaryValue>();
+      base::Value stats_subdictionary(base::Value::Type::DICTIONARY);
       // Timestamp is reported in milliseconds.
-      stats_subdictionary->SetDouble("timestamp",
-                                     stats.timestamp_us() / 1000.0);
+      stats_subdictionary.SetDoubleKey("timestamp",
+                                       stats.timestamp_us() / 1000.0);
       // Values are reported as
       // "values": ["member1", value, "member2", value...]
-      auto name_value_pairs = std::make_unique<base::ListValue>();
+      base::Value name_value_pairs(base::Value::Type::LIST);
       for (const auto* member : stats.Members()) {
         if (!member->is_defined())
           continue;
         // Non-standardized / provisional stats which are not exposed
         // to Javascript are postfixed with an asterisk.
         std::string postfix = member->is_standardized() ? "" : "*";
-        name_value_pairs->AppendString(member->name() + postfix);
-        name_value_pairs->Append(MemberToValue(*member));
+        name_value_pairs.Append(member->name() + postfix);
+        name_value_pairs.Append(MemberToValue(*member));
       }
-      stats_subdictionary->Set("values", std::move(name_value_pairs));
+      stats_subdictionary.SetKey("values", std::move(name_value_pairs));
 
       // The format of "stats_dictionary" is:
       // {id:<string>, stats:<stats_subdictionary>, type:<string>}
-      auto stats_dictionary = std::make_unique<base::DictionaryValue>();
-      stats_dictionary->Set("stats", std::move(stats_subdictionary));
-      stats_dictionary->SetString("id", stats.id());
-      stats_dictionary->SetString("type", stats.type());
+      base::Value stats_dictionary(base::Value::Type::DICTIONARY);
+      stats_dictionary.SetKey("stats", std::move(stats_subdictionary));
+      stats_dictionary.SetStringKey("id", stats.id());
+      stats_dictionary.SetStringKey("type", stats.type());
       result_list->Append(std::move(stats_dictionary));
     }
     return result_list;
   }
 
-  std::unique_ptr<base::Value> MemberToValue(
-      const webrtc::RTCStatsMemberInterface& member) {
+  base::Value MemberToValue(const webrtc::RTCStatsMemberInterface& member) {
     switch (member.type()) {
       // Types supported by base::Value are passed as the appropriate type.
       case webrtc::RTCStatsMemberInterface::Type::kBool:
-        return std::make_unique<base::Value>(
-            *member.cast_to<webrtc::RTCStatsMember<bool>>());
+        return base::Value(*member.cast_to<webrtc::RTCStatsMember<bool>>());
       case webrtc::RTCStatsMemberInterface::Type::kInt32:
-        return std::make_unique<base::Value>(
-            *member.cast_to<webrtc::RTCStatsMember<int32_t>>());
+        return base::Value(*member.cast_to<webrtc::RTCStatsMember<int32_t>>());
       case webrtc::RTCStatsMemberInterface::Type::kString:
-        return std::make_unique<base::Value>(
+        return base::Value(
             *member.cast_to<webrtc::RTCStatsMember<std::string>>());
       case webrtc::RTCStatsMemberInterface::Type::kDouble:
-        return std::make_unique<base::Value>(
-            *member.cast_to<webrtc::RTCStatsMember<double>>());
+        return base::Value(*member.cast_to<webrtc::RTCStatsMember<double>>());
       // Types not supported by base::Value are converted to string.
       case webrtc::RTCStatsMemberInterface::Type::kUint32:
       case webrtc::RTCStatsMemberInterface::Type::kInt64:
@@ -682,7 +677,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       case webrtc::RTCStatsMemberInterface::Type::kSequenceDouble:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceString:
       default:
-        return std::make_unique<base::Value>(member.ValueToString());
+        return base::Value(member.ValueToString());
     }
   }
 

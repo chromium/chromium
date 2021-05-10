@@ -297,8 +297,8 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           CdmSessionType session_type,
                           std::vector<uint8_t>* license) {
   // Create the license request.
-  auto request = std::make_unique<base::DictionaryValue>();
-  auto list = std::make_unique<base::ListValue>();
+  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -306,32 +306,32 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
-    list->AppendString(key_id_string);
+    list.Append(key_id_string);
   }
-  request->Set(kKeyIdsTag, std::move(list));
+  request.SetKey(kKeyIdsTag, std::move(list));
 
   switch (session_type) {
     case CdmSessionType::kTemporary:
-      request->SetString(kTypeTag, kTemporarySession);
+      request.SetStringKey(kTypeTag, kTemporarySession);
       break;
     case CdmSessionType::kPersistentLicense:
-      request->SetString(kTypeTag, kPersistentLicenseSession);
+      request.SetStringKey(kTypeTag, kPersistentLicenseSession);
       break;
   }
 
   // Serialize the license request as a string.
   std::string json;
   JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*request);
+  serializer.Serialize(request);
 
   // Convert the serialized license request into std::vector and return it.
   std::vector<uint8_t> result(json.begin(), json.end());
   license->swap(result);
 }
 
-void AddKeyIdsToDictionary(const KeyIdList& key_ids,
-                           base::DictionaryValue* dictionary) {
-  auto list = std::make_unique<base::ListValue>();
+base::Value MakeKeyIdsDictionary(const KeyIdList& key_ids) {
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -339,17 +339,18 @@ void AddKeyIdsToDictionary(const KeyIdList& key_ids,
                           key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
-    list->AppendString(key_id_string);
+    list.Append(key_id_string);
   }
-  dictionary->Set(kKeyIdsTag, std::move(list));
+  dictionary.SetKey(kKeyIdsTag, std::move(list));
+  return dictionary;
 }
 
 std::vector<uint8_t> SerializeDictionaryToVector(
-    const base::DictionaryValue* dictionary) {
+    const base::Value& dictionary) {
   // Serialize the dictionary as a string.
   std::string json;
   JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*dictionary);
+  serializer.Serialize(dictionary);
 
   // Convert the serialized data into std::vector and return it.
   return std::vector<uint8_t>(json.begin(), json.end());
@@ -358,10 +359,9 @@ std::vector<uint8_t> SerializeDictionaryToVector(
 void CreateKeyIdsInitData(const KeyIdList& key_ids,
                           std::vector<uint8_t>* init_data) {
   // Create the init_data.
-  auto dictionary = std::make_unique<base::DictionaryValue>();
-  AddKeyIdsToDictionary(key_ids, dictionary.get());
+  auto dictionary = MakeKeyIdsDictionary(key_ids);
 
-  auto data = SerializeDictionaryToVector(dictionary.get());
+  auto data = SerializeDictionaryToVector(dictionary);
   init_data->swap(data);
 }
 
@@ -372,9 +372,8 @@ void CreateKeyIdsInitData(const KeyIdList& key_ids,
 //      of the octet sequence containing the key ID value.
 std::vector<uint8_t> CreateLicenseReleaseMessage(const KeyIdList& key_ids) {
   // Create the init_data.
-  auto dictionary = std::make_unique<base::DictionaryValue>();
-  AddKeyIdsToDictionary(key_ids, dictionary.get());
-  return SerializeDictionaryToVector(dictionary.get());
+  auto dictionary = MakeKeyIdsDictionary(key_ids);
+  return SerializeDictionaryToVector(dictionary);
 }
 
 bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,

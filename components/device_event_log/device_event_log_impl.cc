@@ -399,7 +399,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
   GetLogTypes(types, &include_types, &exclude_types);
 
   std::string result;
-  base::ListValue log_entries;
+  base::Value log_entries(base::Value::Type::LIST);
   if (order == OLDEST_FIRST) {
     size_t offset = 0;
     if (max_events > 0 && max_events < entries_.size()) {
@@ -428,7 +428,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
       if (entry.log_level > max_level)
         continue;
       if (format_json) {
-        log_entries.AppendString(LogEntryAsJSON(entry));
+        log_entries.Append(LogEntryAsJSON(entry));
       } else {
         result += LogEntryToString(entry, show_time, show_file, show_type,
                                    show_level);
@@ -444,7 +444,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
       if (entry.log_level > max_level)
         continue;
       if (format_json) {
-        log_entries.AppendString(LogEntryAsJSON(entry));
+        log_entries.Append(LogEntryAsJSON(entry));
       } else {
         result += LogEntryToString(entry, show_time, show_file, show_type,
                                    show_level);
