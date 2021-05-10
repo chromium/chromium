@@ -26,8 +26,7 @@
 #include "extensions/common/extension_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Arbitrary, but reasonable size limit in bytes for prefs file.
@@ -67,7 +66,7 @@ base::Optional<base::Value> LoadPrefsFromDisk(
 
 // static
 bool DemoExtensionsExternalLoader::SupportedForProfile(Profile* profile) {
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
+  if (!ProfileHelper::IsPrimaryProfile(profile))
     return false;
 
   DemoSession* demo_session = DemoSession::Get();
@@ -185,4 +184,4 @@ void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
       base::Value::ToUniquePtrValue(std::move(prefs.value()))));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,6 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
 
@@ -21,9 +23,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
-
-class ExternalCache;
+namespace ash {
 
 // External loader for extensions to be loaded into demo mode sessions. The CRX
 // files are loaded from preinstalled demo mode resources image mounted by
@@ -76,6 +76,12 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   DISALLOW_COPY_AND_ASSIGN(DemoExtensionsExternalLoader);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DemoExtensionsExternalLoader;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_EXTENSIONS_EXTERNAL_LOADER_H_

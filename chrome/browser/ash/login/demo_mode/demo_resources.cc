@@ -14,7 +14,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Path relative to the path at which demo resources are loaded that
@@ -145,4 +145,4 @@ void DemoResources::OnDemoResourcesLoaded(
     std::move(callback).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

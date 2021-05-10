@@ -799,10 +799,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ChromeUserManagerImpl::RegisterPrefs(registry);
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
-  chromeos::DemoModeDetector::RegisterPrefs(registry);
-  chromeos::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
-  chromeos::DemoSession::RegisterLocalStatePrefs(registry);
-  chromeos::DemoSetupController::RegisterLocalStatePrefs(registry);
+  ash::DemoModeDetector::RegisterPrefs(registry);
+  ash::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
+  ash::DemoSession::RegisterLocalStatePrefs(registry);
+  ash::DemoSetupController::RegisterLocalStatePrefs(registry);
   chromeos::DeviceNameStore::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
   ash::device_settings_cache::RegisterPrefs(registry);

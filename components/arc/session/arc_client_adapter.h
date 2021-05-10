@@ -32,8 +32,8 @@ class ArcClientAdapter {
   };
 
   // DemoModeDelegate contains functions used to load the demo session apps for
-  // ARC. The adapter cannot do this directly because chromeos::DemoSession
-  // classes are in //chrome.
+  // ARC. The adapter cannot do this directly because ash::DemoSession classes
+  // are in //chrome.
   class DemoModeDelegate {
    public:
     virtual ~DemoModeDelegate() = default;

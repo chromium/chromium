@@ -19,8 +19,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-
+namespace ash {
 class DemoResources;
 
 // Controls enrollment flow for setting up Demo Mode.
@@ -329,6 +328,12 @@ class DemoSetupController
   DISALLOW_COPY_AND_ASSIGN(DemoSetupController);
 };
 
-}  //  namespace chromeos
+}  //  namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DemoSetupController;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SETUP_CONTROLLER_H_

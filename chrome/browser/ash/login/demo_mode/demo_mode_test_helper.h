@@ -20,7 +20,7 @@ namespace component_updater {
 class FakeCrOSComponentManager;
 }  // namespace component_updater
 
-namespace chromeos {
+namespace ash {
 
 // Creating a DemoModeTestHelper doesn't enable Demo Mode; it just sets up an
 // environment that can support Demo Mode in tests.
@@ -73,6 +73,6 @@ class DemoModeTestHelper {
   DISALLOW_COPY_AND_ASSIGN(DemoModeTestHelper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_TEST_HELPER_H_

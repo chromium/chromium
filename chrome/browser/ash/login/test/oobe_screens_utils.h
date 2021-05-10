@@ -57,4 +57,16 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
 }  // namespace test
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace test {
+using ::chromeos::test::TapEulaAccept;
+using ::chromeos::test::TapWelcomeNext;
+using ::chromeos::test::WaitForEulaScreen;
+using ::chromeos::test::WaitForNetworkSelectionScreen;
+using ::chromeos::test::WaitForWelcomeScreen;
+}  // namespace test
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREENS_UTILS_H_

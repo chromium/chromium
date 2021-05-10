@@ -14,6 +14,7 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_service.h"
 
+namespace chromeos {
 namespace {
 
 // DO NOT REORDER - used to report metrics.
@@ -24,23 +25,21 @@ enum class IdleLogoutWarningEvent {
 };
 
 void ReportMetricsForDemoMode(IdleLogoutWarningEvent event) {
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (DemoSession::IsDeviceInDemoMode())
     UMA_HISTOGRAM_ENUMERATION("DemoMode.IdleLogoutWarningEvent", event);
 }
 
-chromeos::PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
+PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   int action;
   if (on_battery_power)
     action = prefs->GetInteger(ash::prefs::kPowerBatteryIdleAction);
   else
     action = prefs->GetInteger(ash::prefs::kPowerAcIdleAction);
-  return static_cast<chromeos::PowerPolicyController::Action>(action);
+  return static_cast<PowerPolicyController::Action>(action);
 }
 
 }  // namespace
-
-namespace chromeos {
 
 IdleActionWarningObserver::IdleActionWarningObserver() {
   PowerManagerClient::Get()->AddObserver(this);

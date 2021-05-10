@@ -85,8 +85,7 @@ class OobeConfigurationTest : public OobeBaseTest {
         WizardController::default_controller()->demo_setup_controller();
 
     // Simulate offline data directory.
-    ASSERT_TRUE(
-        chromeos::test::SetupDummyOfflinePolicyDir("test", &fake_policy_dir_));
+    ASSERT_TRUE(test::SetupDummyOfflinePolicyDir("test", &fake_policy_dir_));
     controller->SetPreinstalledOfflineResourcesPathForTesting(
         fake_policy_dir_.GetPath());
   }

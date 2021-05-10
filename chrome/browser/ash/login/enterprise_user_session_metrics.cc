@@ -127,7 +127,7 @@ void RecordStoredSessionLength() {
       metric_name,
       GetMinutesToReport(session_length, 10, base::TimeDelta::FromHours(24)));
 
-  if (chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (DemoSession::IsDeviceInDemoMode()) {
     // Demo mode sessions will have shorter durations. Report session length
     // rounded down to the nearest minute, up to two hours.
     base::UmaHistogramSparse(

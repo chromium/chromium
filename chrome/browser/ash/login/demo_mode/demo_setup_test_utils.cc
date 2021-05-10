@@ -9,9 +9,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-using testing::_;
-
+namespace ash {
 namespace {
+
+using ::testing::_;
 
 MATCHER(ConfigIsAttestation, "") {
   return arg.mode == policy::EnrollmentConfig::MODE_ATTESTATION;
@@ -22,8 +23,6 @@ MATCHER(ConfigIsOfflineDemo, "") {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 namespace test {
 
@@ -133,5 +132,4 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
 }
 
 }  // namespace test
-
-}  // namespace chromeos
+}  // namespace ash

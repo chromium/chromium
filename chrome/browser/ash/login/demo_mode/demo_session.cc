@@ -54,14 +54,13 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
+namespace {
+
 // The splash screen should be removed either when this timeout passes or the
 // screensaver app is shown, whichever comes first.
 constexpr base::TimeDelta kRemoveSplashScreenTimeout =
     base::TimeDelta::FromSeconds(10);
-
-namespace chromeos {
-
-namespace {
 
 // Global DemoSession instance.
 DemoSession* g_demo_session = nullptr;
@@ -170,7 +169,7 @@ void RestoreDefaultLocaleForNextSession() {
 }
 
 // Returns the list of locales (and related info) supported by demo mode.
-std::vector<ash::LocaleInfo> GetSupportedLocales() {
+std::vector<LocaleInfo> GetSupportedLocales() {
   const base::flat_set<std::string> kSupportedLocales(
       {"da", "de", "en-GB", "en-US", "es", "fi", "fr", "fr-CA", "it", "ja",
        "nb", "nl", "sv"});
@@ -180,11 +179,11 @@ std::vector<ash::LocaleInfo> GetSupportedLocales() {
   const std::string current_locale_iso_code =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
           language::prefs::kApplicationLocale);
-  std::vector<ash::LocaleInfo> supported_locales;
+  std::vector<LocaleInfo> supported_locales;
   for (const std::string& locale : available_locales) {
     if (!kSupportedLocales.contains(locale))
       continue;
-    ash::LocaleInfo locale_info;
+    LocaleInfo locale_info;
     locale_info.iso_code = locale;
     locale_info.display_name = l10n_util::GetDisplayNameForLocale(
         locale, current_locale_iso_code, true /* is_for_ui */);
@@ -598,4 +597,4 @@ void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
     RemoveSplashScreen();
 }
 
-}  // namespace chromeos
+}  // namespace ash

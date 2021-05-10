@@ -57,7 +57,7 @@ void EnrollmentRequisitionManager::Initialize() {
 
   // Demo requisition may have been set in a prior enrollment attempt that was
   // interrupted.
-  chromeos::DemoSetupController::ClearDemoRequisition();
+  ash::DemoSetupController::ClearDemoRequisition();
   auto* local_state = g_browser_process->local_state();
   const PrefService::Preference* pref =
       local_state->FindPreference(prefs::kDeviceEnrollmentRequisition);

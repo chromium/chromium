@@ -20,7 +20,7 @@ namespace policy_indicator {
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   int controlled_setting_policy_id = IDS_CONTROLLED_SETTING_POLICY;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode())
     controlled_setting_policy_id = IDS_CONTROLLED_SETTING_DEMO_SESSION;
 #endif
   webui::LocalizedString localized_strings[] = {

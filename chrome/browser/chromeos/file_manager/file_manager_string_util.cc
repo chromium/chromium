@@ -1047,8 +1047,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                                   base::DictionaryValue* dict) {
   DCHECK(profile);
 
-  dict->SetBoolean("HIDE_SPACE_INFO",
-                   chromeos::DemoSession::IsDeviceInDemoMode());
+  dict->SetBoolean("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
   dict->SetBoolean("ARC_USB_STORAGE_UI_ENABLED",
                    base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
   dict->SetBoolean("CROSTINI_ENABLED",

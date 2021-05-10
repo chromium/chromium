@@ -120,8 +120,8 @@ ExtensionFunction::ResponseAction ArcAppsPrivateLaunchAppFunction::Run() {
     return RespondNow(Error("Launch failed"));
   }
 
-  chromeos::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-      chromeos::DemoSession::AppLaunchSource::kExtensionApi);
+  ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
+      ash::DemoSession::AppLaunchSource::kExtensionApi);
 
   return RespondNow(NoArguments());
 }

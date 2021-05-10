@@ -230,8 +230,8 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
                                       int64_t display_id) {
   // Handle recording app launch source from the Shelf in Demo Mode.
   if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
-    chromeos::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-        chromeos::DemoSession::AppLaunchSource::kShelf);
+    ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
+        ash::DemoSession::AppLaunchSource::kShelf);
   }
 
   const std::string& app_id = id.app_id;

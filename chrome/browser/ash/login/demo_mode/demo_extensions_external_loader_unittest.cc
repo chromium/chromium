@@ -45,11 +45,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::mojom::ManifestLocation;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::extensions::mojom::ManifestLocation;
 
 // Information about found external extension file: {version, crx_path}.
 using TestCrxInfo = std::tuple<std::string, std::string>;
@@ -137,8 +136,6 @@ class TestExternalProviderVisitor
 
   DISALLOW_COPY_AND_ASSIGN(TestExternalProviderVisitor);
 };
-
-}  // namespace
 
 class DemoExtensionsExternalLoaderTest : public testing::Test {
  public:
@@ -453,8 +450,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
   base::FilePath cache_dir = temp_dir.GetPath().Append("cache");
   ASSERT_TRUE(base::CreateDirectoryAndGetError(cache_dir, nullptr /*error*/));
 
-  scoped_refptr<chromeos::DemoExtensionsExternalLoader> loader =
-      base::MakeRefCounted<chromeos::DemoExtensionsExternalLoader>(cache_dir);
+  auto loader = base::MakeRefCounted<DemoExtensionsExternalLoader>(cache_dir);
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
       std::make_unique<extensions::ExternalProviderImpl>(
           &external_provider_visitor_, loader, profile_.get(),
@@ -618,4 +614,5 @@ TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, DemoSessionNotStarted) {
       DemoExtensionsExternalLoader::SupportedForProfile(profile.get()));
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

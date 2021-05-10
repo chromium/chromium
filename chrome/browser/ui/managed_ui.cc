@@ -67,7 +67,7 @@ base::Optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
 bool ShouldDisplayManagedUi(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show the UI in demo mode.
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
   // Don't show the UI for Unicorn accounts.

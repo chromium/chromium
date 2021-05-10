@@ -48,14 +48,13 @@ void ArcDemoModePreferenceHandler::OnPreferenceChanged() {
   if (!IsArcVmEnabled())
     return;
 
-  chromeos::DemoSession::DemoModeConfig config =
-      static_cast<chromeos::DemoSession::DemoModeConfig>(
-          pref_service_->GetInteger(prefs::kDemoModeConfig));
+  auto config = static_cast<ash::DemoSession::DemoModeConfig>(
+      pref_service_->GetInteger(prefs::kDemoModeConfig));
   switch (config) {
-    case chromeos::DemoSession::DemoModeConfig::kNone:
+    case ash::DemoSession::DemoModeConfig::kNone:
       return;
-    case chromeos::DemoSession::DemoModeConfig::kOnline:
-    case chromeos::DemoSession::DemoModeConfig::kOffline:
+    case ash::DemoSession::DemoModeConfig::kOnline:
+    case ash::DemoSession::DemoModeConfig::kOffline:
       break;
   }
 

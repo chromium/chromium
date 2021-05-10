@@ -84,7 +84,7 @@ AmbientClientImpl::~AmbientClientImpl() = default;
 bool AmbientClientImpl::IsAmbientModeAllowed() {
   DCHECK(chromeos::features::IsAmbientModeEnabled());
 
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
   const user_manager::User* const active_user = GetActiveUser();

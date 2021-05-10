@@ -61,12 +61,11 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::test::DemoModeSetupResult;
-using chromeos::test::SetupDummyOfflinePolicyDir;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using test::DemoModeSetupResult;
+using test::SetupDummyOfflinePolicyDir;
 
 const test::UIPath kDemoConfirmationDialog = {"connect",
                                               "demoModeConfirmationDialog"};
@@ -103,8 +102,6 @@ constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
 
 constexpr int kInvokeDemoModeGestureTapsCount = 10;
-
-}  // namespace
 
 // Basic tests for demo mode setup flow.
 class DemoSetupTestBase : public OobeBaseTest {
@@ -164,7 +161,7 @@ class DemoSetupTestBase : public OobeBaseTest {
 
   void InvokeDemoModeWithAccelerator() {
     WizardController::default_controller()->HandleAccelerator(
-        ash::LoginAcceleratorAction::kStartDemoMode);
+        LoginAcceleratorAction::kStartDemoMode);
   }
 
   void InvokeDemoModeWithTaps() {
@@ -1150,4 +1147,5 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceWithFRE) {
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

@@ -13,18 +13,17 @@ namespace arc {
 
 void ArcDemoModeDelegateImpl::EnsureOfflineResourcesLoaded(
     base::OnceClosure callback) {
-  if (!chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (!ash::DemoSession::IsDeviceInDemoMode()) {
     std::move(callback).Run();
     return;
   }
-  chromeos::DemoSession::Get()->EnsureOfflineResourcesLoaded(
-      std::move(callback));
+  ash::DemoSession::Get()->EnsureOfflineResourcesLoaded(std::move(callback));
 }
 
 base::FilePath ArcDemoModeDelegateImpl::GetDemoAppsPath() {
-  if (!chromeos::DemoSession::IsDeviceInDemoMode())
+  if (!ash::DemoSession::IsDeviceInDemoMode())
     return base::FilePath();
-  return chromeos::DemoSession::Get()->resources()->GetDemoAppsPath();
+  return ash::DemoSession::Get()->resources()->GetDemoAppsPath();
 }
 
 }  // namespace arc

@@ -423,8 +423,8 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
           apps::mojom::AppLaunchSource::kSourceManagementApi));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-      chromeos::DemoSession::AppLaunchSource::kExtensionApi);
+  ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
+      ash::DemoSession::AppLaunchSource::kExtensionApi);
 #endif
 
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,

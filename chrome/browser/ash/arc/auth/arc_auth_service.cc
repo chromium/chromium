@@ -81,7 +81,7 @@ mojom::ChromeAccountType GetAccountType(const Profile* profile) {
   if (IsActiveDirectoryUserForProfile(profile))
     return mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT;
 
-  chromeos::DemoSession* demo_session = chromeos::DemoSession::Get();
+  auto* demo_session = ash::DemoSession::Get();
   if (demo_session && demo_session->started()) {
     // Internally, demo mode is implemented as a public session, and should
     // generally follow normal robot account provisioning flow. Offline enrolled
@@ -645,8 +645,7 @@ void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
         CreateAccountInfo(!IsArcOptInVerificationDisabled(), auth_code,
                           full_account_id, GetAccountType(profile_),
                           policy_util::IsAccountManaged(profile_)));
-  } else if (chromeos::DemoSession::Get() &&
-             chromeos::DemoSession::Get()->started()) {
+  } else if (ash::DemoSession::Get() && ash::DemoSession::Get()->started()) {
     // For demo sessions, if auth code fetch failed (e.g. because the device is
     // offline), fall back to accountless offline demo mode provisioning.
     std::move(callback).Run(

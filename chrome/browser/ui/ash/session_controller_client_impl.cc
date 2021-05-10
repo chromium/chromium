@@ -554,7 +554,7 @@ void SessionControllerClientImpl::SendSessionInfoIfChanged() {
   info->should_lock_screen_automatically = ShouldLockScreenAutomatically();
   info->is_running_in_app_mode = chrome::IsRunningInAppMode();
   info->is_demo_session =
-      chromeos::DemoSession::Get() && chromeos::DemoSession::Get()->started();
+      ash::DemoSession::Get() && ash::DemoSession::Get()->started();
   info->add_user_session_policy = GetAddUserSessionPolicy();
   info->state = session_manager->session_state();
 

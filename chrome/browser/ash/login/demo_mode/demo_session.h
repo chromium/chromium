@@ -29,8 +29,7 @@ namespace base {
 class OneShotTimer;
 }
 
-namespace chromeos {
-
+namespace ash {
 class DemoResources;
 
 // Tracks global demo session state, such as whether the demo session has
@@ -247,12 +246,12 @@ class DemoSession : public session_manager::SessionManagerObserver,
   DISALLOW_COPY_AND_ASSIGN(DemoSession);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::DemoSession;
+namespace chromeos {
+using ::ash::DemoSession;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SESSION_H_

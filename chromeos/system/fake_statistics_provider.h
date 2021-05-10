@@ -59,4 +59,12 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) ScopedFakeStatisticsProvider
 }  // namespace system
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace system {
+using ::chromeos::system::ScopedFakeStatisticsProvider;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_

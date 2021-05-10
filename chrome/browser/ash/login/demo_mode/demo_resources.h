@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 
-namespace chromeos {
+namespace ash {
 
 // Loads Demo Mode Resources depending on the configuration:
 // - online demo mode: loads or installs the Demo Mode resources CrOS Component
@@ -114,6 +114,6 @@ class DemoResources {
   DISALLOW_COPY_AND_ASSIGN(DemoResources);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_RESOURCES_H_

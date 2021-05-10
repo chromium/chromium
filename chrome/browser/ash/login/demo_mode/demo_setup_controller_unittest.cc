@@ -32,16 +32,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::test::DemoModeSetupResult;
-using chromeos::test::SetupDummyOfflinePolicyDir;
-using chromeos::test::SetupMockDemoModeNoEnrollmentHelper;
-using chromeos::test::SetupMockDemoModeOfflineEnrollmentHelper;
-using chromeos::test::SetupMockDemoModeOnlineEnrollmentHelper;
-using testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using test::DemoModeSetupResult;
+using test::SetupDummyOfflinePolicyDir;
+using test::SetupMockDemoModeNoEnrollmentHelper;
+using test::SetupMockDemoModeOfflineEnrollmentHelper;
+using test::SetupMockDemoModeOnlineEnrollmentHelper;
+// TODO(https://crbug.com/1164001): remove after moving to ash::
+using ::chromeos::ScopedStubInstallAttributes;
+using ::testing::_;
 
 class DemoSetupControllerTestHelper {
  public:
@@ -103,8 +104,6 @@ class DemoSetupControllerTestHelper {
 
   DISALLOW_COPY_AND_ASSIGN(DemoSetupControllerTestHelper);
 };
-
-}  // namespace
 
 class DemoSetupControllerTest : public testing::Test {
  protected:
@@ -421,4 +420,5 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
   EXPECT_EQ(email, "");
 }
 
-}  //  namespace chromeos
+}  // namespace
+}  //  namespace ash

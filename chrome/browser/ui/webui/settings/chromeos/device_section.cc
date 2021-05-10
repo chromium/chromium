@@ -851,8 +851,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kDeviceStrings);
 
-  html_source->AddBoolean("isDemoSession",
-                          chromeos::DemoSession::IsDeviceInDemoMode());
+  html_source->AddBoolean("isDemoSession", DemoSession::IsDeviceInDemoMode());
 
   AddDevicePointersStrings(html_source);
   AddDeviceKeyboardStrings(html_source);

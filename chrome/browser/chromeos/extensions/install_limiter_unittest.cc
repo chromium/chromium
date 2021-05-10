@@ -25,7 +25,7 @@ constexpr int kSmallExtensionSize = 200000;
 }  // namespace
 
 class InstallLimiterTest
-    : public testing::TestWithParam<chromeos::DemoSession::DemoModeConfig> {
+    : public testing::TestWithParam<ash::DemoSession::DemoModeConfig> {
  public:
   InstallLimiterTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
@@ -44,16 +44,16 @@ TEST_P(InstallLimiterTest, ShouldDeferInstall) {
       extension_misc::kScreensaverAppId, extension_misc::kScreensaverAtlasAppId,
       extension_misc::kScreensaverKraneZdksAppId};
 
-  chromeos::DemoModeTestHelper demo_mode_test_helper;
-  if (GetParam() != chromeos::DemoSession::DemoModeConfig::kNone)
+  ash::DemoModeTestHelper demo_mode_test_helper;
+  if (GetParam() != ash::DemoSession::DemoModeConfig::kNone)
     demo_mode_test_helper.InitializeSession(GetParam());
 
   // In demo mode (either online or offline), all apps larger than 1MB except
   // for the screensaver should be deferred.
   for (const std::string& id : screensaver_ids) {
     bool expected_defer_install =
-        GetParam() == chromeos::DemoSession::DemoModeConfig::kNone ||
-        id != chromeos::DemoSession::GetScreensaverAppId();
+        GetParam() == ash::DemoSession::DemoModeConfig::kNone ||
+        id != ash::DemoSession::GetScreensaverAppId();
     EXPECT_EQ(expected_defer_install,
               InstallLimiter::ShouldDeferInstall(kLargeExtensionSize, id));
   }
@@ -66,6 +66,6 @@ TEST_P(InstallLimiterTest, ShouldDeferInstall) {
 INSTANTIATE_TEST_SUITE_P(
     DemoModeConfig,
     InstallLimiterTest,
-    ::testing::Values(chromeos::DemoSession::DemoModeConfig::kNone,
-                      chromeos::DemoSession::DemoModeConfig::kOnline,
-                      chromeos::DemoSession::DemoModeConfig::kOffline));
+    ::testing::Values(ash::DemoSession::DemoModeConfig::kNone,
+                      ash::DemoSession::DemoModeConfig::kOnline,
+                      ash::DemoSession::DemoModeConfig::kOffline));

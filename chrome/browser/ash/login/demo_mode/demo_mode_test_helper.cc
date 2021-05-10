@@ -19,7 +19,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 DemoModeTestHelper::DemoModeTestHelper()
     : browser_process_platform_part_test_api_(
@@ -131,4 +131,4 @@ void DemoModeTestHelper::FailLoadingComponent() {
   run_loop.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -362,9 +362,8 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
     PopulateArcPolicyStatus(response.get());
   }
   response->emplace(kAccountTypeKey, GetPrimaryAccountTypeString());
-  response->emplace(kDemoModeConfigKey,
-                    chromeos::DemoSession::DemoConfigToString(
-                        chromeos::DemoSession::GetDemoConfig()));
+  response->emplace(kDemoModeConfigKey, ash::DemoSession::DemoConfigToString(
+                                            ash::DemoSession::GetDemoConfig()));
   PopulateLocalStateSettings(response.get());
   PopulateOnboardingTime(response.get());
 

@@ -778,19 +778,19 @@ void ExternalProviderImpl::CreateExternalProviders(
   }
 
   // For Chrome OS demo sessions, add pre-installed demo extensions and apps.
-  if (chromeos::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
+  if (ash::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
     base::FilePath cache_dir;
     CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                  &cache_dir));
-    scoped_refptr<chromeos::DemoExtensionsExternalLoader> loader =
-        base::MakeRefCounted<chromeos::DemoExtensionsExternalLoader>(cache_dir);
+    auto loader =
+        base::MakeRefCounted<ash::DemoExtensionsExternalLoader>(cache_dir);
     std::unique_ptr<ExternalProviderImpl> demo_apps_provider =
         std::make_unique<ExternalProviderImpl>(
             service, loader, profile, ManifestLocation::kExternalPolicy,
             ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
     demo_apps_provider->set_auto_acknowledge(true);
     demo_apps_provider->set_install_immediately(true);
-    chromeos::DemoSession::Get()->SetExtensionsExternalLoader(loader);
+    ash::DemoSession::Get()->SetExtensionsExternalLoader(loader);
     provider_list->push_back(std::move(demo_apps_provider));
   }
 #endif

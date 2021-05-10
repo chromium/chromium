@@ -42,11 +42,10 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using component_updater::FakeCrOSComponentManager;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::component_updater::FakeCrOSComponentManager;
 
 constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
@@ -55,8 +54,6 @@ constexpr char kTestDemoModeResourcesMountPoint[] =
 void SetBoolean(bool* value) {
   *value = true;
 }
-
-}  // namespace
 
 class DemoSessionTest : public testing::Test {
  public:
@@ -134,8 +131,7 @@ class DemoSessionTest : public testing::Test {
         "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
         std::string() /* supervised_user_id */,
         TestingProfile::TestingFactories());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
     user_manager->LoginUser(account_id);
     return profile;
@@ -582,4 +578,5 @@ TEST_F(DemoSessionLocaleTest, DefaultAndCurrentLocaleIdentical) {
   EXPECT_FALSE(profile->requested_locale().has_value());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

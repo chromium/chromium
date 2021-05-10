@@ -20,11 +20,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using component_updater::FakeCrOSComponentManager;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::component_updater::FakeCrOSComponentManager;
 
 constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
@@ -35,8 +34,6 @@ constexpr char kExternalExtensionsPrefsFile[] = "demo_extensions.json";
 void SetBoolean(bool* value) {
   *value = true;
 }
-
-}  // namespace
 
 class DemoResourcesTest : public testing::Test {
  public:
@@ -235,4 +232,5 @@ TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOffline) {
   EXPECT_TRUE(demo_resources.loaded());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

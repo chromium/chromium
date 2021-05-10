@@ -298,4 +298,10 @@ class AutoEnrollmentController {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AutoEnrollmentController;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_

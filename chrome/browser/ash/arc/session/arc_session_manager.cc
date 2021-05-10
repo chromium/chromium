@@ -208,7 +208,7 @@ bool ShouldUseErrorDialog() {
   if (IsArcKioskMode())
     return false;
 
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
   return true;
@@ -1395,7 +1395,7 @@ void ArcSessionManager::StartArc() {
 
   UpgradeParams params;
 
-  const chromeos::DemoSession* demo_session = chromeos::DemoSession::Get();
+  const auto* demo_session = ash::DemoSession::Get();
   params.is_demo_session = demo_session && demo_session->started();
   if (params.is_demo_session) {
     DCHECK(demo_session->resources()->loaded());

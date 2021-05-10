@@ -21,6 +21,8 @@
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -69,7 +71,6 @@ namespace login {
 class NetworkStateHelper;
 }  // namespace login
 
-class DemoSetupController;
 class ErrorScreen;
 struct Geoposition;
 class SimpleGeolocationProvider;

@@ -68,4 +68,10 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::DemoPreferencesScreenView;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_PREFERENCES_SCREEN_HANDLER_H_

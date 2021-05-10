@@ -24,7 +24,7 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/events/base_event_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 class DemoModeDetectorTest : public testing::Test {
  protected:
@@ -199,4 +199,4 @@ TEST_F(DemoModeDetectorTest,
   runner_->FastForwardBy(DemoModeDetector::kDerelictIdleTimeout);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -539,7 +539,7 @@ bool IsArcStatsReportingEnabled() {
 }
 
 bool IsArcDemoModeSetupFlow() {
-  return chromeos::DemoSetupController::IsOobeDemoSetupFlowInProgress();
+  return ash::DemoSetupController::IsOobeDemoSetupFlowInProgress();
 }
 
 void UpdateArcFileSystemCompatibilityPrefIfNeeded(
@@ -615,12 +615,12 @@ bool IsPlayStoreAvailable() {
     return true;
 
   // Demo Mode is the only public session scenario that can launch Play.
-  if (!chromeos::DemoSession::IsDeviceInDemoMode())
+  if (!ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
   // TODO(b/154290639): Remove check for |IsDemoModeOfflineEnrolled| when fixed
   //                    in Play Store.
-  return !chromeos::DemoSession::IsDemoModeOfflineEnrolled() &&
+  return !ash::DemoSession::IsDemoModeOfflineEnrolled() &&
          chromeos::features::ShouldShowPlayStoreInDemoMode();
 }
 
@@ -687,7 +687,7 @@ std::string GetHistogramNameByUserType(const std::string& base_name,
     profile = ProfileManager::GetPrimaryUserProfile();
   }
   if (IsRobotOrOfflineDemoAccountMode()) {
-    chromeos::DemoSession* demo_session = chromeos::DemoSession::Get();
+    auto* demo_session = ash::DemoSession::Get();
     if (demo_session && demo_session->started()) {
       return demo_session->offline_enrolled() ? base_name + ".OfflineDemoMode"
                                               : base_name + ".DemoMode";

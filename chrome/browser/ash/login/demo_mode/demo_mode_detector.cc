@@ -17,7 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 const base::TimeDelta DemoModeDetector::kDerelictDetectionTimeout =
     base::TimeDelta::FromHours(8);
@@ -162,4 +162,4 @@ bool DemoModeDetector::IsDerelict() {
   return time_on_oobe_ >= derelict_detection_timeout_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

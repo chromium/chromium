@@ -113,4 +113,10 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ErrorScreenView;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_

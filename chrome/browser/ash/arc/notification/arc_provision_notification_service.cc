@@ -147,8 +147,7 @@ void ArcProvisionNotificationService::OnArcPlayStoreEnabledChanged(
 void ArcProvisionNotificationService::OnArcStarted() {
   // Show notification only for Public Session (except for Demo Session) when
   // ARC is going to start.
-  if (profiles::IsPublicSession() &&
-      !chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (profiles::IsPublicSession() && !ash::DemoSession::IsDeviceInDemoMode()) {
     MaybeShowNotification();
   }
 }

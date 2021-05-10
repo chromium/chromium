@@ -98,4 +98,12 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
 }  // namespace test
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace test {
+using ::chromeos::test::EnrollmentHelperMixin;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_HELPER_MIXIN_H_

@@ -142,7 +142,7 @@ AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
   if (profile->IsOffTheRecord())
     return AssistantAllowedState::DISALLOWED_BY_INCOGNITO;
 
-  if (chromeos::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode())
     return AssistantAllowedState::DISALLOWED_BY_DEMO_MODE;
 
   if (!IsAssistantAllowedForUserType(profile))

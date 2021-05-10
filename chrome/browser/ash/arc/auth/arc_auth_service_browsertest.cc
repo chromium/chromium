@@ -492,9 +492,9 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, GetPrimaryAccountForPublicAccounts) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        GetPrimaryAccountForOfflineDemoAccounts) {
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOffline);
-  chromeos::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOffline);
+  ash::DemoSession::StartIfInDemoMode();
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   const std::pair<std::string, mojom::ChromeAccountType>
       primary_account = RequestPrimaryAccount();
@@ -843,9 +843,9 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
 // Tests that when ARC requests account info for a demo session account,
 // Chrome supplies the info configured in SetAccountAndProfile() above.
 IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
-  chromeos::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
@@ -868,9 +868,9 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
 }
 
 IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest, GetOfflineDemoAccount) {
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOffline);
-  chromeos::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOffline);
+  ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
@@ -889,9 +889,9 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest, GetOfflineDemoAccount) {
 
 IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest,
                        GetDemoAccountOnAuthTokenFetchFailure) {
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
-  chromeos::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 

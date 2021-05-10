@@ -297,8 +297,7 @@ void ChromeExtensionsBrowserClient::PermitExternalProtocolHandler() {
 
 bool ChromeExtensionsBrowserClient::IsInDemoMode() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const chromeos::DemoSession* const demo_session =
-      chromeos::DemoSession::Get();
+  const auto* const demo_session = ash::DemoSession::Get();
   return demo_session && demo_session->started();
 #else
   return false;
@@ -308,8 +307,7 @@ bool ChromeExtensionsBrowserClient::IsInDemoMode() {
 bool ChromeExtensionsBrowserClient::IsScreensaverInDemoMode(
     const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return app_id == chromeos::DemoSession::GetScreensaverAppId() &&
-         IsInDemoMode();
+  return app_id == ash::DemoSession::GetScreensaverAppId() && IsInDemoMode();
 #endif
   return false;
 }

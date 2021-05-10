@@ -1429,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(FilesManagerExtensionTest, VerifyFirstItem) {
 // Launching an app from the shelf when not in Demo Mode should not record app
 // launch stat.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, NoDemoModeAppLaunchSourceReported) {
-  EXPECT_FALSE(chromeos::DemoSession::IsDeviceInDemoMode());
+  EXPECT_FALSE(ash::DemoSession::IsDeviceInDemoMode());
 
   base::HistogramTester histogram_tester;
 
@@ -1448,9 +1448,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, NoDemoModeAppLaunchSourceReported) {
 // launch stat.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
   // Set Demo mode
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
-  EXPECT_TRUE(chromeos::DemoSession::IsDeviceInDemoMode());
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
 
   base::HistogramTester histogram_tester;
 
@@ -1463,8 +1463,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
 
   // Should see 1 app launched from the shelf in the histogram.
   histogram_tester.ExpectUniqueSample(
-      "DemoMode.AppLaunchSource",
-      chromeos::DemoSession::AppLaunchSource::kShelf, 1);
+      "DemoMode.AppLaunchSource", ash::DemoSession::AppLaunchSource::kShelf, 1);
 }
 
 // Confirm that a page can be navigated from and to while maintaining the

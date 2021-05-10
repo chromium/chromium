@@ -35,8 +35,7 @@
 #include "components/user_manager/user_type.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 DemoModeResourcesRemover* g_instance = nullptr;
@@ -314,4 +313,4 @@ void DemoModeResourcesRemover::OnRemovalDone(RemovalReason reason,
     std::move(callback).Run(result);
 }
 
-}  // namespace chromeos
+}  // namespace ash

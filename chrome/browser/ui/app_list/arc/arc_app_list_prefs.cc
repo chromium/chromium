@@ -1238,9 +1238,9 @@ void ArcAppListPrefs::AddAppAndShortcut(
     // TODO(b/154290639): Remove check for |IsDemoModeOfflineEnrolled| when
     //                    fixed in Play Store.
     if (arc::IsRobotOrOfflineDemoAccountMode() &&
-        !(chromeos::DemoSession::IsDeviceInDemoMode() &&
+        !(ash::DemoSession::IsDeviceInDemoMode() &&
           chromeos::features::ShouldShowPlayStoreInDemoMode() &&
-          !chromeos::DemoSession::IsDemoModeOfflineEnrolled())) {
+          !ash::DemoSession::IsDemoModeOfflineEnrolled())) {
       return;
     }
   }

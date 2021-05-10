@@ -270,6 +270,10 @@ WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
 namespace ash {
 namespace test {
 using ::chromeos::test::CreateOobeScreenWaiter;
+using ::chromeos::test::ExecuteOobeJS;
+using ::chromeos::test::GetOobeElementPath;
+using ::chromeos::test::OobeJS;
+using ::chromeos::test::UIPath;
 }  // namespace test
 }  // namespace ash
 

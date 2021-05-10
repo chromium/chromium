@@ -106,9 +106,8 @@ std::string GetLanguageListForProfile(Profile* profile,
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, if in demo mode, add the demo mode private language list.
-  if (chromeos::DemoSession::IsDeviceInDemoMode()) {
-    return language_list + "," +
-           chromeos::DemoSession::GetAdditionalLanguageList();
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
+    return language_list + "," + ash::DemoSession::GetAdditionalLanguageList();
   }
 #endif
   return language_list;

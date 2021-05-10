@@ -250,8 +250,8 @@ std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper) {
       continue;
     }
 
-    if (chromeos::DemoSession::Get() &&
-        chromeos::DemoSession::Get()->ShouldIgnorePinPolicy(*policy_entry)) {
+    if (ash::DemoSession::Get() &&
+        ash::DemoSession::Get()->ShouldIgnorePinPolicy(*policy_entry)) {
       continue;
     }
 

@@ -15,6 +15,8 @@
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
@@ -73,7 +75,6 @@ namespace chromeos {
 
 class BulkPrintersCalculatorFactory;
 class CrosUsbDetector;
-class DemoModeResourcesRemover;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class IdleActionWarningObserver;

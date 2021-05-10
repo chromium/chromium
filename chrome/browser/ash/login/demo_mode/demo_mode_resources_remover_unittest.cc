@@ -26,9 +26,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after moving to ash::
+using ::chromeos::ScopedStubInstallAttributes;
+using ::chromeos::StubInstallAttributes;
 
 // Key for the pref in local state that tracks accumulated device usage time in
 // seconds.
@@ -42,8 +45,6 @@ void RecordRemovalResult(
     DemoModeResourcesRemover::RemovalResult result) {
   *result_out = result;
 }
-
-}  // namespace
 
 class DemoModeResourcesRemoverTest : public testing::Test {
  public:
@@ -900,4 +901,5 @@ TEST_F(DemoModeResourcesRemoverInLegacyDemoRetailModeTest,
   EXPECT_TRUE(DemoModeResourcesExist());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

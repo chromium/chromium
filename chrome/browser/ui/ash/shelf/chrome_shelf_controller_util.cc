@@ -106,9 +106,8 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const std::string policy_value_for_id =
       GetPolicyValueFromAppId(app_id, profile);
 
-  if (chromeos::DemoSession::Get() &&
-      chromeos::DemoSession::Get()->ShouldIgnorePinPolicy(
-          policy_value_for_id)) {
+  if (ash::DemoSession::Get() &&
+      ash::DemoSession::Get()->ShouldIgnorePinPolicy(policy_value_for_id)) {
     return AppListControllerDelegate::PIN_EDITABLE;
   }
 

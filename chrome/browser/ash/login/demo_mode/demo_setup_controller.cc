@@ -42,10 +42,11 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after moving to ash::
+using ::chromeos::InstallAttributes;
 using ErrorCode = DemoSetupController::DemoSetupError::ErrorCode;
 using RecoveryMethod = DemoSetupController::DemoSetupError::RecoveryMethod;
 
@@ -878,4 +879,4 @@ void DemoSetupController::OnStoreError(policy::CloudPolicyStore* store) {
                      "Failed to store the local account policy"));
 }
 
-}  //  namespace chromeos
+}  //  namespace ash

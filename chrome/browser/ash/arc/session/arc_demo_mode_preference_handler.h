@@ -20,7 +20,7 @@ class ArcDemoModePreferenceHandlerTest;
 // Observes Demo Mode preference and stops mini-ARCVM once, if running, via
 // ArcSessionManager when the preference is enabled, which only happens after
 // Demo Mode enrollment is complete (in
-// chromeos::DemoSetupController::OnDeviceRegistered). ARCVM will automatically
+// ash::DemoSetupController::OnDeviceRegistered). ARCVM will automatically
 // start again once the Demo session starts. This is necessary because (1) the
 // demo apps image must be present at ARCVM boot and (2) mini-ARCVM is started
 // once the OOBE is visible, but before Demo Mode setup is completed. As a
