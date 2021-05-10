@@ -371,7 +371,7 @@ int TopSitesImpl::num_results_to_request_from_history() const {
 
   const base::DictionaryValue* blocked_urls =
       pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return kTopSitesNumber + (blocked_urls ? blocked_urls->size() : 0);
+  return kTopSitesNumber + (blocked_urls ? blocked_urls->DictSize() : 0);
 }
 
 void TopSitesImpl::MoveStateToLoaded() {
