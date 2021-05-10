@@ -10,7 +10,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -127,7 +126,10 @@ class TaskManagerValuesStringifier {
         disabled_nacl_debugging_string_(l10n_util::GetStringUTF16(
             IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {}
 
-  ~TaskManagerValuesStringifier() {}
+  TaskManagerValuesStringifier(const TaskManagerValuesStringifier&) = delete;
+  TaskManagerValuesStringifier& operator=(const TaskManagerValuesStringifier&) =
+      delete;
+  ~TaskManagerValuesStringifier() = default;
 
   std::u16string GetCpuUsageText(double cpu_usage) {
     if (std::isnan(cpu_usage))
@@ -280,8 +282,6 @@ class TaskManagerValuesStringifier {
   // The string to show on the NaCl debug port column cells when the flag
   // #enable-nacl-debug is disabled.
   const std::u16string disabled_nacl_debugging_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerValuesStringifier);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

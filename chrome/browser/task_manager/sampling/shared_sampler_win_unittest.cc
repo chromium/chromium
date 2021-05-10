@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -40,6 +39,8 @@ class SharedSamplerTest : public testing::Test {
                             base::Unretained(this)));
   }
 
+  SharedSamplerTest(const SharedSamplerTest&) = delete;
+  SharedSamplerTest& operator=(const SharedSamplerTest&) = delete;
   ~SharedSamplerTest() override {}
 
  protected:
@@ -97,8 +98,6 @@ class SharedSamplerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_pool_runner_;
   scoped_refptr<SharedSampler> shared_sampler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedSamplerTest);
 };
 
 // Tests that Idle Wakeups per second value can be obtained from SharedSampler.

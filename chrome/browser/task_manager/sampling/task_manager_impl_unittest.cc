@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -36,6 +35,9 @@ class FakeTask : public Task {
     TaskManagerImpl::GetInstance()->TaskAdded(this);
   }
 
+  FakeTask(const FakeTask&) = delete;
+  FakeTask& operator=(const FakeTask&) = delete;
+
   ~FakeTask() override { TaskManagerImpl::GetInstance()->TaskRemoved(this); }
 
   Type GetType() const override { return type_; }
@@ -52,8 +54,6 @@ class FakeTask : public Task {
   Type type_;
   Task* parent_;
   SessionID tab_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTask);
 };
 
 }  // namespace
@@ -65,6 +65,8 @@ class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
                             REFRESH_TYPE_NONE) {
     TaskManagerImpl::GetInstance()->AddObserver(this);
   }
+  TaskManagerImplTest(const TaskManagerImplTest&) = delete;
+  TaskManagerImplTest& operator=(const TaskManagerImplTest&) = delete;
   ~TaskManagerImplTest() override {
     tasks_.clear();
     observed_task_manager()->RemoveObserver(this);
@@ -93,7 +95,6 @@ class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<FakeTask>> tasks_;
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImplTest);
 };
 
 TEST_F(TaskManagerImplTest, SortingTypes) {

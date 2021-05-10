@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -28,6 +27,8 @@ class WebContentsTaskProvider;
 // |task_manager::WebContentsTags|.
 class WebContentsTag : public base::SupportsUserData::Data {
  public:
+  WebContentsTag(const WebContentsTag&) = delete;
+  WebContentsTag& operator=(const WebContentsTag&) = delete;
   ~WebContentsTag() override;
 
   // Retrieves the instance of the WebContentsTag that was attached to the
@@ -56,8 +57,6 @@ class WebContentsTag : public base::SupportsUserData::Data {
 
   // The owning WebContents.
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTag);
 };
 
 }  // namespace task_manager

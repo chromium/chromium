@@ -23,6 +23,8 @@ namespace task_manager {
 class ArcSharedSampler {
  public:
   ArcSharedSampler();
+  ArcSharedSampler(const ArcSharedSampler&) = delete;
+  ArcSharedSampler& operator=(const ArcSharedSampler&) = delete;
   ~ArcSharedSampler();
 
   using MemoryFootprintBytes = uint64_t;
@@ -61,8 +63,6 @@ class ArcSharedSampler {
   base::Time last_app_refresh_;
 
   base::WeakPtrFactory<ArcSharedSampler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSharedSampler);
 };
 
 }  // namespace task_manager

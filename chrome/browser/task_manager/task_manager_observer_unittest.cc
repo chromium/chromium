@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/test_task_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,30 +17,29 @@ class TestObserver : public TaskManagerObserver {
   TestObserver(base::TimeDelta refresh_time, int64_t resources_flags)
       : TaskManagerObserver(refresh_time, resources_flags) {}
 
-  ~TestObserver() override {}
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+  ~TestObserver() override = default;
 
   // task_manager::TaskManagerObserver:
   void OnTaskAdded(TaskId id) override {}
   void OnTaskToBeRemoved(TaskId id) override {}
   void OnTasksRefreshed(const TaskIdList& task_ids) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Defines a test to validate the behavior of the task manager in response to
 // adding and removing different kind of observers.
 class TaskManagerObserverTest : public testing::Test {
  public:
-  TaskManagerObserverTest() {}
-  ~TaskManagerObserverTest() override {}
+  TaskManagerObserverTest() = default;
+  TaskManagerObserverTest(const TaskManagerObserverTest&) = delete;
+  TaskManagerObserverTest& operator=(const TaskManagerObserverTest&) = delete;
+  ~TaskManagerObserverTest() override = default;
 
   TestTaskManager& task_manager() { return task_manager_; }
 
  private:
   TestTaskManager task_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerObserverTest);
 };
 
 }  // namespace

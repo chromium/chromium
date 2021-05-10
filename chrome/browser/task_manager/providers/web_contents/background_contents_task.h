@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TASK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
@@ -16,6 +15,8 @@ class BackgroundContentsTask : public RendererTask {
  public:
   BackgroundContentsTask(const std::u16string& title,
                          BackgroundContents* background_contents);
+  BackgroundContentsTask(const BackgroundContentsTask&) = delete;
+  BackgroundContentsTask& operator=(const BackgroundContentsTask&) = delete;
   ~BackgroundContentsTask() override;
 
   // task_manager::RendererTask:
@@ -24,8 +25,6 @@ class BackgroundContentsTask : public RendererTask {
 
  private:
   static gfx::ImageSkia* s_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsTask);
 };
 
 }  // namespace task_manager

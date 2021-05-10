@@ -81,6 +81,9 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
     driver_->AddObserver(this);
   }
 
+  FaviconWaiter(const FaviconWaiter&) = delete;
+  FaviconWaiter& operator=(const FaviconWaiter&) = delete;
+
   void WaitForFaviconWithURL(const GURL& url) {
     if (GetCurrentFaviconURL() == url) {
       driver_->RemoveObserver(this);
@@ -118,8 +121,6 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
   favicon::ContentFaviconDriver* driver_;
   GURL target_favicon_url_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconWaiter);
 };
 
 }  // namespace
@@ -129,6 +130,8 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
 class TabContentsTagTest : public InProcessBrowserTest {
  public:
   TabContentsTagTest() { EXPECT_TRUE(embedded_test_server()->Start()); }
+  TabContentsTagTest(const TabContentsTagTest&) = delete;
+  TabContentsTagTest& operator=(const TabContentsTagTest&) = delete;
   ~TabContentsTagTest() override {}
 
   void AddNewTestTabAt(int index, const char* test_page_file) {
@@ -179,9 +182,6 @@ class TabContentsTagTest : public InProcessBrowserTest {
   GURL GetUrlOfFile(const char* test_page_file) const {
     return embedded_test_server()->GetURL(test_page_file);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabContentsTagTest);
 };
 
 // Tests that TabContentsTags are being recorded correctly by the

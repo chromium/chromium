@@ -47,6 +47,9 @@ class ByteBuffer {
       grow(capacity);
   }
 
+  ByteBuffer(const ByteBuffer&) = delete;
+  ByteBuffer& operator=(const ByteBuffer&) = delete;
+
   ~ByteBuffer() {}
 
   BYTE* data() { return data_.get(); }
@@ -70,8 +73,6 @@ class ByteBuffer {
   std::unique_ptr<BYTE[]> data_;
   size_t size_;
   size_t capacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(ByteBuffer);
 };
 
 // Wrapper for NtQuerySystemProcessInformation with buffer reallocation logic.
@@ -139,15 +140,14 @@ struct ThreadData {
 // snapshot. This structure is accessed only on the worker thread.
 struct ProcessData {
   ProcessData() = default;
+  ProcessData(const ProcessData&) = delete;
+  ProcessData& operator=(const ProcessData&) = delete;
   ProcessData(ProcessData&&) = default;
 
   int64_t hard_fault_count;
   base::Time start_time;
   base::TimeDelta cpu_time;
   std::vector<ThreadData> threads;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessData);
 };
 
 typedef std::map<base::ProcessId, ProcessData> ProcessDataMap;

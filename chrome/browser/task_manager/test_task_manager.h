@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
@@ -19,6 +18,8 @@ namespace task_manager {
 class TestTaskManager : public TaskManagerInterface {
  public:
   TestTaskManager();
+  TestTaskManager(const TestTaskManager&) = delete;
+  TestTaskManager& operator=(const TestTaskManager&) = delete;
   ~TestTaskManager() override;
 
   // task_manager::TaskManagerInterface:
@@ -86,9 +87,6 @@ class TestTaskManager : public TaskManagerInterface {
   std::u16string title_;
   gfx::ImageSkia icon_;
   TaskIdList ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTaskManager);
 };
 
 }  // namespace task_manager

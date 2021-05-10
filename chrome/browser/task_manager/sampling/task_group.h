@@ -11,7 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -63,6 +62,8 @@ class TaskGroup {
       CrosapiTaskProviderAsh* crosapi_task_provider,
 #endif
       const scoped_refptr<base::SequencedTaskRunner>& blocking_pool_runner);
+  TaskGroup(const TaskGroup&) = delete;
+  TaskGroup& operator=(const TaskGroup&) = delete;
   ~TaskGroup();
 
   // Adds and removes the given |task| to this group. |task| must be running on
@@ -249,8 +250,6 @@ class TaskGroup {
   // Always keep this the last member of this class so that it's the first to be
   // destroyed.
   base::WeakPtrFactory<TaskGroup> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TaskGroup);
 };
 
 }  // namespace task_manager

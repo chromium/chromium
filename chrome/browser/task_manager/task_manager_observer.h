@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -80,6 +79,8 @@ class TaskManagerObserver {
   // will update its refresh time and the calculated resources to be the minimum
   // required value of all the remaining observers.
   TaskManagerObserver(base::TimeDelta refresh_time, int64_t resources_flags);
+  TaskManagerObserver(const TaskManagerObserver&) = delete;
+  TaskManagerObserver& operator=(const TaskManagerObserver&) = delete;
   virtual ~TaskManagerObserver();
 
   // Notifies the observer that a chrome task with |id| has started and the task
@@ -146,8 +147,6 @@ class TaskManagerObserver {
   // The flags that contain the resources that this observer needs to be
   // calculated on each refresh.
   int64_t desired_resources_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerObserver);
 };
 
 }  // namespace task_manager

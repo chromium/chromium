@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 class ProcessResourceUsage;
@@ -43,6 +42,8 @@ class ChildProcessTask : public Task {
   ChildProcessTask(const content::ChildProcessData& data,
                    ProcessSubtype subtype);
 
+  ChildProcessTask(const ChildProcessTask&) = delete;
+  ChildProcessTask& operator=(const ChildProcessTask&) = delete;
   ~ChildProcessTask() override;
 
   // task_manager::Task:
@@ -75,8 +76,6 @@ class ChildProcessTask : public Task {
   // Depending on the |process_type_|, determines whether this task uses V8
   // memory or not.
   const bool uses_v8_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTask);
 };
 
 }  // namespace task_manager

@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -84,6 +83,8 @@ const base::FilePath::CharType* kTitle1File = FILE_PATH_LITERAL("title1.html");
 class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   TaskManagerBrowserTest() = default;
+  TaskManagerBrowserTest(const TaskManagerBrowserTest&) = delete;
+  TaskManagerBrowserTest& operator=(const TaskManagerBrowserTest&) = delete;
   ~TaskManagerBrowserTest() override = default;
 
   task_manager::TaskManagerTester* model() { return model_.get(); }
@@ -155,12 +156,15 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   std::unique_ptr<task_manager::TaskManagerTester> model_;
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerBrowserTest);
 };
 
 class TaskManagerUtilityProcessBrowserTest : public TaskManagerBrowserTest {
  public:
-  TaskManagerUtilityProcessBrowserTest() {}
+  TaskManagerUtilityProcessBrowserTest() = default;
+  TaskManagerUtilityProcessBrowserTest(
+      const TaskManagerUtilityProcessBrowserTest&) = delete;
+  TaskManagerUtilityProcessBrowserTest& operator=(
+      const TaskManagerUtilityProcessBrowserTest&) = delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -172,9 +176,6 @@ class TaskManagerUtilityProcessBrowserTest : public TaskManagerBrowserTest {
         switches::kProxyPacUrl,
         "data:,function FindProxyForURL(url, host){return \"DIRECT;\";}");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerUtilityProcessBrowserTest);
 };
 
 // Parameterized variant of TaskManagerBrowserTest which runs with/without
@@ -182,7 +183,10 @@ class TaskManagerUtilityProcessBrowserTest : public TaskManagerBrowserTest {
 class TaskManagerOOPIFBrowserTest : public TaskManagerBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  TaskManagerOOPIFBrowserTest() {}
+  TaskManagerOOPIFBrowserTest() = default;
+  TaskManagerOOPIFBrowserTest(const TaskManagerOOPIFBrowserTest&) = delete;
+  TaskManagerOOPIFBrowserTest& operator=(const TaskManagerOOPIFBrowserTest&) =
+      delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -194,9 +198,6 @@ class TaskManagerOOPIFBrowserTest : public TaskManagerBrowserTest,
   bool ShouldExpectSubframes() {
     return content::AreAllSitesIsolatedForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerOOPIFBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(DefaultIsolation,

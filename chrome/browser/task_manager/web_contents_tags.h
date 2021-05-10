@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_WEB_CONTENTS_TAGS_H_
 #define CHROME_BROWSER_TASK_MANAGER_WEB_CONTENTS_TAGS_H_
 
-#include "base/macros.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -29,6 +28,9 @@ namespace task_manager {
 // task manager.
 class WebContentsTags {
  public:
+  WebContentsTags(const WebContentsTags&) = delete;
+  WebContentsTags& operator=(const WebContentsTags&) = delete;
+
   // Tag a BackgroundContents so that it shows up in the task manager. Calling
   // this function creates a BackgroundContentsTag, and attaches it to
   // |web_contents|. If an instance is already attached, this does nothing. The
@@ -105,9 +107,6 @@ class WebContentsTags {
   // Clearing the tag is necessary only when you need to re-tag an existing
   // WebContents, to indicate a change in ownership.
   static void ClearTag(content::WebContents* web_contents);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTags);
 };
 
 }  // namespace task_manager

@@ -7,9 +7,7 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/notification_observer.h"
@@ -27,6 +25,9 @@ class RenderProcessHostTaskProvider : public TaskProvider,
                                       public content::NotificationObserver {
  public:
   RenderProcessHostTaskProvider();
+  RenderProcessHostTaskProvider(const RenderProcessHostTaskProvider&) = delete;
+  RenderProcessHostTaskProvider& operator=(
+      const RenderProcessHostTaskProvider&) = delete;
   ~RenderProcessHostTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -58,8 +59,6 @@ class RenderProcessHostTaskProvider : public TaskProvider,
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<RenderProcessHostTaskProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostTaskProvider);
 };
 
 }  // namespace task_manager

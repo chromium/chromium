@@ -10,8 +10,7 @@ TaskProvider::TaskProvider()
     : observer_(nullptr) {
 }
 
-TaskProvider::~TaskProvider() {
-}
+TaskProvider::~TaskProvider() = default;
 
 void TaskProvider::SetObserver(TaskProviderObserver* observer) {
   DCHECK(observer);

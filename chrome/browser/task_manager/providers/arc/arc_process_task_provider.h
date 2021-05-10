@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/process/process.h"
@@ -33,6 +32,8 @@ namespace task_manager {
 class ArcProcessTaskProvider : public TaskProvider {
  public:
   ArcProcessTaskProvider();
+  ArcProcessTaskProvider(const ArcProcessTaskProvider&) = delete;
+  ArcProcessTaskProvider& operator=(const ArcProcessTaskProvider&) = delete;
   ~ArcProcessTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -69,8 +70,6 @@ class ArcProcessTaskProvider : public TaskProvider {
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<ArcProcessTaskProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcessTaskProvider);
 };
 
 }  // namespace task_manager

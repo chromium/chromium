@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 namespace task_manager {
@@ -13,8 +12,10 @@ namespace task_manager {
 // Defines an interface for observing tasks addition / removal.
 class TaskProviderObserver {
  public:
-  TaskProviderObserver() {}
-  virtual ~TaskProviderObserver() {}
+  TaskProviderObserver() = default;
+  TaskProviderObserver(const TaskProviderObserver&) = delete;
+  TaskProviderObserver& operator=(const TaskProviderObserver&) = delete;
+  virtual ~TaskProviderObserver() = default;
 
   // This notifies of the event that a new |task| has been created.
   virtual void TaskAdded(Task* task) = 0;
@@ -37,9 +38,6 @@ class TaskProviderObserver {
   // lacros tasks changes the sorting order.
   virtual void TaskIdsListToBeInvalidated() {}
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskProviderObserver);
 };
 
 }  // namespace task_manager

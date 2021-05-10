@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
@@ -34,6 +33,8 @@ class DevToolsTagTest : public InProcessBrowserTest {
     CHECK(embedded_test_server()->Start());
   }
 
+  DevToolsTagTest(const DevToolsTagTest&) = delete;
+  DevToolsTagTest& operator=(const DevToolsTagTest&) = delete;
   ~DevToolsTagTest() override {}
 
   void LoadTestPage(const std::string& test_page) {
@@ -56,8 +57,6 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
  private:
   DevToolsWindow* devtools_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTagTest);
 };
 
 // Tests that opening a DevToolsWindow will result in tagging its main

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -30,6 +29,8 @@ class ChildProcessTaskProvider
       public content::BrowserChildProcessObserver {
  public:
   ChildProcessTaskProvider();
+  ChildProcessTaskProvider(const ChildProcessTaskProvider&) = delete;
+  ChildProcessTaskProvider& operator=(const ChildProcessTaskProvider&) = delete;
   ~ChildProcessTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -77,8 +78,6 @@ class ChildProcessTaskProvider
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<ChildProcessTaskProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskProvider);
 };
 
 }  // namespace task_manager

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,7 +18,11 @@ class BrowserProcessTaskProviderTest
       : provided_task_(nullptr) {
   }
 
-  ~BrowserProcessTaskProviderTest() override {}
+  BrowserProcessTaskProviderTest(const BrowserProcessTaskProviderTest&) =
+      delete;
+  BrowserProcessTaskProviderTest& operator=(
+      const BrowserProcessTaskProviderTest&) = delete;
+  ~BrowserProcessTaskProviderTest() override = default;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
@@ -32,9 +35,6 @@ class BrowserProcessTaskProviderTest
 
  protected:
   Task* provided_task_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessTaskProviderTest);
 };
 
 // Tests the browser process task provider and browser process task itself.

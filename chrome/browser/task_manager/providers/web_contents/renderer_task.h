@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/navigation_entry.h"
@@ -35,6 +34,8 @@ class RendererTask : public Task,
   RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
                content::RenderFrameHost* subframe);
+  RendererTask(const RendererTask&) = delete;
+  RendererTask& operator=(const RendererTask&) = delete;
   ~RendererTask() override;
 
   // An abstract method that will be called when the event
@@ -132,8 +133,6 @@ class RendererTask : public Task,
 
   base::TerminationStatus termination_status_;
   int termination_error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererTask);
 };
 
 }  // namespace task_manager

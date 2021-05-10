@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -35,6 +34,9 @@ namespace task_manager {
 // enabled calculations of the usage of the various resources.
 class TaskManagerInterface {
  public:
+  TaskManagerInterface(const TaskManagerInterface&) = delete;
+  TaskManagerInterface& operator=(const TaskManagerInterface&) = delete;
+
   // Registers the task manager related prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -292,8 +294,6 @@ class TaskManagerInterface {
 
   // The flags containing the enabled resources types calculations.
   int64_t enabled_resources_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerInterface);
 };
 
 }  // namespace task_manager

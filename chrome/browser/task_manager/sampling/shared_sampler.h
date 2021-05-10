@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
@@ -37,6 +36,9 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
  public:
   explicit SharedSampler(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_pool_runner);
+
+  SharedSampler(const SharedSampler&) = delete;
+  SharedSampler& operator=(const SharedSampler&) = delete;
 
   struct SamplingResult {
     base::TimeDelta cpu_time;
@@ -132,8 +134,6 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   // To assert we're running on the correct thread.
   base::SequenceChecker worker_pool_sequenced_checker_;
 #endif  // defined(OS_WIN)
-
-  DISALLOW_COPY_AND_ASSIGN(SharedSampler);
 };
 
 }  // namespace task_manager

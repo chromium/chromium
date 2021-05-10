@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TAG_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TAG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/background_contents_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 
@@ -17,6 +16,8 @@ namespace task_manager {
 // service.
 class BackgroundContentsTag : public WebContentsTag {
  public:
+  BackgroundContentsTag(const BackgroundContentsTag&) = delete;
+  BackgroundContentsTag& operator=(const BackgroundContentsTag&) = delete;
   ~BackgroundContentsTag() override;
 
   // task_manager::WebContentsTag:
@@ -31,8 +32,6 @@ class BackgroundContentsTag : public WebContentsTag {
 
   // The owning BackgroundContents.
   BackgroundContents* background_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsTag);
 };
 
 }  // namespace task_manager

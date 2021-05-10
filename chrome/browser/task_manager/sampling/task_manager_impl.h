@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -39,6 +38,8 @@ class SharedSampler;
 class TaskManagerImpl : public TaskManagerInterface,
                         public TaskProviderObserver {
  public:
+  TaskManagerImpl(const TaskManagerImpl&) = delete;
+  TaskManagerImpl& operator=(const TaskManagerImpl&) = delete;
   ~TaskManagerImpl() override;
 
   static TaskManagerImpl* GetInstance();
@@ -196,7 +197,6 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool waiting_for_memory_dump_;
 
   base::WeakPtrFactory<TaskManagerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImpl);
 };
 
 }  // namespace task_manager

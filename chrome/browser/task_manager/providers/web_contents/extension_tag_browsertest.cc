@@ -4,7 +4,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,6 +21,8 @@ namespace task_manager {
 class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionTagsTest() = default;
+  ExtensionTagsTest(const ExtensionTagsTest&) = delete;
+  ExtensionTagsTest& operator=(const ExtensionTagsTest&) = delete;
   ~ExtensionTagsTest() override = default;
 
  protected:
@@ -38,9 +39,6 @@ class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
   const std::vector<WebContentsTag*>& tracked_tags() const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTagsTest);
 };
 
 // Tests loading, disabling, enabling and unloading extensions and how that will

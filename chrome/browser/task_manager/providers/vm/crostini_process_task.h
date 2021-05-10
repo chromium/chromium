@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task.h"
 
 namespace task_manager {
@@ -18,6 +17,8 @@ class CrostiniProcessTask : public VmProcessTask {
   CrostiniProcessTask(base::ProcessId pid,
                       const std::string& owner_id,
                       const std::string& vm_name);
+  CrostiniProcessTask(const CrostiniProcessTask&) = delete;
+  CrostiniProcessTask& operator=(const CrostiniProcessTask&) = delete;
   ~CrostiniProcessTask() override = default;
 
   // task_manager::Task:
@@ -26,8 +27,6 @@ class CrostiniProcessTask : public VmProcessTask {
 
  private:
   static gfx::ImageSkia* s_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniProcessTask);
 };
 
 }  // namespace task_manager

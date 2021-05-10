@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
@@ -49,9 +48,10 @@ class ChildProcessTaskTest
     : public testing::Test,
       public TaskProviderObserver {
  public:
-  ChildProcessTaskTest() {}
-
-  ~ChildProcessTaskTest() override {}
+  ChildProcessTaskTest() = default;
+  ChildProcessTaskTest(const ChildProcessTaskTest&) = delete;
+  ChildProcessTaskTest& operator=(const ChildProcessTaskTest&) = delete;
+  ~ChildProcessTaskTest() override = default;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
@@ -78,8 +78,6 @@ class ChildProcessTaskTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskTest);
 };
 
 // Performs a basic test.

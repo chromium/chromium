@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
 namespace task_manager {
@@ -18,6 +17,8 @@ namespace task_manager {
 class TaskProvider {
  public:
   TaskProvider();
+  TaskProvider(const TaskProvider&) = delete;
+  TaskProvider& operator=(const TaskProvider&) = delete;
   virtual ~TaskProvider();
 
   // Should return the task associated to the specified IDs from a
@@ -72,8 +73,6 @@ class TaskProvider {
 
   // We support only one single obsever which will be the sampler in this case.
   TaskProviderObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskProvider);
 };
 
 }  // namespace task_manager

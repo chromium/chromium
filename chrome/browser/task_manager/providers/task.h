@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -68,6 +67,8 @@ class Task {
        const gfx::ImageSkia* icon,
        base::ProcessHandle handle,
        base::ProcessId process_id = base::kNullProcessId);
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
   virtual ~Task();
 
   // Gets the name of the given |profile| from the ProfileAttributesStorage.
@@ -223,8 +224,6 @@ class Task {
 
   // The PID of the process on which this task is running.
   base::ProcessId process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
 }  // namespace task_manager
