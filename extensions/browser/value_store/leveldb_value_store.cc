@@ -204,7 +204,7 @@ ValueStore::WriteResult LeveldbValueStore::Clear() {
     return WriteResult(read_result.PassStatus());
 
   base::DictionaryValue& whole_db = read_result.settings();
-  while (!whole_db.empty()) {
+  while (!whole_db.DictEmpty()) {
     std::string next_key = base::DictionaryValue::Iterator(whole_db).key();
     std::unique_ptr<base::Value> next_value;
     whole_db.RemoveWithoutPathExpansion(next_key, &next_value);

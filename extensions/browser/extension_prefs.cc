@@ -443,7 +443,7 @@ static std::string MakePathRelative(const base::FilePath& parent,
 void ExtensionPrefs::MakePathsRelative() {
   const base::DictionaryValue* dict =
       prefs_->GetDictionary(pref_names::kExtensions);
-  if (!dict || dict->empty())
+  if (!dict || dict->DictEmpty())
     return;
 
   // Collect all extensions ids with absolute paths in |absolute_keys|.
@@ -1460,7 +1460,7 @@ void ExtensionPrefs::SetExtensionBlocklistState(const std::string& extension_id,
     } else {
       UpdateExtensionPref(extension_id, kPrefBlocklist, nullptr);
       const base::DictionaryValue* dict = GetExtensionPref(extension_id);
-      if (dict && dict->empty())
+      if (dict && dict->DictEmpty())
         DeleteExtensionPrefs(extension_id);
     }
   }
@@ -1853,7 +1853,7 @@ void ExtensionPrefs::SetLastLaunchTime(const std::string& extension_id,
 void ExtensionPrefs::ClearLastLaunchTimes() {
   const base::DictionaryValue* dict =
       prefs_->GetDictionary(pref_names::kExtensions);
-  if (!dict || dict->empty())
+  if (!dict || dict->DictEmpty())
     return;
 
   // Collect all the keys to remove the last launched preference from.

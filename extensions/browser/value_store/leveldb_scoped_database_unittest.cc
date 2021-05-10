@@ -202,5 +202,5 @@ TEST_F(LeveldbScopedDatabaseUnitTest, TestDeleteValues) {
 
   base::DictionaryValue read_s2_vals;
   EXPECT_TRUE(db_->Read("scope2", &read_s2_vals).ok());
-  EXPECT_TRUE(read_s2_vals.empty());
+  EXPECT_TRUE(read_s2_vals.DictEmpty());
 }
