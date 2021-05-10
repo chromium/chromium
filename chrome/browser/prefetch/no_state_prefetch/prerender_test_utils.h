@@ -15,7 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -70,8 +70,9 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
   FinalStatus expected_final_status_;
 
-  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
-      observer_;
+  base::ScopedMultiSourceObservation<content::RenderWidgetHost,
+                                     content::RenderWidgetHostObserver>
+      observations_{this};
 
   // The main frame created for the prerender, if any.
   content::RenderFrameHost* new_main_frame_ = nullptr;

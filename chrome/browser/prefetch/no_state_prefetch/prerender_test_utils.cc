@@ -109,7 +109,6 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
           initiator_origin,
           origin),
       expected_final_status_(expected_final_status),
-      observer_(this),
       skip_final_checks_(ignore_final_status) {}
 
 TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
@@ -143,7 +142,7 @@ void TestNoStatePrefetchContents::RenderFrameHostChanged(
   if (!new_frame_host->GetParent()) {
     // Used to make sure the main frame widget is hidden and, if used,
     // subsequently shown.
-    observer_.Add(new_frame_host->GetRenderWidgetHost());
+    observations_.AddObservation(new_frame_host->GetRenderWidgetHost());
     new_main_frame_ = new_frame_host;
   }
 
@@ -160,7 +159,7 @@ void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
 
 void TestNoStatePrefetchContents::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  observer_.Remove(widget_host);
+  observations_.RemoveObservation(widget_host);
 }
 
 DestructionWaiter::DestructionWaiter(
