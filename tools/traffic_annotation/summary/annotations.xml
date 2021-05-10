@@ -47,6 +47,7 @@ Refer to README.md for content description and update process.
  <item id="certificate_verifier_url_request" added_in_milestone="80" hash_code="85988208" type="0" content_hash_code="59262468" os_list="linux,windows" file_path="net/cert_net/cert_net_fetcher_url_request.cc"/>
  <item id="chrome_HaTS_service" added_in_milestone="83" hash_code="136028241" type="0" deprecated="2021-02-03" content_hash_code="68990360" file_path=""/>
  <item id="chrome_apps_socket_api" added_in_milestone="65" hash_code="8591273" type="0" content_hash_code="130709397" os_list="linux,windows" file_path="extensions/browser/api/socket/socket.cc"/>
+ <item id="chrome_cart_discounts_lookup" added_in_milestone="92" hash_code="44551896" type="0" content_hash_code="95675425" os_list="linux,windows" file_path="chrome/browser/cart/cart_discount_fetcher.cc"/>
  <item id="chrome_cleaner" added_in_milestone="63" hash_code="27071967" type="0" content_hash_code="111240292" os_list="windows" file_path="chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win.cc"/>
  <item id="chrome_cleanup_report" added_in_milestone="70" hash_code="71102679" type="0" content_hash_code="130565656" os_list="windows" file_path="chrome/chrome_cleaner/logging/cleaner_logging_service.cc"/>
  <item id="chrome_feedback_report_app" added_in_milestone="62" hash_code="134729048" type="0" content_hash_code="73916972" os_list="linux,windows" file_path="components/feedback/feedback_uploader.cc"/>

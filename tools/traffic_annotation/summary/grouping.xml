@@ -166,6 +166,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="box_access_token_fetcher"/>
       <traffic_annotation unique_id="web_app_origin_association_download"/>
       <traffic_annotation unique_id="digital_asset_links"/>
+      <traffic_annotation unique_id="chrome_cart_discounts_lookup"/>
     </sender>
   </group>
   <group name="Admin Features">
