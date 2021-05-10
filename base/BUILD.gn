@@ -1932,6 +1932,8 @@ component("base") {
         "allocator/partition_allocator/starscan/raceful_worklist.h",
         "allocator/partition_allocator/starscan/stack/stack.cc",
         "allocator/partition_allocator/starscan/stack/stack.h",
+        "allocator/partition_allocator/starscan/stats_collector.cc",
+        "allocator/partition_allocator/starscan/stats_collector.h",
         "allocator/partition_allocator/thread_cache.cc",
         "allocator/partition_allocator/thread_cache.h",
         "allocator/partition_allocator/yield_processor.h",
