@@ -7,7 +7,7 @@ underlying implementation.
 
 ## Related directories
 
-[`//content/browser/fileapi/`](../../../content/browser/fileapi) contains the
+[`//content/browser/file_system/`](../../../content/browser/file_system) contains the
 rest of the browser side implementation, while
 [`blink/renderer/modules/filesystem`](../../../third_party/blink/renderer/modules/filesystem)
 contains the renderer side implementation and
