@@ -664,7 +664,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                          cc::PaintBenchmarkResult& result) override;
   KURL GetURLForDebugTrace() override;
   float GetTestingDeviceScaleFactorOverride() override;
-
+  void CountDroppedPointerDownForEventTiming(unsigned count) override;
   // mojom::blink::FrameWidget overrides.
   void DragTargetDragEnter(const WebDragData&,
                            const gfx::PointF& point_in_viewport,

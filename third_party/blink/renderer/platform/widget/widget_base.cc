@@ -1509,6 +1509,10 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
 #endif
 }
 
+void WidgetBase::CountDroppedPointerDownForEventTiming(unsigned count) {
+  client_->CountDroppedPointerDownForEventTiming(count);
+}
+
 gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
   if (!use_zoom_for_dsf_)
     return point;

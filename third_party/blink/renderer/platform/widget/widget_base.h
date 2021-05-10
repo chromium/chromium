@@ -287,6 +287,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
     visible_viewport_size_in_dips_ = size;
   }
 
+  // Some touch start which can trigger pointerdown will not be sent to the main
+  // thread. And following touchend can't be dispatched. We want to count those
+  // touchstart, touchend and pointerdown for EventTiming.
+  void CountDroppedPointerDownForEventTiming(unsigned count);
+
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
   // pixels).
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point);
@@ -379,6 +384,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   bool initialized_ = false;
 
   // The client which handles behaviour specific to the type of widget.
+  // It's the owner of the widget and will outlive this class.
   WidgetBaseClient* const client_;
 
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;

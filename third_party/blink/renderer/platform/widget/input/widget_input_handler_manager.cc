@@ -43,6 +43,12 @@ using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 using ::perfetto::protos::pbzero::TrackEvent;
 
 namespace {
+// We will count dropped pointerdown by posting a task in the main thread.
+// To avoid blocking the main thread, we need a timer to send the data
+// intermittently. The time delay of the timer is 10X of the threshold of
+// long tasks which block the main thread 50 ms or longer.
+const base::TimeDelta kEventCountsTimerDelay =
+    base::TimeDelta::FromMilliseconds(500);
 
 mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
     const InputHandlerProxy::DidOverscrollParams* overscroll_params) {
@@ -717,6 +723,14 @@ void WidgetInputHandlerManager::FindScrollTargetReply(
       hit_test_result);
 }
 
+void WidgetInputHandlerManager::SendDroppedPointerDownCounts() {
+  main_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WidgetBase::CountDroppedPointerDownForEventTiming,
+                     widget_, dropped_pointer_down_));
+  dropped_pointer_down_ = 0;
+}
+
 void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback,
     InputHandlerProxy::EventDisposition event_disposition,
@@ -728,6 +742,31 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
+
+  if (event_disposition == InputHandlerProxy::DROP_EVENT &&
+      event->Event().GetType() == blink::WebInputEvent::Type::kTouchStart) {
+    const WebTouchEvent touch_event =
+        static_cast<const WebTouchEvent&>(event->Event());
+    for (unsigned i = 0; i < touch_event.touches_length; ++i) {
+      const WebTouchPoint& touch_point = touch_event.touches[i];
+      if (touch_point.state == WebTouchPoint::State::kStatePressed) {
+        dropped_pointer_down_++;
+      }
+    }
+    if (dropped_pointer_down_ > 0) {
+      if (!dropped_event_counts_timer_) {
+        dropped_event_counts_timer_ = std::make_unique<base::OneShotTimer>();
+      }
+
+      if (!dropped_event_counts_timer_->IsRunning()) {
+        dropped_event_counts_timer_->Start(
+            FROM_HERE, kEventCountsTimerDelay,
+            base::BindOnce(
+                &WidgetInputHandlerManager::SendDroppedPointerDownCounts,
+                this));
+      }
+    }
+  }
 
   ui::LatencyInfo::TraceIntermediateFlowEvents(
       {event->latency_info()},

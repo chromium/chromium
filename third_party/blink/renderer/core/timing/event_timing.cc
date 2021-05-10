@@ -33,25 +33,6 @@ bool ShouldLogEvent(const Event& event) {
          event.type() == event_type_names::kMousedown;
 }
 
-bool IsEventTypeForEventTiming(const Event& event) {
-  // Include only trusted events of certain kinds. Explicitly excluding input
-  // events that are considered continuous: event types for which the user agent
-  // may have timer-based dispatch under certain conditions. These are excluded
-  // since EventCounts cannot be used to properly computed percentiles on those.
-  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed
-  return event.isTrusted() &&
-         (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||
-          IsA<TouchEvent>(event) || IsA<KeyboardEvent>(event) ||
-          IsA<WheelEvent>(event) || event.IsInputEvent() ||
-          event.IsCompositionEvent() || event.IsDragEvent()) &&
-         event.type() != event_type_names::kMousemove &&
-         event.type() != event_type_names::kPointermove &&
-         event.type() != event_type_names::kPointerrawupdate &&
-         event.type() != event_type_names::kTouchmove &&
-         event.type() != event_type_names::kWheel &&
-         event.type() != event_type_names::kDrag;
-}
-
 bool ShouldReportForEventTiming(WindowPerformance* performance) {
   if (!performance->FirstInputDetected())
     return true;
@@ -74,6 +55,26 @@ EventTiming::EventTiming(base::TimeTicks processing_start,
       event_timestamp_(event_timestamp),
       performance_(performance),
       should_log_event_(should_log_event) {}
+
+// static
+bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
+  // Include only trusted events of certain kinds. Explicitly excluding input
+  // events that are considered continuous: event types for which the user agent
+  // may have timer-based dispatch under certain conditions. These are excluded
+  // since EventCounts cannot be used to properly computed percentiles on those.
+  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed
+  return event.isTrusted() &&
+         (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||
+          IsA<TouchEvent>(event) || IsA<KeyboardEvent>(event) ||
+          IsA<WheelEvent>(event) || event.IsInputEvent() ||
+          event.IsCompositionEvent() || event.IsDragEvent()) &&
+         event.type() != event_type_names::kMousemove &&
+         event.type() != event_type_names::kPointermove &&
+         event.type() != event_type_names::kPointerrawupdate &&
+         event.type() != event_type_names::kTouchmove &&
+         event.type() != event_type_names::kWheel &&
+         event.type() != event_type_names::kDrag;
+}
 
 // static
 std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,

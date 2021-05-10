@@ -218,6 +218,15 @@ class WidgetBaseClient {
   // remote in that frame tree, then the url is not known, and an empty url is
   // returned.
   virtual KURL GetURLForDebugTrace() = 0;
+
+  // In EventTiming, we count the events invoked by user interactions. Some
+  // touchstarts will be dropped before they get sent to the main thread.
+  // Meanwhile, the corresponding pointerdown will not be fired. The following
+  // pointerup will be captured in pointer_event_manager. The following touchend
+  // will not be dispatched because there's no target which is always set by
+  // touchstart. But we still want to count those touchstart, pointerdown and
+  // touchend.
+  virtual void CountDroppedPointerDownForEventTiming(unsigned count) {}
 };
 
 }  // namespace blink

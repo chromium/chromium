@@ -161,6 +161,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   using ElementAtPointCallback = base::OnceCallback<void(uint64_t)>;
   void FindScrollTargetOnMainThread(const gfx::PointF& point,
                                     ElementAtPointCallback callback);
+  void SendDroppedPointerDownCounts();
 
   void ClearClient();
 
@@ -323,6 +324,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool has_seen_first_gesture_scroll_update_after_begin_ = false;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> response_power_mode_voter_;
+
+  // Timer for count dropped events.
+  std::unique_ptr<base::OneShotTimer> dropped_event_counts_timer_;
+
+  unsigned dropped_pointer_down_ = 0;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<SynchronousCompositorProxyRegistry>

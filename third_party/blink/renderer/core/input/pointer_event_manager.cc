@@ -26,6 +26,9 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -175,6 +178,16 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   const PointerId pointer_id = pointer_event->pointerId();
   const AtomicString& event_type = pointer_event->type();
   bool should_filter = ShouldFilterEvent(pointer_event);
+  // We are about to dispatch this event. It has to be trusted at this point.
+  pointer_event->SetTrusted(true);
+
+  if (frame_ && frame_->DomWindow()) {
+    WindowPerformance* performance =
+        DOMWindowPerformance::performance(*(frame_->DomWindow()));
+    if (performance && EventTiming::IsEventTypeForEventTiming(*pointer_event)) {
+      performance->eventCounts()->Add(event_type);
+    }
+  }
 
   if (should_filter &&
       !HasPointerEventListener(frame_->GetEventHandlerRegistry()))

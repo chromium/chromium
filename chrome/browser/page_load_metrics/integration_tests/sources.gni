@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 metric_integration_sources = [
+  "//chrome/browser/page_load_metrics/integration_tests/event_counts_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/first_input_delay_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/first_scroll_delay_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/largest_contentful_paint_browsertest.cc",

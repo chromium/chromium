@@ -355,9 +355,22 @@ void WindowPerformance::RegisterEventTiming(const AtomicString& event_type,
   if (!DomWindow())
     return;
 
-  if (!event_counts_)
-    event_counts_ = MakeGarbageCollected<EventCounts>();
-  event_counts_->Add(event_type);
+  // Count non-pointerevent Events. Avoid double counting pointerevents
+  // because we count them in pointer_event_manager.cc. Note click, auxclick and
+  // contextmenu are PointerEvent but the dispatch process of them are different
+  // from other PointerEvent.
+  if (event_type != event_type_names::kPointerover &&
+      event_type != event_type_names::kPointerenter &&
+      event_type != event_type_names::kPointerdown &&
+      event_type != event_type_names::kPointerup &&
+      event_type != event_type_names::kPointercancel &&
+      event_type != event_type_names::kPointerout &&
+      event_type != event_type_names::kPointerleave &&
+      event_type != event_type_names::kGotpointercapture &&
+      event_type != event_type_names::kLostpointercapture) {
+    eventCounts()->Add(event_type);
+  }
+
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(processing_start),

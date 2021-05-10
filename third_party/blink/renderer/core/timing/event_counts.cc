@@ -43,6 +43,14 @@ void EventCounts::Add(const AtomicString& event_type) {
   iterator->value++;
 }
 
+void EventCounts::AddMultipleEvents(const AtomicString& event_type,
+                                    unsigned count) {
+  auto iterator = event_count_map_.find(event_type);
+  if (iterator == event_count_map_.end())
+    return;
+  iterator->value += count;
+}
+
 EventCounts::EventCounts() {
   // Should contain the same types that would return true in
   // IsEventTypeForEventTiming() in event_timing.cc. Note that this list differs

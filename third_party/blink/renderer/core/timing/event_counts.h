@@ -29,6 +29,9 @@ class EventCounts final : public ScriptWrappable,
 
   void Add(const AtomicString& event_type);
 
+  // Add multiple events with the same event type.
+  void AddMultipleEvents(const AtomicString& event_type, unsigned count);
+
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
   }

@@ -110,6 +110,8 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
@@ -2105,6 +2107,28 @@ void WebFrameWidgetImpl::SetSuppressFrameRequestsWorkaroundFor704763Only(
     bool suppress_frame_requests) {
   GetPage()->Animator().SetSuppressFrameRequestsWorkaroundFor704763Only(
       suppress_frame_requests);
+}
+
+void WebFrameWidgetImpl::CountDroppedPointerDownForEventTiming(unsigned count) {
+  if (!local_root_ || !(local_root_->GetFrame()) ||
+      !(local_root_->GetFrame()->DomWindow())) {
+    return;
+  }
+  WindowPerformance* performance = DOMWindowPerformance::performance(
+      *(local_root_->GetFrame()->DomWindow()));
+
+  performance->eventCounts()->AddMultipleEvents(event_type_names::kPointerdown,
+                                                count);
+  // We only count dropped touchstart that can trigger pointerdown.
+  performance->eventCounts()->AddMultipleEvents(event_type_names::kTouchstart,
+                                                count);
+  // TouchEnd will not be dropped. But in touch event model only touch starts
+  // can set the target and after that the touch event always goes to that
+  // target. So if a touchstart has been dropped, the following touchend will
+  // not be dispatched. Meanwhile, the pointerup can be captured in the
+  // pointer_event_manager.
+  performance->eventCounts()->AddMultipleEvents(event_type_names::kTouchend,
+                                                count);
 }
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
