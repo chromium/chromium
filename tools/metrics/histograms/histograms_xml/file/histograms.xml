@@ -625,16 +625,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
-    expires_after="2021-09-05">
-  <owner>lucmult@chromium.org</owner>
-  <owner>majewski@chromium.org</owner>
+    expires_after="2021-11-05">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS File Browser: the source of file sharing action.</summary>
 </histogram>
 
 <histogram name="FileBrowser.Share.FileCount" units="files"
-    expires_after="2021-05-05">
-  <owner>lucmult@chromium.org</owner>
-  <owner>majewski@chromium.org</owner>
+    expires_after="2021-11-05">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS File Browser: The number of files shared via a single Share
     action.
@@ -642,9 +642,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Share.FileType" enum="ViewFileType"
-    expires_after="2021-05-05">
-  <owner>lucmult@chromium.org</owner>
-  <owner>majewski@chromium.org</owner>
+    expires_after="2021-11-05">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Chrome OS File Browser: The type of the file shared via Share action.
     Recorded for each file being shared by a share action
