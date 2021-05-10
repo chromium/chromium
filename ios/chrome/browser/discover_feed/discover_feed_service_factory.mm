@@ -42,5 +42,8 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<DiscoverFeedService>(browser_state);
+  return std::make_unique<DiscoverFeedService>(
+      browser_state->GetPrefs(),
+      AuthenticationServiceFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForBrowserState(browser_state));
 }

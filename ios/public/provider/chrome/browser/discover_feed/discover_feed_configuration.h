@@ -8,15 +8,11 @@
 #import <Foundation/Foundation.h>
 
 class AuthenticationService;
-class ChromeBrowserState;
 @class DiscoverFeedMetricsRecorder;
 class PrefService;
 
 // Configuration object used by the DiscoverFeedProvider.
 @interface DiscoverFeedConfiguration : NSObject
-
-// BrowserState used by DiscoverFeedProvider. DEPRECATED.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
 
 // AuthenticationService used by DiscoverFeedProvider.
 @property(nonatomic, assign) AuthenticationService* authService;

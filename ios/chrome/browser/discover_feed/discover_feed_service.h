@@ -9,8 +9,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class ChromeBrowserState;
+class AuthenticationService;
 @class DiscoverFeedMetricsRecorder;
+class PrefService;
 
 // A browser-context keyed service that is used to keep the Discover Feed data
 // up to date.
@@ -18,7 +19,9 @@ class DiscoverFeedService : public KeyedService,
                             public signin::IdentityManager::Observer {
  public:
   // Initializes the service.
-  explicit DiscoverFeedService(ChromeBrowserState* browser_state);
+  DiscoverFeedService(PrefService* pref_service,
+                      AuthenticationService* authentication_service,
+                      signin::IdentityManager* identity_manager);
   ~DiscoverFeedService() override;
 
   // Returns the FeedMetricsRecorder to be used by the Feed, a single instance

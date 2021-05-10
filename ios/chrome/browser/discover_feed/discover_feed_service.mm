@@ -5,8 +5,6 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_configuration.h"
@@ -16,9 +14,10 @@
 #error "This file requires ARC support."
 #endif
 
-DiscoverFeedService::DiscoverFeedService(ChromeBrowserState* browser_state) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+DiscoverFeedService::DiscoverFeedService(
+    PrefService* pref_service,
+    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager) {
   if (identity_manager)
     identity_manager_observation_.Observe(identity_manager);
 
@@ -26,10 +25,8 @@ DiscoverFeedService::DiscoverFeedService(ChromeBrowserState* browser_state) {
 
   DiscoverFeedConfiguration* discover_config =
       [[DiscoverFeedConfiguration alloc] init];
-  discover_config.browserState = browser_state;
-  discover_config.authService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  discover_config.prefService = browser_state->GetPrefs();
+  discover_config.authService = authentication_service;
+  discover_config.prefService = pref_service;
   discover_config.metricsRecorder = discover_feed_metrics_recorder_;
   ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StartFeed(
       discover_config);
