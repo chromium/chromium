@@ -306,6 +306,18 @@ bool PdfViewWebPlugin::CanEditText() const {
   return engine()->CanEditText();
 }
 
+bool PdfViewWebPlugin::HasEditableText() const {
+  return engine()->HasEditableText();
+}
+
+bool PdfViewWebPlugin::CanUndo() const {
+  return engine()->CanUndo();
+}
+
+bool PdfViewWebPlugin::CanRedo() const {
+  return engine()->CanRedo();
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }

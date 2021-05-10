@@ -116,10 +116,10 @@ class PDFiumEngine : public PDFEngine,
       const DocumentLayout::Options& options) override;
   std::string GetSelectedText() override;
   bool CanEditText() const override;
-  bool HasEditableText() override;
+  bool HasEditableText() const override;
   void ReplaceSelection(const std::string& text) override;
-  bool CanUndo() override;
-  bool CanRedo() override;
+  bool CanUndo() const override;
+  bool CanRedo() const override;
   void Undo() override;
   void Redo() override;
   void HandleAccessibilityAction(

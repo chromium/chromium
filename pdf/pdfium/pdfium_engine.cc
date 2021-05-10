@@ -2214,7 +2214,7 @@ bool PDFiumEngine::CanEditText() const {
   return editable_form_text_area_;
 }
 
-bool PDFiumEngine::HasEditableText() {
+bool PDFiumEngine::HasEditableText() const {
   DCHECK(CanEditText());
   if (!PageIndexInBounds(last_focused_page_))
     return false;
@@ -2234,12 +2234,12 @@ void PDFiumEngine::ReplaceSelection(const std::string& text) {
                         reinterpret_cast<FPDF_WIDESTRING>(text_wide.c_str()));
 }
 
-bool PDFiumEngine::CanUndo() {
+bool PDFiumEngine::CanUndo() const {
   return PageIndexInBounds(last_focused_page_) &&
          FORM_CanUndo(form(), pages_[last_focused_page_]->GetPage());
 }
 
-bool PDFiumEngine::CanRedo() {
+bool PDFiumEngine::CanRedo() const {
   return PageIndexInBounds(last_focused_page_) &&
          FORM_CanRedo(form(), pages_[last_focused_page_]->GetPage());
 }
