@@ -447,6 +447,79 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   run_loop.Run();
 }
 
+// Test that the Help App delegate filters out invalid search concepts when
+// updating the launcher search index.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2UpdateLauncherSearchIndexFilterInvalid) {
+  WaitForTestSystemAppInstall();
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+
+  // Script that adds a data item to the launcher search index.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const delegate = document.querySelector('showoff-app').getDelegate();
+      await delegate.updateLauncherSearchIndex([
+        {
+          id: '6318213',  // Fix connection problems.
+          title: 'Article 1: Invalid',
+          mainCategoryName: 'Help',
+          tags: ['verycomplicatedsearchquery'],
+          urlPathWithParameters: '',  // Invalid because empty field.
+          locale: '',
+        },
+        {
+          id: 'test-id-2',
+          title: 'Article 2: Valid',
+          mainCategoryName: 'Help',
+          tags: ['verycomplicatedsearchquery'],
+          urlPathWithParameters: 'help/',
+          locale: '',
+        },
+        {
+          id: '1700055',  // Open, save, or delete files.
+          title: 'Article 3: Invalid',
+          mainCategoryName: 'Help',
+          tags: [''],  // Invalid because no non-empty tags.
+          urlPathWithParameters: 'help/',
+          locale: '',
+        },
+      ]);
+      window.domAutomationController.send(true);
+    })();
+  )";
+
+  bool script_finished;
+  // Use ExtractBool to make the script wait until the update completes.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
+      &script_finished));
+  EXPECT_TRUE(script_finished);
+
+  // These hash values can be found in the enum in the google-internal histogram
+  // file.
+  histogram_tester.ExpectBucketCount(
+      "Discover.LauncherSearch.InvalidConceptInUpdate", -20424143, 1);
+  histogram_tester.ExpectBucketCount(
+      "Discover.LauncherSearch.InvalidConceptInUpdate", 395626524, 1);
+
+  // Search using the search handler to confirm that only the valid article was
+  // added to the index.
+  base::RunLoop run_loop;
+  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+      ->search_handler()
+      ->Search(u"verycomplicatedsearchquery",
+               /*max_num_results=*/3u,
+               base::BindLambdaForTesting(
+                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                           search_results) {
+                     EXPECT_EQ(search_results.size(), 1u);
+                     EXPECT_EQ(search_results[0]->id, "test-id-2");
+                     run_loop.QuitClosure().Run();
+                   }));
+  run_loop.Run();
+}
+
 // Test that the Help App background task works.
 // It should open and update the index for launcher search, then close.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,

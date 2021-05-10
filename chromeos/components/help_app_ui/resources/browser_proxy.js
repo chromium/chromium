@@ -256,7 +256,12 @@ guestMessagePipe.registerHandler(
       const dataFiltered = dataToSend.filter(item => {
         const valid = item.id && item.title && item.mainCategory
             && item.tags.length > 0 && item.urlPathWithParameters;
-        // TODO(b/182763045): Consider recording a metric for invalid items.
+        // This is a google-internal histogram. If changing this, also change
+        // the corresponding histograms file.
+        if (!valid) {
+          chrome.metricsPrivate.recordSparseHashable(
+            'Discover.LauncherSearch.InvalidConceptInUpdate', item.id);
+        }
         return valid;
       });
       return searchHandlerRemote.update(dataFiltered);
