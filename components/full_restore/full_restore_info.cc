@@ -59,4 +59,9 @@ void FullRestoreInfo::OnWidgetInitialized(views::Widget* widget) {
     observer.OnWidgetInitialized(widget);
 }
 
+void FullRestoreInfo::OnARCTaskReadyForUnparentedWindow(aura::Window* window) {
+  for (auto& observer : observers_)
+    observer.OnARCTaskReadyForUnparentedWindow(window);
+}
+
 }  // namespace full_restore

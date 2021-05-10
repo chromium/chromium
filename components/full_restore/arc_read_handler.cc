@@ -64,8 +64,8 @@ void ArcReadHandler::OnTaskCreated(const std::string& app_id,
   if (window_it != arc_window_candidates_.end()) {
     (*window_it)
         ->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
-    (*window_it)->SetProperty(full_restore::kParentToHiddenContainerKey, false);
-    FullRestoreInfo::GetInstance()->OnWindowInitialized(*window_it);
+    FullRestoreInfo::GetInstance()->OnARCTaskReadyForUnparentedWindow(
+        *window_it);
     arc_window_candidates_.erase(*window_it);
   }
 }

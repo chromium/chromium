@@ -162,12 +162,58 @@ void FullRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
-void FullRestoreController::OnAppLaunched(aura::Window* window) {}
-
 void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   DCHECK(widget);
+  UpdateAndObserveWindow(widget->GetNativeWindow());
+}
 
-  aura::Window* window = widget->GetNativeWindow();
+void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
+    aura::Window* window) {
+  DCHECK(window);
+  window->SetProperty(full_restore::kParentToHiddenContainerKey, false);
+
+  // TODO(crbug.com/1205148): Reparent and call `UpdateAndObserveWindow()`.
+}
+
+void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
+  DCHECK(windows_observation_.IsObservingSource(window));
+
+  // Do nothing if stacking was triggered by us.
+  if (is_stacking_)
+    return;
+
+  // Once a window has its stacking changed, possibly by another window
+  // management feature, it can be cleared of its activation index
+  // key since it is no longer used in the stacking algorithm.
+  window->ClearProperty(full_restore::kActivationIndexKey);
+}
+
+void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
+                                                      bool visible) {
+  if (!windows_observation_.IsObservingSource(window))
+    return;
+
+  // Early return if `window` isn't visible, we're not in tablet mode, or the
+  // app list is null.
+  aura::Window* app_list_window =
+      Shell::Get()->app_list_controller()->GetWindow();
+  if (!visible || !Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      !app_list_window) {
+    return;
+  }
+
+  // Because windows are shown inactive, they don't take focus/activation. This
+  // can lead to situations in tablet mode where the app list is active and
+  // visibly below restored windows. This causes the hotseat widget to not be
+  // hidden, so deactivate the app list. See crbug.com/1202923.
+  auto* app_list_widget =
+      views::Widget::GetWidgetForNativeWindow(app_list_window);
+  if (app_list_widget->IsActive() && WindowState::Get(window)->IsMaximized())
+    app_list_widget->Deactivate();
+}
+
+void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
+  DCHECK(window);
   DCHECK(window->parent());
   windows_observation_.AddObservation(window);
 
@@ -229,43 +275,6 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
     base::AutoReset<bool> auto_reset_is_stacking(&is_stacking_, true);
     window->parent()->StackChildBelow(window, target_sibling);
   }
-}
-
-void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
-  DCHECK(windows_observation_.IsObservingSource(window));
-
-  // Do nothing if stacking was triggered by us.
-  if (is_stacking_)
-    return;
-
-  // Once a window has its stacking changed, possibly by another window
-  // management feature, it can be cleared of its activation index
-  // key since it is no longer used in the stacking algorithm.
-  window->ClearProperty(full_restore::kActivationIndexKey);
-}
-
-void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
-                                                      bool visible) {
-  if (!windows_observation_.IsObservingSource(window))
-    return;
-
-  // Early return if `window` isn't visible, we're not in tablet mode, or the
-  // app list is null.
-  aura::Window* app_list_window =
-      Shell::Get()->app_list_controller()->GetWindow();
-  if (!visible || !Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !app_list_window) {
-    return;
-  }
-
-  // Because windows are shown inactive, they don't take focus/activation. This
-  // can lead to situations in tablet mode where the app list is active and
-  // visibly below restored windows. This causes the hotseat widget to not be
-  // hidden, so deactivate the app list. See crbug.com/1202923.
-  auto* app_list_widget =
-      views::Widget::GetWidgetForNativeWindow(app_list_window);
-  if (app_list_widget->IsActive() && WindowState::Get(window)->IsMaximized())
-    app_list_widget->Deactivate();
 }
 
 void FullRestoreController::OnWindowDestroying(aura::Window* window) {

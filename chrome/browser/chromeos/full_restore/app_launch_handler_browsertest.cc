@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
   // Simulate creating the task for the restored window.
   CreateTask(app_id, kTaskId2, session_id2);
 
-  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/2);
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/1);
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
   VerifyWindowInfo(window, kActivationIndex);
 
@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   window2 = widget2->GetNativeWindow();
   EXPECT_EQ(pre_restore_bounds_2, window2->GetBoundsInScreen());
 
-  VerifyObserver(window1, /*launch_count=*/1, /*init_count=*/2);
+  VerifyObserver(window1, /*launch_count=*/1, /*init_count=*/1);
   VerifyObserver(window2, /*launch_count=*/1, /*init_count=*/1);
   VerifyWindowProperty(window1, kTaskId3, kTaskId1, /*hidden=*/false);
   VerifyWindowProperty(window2, kTaskId4, kTaskId2, /*hidden=*/false);
@@ -1181,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 
   // Recreate the task.
   CreateTask(kAppId, kRestoreTaskId, kRestoreSessionId);
-  VerifyObserver(arc_window, /*launch_count=*/1, /*init_count=*/2);
+  VerifyObserver(arc_window, /*launch_count=*/1, /*init_count=*/1);
   VerifyWindowProperty(arc_window, kRestoreTaskId, kPreRestoreTaskId,
                        /*hidden=*/false);
   VerifyWindowInfo(arc_window, kActivationIndex, kWindowStateType);

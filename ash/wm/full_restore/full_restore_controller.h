@@ -68,8 +68,8 @@ class ASH_EXPORT FullRestoreController
   void OnTabletControllerDestroyed() override;
 
   // full_restore::FullRestoreInfo::Observer:
-  void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
+  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
 
   // aura::WindowObserver:
   void OnWindowStackingChanged(aura::Window* window) override;
@@ -80,6 +80,11 @@ class ASH_EXPORT FullRestoreController
 
  private:
   friend class FullRestoreControllerTest;
+
+  // Updates the window state, activation and stacking of `window`. Also
+  // observes `window` as we need to do further updates when the window is
+  // shown.
+  void UpdateAndObserveWindow(aura::Window* window);
 
   // Gets all windows on all desk in the MRU window tracker and saves them to
   // file.
