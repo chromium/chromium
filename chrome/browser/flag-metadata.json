@@ -2105,8 +2105,8 @@
   },
   {
     "name": "enable-navigation-predictor",
-    "owners": [ "tbansal", "ryansturm", "instant-nav@google.com" ],
-    "expiry_milestone": 90
+    "owners": [ "spelchat", "ryansturm", "instant-nav@google.com" ],
+    "expiry_milestone": 94
   },
   {
     "name": "enable-network-logging-to-file",
