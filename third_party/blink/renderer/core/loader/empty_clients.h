@@ -186,6 +186,10 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void ContentsSizeChanged(LocalFrame*, const IntSize&) const override {}
   void ShowMouseOverURL(const HitTestResult&) override {}
   void SetToolTip(LocalFrame&, const String&, TextDirection) override {}
+  void UpdateTooltipFromKeyboard(LocalFrame&,
+                                 const String&,
+                                 TextDirection,
+                                 const gfx::Rect&) override {}
   void PrintDelegate(LocalFrame*) override {}
   ColorChooser* OpenColorChooser(LocalFrame*,
                                  ColorChooserClient*,

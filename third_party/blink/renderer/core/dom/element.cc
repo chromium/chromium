@@ -3973,14 +3973,32 @@ void Element::focus(const FocusParams& params) {
 
   if (GetDocument().FocusedElement() == this &&
       GetDocument().GetFrame()->HasStickyUserActivation()) {
+    ChromeClient& chrome_client = GetDocument().GetPage()->GetChromeClient();
     // Bring up the keyboard in the context of anything triggered by a user
     // gesture. Since tracking that across arbitrary boundaries (eg.
     // animations) is difficult, for now we match IE's heuristic and bring
     // up the keyboard if there's been any gesture since load.
-    GetDocument()
-        .GetPage()
-        ->GetChromeClient()
-        .ShowVirtualKeyboardOnElementFocus(*GetDocument().GetFrame());
+    chrome_client.ShowVirtualKeyboardOnElementFocus(*GetDocument().GetFrame());
+
+    // Trigger a tooltip to show for the newly focused element only when the
+    // focus was set resulting from a keyboard action.
+    //
+    // TODO(bebeaudr): To also trigger a tooltip when the |params.type| is
+    // kSpatialNavigation, we'll first have to ensure that the fake mouse move
+    // event fired by `SpatialNavigationController::DispatchMouseMoveEvent` does
+    // not lead to a cursor triggered tooltip update. The only tooltip update
+    // that there should be in that case is the one triggered from the spatial
+    // navigation keypress. This issue is tracked in https://crbug.com/1206446.
+    switch (params.type) {
+      case mojom::blink::FocusType::kForward:
+      case mojom::blink::FocusType::kBackward:
+      case mojom::blink::FocusType::kAccessKey:
+        chrome_client.ElementFocusedFromKeypress(*GetDocument().GetFrame(),
+                                                 this);
+        break;
+      default:
+        break;
+    }
   }
 }
 

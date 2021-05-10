@@ -342,6 +342,16 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                const HitTestLocation&,
                                const HitTestResult&);
   virtual void SetToolTip(LocalFrame&, const String&, TextDirection) = 0;
+  void ElementFocusedFromKeypress(LocalFrame&, const Element*);
+  // This function allows us to trigger a tooltip to show from a keypress. The
+  // tooltip will be positioned in the gfx::Rect passed by parameter. That rect
+  // corresponds to the focused element's bounds, which are in viewport
+  // coordinates at this point. They will be converted to enclosed DIPS before
+  // being passed to the browser process.
+  virtual void UpdateTooltipFromKeyboard(LocalFrame&,
+                                         const String&,
+                                         TextDirection,
+                                         const gfx::Rect&) = 0;
   void ClearToolTip(LocalFrame&);
   String GetLastToolTipTextForTesting() {
     return current_tool_tip_text_for_test_;

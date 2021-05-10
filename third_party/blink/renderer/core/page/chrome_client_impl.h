@@ -152,6 +152,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void MainFrameLayoutUpdated() const override;
   void ShowMouseOverURL(const HitTestResult&) override;
   void SetToolTip(LocalFrame&, const String&, TextDirection) override;
+  void UpdateTooltipFromKeyboard(LocalFrame&,
+                                 const String&,
+                                 TextDirection,
+                                 const gfx::Rect&) override;
   void DispatchViewportPropertiesDidChange(
       const ViewportDescription&) const override;
   void PrintDelegate(LocalFrame*) override;

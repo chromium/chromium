@@ -559,6 +559,16 @@ void ChromeClientImpl::SetToolTip(LocalFrame& frame,
   }
 }
 
+void ChromeClientImpl::UpdateTooltipFromKeyboard(LocalFrame& frame,
+                                                 const String& tooltip_text,
+                                                 TextDirection dir,
+                                                 const gfx::Rect& bounds) {
+  if (!RuntimeEnabledFeatures::KeyboardAccessibleTooltipEnabled())
+    return;
+
+  // TODO(bebeaudr): Add WidgetHost function and call it here.
+}
+
 void ChromeClientImpl::DispatchViewportPropertiesDidChange(
     const ViewportDescription& description) const {
   web_view_->UpdatePageDefinedViewportConstraints(description);

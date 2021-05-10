@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
@@ -283,6 +284,20 @@ void ChromeClient::SetToolTip(LocalFrame& frame,
   last_mouse_over_node_ = result.InnerNodeOrImageMapImage();
   current_tool_tip_text_for_test_ = last_tool_tip_text_;
   SetToolTip(frame, tool_tip, tool_tip_direction);
+}
+
+void ChromeClient::ElementFocusedFromKeypress(LocalFrame& frame,
+                                              const Element* element) {
+  String tooltip_text = element->title();
+  if (tooltip_text.IsNull())
+    tooltip_text = element->DefaultToolTip();
+
+  LayoutObject* layout_object = element->GetLayoutObject();
+  if (!tooltip_text.IsNull() && layout_object) {
+    TextDirection tooltip_direction = layout_object->StyleRef().Direction();
+    UpdateTooltipFromKeyboard(frame, tooltip_text, tooltip_direction,
+                              element->BoundsInViewport());
+  }
 }
 
 void ChromeClient::ClearToolTip(LocalFrame& frame) {
