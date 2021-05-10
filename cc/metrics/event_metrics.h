@@ -142,6 +142,8 @@ class CC_EXPORT EventMetrics {
   // this event or not. This metric is only desired for gesture-scroll events.
   bool ShouldReportScrollingTotalLatency() const;
 
+  bool HasSmoothInputEvent() const;
+
   std::unique_ptr<EventMetrics> Clone() const;
 
   // Used in tests to check expectations on EventMetrics objects.

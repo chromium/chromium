@@ -252,6 +252,10 @@ bool EventMetrics::ShouldReportScrollingTotalLatency() const {
          type_ == EventType::kGestureScrollUpdate;
 }
 
+bool EventMetrics::HasSmoothInputEvent() const {
+  return type_ == EventType::kMouseDragged || type_ == EventType::kTouchMoved;
+}
+
 std::unique_ptr<EventMetrics> EventMetrics::Clone() const {
   auto clone = base::WrapUnique(
       new EventMetrics(type_, scroll_type_, base::TimeTicks(), tick_clock_));

@@ -1094,6 +1094,12 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
         reporter->set_has_compositor_animation(
             HasCompositorThreadAnimation(active_trackers_));
 
+        bool has_smooth_input_main = false;
+        for (const auto& event_metrics : events_metrics_) {
+          has_smooth_input_main |= event_metrics->HasSmoothInputEvent();
+        }
+        reporter->set_has_smooth_input_main(has_smooth_input_main);
+
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });
 
