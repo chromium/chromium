@@ -17,7 +17,9 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Extracts search results by parsing in the renderer.
@@ -61,7 +63,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupLabel.length; i++) {
             List<PageItem> results = new ArrayList<PageItem>();
+            Set<GURL> groupUrls = new HashSet<>();
             for (int j = 0; j < groupSize[i]; j++) {
+                // Uniquify urls within the group.
+                if (!groupUrls.add(urls[groupOffset + j])) continue;
+
                 results.add(new PageItem(urls[groupOffset + j], titles[groupOffset + j]));
             }
             groupOffset += groupSize[i];
