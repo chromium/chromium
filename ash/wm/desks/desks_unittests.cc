@@ -502,6 +502,80 @@ TEST_F(DesksTest, RemoveDeskWithEmptyName) {
   EXPECT_EQ(1u, controller->desks().size());
 }
 
+// Tests that removing a non-active desk updates the window workspaces for
+// desks restore correctly.
+TEST_F(DesksTest, RemovingNonActiveDeskUpdatesWindowWorkspaces) {
+  auto* controller = DesksController::Get();
+
+  // Create two new desks.
+  NewDesk();
+  NewDesk();
+  EXPECT_EQ(3u, controller->desks().size());
+
+  // Create one window in each desk.
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  for (int i = 0; i < 3; i++) {
+    windows.push_back(CreateAppWindow());
+    controller->SendToDeskAtIndex(windows[i].get(), i);
+    EXPECT_EQ(i, windows[i]->GetProperty(aura::client::kWindowWorkspaceKey));
+  }
+
+  // Switch to the third desk.
+  ActivateDesk(controller->desks()[2].get());
+
+  // Close the second desk.
+  RemoveDesk(controller->desks()[1].get());
+  EXPECT_EQ(2u, controller->desks().size());
+
+  // The window in the first desk remain unaffected by the second desk removal.
+  EXPECT_EQ(0, windows[0]->GetProperty(aura::client::kWindowWorkspaceKey));
+  // The window in the removed second desk should move to the active desk, the
+  // third desk, which just becomes the second desk after the removal.
+  EXPECT_EQ(1, windows[1]->GetProperty(aura::client::kWindowWorkspaceKey));
+  // The window in the third desk update its workspace to index - 1.
+  EXPECT_EQ(1, windows[2]->GetProperty(aura::client::kWindowWorkspaceKey));
+}
+
+// Tests that removing an active desk updates the window workspaces for desks
+// restore correctly.
+TEST_F(DesksTest, RemovingActiveDeskUpdatesWindowWorkspaces) {
+  auto* controller = DesksController::Get();
+
+  // Create three new desks.
+  NewDesk();
+  NewDesk();
+  NewDesk();
+  EXPECT_EQ(4u, controller->desks().size());
+
+  // Create one window in each desk.
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  for (int i = 0; i < 4; i++) {
+    windows.push_back(CreateAppWindow());
+    controller->SendToDeskAtIndex(windows[i].get(), i);
+    EXPECT_EQ(i, windows[i]->GetProperty(aura::client::kWindowWorkspaceKey));
+  }
+
+  // Switch to the second desk.
+  const Desk* desk_2 = controller->desks()[1].get();
+  ActivateDesk(desk_2);
+
+  // Close the second desk.
+  RemoveDesk(desk_2);
+  EXPECT_EQ(3u, controller->desks().size());
+
+  // The previous desk (first) becomes active after closing the second desk.
+  EXPECT_EQ(controller->desks()[0].get(), controller->active_desk());
+
+  // The window in the first desk remain unaffected by the second desk removal.
+  EXPECT_EQ(0, windows[0]->GetProperty(aura::client::kWindowWorkspaceKey));
+  // The window from the removed second desk moves to the active, first desk.
+  EXPECT_EQ(0, windows[1]->GetProperty(aura::client::kWindowWorkspaceKey));
+  // The desk indices of the third and forth desks are decreased by one, so
+  // the workspace values of windows in those desks are reduced by one.
+  EXPECT_EQ(1, windows[2]->GetProperty(aura::client::kWindowWorkspaceKey));
+  EXPECT_EQ(2, windows[3]->GetProperty(aura::client::kWindowWorkspaceKey));
+}
+
 // Test that gesture taps do not reset the button state to normal when the
 // button is disabled. https://crbug.com/1084241.
 TEST_F(DesksTest, GestureTapOnNewDeskButton) {

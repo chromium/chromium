@@ -954,8 +954,13 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
       [desk](const std::unique_ptr<Desk>& d) { return d.get() == desk; });
   DCHECK(iter != desks_.end());
 
-  // Used by accessibility to indicate the desk that has been removed.
-  const int removed_desk_number = std::distance(desks_.begin(), iter) + 1;
+  const int removed_desk_index = std::distance(desks_.begin(), iter);
+  // Update workspaces of windows in desks that have higher indices than the
+  // removed desk since indices of those desks shift by one.
+  for (int i = removed_desk_index + 1; i < int{desks_.size()}; i++) {
+    for (auto* window : desks_[i]->windows())
+      window->SetProperty(aura::client::kWindowWorkspaceKey, i - 1);
+  }
 
   // Record |desk|'s lifetime before it's removed from |desks_|.
   auto* non_const_desk = const_cast<Desk*>(desk);
@@ -1083,9 +1088,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   ReportDesksCountHistogram();
   ReportNumberOfWindowsPerDeskHistogram();
 
-  int active_desk_number = GetDeskIndex(active_desk_) + 1;
-  if (active_desk_number == removed_desk_number)
-    active_desk_number++;
   Shell::Get()
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
