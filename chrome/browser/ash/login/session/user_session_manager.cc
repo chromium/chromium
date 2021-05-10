@@ -34,6 +34,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -174,9 +176,39 @@ using ::signin::ConsentLevel;
 constexpr base::TimeDelta kWaitForChildPolicyTimeout =
     base::TimeDelta::FromSeconds(10);
 
-// Milliseconds until we timeout our attempt to fetch flags from the child
-// account service.
-static const int kFlagsFetchingLoginTimeoutMs = 1000;
+// Timeout to fetch flags from the child account service.
+constexpr base::TimeDelta kFlagsFetchingLoginTimeout =
+    base::TimeDelta::FromMilliseconds(1000);
+
+// Trace event category of the trace events.
+constexpr char kEventCategoryChromeOS[] = "chromeos";
+
+// Trace event that covers the time from UserSessionManager::StartSession is
+// called until UserSessionManager notifies SessionManager::SessionStarted.
+// Basically, the time after cryptohome mount until user desktop is about to be
+// shown after animations triggered by session state changing to ACTIVE.
+constexpr char kEventStartSession[] = "StartUserSession";
+
+// Trace event that covers the time spend to notify session manager daemon
+// about a new user session is starting.
+constexpr char kEventStartCrosSession[] = "StartCrosSession";
+
+// Trace event that covers the time prior user profile loading.
+constexpr char kEventPrePrepareProfile[] = "PrePrepareProfile";
+
+// Trace event that covers the time between start user profile loading and
+// when user profile loading is finalized.
+constexpr char kEventPrepareProfile[] = "PrepareProfile";
+
+// Trace event that covers the time spent after user profile load but before
+// start to prepare user desktop, e.g. notify user profile observers, start
+// services that needs user profile.
+constexpr char kEventHandleProfileLoad[] = "HandleProfileLoad";
+
+// Trace event that covers the time to prepare user desktop, e.g. launching
+// browser and dismiss the login screen. Note full restore is asynchronous and
+// is not included.
+constexpr char kEventInitUserDesktop[] = "InitUserDesktop";
 
 void InitLocaleAndInputMethodsForNewUser(
     UserSessionManager* session_manager,
@@ -577,6 +609,9 @@ void UserSessionManager::StartSession(const UserContext& user_context,
                                       bool has_auth_cookies,
                                       bool has_active_session,
                                       UserSessionManagerDelegate* delegate) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS, kEventStartSession,
+                                    TRACE_ID_LOCAL(this));
+
   easy_unlock_key_ops_finished_ = false;
 
   delegate_ = delegate;
@@ -594,6 +629,8 @@ void UserSessionManager::StartSession(const UserContext& user_context,
                                           user_context.GetDeviceId());
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
   InitDemoSessionIfNeeded(base::BindOnce(
       &UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile,
       AsWeakPtr()));
@@ -1095,6 +1132,7 @@ void UserSessionManager::StoreUserContextDataBeforeProfileIsCreated() {
 }
 
 void UserSessionManager::StartCrosSession() {
+  TRACE_EVENT0(kEventCategoryChromeOS, kEventStartCrosSession);
   BootTimesRecorder* btl = BootTimesRecorder::Get();
   btl->AddLoginTimeMarker("StartSession-Start", false);
   SessionManagerClient::Get()->StartSession(
@@ -1167,6 +1205,12 @@ void UserSessionManager::InitializeAccountManager() {
 }
 
 void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS,
+                                    kEventPrepareProfile, TRACE_ID_LOCAL(this));
+
   const bool is_demo_session = false;
 
   // TODO(nkostylev): Figure out whether demo session is using the right profile
@@ -1427,6 +1471,8 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     if (delegate_)
       delegate_->OnProfilePrepared(profile, false);
 
+    TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS,
+                                    kEventPrepareProfile, TRACE_ID_LOCAL(this));
     return;
   }
 
@@ -1557,50 +1603,57 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
   profile->OnLogin();
 
-  NotifyUserProfileLoaded(profile, user);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS, kEventPrepareProfile,
+                                  TRACE_ID_LOCAL(this));
 
-  // Initialize various services only for primary user.
-  if (user_manager->GetPrimaryUser() == user) {
-    StartTetherServiceIfPossible(profile);
+  {
+    TRACE_EVENT0(kEventCategoryChromeOS, kEventHandleProfileLoad);
+    NotifyUserProfileLoaded(profile, user);
 
-    // PrefService is ready, check whether we need to force a VPN connection.
-    always_on_vpn_manager_ =
-        std::make_unique<arc::AlwaysOnVpnManager>(profile->GetPrefs());
+    // Initialize various services only for primary user.
+    if (user_manager->GetPrimaryUser() == user) {
+      StartTetherServiceIfPossible(profile);
 
-    secure_dns_manager_ = std::make_unique<net::SecureDnsManager>(
-        g_browser_process->local_state());
-  }
+      // PrefService is ready, check whether we need to force a VPN connection.
+      always_on_vpn_manager_ =
+          std::make_unique<arc::AlwaysOnVpnManager>(profile->GetPrefs());
 
-  UpdateEasyUnlockKeys(user_context_);
-  quick_unlock::PinBackend::GetInstance()->MigrateToCryptohome(
-      profile, *user_context_.GetKey());
+      secure_dns_manager_ = std::make_unique<net::SecureDnsManager>(
+          g_browser_process->local_state());
+    }
 
-  // Save sync password hash and salt to profile prefs if they are available.
-  // These will be used to detect Gaia password reuses.
-  if (user_context_.GetSyncPasswordData().has_value()) {
-    login::SaveSyncPasswordDataToProfile(user_context_, profile);
-  }
+    UpdateEasyUnlockKeys(user_context_);
+    quick_unlock::PinBackend::GetInstance()->MigrateToCryptohome(
+        profile, *user_context_.GetKey());
 
-  if (!user_context_.GetChallengeResponseKeys().empty())
-    PersistChallengeResponseKeys(user_context_);
+    // Save sync password hash and salt to profile prefs if they are available.
+    // These will be used to detect Gaia password reuses.
+    if (user_context_.GetSyncPasswordData().has_value()) {
+      login::SaveSyncPasswordDataToProfile(user_context_, profile);
+    }
 
-  if (user_context_.GetSyncTrustedVaultKeys().has_value()) {
-    SaveSyncTrustedVaultKeysToProfile(user_context_.GetGaiaID(),
-                                      *user_context_.GetSyncTrustedVaultKeys(),
-                                      profile);
-  }
+    if (!user_context_.GetChallengeResponseKeys().empty())
+      PersistChallengeResponseKeys(user_context_);
 
-  VLOG(1) << "Clearing all secrets";
-  user_context_.ClearSecrets();
-  if (user->GetType() == user_manager::USER_TYPE_CHILD) {
-    if (base::FeatureList::IsEnabled(::features::kDMServerOAuthForChildUser)) {
-      VLOG(1) << "Waiting for child policy refresh before showing session UI";
-      DCHECK(child_policy_observer_);
-      child_policy_observer_->NotifyWhenPolicyReady(
-          base::BindOnce(&UserSessionManager::OnChildPolicyReady,
-                         weak_factory_.GetWeakPtr()),
-          kWaitForChildPolicyTimeout);
-      return;
+    if (user_context_.GetSyncTrustedVaultKeys().has_value()) {
+      SaveSyncTrustedVaultKeysToProfile(
+          user_context_.GetGaiaID(), *user_context_.GetSyncTrustedVaultKeys(),
+          profile);
+    }
+
+    VLOG(1) << "Clearing all secrets";
+    user_context_.ClearSecrets();
+    if (user->GetType() == user_manager::USER_TYPE_CHILD) {
+      if (base::FeatureList::IsEnabled(
+              ::features::kDMServerOAuthForChildUser)) {
+        VLOG(1) << "Waiting for child policy refresh before showing session UI";
+        DCHECK(child_policy_observer_);
+        child_policy_observer_->NotifyWhenPolicyReady(
+            base::BindOnce(&UserSessionManager::OnChildPolicyReady,
+                           weak_factory_.GetWeakPtr()),
+            kWaitForChildPolicyTimeout);
+        return;
+      }
     }
   }
 
@@ -1652,6 +1705,8 @@ void UserSessionManager::MaybeLaunchHelpApp(Profile* profile) const {
 }
 
 bool UserSessionManager::InitializeUserSession(Profile* profile) {
+  TRACE_EVENT0(kEventCategoryChromeOS, kEventInitUserDesktop);
+
   ChildAccountService* child_service =
       ChildAccountServiceFactory::GetForProfile(profile);
   child_service->AddChildStatusReceivedCallback(
@@ -1661,7 +1716,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       FROM_HERE,
       base::BindOnce(&UserSessionManager::StopChildStatusObserving,
                      weak_factory_.GetWeakPtr(), profile),
-      base::TimeDelta::FromMilliseconds(kFlagsFetchingLoginTimeoutMs));
+      kFlagsFetchingLoginTimeout);
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
@@ -2083,13 +2138,20 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   if (should_launch_browser_ && !IsFullRestoreEnabled(profile))
     LaunchBrowser(profile);
 
-  if (HatsNotificationController::ShouldShowSurveyToProfile(profile,
-                                                            kHatsGeneralSurvey))
+  if (HatsNotificationController::ShouldShowSurveyToProfile(
+          profile, kHatsGeneralSurvey)) {
     hats_notification_controller_ =
         new HatsNotificationController(profile, kHatsGeneralSurvey);
+  }
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
-      [] { session_manager::SessionManager::Get()->SessionStarted(); });
+      [](void* trace_id) {
+        session_manager::SessionManager::Get()->SessionStarted();
+        TRACE_EVENT_NESTABLE_ASYNC_END0(kEventCategoryChromeOS,
+                                        kEventStartSession,
+                                        TRACE_ID_LOCAL(trace_id));
+      },
+      this);
 
   // Mark login host for deletion after browser starts.  This
   // guarantees that the message loop will be referenced by the
