@@ -573,7 +573,7 @@ void MediaGalleriesPreferences::InitFromPrefs() {
   const base::ListValue* list = prefs->GetList(
       prefs::kMediaGalleriesRememberedGalleries);
   if (list) {
-    for (const auto& gallery_value : *list) {
+    for (const auto& gallery_value : list->GetList()) {
       if (!gallery_value.is_dict())
         continue;
 
@@ -795,7 +795,7 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
         new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
     base::ListValue* list = update->Get();
 
-    for (auto& gallery_value : *list) {
+    for (auto& gallery_value : list->GetList()) {
       MediaGalleryPrefId iter_id;
       if (gallery_value.is_dict() &&
           GetPrefId(base::Value::AsDictionaryValue(gallery_value), &iter_id) &&
@@ -894,7 +894,7 @@ void MediaGalleriesPreferences::UpdateDefaultGalleriesPaths() {
 
   std::vector<MediaGalleryPrefId> pref_ids;
 
-  for (auto& gallery_value : *list) {
+  for (auto& gallery_value : list->GetList()) {
     MediaGalleryPrefId pref_id;
 
     if (!(gallery_value.is_dict() &&
@@ -989,7 +989,8 @@ void MediaGalleriesPreferences::EraseOrBlacklistGalleryById(
   if (!base::Contains(known_galleries_, id))
     return;
 
-  for (auto iter = list->begin(); iter != list->end(); ++iter) {
+  for (auto iter = list->GetList().begin(); iter != list->GetList().end();
+       ++iter) {
     MediaGalleryPrefId iter_id;
     if (iter->is_dict() &&
         GetPrefId(base::Value::AsDictionaryValue(*iter), &iter_id) &&
@@ -1167,7 +1168,7 @@ bool MediaGalleriesPreferences::SetGalleryPermissionInPrefs(
     permissions = update.Create();
   } else {
     // If the gallery is already in the list, update the permission...
-    for (auto& permission : *permissions) {
+    for (auto& permission : permissions->GetList()) {
       if (!permission.is_dict())
         continue;
       MediaGalleryPermission perm;
@@ -1203,7 +1204,8 @@ bool MediaGalleriesPreferences::UnsetGalleryPermissionInPrefs(
   if (!permissions)
     return false;
 
-  for (auto iter = permissions->begin(); iter != permissions->end(); ++iter) {
+  for (auto iter = permissions->GetList().begin();
+       iter != permissions->GetList().end(); ++iter) {
     if (!iter->is_dict())
       continue;
     MediaGalleryPermission perm;
@@ -1230,7 +1232,7 @@ MediaGalleriesPreferences::GetGalleryPermissionsFromPrefs(
     return result;
   }
 
-  for (const auto& permission : *permissions) {
+  for (const auto& permission : permissions->GetList()) {
     if (!permission.is_dict())
       continue;
     MediaGalleryPermission perm;
