@@ -88,7 +88,7 @@ void StateStore::Transaction::ClearForType(IncidentType type) {
 
 void StateStore::Transaction::ClearAll() {
   // Clear the preference if it exists and contains any values.
-  if (store_->incidents_sent_ && !store_->incidents_sent_->empty())
+  if (store_->incidents_sent_ && !store_->incidents_sent_->DictEmpty())
     GetPrefDict()->Clear();
 }
 
@@ -131,7 +131,7 @@ StateStore::StateStore(Profile* profile)
   std::unique_ptr<base::DictionaryValue> value_dict(
       platform_state_store::Load(profile_));
   if (value_dict) {
-    if (value_dict->empty())
+    if (value_dict->DictEmpty())
       transaction.ClearAll();
     else if (!incidents_sent_ || *incidents_sent_ != *value_dict)
       transaction.ReplacePrefDict(std::move(value_dict));

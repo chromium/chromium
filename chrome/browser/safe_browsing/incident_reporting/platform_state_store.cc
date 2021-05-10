@@ -72,7 +72,7 @@ void IncidentsSentToProtobuf(
       NOTREACHED();
       continue;
     }
-    if (keys_and_digests->empty())
+    if (keys_and_digests->DictEmpty())
       continue;
     int incident_type = 0;
     if (!base::StringToInt(iter.key(), &incident_type)) {
