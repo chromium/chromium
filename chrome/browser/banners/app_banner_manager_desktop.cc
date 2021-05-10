@@ -86,7 +86,7 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
-    registrar_observer_.Add(&provider->registrar());
+    registrar_observation_.Observe(&provider->registrar());
 }
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() { }
@@ -205,7 +205,7 @@ void AppBannerManagerDesktop::OnWebAppInstalled(
 }
 
 void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
-  registrar_observer_.RemoveAll();
+  registrar_observation_.Reset();
 }
 
 void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
