@@ -2212,6 +2212,7 @@ clang_tot_linux_builder(
 
 ci.clang_builder(
     name = "ToTWin(dbg)",
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dbg",
@@ -2248,6 +2249,7 @@ ci.clang_builder(
 
 ci.clang_builder(
     name = "ToTWinASanLibfuzzer",
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
