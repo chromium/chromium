@@ -5,34 +5,41 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BERT_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BERT_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/content/browser/optimization_target_model_executor.h"
+#include "components/optimization_guide/content/browser/model_executor.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
 
-// An OptimizationTargetModelExecutor that executes BERT models.
+// An implementation of a ModelHandler that executes BERT models.
 //
 // Note that sentencepiece tokenizers are not supported by Chromium's copy of
 // the TFLite Support library.
-class BertModelExecutor : public OptimizationTargetModelExecutor<
-                              std::vector<tflite::task::core::Category>,
-                              const std::string&> {
+class BertModelExecutorHandle
+    : public ModelHandler<std::vector<tflite::task::core::Category>,
+                          const std::string&> {
  public:
-  BertModelExecutor(OptimizationGuideDecider* decider,
-                    proto::OptimizationTarget optimization_target,
-                    const base::Optional<proto::Any>& model_metadata,
-                    const scoped_refptr<base::SequencedTaskRunner>&
-                        model_execution_task_runner);
-  ~BertModelExecutor() override;
-  BertModelExecutor(const BertModelExecutor&) = delete;
-  BertModelExecutor& operator=(const BertModelExecutor&) = delete;
+  BertModelExecutorHandle(OptimizationGuideDecider* decider,
+                          proto::OptimizationTarget optimization_target,
+                          const base::Optional<proto::Any>& model_metadata);
+  ~BertModelExecutorHandle() override;
 
- protected:
+  BertModelExecutorHandle(const BertModelExecutorHandle&) = delete;
+  BertModelExecutorHandle& operator=(const BertModelExecutorHandle&) = delete;
+};
+
+// A full implementation of a ModelExecutor that executes BERT models.
+class BertModelExecutor
+    : public ModelExecutor<std::vector<tflite::task::core::Category>,
+                           const std::string&> {
+ public:
+  BertModelExecutor();
+  ~BertModelExecutor() override;
+
   using ModelExecutionTask =
       tflite::task::core::BaseTaskApi<std::vector<tflite::task::core::Category>,
                                       const std::string&>;
 
-  // OptimizationTargetModelExecutor:
+  // ModelExecutor:
   base::Optional<std::vector<tflite::task::core::Category>> Execute(
       ModelExecutionTask* execution_task,
       const std::string& input) override;

@@ -52,7 +52,7 @@ class PageContentAnnotationsModelManager {
       const std::vector<tflite::task::core::Category>& model_output) const;
 
   // The model executor responsible for executing the page topics model.
-  std::unique_ptr<BertModelExecutor> page_topics_model_executor_;
+  std::unique_ptr<BertModelExecutorHandle> page_topics_model_executor_handle_;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};
