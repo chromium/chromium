@@ -2228,10 +2228,6 @@
     "owners": [ "benwgold", "flackr" ],
     "expiry_milestone": 95
   },
-  { "name": "enable-phone-hub",
-    "owners": [ "better-together-dev@google.com", "tjohnsonkanu", "khorimoto" ],
-    "expiry_milestone": 90
-  },
   {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],

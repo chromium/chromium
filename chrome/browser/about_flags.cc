@@ -5541,10 +5541,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrinterStatusDialogDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrinterStatusDialog)},
 
-    {"enable-phone-hub", flag_descriptions::kPhoneHubName,
-     flag_descriptions::kPhoneHubDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kPhoneHub)},
-
     {"wifi-sync-allow-deletes", flag_descriptions::kWifiSyncAllowDeletesName,
      flag_descriptions::kWifiSyncAllowDeletesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kWifiSyncAllowDeletes)},
