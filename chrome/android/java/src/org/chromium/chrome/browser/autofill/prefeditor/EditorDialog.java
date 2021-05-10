@@ -293,6 +293,10 @@ public class EditorDialog
     private void animateOutDialog() {
         if (mDialogInOutAnimator != null || !isShowing()) return;
 
+        if (getCurrentFocus() != null) {
+            KeyboardVisibilityDelegate.getInstance().hideKeyboard(getCurrentFocus());
+        }
+
         Animator dropDown =
                 ObjectAnimator.ofFloat(mLayout, View.TRANSLATION_Y, 0f, mLayout.getHeight());
         Animator fadeOut = ObjectAnimator.ofFloat(mLayout, View.ALPHA, mLayout.getAlpha(), 0f);
