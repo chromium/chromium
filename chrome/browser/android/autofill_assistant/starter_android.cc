@@ -7,6 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDependenciesImpl_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantServiceInjector_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/Starter_jni.h"
@@ -51,7 +52,8 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
 
   starter_ = std::make_unique<Starter>(
       web_contents_, this, ukm::UkmRecorder::Get(),
-      RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr());
+      RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
+      base::DefaultTickClock::GetInstance());
 }
 
 void StarterAndroid::Detach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {

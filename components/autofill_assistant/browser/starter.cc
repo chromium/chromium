@@ -44,6 +44,19 @@ const char kTriggerScriptExperimentSyntheticFieldTrialName[] =
 const char kTriggerScriptExperimentGroup[] = "Experiment";
 const char kTriggerScriptControlGroup[] = "Control";
 
+// The maximum number of items to be kept in the cache. If this number is
+// exceeded, the entry that hasn't been accessed the longest is automatically
+// removed.
+constexpr size_t kMaxFailedTriggerScriptsCacheSize = 100;
+constexpr size_t kMaxUserDenylistedCacheSize = 100;
+
+// The duration for which cache entries are considered fresh. Stale entries in
+// the cache are ignored.
+constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
+    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMaxUserDenylistedCacheDuration =
+    base::TimeDelta::FromHours(1);
+
 // Creates a service request sender that serves the pre-specified response.
 // Creation may fail (return null) if the parameter fails to decode.
 std::unique_ptr<ServiceRequestSender> CreateBase64TriggerScriptRequestSender(
@@ -87,18 +100,57 @@ const scoped_refptr<StarterHeuristic> GetOrCreateStarterHeuristic() {
   return *starter_heuristic;
 }
 
+// The cache of failed trigger script fetches is shared across all instances and
+// initialized on first use.
+base::HashingMRUCache<std::string, base::TimeTicks>*
+GetOrCreateFailedTriggerScriptFetchesCache() {
+  static base::NoDestructor<base::HashingMRUCache<std::string, base::TimeTicks>>
+      cached_failed_trigger_script_fetches(kMaxFailedTriggerScriptsCacheSize);
+  return cached_failed_trigger_script_fetches.get();
+}
+
+// Goes through the |cache| and removes entries that have gone stale, i.e.,
+// entries that were added before |cutoff_ticks|.
+void ClearStaleCacheEntries(
+    base::HashingMRUCache<std::string, base::TimeTicks>* cache,
+    base::TimeTicks cutoff_ticks) {
+  // Go in reverse order until the oldest entry is younger than |cutoff_ticks|.
+  for (auto it = cache->rbegin(); it != cache->rend();) {
+    if (it->second > cutoff_ticks) {
+      return;
+    }
+    it = cache->Erase(it);
+  }
+}
+
+// Returns true if |cache| has an entry for |url| that is younger than
+// |cutoff_ticks|, false otherwise. Does not change the order of the cache.
+bool HasFreshCacheEntry(
+    const base::HashingMRUCache<std::string, base::TimeTicks>& cache,
+    const GURL& url,
+    base::TimeTicks cutoff_ticks) {
+  std::string domain = url_utils::GetOrganizationIdentifyingDomain(url);
+  auto it = cache.Peek(domain);
+  return (it != cache.end() && (it->second > cutoff_ticks));
+}
+
 }  // namespace
 
 Starter::Starter(content::WebContents* web_contents,
                  StarterPlatformDelegate* platform_delegate,
                  ukm::UkmRecorder* ukm_recorder,
-                 base::WeakPtr<RuntimeManagerImpl> runtime_manager)
+                 base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+                 const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents),
       next_ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)),
+      cached_failed_trigger_script_fetches_(
+          GetOrCreateFailedTriggerScriptFetchesCache()),
+      user_denylisted_domains_(kMaxUserDenylistedCacheSize),
       platform_delegate_(platform_delegate),
       ukm_recorder_(ukm_recorder),
       runtime_manager_(runtime_manager),
-      starter_heuristic_(GetOrCreateStarterHeuristic()) {
+      starter_heuristic_(GetOrCreateStarterHeuristic()),
+      tick_clock_(tick_clock) {
   CheckSettings();
 }
 
@@ -173,6 +225,16 @@ void Starter::DidFinishNavigation(
 void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
   if (!fetch_trigger_scripts_on_navigation_ || IsStartupPending() ||
       platform_delegate_->IsRegularScriptRunning() || !url.is_valid()) {
+    return;
+  }
+
+  // If we have failed to fetch a trigger script for this domain before, or if
+  // the user has denylisted the domain, don't try again.
+  base::TimeTicks now_ticks = tick_clock_->NowTicks();
+  if (HasFreshCacheEntry(*cached_failed_trigger_script_fetches_, url,
+                         now_ticks - kMaxFailedTriggerScriptsCacheDuration) ||
+      HasFreshCacheEntry(user_denylisted_domains_, url,
+                         now_ticks - kMaxUserDenylistedCacheDuration)) {
     return;
   }
 
@@ -462,6 +524,37 @@ void Starter::OnTriggerScriptFinished(
     Metrics::LiteScriptFinishedState state,
     std::unique_ptr<TriggerContext> trigger_context,
     base::Optional<TriggerScriptProto> trigger_script) {
+  // Update caches on error or user-cancel.
+  if (trigger_script_coordinator_) {
+    std::string domain = url_utils::GetOrganizationIdentifyingDomain(
+        trigger_script_coordinator_->GetDeeplink());
+    switch (state) {
+      case Metrics::LiteScriptFinishedState::
+          LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE:
+      case Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED:
+        cached_failed_trigger_script_fetches_->Put(domain,
+                                                   tick_clock_->NowTicks());
+        ClearStaleCacheEntries(
+            cached_failed_trigger_script_fetches_,
+            tick_clock_->NowTicks() - kMaxFailedTriggerScriptsCacheDuration);
+        break;
+      case Metrics::LiteScriptFinishedState::
+          LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION:
+        user_denylisted_domains_.Put(domain, tick_clock_->NowTicks());
+        ClearStaleCacheEntries(
+            &user_denylisted_domains_,
+            tick_clock_->NowTicks() - kMaxUserDenylistedCacheDuration);
+        break;
+      default: {
+        auto cache_it = cached_failed_trigger_script_fetches_->Peek(domain);
+        if (cache_it != cached_failed_trigger_script_fetches_->end()) {
+          cached_failed_trigger_script_fetches_->Erase(cache_it);
+        }
+        break;
+      }
+    }
+  }
+
   // Delete the coordinator asynchronously, to give this notification time to
   // end gracefully.
   content::GetUIThreadTaskRunner({})->PostTask(
