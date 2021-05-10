@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
@@ -51,7 +50,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Specifies the sample count if MSAA is enabled for this tile.
     int msaa_sample_count = 0;
 
-    CheckedPtr<ImageProvider> image_provider = nullptr;
+    ImageProvider* image_provider = nullptr;
   };
 
   RasterSource(const RasterSource&) = delete;

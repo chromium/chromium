@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -54,10 +53,10 @@ class ExtensionsMenuButton : public HoverButton,
 
   void ButtonPressed();
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // Responsible for executing the extension's actions.
-  const CheckedPtr<ToolbarActionViewController> controller_;
+  ToolbarActionViewController* const controller_;
 
   bool allow_pinning_;
 };

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_CAST_FEEDBACK_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace content {
@@ -26,8 +25,8 @@ class CastFeedbackUI : public ui::MojoWebUIController {
   ~CastFeedbackUI() override;
 
  private:
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<content::WebContents> web_contents_;
+  Profile* const profile_;
+  content::WebContents* const web_contents_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

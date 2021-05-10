@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/android/save_address_profile_prompt_view.h"
 
 namespace content {
@@ -45,8 +44,8 @@ class SaveAddressProfilePromptViewAndroid
   // a save prompt.
   bool is_update_ = false;
   // The controller to supply the content for the view,
-  CheckedPtr<SaveAddressProfilePromptController> controller_ = nullptr;
-  CheckedPtr<content::WebContents> web_contents_;
+  SaveAddressProfilePromptController* controller_ = nullptr;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace autofill

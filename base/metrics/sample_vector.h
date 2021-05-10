@@ -17,7 +17,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -106,7 +105,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   mutable std::atomic<HistogramBase::AtomicCount*> counts_{nullptr};
 
   // Shares the same BucketRanges with Histogram object.
-  const CheckedPtr<const BucketRanges> bucket_ranges_;
+  const BucketRanges* const bucket_ranges_;
 };
 
 // A sample vector that uses local memory for the counts array.
@@ -191,9 +190,9 @@ class BASE_EXPORT SampleVectorIterator : public SampleCountIterator {
  private:
   void SkipEmptyBuckets();
 
-  CheckedPtr<const HistogramBase::AtomicCount> counts_;
+  const HistogramBase::AtomicCount* counts_;
   size_t counts_size_;
-  CheckedPtr<const BucketRanges> bucket_ranges_;
+  const BucketRanges* bucket_ranges_;
 
   size_t index_;
 };

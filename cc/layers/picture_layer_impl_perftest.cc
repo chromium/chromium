@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -173,7 +172,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     return reporter;
   }
 
-  CheckedPtr<FakePictureLayerImpl> pending_layer_;
+  FakePictureLayerImpl* pending_layer_;
   base::LapTimer timer_;
 };
 

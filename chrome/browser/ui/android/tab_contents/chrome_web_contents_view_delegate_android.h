@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 namespace content {
@@ -32,7 +31,7 @@ class ChromeWebContentsViewDelegateAndroid
 
  private:
   // The WebContents that owns the view and this delegate transitively.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsViewDelegateAndroid);
 };

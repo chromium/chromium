@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/image_model.h"
@@ -103,7 +102,7 @@ class StatusIconMenuModel
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(StatusIconMenuModel);
 };

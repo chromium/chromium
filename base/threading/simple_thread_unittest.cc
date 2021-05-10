@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -25,7 +24,7 @@ class SetIntRunner : public DelegateSimpleThread::Delegate {
  private:
   void Run() override { *ptr_ = val_; }
 
-  CheckedPtr<int> ptr_;
+  int* ptr_;
   int val_;
 
   DISALLOW_COPY_AND_ASSIGN(SetIntRunner);
@@ -79,7 +78,7 @@ class WaitEventRunner : public DelegateSimpleThread::Delegate {
     EXPECT_TRUE(event_->IsSignaled());
   }
 
-  CheckedPtr<WaitableEvent> event_;
+  WaitableEvent* event_;
 
   DISALLOW_COPY_AND_ASSIGN(WaitEventRunner);
 };
@@ -91,7 +90,7 @@ class SeqRunner : public DelegateSimpleThread::Delegate {
  private:
   void Run() override { seq_->GetNext(); }
 
-  CheckedPtr<AtomicSequenceNumber> seq_;
+  AtomicSequenceNumber* seq_;
 
   DISALLOW_COPY_AND_ASSIGN(SeqRunner);
 };
@@ -114,9 +113,9 @@ class VerifyPoolRunner : public DelegateSimpleThread::Delegate {
     }
   }
 
-  CheckedPtr<AtomicSequenceNumber> seq_;
+  AtomicSequenceNumber* seq_;
   int total_;
-  CheckedPtr<WaitableEvent> event_;
+  WaitableEvent* event_;
 
   DISALLOW_COPY_AND_ASSIGN(VerifyPoolRunner);
 };

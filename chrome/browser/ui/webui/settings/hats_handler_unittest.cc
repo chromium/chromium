@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -52,7 +51,7 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   HatsHandler* handler() { return handler_.get(); }
-  CheckedPtr<MockHatsService> mock_hats_service_;
+  MockHatsService* mock_hats_service_;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;

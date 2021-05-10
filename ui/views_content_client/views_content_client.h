@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views_content_client/views_content_client_export.h"
@@ -93,7 +92,7 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
  private:
 #if defined(OS_WIN)
   HINSTANCE instance_;
-  CheckedPtr<sandbox::SandboxInterfaceInfo> sandbox_info_;
+  sandbox::SandboxInterfaceInfo* sandbox_info_;
 #else
   int argc_;
   const char** argv_;

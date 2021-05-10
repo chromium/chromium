@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/ranges/algorithm.h"
 
 // This class is DEPRECATED. Instead please use one of:
@@ -82,7 +81,7 @@ class ScopedObserver {
   size_t GetSourcesCount() const { return sources_.size(); }
 
  private:
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   std::vector<Source*> sources_;
 };

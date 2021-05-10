@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
@@ -80,23 +79,23 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
-  const CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* const web_contents_;
 
-  CheckedPtr<DesktopMediaPickerViews> parent_;
+  DesktopMediaPickerViews* parent_;
 
-  CheckedPtr<views::Label> description_label_ = nullptr;
+  views::Label* description_label_ = nullptr;
 
-  CheckedPtr<views::Checkbox> presenter_tools_checkbox_ = nullptr;
+  views::Checkbox* presenter_tools_checkbox_ = nullptr;
 
   base::CallbackListSubscription presenter_tools_checked_subscription_;
 
-  CheckedPtr<views::Checkbox> audio_share_checkbox_ = nullptr;
+  views::Checkbox* audio_share_checkbox_ = nullptr;
 
   // Contains |presenter_tools_checkbox_| and |audio_share_checkbox_| if
   // present.
-  CheckedPtr<views::View> extra_views_container_ = nullptr;
+  views::View* extra_views_container_ = nullptr;
 
-  CheckedPtr<views::TabbedPane> tabbed_pane_ = nullptr;
+  views::TabbedPane* tabbed_pane_ = nullptr;
   std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
   std::vector<DesktopMediaList::Type> source_types_;
 
@@ -142,7 +141,7 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
   // The |dialog_| is owned by the corresponding views::Widget instance.
   // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed
   // asynchronously by closing the widget.
-  CheckedPtr<DesktopMediaPickerDialogView> dialog_;
+  DesktopMediaPickerDialogView* dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -107,7 +106,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
-  CheckedPtr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
+  ToolbarActionsModel* toolbar_actions_model_ = nullptr;
   MockMediaRouterContextualMenuObserver observer_;
 
  private:

@@ -12,7 +12,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
@@ -264,7 +263,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   std::unique_ptr<FileMetricsProvider> provider_;
   base::HistogramBase* created_histograms_[kMaxCreateHistograms];
 
-  CheckedPtr<const FileMetricsProvider::FilterAction> filter_actions_ = nullptr;
+  const FileMetricsProvider::FilterAction* filter_actions_ = nullptr;
   size_t filter_actions_remaining_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(FileMetricsProviderTest);

@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 #define MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -43,7 +42,7 @@ class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
                             int32_t route_id,
                             IPC::Message* reply_message);
 
-  const CheckedPtr<gpu::GpuChannel> channel_;
+  gpu::GpuChannel* const channel_;
   scoped_refptr<MediaGpuChannelFilter> filter_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 

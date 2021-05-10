@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
@@ -451,7 +450,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  const CheckedPtr<PooledSingleThreadTaskRunnerManager> manager_to_join_;
+  PooledSingleThreadTaskRunnerManager* const manager_to_join_;
   TestWaitableEvent run_started_event_;
 };
 

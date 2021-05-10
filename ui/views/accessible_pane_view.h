@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/focus/focus_manager.h"
@@ -107,7 +106,7 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
 
   // Save the focus manager rather than calling GetFocusManager(),
   // so that we can remove focus listeners in the destructor.
-  CheckedPtr<FocusManager> focus_manager_ = nullptr;
+  FocusManager* focus_manager_ = nullptr;
 
   // Our custom focus search implementation that traps focus in this
   // pane and traverses all views that are focusable for accessibility,

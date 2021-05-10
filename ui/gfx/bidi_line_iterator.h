@@ -9,7 +9,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"
@@ -39,7 +38,7 @@ class GFX_EXPORT BiDiLineIterator {
   void GetLogicalRun(int start, int* end, UBiDiLevel* level) const;
 
  private:
-  CheckedPtr<UBiDi> bidi_;
+  UBiDi* bidi_;
 
   DISALLOW_COPY_AND_ASSIGN(BiDiLineIterator);
 };

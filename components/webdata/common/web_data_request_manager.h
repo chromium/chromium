@@ -14,7 +14,6 @@
 
 #include "base/atomicops.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -78,7 +77,7 @@ class WebDataRequest {
   base::subtle::AtomicWord atomic_manager_;
 
   // The originator of the service request.
-  const CheckedPtr<WebDataServiceConsumer> consumer_;
+  WebDataServiceConsumer* const consumer_;
 
   // Identifier for this request.
   const WebDataServiceBase::Handle handle_;

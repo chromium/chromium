@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "url/gurl.h"
 
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
@@ -56,7 +55,7 @@ class FramebustBlockMessageDelegate : public InterventionDelegate {
 
   // WebContents associated with the frame that was targeted by the framebust.
   // Will be used to continue the navigation to the blocked URL.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // The URL that was the redirection target in the blocked framebust attempt.
   const GURL blocked_url_;

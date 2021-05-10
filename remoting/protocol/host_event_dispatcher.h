@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_event_timestamps.h"
 
@@ -46,7 +45,7 @@ class HostEventDispatcher : public ChannelDispatcherBase {
 
   scoped_refptr<InputEventTimestampsSourceImpl> event_timestamps_source_;
 
-  CheckedPtr<InputStub> input_stub_ = nullptr;
+  InputStub* input_stub_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(HostEventDispatcher);
 };

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -154,9 +153,8 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
   }
 
   // Use a bare pointer because the storage is managed by the base class.
-  CheckedPtr<NegotiatingHostAuthenticator> host_as_negotiating_authenticator_;
-  CheckedPtr<NegotiatingClientAuthenticator>
-      client_as_negotiating_authenticator_;
+  NegotiatingHostAuthenticator* host_as_negotiating_authenticator_;
+  NegotiatingClientAuthenticator* client_as_negotiating_authenticator_;
 
  private:
   scoped_refptr<PairingRegistry> pairing_registry_;

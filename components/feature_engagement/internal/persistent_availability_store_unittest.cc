@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/internal/proto/availability.pb.h"
@@ -84,7 +83,7 @@ class PersistentAvailabilityStoreTest : public testing::Test {
   std::map<std::string, Availability> db_availabilities_;
 
   // The database that is in use.
-  CheckedPtr<leveldb_proto::test::FakeDB<Availability>> db_;
+  leveldb_proto::test::FakeDB<Availability>* db_;
 
   // Constant test data.
   base::FilePath storage_dir_;

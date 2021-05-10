@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -98,17 +97,17 @@ class FakeConnectionToClient : public ConnectionToClient {
   // a success.
   std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer_;
   std::unique_ptr<Session> session_;
-  CheckedPtr<EventHandler> event_handler_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
 
   base::WeakPtr<FakeVideoStream> last_video_stream_;
 
-  CheckedPtr<ClientStub> client_stub_ = nullptr;
+  ClientStub* client_stub_ = nullptr;
 
-  CheckedPtr<ClipboardStub> clipboard_stub_ = nullptr;
-  CheckedPtr<HostStub> host_stub_ = nullptr;
-  CheckedPtr<InputStub> input_stub_ = nullptr;
-  CheckedPtr<VideoStub> video_stub_ = nullptr;
-  CheckedPtr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
+  ClipboardStub* clipboard_stub_ = nullptr;
+  HostStub* host_stub_ = nullptr;
+  InputStub* input_stub_ = nullptr;
+  VideoStub* video_stub_ = nullptr;
+  VideoFeedbackStub* video_feedback_stub_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
 

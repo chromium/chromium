@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
@@ -111,7 +110,7 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
   ClientDiscardableHandle::Id FindDiscardableHandleId(const EntryKey& key);
   ClientDiscardableHandle CreateDiscardableHandle(const EntryKey& key);
 
-  const CheckedPtr<Client> client_;  // not owned --- client_ outlives this
+  Client* const client_;  // not owned --- client_ outlives this
 
   base::Optional<ScopedMappedMemoryPtr> mapped_ptr_;
   base::Optional<ScopedTransferBufferPtr> transfer_buffer_ptr_;

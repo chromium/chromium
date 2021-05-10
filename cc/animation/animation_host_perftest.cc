@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "cc/animation/animation_host.h"
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -140,7 +139,7 @@ class AnimationHostPerfTest : public testing::Test {
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;
   scoped_refptr<Layer> root_layer_;
-  CheckedPtr<LayerImpl> root_layer_impl_;
+  LayerImpl* root_layer_impl_;
   scoped_refptr<AnimationTimeline> all_animations_timeline_;
 
   int first_timeline_id_;

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -89,7 +88,7 @@ class LazyMinimumSize {
   }
 
  private:
-  const CheckedPtr<const View> view_;
+  const View* const view_;
   mutable base::Optional<gfx::Size> size_;
 };
 

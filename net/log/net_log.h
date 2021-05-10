@@ -13,7 +13,6 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -136,7 +135,7 @@ class NET_EXPORT NetLog {
 
     // Both of these values are only modified by the NetLog.
     NetLogCaptureMode capture_mode_;
-    CheckedPtr<NetLog> net_log_;
+    NetLog* net_log_;
 
     DISALLOW_COPY_AND_ASSIGN(ThreadSafeObserver);
   };
@@ -169,7 +168,7 @@ class NET_EXPORT NetLog {
     friend class NetLog;
 
     // This value is only modified by the NetLog.
-    CheckedPtr<NetLog> net_log_ = nullptr;
+    NetLog* net_log_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(ThreadSafeCaptureModeObserver);
   };

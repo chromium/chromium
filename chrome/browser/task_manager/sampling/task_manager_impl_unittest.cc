@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -51,7 +50,7 @@ class FakeTask : public Task {
 
  private:
   Type type_;
-  CheckedPtr<Task> parent_;
+  Task* parent_;
   SessionID tab_id_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeTask);

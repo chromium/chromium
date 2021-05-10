@@ -9,7 +9,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
 // safety of a class.
@@ -174,7 +173,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     ~Check() = default;
 
    private:
-    CheckedPtr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
 
     DISALLOW_COPY_AND_ASSIGN(Check);
   };
@@ -193,7 +192,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    CheckedPtr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedCheck);
   };
@@ -212,7 +211,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    CheckedPtr<ThreadCollisionWarner> warner_;
+    ThreadCollisionWarner* warner_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
   };
@@ -240,7 +239,7 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.
-  CheckedPtr<AsserterBase> asserter_;
+  AsserterBase* asserter_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadCollisionWarner);
 };

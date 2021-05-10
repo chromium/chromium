@@ -6,7 +6,6 @@
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {
@@ -51,7 +50,7 @@ class InputStreamReader {
   // net::OK is returned on success, the error code otherwise.
   int SkipToRequestedRange(const net::HttpByteRange& byte_range);
 
-  CheckedPtr<InputStream> stream_;
+  InputStream* stream_;
 
   DISALLOW_COPY_AND_ASSIGN(InputStreamReader);
 };

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
@@ -57,7 +56,7 @@ class NET_EXPORT_PRIVATE HttpResponseBodyDrainer {
   State next_state_;
   int total_read_;
   base::OneShotTimer timer_;
-  CheckedPtr<HttpNetworkSession> session_;
+  HttpNetworkSession* session_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpResponseBodyDrainer);
 };

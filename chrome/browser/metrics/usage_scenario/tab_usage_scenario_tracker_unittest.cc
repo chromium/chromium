@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -82,7 +81,7 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   display::test::TestScreen screen_;
-  CheckedPtr<display::Screen> previous_screen_;
+  display::Screen* previous_screen_;
   UsageScenarioDataStoreImpl usage_scenario_data_store_;
   std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;

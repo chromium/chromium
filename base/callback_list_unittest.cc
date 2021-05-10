@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -80,7 +79,7 @@ class Adder {
  private:
   bool added_ = false;
   int total_ = 0;
-  CheckedPtr<RepeatingClosureList> cb_reg_;
+  RepeatingClosureList* cb_reg_;
   CallbackListSubscription subscription_;
 };
 

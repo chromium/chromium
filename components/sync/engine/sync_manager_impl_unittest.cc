@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -211,8 +210,7 @@ class SyncManagerTest : public testing::Test {
   CancelationSignal cancelation_signal_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
-  CheckedPtr<StrictMock<SyncEncryptionHandlerObserverMock>>
-      encryption_observer_;
+  StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_;
 };
 
 class SyncManagerWithLocalBackendTest : public SyncManagerTest {
@@ -249,7 +247,7 @@ class ComponentsFactory : public TestEngineComponentsFactory {
 
  private:
   std::unique_ptr<SyncScheduler> scheduler_to_use_;
-  CheckedPtr<SyncCycleContext*> cycle_context_;
+  SyncCycleContext** cycle_context_;
 };
 
 class SyncManagerTestWithMockScheduler : public SyncManagerTest {
@@ -264,7 +262,7 @@ class SyncManagerTestWithMockScheduler : public SyncManagerTest {
   SyncCycleContext* cycle_context() { return cycle_context_; }
 
  private:
-  CheckedPtr<MockSyncScheduler> scheduler_;
+  MockSyncScheduler* scheduler_;
   SyncCycleContext* cycle_context_;
 };
 

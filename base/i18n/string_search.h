@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/memory/checked_ptr.h"
 
 struct UStringSearch;
 
@@ -67,7 +66,7 @@ class BASE_I18N_EXPORT FixedPatternStringSearch {
 
  private:
   std::u16string find_this_;
-  CheckedPtr<UStringSearch> search_;
+  UStringSearch* search_;
 };
 
 // This class is for speeding up multiple StringSearchIgnoringCaseAndAccents()

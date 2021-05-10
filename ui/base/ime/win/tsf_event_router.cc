@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/win/atl.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/range/range.h"
@@ -84,7 +83,7 @@ class ATL_NO_VTABLE TSFEventRouter::Delegate
   // The cookie for |ui_source_|.
   DWORD ui_source_cookie_ = TF_INVALID_COOKIE;
 
-  CheckedPtr<TSFEventRouter> router_ = nullptr;
+  TSFEventRouter* router_ = nullptr;
   gfx::Range previous_composition_range_;
 
   DISALLOW_COPY_AND_ASSIGN(Delegate);

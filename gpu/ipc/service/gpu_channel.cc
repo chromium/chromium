@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_channel.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 
 #include <utility>
@@ -140,16 +139,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
                            uint64_t decode_release_count) override;
 
-  CheckedPtr<IPC::Channel> ipc_channel_ = nullptr;
+  IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
   std::vector<scoped_refptr<IPC::MessageFilter>> channel_filters_;
 
-  CheckedPtr<gpu::GpuChannel> gpu_channel_ = nullptr;
+  gpu::GpuChannel* gpu_channel_ = nullptr;
   // Map of route id to scheduler sequence id.
   base::flat_map<int32_t, SequenceId> route_sequences_;
   mutable base::Lock gpu_channel_lock_;
 
-  CheckedPtr<Scheduler> scheduler_;
+  Scheduler* scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;

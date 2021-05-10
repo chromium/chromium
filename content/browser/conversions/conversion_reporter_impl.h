@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
@@ -96,11 +95,11 @@ class CONTENT_EXPORT ConversionReporterImpl
   base::flat_map<int64_t, base::OnceCallback<void(int64_t)>>
       conversion_report_callbacks_;
 
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   // Should never be nullptr, since StoragePartition owns the ConversionManager
   // which owns |this|.
-  CheckedPtr<StoragePartitionImpl> partition_;
+  StoragePartitionImpl* partition_;
 
   // Timer which signals the next report in |report_queue_| should be sent.
   base::OneShotTimer send_report_timer_;

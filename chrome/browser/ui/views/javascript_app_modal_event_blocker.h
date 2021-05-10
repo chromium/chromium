@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_JAVASCRIPT_APP_MODAL_EVENT_BLOCKER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_handler.h"
 
 class BrowserView;
@@ -40,10 +39,10 @@ class JavascriptAppModalEventBlocker : public ui::EventHandler {
   void OnTouchEvent(ui::TouchEvent* event) override;
 
   // The app modal dialog.
-  CheckedPtr<aura::Window> modal_window_;
+  aura::Window* modal_window_;
 
   // The BrowserView which hosts the app modal dialog.
-  CheckedPtr<BrowserView> browser_view_with_modal_dialog_;
+  BrowserView* browser_view_with_modal_dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(JavascriptAppModalEventBlocker);
 };

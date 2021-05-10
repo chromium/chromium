@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/notification_service.h"
@@ -90,7 +89,7 @@ class IconImage::Source : public gfx::ImageSkiaSource {
 
   // Used to load images, possibly asynchronously. nullptr'ed out when the
   // IconImage is destroyed.
-  CheckedPtr<IconImage> host_;
+  IconImage* host_;
 
   // Image whose representations will be used until |host_| loads the real
   // representations for the image.

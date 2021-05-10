@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -162,7 +161,7 @@ class BASE_EXPORT ThreadGroup {
     // A TransactionWithRegisteredTaskSource and the thread group in which it
     // should be enqueued.
     Optional<TransactionWithRegisteredTaskSource> transaction_with_task_source_;
-    CheckedPtr<ThreadGroup> destination_thread_group_ = nullptr;
+    ThreadGroup* destination_thread_group_ = nullptr;
   };
 
   // |predecessor_thread_group| is a ThreadGroup whose lock can be acquired
@@ -259,7 +258,7 @@ class BASE_EXPORT ThreadGroup {
   // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
-  CheckedPtr<ThreadGroup> replacement_thread_group_ = nullptr;
+  ThreadGroup* replacement_thread_group_ = nullptr;
 };
 
 }  // namespace internal

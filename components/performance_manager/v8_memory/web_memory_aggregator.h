@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
@@ -82,9 +81,9 @@ class WebMemoryAggregator {
   // The origin of the node that requests memory measurement.
   const url::Origin requesting_origin_;
   // The process node of the requesting frame.
-  const CheckedPtr<const ProcessNode> requesting_process_node_;
+  const ProcessNode* const requesting_process_node_;
   // The process node of the main frame.
-  const CheckedPtr<const ProcessNode> main_process_node_;
+  const ProcessNode* const main_process_node_;
   // The browsing instance id of the requesting frame.
   const int32_t browsing_instance_id_;
 

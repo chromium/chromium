@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -98,7 +97,7 @@ class WakeLock : public mojom::WakeLock {
   std::unique_ptr<PowerSaveBlocker> wake_lock_;
 
   // Not owned. |observer_| must outlive this instance of WakeLock.
-  const CheckedPtr<Observer> observer_;
+  Observer* const observer_;
 
   // Multiple clients that associate to the same WebContents share the same one
   // WakeLock instance. Two consecutive |RequestWakeLock| requests

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_TEST_MOCK_DNS_SD_REGISTRY_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_TEST_MOCK_DNS_SD_REGISTRY_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -27,7 +26,7 @@ class MockDnsSdRegistry : public DnsSdRegistry {
                          const DnsSdServiceList& services);
 
  private:
-  CheckedPtr<DnsSdObserver> observer_;
+  DnsSdObserver* observer_;
 };
 
 }  // namespace media_router

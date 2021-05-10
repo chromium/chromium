@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,10 +55,10 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
   // IconImage::Observer:
   void OnExtensionIconImageChanged(IconImage* image) override;
 
-  CheckedPtr<const Extension> extension_;
-  CheckedPtr<StatusTray> status_tray_;
-  CheckedPtr<StatusIcon> status_icon_;
-  CheckedPtr<Profile> profile_;
+  const Extension* extension_;
+  StatusTray* status_tray_;
+  StatusIcon* status_icon_;
+  Profile* profile_;
   IconImage manifest_icon_;
   gfx::Image dynamic_icon_;
 

@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_request.h"
 
@@ -51,7 +50,7 @@ class CC_EXPORT UIResourceManager {
 
  private:
   struct UIResourceClientData {
-    CheckedPtr<UIResourceClient> client;
+    UIResourceClient* client;
     gfx::Size size;
   };
 

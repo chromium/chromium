@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "remoting/protocol/connection_tester.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/bind.h"
 #include "net/base/io_buffer.h"
@@ -160,7 +159,7 @@ class MessagePipeConnectionTester::MessageSender
   void OnMessagePipeClosed() override { NOTREACHED(); }
 
  private:
-  CheckedPtr<MessagePipe> pipe_;
+  MessagePipe* pipe_;
   int message_size_;
   int message_count_;
 

@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 
 namespace cc {
@@ -39,7 +38,7 @@ class CC_EXPORT LayerListIterator {
   // The implementation of this iterator is currently tied tightly to the layer
   // tree, but it should be straightforward to reimplement in terms of a list
   // when it's ready.
-  CheckedPtr<Layer> current_layer_;
+  Layer* current_layer_;
   std::vector<size_t> list_indices_;
 };
 

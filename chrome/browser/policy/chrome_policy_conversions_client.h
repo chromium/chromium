@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 #define CHROME_BROWSER_POLICY_CHROME_POLICY_CONVERSIONS_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 
@@ -43,7 +42,7 @@ class ChromePolicyConversionsClient : public PolicyConversionsClient {
 #endif
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace policy

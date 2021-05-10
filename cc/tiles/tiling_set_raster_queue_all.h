@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/stack_container.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -57,8 +56,8 @@ class CC_EXPORT TilingSetRasterQueueAll {
     bool IsTileValid(const Tile* tile) const;
 
     PrioritizedTile current_tile_;
-    CheckedPtr<PictureLayerTiling> tiling_;
-    CheckedPtr<TilingData> tiling_data_;
+    PictureLayerTiling* tiling_;
+    TilingData* tiling_data_;
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     gfx::Rect pending_visible_rect_;
   };
@@ -158,8 +157,8 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
     void AdvancePhase();
 
-    CheckedPtr<PictureLayerTiling> tiling_;
-    CheckedPtr<TilingData> tiling_data_;
+    PictureLayerTiling* tiling_;
+    TilingData* tiling_data_;
 
     Phase phase_;
 
@@ -181,7 +180,7 @@ class CC_EXPORT TilingSetRasterQueueAll {
   void MakeTilingIterator(IteratorType type, PictureLayerTiling* tiling);
   void AdvanceToNextStage();
 
-  CheckedPtr<PictureLayerTilingSet> tiling_set_;
+  PictureLayerTilingSet* tiling_set_;
 
   struct IterationStage {
     IterationStage(IteratorType type, TilePriority::PriorityBin bin);

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -147,7 +146,7 @@ class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

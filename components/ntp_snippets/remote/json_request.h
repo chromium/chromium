@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -120,7 +119,7 @@ class JsonRequest {
 
     // Only required, if the request needs to be sent.
     std::string auth_header_;
-    CheckedPtr<const base::Clock> clock_;
+    const base::Clock* clock_;
     RequestParams params_;
     ParseJSONCallback parse_json_callback_;
     GURL url_;
@@ -129,7 +128,7 @@ class JsonRequest {
     // Optional properties.
     std::string user_class_;
     std::string display_capability_;
-    CheckedPtr<const language::UrlLanguageHistogram> language_histogram_;
+    const language::UrlLanguageHistogram* language_histogram_;
 
     DISALLOW_COPY_AND_ASSIGN(Builder);
   };

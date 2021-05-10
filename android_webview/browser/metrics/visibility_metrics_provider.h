@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_METRICS_VISIBILITY_METRICS_PROVIDER_H_
 #define ANDROID_WEBVIEW_BROWSER_METRICS_VISIBILITY_METRICS_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace android_webview {
@@ -25,7 +24,7 @@ class VisibilityMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  CheckedPtr<VisibilityMetricsLogger> logger_;
+  VisibilityMetricsLogger* logger_;
 };
 
 }  // namespace android_webview

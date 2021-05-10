@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
@@ -68,7 +67,7 @@ class RulesetPublisherImpl : public RulesetPublisher,
   base::OnceClosure ruleset_published_callback_;
 
   // The service owns the publisher, and therefore outlives it.
-  CheckedPtr<RulesetService> ruleset_service_;
+  RulesetService* ruleset_service_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> ruleset_dealer_;
   scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner_;
 

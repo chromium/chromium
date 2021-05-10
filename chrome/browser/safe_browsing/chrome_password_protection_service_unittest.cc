@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -405,13 +404,13 @@ class ChromePasswordProtectionServiceTest
   std::unique_ptr<LoginReputationClientResponse> verdict_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  CheckedPtr<MockSecurityEventRecorder> security_event_recorder_;
+  MockSecurityEventRecorder* security_event_recorder_;
   scoped_refptr<password_manager::MockPasswordStore> password_store_;
   scoped_refptr<password_manager::MockPasswordStore> account_password_store_;
   // Owned by KeyedServiceFactory.
-  CheckedPtr<syncer::FakeUserEventService> fake_user_event_service_;
+  syncer::FakeUserEventService* fake_user_event_service_;
 #if !defined(OS_ANDROID)
-  CheckedPtr<extensions::TestEventRouter> test_event_router_;
+  extensions::TestEventRouter* test_event_router_;
 #endif
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   ScopedTestingLocalState local_state_;

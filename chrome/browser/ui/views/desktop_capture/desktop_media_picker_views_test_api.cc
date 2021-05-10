@@ -144,13 +144,13 @@ views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(size_t index) {
 const views::TableView* DesktopMediaPickerViewsTestApi::GetTableView() const {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;
   return IsDesktopMediaTabList(list)
-             ? static_cast<DesktopMediaTabList*>(list)->child_.get()
+             ? static_cast<DesktopMediaTabList*>(list)->child_
              : nullptr;
 }
 
 views::TableView* DesktopMediaPickerViewsTestApi::GetTableView() {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;
   return IsDesktopMediaTabList(list)
-             ? static_cast<DesktopMediaTabList*>(list)->child_.get()
+             ? static_cast<DesktopMediaTabList*>(list)->child_
              : nullptr;
 }

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp_server.h"
 
@@ -48,7 +47,7 @@ class SocketsTcpServerCreateFunction : public TCPServerSocketAsyncApiFunction {
   FRIEND_TEST_ALL_PREFIXES(SocketsTcpServerUnitTest, Create);
   std::unique_ptr<sockets_tcp_server::Create::Params> params_;
 
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 };
 
 class SocketsTcpServerUpdateFunction : public TCPServerSocketAsyncApiFunction {
@@ -86,7 +85,7 @@ class SocketsTcpServerSetPausedFunction
 
  private:
   std::unique_ptr<sockets_tcp_server::SetPaused::Params> params_;
-  CheckedPtr<TCPServerSocketEventDispatcher> socket_event_dispatcher_;
+  TCPServerSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsTcpServerListenFunction : public TCPServerSocketAsyncApiFunction {
@@ -107,7 +106,7 @@ class SocketsTcpServerListenFunction : public TCPServerSocketAsyncApiFunction {
   void OnCompleted(int result, const std::string& error_msg);
 
   std::unique_ptr<sockets_tcp_server::Listen::Params> params_;
-  CheckedPtr<TCPServerSocketEventDispatcher> socket_event_dispatcher_;
+  TCPServerSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsTcpServerDisconnectFunction

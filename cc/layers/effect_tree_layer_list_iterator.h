@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_EFFECT_TREE_LAYER_LIST_ITERATOR_H_
 #define CC_LAYERS_EFFECT_TREE_LAYER_LIST_ITERATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -116,8 +115,8 @@ class CC_EXPORT EffectTreeLayerListIterator {
   // render surface.
   int lowest_common_effect_tree_ancestor_index_;
 
-  CheckedPtr<LayerTreeImpl> layer_tree_impl_;
-  CheckedPtr<EffectTree> effect_tree_;
+  LayerTreeImpl* layer_tree_impl_;
+  EffectTree* effect_tree_;
 };
 
 }  // namespace cc

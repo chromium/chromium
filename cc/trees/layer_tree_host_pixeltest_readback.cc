@@ -86,8 +86,8 @@ class LayerTreeHostReadbackPixelTest
 
   void BeginTest() override {
     if (insert_copy_request_after_frame_count_ == 0) {
-      Layer* const target = readback_target_ ? readback_target_.get()
-                                             : layer_tree_host()->root_layer();
+      Layer* const target =
+          readback_target_ ? readback_target_ : layer_tree_host()->root_layer();
       target->RequestCopyOfOutput(CreateCopyOutputRequest());
     }
     PostSetNeedsCommitToMainThread();
@@ -96,8 +96,8 @@ class LayerTreeHostReadbackPixelTest
   void DidCommitAndDrawFrame() override {
     if (insert_copy_request_after_frame_count_ ==
         layer_tree_host()->SourceFrameNumber()) {
-      Layer* const target = readback_target_ ? readback_target_.get()
-                                             : layer_tree_host()->root_layer();
+      Layer* const target =
+          readback_target_ ? readback_target_ : layer_tree_host()->root_layer();
       target->RequestCopyOfOutput(CreateCopyOutputRequest());
     }
   }

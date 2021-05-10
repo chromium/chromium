@@ -101,7 +101,7 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
 
   // Listen for extension loads and install failures.
   status_ = kWaitingForExtensionLoads;
-  registry_observation_.Observe(registry_.get());
+  registry_observation_.Observe(registry_);
   collector_observation_.Observe(InstallStageTracker::Get(profile_));
 
   const base::DictionaryValue* value =

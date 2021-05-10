@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/hid/hid_test_utils.h"
@@ -147,7 +146,7 @@ class HidServiceTest : public RenderViewHostImplTestHarness {
 
  private:
   HidTestContentBrowserClient test_client_;
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   device::FakeHidManager hid_manager_;
   FakeHidConnectionClient connection_client_;
 };

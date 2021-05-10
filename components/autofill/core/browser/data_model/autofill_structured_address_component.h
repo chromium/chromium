@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -573,7 +572,7 @@ class AddressComponent {
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
-  const CheckedPtr<AddressComponent> parent_;
+  AddressComponent* const parent_;
 
   // Defines if and how two components can be merged.
   int merge_mode_;

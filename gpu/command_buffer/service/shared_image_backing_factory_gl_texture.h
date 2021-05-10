@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -144,7 +143,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
 
     GLenum gl_format = 0;
     GLenum gl_type = 0;
-    CheckedPtr<const gles2::Texture::CompatibilitySwizzle> swizzle = nullptr;
+    const gles2::Texture::CompatibilitySwizzle* swizzle = nullptr;
     GLenum adjusted_format = 0;
 
     // The internalformat portion of the format/type/internalformat triplet
@@ -169,7 +168,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
   bool use_passthrough_ = false;
 
   // Factory used to generate GLImages for SCANOUT backings.
-  CheckedPtr<ImageFactory> image_factory_ = nullptr;
+  ImageFactory* image_factory_ = nullptr;
 
   FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
@@ -180,10 +179,10 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
-  const CheckedPtr<gl::ProgressReporter> progress_reporter_ = nullptr;
+  gl::ProgressReporter* const progress_reporter_ = nullptr;
 
 #if defined(OS_ANDROID)
-  CheckedPtr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
+  SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
 #endif
 };
 
