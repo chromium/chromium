@@ -158,8 +158,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     // WebContents.
     virtual void ReattachOuterDelegateIfNeeded() = 0;
 
-    // Called when a FrameTreeNode is destoryed. Only called for subframes for
-    // now.
+    // Called when a FrameTreeNode is destroyed.
     virtual void OnFrameTreeNodeDestroyed(FrameTreeNode* node) = 0;
 
    protected:
