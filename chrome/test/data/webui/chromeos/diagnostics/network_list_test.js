@@ -76,11 +76,11 @@ export function networkListTestSuite() {
   }
 
   /**
-   * Returns all network-info elements.
+   * Returns all network-card elements.
    * @return {!NodeList<!Element>}
    */
-  function getNetworkInfoElements() {
-    return networkListElement.shadowRoot.querySelectorAll('network-info');
+  function getNetworkCardElements() {
+    return networkListElement.shadowRoot.querySelectorAll('network-card');
   }
 
   /**
@@ -118,42 +118,42 @@ export function networkListTestSuite() {
   test('NetworkGuidsPresent', () => {
     let networkGuids;
     let numDomRepeatInstances;
-    let networkInfoElements;
+    let networkCardElements;
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkInfoList').items.length;
-          networkInfoElements = getNetworkInfoElements();
+              networkListElement.$$('#networkCardList').items.length;
+          networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
-          for (let i = 0; i < networkInfoElements.length; i++) {
-            assertEquals(networkInfoElements[i].guid, networkGuids[i]);
+          for (let i = 0; i < networkCardElements.length; i++) {
+            assertEquals(networkCardElements[i].guid, networkGuids[i]);
           }
           return triggerNetworkListObserver();
         })
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkInfoList').items.length;
-          networkInfoElements = getNetworkInfoElements();
+              networkListElement.$$('#networkCardList').items.length;
+          networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
-          for (let i = 0; i < networkInfoElements.length; i++) {
-            assertEquals(networkInfoElements[i].guid, networkGuids[i]);
+          for (let i = 0; i < networkCardElements.length; i++) {
+            assertEquals(networkCardElements[i].guid, networkGuids[i]);
           }
         });
   });
 
-  test('NetworkInfoElementsPopulated', () => {
-    let networkInfoElements;
+  test('NetworkCardElementsPopulated', () => {
+    let networkCardElements;
     return initializeNetworkList(fakeNetworkGuidInfoList).then(async () => {
-      networkInfoElements = getNetworkInfoElements();
+      networkCardElements = getNetworkCardElements();
       // The first network list observation provides guids for Cellular
       // and WiFi. The connectivity-card is responsbile for the Ethernet
       // guid as it's the currently active guid.
       dx_utils.assertElementContainsText(
-          networkInfoElements[0].$$('#guid'), fakeWifiNetwork.guid);
+          networkCardElements[0].$$('#guid'), fakeWifiNetwork.guid);
       dx_utils.assertElementContainsText(
-          networkInfoElements[1].$$('#guid'), fakeCellularNetwork.guid);
+          networkCardElements[1].$$('#guid'), fakeCellularNetwork.guid);
     });
   });
 }

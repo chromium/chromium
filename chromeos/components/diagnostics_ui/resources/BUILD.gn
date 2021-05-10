@@ -28,7 +28,7 @@ js_type_check("closure_compile_module") {
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
-    ":network_info",
+    ":network_card",
     ":network_list",
     ":overview_card",
     ":percent_bar_chart",
@@ -187,7 +187,7 @@ js_library("mojo_utils") {
   ]
 }
 
-js_library("network_info") {
+js_library("network_card") {
   deps = [
     ":cellular_info",
     ":diagnostics_card",
@@ -203,6 +203,7 @@ js_library("network_list") {
     ":connectivity_card",
     ":diagnostics_types",
     ":mojo_interface_provider",
+    ":network_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -283,7 +284,7 @@ html_to_js("web_components") {
     "ethernet_info.js",
     "icons.js",
     "memory_card.js",
-    "network_info.js",
+    "network_card.js",
     "network_list.js",
     "overview_card.js",
     "percent_bar_chart.js",

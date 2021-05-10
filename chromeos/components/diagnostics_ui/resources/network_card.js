@@ -16,11 +16,12 @@ import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
- * 'network-info' is responsible for observing a network guid and
- * displaying a specialized network card (Ethernet, WiFi, Cellular).
+ * 'network-card' is responsible for observing a network guid and
+ * displaying a specialized set of data points for a supported network
+ * type (Ethernet, WiFi, Cellular).
  */
 Polymer({
-  is: 'network-info',
+  is: 'network-card',
 
   _template: html`{__html_template__}`,
 

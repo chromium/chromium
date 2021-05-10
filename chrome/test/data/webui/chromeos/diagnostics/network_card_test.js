@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://diagnostics/network_info.js';
+import 'chrome://diagnostics/network_card.js';
 
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
@@ -13,9 +13,9 @@ import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
-export function networkInfoTestSuite() {
-  /** @type {?NetworkInfoElement} */
-  let networkInfoElement = null;
+export function networkCardTestSuite() {
+  /** @type {?NetworkCardElement} */
+  let networkCardElement = null;
 
   /** @type {?FakeNetworkHealthProvider} */
   let provider = null;
@@ -30,27 +30,27 @@ export function networkInfoTestSuite() {
   });
 
   teardown(() => {
-    networkInfoElement.remove();
-    networkInfoElement = null;
+    networkCardElement.remove();
+    networkCardElement = null;
     provider.reset();
   });
 
   /**
    * @param {string} guid
    */
-  function initializeNetworkInfo(guid) {
-    assertFalse(!!networkInfoElement);
+  function initializeNetworkCard(guid) {
+    assertFalse(!!networkCardElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
     provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
     provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
     provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
 
     // Add the network info to the DOM.
-    networkInfoElement = /** @type {!NetworkInfoElement} */ (
-        document.createElement('network-info'));
-    assertTrue(!!networkInfoElement);
-    networkInfoElement.guid = guid;
-    document.body.appendChild(networkInfoElement);
+    networkCardElement = /** @type {!NetworkCardElement} */ (
+        document.createElement('network-card'));
+    assertTrue(!!networkCardElement);
+    networkCardElement.guid = guid;
+    document.body.appendChild(networkCardElement);
 
     return flushTasks();
   }
@@ -60,7 +60,7 @@ export function networkInfoTestSuite() {
    * @return {!WifiInfoElement}
    */
   function getWifiInfo() {
-    return /** @type {!WifiInfoElement} */ (networkInfoElement.$$('#wifiInfo'));
+    return /** @type {!WifiInfoElement} */ (networkCardElement.$$('#wifiInfo'));
   }
 
   /**
@@ -69,7 +69,7 @@ export function networkInfoTestSuite() {
    */
   function getCellularInfo() {
     return /** @type {!CellularInfoElement} */ (
-        networkInfoElement.$$('#cellularInfo'));
+        networkCardElement.$$('#cellularInfo'));
   }
 
   /**
@@ -78,7 +78,7 @@ export function networkInfoTestSuite() {
    */
   function getEthernetInfo() {
     return /** @type {!EthernetInfoElement} */ (
-        networkInfoElement.$$('#ethernetInfo'));
+        networkCardElement.$$('#ethernetInfo'));
   }
 
   /**
@@ -86,19 +86,19 @@ export function networkInfoTestSuite() {
    * @return {!Promise}
    */
   function changeGuid(guid) {
-    networkInfoElement.guid = guid;
+    networkCardElement.guid = guid;
     return flushTasks();
   }
 
   test('NetworkStatePopulated', () => {
-    return initializeNetworkInfo('wifiGuid').then(() => {
+    return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkInfoElement.$$('#guid'), fakeWifiNetwork.guid);
+          networkCardElement.$$('#guid'), fakeWifiNetwork.guid);
     });
   });
 
   test('CorrectInfoElementShown', () => {
-    return initializeNetworkInfo('wifiGuid')
+    return initializeNetworkCard('wifiGuid')
         .then(() => {
           // wifi-info should be visible.
           assertTrue(isVisible(getWifiInfo()));

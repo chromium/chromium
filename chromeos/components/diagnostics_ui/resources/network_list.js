@@ -5,7 +5,7 @@
 import './connectivity_card.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
-import './network_info.js';
+import './network_card.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -67,7 +67,7 @@ Polymer({
   onNetworkListChanged(networkGuidInfo) {
     // The connectivity-card is responsible for displaying the active network
     // so we need to filter out the activeGuid to avoid displaying a
-    // a network-info card for it.
+    // a network-card for it.
     this.otherNetworkGuids_ = networkGuidInfo.networkGuids.filter(
         guid => guid !== networkGuidInfo.activeGuid);
     this.activeGuid_ = networkGuidInfo.activeGuid || '';
