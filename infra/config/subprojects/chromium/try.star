@@ -1293,6 +1293,7 @@ try_.chromium_linux_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
+    os = os.LINUX_BIONIC,
 )
 
 try_.chromium_linux_builder(
