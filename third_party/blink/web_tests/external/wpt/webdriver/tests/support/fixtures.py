@@ -6,8 +6,6 @@ import asyncio
 import pytest
 import webdriver
 
-from six import string_types
-
 from urllib.parse import urlunsplit
 
 from tests.support import defaults
@@ -245,7 +243,7 @@ def create_dialog(session):
         if text is None:
             text = ""
 
-        assert isinstance(text, string_types), "`text` parameter must be a string"
+        assert isinstance(text, str), "`text` parameter must be a string"
 
         # Script completes itself when the user prompt has been opened.
         # For prompt() dialogs, add a value for the 'default' argument,

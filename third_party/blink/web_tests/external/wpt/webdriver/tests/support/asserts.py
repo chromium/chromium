@@ -2,8 +2,6 @@ import imghdr
 import struct
 from base64 import decodebytes
 
-import six
-
 from webdriver import Element, NoSuchAlertException, WebDriverException
 
 
@@ -52,8 +50,8 @@ def assert_error(response, error_code):
     assert response.status == errors[error_code]
     assert "value" in response.body
     assert response.body["value"]["error"] == error_code
-    assert isinstance(response.body["value"]["message"], six.text_type)
-    assert isinstance(response.body["value"]["stacktrace"], six.text_type)
+    assert isinstance(response.body["value"]["message"], str)
+    assert isinstance(response.body["value"]["stacktrace"], str)
     assert_response_headers(response.headers)
 
 
