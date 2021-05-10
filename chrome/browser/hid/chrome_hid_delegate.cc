@@ -35,10 +35,10 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
     content::HidChooser::Callback callback) {
   auto* chooser_context = GetChooserContext(frame);
-  if (!device_observer_.IsObservingSources())
-    device_observer_.Add(chooser_context);
-  if (!permission_observer_.IsObservingSources())
-    permission_observer_.Add(chooser_context);
+  if (!device_observation_.IsObserving())
+    device_observation_.Observe(chooser_context);
+  if (!permission_observation_.IsObserving())
+    permission_observation_.Observe(chooser_context);
 
   return std::make_unique<HidChooser>(chrome::ShowDeviceChooserDialog(
       frame, std::make_unique<HidChooserController>(frame, std::move(filters),
@@ -76,10 +76,10 @@ void ChromeHidDelegate::AddObserver(content::RenderFrameHost* frame,
                                     Observer* observer) {
   observer_list_.AddObserver(observer);
   auto* chooser_context = GetChooserContext(frame);
-  if (!device_observer_.IsObservingSources())
-    device_observer_.Add(chooser_context);
-  if (!permission_observer_.IsObservingSources())
-    permission_observer_.Add(chooser_context);
+  if (!device_observation_.IsObserving())
+    device_observation_.Observe(chooser_context);
+  if (!permission_observation_.IsObserving())
+    permission_observation_.Observe(chooser_context);
 }
 
 void ChromeHidDelegate::RemoveObserver(
@@ -121,14 +121,14 @@ void ChromeHidDelegate::OnDeviceChanged(
 }
 
 void ChromeHidDelegate::OnHidManagerConnectionError() {
-  device_observer_.RemoveAll();
-  permission_observer_.RemoveAll();
+  device_observation_.Reset();
+  permission_observation_.Reset();
 
   for (auto& observer : observer_list_)
     observer.OnHidManagerConnectionError();
 }
 
 void ChromeHidDelegate::OnHidChooserContextShutdown() {
-  device_observer_.RemoveAll();
-  permission_observer_.RemoveAll();
+  device_observation_.Reset();
+  permission_observation_.Reset();
 }
