@@ -136,13 +136,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   // Wait until PostSubBufferAsync() is finished on ThreadPool.
   void WaitUntilPostSubBufferAsyncFinished() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  struct FenceAndSemaphores {
-    VkFence fence = VK_NULL_HANDLE;
-    VkSemaphore semaphores[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
-  };
-  FenceAndSemaphores GetOrCreateFenceAndSemaphores()
+  bool GetOrCreateSemaphores(VkSemaphore* acquire_semaphore,
+                             VkSemaphore* present_semaphore)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void ReturnFenceAndSemaphores(const FenceAndSemaphores& fence_and_semaphores)
+  void ReturnSemaphores(VkSemaphore acquire_semaphore,
+                        VkSemaphore present_semaphore)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   mutable base::Lock lock_;
@@ -185,10 +183,14 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   scoped_refptr<base::SequencedTaskRunner> post_sub_buffer_task_runner_;
 
 #if !defined(OS_FUCHSIA)
-  // Available fence and semaphores can be reused when fence is passed.
+  // Available semaphores can be reused when waiting semaphores is over.
   // Not used on Fuchsia because Fuchsia's swapchain implementation doesn't
   // support fences.
-  base::circular_deque<FenceAndSemaphores> fence_and_semaphores_queue_
+  struct PendingSemaphores {
+    VkSemaphore acquire_semaphore = VK_NULL_HANDLE;
+    VkSemaphore present_semaphore = VK_NULL_HANDLE;
+  };
+  base::circular_deque<PendingSemaphores> pending_semaphores_queue_
       GUARDED_BY(lock_);
 #endif
 
