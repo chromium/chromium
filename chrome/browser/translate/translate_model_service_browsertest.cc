@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 }
 
 // Disabled on macOS+ASAN due to high failure rate: crbug.com/1199854.
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || defined(OS_WIN)
 #define MAYBE_LanguageDetectionWithBackgroundTab \
   DISABLED_LanguageDetectionWithBackgroundTab
 #else
