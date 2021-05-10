@@ -4,16 +4,14 @@
 
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
+#include <set>
 #include <string>
-#include <vector>
 
-#include "auction_url_loader_factory_proxy.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/interest_group/ad_auction.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_sandbox_type.h"
 #include "content/browser/storage_partition_impl.h"
@@ -92,46 +90,6 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
           std::move(simple_url_loader)));
 }
 
-struct ValidatedResult {
-  bool is_valid_auction_result = false;
-  std::string ad_json;
-};
-
-ValidatedResult ValidateAuctionResult(
-    const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders,
-    const GURL& render_url,
-    const url::Origin& owner,
-    const std::string& name) {
-  ValidatedResult result;
-  if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme))
-    return result;
-
-  for (const auto& bidder : bidders) {
-    // Auction winner must be one of the bidders and bidder must have ads.
-    if (bidder->group->owner != owner || bidder->group->name != name ||
-        !bidder->group->ads) {
-      continue;
-    }
-    // `render_url` must be one of the winning bidder's ads.
-    for (const auto& ad : bidder->group->ads.value()) {
-      if (ad->render_url == render_url) {
-        result.is_valid_auction_result = true;
-        if (ad->metadata) {
-          //`metadata` is already in JSON so no quotes are needed.
-          result.ad_json = base::StringPrintf(
-              R"({"render_url":"%s","metadata":%s})", render_url.spec().c_str(),
-              ad->metadata.value().c_str());
-        } else {
-          result.ad_json = base::StringPrintf(R"({"render_url":"%s"})",
-                                              render_url.spec().c_str());
-        }
-        return result;
-      }
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -154,213 +112,19 @@ void AdAuctionServiceImpl::CreateMojoService(
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                                         RunAdAuctionCallback callback) {
-  const url::Origin frame_origin = origin();
-  // If the interest group API is not allowed for this seller do nothing.
-  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), frame_origin,
-          config->seller.GetURL())) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-
-  // The seller origin has to match the `decision_logic_url` origin.
-  if (config->seller.scheme() != url::kHttpsScheme ||
-      !config->decision_logic_url.SchemeIs(url::kHttpsScheme) ||
-      config->seller != url::Origin::Create(config->decision_logic_url)) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-
-  if (!config->interest_group_buyers ||
-      config->interest_group_buyers->is_all_buyers()) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-  DCHECK(config->interest_group_buyers->is_buyers());
-  auto buyers = config->interest_group_buyers->get_buyers();
-
-  std::vector<url::Origin> trimmed_buyers;
-  std::copy_if(
-      buyers.begin(), buyers.end(), std::back_inserter(trimmed_buyers),
-      [this, &frame_origin](const url::Origin& buyer) {
-        return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-            render_frame_host()->GetBrowserContext(), frame_origin,
-            buyer.GetURL());
-      });
-  if (trimmed_buyers.size() == 0) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-  GetInterestGroupsFromStorage(std::move(config), trimmed_buyers,
-                               std::move(callback));
+  std::unique_ptr<AdAuction> auction = std::make_unique<AdAuction>(
+      this, std::move(config),
+      base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
+                     base::Unretained(this), std::move(callback)));
+  AdAuction* auction_ptr = auction.get();
+  auctions_.insert(std::move(auction));
+  auction_ptr->StartAuction();
 }
 
 InterestGroupManager* AdAuctionServiceImpl::GetInterestGroupManager() {
   return static_cast<StoragePartitionImpl*>(
              render_frame_host()->GetStoragePartition())
       ->GetInterestGroupStorage();
-}
-
-void AdAuctionServiceImpl::LaunchWorkletServiceIfNeeded() {
-  if (auction_worklet_service_ && auction_worklet_service_.is_connected())
-    return;
-  auction_worklet_service_.reset();
-  content::ServiceProcessHost::Launch(
-      auction_worklet_service_.BindNewPipeAndPassReceiver(),
-      ServiceProcessHost::Options()
-          .WithDisplayName("Auction Worklet Service")
-          .Pass());
-}
-
-void AdAuctionServiceImpl::GetInterestGroupsFromStorage(
-    blink::mojom::AuctionAdConfigPtr config,
-    const std::vector<url::Origin>& buyers,
-    RunAdAuctionCallback callback) {
-  if (buyers.empty()) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-  // Buyers in `per_buyer_signals` should be a subset of `buyers`.
-  if (config->per_buyer_signals) {
-    for (const auto& it : config->per_buyer_signals.value()) {
-      if (!base::Contains(buyers, it.first)) {
-        std::move(callback).Run(base::nullopt);
-        return;
-      }
-    }
-  }
-
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> interest_groups;
-  GetInterestGroup(buyers, std::move(bidders), std::move(config),
-                   std::move(callback), std::move(interest_groups));
-}
-
-void AdAuctionServiceImpl::GetInterestGroup(
-    std::vector<url::Origin> buyers,
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
-    blink::mojom::AuctionAdConfigPtr config,
-    RunAdAuctionCallback callback,
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-        interest_groups) {
-  for (auto& interest_group : interest_groups)
-    bidders.emplace_back(std::move(interest_group));
-
-  // Get interest groups of each buyer from storage and push them to bidders.
-  if (!buyers.empty()) {
-    url::Origin buyer = buyers.back();
-    buyers.pop_back();
-    if (buyer.scheme() != url::kHttpsScheme) {
-      std::move(callback).Run(base::nullopt);
-      return;
-    }
-    GetInterestGroupManager()->GetInterestGroupsForOwner(
-        buyer, base::BindOnce(&AdAuctionServiceImpl::GetInterestGroup,
-                              weak_ptr_factory_.GetWeakPtr(), std::move(buyers),
-                              std::move(bidders), std::move(config),
-                              std::move(callback)));
-    return;
-  }
-
-  StartAuction(std::move(config), std::move(bidders), std::move(callback));
-}
-
-void AdAuctionServiceImpl::StartAuction(
-    blink::mojom::AuctionAdConfigPtr config,
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
-    RunAdAuctionCallback callback) {
-  if (bidders.empty()) {
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-  // TODO(qingxin): Determine if one service per auction / frame is good.
-  LaunchWorkletServiceIfNeeded();
-  auto browser_signals =
-      auction_worklet::mojom::BrowserSignals::New(origin(), config->seller);
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  auto url_loader_factory_proxy =
-      std::make_unique<AuctionURLLoaderFactoryProxy>(
-          url_loader_factory.InitWithNewPipeAndPassReceiver(),
-          base::BindRepeating(&AdAuctionServiceImpl::GetFrameURLLoaderFactory,
-                              base::Unretained(this)),
-          base::BindRepeating(&AdAuctionServiceImpl::GetTrustedURLLoaderFactory,
-                              base::Unretained(this)),
-          browser_signals->top_frame_origin, *config, bidders);
-
-  // If the AuctionWorklet service crashes, it will silently delete the bound
-  // WorkletComplete callback. Create a ScopedClosureRunner to invoke the
-  // RunAdAuctionCallback if the WorkletComplete callback is destroyed without
-  // being invoked.
-  // TODO(crbug.com/1201642): Redesign this to handle worklet crashes
-  // differently.
-  std::unique_ptr<RunAdAuctionCallback> owned_callback =
-      std::make_unique<RunAdAuctionCallback>(std::move(callback));
-  RunAdAuctionCallback* unowned_callback = owned_callback.get();
-  base::ScopedClosureRunner on_crash(base::BindOnce(
-      &AdAuctionServiceImpl::OnMaybeWorkletCrashed,
-      weak_ptr_factory_.GetWeakPtr(), std::move(owned_callback)));
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy;
-  bidders_copy.reserve(bidders.size());
-  for (auto& bidder : bidders)
-    bidders_copy.emplace_back(bidder.Clone());
-  ++running_auctions_;
-  auction_worklet_service_->RunAuction(
-      std::move(url_loader_factory), std::move(config), std::move(bidders),
-      std::move(browser_signals),
-      base::BindOnce(&AdAuctionServiceImpl::WorkletComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(bidders_copy),
-                     unowned_callback, std::move(url_loader_factory_proxy),
-                     std::move(on_crash)));
-}
-
-void AdAuctionServiceImpl::WorkletComplete(
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
-    RunAdAuctionCallback* callback,
-    std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy,
-    base::ScopedClosureRunner on_crash,
-    const GURL& render_url,
-    const url::Origin& owner,
-    const std::string& name,
-    auction_worklet::mojom::WinningBidderReportPtr bidder_report,
-    auction_worklet::mojom::SellerReportPtr seller_report,
-    const std::vector<std::string>& errors) {
-  // Release process if needed.
-  AuctionComplete();
-
-  // Forward debug information to devtools.
-  for (const std::string& error : errors) {
-    devtools_instrumentation::LogWorkletError(
-        static_cast<RenderFrameHostImpl*>(render_frame_host()), error);
-  }
-
-  // Check if returned winner's information is valid.
-  ValidatedResult result =
-      ValidateAuctionResult(bidders, render_url, owner, name);
-  if (!result.is_valid_auction_result) {
-    std::move(*callback).Run(base::nullopt);
-    return;
-  }
-  std::move(*callback).Run(render_url);
-
-  GetInterestGroupManager()->RecordInterestGroupWin(owner, name,
-                                                    result.ad_json);
-  // TODO(qingxin): Decide if we should record a bid if the auction fails, or
-  // the interest group doesn't make a bid.
-  for (const auto& bidder : bidders) {
-    GetInterestGroupManager()->RecordInterestGroupBid(bidder->group->owner,
-                                                      bidder->group->name);
-  }
-
-  network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
-  if (bidder_report->report_requested && bidder_report->report_url.is_valid() &&
-      bidder_report->report_url.SchemeIs(url::kHttpsScheme)) {
-    FetchReport(factory, bidder_report->report_url, origin());
-  }
-  if (seller_report->success && seller_report->report_url.is_valid() &&
-      seller_report->report_url.SchemeIs(url::kHttpsScheme)) {
-    FetchReport(factory, seller_report->report_url, origin());
-  }
 }
 
 network::mojom::URLLoaderFactory*
@@ -403,32 +167,60 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   return trusted_url_loader_factory_.get();
 }
 
-void AdAuctionServiceImpl::AuctionComplete() {
-  DCHECK_GE(running_auctions_, 1);
-  --running_auctions_;
+auction_worklet::mojom::AuctionWorkletService*
+AdAuctionServiceImpl::GetWorkletService() {
+  // If there are no live auctions, what's requesting the service?
+  DCHECK(!auctions_.empty());
 
-  // Shutdown the process if we don't need it.
-  if (running_auctions_ == 0)
+  if (!auction_worklet_service_ || !auction_worklet_service_.is_connected()) {
     auction_worklet_service_.reset();
+    content::ServiceProcessHost::Launch(
+        auction_worklet_service_.BindNewPipeAndPassReceiver(),
+        ServiceProcessHost::Options()
+            .WithDisplayName("Auction Worklet Service")
+            .Pass());
+    auction_worklet_service_.set_disconnect_handler(base::BindOnce(
+        &AdAuctionServiceImpl::OnWorkletServiceCrash, base::Unretained(this)));
+  }
+  return auction_worklet_service_.get();
 }
 
-// static
-void AdAuctionServiceImpl::OnMaybeWorkletCrashed(
-    base::WeakPtr<AdAuctionServiceImpl> self,
-    std::unique_ptr<AdAuctionServiceImpl::RunAdAuctionCallback> callback) {
-  // The callback is null if WorkletComplete already ran it, e.g. no crash has
-  // happened.
-  if (callback->is_null())
+void AdAuctionServiceImpl::OnAuctionComplete(
+    RunAdAuctionCallback callback,
+    AdAuction* auction,
+    base::Optional<GURL> render_url,
+    base::Optional<GURL> bidder_report_url,
+    base::Optional<GURL> seller_report_url) {
+  auto auction_it = auctions_.find(auction);
+  DCHECK(auction_it != auctions_.end());
+  auctions_.erase(auction_it);
+
+  if (auctions_.empty())
+    auction_worklet_service_.reset();
+
+  std::move(callback).Run(render_url);
+
+  if (!render_url) {
+    DCHECK(!bidder_report_url);
+    DCHECK(!seller_report_url);
     return;
+  }
 
-  // self may be null if we got destroyed due to navigating away or the renderer
-  // closing the pipe. At that point there is no need to call AuctionComplete,
-  // but the callback may still need to be run in the former case if the pipe is
-  // still alive for now.
-  if (self)
-    self->AuctionComplete();
+  network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
+  if (bidder_report_url)
+    FetchReport(factory, *bidder_report_url, origin());
+  if (seller_report_url)
+    FetchReport(factory, *seller_report_url, origin());
+}
 
-  std::move(*callback).Run(base::nullopt);
+void AdAuctionServiceImpl::OnWorkletServiceCrash() {
+  // Each loop iteration calls on OnServiceCrash() on a single element of
+  // `auctions_`, which should result in it being immediately deleted. Since the
+  // loop modifies `auctions_`, need to be careful not to hold onto an iterator
+  // for the removed element, which this loop does by checking if `auctions_` is
+  // empty, rather than using a for loop.
+  while (!auctions_.empty())
+    (*auctions_.begin())->OnServiceCrash();
 }
 
 }  // namespace content
