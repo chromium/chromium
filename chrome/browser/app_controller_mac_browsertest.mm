@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -915,6 +916,37 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   // Ensure a cached menu was used.
   EXPECT_EQ(profile1_submenu, [ac bookmarkMenuBridge]->BookmarkMenu());
+}
+
+// Tests opening a new window from a browser command while incognito is forced.
+// Regression test for https://crbug.com/1206726
+IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
+                       ForcedIncognito_NewWindow) {
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Close the current non-incognito browser.
+  Profile* profile = browser()->profile();
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  // Force incognito mode.
+  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
+                                      IncognitoModePrefs::FORCED);
+  // Simulate click on "New window".
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  AppController* ac = base::mac::ObjCCast<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
+  NSMenu* menu = [ac applicationDockMenu:NSApp];
+  ASSERT_TRUE(menu);
+  NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
+  ASSERT_TRUE(item);
+  [ac commandDispatch:item];
+  // Check that a new incognito browser is opened.
+  Browser* new_browser = browser_added_observer.Wait();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
+  EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
 }
 
 }  // namespace

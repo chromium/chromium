@@ -1521,8 +1521,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (!profile)
     return nullptr;
 
-  // Guest sessions must always be OffTheRecord. Use that when opening windows.
-  if (profile->IsGuestSession())
+  // When opening a Guest session or if incognito is forced.
+  if (ProfileManager::IsOffTheRecordModeForced(profile))
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   return profile;
