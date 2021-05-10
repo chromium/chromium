@@ -22,10 +22,13 @@ js_library("os_powerwash_dialog") {
     ":os_powerwash_dialog_esim_item",
     ":os_reset_browser_proxy",
     "..:metrics_recorder.m",
+    "..:os_route.m",
     "../..:lifetime_browser_proxy",
+    "../..:router",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
   ]
 }
 

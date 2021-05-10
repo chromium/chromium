@@ -16,9 +16,12 @@ import '../../settings_shared_css.js';
 import './os_powerwash_dialog_esim_item.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
+import {Router} from '../../router.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
 
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 
@@ -47,7 +50,20 @@ Polymer({
     shouldShowESimWarning_: {
       type: Boolean,
       value: false,
-      computed: 'computeShouldShowESimWarning_(installedESimProfiles)',
+      computed:
+          'computeShouldShowESimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
+    },
+
+    /** @private */
+    isESimCheckboxChecked_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    hasContinueBeenTapped_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -69,11 +85,33 @@ Polymer({
         this.requestTpmFirmwareUpdate);
   },
 
+  /** @private */
+  onContinueTap_() {
+    this.hasContinueBeenTapped_ = true;
+  },
+
+  /** @private */
+  onMobileSettingsLinkClicked_(event) {
+    event.detail.event.preventDefault();
+
+    const params = new URLSearchParams;
+    params.append(
+        'type',
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kCellular));
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+
+    this.$.dialog.close();
+  },
+
   /**
    * @return {boolean}
    * @private
    */
   computeShouldShowESimWarning_() {
+    if (this.hasContinueBeenTapped_) {
+      return false;
+    }
     return !!this.installedESimProfiles.length;
   },
 });

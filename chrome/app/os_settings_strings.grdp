@@ -3141,7 +3141,7 @@ Press an assigned switch to remove assignment.
     Remove eSIM profiles before Powerwash
   </message>
   <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_WARNING" desc="Warning text in the 'Factory Reset' window informing the user that the eSIM profiles they have installed won't be removed by a factory reset. Contains a url to the mobile data subpage.">
-    Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Mobile Settings<ph name="LINK_END">&lt;/a&gt;</ph> to manually remove these profiles.
+    Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Mobile Settings<ph name="LINK_END">&lt;/a&gt;</ph> to manually remove these profiles.
   </message>
   <message name="IDS_SETTINGS_FACTORY_RESET_ESIM_LIST_TITLE" desc="Title for the list showing installed eSIM profiles in the 'Factory Reset' window.">
     Active profiles

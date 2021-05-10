@@ -37,13 +37,12 @@
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}"
     ignore-enter-key>
-  <template is="dom-if" if="[[shouldShowESimWarning_]]">
+  <template is="dom-if" if="[[shouldShowESimWarning_]]" restamp>
     <div slot="title">$i18n{powerwashDialogESimWarningTitle}</div>
     <div slot="body">
-      <!-- TODO(crbug.com/1196511): Add link to mobile settings. -->
       <settings-localized-link
           localized-string="$i18n{powerwashDialogESimWarning}"
-          link-url="#">
+          on-link-clicked="onMobileSettingsLinkClicked_">
       </settings-localized-link>
       <div id="profilesListContainer">
         <div id="profilesListTitle">
@@ -61,14 +60,14 @@
           </template>
         </iron-list>
       </div>
-      <cr-checkbox>
+      <cr-checkbox checked="{{isESimCheckboxChecked_}}">
         <div id="checkboxLabel">
           $i18n{powerwashDialogESimWarningCheckbox}
         </div>
       </cr-checkbox>
     </div>
   </template>
-  <template is="dom-if" if="[[!shouldShowESimWarning_]]">
+  <template is="dom-if" if="[[!shouldShowESimWarning_]]" restamp>
     <div slot="title">$i18n{powerwashDialogTitle}</div>
     <div slot="body">
       <div id="powerwashContainer">
@@ -82,16 +81,16 @@
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelTap_"
         id="cancel">$i18n{cancel}</cr-button>
-    <template is="dom-if" if="[[!shouldShowESimWarning_]]">
+    <template is="dom-if" if="[[!shouldShowESimWarning_]]" restamp>
       <cr-button class="action-button" id="powerwash"
           on-click="onRestartTap_">
         $i18n{powerwashDialogButton}
       </cr-button>
     </template>
-    <template is="dom-if" if="[[shouldShowESimWarning_]]">
-      <!-- TODO(crbug.com/1196511): Add continue button logic. -->
+    <template is="dom-if" if="[[shouldShowESimWarning_]]" restamp>
       <cr-button class="action-button" id="continue"
-          hidden="[[!shouldShowESimWarning_]]">
+          on-click="onContinueTap_"
+          disabled="[[!isESimCheckboxChecked_]]">
         $i18n{powerwashContinue}
       </cr-button>
     </template>

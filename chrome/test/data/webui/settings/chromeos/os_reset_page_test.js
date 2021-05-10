@@ -102,6 +102,29 @@ cr.define('settings_reset_page', function() {
       ]);
     }
 
+    async function openDialogWithESimWarning() {
+      init(/*updatedCellularActivationUi=*/ true);
+      eSimManagerRemote.addEuiccForTest(2);
+
+      // Set the first profile's state to kActive.
+      const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
+      const profile = (await euicc.getProfileList()).profiles[0];
+      profile.properties.state =
+          chromeos.cellularSetup.mojom.ProfileState.kActive;
+
+      // Click the powerwash button.
+      resetPage.$$('#powerwash').click();
+      await flushAsync();
+
+      // The eSIM warning should be showing.
+      assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ true);
+      const dialog = resetPage.$$('os-settings-powerwash-dialog');
+      assertEquals(dialog.$$('iron-list').items.length, 1);
+
+      // The 'Continue' button should initially be disabled.
+      assertTrue(dialog.$$('#continue').disabled);
+    }
+
     /**
      * @param {boolean} shouldBeShowingESimWarning
      */
@@ -223,24 +246,40 @@ cr.define('settings_reset_page', function() {
     test(
         'Cellular flag on, with non-pending profile shows eSIM warning dialog',
         async () => {
-          init(/*updatedCellularActivationUi=*/ true);
-          eSimManagerRemote.addEuiccForTest(2);
+          await openDialogWithESimWarning();
 
-          // Set the first profile's state to kActive.
-          const euicc =
-              (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
-          const profile = (await euicc.getProfileList()).profiles[0];
-          profile.properties.state =
-              chromeos.cellularSetup.mojom.ProfileState.kActive;
+          // Clicking the checkbox should enable the 'Continue' button.
+          const dialog = resetPage.$$('os-settings-powerwash-dialog');
+          const continueButton = dialog.$$('#continue');
+          dialog.$$('cr-checkbox').click();
+          assertFalse(continueButton.disabled);
 
-          // Click the powerwash button.
-          resetPage.$$('#powerwash').click();
+          // Click the 'Continue' button.
+          continueButton.click();
+          await flushAsync();
+          // The powerwash UI should now be showing.
+          assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
+        });
+
+    test(
+        'eSIM warning dialog link click goes to mobile data subpage',
+        async () => {
+          await openDialogWithESimWarning();
+
+          const dialog = resetPage.$$('os-settings-powerwash-dialog');
+          const mobileSettingsLink = dialog.$$('settings-localized-link')
+                                         .shadowRoot.querySelector('a');
+          assertTrue(!!mobileSettingsLink);
+
+          mobileSettingsLink.click();
           await flushAsync();
 
-          // The eSIM warning should be showing.
-          assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ true);
-          const dialog = resetPage.$$('os-settings-powerwash-dialog');
-          assertEquals(dialog.$$('iron-list').items.length, 1);
+          assertEquals(
+              settings.routes.INTERNET_NETWORKS,
+              settings.Router.getInstance().getCurrentRoute());
+          assertEquals(
+              'type=Cellular',
+              settings.Router.getInstance().getQueryParameters().toString());
         });
   });
 
