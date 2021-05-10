@@ -366,7 +366,7 @@ class MockHashStoreContents : public HashStoreContents {
   MockHashStoreContents() {}
 
   // Returns the number of hashes stored.
-  size_t stored_hashes_count() const { return dictionary_.size(); }
+  size_t stored_hashes_count() const { return dictionary_.DictSize(); }
 
   // Returns the number of paths cleared.
   size_t cleared_paths_count() const { return removed_entries_.size(); }
@@ -1030,7 +1030,7 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
     // invalid keys.
     const base::Value* split_value_in_store;
     ASSERT_TRUE(pref_store_contents_->Get(kSplitPref, &split_value_in_store));
-    ASSERT_EQ(2U, dict_value->size());
+    ASSERT_EQ(2U, dict_value->DictSize());
     ASSERT_FALSE(dict_value->HasKey("a"));
     ASSERT_TRUE(dict_value->HasKey("b"));
     ASSERT_FALSE(dict_value->HasKey("c"));
@@ -1049,7 +1049,7 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
     const base::Value* split_value_in_store;
     ASSERT_TRUE(pref_store_contents_->Get(kSplitPref, &split_value_in_store));
     ASSERT_EQ(dict_value, split_value_in_store);
-    ASSERT_EQ(4U, dict_value->size());
+    ASSERT_EQ(4U, dict_value->DictSize());
     ASSERT_TRUE(dict_value->HasKey("a"));
     ASSERT_TRUE(dict_value->HasKey("b"));
     ASSERT_TRUE(dict_value->HasKey("c"));
