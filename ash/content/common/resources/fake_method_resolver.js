@@ -17,9 +17,6 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
  */
 class FakeMethodState {
   constructor() {
-    /** @private {PromiseResolver} */
-    this.resolver_ = new PromiseResolver();
-
     /** @private {T} */
     this.result_ = undefined;
   }
@@ -29,8 +26,9 @@ class FakeMethodState {
    * @return {!Promise}
    */
   resolveMethod() {
-    this.resolver_.resolve(this.result_);
-    return this.resolver_.promise;
+    let resolver = new PromiseResolver();
+    resolver.resolve(this.result_);
+    return resolver.promise;
   }
 
   /**

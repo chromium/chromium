@@ -42,4 +42,20 @@ export function fakeMethodResolverTestSuite() {
       assertEquals(expected, result);
     });
   });
+
+  test('AddingMethodWithChangedResult', () => {
+    resolver.register('foo');
+    const expected = {'foo': 'bar'};
+    const second_expected = {'foo': 'baz'};
+    resolver.setResult('foo', expected);
+    resolver.resolveMethod('foo').then((result) => {
+      assertEquals(expected, result);
+    });
+    resolver.setResult('foo', second_expected);
+    return resolver.resolveMethod('foo').then((result) => {
+      assertEquals(second_expected, result);
+    });
+  });
+
+
 }
