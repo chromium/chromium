@@ -6859,3 +6859,6 @@ crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/i
 crbug.com/1206734 [ Mac10.13 ] external/wpt/websockets/Send-binary-blob.any.worker.html?wpt_flags=h2 [ Timeout ]
 
 crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html [ Pass Failure ]
+
+# Temporarily disable the test case. Will be re-enabled in CL 2804364
+crbug.com/1046784 http/tests/devtools/sources/debugger/debugger-scope-resolve-this.js [ Pass Failure ]
