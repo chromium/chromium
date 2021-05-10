@@ -367,6 +367,12 @@ const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
 const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
     &kDnsOverHttps, "Templates", ""};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables the DNS-Over-HTTPS in the DNS proxy.
+const base::Feature kDnsProxyEnableDOH{"DnsProxyEnableDOH",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_ANDROID)
 // Enable changing default downloads storage location on Android.
 const base::Feature kDownloadsLocationChange{"DownloadsLocationChange",

@@ -4229,6 +4229,12 @@ const char kEnableDnsProxyDescription[] =
     "When enabled, standard DNS queries will be proxied through the system "
     "service";
 
+const char kDnsProxyEnableDOHName[] =
+    "Enable DNS-over-HTTPS in the DNS proxy service";
+const char kDnsProxyEnableDOHDescription[] =
+    "When enabled, the DNS proxy will perform DNS-over-HTTPS in accordance "
+    "with the Chrome OS SecureDNS settings.";
+
 const char kEnableEncryptionMigrationName[] =
     "Enable encryption migration of user data";
 const char kEnableEncryptionMigrationDescription[] =

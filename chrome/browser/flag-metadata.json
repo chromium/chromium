@@ -1155,6 +1155,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "dns-proxy-enable-doh",
+    "owners": [ "garrick", "jasongustaman" ],
+    "expiry_milestone": 99
+  },
+   {
     "name": "document-transition",
     "owners": [ "vmpstr", "chrishtr" ],
     "expiry_milestone" : 94

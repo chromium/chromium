@@ -46175,6 +46175,7 @@ from previous Chrome versions.
   <int value="-595353721" label="RecordWebAppDebugInfo:enabled"/>
   <int value="-594076614" label="PluginVmShowCameraPermissions:disabled"/>
   <int value="-593536514" label="ExperimentalTabController:enabled"/>
+  <int value="-592628080" label="DnsProxyEnableDOH:disabled"/>
   <int value="-591874964" label="LiteVideo:enabled"/>
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
   <int value="-588669613"
@@ -48234,6 +48235,7 @@ from previous Chrome versions.
   <int value="1247293682" label="topchrome-md"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
+  <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
   <int value="1253001092" label="FeedShare:enabled"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
