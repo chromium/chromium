@@ -1109,7 +1109,7 @@ void ScanForCustomEvents(
     ArcTracingGraphicsModel::BufferEvents* out_custom_events) {
   if (base::StartsWith(event->GetName(), kCustomTracePrefix,
                        base::CompareCase::SENSITIVE)) {
-    DCHECK(!event->GetArgs() || event->GetArgs()->empty());
+    DCHECK(!event->GetArgs() || event->GetArgs()->DictEmpty());
     out_custom_events->emplace_back(
         ArcTracingGraphicsModel::BufferEventType::kCustomEvent,
         event->GetTimestamp(),
