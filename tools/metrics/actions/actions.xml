@@ -7102,8 +7102,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="FileBrowser.SuggestApps.ShowDialog">
-  <owner>sashab@chromium.org</owner>
-  <owner>slangley@chromium.org</owner>
+  <obsolete>
+    Removed in M90. Files.app no longer displays CWS widget dialog.
+  </obsolete>
+  <owner>simmonsjosh@google.com</owner>
   <description>
     The embedded Chrome Web Store dialog was shown with suggested apps to open
     the file in the file manager app.
