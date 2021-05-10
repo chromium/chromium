@@ -152,12 +152,9 @@ void AnimationEffect::UpdateInheritedTime(
   last_update_time_ = inherited_time;
   last_update_phase_ = timeline_phase;
 
-  const base::Optional<double> local_time =
-      inherited_time ? base::make_optional(inherited_time.value().InSecondsF())
-                     : base::nullopt;
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        local_time, timeline_phase, direction, IsA<KeyframeEffect>(this),
+        inherited_time, timeline_phase, direction, IsA<KeyframeEffect>(this),
         playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
@@ -187,9 +184,9 @@ void AnimationEffect::UpdateInheritedTime(
     // FIXME: This probably shouldn't be recursive.
     UpdateChildrenAndEffects();
     calculated_.time_to_forwards_effect_change = CalculateTimeToEffectChange(
-        true, local_time, calculated_.time_to_next_iteration);
+        true, inherited_time, calculated_.time_to_next_iteration);
     calculated_.time_to_reverse_effect_change = CalculateTimeToEffectChange(
-        false, local_time, calculated_.time_to_next_iteration);
+        false, inherited_time, calculated_.time_to_next_iteration);
   }
 }
 

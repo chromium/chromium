@@ -993,9 +993,9 @@ TEST_F(AnimationAnimationTestNoCompositing, AnimationsDisassociateFromEffect) {
 
 TEST_F(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
   Timing timing;
-  timing.start_delay = 1;
+  timing.start_delay = AnimationTimeDelta::FromSecondsD(1);
   timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
-  timing.end_delay = 1;
+  timing.end_delay = AnimationTimeDelta::FromSecondsD(1);
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, MakeEmptyEffectModel(), timing);
   animation = timeline->Play(keyframe_effect);

@@ -298,8 +298,7 @@ void Animation::Dispose() {
 }
 
 AnimationTimeDelta Animation::EffectEnd() const {
-  return content_ ? AnimationTimeDelta::FromSecondsD(
-                        content_->SpecifiedTiming().EndTimeInternal())
+  return content_ ? content_->SpecifiedTiming().EndTimeInternal()
                   : AnimationTimeDelta();
 }
 

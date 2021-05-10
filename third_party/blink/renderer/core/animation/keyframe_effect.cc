@@ -655,14 +655,15 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
 
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
-    base::Optional<double> local_time,
+    base::Optional<AnimationTimeDelta> local_time,
     AnimationTimeDelta time_to_next_iteration) const {
-  const double start_time = SpecifiedTiming().start_delay;
-  const double end_time_minus_end_delay =
+  const AnimationTimeDelta start_time = SpecifiedTiming().start_delay;
+  const AnimationTimeDelta end_time_minus_end_delay =
       start_time + SpecifiedTiming().ActiveDuration();
-  const double end_time =
+  const AnimationTimeDelta end_time =
       end_time_minus_end_delay + SpecifiedTiming().end_delay;
-  const double after_time = std::min(end_time_minus_end_delay, end_time);
+  const AnimationTimeDelta after_time =
+      std::min(end_time_minus_end_delay, end_time);
 
   Timing::Phase phase = GetPhase();
   DCHECK(local_time || phase == Timing::kPhaseNone);
@@ -672,18 +673,17 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     case Timing::kPhaseBefore:
       // Return value is clamped at 0 to prevent unexpected results that could
       // be caused by returning negative values.
-      return forwards ? AnimationTimeDelta::FromSecondsD(std::max<double>(
-                            start_time - local_time.value(), 0))
+      return forwards ? std::max(start_time - local_time.value(),
+                                 AnimationTimeDelta())
                       : AnimationTimeDelta::Max();
     case Timing::kPhaseActive:
       if (forwards) {
         // Need service to apply fill / fire events.
-        const double time_to_end = after_time - local_time.value();
+        const AnimationTimeDelta time_to_end = after_time - local_time.value();
         if (RequiresIterationEvents()) {
-          return std::min(AnimationTimeDelta::FromSecondsD(time_to_end),
-                          time_to_next_iteration);
+          return std::min(time_to_end, time_to_next_iteration);
         }
-        return AnimationTimeDelta::FromSecondsD(time_to_end);
+        return time_to_end;
       }
       return {};
     case Timing::kPhaseAfter:
@@ -692,11 +692,10 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
         // If an animation has a positive-valued end delay, we need an
         // additional tick at the end time to ensure that the finished event is
         // delivered.
-        return end_time > local_time ? AnimationTimeDelta::FromSecondsD(
-                                           end_time - local_time.value())
+        return end_time > local_time ? end_time - local_time.value()
                                      : AnimationTimeDelta::Max();
       }
-      return AnimationTimeDelta::FromSecondsD(local_time.value() - after_time);
+      return local_time.value() - after_time;
     default:
       NOTREACHED();
       return AnimationTimeDelta::Max();

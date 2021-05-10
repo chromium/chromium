@@ -52,16 +52,45 @@ static inline double TimingCalculationEpsilon() {
   return 2.0 * std::numeric_limits<double>::epsilon();
 }
 
+static inline AnimationTimeDelta TimeTolerance() {
+  return AnimationTimeDelta::FromSecondsD(0.000001 /*one microsecond*/);
+}
+
 static inline bool IsWithinAnimationTimeEpsilon(double a, double b) {
   return std::abs(a - b) <= TimingCalculationEpsilon();
+}
+
+static inline bool IsWithinAnimationTimeTolerance(AnimationTimeDelta a,
+                                                  AnimationTimeDelta b) {
+  if (a.is_inf() || b.is_inf()) {
+    return a == b;
+  }
+  AnimationTimeDelta difference = a >= b ? a - b : b - a;
+  return difference <= TimeTolerance();
 }
 
 static inline bool LessThanOrEqualToWithinEpsilon(double a, double b) {
   return a <= b + TimingCalculationEpsilon();
 }
 
+static inline bool LessThanOrEqualToWithinTimeTolerance(AnimationTimeDelta a,
+                                                        AnimationTimeDelta b) {
+  return a <= b + TimeTolerance();
+}
+
 static inline bool GreaterThanOrEqualToWithinEpsilon(double a, double b) {
   return a >= b - TimingCalculationEpsilon();
+}
+
+static inline bool GreaterThanOrEqualToWithinTimeTolerance(
+    AnimationTimeDelta a,
+    AnimationTimeDelta b) {
+  return a >= b - TimeTolerance();
+}
+
+static inline bool GreaterThanWithinTimeTolerance(AnimationTimeDelta a,
+                                                  AnimationTimeDelta b) {
+  return a > b - TimeTolerance();
 }
 
 static inline double MultiplyZeroAlwaysGivesZero(double x, double y) {
@@ -70,26 +99,29 @@ static inline double MultiplyZeroAlwaysGivesZero(double x, double y) {
   return x && y ? x * y : 0;
 }
 
-static inline double MultiplyZeroAlwaysGivesZero(AnimationTimeDelta x,
-                                                 double y) {
+static inline AnimationTimeDelta MultiplyZeroAlwaysGivesZero(
+    AnimationTimeDelta x,
+    double y) {
   DCHECK(!std::isnan(y));
-  return x.is_zero() || y == 0 ? 0 : (x * y).InSecondsF();
+  return x.is_zero() || y == 0 ? AnimationTimeDelta() : (x * y);
 }
 
 // https://drafts.csswg.org/web-animations-1/#animation-effect-phases-and-states
 static inline Timing::Phase CalculatePhase(
-    double active_duration,
-    base::Optional<double> local_time,
+    AnimationTimeDelta active_duration,
+    base::Optional<AnimationTimeDelta> local_time,
     base::Optional<Timing::Phase> timeline_phase,
     Timing::AnimationDirection direction,
     const Timing& specified) {
-  DCHECK_GE(active_duration, 0);
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
+                                                 AnimationTimeDelta()));
   if (!local_time)
     return Timing::kPhaseNone;
-  double end_time = std::max(
-      specified.start_delay + active_duration + specified.end_delay, 0.0);
-  double before_active_boundary_time =
-      std::max(std::min(specified.start_delay, end_time), 0.0);
+  AnimationTimeDelta end_time =
+      std::max(specified.start_delay + active_duration + specified.end_delay,
+               AnimationTimeDelta());
+  AnimationTimeDelta before_active_boundary_time =
+      std::max(std::min(specified.start_delay, end_time), AnimationTimeDelta());
   if (local_time.value() < before_active_boundary_time ||
       (local_time.value() == before_active_boundary_time && timeline_phase &&
        timeline_phase.value() == Timing::kPhaseBefore) ||
@@ -97,8 +129,9 @@ static inline Timing::Phase CalculatePhase(
        direction == Timing::AnimationDirection::kBackwards)) {
     return Timing::kPhaseBefore;
   }
-  double active_after_boundary_time = std::max(
-      std::min(specified.start_delay + active_duration, end_time), 0.0);
+  AnimationTimeDelta active_after_boundary_time =
+      std::max(std::min(specified.start_delay + active_duration, end_time),
+               AnimationTimeDelta());
   if (local_time > active_after_boundary_time ||
       (local_time.value() == active_after_boundary_time && timeline_phase &&
        timeline_phase.value() == Timing::kPhaseAfter) ||
@@ -111,33 +144,33 @@ static inline Timing::Phase CalculatePhase(
 
 // https://drafts.csswg.org/web-animations/#calculating-the-active-time
 static inline base::Optional<AnimationTimeDelta> CalculateActiveTime(
-    double active_duration,
+    AnimationTimeDelta active_duration,
     Timing::FillMode fill_mode,
-    base::Optional<double> local_time,
+    base::Optional<AnimationTimeDelta> local_time,
     Timing::Phase phase,
     const Timing& specified) {
-  DCHECK_GE(active_duration, 0);
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
+                                                 AnimationTimeDelta()));
 
   switch (phase) {
     case Timing::kPhaseBefore:
       if (fill_mode == Timing::FillMode::BACKWARDS ||
           fill_mode == Timing::FillMode::BOTH) {
         DCHECK(local_time.has_value());
-        return AnimationTimeDelta::FromSecondsD(
-            std::max(local_time.value() - specified.start_delay, 0.0));
+        return std::max(local_time.value() - specified.start_delay,
+                        AnimationTimeDelta());
       }
       return base::nullopt;
     case Timing::kPhaseActive:
       DCHECK(local_time.has_value());
-      return AnimationTimeDelta::FromSecondsD(local_time.value() -
-                                              specified.start_delay);
+      return local_time.value() - specified.start_delay;
     case Timing::kPhaseAfter:
       if (fill_mode == Timing::FillMode::FORWARDS ||
           fill_mode == Timing::FillMode::BOTH) {
         DCHECK(local_time.has_value());
-        return AnimationTimeDelta::FromSecondsD(std::max(
-            0.0, std::min(active_duration,
-                          local_time.value() - specified.start_delay)));
+        return std::max(AnimationTimeDelta(),
+                        std::min(active_duration,
+                                 local_time.value() - specified.start_delay));
       }
       return base::nullopt;
     case Timing::kPhaseNone:
@@ -155,7 +188,7 @@ static inline base::Optional<AnimationTimeDelta> CalculateActiveTime(
 static inline base::Optional<double> CalculateOverallProgress(
     Timing::Phase phase,
     base::Optional<AnimationTimeDelta> active_time,
-    double iteration_duration,
+    AnimationTimeDelta iteration_duration,
     double iteration_count,
     double iteration_start) {
   // 1. If the active time is unresolved, return unresolved.
@@ -164,11 +197,12 @@ static inline base::Optional<double> CalculateOverallProgress(
 
   // 2. Calculate an initial value for overall progress.
   double overall_progress = 0;
-  if (IsWithinAnimationTimeEpsilon(iteration_duration, 0)) {
+  if (IsWithinAnimationTimeTolerance(iteration_duration,
+                                     AnimationTimeDelta())) {
     if (phase != Timing::kPhaseBefore)
       overall_progress = iteration_count;
   } else {
-    overall_progress = active_time->InSecondsF() / iteration_duration;
+    overall_progress = (active_time.value() / iteration_duration);
   }
 
   return overall_progress + iteration_start;
@@ -184,7 +218,7 @@ static inline base::Optional<double> CalculateSimpleIterationProgress(
     base::Optional<double> overall_progress,
     double iteration_start,
     base::Optional<AnimationTimeDelta> active_time,
-    double active_duration,
+    AnimationTimeDelta active_duration,
     double iteration_count) {
   // 1. If the overall progress is unresolved, return unresolved.
   if (!overall_progress)
@@ -209,8 +243,7 @@ static inline base::Optional<double> CalculateSimpleIterationProgress(
   // let the simple iteration progress be 1.0.
   if (IsWithinAnimationTimeEpsilon(simple_iteration_progress, 0.0) &&
       (phase == Timing::kPhaseActive || phase == Timing::kPhaseAfter) &&
-      IsWithinAnimationTimeEpsilon(active_time->InSecondsF(),
-                                   active_duration) &&
+      IsWithinAnimationTimeTolerance(active_time.value(), active_duration) &&
       !IsWithinAnimationTimeEpsilon(iteration_count, 0.0)) {
     simple_iteration_progress = 1.0;
   }
@@ -338,23 +371,26 @@ static inline base::Optional<double> CalculateTransformedProgress(
 // the Web Animations spec; it is used for calculating the time until the next
 // iteration to optimize scheduling.
 static inline base::Optional<AnimationTimeDelta> CalculateOffsetActiveTime(
-    double active_duration,
+    AnimationTimeDelta active_duration,
     base::Optional<AnimationTimeDelta> active_time,
-    double start_offset) {
-  DCHECK_GE(active_duration, 0);
-  DCHECK_GE(start_offset, 0);
+    AnimationTimeDelta start_offset) {
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
+                                                 AnimationTimeDelta()));
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(start_offset,
+                                                 AnimationTimeDelta()));
 
   if (!active_time)
     return base::nullopt;
 
-  DCHECK(active_time.value() >= AnimationTimeDelta() &&
-         LessThanOrEqualToWithinEpsilon(active_time->InSecondsF(),
-                                        active_duration));
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_time.value(),
+                                                 AnimationTimeDelta()) &&
+         LessThanOrEqualToWithinTimeTolerance(active_time.value(),
+                                              active_duration));
 
   if (active_time->is_max())
     return AnimationTimeDelta::Max();
 
-  return active_time.value() + AnimationTimeDelta::FromSecondsD(start_offset);
+  return active_time.value() + start_offset;
 }
 
 // Maps the offset active time into 'iteration time space'[0], aka the offset
@@ -364,43 +400,45 @@ static inline base::Optional<AnimationTimeDelta> CalculateOffsetActiveTime(
 //
 // [0] https://drafts.csswg.org/web-animations-1/#iteration-time-space
 static inline base::Optional<AnimationTimeDelta> CalculateIterationTime(
-    double iteration_duration,
-    double active_duration,
+    AnimationTimeDelta iteration_duration,
+    AnimationTimeDelta active_duration,
     base::Optional<AnimationTimeDelta> offset_active_time,
-    double start_offset,
+    AnimationTimeDelta start_offset,
     Timing::Phase phase,
     const Timing& specified) {
-  DCHECK_GT(iteration_duration, 0);
-  DCHECK_EQ(active_duration,
-            MultiplyZeroAlwaysGivesZero(iteration_duration,
-                                        specified.iteration_count));
+  DCHECK(
+      GreaterThanWithinTimeTolerance(iteration_duration, AnimationTimeDelta()));
+  DCHECK(IsWithinAnimationTimeTolerance(
+      active_duration, MultiplyZeroAlwaysGivesZero(iteration_duration,
+                                                   specified.iteration_count)));
 
   if (!offset_active_time)
     return base::nullopt;
 
-  DCHECK_GE(offset_active_time.value(), AnimationTimeDelta());
-  DCHECK(LessThanOrEqualToWithinEpsilon(offset_active_time->InSecondsF(),
-                                        active_duration + start_offset));
+  DCHECK(GreaterThanWithinTimeTolerance(offset_active_time.value(),
+                                        AnimationTimeDelta()));
+  DCHECK(LessThanOrEqualToWithinTimeTolerance(
+      offset_active_time.value(), (active_duration + start_offset)));
 
   if (offset_active_time->is_max() ||
-      (offset_active_time->InSecondsF() - start_offset == active_duration &&
+      (IsWithinAnimationTimeTolerance(offset_active_time.value() - start_offset,
+                                      active_duration) &&
        specified.iteration_count &&
        EndsOnIterationBoundary(specified.iteration_count,
                                specified.iteration_start)))
-    return AnimationTimeDelta::FromSecondsD(iteration_duration);
+    return base::make_optional(iteration_duration);
 
   DCHECK(!offset_active_time->is_max());
-  double iteration_time =
-      fmod(offset_active_time->InSecondsF(), iteration_duration);
+  AnimationTimeDelta iteration_time = AnimationTimeDelta::FromSecondsD(
+      fmod(offset_active_time->InSecondsF(), iteration_duration.InSecondsF()));
 
   // This implements step 3 of
   // https://drafts.csswg.org/web-animations/#calculating-the-simple-iteration-progress
-  if (iteration_time == 0 && phase == Timing::kPhaseAfter &&
-      active_duration != 0 &&
-      offset_active_time.value() != AnimationTimeDelta())
-    return AnimationTimeDelta::FromSecondsD(iteration_duration);
+  if (iteration_time.is_zero() && phase == Timing::kPhaseAfter &&
+      !active_duration.is_zero() && !offset_active_time.value().is_zero())
+    return base::make_optional(iteration_duration);
 
-  return AnimationTimeDelta::FromSecondsD(iteration_time);
+  return iteration_time;
 }
 
 }  // namespace blink

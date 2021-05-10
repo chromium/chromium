@@ -88,4 +88,48 @@ TEST(AnimationTimeDeltaTest, Comparison) {
               AnimationTimeDelta::FromSecondsD(100));
 }
 
+TEST(AnimationTimeDeltaTest, Division) {
+  double inf = std::numeric_limits<double>::infinity();
+  AnimationTimeDelta inf_time_delta = AnimationTimeDelta::Max();
+  AnimationTimeDelta zero = AnimationTimeDelta();
+  AnimationTimeDelta num = AnimationTimeDelta::FromSecondsD(5);
+
+  // 0 / 0 = undefined
+  EXPECT_DEATH_IF_SUPPORTED(zero / zero, "");
+  // 0 / inf = 0
+  EXPECT_EQ(0, zero / inf_time_delta);
+  // 0 / -inf = 0
+  EXPECT_EQ(0, zero / -inf_time_delta);
+  // 0 / 5 = 0
+  EXPECT_EQ(0, zero / num);
+  // inf / 0 = undefined
+  EXPECT_DEATH_IF_SUPPORTED(inf_time_delta / zero, "");
+  // -inf / 0 = undefined
+  EXPECT_DEATH_IF_SUPPORTED(-inf_time_delta / zero, "");
+  // inf / inf = undefined
+  EXPECT_DEATH_IF_SUPPORTED(inf_time_delta / inf_time_delta, "");
+  // inf / -inf = undefined
+  EXPECT_DEATH_IF_SUPPORTED(inf_time_delta / -inf_time_delta, "");
+  // -inf / inf = undefined
+  EXPECT_DEATH_IF_SUPPORTED(-inf_time_delta / inf_time_delta, "");
+  // -inf / -inf = undefined
+  EXPECT_DEATH_IF_SUPPORTED(-inf_time_delta / -inf_time_delta, "");
+  // inf / 5 = inf
+  EXPECT_EQ(inf, inf_time_delta / num);
+  // inf / -5 = -inf
+  EXPECT_EQ(-inf, inf_time_delta / -num);
+  // -inf / 5 = -inf
+  EXPECT_EQ(-inf, -inf_time_delta / num);
+  // -inf / -5 = inf
+  EXPECT_EQ(inf, -inf_time_delta / -num);
+  // 5 / 0 = undefined
+  EXPECT_DEATH_IF_SUPPORTED(num / zero, "");
+  // 5 / inf = 0
+  EXPECT_EQ(0, num / inf_time_delta);
+  // 5 / -inf = 0
+  EXPECT_EQ(0, num / -inf_time_delta);
+  // 5 / 2 = 2.5
+  EXPECT_EQ(2.5, num / AnimationTimeDelta::FromSecondsD(2));
+}
+
 }  // namespace blink

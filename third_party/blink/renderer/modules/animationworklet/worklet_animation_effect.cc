@@ -22,12 +22,8 @@ EffectTiming* WorkletAnimationEffect::getTiming() const {
 }
 
 ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
-  base::Optional<double> local_time;
-  if (local_time_)
-    local_time = base::Optional<double>(local_time_.value().InSecondsF());
-
-  bool needs_update = last_update_time_ != local_time;
-  last_update_time_ = local_time;
+  bool needs_update = last_update_time_ != local_time_;
+  last_update_time_ = local_time_;
 
   if (needs_update) {
     // The playback rate is needed to calculate whether the effect is current or
@@ -35,6 +31,10 @@ ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
     // use this information to create a ComputedEffectTiming, which does not
     // include that information, we do not need to supply one.
     base::Optional<double> playback_rate = base::nullopt;
+    base::Optional<AnimationTimeDelta> local_time;
+    if (local_time_) {
+      local_time = AnimationTimeDelta(local_time_.value());
+    }
     calculated_ = specified_timing_.CalculateTimings(
         local_time, base::nullopt, Timing::AnimationDirection::kForwards, false,
         playback_rate);

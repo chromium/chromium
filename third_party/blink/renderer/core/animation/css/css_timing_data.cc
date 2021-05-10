@@ -18,7 +18,8 @@ CSSTimingData::CSSTimingData(const CSSTimingData& other) = default;
 
 Timing CSSTimingData::ConvertToTiming(size_t index) const {
   Timing timing;
-  timing.start_delay = GetRepeated(delay_list_, index);
+  timing.start_delay =
+      AnimationTimeDelta::FromSecondsD(GetRepeated(delay_list_, index));
   double duration = GetRepeated(duration_list_, index);
   timing.iteration_duration =
       std::isnan(duration)

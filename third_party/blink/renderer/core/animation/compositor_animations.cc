@@ -633,7 +633,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
     return false;
 
   // FIXME: Compositor does not know anything about endDelay.
-  if (timing.end_delay != 0)
+  if (!timing.end_delay.is_zero())
     return false;
 
   if (!timing.iteration_duration || !timing.iteration_count ||
@@ -643,7 +643,8 @@ bool CompositorAnimations::ConvertTimingForCompositor(
 
   // Compositor's time offset is positive for seeking into the animation.
   DCHECK(animation_playback_rate);
-  double delay = animation_playback_rate > 0 ? timing.start_delay : 0;
+  double delay =
+      animation_playback_rate > 0 ? timing.start_delay.InSecondsF() : 0;
   out.scaled_time_offset =
       -base::TimeDelta::FromSecondsD(delay / animation_playback_rate) +
       time_offset;

@@ -61,7 +61,7 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
 
 AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(
     bool,
-    base::Optional<double>,
+    base::Optional<AnimationTimeDelta>,
     AnimationTimeDelta) const {
   return AnimationTimeDelta::Max();
 }

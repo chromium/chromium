@@ -162,7 +162,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void CountAnimatedProperties() const;
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<double> inherited_time,
+      base::Optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
   bool HasIncompatibleStyle() const;
   bool HasMultipleTransformProperties() const;

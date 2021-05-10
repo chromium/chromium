@@ -99,7 +99,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   AnimationTimeDelta TimeToReverseEffectChange() const {
     return EnsureCalculated().time_to_reverse_effect_change;
   }
-  base::Optional<double> LocalTime() const {
+  base::Optional<AnimationTimeDelta> LocalTime() const {
     return EnsureCalculated().local_time;
   }
 
@@ -158,7 +158,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<double> local_time,
+      base::Optional<AnimationTimeDelta> local_time,
       AnimationTimeDelta time_to_next_iteration) const = 0;
 
   const Animation* GetAnimation() const;

@@ -88,20 +88,11 @@ struct CORE_EXPORT Timing {
   static FillMode StringToFillMode(const String&);
   static String PlaybackDirectionString(PlaybackDirection);
 
-  Timing()
-      : start_delay(0),
-        end_delay(0),
-        fill_mode(FillMode::AUTO),
-        iteration_start(0),
-        iteration_count(1),
-        iteration_duration(base::nullopt),
-        direction(PlaybackDirection::NORMAL),
-        timing_function(LinearTimingFunction::Shared()),
-        timing_overrides(kOverrideNode) {}
+  Timing() = default;
 
   void AssertValid() const {
-    DCHECK(std::isfinite(start_delay));
-    DCHECK(std::isfinite(end_delay));
+    DCHECK(!start_delay.is_inf());
+    DCHECK(!end_delay.is_inf());
     DCHECK(std::isfinite(iteration_start));
     DCHECK_GE(iteration_start, 0);
     DCHECK_GE(iteration_count, 0);
@@ -114,8 +105,8 @@ struct CORE_EXPORT Timing {
   AnimationTimeDelta IterationDuration() const;
 
   // https://drafts.csswg.org/web-animations-1/#active-duration
-  double ActiveDuration() const;
-  double EndTimeInternal() const;
+  AnimationTimeDelta ActiveDuration() const;
+  AnimationTimeDelta EndTimeInternal() const;
 
   Timing::FillMode ResolvedFillMode(bool is_animation) const;
   EffectTiming* ConvertToEffectTiming() const;
@@ -142,20 +133,21 @@ struct CORE_EXPORT Timing {
   }
   bool HasTimingOverrides() { return timing_overrides != kOverrideNode; }
 
-  double start_delay;
-  double end_delay;
-  FillMode fill_mode;
-  double iteration_start;
-  double iteration_count;
+  AnimationTimeDelta start_delay;
+  AnimationTimeDelta end_delay;
+  FillMode fill_mode = FillMode::AUTO;
+  double iteration_start = 0;
+  double iteration_count = 1;
   // If empty, indicates the 'auto' value.
-  base::Optional<AnimationTimeDelta> iteration_duration;
+  base::Optional<AnimationTimeDelta> iteration_duration = base::nullopt;
 
-  PlaybackDirection direction;
-  scoped_refptr<TimingFunction> timing_function;
+  PlaybackDirection direction = PlaybackDirection::NORMAL;
+  scoped_refptr<TimingFunction> timing_function =
+      LinearTimingFunction::Shared();
   // Mask of timing attributes that are set by calls to
   // AnimationEffect.updateTiming. Once set, these attributes ignore changes
   // based on the CSS style.
-  uint16_t timing_overrides;
+  uint16_t timing_overrides = kOverrideNode;
 
   struct CalculatedTiming {
     DISALLOW_NEW();
@@ -165,7 +157,7 @@ struct CORE_EXPORT Timing {
     bool is_current = false;
     bool is_in_effect = false;
     bool is_in_play = false;
-    base::Optional<double> local_time;
+    base::Optional<AnimationTimeDelta> local_time;
     AnimationTimeDelta time_to_forwards_effect_change =
         AnimationTimeDelta::Max();
     AnimationTimeDelta time_to_reverse_effect_change =
@@ -173,11 +165,12 @@ struct CORE_EXPORT Timing {
     AnimationTimeDelta time_to_next_iteration = AnimationTimeDelta::Max();
   };
 
-  CalculatedTiming CalculateTimings(base::Optional<double> local_time,
-                                    base::Optional<Phase> timeline_phase,
-                                    AnimationDirection animation_direction,
-                                    bool is_keyframe_effect,
-                                    base::Optional<double> playback_rate) const;
+  CalculatedTiming CalculateTimings(
+      base::Optional<AnimationTimeDelta> local_time,
+      base::Optional<Phase> timeline_phase,
+      AnimationDirection animation_direction,
+      bool is_keyframe_effect,
+      base::Optional<double> playback_rate) const;
   ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
                                           bool is_keyframe_effect) const;
 };

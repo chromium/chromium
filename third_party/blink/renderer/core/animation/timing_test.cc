@@ -10,8 +10,9 @@ namespace blink {
 
 class AnimationTimingTest : public testing::Test {
  public:
-  Timing::CalculatedTiming CalculateTimings(base::Optional<double> local_time,
-                                            double playback_rate) {
+  Timing::CalculatedTiming CalculateTimings(
+      base::Optional<AnimationTimeDelta> local_time,
+      double playback_rate) {
     const bool is_keyframe_effect = false;
     Timing::AnimationDirection animation_direction =
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
@@ -21,7 +22,12 @@ class AnimationTimingTest : public testing::Test {
         is_keyframe_effect, playback_rate);
   }
   bool IsCurrent(base::Optional<double> local_time, double playback_rate) {
-    return CalculateTimings(local_time, playback_rate).is_current;
+    base::Optional<AnimationTimeDelta> local_time_delta;
+    if (local_time) {
+      local_time_delta = base::make_optional(
+          AnimationTimeDelta::FromSecondsD(local_time.value()));
+    }
+    return CalculateTimings(local_time_delta, playback_rate).is_current;
   }
 
  private:

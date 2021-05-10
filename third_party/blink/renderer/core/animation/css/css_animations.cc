@@ -396,27 +396,33 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
 
 // Returns the start time of an animation given the start delay. A negative
 // start delay results in the animation starting with non-zero progress.
-AnimationTimeDelta StartTimeFromDelay(double start_delay) {
-  return AnimationTimeDelta::FromSecondsD(start_delay < 0 ? -start_delay : 0);
+AnimationTimeDelta StartTimeFromDelay(AnimationTimeDelta start_delay) {
+  return start_delay < AnimationTimeDelta() ? -start_delay
+                                            : AnimationTimeDelta();
 }
 
 // Timing functions for computing elapsed time of an event.
 
 AnimationTimeDelta IntervalStart(const AnimationEffect& effect) {
-  const double start_delay = effect.SpecifiedTiming().start_delay;
-  const double active_duration = effect.SpecifiedTiming().ActiveDuration();
-  return AnimationTimeDelta::FromSecondsD(
-      std::fmax(std::fmin(-start_delay, active_duration), 0.0));
+  AnimationTimeDelta start_delay = effect.SpecifiedTiming().start_delay;
+  const AnimationTimeDelta active_duration =
+      effect.SpecifiedTiming().ActiveDuration();
+  // This fixes a problem where start_delay could be -0
+  if (!start_delay.is_zero()) {
+    start_delay = -start_delay;
+  }
+  return std::max(std::min(start_delay, active_duration), AnimationTimeDelta());
 }
 
 AnimationTimeDelta IntervalEnd(const AnimationEffect& effect) {
-  const double start_delay = effect.SpecifiedTiming().start_delay;
-  const double end_delay = effect.SpecifiedTiming().end_delay;
-  const double active_duration = effect.SpecifiedTiming().ActiveDuration();
-  const double target_effect_end =
-      std::max(start_delay + active_duration + end_delay, 0.0);
-  return AnimationTimeDelta::FromSecondsD(std::max(
-      std::min(target_effect_end - start_delay, active_duration), 0.0));
+  const AnimationTimeDelta start_delay = effect.SpecifiedTiming().start_delay;
+  const AnimationTimeDelta end_delay = effect.SpecifiedTiming().end_delay;
+  const AnimationTimeDelta active_duration =
+      effect.SpecifiedTiming().ActiveDuration();
+  const AnimationTimeDelta target_effect_end =
+      std::max(start_delay + active_duration + end_delay, AnimationTimeDelta());
+  return std::max(std::min(target_effect_end - start_delay, active_duration),
+                  AnimationTimeDelta());
 }
 
 AnimationTimeDelta IterationElapsedTime(const AnimationEffect& effect,
@@ -1186,7 +1192,8 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   Timing timing = state.transition_data->ConvertToTiming(transition_index);
   // CSS Transitions always have a valid duration (i.e. the value 'auto' is not
   // supported), so iteration_duration will always be set.
-  if (timing.start_delay + timing.iteration_duration->InSecondsF() <= 0) {
+  if (timing.start_delay + timing.iteration_duration.value() <=
+      AnimationTimeDelta()) {
     // We may have started a transition in a prior CSSTransitionData update,
     // this CSSTransitionData update needs to override them.
     // TODO(alancutter): Just iterate over the CSSTransitionDatas in reverse and
@@ -1211,7 +1218,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
                       (1 - interrupted_transition->reversing_shortening_factor),
                   0.0, 1.0);
       timing.iteration_duration.value() *= reversing_shortening_factor;
-      if (timing.start_delay < 0) {
+      if (timing.start_delay < AnimationTimeDelta()) {
         timing.start_delay *= reversing_shortening_factor;
       }
     }

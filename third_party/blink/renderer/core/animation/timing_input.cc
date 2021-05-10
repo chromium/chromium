@@ -163,12 +163,16 @@ bool TimingInput::Update(Timing& timing,
   bool changed = false;
   if (input->hasDelay()) {
     DCHECK(std::isfinite(input->delay()));
-    changed |= UpdateValueIfChanged(timing.start_delay, input->delay() / 1000);
+    changed |= UpdateValueIfChanged(
+        timing.start_delay,
+        AnimationTimeDelta::FromMillisecondsD(input->delay()));
     timing.SetTimingOverride(Timing::kOverrideStartDelay);
   }
   if (input->hasEndDelay()) {
     DCHECK(std::isfinite(input->endDelay()));
-    changed |= UpdateValueIfChanged(timing.end_delay, input->endDelay() / 1000);
+    changed |= UpdateValueIfChanged(
+        timing.end_delay,
+        AnimationTimeDelta::FromMillisecondsD(input->endDelay()));
     timing.SetTimingOverride(Timing::kOverrideEndDelay);
   }
   if (input->hasFill()) {

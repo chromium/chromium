@@ -364,8 +364,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
 TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   Timing timing;
   timing.iteration_duration = AnimationTimeDelta::FromSecondsD(100);
-  timing.start_delay = 100;
-  timing.end_delay = 100;
+  timing.start_delay = AnimationTimeDelta::FromSecondsD(100);
+  timing.end_delay = AnimationTimeDelta::FromSecondsD(100);
   timing.fill_mode = Timing::FillMode::NONE;
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, CreateEmptyEffectModel(), timing);

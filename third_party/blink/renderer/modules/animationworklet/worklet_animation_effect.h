@@ -43,7 +43,9 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   // object, as is defined in worklet_animation_effect.idl.
   const Timing specified_timing_;
   mutable Timing::CalculatedTiming calculated_;
-  mutable base::Optional<double> last_update_time_;
+  // last_update_time_ has type base::TimeDelta to match the type of local_time_
+  // since it is a cached value of local_time_
+  mutable base::Optional<base::TimeDelta> last_update_time_;
 };
 
 }  // namespace blink
