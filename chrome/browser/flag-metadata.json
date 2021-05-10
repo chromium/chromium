@@ -3804,11 +3804,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "ntp-webui",
-    "owners": [ "aee", "mahmadi", "tiborg" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "offline-indicator-choice",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 76
