@@ -58,6 +58,7 @@ source_set("unit_tests") {
     ":signin_ui",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/authentication",
     "//ios/public/provider/chrome/browser:test_support",

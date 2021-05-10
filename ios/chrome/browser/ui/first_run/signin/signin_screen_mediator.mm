@@ -30,16 +30,17 @@
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 // Logger used to record sign in metrics.
 @property(nonatomic, strong) UserSigninLogger* logger;
+// Pref service to retrieve preference values.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
 @implementation SigninScreenMediator
 
-#pragma mark - Public
-
-- (instancetype)init {
+- (instancetype)initWithPrefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
+    _prefService = prefService;
     _browserProviderObserver =
         std::make_unique<ChromeBrowserProviderObserverBridge>(self);
     _identityServiceObserver =
@@ -48,9 +49,19 @@
     _logger = [[FirstRunSigninLogger alloc]
         initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE
                 promoAction:signin_metrics::PromoAction::
-                                PROMO_ACTION_NO_SIGNIN_PROMO];
+                                PROMO_ACTION_NO_SIGNIN_PROMO
+                prefService:prefService];
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService);
+}
+
+- (void)disconnect {
+  [self.logger disconnect];
+  self.prefService = nullptr;
 }
 
 - (void)startSignInWithAuthenticationFlow:
@@ -105,10 +116,15 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
+  if (!self.prefService) {
+    return;
+  }
+
   if (!self.selectedIdentity ||
       !self.identityService->IsValidIdentity(self.selectedIdentity)) {
     NSArray* identities =
-        self.identityService->GetAllIdentitiesSortedForDisplay();
+        self.identityService->GetAllIdentitiesSortedForDisplay(
+            self.prefService);
     ChromeIdentity* newIdentity = nil;
     if (identities.count != 0) {
       newIdentity = identities[0];

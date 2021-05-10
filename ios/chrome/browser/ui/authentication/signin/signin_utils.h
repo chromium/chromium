@@ -24,7 +24,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState);
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void RecordVersionSeen();
+void RecordVersionSeenWithPrefService(PrefService* prefService);
 
 // Set the Chromium current version for sign-in. Used for tests only.
 void SetCurrentVersionForTesting(base::Version* version);

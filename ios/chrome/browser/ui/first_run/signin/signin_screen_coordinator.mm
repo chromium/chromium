@@ -82,7 +82,8 @@
                                     ->HasIdentities();
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
-  self.mediator = [[SigninScreenMediator alloc] init];
+  self.mediator = [[SigninScreenMediator alloc]
+      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
   NSArray* identities = ios::GetChromeBrowserProvider()
                             ->GetChromeIdentityService()
                             ->GetAllIdentitiesSortedForDisplay(
@@ -102,6 +103,7 @@
 - (void)stop {
   self.delegate = nil;
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
   [self.identityChooserCoordinator stop];
   self.identityChooserCoordinator = nil;

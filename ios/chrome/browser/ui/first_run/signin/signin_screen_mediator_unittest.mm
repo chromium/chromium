@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
@@ -56,10 +57,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 class SigninScreenMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
+    PlatformTest::SetUp();
     browser_provider_ = ios::TestChromeBrowserProvider::GetTestProvider();
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    mediator_ = [[SigninScreenMediator alloc] init];
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    mediator_ = [[SigninScreenMediator alloc]
+        initWithPrefService:browser_state_->GetPrefs()];
     consumer_ = [[FakeSigninScreenConsumer alloc] init];
     identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"
@@ -67,6 +71,9 @@ class SigninScreenMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    PlatformTest::TearDown();
+    [mediator_ disconnect];
+    browser_state_.reset();
     identity_service_->WaitForServiceCallbacksToComplete();
   }
 
@@ -83,6 +90,7 @@ class SigninScreenMediatorTest : public PlatformTest {
   base::test::TaskEnvironment task_enviroment_;
   SigninScreenMediator* mediator_;
   ios::TestChromeBrowserProvider* browser_provider_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
   FakeSigninScreenConsumer* consumer_;
   FakeChromeIdentity* identity_;

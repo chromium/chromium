@@ -9,13 +9,18 @@
 
 @class AuthenticationFlow;
 @class ChromeIdentity;
+class PrefService;
 @protocol SigninScreenConsumer;
 @protocol SigninScreenMediatorDelegate;
 
 // Mediator that handles the sign-in operation.
 @interface SigninScreenMediator : NSObject
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// The designated initializer.
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
@@ -28,6 +33,9 @@
 
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 // Starts the sign in process, using |authenticationFlow|.
 - (void)startSignInWithAuthenticationFlow:

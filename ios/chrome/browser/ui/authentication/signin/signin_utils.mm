@@ -92,9 +92,10 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
       return false;
   }
   // Don't show the promo if there is no identities.
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentitiesSortedForDisplay();
+  NSArray* identities =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->GetAllIdentitiesSortedForDisplay(browserState->GetPrefs());
   if ([identities count] == 0)
     return false;
   // The sign-in promo should be shown twice, even if no account has been added.
@@ -113,14 +114,16 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
          ![lastKnownGaiaIdSet isEqualToSet:currentGaiaIdSet];
 }
 
-void RecordVersionSeen() {
+void RecordVersionSeenWithPrefService(PrefService* prefService) {
+  DCHECK(prefService);
+
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   [standardDefaults
       setObject:base::SysUTF8ToNSString(CurrentVersion().GetString())
          forKey:kDisplayedSSORecallForMajorVersionKey];
   NSArray* identities = ios::GetChromeBrowserProvider()
                             ->GetChromeIdentityService()
-                            ->GetAllIdentitiesSortedForDisplay();
+                            ->GetAllIdentitiesSortedForDisplay(prefService);
   NSArray* gaiaIdList = GaiaIdSetWithIdentities(identities).allObjects;
   [standardDefaults setObject:gaiaIdList
                        forKey:kLastShownAccountGaiaIdVersionKey];

@@ -15,6 +15,7 @@ source_set("logging") {
     "user_signin_logger.mm",
   ]
   deps = [
+    "//components/prefs",
     "//components/signin/public/base",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

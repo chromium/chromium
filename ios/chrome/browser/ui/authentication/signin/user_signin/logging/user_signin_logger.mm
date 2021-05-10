@@ -22,13 +22,23 @@ using signin_metrics::PromoAction;
 #pragma mark - Public
 
 - (instancetype)initWithAccessPoint:(AccessPoint)accessPoint
-                        promoAction:(PromoAction)promoAction {
+                        promoAction:(PromoAction)promoAction
+                        prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _accessPoint = accessPoint;
     _promoAction = promoAction;
+    _prefService = prefService;
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService);
+}
+
+- (void)disconnect {
+  self.prefService = nullptr;
 }
 
 - (void)logSigninStarted {

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 #include "base/notreached.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
@@ -30,9 +32,10 @@ using signin_metrics::PromoAction;
                                        identity:(ChromeIdentity*)identity
                                     accessPoint:(AccessPoint)accessPoint
                                     promoAction:(PromoAction)promoAction {
-  UserSigninLogger* logger =
-      [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
-                                        promoAction:promoAction];
+  UserSigninLogger* logger = [[UserSigninLogger alloc]
+      initWithAccessPoint:accessPoint
+              promoAction:promoAction
+              prefService:browser->GetBrowserState()->GetPrefs()];
   return [[UserSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
@@ -47,7 +50,8 @@ using signin_metrics::PromoAction;
                                                             (Browser*)browser {
   UserSigninLogger* logger = [[FirstRunSigninLogger alloc]
       initWithAccessPoint:AccessPoint::ACCESS_POINT_START_PAGE
-              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO];
+              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+              prefService:browser->GetBrowserState()->GetPrefs()];
   return [[UserSigninCoordinator alloc]
       initWithBaseNavigationController:navigationController
                                browser:browser
@@ -61,7 +65,8 @@ using signin_metrics::PromoAction;
                                                 browser:(Browser*)browser {
   UserSigninLogger* logger = [[UpgradeSigninLogger alloc]
       initWithAccessPoint:AccessPoint::ACCESS_POINT_SIGNIN_PROMO
-              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO];
+              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+              prefService:browser->GetBrowserState()->GetPrefs()];
   return [[UserSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser

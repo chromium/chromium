@@ -178,6 +178,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   DCHECK(!self.addAccountSigninCoordinator);
   DCHECK(!self.advancedSettingsSigninCoordinator);
   [super stop];
+  [self.logger disconnect];
 }
 
 #pragma mark - UnifiedConsentCoordinatorDelegate
