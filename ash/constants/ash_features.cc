@@ -430,7 +430,7 @@ const base::Feature kHandwritingGestureEditing{
 
 // Enables the Discover Tab in the help app.
 const base::Feature kHelpAppDiscoverTab{"HelpAppDiscoverTab",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable showing search results from the help app in the launcher.
 const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
