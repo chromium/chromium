@@ -70,6 +70,7 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
@@ -171,6 +172,14 @@ net::CookieOptions CreateCookieOptions(
   options.set_is_in_nontrivial_first_party_set(
       is_in_nontrivial_first_party_set);
   return options;
+}
+
+bool IsTLS13OverTCP(const net::HttpResponseInfo& response_info) {
+  // Although IETF QUIC also uses TLS 1.3, our QUIC connections report
+  // SSL_CONNECTION_VERSION_QUIC.
+  return net::SSLConnectionStatusToVersion(
+             response_info.ssl_info.connection_status) ==
+         net::SSL_CONNECTION_VERSION_TLS1_3;
 }
 
 }  // namespace
@@ -1403,6 +1412,19 @@ void URLRequestHttpJob::RecordTimer() {
   request_creation_time_ = base::Time();
 
   UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
+
+  // Record additional metrics for TLS 1.3 servers. This is to help measure the
+  // impact of enabling 0-RTT. The effects of 0-RTT will be muted because not
+  // all TLS 1.3 servers enable 0-RTT, and only the first round-trip on a
+  // connection makes use of 0-RTT. However, 0-RTT can affect how requests are
+  // bound to connections and which connections offer resumption. We look at all
+  // TLS 1.3 responses for an apples-to-apples comparison.
+  //
+  // TODO(https://crbug.com/641225): Remove these metrics after launching 0-RTT.
+  if (transaction_ && transaction_->GetResponseInfo() &&
+      IsTLS13OverTCP(*transaction_->GetResponseInfo())) {
+    base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13", to_start);
+  }
 }
 
 void URLRequestHttpJob::ResetTimer() {
@@ -1435,7 +1457,7 @@ void URLRequestHttpJob::SetResponseHeadersCallback(
   response_headers_callback_ = std::move(callback);
 }
 
-void URLRequestHttpJob::RecordPerfHistograms(CompletionCause reason) {
+void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
   if (start_time_.is_null())
     return;
 
@@ -1463,6 +1485,15 @@ void URLRequestHttpJob::RecordPerfHistograms(CompletionCause reason) {
         UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpJob.TotalTime.Secure.Quic",
                                    total_time);
       }
+    }
+
+    // Record metrics for TLS 1.3 to measure the impact of 0-RTT. See comment in
+    // RecordTimer().
+    //
+    // TODO(https://crbug.com/641225): Remove these metrics after launching
+    // 0-RTT.
+    if (IsTLS13OverTCP(*response_info_)) {
+      base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13", total_time);
     }
 
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead",
@@ -1511,7 +1542,7 @@ void URLRequestHttpJob::DoneWithRequest(CompletionCause reason) {
     network_quality_estimator->NotifyRequestCompleted(*request());
   }
 
-  RecordPerfHistograms(reason);
+  RecordCompletionHistograms(reason);
   request()->set_received_response_content_length(prefilter_bytes_read());
 }
 

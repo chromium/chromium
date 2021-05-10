@@ -173,7 +173,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void MaybeStartTransactionInternal(int result);
   void StartTransactionInternal();
 
-  void RecordPerfHistograms(CompletionCause reason);
+  void RecordCompletionHistograms(CompletionCause reason);
   void DoneWithRequest(CompletionCause reason);
 
   // Callback functions for Cookie Monster
