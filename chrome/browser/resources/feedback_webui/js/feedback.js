@@ -37,33 +37,10 @@ let feedbackInfo = {
 
 
 class FeedbackHelper {
-  constructor() {
-    /**
-     * @type {boolean}
-     */
-    this.systemInformationLoaded = false;
-  }
 
   getSystemInformation() {
     return new Promise(
         resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
-  }
-
-  getFullSystemInformation() {
-    if (this.systemInformationLoaded) {
-      return Promise.resolve(feedbackInfo.systemInformation);
-    }
-
-    return this.getSystemInformation().then(sysInfo => {
-      if (feedbackInfo.systemInformation) {
-        feedbackInfo.systemInformation =
-            feedbackInfo.systemInformation.concat(sysInfo);
-      } else {
-        feedbackInfo.systemInformation = sysInfo;
-      }
-      this.systemInformationLoaded = true;
-      return feedbackInfo.systemInformation;
-    });
   }
 
   getUserEmail() {
@@ -74,12 +51,26 @@ class FeedbackHelper {
    * @param {boolean} useSystemInfo
    */
   sendFeedbackReport(useSystemInfo) {
+    if (!useSystemInfo) {
+      feedbackInfo.systemInformation = [];
+      this.sendFeedbackReportNow();
+      return;
+    }
+
+    this.getSystemInformation().then(sysInfo => {
+      if (feedbackInfo.systemInformation) {
+        feedbackInfo.systemInformation =
+            feedbackInfo.systemInformation.concat(sysInfo);
+      } else {
+        feedbackInfo.systemInformation = sysInfo;
+      }
+      this.sendFeedbackReportNow();
+    });
+  }
+
+  sendFeedbackReportNow() {
     const ID = Math.round(Date.now() / 1000);
     const FLOW = feedbackInfo.flow;
-    if (!useSystemInfo) {
-      this.systemInformationLoaded = false;
-      feedbackInfo.systemInformation = [];
-    }
 
     chrome.feedbackPrivate.sendFeedback(
         feedbackInfo, function(result, landingPageType) {
@@ -101,6 +92,7 @@ class FeedbackHelper {
           if (FLOW == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
             chrome.feedbackPrivate.loginFeedbackComplete();
           }
+          scheduleWindowClose();
         });
   }
 
@@ -425,7 +417,7 @@ function sendReport() {
 
   // Request sending the report, show the landing page (if allowed)
   feedbackHelper.sendFeedbackReport(useSystemInfo);
-  scheduleWindowClose();
+
   return true;
 }
 
@@ -581,37 +573,33 @@ function initialize() {
     }
     // </if>
 
-    // This call is needed so the systemInformation in the feedbackInfo object
-    // is populated, although the sysInfo is not being used here.
-    feedbackHelper.getFullSystemInformation().then(function(sysInfo) {
-      const sysInfoUrlElement = $('sys-info-url');
-      if (sysInfoUrlElement) {
-        // Opens a new window showing the full anonymized system+app
-        // information.
-        sysInfoUrlElement.onclick = function(e) {
-          e.preventDefault();
+    const sysInfoUrlElement = $('sys-info-url');
+    if (sysInfoUrlElement) {
+      // Opens a new window showing the full anonymized system+app
+      // information.
+      sysInfoUrlElement.onclick = function(e) {
+        e.preventDefault();
 
-          feedbackHelper.showSystemInfo();
-        };
+        feedbackHelper.showSystemInfo();
+      };
 
-        sysInfoUrlElement.onauxclick = function(e) {
-          e.preventDefault();
-        };
-      }
+      sysInfoUrlElement.onauxclick = function(e) {
+        e.preventDefault();
+      };
+    }
 
-      const histogramUrlElement = $('histograms-url');
-      if (histogramUrlElement) {
-        histogramUrlElement.onclick = function(e) {
-          e.preventDefault();
+    const histogramUrlElement = $('histograms-url');
+    if (histogramUrlElement) {
+      histogramUrlElement.onclick = function(e) {
+        e.preventDefault();
 
-          feedbackHelper.showMetrics();
-        };
+        feedbackHelper.showMetrics();
+      };
 
-        histogramUrlElement.onauxclick = function(e) {
-          e.preventDefault();
-        };
-      }
-    });
+      histogramUrlElement.onauxclick = function(e) {
+        e.preventDefault();
+      };
+    }
 
     // The following URLs don't open on login screen, so hide them.
     // TODO(crbug.com/1116383): Find a solution to display them properly.
