@@ -47,7 +47,6 @@ source_set("signin_impl") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/signin/ios/browser",
-    "//components/version_info",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy:policy_util",

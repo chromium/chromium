@@ -108,6 +108,7 @@ source_set("scene") {
     "//components/previous_session_info",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",
+    "//components/version_info",
     "//components/web_resource",
     "//ios/chrome/app:app",
     "//ios/chrome/app:blocking_scene_commands",

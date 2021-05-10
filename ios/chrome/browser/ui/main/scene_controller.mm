@@ -25,6 +25,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/version_info/version_info.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -1246,8 +1247,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Returns YES if the promo is shown.
 - (BOOL)presentSigninUpgradePromoIfPossible {
   if (!signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.appState.mainBrowserState))
+          self.sceneState.appState.mainBrowserState,
+          version_info::GetVersion())) {
     return NO;
+  }
   // Don't show promos if first run is shown in any scene.  (Note:  This flag
   // is only YES while the first run UI is visible.  However, as this function
   // is called immediately after the UI is shown, it's a safe check.)
