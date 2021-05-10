@@ -51,6 +51,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,6 +90,9 @@ public class AutofillAssistantPersonalDataManagerTest {
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
+    private final AutofillAssistantScreenOrientationHelper<CustomTabActivityTestRule>
+            mScreenOrientationHelper = new AutofillAssistantScreenOrientationHelper<>(mTestRule);
+
     private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
             + "form_target_website.html";
 
@@ -104,7 +108,13 @@ public class AutofillAssistantPersonalDataManagerTest {
         mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(),
                 mTestRule.getTestServer().getURL(TEST_PAGE)));
+        mScreenOrientationHelper.setPortraitOrientation();
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
+    }
+
+    @After
+    public void tearDown() {
+        mScreenOrientationHelper.restoreOrientation();
     }
 
     /**
@@ -192,7 +202,6 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1197105")
     public void testCreateAndEditProfileMultipleTimes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
