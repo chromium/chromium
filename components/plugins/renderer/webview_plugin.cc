@@ -306,7 +306,7 @@ bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {
   return true;
 }
 
-void WebViewPlugin::WebViewHelper::SetToolTipText(
+void WebViewPlugin::WebViewHelper::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text,
     base::i18n::TextDirection hint) {
   if (plugin_->container_) {

@@ -851,7 +851,7 @@ void TestWebFrameWidgetHost::SetCursor(const ui::Cursor& cursor) {
   cursor_set_count_++;
 }
 
-void TestWebFrameWidgetHost::SetToolTipText(
+void TestWebFrameWidgetHost::UpdateTooltipUnderCursor(
     const String& tooltip_text,
     base::i18n::TextDirection text_direction_hint) {}
 

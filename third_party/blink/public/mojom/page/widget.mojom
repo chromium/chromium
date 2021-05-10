@@ -241,9 +241,9 @@ interface WidgetHost {
   SetCursor(ui.mojom.Cursor cursor);
 
   // Sent by a widget to the browser to set the tooltip text for the current
-  // mouse position. An empty |tooltip_text| will hide the tooltip view.
-  SetToolTipText(mojo_base.mojom.String16 tooltip_text,
-                 mojo_base.mojom.TextDirection text_direction_hint);
+  // cursor position. An empty |tooltip_text| will hide the tooltip view.
+  UpdateTooltipUnderCursor(mojo_base.mojom.String16 tooltip_text,
+                           mojo_base.mojom.TextDirection text_direction_hint);
 
   // Sent when the text input state is changed. This usually happens when
   // a text input entry is focused.

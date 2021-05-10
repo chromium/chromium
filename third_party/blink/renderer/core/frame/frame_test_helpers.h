@@ -186,8 +186,9 @@ class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
 
   // mojom::blink::WidgetHost overrides:
   void SetCursor(const ui::Cursor& cursor) override;
-  void SetToolTipText(const String& tooltip_text,
-                      base::i18n::TextDirection text_direction_hint) override;
+  void UpdateTooltipUnderCursor(
+      const String& tooltip_text,
+      base::i18n::TextDirection text_direction_hint) override;
   void TextInputStateChanged(
       ui::mojom::blink::TextInputStatePtr state) override;
   void SelectionBoundsChanged(const gfx::Rect& anchor_rect,

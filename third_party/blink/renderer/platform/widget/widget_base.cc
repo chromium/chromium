@@ -817,9 +817,10 @@ void WidgetBase::SetCursor(const ui::Cursor& cursor) {
   }
 }
 
-void WidgetBase::SetToolTipText(const String& tooltip_text, TextDirection dir) {
-  widget_host_->SetToolTipText(tooltip_text.IsEmpty() ? "" : tooltip_text,
-                               ToBaseTextDirection(dir));
+void WidgetBase::UpdateTooltipUnderCursor(const String& tooltip_text,
+                                          TextDirection dir) {
+  widget_host_->UpdateTooltipUnderCursor(
+      tooltip_text.IsEmpty() ? "" : tooltip_text, ToBaseTextDirection(dir));
 }
 
 void WidgetBase::ShowVirtualKeyboard() {

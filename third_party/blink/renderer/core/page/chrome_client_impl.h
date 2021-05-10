@@ -151,7 +151,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ResizeAfterLayout() const override;
   void MainFrameLayoutUpdated() const override;
   void ShowMouseOverURL(const HitTestResult&) override;
-  void SetToolTip(LocalFrame&, const String&, TextDirection) override;
+  void UpdateTooltipUnderCursor(LocalFrame&,
+                                const String&,
+                                TextDirection) override;
   void UpdateTooltipFromKeyboard(LocalFrame&,
                                  const String&,
                                  TextDirection,

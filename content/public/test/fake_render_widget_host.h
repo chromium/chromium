@@ -54,8 +54,9 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
 
   // blink::mojom::WidgetHost overrides.
   void SetCursor(const ui::Cursor& cursor) override;
-  void SetToolTipText(const std::u16string& tooltip_text,
-                      base::i18n::TextDirection text_direction_hint) override;
+  void UpdateTooltipUnderCursor(
+      const std::u16string& tooltip_text,
+      base::i18n::TextDirection text_direction_hint) override;
   void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override;
   void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                               base::i18n::TextDirection anchor_dir,

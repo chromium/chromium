@@ -1055,7 +1055,9 @@ class TooltipCapturingChromeClient : public EmptyChromeClient {
  public:
   TooltipCapturingChromeClient() = default;
 
-  void SetToolTip(LocalFrame&, const String& str, TextDirection) override {
+  void UpdateTooltipUnderCursor(LocalFrame&,
+                                const String& str,
+                                TextDirection) override {
     last_tooltip_text_ = str;
     // Always reset the bounds to zero as this function doesn't set bounds.
     last_tooltip_bounds_ = gfx::Rect();

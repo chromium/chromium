@@ -26,11 +26,12 @@ namespace {
 
 class ScrollableAreaMockChromeClient : public RenderingTestChromeClient {
  public:
-  MOCK_METHOD3(MockSetToolTip, void(LocalFrame*, const String&, TextDirection));
-  void SetToolTip(LocalFrame& frame,
-                  const String& tooltip_text,
-                  TextDirection dir) override {
-    MockSetToolTip(&frame, tooltip_text, dir);
+  MOCK_METHOD3(MockUpdateTooltipUnderCursor,
+               void(LocalFrame*, const String&, TextDirection));
+  void UpdateTooltipUnderCursor(LocalFrame& frame,
+                                const String& tooltip_text,
+                                TextDirection dir) override {
+    MockUpdateTooltipUnderCursor(&frame, tooltip_text, dir);
   }
 };
 
@@ -659,16 +660,16 @@ TEST_P(PaintLayerScrollableAreaTest, HideTooltipWhenScrollPositionChanges) {
           ->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
 
-  EXPECT_CALL(GetChromeClient(),
-              MockSetToolTip(GetDocument().GetFrame(), String(), _))
+  EXPECT_CALL(GetChromeClient(), MockUpdateTooltipUnderCursor(
+                                     GetDocument().GetFrame(), String(), _))
       .Times(1);
   scrollable_area->SetScrollOffset(ScrollOffset(1, 1),
                                    mojom::blink::ScrollType::kUser);
 
-  // Programmatic scrolling should not dismiss the tooltip, so setToolTip
-  // should not be called for this invocation.
-  EXPECT_CALL(GetChromeClient(),
-              MockSetToolTip(GetDocument().GetFrame(), String(), _))
+  // Programmatic scrolling should not dismiss the tooltip, so
+  // UpdateTooltipUnderCursor should not be called for this invocation.
+  EXPECT_CALL(GetChromeClient(), MockUpdateTooltipUnderCursor(
+                                     GetDocument().GetFrame(), String(), _))
       .Times(0);
   scrollable_area->SetScrollOffset(ScrollOffset(2, 2),
                                    mojom::blink::ScrollType::kProgrammatic);

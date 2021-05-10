@@ -335,11 +335,12 @@ class InspectorOverlayAgent::InspectorOverlayChromeClient final
     client_->SetCursorOverridden(true);
   }
 
-  void SetToolTip(LocalFrame& frame,
-                  const String& tooltip,
-                  TextDirection direction) override {
+  void UpdateTooltipUnderCursor(LocalFrame& frame,
+                                const String& tooltip,
+                                TextDirection direction) override {
     DCHECK_EQ(&frame, overlay_->OverlayMainFrame());
-    client_->SetToolTip(*overlay_->GetFrame(), tooltip, direction);
+    client_->UpdateTooltipUnderCursor(*overlay_->GetFrame(), tooltip,
+                                      direction);
   }
 
  private:

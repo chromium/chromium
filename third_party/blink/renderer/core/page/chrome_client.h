@@ -341,7 +341,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   void MouseDidMoveOverElement(LocalFrame&,
                                const HitTestLocation&,
                                const HitTestResult&);
-  virtual void SetToolTip(LocalFrame&, const String&, TextDirection) = 0;
+  virtual void UpdateTooltipUnderCursor(LocalFrame&,
+                                        const String&,
+                                        TextDirection) = 0;
   void ElementFocusedFromKeypress(LocalFrame&, const Element*);
   // This function allows us to trigger a tooltip to show from a keypress. The
   // tooltip will be positioned in the gfx::Rect passed by parameter. That rect
@@ -575,7 +577,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   bool CanOpenUIElementIfDuringPageDismissal(Frame& main_frame,
                                              UIElementType,
                                              const String& message);
-  void SetToolTip(LocalFrame&, const HitTestLocation&, const HitTestResult&);
+  void UpdateTooltipUnderCursor(LocalFrame&,
+                                const HitTestLocation&,
+                                const HitTestResult&);
 
   WeakMember<Node> last_mouse_over_node_;
   PhysicalOffset last_tool_tip_point_;
@@ -584,8 +588,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // the tooltip text that is cleared when ClearToolTip is called.
   String current_tool_tip_text_for_test_;
 
-  FRIEND_TEST_ALL_PREFIXES(ChromeClientTest, SetToolTipFlood);
-  FRIEND_TEST_ALL_PREFIXES(ChromeClientTest, SetToolTipEmptyString);
+  FRIEND_TEST_ALL_PREFIXES(ChromeClientTest, UpdateTooltipUnderCursorFlood);
+  FRIEND_TEST_ALL_PREFIXES(ChromeClientTest,
+                           UpdateTooltipUnderCursorEmptyString);
 };
 
 }  // namespace blink

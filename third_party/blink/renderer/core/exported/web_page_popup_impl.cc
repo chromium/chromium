@@ -246,10 +246,10 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     popup_->SetRootLayer(layer.get());
   }
 
-  void SetToolTip(LocalFrame&,
-                  const String& tooltip_text,
-                  TextDirection dir) override {
-    popup_->widget_base_->SetToolTipText(tooltip_text, dir);
+  void UpdateTooltipUnderCursor(LocalFrame&,
+                                const String& tooltip_text,
+                                TextDirection dir) override {
+    popup_->widget_base_->UpdateTooltipUnderCursor(tooltip_text, dir);
   }
 
   void InjectGestureScrollEvent(LocalFrame& local_frame,

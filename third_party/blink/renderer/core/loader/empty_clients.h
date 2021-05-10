@@ -185,7 +185,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   }
   void ContentsSizeChanged(LocalFrame*, const IntSize&) const override {}
   void ShowMouseOverURL(const HitTestResult&) override {}
-  void SetToolTip(LocalFrame&, const String&, TextDirection) override {}
+  void UpdateTooltipUnderCursor(LocalFrame&,
+                                const String&,
+                                TextDirection) override {}
   void UpdateTooltipFromKeyboard(LocalFrame&,
                                  const String&,
                                  TextDirection,
