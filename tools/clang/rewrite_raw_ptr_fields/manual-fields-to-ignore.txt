@@ -219,7 +219,7 @@ mojo::core::ports::PortLocker::port_refs_
 
 # Populated manually - static pointee
 mojo::core::RequestContext::tls_context_
-base::sequence_manager::tick_clock_
+base::sequence_manager::LazyNow::tick_clock_
 
 # Populated manually - on-stack pointee
 mojo::internal::ContainerValidateParams::key_validate_params
