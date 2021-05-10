@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/webcrypto/webcrypto_impl.h"
 #include "content/common/content_export.h"

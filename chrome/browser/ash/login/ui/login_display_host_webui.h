@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/ui/login_display.h"

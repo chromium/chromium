@@ -7,9 +7,15 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_config.h"
+
+namespace base {
+namespace trace_event {
+class TraceConfig;
+}
+}  // namespace base
 
 namespace tracing {
 
@@ -39,7 +45,7 @@ bool BeginTracing(const std::string& category_patterns) WARN_UNUSED_RESULT;
 bool BeginTracingWithTraceConfig(
     const base::trace_event::TraceConfig& trace_config) WARN_UNUSED_RESULT;
 
-typedef base::OnceCallback<void()> StartTracingDoneCallback;
+using StartTracingDoneCallback = base::OnceClosure;
 bool BeginTracingWithTraceConfig(
     const base::trace_event::TraceConfig& trace_config,
     StartTracingDoneCallback start_tracing_done_callback) WARN_UNUSED_RESULT;

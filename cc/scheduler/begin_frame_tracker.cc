@@ -4,6 +4,7 @@
 
 #include "cc/scheduler/begin_frame_tracker.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {

@@ -4,6 +4,7 @@
 
 #include "components/exo/touch.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"

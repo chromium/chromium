@@ -15,6 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store_schema.h"
 #include "sql/database.h"

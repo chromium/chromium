@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/trace_event/trace_event.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"

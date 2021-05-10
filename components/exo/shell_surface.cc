@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"

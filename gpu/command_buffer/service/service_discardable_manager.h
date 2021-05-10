@@ -9,6 +9,7 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/gpu_gles2_export.h"

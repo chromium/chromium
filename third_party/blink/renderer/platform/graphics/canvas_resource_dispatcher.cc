@@ -8,6 +8,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"

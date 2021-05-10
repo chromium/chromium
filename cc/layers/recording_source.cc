@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/display_item_list.h"

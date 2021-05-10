@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_voter.h"

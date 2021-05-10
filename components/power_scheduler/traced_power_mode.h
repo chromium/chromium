@@ -7,7 +7,6 @@
 
 #include <atomic>
 
-#include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode.h"
 
 namespace power_scheduler {

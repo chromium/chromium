@@ -6,9 +6,11 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_BEGIN_FRAME_SOURCE_WEBVIEW_H_
 
 #include <memory>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"

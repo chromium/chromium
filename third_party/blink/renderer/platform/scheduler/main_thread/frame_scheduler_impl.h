@@ -17,7 +17,6 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

@@ -21,7 +21,6 @@
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"

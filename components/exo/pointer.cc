@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
