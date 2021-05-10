@@ -66,7 +66,12 @@ class PerfCpuLogger {
   explicit PerfCpuLogger(base::StringPiece test_name)
       : test_name_(test_name),
         process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()) {
-    process_metrics_->GetPlatformIndependentCPUUsage();
+    // Query the CPU usage once to start the recording interval.
+    const double inital_cpu_usage =
+        process_metrics_->GetPlatformIndependentCPUUsage();
+    // This should have been the first call so the reported cpu usage should be
+    // exactly zero.
+    DCHECK_EQ(inital_cpu_usage, 0.0);
   }
 
   ~PerfCpuLogger() {

@@ -121,13 +121,13 @@ class BASE_EXPORT ProcessMetrics {
   //
   // Since this API measures usage over an interval, it will return zero on the
   // first call, and an actual value only on the second and subsequent calls.
-  double GetPlatformIndependentCPUUsage();
+  double GetPlatformIndependentCPUUsage() WARN_UNUSED_RESULT;
 
   // Returns the cumulative CPU usage across all threads of the process since
   // process start. In case of multi-core processors, a process can consume CPU
   // at a rate higher than wall-clock time, e.g. two cores at full utilization
   // will result in a time delta of 2 seconds/per 1 wall-clock second.
-  TimeDelta GetCumulativeCPUUsage();
+  TimeDelta GetCumulativeCPUUsage() WARN_UNUSED_RESULT;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)
