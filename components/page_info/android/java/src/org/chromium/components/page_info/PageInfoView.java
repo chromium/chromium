@@ -16,7 +16,7 @@ import android.widget.TextView;
 /**
  * Represents the view inside the page info popup.
  */
-public class PageInfoViewV2 extends FrameLayout implements OnClickListener {
+public class PageInfoView extends FrameLayout implements OnClickListener {
     private LinearLayout mRowWrapper;
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
@@ -38,9 +38,9 @@ public class PageInfoViewV2 extends FrameLayout implements OnClickListener {
         public Runnable onUiClosingCallback;
     }
 
-    public PageInfoViewV2(Context context, Params params) {
+    public PageInfoView(Context context, Params params) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.page_info_v2, this, true);
+        LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
         init(params);
     }
 

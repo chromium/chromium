@@ -79,10 +79,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // A pointer to the C++ object for this UI.
     private long mNativePageInfoController;
 
-    // The view inside the popup or the main PageInfo view.
-    private PageInfoViewV2 mView;
+    // The main PageInfo view.
+    private PageInfoView mView;
 
-    // The view inside the popup (V2).
+    // The view inside the popup.
     private PageInfoContainer mContainer;
 
     // The dialog the view is placed in.
@@ -209,7 +209,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mContainer.setParams(containerParams);
 
         // Setup View.
-        PageInfoViewV2.Params viewParams = new PageInfoViewV2.Params();
+        PageInfoView.Params viewParams = new PageInfoView.Params();
         viewParams.onUiClosingCallback = () -> {
             // |this| may have already been destroyed by the time this is called.
             if (mCookiesController != null) mCookiesController.onUiClosing();
@@ -231,7 +231,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             viewParams.instantAppButtonShown = false;
         }
         viewParams.httpsImageCompressionMessageShown = mDelegate.isHttpsImageCompressionApplied();
-        mView = new PageInfoViewV2(mContext, viewParams);
+        mView = new PageInfoView(mContext, viewParams);
         if (isSheet(mContext)) mView.setBackgroundColor(Color.WHITE);
         mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
             // Return early if PageInfo has been dismissed.

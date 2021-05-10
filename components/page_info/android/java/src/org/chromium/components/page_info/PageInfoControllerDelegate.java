@@ -128,11 +128,11 @@ public abstract class PageInfoControllerDelegate {
 
     /**
      * Initialize viewParams with Offline Page UI info, if any.
-     * @param viewParams The PageInfoViewV2.Params to set state on.
+     * @param viewParams The PageInfoView.Params to set state on.
      * @param runAfterDismiss Used to set "open Online" button callback for offline page.
      */
     public void initOfflinePageUiParams(
-            PageInfoViewV2.Params viewParams, Consumer<Runnable> runAfterDismiss) {
+            PageInfoView.Params viewParams, Consumer<Runnable> runAfterDismiss) {
         viewParams.openOnlineButtonShown = false;
     }
 
