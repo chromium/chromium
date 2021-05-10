@@ -806,6 +806,10 @@ interface LocalFrame {
 
   // Asks the renderer to handle a renderer-debug URL.
   HandleRendererDebugURL(url.mojom.Url url);
+
+  // Requests the link-rel calnonical URL. The canonical url could be null if
+  // the document of this frame doesn't have the HTMLLinkElement.
+  GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

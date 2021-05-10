@@ -737,6 +737,8 @@ class CORE_EXPORT LocalFrame final
                             ExtractSmartClipDataCallback callback) final;
 #endif
   void HandleRendererDebugURL(const KURL& url) final;
+  void GetCanonicalUrlForSharing(
+      GetCanonicalUrlForSharingCallback callback) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

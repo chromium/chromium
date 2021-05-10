@@ -134,6 +134,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -3889,6 +3890,17 @@ void LocalFrame::HandleRendererDebugURL(const KURL& url) {
   // address bar.
   if (!IsLoading())
     Client()->DidStopLoading();
+}
+
+void LocalFrame::GetCanonicalUrlForSharing(
+    GetCanonicalUrlForSharingCallback callback) {
+  KURL canonical_url;
+  HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
+  if (link_element)
+    canonical_url = link_element->Href();
+  std::move(callback).Run(canonical_url.IsNull()
+                              ? base::nullopt
+                              : base::make_optional(canonical_url));
 }
 
 bool LocalFrame::ShouldThrottleDownload() {

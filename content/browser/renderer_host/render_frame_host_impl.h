@@ -648,7 +648,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Fetch the link-rel canonical URL to be used for sharing to external
   // applications.
   void GetCanonicalUrlForSharing(
-      mojom::Frame::GetCanonicalUrlForSharingCallback callback);
+      blink::mojom::LocalFrame::GetCanonicalUrlForSharingCallback callback);
 
   // Get HTML data for this RenderFrame by serializing contents on the renderer
   // side and replacing all links to both same-site and cross-site resources

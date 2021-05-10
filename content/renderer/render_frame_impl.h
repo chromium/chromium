@@ -796,8 +796,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void GetInterfaceProvider(
       mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
       override;
-  void GetCanonicalUrlForSharing(
-      GetCanonicalUrlForSharingCallback callback) override;
   void SnapshotAccessibilityTree(
       mojom::SnapshotAccessibilityTreeParamsPtr params,
       SnapshotAccessibilityTreeCallback callback) override;

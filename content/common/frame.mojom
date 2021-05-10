@@ -377,8 +377,6 @@ interface Frame {
   GetInterfaceProvider(
       pending_receiver<service_manager.mojom.InterfaceProvider> interfaces);
 
-  GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
-
   // Requests a one-time snapshot of the accessibility tree without enabling
   // accessibility if it wasn't already enabled.
   SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)

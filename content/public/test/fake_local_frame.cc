@@ -174,6 +174,9 @@ void FakeLocalFrame::ExtractSmartClipData(
 
 void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 
+void FakeLocalFrame::GetCanonicalUrlForSharing(
+    GetCanonicalUrlForSharingCallback callback) {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

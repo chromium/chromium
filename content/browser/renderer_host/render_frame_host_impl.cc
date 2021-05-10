@@ -1923,9 +1923,9 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
 }
 
 void RenderFrameHostImpl::GetCanonicalUrlForSharing(
-    mojom::Frame::GetCanonicalUrlForSharingCallback callback) {
+    blink::mojom::LocalFrame::GetCanonicalUrlForSharingCallback callback) {
   if (IsRenderFrameCreated()) {
-    GetMojomFrameInRenderer()->GetCanonicalUrlForSharing(std::move(callback));
+    GetAssociatedLocalFrame()->GetCanonicalUrlForSharing(std::move(callback));
   } else {
     std::move(callback).Run(base::nullopt);
   }

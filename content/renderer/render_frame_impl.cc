@@ -2461,14 +2461,6 @@ void RenderFrameImpl::GetInterfaceProvider(
   interface_provider_receivers_.Add(this, std::move(receiver), task_runner);
 }
 
-void RenderFrameImpl::GetCanonicalUrlForSharing(
-    GetCanonicalUrlForSharingCallback callback) {
-  WebURL canonical_url = GetWebFrame()->GetDocument().CanonicalUrlForSharing();
-  std::move(callback).Run(canonical_url.IsNull()
-                              ? base::nullopt
-                              : base::make_optional(GURL(canonical_url)));
-}
-
 void RenderFrameImpl::BlockRequests() {
   frame_request_blocker_->Block();
 }
