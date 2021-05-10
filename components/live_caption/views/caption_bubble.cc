@@ -858,7 +858,6 @@ void CaptionBubble::Hide() {
   if (!GetWidget()->IsVisible())
     return;
   GetWidget()->Hide();
-  GetWidget()->Deactivate();
   LogSessionEvent(SessionEvent::kStreamEnded);
 }
 
