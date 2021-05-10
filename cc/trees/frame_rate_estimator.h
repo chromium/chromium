@@ -20,6 +20,7 @@ class CC_EXPORT FrameRateEstimator {
   void WillDraw(base::TimeTicks now);
   void NotifyInputEvent();
   base::TimeDelta GetPreferredInterval() const;
+  bool input_priority_mode() const { return input_priority_mode_; }
 
  private:
   void OnExitInputPriorityMode();
