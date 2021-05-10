@@ -306,7 +306,6 @@ def _OptimizeWithR8(options,
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
         '-Dcom.android.tools.r8.allowTestProguardOptions=1',
-        '-Dcom.android.tools.r8.verticalClassMerging=1',
         '-Dcom.android.tools.r8.disableHorizontalClassMerging=1',
     ]
     if options.disable_outlining:
@@ -467,46 +466,32 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
 
         # TODO(agrieve): Create interface jars for these missing classes rather
         #     than allowlisting here.
-        'dalvik/system',
-        'libcore/io',
-        'sun/misc/Unsafe',
-
-        # Found in: com/facebook/fbui/textlayoutbuilder/StaticLayoutHelper
-        ('android/text/StaticLayout;<init>(Ljava/lang/CharSequence;IILandroid'
-         '/text/TextPaint;ILandroid/text/Layout$Alignment;Landroid/text/'
-         'TextDirectionHeuristic;FFZLandroid/text/TextUtils$TruncateAt;II)V'),
-
-        # Found in
-        # com/google/android/gms/cast/framework/media/internal/ResourceProvider
-        # Missing due to setting "strip_resources = true".
-        'com/google/android/gms/cast/framework/R',
-
-        # Found in com/google/android/gms/common/GoogleApiAvailability
-        # Missing due to setting "strip_drawables = true".
-        'com/google/android/gms/base/R$drawable',
+        'dalvik.system',
+        'libcore.io',
+        'sun.misc.Unsafe',
 
         # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
         # PlatformProvider.
-        'com/google/common/flogger/backend/google/GooglePlatform',
-        'com/google/common/flogger/backend/system/DefaultPlatform',
+        'com.google.common.flogger.backend.google.GooglePlatform',
+        'com.google.common.flogger.backend.system.DefaultPlatform',
 
         # trichrome_webview_google_bundle contains this missing reference.
         # TODO(crbug.com/1142530): Fix this missing reference properly.
-        'org/chromium/build/NativeLibraries',
+        'org.chromium.build.NativeLibraries',
 
         # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
-        'Ljava/lang/instrument/ClassFileTransformer',
-        'Ljava/lang/instrument/IllegalClassFormatException',
-        'Ljava/lang/instrument/Instrumentation',
-        'Ljava/lang/management/ManagementFactory',
-        'Ljavax/management/MBeanServer',
-        'Ljavax/management/ObjectInstance',
-        'Ljavax/management/ObjectName',
-        'Ljavax/management/StandardMBean',
+        'java.lang.instrument.ClassFileTransformer',
+        'java.lang.instrument.IllegalClassFormatException',
+        'java.lang.instrument.Instrumentation',
+        'java.lang.management.ManagementFactory',
+        'javax.management.MBeanServer',
+        'javax.management.ObjectInstance',
+        'javax.management.ObjectName',
+        'javax.management.StandardMBean',
 
         # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
         # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
-        'Lkotlin/KotlinVersion',
+        'kotlin.KotlinVersion',
     ]
 
     had_unfiltered_items = '  ' in stderr
