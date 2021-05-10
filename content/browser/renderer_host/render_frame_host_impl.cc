@@ -1758,8 +1758,10 @@ void RenderFrameHostImpl::ForEachFrameImpl(FrameIterationCallbackImpl on_frame,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!include_speculative &&
-      lifecycle_state() == LifecycleStateImpl::kSpeculative)
+      (lifecycle_state() == LifecycleStateImpl::kSpeculative ||
+       lifecycle_state() == LifecycleStateImpl::kPendingCommit)) {
     return;
+  }
 
   // Since |this| may not be current in its FrameTree, we can't begin iterating
   // from |frame_tree_node()|, so we special case the first invocation for
