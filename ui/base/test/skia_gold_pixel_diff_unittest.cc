@@ -5,7 +5,6 @@
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/test/scoped_environment_variable_override.h"
 #include "base/test/test_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -267,82 +266,6 @@ TEST_F(SkiaGoldPixelDiffTest, ExplicitCodeReviewSystem) {
                         Property(&base::CommandLine::GetCommandLineString,
                                  Not(HasSubstr(FILE_PATH_LITERAL("gerrit")))))))
       .Times(1);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentHasRetryLeft) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "1");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(mock_pixel,
-              LaunchProcess(AllOf(Property(
-                  &base::CommandLine::GetCommandLineString,
-                  HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1"))))))
-      .Times(1);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentForCIJob) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "0");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(
-          &base::CommandLine::GetCommandLineString,
-          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
-      .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentNoRetryLeft) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "0");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(
-          &base::CommandLine::GetCommandLineString,
-          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
-      .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentInvalidFlag) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
-  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
-  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherRetriesLeft, "NotANumber");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(
-          &base::CommandLine::GetCommandLineString,
-          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
-      .Times(3);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
   EXPECT_TRUE(ret);
