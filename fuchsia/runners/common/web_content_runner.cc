@@ -18,6 +18,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "fuchsia/runners/buildflags.h"
 #include "fuchsia/runners/common/web_component.h"
 #include "url/gurl.h"
@@ -40,6 +41,11 @@ bool IsChannelClosed(const zx::channel& channel) {
   zx_status_t status =
       channel.wait_one(ZX_ERR_PEER_CLOSED, zx::time(), &observed);
   return status == ZX_OK;
+}
+
+std::string CreateUniqueComponentName() {
+  static int last_component_id_ = 0;
+  return base::StringPrintf("web-component:%d", ++last_component_id_);
 }
 
 }  // namespace
@@ -90,7 +96,7 @@ void WebContentRunner::StartComponent(
   }
 
   std::unique_ptr<WebComponent> component = std::make_unique<WebComponent>(
-      std::string(), this,
+      CreateUniqueComponentName(), this,
       std::make_unique<base::StartupContext>(std::move(startup_info)),
       std::move(controller_request));
 #if BUILDFLAG(WEB_RUNNER_REMOTE_DEBUGGING_PORT) != 0

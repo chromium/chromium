@@ -32,7 +32,10 @@ WebComponent::WebComponent(
       module_context_(
           startup_context()->svc()->Connect<fuchsia::modular::ModuleContext>()),
       navigation_listener_binding_(this) {
+  DCHECK(!debug_name_.empty());
   DCHECK(runner);
+
+  LOG(INFO) << "Creating component " << debug_name_;
 
   // If the ComponentController request is valid then bind it, and configure it
   // to destroy this component on error.
@@ -40,7 +43,7 @@ WebComponent::WebComponent(
     controller_binding_.Bind(std::move(controller_request));
     controller_binding_.set_error_handler([this](zx_status_t status) {
       ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
-          << " ComponentController disconnected";
+          << " ComponentController disconnected for component " << debug_name_;
       // Teardown the component with dummy values, since ComponentController
       // channel isn't there to receive them.
       DestroyComponent(0, fuchsia::sys::TerminationReason::UNKNOWN);
@@ -82,8 +85,10 @@ void WebComponent::StartComponent() {
   // ZX_ERR_PEER_CLOSED will usually indicate a crash, reported elsewhere.
   // Therefore only log other, more unusual, |status| codes.
   frame_.set_error_handler([this](zx_status_t status) {
-    if (status != ZX_OK && status != ZX_ERR_PEER_CLOSED)
-      ZX_LOG(ERROR, status) << " Frame disconnected";
+    if (status != ZX_OK && status != ZX_ERR_PEER_CLOSED) {
+      ZX_LOG(ERROR, status)
+          << " component " << debug_name_ << ": Frame disconnected";
+    }
     DestroyComponent(status, fuchsia::sys::TerminationReason::EXITED);
   });
 
@@ -109,6 +114,7 @@ void WebComponent::LoadUrl(
     const GURL& url,
     std::vector<fuchsia::net::http::Header> extra_headers) {
   DCHECK(url.is_valid());
+
   fuchsia::web::NavigationControllerPtr navigation_controller;
   frame()->GetNavigationController(navigation_controller.NewRequest());
 
@@ -184,6 +190,10 @@ void WebComponent::OnNavigationStateChanged(
 
 void WebComponent::DestroyComponent(int64_t exit_code,
                                     fuchsia::sys::TerminationReason reason) {
+  LOG(INFO) << "Component " << debug_name_
+            << " is shutting down. reason=" << static_cast<int>(reason)
+            << " exit_code=" << exit_code;
+
   termination_reason_ = reason;
   termination_exit_code_ = exit_code;
   runner_->DestroyComponent(this);
