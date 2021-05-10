@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing TAO tests</title>
+<link rel="author" title="Google" href="http://www.google.com/" />
+<link rel="help" href="https://www.w3.org/TR/resource-timing-2/#timing-allow-origin"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/entry-invariants.js"></script>
+<script src="resources/resource-loaders.js"></script>
+<script>
+const {REMOTE_ORIGIN} = get_host_info();
+const path = REMOTE_ORIGIN + '/resource-timing/resources/TAOResponse.py?tao=match_origin';
+attribute_test(load.xhr_sync, path,
+  invariants.assert_tao_pass_no_redirect,
+'The timing allow check algorithm will pass when the Timing-Allow-Origin header value list contains a case-sensitive match.');
+</script>
+</body>
+</html>

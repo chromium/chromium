@@ -14,13 +14,13 @@ attribute_test(
   entry => {
     assert_true(entry.name.includes('#hash=1'),
       "There should be a hash in the resource name");
-    invariants.assert_http_resource(entry);
+    invariants.assert_tao_pass_no_redirect(entry);
   },
   "Image resources should generate conformant entries");
 
 attribute_test(
   load.font, "/fonts/Ahem.ttf",
-  invariants.assert_http_resource,
+  invariants.assert_tao_pass_no_redirect,
   "Font resources should generate conformant entries");
 
 attribute_test(

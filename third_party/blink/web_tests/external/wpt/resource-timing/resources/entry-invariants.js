@@ -37,8 +37,9 @@ const assert_positive_ = (entry, attributes) => {
 
 const invariants = {
   // Asserts that attributes of the given PerformanceResourceTiming entry match
-  // what the spec dictates for any resource fetched over HTTP.
-  assert_http_resource: entry => {
+  // what the spec dictates for any resource fetched without redirects but
+  // passing the Timing-Allow-Origin checks.
+  assert_tao_pass_no_redirect: entry => {
     assert_ordered_(entry, [
       "fetchStart",
       "domainLookupStart",

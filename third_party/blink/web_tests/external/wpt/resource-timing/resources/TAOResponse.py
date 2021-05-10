@@ -49,3 +49,6 @@ def main(request, response):
         response.headers.set(b'Timing-Allow-Origin', origin.upper())
     else:
         pass
+    response.status = 200
+    response.headers.set(b"Content-Type", b"text/plain")
+    response.content = "TEST"
