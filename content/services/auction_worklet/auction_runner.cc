@@ -199,31 +199,38 @@ void AuctionRunner::ReportSellerResult(const BidState* best_bid) {
 
 void AuctionRunner::OnReportSellerResultComplete(
     const BidState* best_bid,
-    SellerWorklet::Report seller_report) {
-  if (seller_report.error_msg.has_value())
-    errors_.push_back(std::move(seller_report.error_msg).value());
-  ReportBidWin(best_bid, std::move(seller_report));
+    const base::Optional<std::string>& signals_for_winner,
+    const base::Optional<GURL>& seller_report_url,
+    const std::vector<std::string>& errors) {
+  signals_for_winner_ = signals_for_winner;
+  seller_report_url_ = seller_report_url;
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
+
+  ReportBidWin(best_bid);
 }
 
-void AuctionRunner::ReportBidWin(const BidState* best_bid,
-                                 SellerWorklet::Report seller_report) {
-  DCHECK(best_bid->bid_result);
-  std::string signals_for_winner = seller_report.signals_for_winner;
+void AuctionRunner::ReportBidWin(const BidState* best_bid) {
+  CHECK(best_bid->bid_result);
+  std::string signals_for_winner_arg;
+  // TODO(mmenke): It's unclear what should happen here if `signals_for_winner_`
+  // is null. As-is, an empty string will result in the BidderWorklet's
+  // ReportWin() method failing, since it's not valid JSON.
+  if (signals_for_winner_)
+    signals_for_winner_arg = *signals_for_winner_;
   best_bid->bidder_worklet->ReportWin(
-      signals_for_winner, best_bid->bid_result->render_url,
+      signals_for_winner_arg, best_bid->bid_result->render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
-                     base::Unretained(this), best_bid,
-                     std::move(seller_report)));
+                     base::Unretained(this), best_bid));
 }
 
 void AuctionRunner::OnReportBidWinComplete(
     const BidState* best_bid,
-    SellerWorklet::Report seller_report,
     const base::Optional<GURL>& bidder_report_url,
     const std::vector<std::string>& error_msgs) {
+  bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), error_msgs.begin(), error_msgs.end());
-  ReportSuccess(best_bid, seller_report, bidder_report_url);
+  ReportSuccess(best_bid);
 }
 
 void AuctionRunner::FailAuction() {
@@ -234,21 +241,19 @@ void AuctionRunner::FailAuction() {
   delete this;
 }
 
-void AuctionRunner::ReportSuccess(
-    const BidState* state,
-    const SellerWorklet::Report& seller_report,
-    const base::Optional<GURL>& bidder_report_url) {
+void AuctionRunner::ReportSuccess(const BidState* state) {
   DCHECK(state->bid_result);
 
   std::move(callback_).Run(
       state->bid_result->render_url, state->bidder->group->owner,
       state->bidder->group->name,
       mojom::WinningBidderReport::New(
-          bidder_report_url.has_value(),
-          bidder_report_url.has_value() ? *bidder_report_url : GURL()),
-      mojom::SellerReport::New(seller_report.success,
-                               seller_report.signals_for_winner,
-                               seller_report.report_url),
+          bidder_report_url_.has_value(),
+          bidder_report_url_.has_value() ? *bidder_report_url_ : GURL()),
+      mojom::SellerReport::New(
+          signals_for_winner_.has_value(),
+          "<TODO: Remove this. Currently ignored>",
+          seller_report_url_.has_value() ? *seller_report_url_ : GURL()),
       errors_);
   delete this;
 }

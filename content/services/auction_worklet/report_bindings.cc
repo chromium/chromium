@@ -42,16 +42,16 @@ void ReportBindings::SendReportTo(
   if (args.Length() < 1 || args[0].IsEmpty() ||
       !gin::ConvertFromV8(v8_helper->isolate(), args[0], &url_string)) {
     bindings->exception_thrown_ = true;
-    bindings->report_url_ = GURL();
+    bindings->report_url_.reset();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "sendReportTo requires 1 string parameter")));
     return;
   }
 
-  if (bindings->exception_thrown_ || bindings->report_url_.is_valid()) {
+  if (bindings->exception_thrown_ || bindings->report_url_) {
     bindings->exception_thrown_ = true;
-    bindings->report_url_ = GURL();
+    bindings->report_url_.reset();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "sendReportTo may be called at most once")));

@@ -28,43 +28,6 @@ class WorkletLoader;
 // seller worklet's Javascript.
 class SellerWorklet {
  public:
-  // The result of invoking reportResult().
-  struct Report {
-    // Creates a Report for a failure.
-    Report();
-
-    // Creates a Report for a successful call.
-    Report(std::string signals_for_winner, GURL report_url);
-
-    // Creates a ScoreResult representing a fatal error, potentially with a
-    // helpful diagnostic message in `error_msg`.
-    explicit Report(base::Optional<std::string> error_msg);
-
-    Report(const Report& other);
-    Report(Report&& other);
-
-    ~Report();
-
-    Report& operator=(const Report&);
-    Report& operator=(Report&&);
-
-    // `success` will be false on any type of failure, including lack of a
-    // method.
-    bool success = false;
-
-    // JSON data as a string. Sent to the winner's ReportWin function. JSON
-    // instead of a v8 Value for sanitization.
-    std::string signals_for_winner;
-
-    // Report URL, if one is provided. Empty on failure, or if no report URL is
-    // provided.
-    GURL report_url;
-
-    // Error message for debugging. This isn't guaranteed to have a value for
-    // all failures.
-    base::Optional<std::string> error_msg;
-  };
-
   using LoadWorkletCallback =
       base::OnceCallback<void(bool success,
                               base::Optional<std::string> error_msg)>;
@@ -75,6 +38,23 @@ class SellerWorklet {
   using ScoreAdCallback =
       base::OnceCallback<void(double score,
                               const std::vector<std::string>& errors)>;
+
+  // Callback for ReportResult().
+  //
+  // `signals_for_winner` is JSON data as a string that should be sent to the
+  // winning bidder worklet's reportWin() function. It's empty if the script
+  // failed to run or threw an exception, and "null" if the return value wasn't
+  // a valid JSON object.
+  //
+  // `report_url` is the report URL provided by the script, if one is provided.
+  // nullopt on failure, or if no report URL is provided.
+  //
+  // `errors` is a vector of any errors that occurred while running the
+  // script.
+  using ReportResultCallback = base::OnceCallback<void(
+      const base::Optional<std::string>& signals_for_winner,
+      const base::Optional<GURL>& report_url,
+      const std::vector<std::string>& errors)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -110,7 +90,7 @@ class SellerWorklet {
                     const std::string& browser_signal_ad_render_fingerprint,
                     double browser_signal_bid,
                     double browser_signal_desirability,
-                    base::OnceCallback<void(Report)> callback);
+                    ReportResultCallback callback);
 
  private:
   void OnDownloadComplete(

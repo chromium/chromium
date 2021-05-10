@@ -341,12 +341,6 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -377,12 +371,6 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://adplatform.com",)"
-            R"("renderUrl":"https://ad1.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":1,"desirability":2})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -419,12 +407,6 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://adplatform.com",)"
-            R"("renderUrl":"https://ad1.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":1,"desirability":2})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -453,7 +435,6 @@ TEST_F(AuctionRunnerTest, NoBids) {
   EXPECT_EQ("", res.interest_group_name);
   EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
   EXPECT_THAT(
@@ -485,7 +466,6 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   EXPECT_EQ("", res.interest_group_name);
   EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
   EXPECT_THAT(
@@ -524,7 +504,6 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   EXPECT_EQ("", res.interest_group_name);
   EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
   EXPECT_THAT(res.errors,
@@ -562,12 +541,6 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://adplatform.com",)"
-            R"("renderUrl":"https://ad1.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":1,"desirability":2})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -584,7 +557,6 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   EXPECT_EQ("", res.interest_group_name);
   EXPECT_FALSE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ("", res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
 
@@ -628,12 +600,6 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -665,12 +631,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -712,12 +672,6 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
   EXPECT_EQ("Another Ad Thing", res.interest_group_name);
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_TRUE(res.bidder_report->report_requested);
   EXPECT_EQ("https://buyer-reporting.example.com/",
             res.bidder_report->report_url.spec());
@@ -753,12 +707,6 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_EQ("https://reporting.example.com/",
             res.seller_report->report_url.spec());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
   EXPECT_THAT(res.errors, testing::ElementsAre());
@@ -793,12 +741,6 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   EXPECT_EQ("Another Ad Thing", res.interest_group_name);
   EXPECT_TRUE(res.seller_report->success);
   EXPECT_TRUE(res.seller_report->report_url.is_empty());
-  EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
-            R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("renderUrl":"https://ad2.com/",)"
-            R"("adRenderFingerprint":"#####",)"
-            R"("bid":2,"desirability":4})",
-            res.seller_report->signals_for_winner_json);
   EXPECT_FALSE(res.bidder_report->report_requested);
   EXPECT_TRUE(res.bidder_report->report_url.is_empty());
   EXPECT_THAT(res.errors, testing::ElementsAre());

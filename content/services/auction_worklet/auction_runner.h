@@ -102,11 +102,13 @@ class AuctionRunner {
   // report a a win, Will ultimately invoke ReportSuccess(), which will delete
   // the auction.
   void ReportSellerResult(const BidState* state);
-  void OnReportSellerResultComplete(const BidState* best_bid,
-                                    SellerWorklet::Report seller_report);
-  void ReportBidWin(const BidState* state, SellerWorklet::Report seller_report);
+  void OnReportSellerResultComplete(
+      const BidState* best_bid,
+      const base::Optional<std::string>& signals_for_winner,
+      const base::Optional<GURL>& seller_report_url,
+      const std::vector<std::string>& errors);
+  void ReportBidWin(const BidState* state);
   void OnReportBidWinComplete(const BidState* best_bid,
-                              SellerWorklet::Report seller_report,
                               const base::Optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
@@ -114,9 +116,7 @@ class AuctionRunner {
   void FailAuction();
 
   // Destroys `this`.
-  void ReportSuccess(const BidState* state,
-                     const SellerWorklet::Report& seller_report,
-                     const base::Optional<GURL>& bidder_report_url);
+  void ReportSuccess(const BidState* state);
 
   // `auction_v8_helper_` needs to be before the worklets, since they refer to
   // it.
@@ -144,6 +144,13 @@ class AuctionRunner {
   // that can be done.
   bool seller_loaded_ = false;
   size_t seller_considering_ = 0;
+
+  // Seller script reportResult() results.
+  base::Optional<std::string> signals_for_winner_;
+  base::Optional<GURL> seller_report_url_;
+
+  // Bidder script reportWin() results.
+  base::Optional<GURL> bidder_report_url_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

@@ -192,12 +192,8 @@ void BidderWorklet::ReportWin(
     return;
   }
 
-  if (!report_bindings.report_url().is_valid()) {
-    std::move(callback).Run(base::nullopt /* report_url */,
-                            std::vector<std::string>() /* error_msgs */);
-    return;
-  }
-
+  // This covers both the case where a report URL was provided, and the case one
+  // was not.
   std::move(callback).Run(report_bindings.report_url(),
                           std::vector<std::string>() /* error_msgs */);
 }

@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
@@ -26,7 +27,7 @@ class ReportBindings {
   ReportBindings& operator=(const ReportBindings&) = delete;
   ~ReportBindings();
 
-  const GURL& report_url() const { return report_url_; }
+  const base::Optional<GURL>& report_url() const { return report_url_; }
 
  private:
   static void SendReportTo(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -34,7 +35,7 @@ class ReportBindings {
   AuctionV8Helper* const v8_helper_;
 
   // This cleared if an exception is thrown.
-  GURL report_url_;
+  base::Optional<GURL> report_url_;
 
   // Once an exception has been thrown, `report_url_` will be permanently
   // cleared.

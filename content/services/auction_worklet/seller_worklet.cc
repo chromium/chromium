@@ -119,30 +119,16 @@ void InvokeScoreAdCallbackAsync(SellerWorklet::ScoreAdCallback callback,
 }
 
 void InvokeReportResultCallbackAsync(
-    base::OnceCallback<void(SellerWorklet::Report)> callback,
-    SellerWorklet::Report report) {
+    SellerWorklet::ReportResultCallback callback,
+    const base::Optional<std::string>& signals_for_winner,
+    const base::Optional<GURL>& report_url,
+    const std::vector<std::string>& errors) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(report)));
+      FROM_HERE, base::BindOnce(std::move(callback), signals_for_winner,
+                                report_url, errors));
 }
 
 }  // namespace
-
-SellerWorklet::Report::Report() = default;
-
-SellerWorklet::Report::Report(std::string signals_for_winner, GURL report_url)
-    : success(true),
-      signals_for_winner(std::move(signals_for_winner)),
-      report_url(std::move(report_url)) {}
-
-SellerWorklet::Report::Report(base::Optional<std::string> error_msg)
-    : error_msg(std::move(error_msg)) {}
-
-SellerWorklet::Report::Report(const Report& other) = default;
-SellerWorklet::Report::Report(Report&& other) = default;
-SellerWorklet::Report::~Report() = default;
-SellerWorklet::Report& SellerWorklet::Report::operator=(const Report&) =
-    default;
-SellerWorklet::Report& SellerWorklet::Report::operator=(Report&&) = default;
 
 SellerWorklet::SellerWorklet(
     network::mojom::URLLoaderFactory* url_loader_factory,
@@ -253,7 +239,7 @@ void SellerWorklet::ReportResult(
     const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     double browser_signal_desirability,
-    base::OnceCallback<void(Report)> callback) {
+    ReportResultCallback callback) {
   callback =
       base::BindOnce(&InvokeReportResultCallbackAsync, std::move(callback));
 
@@ -271,7 +257,9 @@ void SellerWorklet::ReportResult(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args)) {
-    std::move(callback).Run(Report());
+    std::move(callback).Run(base::nullopt /* signals_for_winner */,
+                            base::nullopt /* report_url */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
 
@@ -288,7 +276,9 @@ void SellerWorklet::ReportResult(
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
-    std::move(callback).Run(Report());
+    std::move(callback).Run(base::nullopt /* signals_for_winner */,
+                            base::nullopt /* report_url */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
@@ -299,7 +289,11 @@ void SellerWorklet::ReportResult(
            ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
                        args, error_msg_out)
            .ToLocal(&signals_for_winner_value)) {
-    std::move(callback).Run(Report(std::move(error_msg_out)));
+    std::vector<std::string> errors;
+    if (error_msg_out)
+      errors.emplace_back(std::move(error_msg_out).value());
+    std::move(callback).Run(base::nullopt /* signals_for_winner */,
+                            base::nullopt /* report_url */, errors);
     return;
   }
 
@@ -311,8 +305,8 @@ void SellerWorklet::ReportResult(
     signals_for_winner = "null";
   }
 
-  std::move(callback).Run(
-      Report(signals_for_winner, report_bindings.report_url()));
+  std::move(callback).Run(signals_for_winner, report_bindings.report_url(),
+                          std::vector<std::string>() /* errors */);
 }
 
 void SellerWorklet::OnDownloadComplete(
