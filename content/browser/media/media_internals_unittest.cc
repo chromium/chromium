@@ -379,7 +379,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
 
     {
       base::AutoLock auto_lock(lock_);
-      if (!update_data_.empty() && call_count_ == wanted_call_count_)
+      if (!update_data_.DictEmpty() && call_count_ == wanted_call_count_)
         return;
     }
 
