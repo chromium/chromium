@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -155,8 +155,8 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
 
   scoped_refptr<SafeBrowsingNavigationObserverManager> manager_;
 
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observer_{this};
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };

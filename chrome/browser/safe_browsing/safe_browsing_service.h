@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -313,7 +313,8 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   scoped_refptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   std::unique_ptr<TriggerManager> trigger_manager_;
 

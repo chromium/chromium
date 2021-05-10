@@ -106,8 +106,9 @@ SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
     content::WebContents* contents,
     const scoped_refptr<SafeBrowsingNavigationObserverManager>& manager)
     : content::WebContentsObserver(contents), manager_(manager) {
-  content_settings_observer_.Add(HostContentSettingsMapFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
+  content_settings_observation_.Observe(
+      HostContentSettingsMapFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
 }
 
 SafeBrowsingNavigationObserver::~SafeBrowsingNavigationObserver() {}
