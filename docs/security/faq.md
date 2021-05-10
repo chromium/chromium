@@ -152,7 +152,7 @@ No. Chromium once contained a reflected XSS filter called the [XSSAuditor](https
 that was a best-effort second line of defense against reflected XSS flaws found
 in web sites. The XSS Auditor was [removed in Chrome 78](https://groups.google.com/a/chromium.org/forum/#!msg/blink-dev/TuYw-EZhO9g/blGViehIAwAJ).
 
-<a name="TOC-What-if-a-Chrome-component-breaks-an-OS-security-boundary-"</a>
+<a name="TOC-What-if-a-Chrome-component-breaks-an-OS-security-boundary-"></a>
 ## What if a Chrome component breaks an OS security boundary?
 
 If Chrome or any of its components (e.g. updater) can be abused to
