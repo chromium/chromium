@@ -63,10 +63,9 @@
     box-sizing: border-box;
     height: 100%;
     pointer-events: none;
-    position: fixed;
+    position: absolute;
+    top: 0;
     width: 100%;
-    /* z-index for this should be higher than toolbar. */
-    z-index: 5;
   }
 
   viewer-ink-host {
@@ -107,6 +106,7 @@
   #main {
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 
   #scroller {
@@ -176,7 +176,8 @@
       <div id="sizer"></div>
       <div id="content"></div>
     </div>
-  <div>
+    <div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>
+  </div>
 </div>
 
 <template is="dom-if" if="[[showPasswordDialog_]]" restamp>
@@ -197,5 +198,3 @@
 <if expr="chromeos">
 <viewer-form-warning id="form-warning"></viewer-form-warning>
 </if>
-
-<div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>
