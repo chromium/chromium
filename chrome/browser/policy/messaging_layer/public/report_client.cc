@@ -333,8 +333,9 @@ ReportingClient::ReportingClient()
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   // Storage location in the local file system (if local storage is enabled).
   base::FilePath user_data_dir;
-  DCHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
-      << "Could not retrieve base path";
+  const auto res =
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  DCHECK(res) << "Could not retrieve base path";
   reporting_path_ = user_data_dir.Append(kReportingDirectory);
 }
 
