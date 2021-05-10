@@ -2292,6 +2292,21 @@
             ]
         }
     ],
+    "CredentialEditAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EditPasswordsInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "CriticalPersistedTabData_V2": [
         {
             "platforms": [
