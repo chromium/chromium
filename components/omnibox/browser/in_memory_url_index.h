@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -177,6 +178,9 @@ class InMemoryURLIndex : public KeyedService,
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_;  // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.
+    // When the task was first requested from the main thread. This is the same
+    // time as when this task object is constructed.
+    const base::TimeTicks task_creation_time_;
   };
 
   // Initializes all index data members in preparation for restoring the index

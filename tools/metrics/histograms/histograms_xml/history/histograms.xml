@@ -670,7 +670,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexingTime" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -679,8 +679,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.InMemoryURLIndexingTime.RoundTripTime" units="ms"
+    expires_after="2022-03-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <summary>
+    Records the total time between when the in-memory url index is requested to
+    be built from the main thread, and when the request is succesfully finished
+    and reported back to the main thread. Failed cases are not recorded.
+
+    From startup traces, we found that History initialization blocks the DB task
+    to create the in-memory url index, and also dominates the total time taken.
+    That's why this metric measures the round-trip time from request to finish
+    from the perspective of the main thread.
+  </summary>
+</histogram>
+
 <histogram name="History.InMemoryURLIndexRestoreCacheTime" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-03-01">
   <owner>tommycli@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -690,7 +706,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexSaveCacheTime" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-03-01">
   <owner>tommycli@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
