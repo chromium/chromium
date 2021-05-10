@@ -42,13 +42,14 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.ModelType;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures(
-        {ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY, ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -110,6 +111,7 @@ public class SigninManagerImplTest {
     @Test
     public void signinAndTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
+        when(mProfileSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
 
         mSigninManager.onFirstRunCheckDone();
 
@@ -330,43 +332,6 @@ public class SigninManagerImplTest {
         // Sign-out triggered by wiping account cookies shouldn't wipe data.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    public void rollbackWhenMobileIdentityConsistencyIsDisabled() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(ACCOUNT_INFO);
-
-        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
-                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
-
-        // SignedIn state (without sync consent) doesn't exist pre-MobileIdentityConsistency. If the
-        // feature is disabled while in this state, SigninManager ctor should trigger sign-out.
-        verify(mIdentityMutator)
-                .clearPrimaryAccount(SignoutReason.MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
-                        SignoutDelete.IGNORE_METRIC);
-        verify(mNativeMock)
-                .logOutAllAccountsForMobileIdentityConsistencyRollback(NATIVE_SIGNIN_MANAGER);
-        // This sign-out shouldn't wipe data.
-        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
-        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void noRollbackWhenMobileIdentityConsistencyIsEnabled() {
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
-                .thenReturn(ACCOUNT_INFO);
-
-        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
-                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
-        ;
-
-        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
-        verify(mNativeMock, never())
-                .logOutAllAccountsForMobileIdentityConsistencyRollback(anyLong());
     }
 
     @Test

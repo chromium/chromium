@@ -277,13 +277,6 @@ SigninManagerAndroid::GetManagementDomain(JNIEnv* env) {
   return domain;
 }
 
-void SigninManagerAndroid::
-    LogOutAllAccountsForMobileIdentityConsistencyRollback(JNIEnv* env) {
-  identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
-      gaia::GaiaSource::kAccountReconcilorMirror,
-      base::DoNothing::Once<const GoogleServiceAuthError&>());
-}
-
 void SigninManagerAndroid::WipeProfileData(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_callback) {

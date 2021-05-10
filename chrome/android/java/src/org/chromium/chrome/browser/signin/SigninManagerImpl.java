@@ -116,8 +116,6 @@ class SigninManagerImpl
 
         identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
-
-        signinManager.maybeRollbackMobileIdentityConsistency();
         return signinManager;
     }
 
@@ -147,25 +145,6 @@ class SigninManagerImpl
         AccountInfoService.get().destroy();
         mIdentityManager.removeObserver(this);
         mNativeSigninManagerAndroid = 0;
-    }
-
-    /**
-     * Temporary code to handle rollback for {@link ChromeFeatureList#MOBILE_IDENTITY_CONSISTENCY}.
-     * TODO(https://crbug.com/1065029): Remove when the flag is removed.
-     */
-    private void maybeRollbackMobileIdentityConsistency() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) return;
-        // Nothing to do if there's no primary account.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) return;
-        // Nothing to do if sync is on - this state existed before MobileIdentityConsistency.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
-
-        Log.w(TAG, "Rolling back MobileIdentityConsistency: signing out.");
-        signOut(SignoutReason.MOBILE_IDENTITY_CONSISTENCY_ROLLBACK);
-        // Since AccountReconcilor currently operates in pre-MICE mode, it doesn't react to
-        // primary account changes when there's no sync consent. Log-out web accounts manually.
-        SigninManagerImplJni.get().logOutAllAccountsForMobileIdentityConsistencyRollback(
-                mNativeSigninManagerAndroid);
     }
 
     /**
@@ -413,8 +392,7 @@ class SigninManagerImpl
                     AccountUtils.createAccountFromName(mSignInState.mCoreAccountInfo.getEmail()));
             boolean atLeastOneDataTypeSynced =
                     !ProfileSyncService.get().getChosenDataTypes().isEmpty();
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                    || atLeastOneDataTypeSynced) {
+            if (atLeastOneDataTypeSynced) {
                 // Turn on sync only when user has at least one data type to sync, this is
                 // consistent with {@link ManageSyncSettings#updataSyncStateFromSelectedModelTypes},
                 // in which we turn off sync we stop sync service when the user toggles off all the
@@ -765,10 +743,6 @@ class SigninManagerImpl
                 Callback<Boolean> callback);
 
         String getManagementDomain(long nativeSigninManagerAndroid);
-
-        // Temporary code to handle rollback for MobileIdentityConsistency.
-        // TODO(https://crbug.com/1065029): Remove when the flag is removed.
-        void logOutAllAccountsForMobileIdentityConsistencyRollback(long nativeSigninManagerAndroid);
 
         void wipeProfileData(long nativeSigninManagerAndroid, Runnable callback);
 
