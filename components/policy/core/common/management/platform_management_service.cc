@@ -5,9 +5,7 @@
 #include "components/policy/core/common/management/platform_management_service.h"
 
 #include "build/build_config.h"
-#if defined(OS_MAC)
-#include "components/policy/core/common/management/platform_management_status_provider_mac.h"
-#elif defined(OS_WIN)
+#if defined(OS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
 #endif
 
@@ -28,7 +26,7 @@ PlatformManagementService& PlatformManagementService::GetInstance() {
 
 void PlatformManagementService::InitManagementStatusProviders() {
   std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN)
   providers.emplace_back(std::make_unique<DomainEnrollmentStatusProvider>());
   providers.emplace_back(
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
