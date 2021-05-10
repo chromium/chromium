@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.content_creation.notes;
 
+import android.app.Activity;
+
+import org.chromium.chrome.browser.profiles.Profile;
+
 /**
  * Factory for creating instances of the NoteCreationCoordinatorImpl.
  */
@@ -11,7 +15,8 @@ public class NoteCreationCoordinatorFactory {
     /**
      * @return a NoteCreationCoordinator instance.
      */
-    public static NoteCreationCoordinator create() {
-        return new NoteCreationCoordinatorImpl();
+    public static NoteCreationCoordinator create(Activity activity) {
+        Profile profile = Profile.getLastUsedRegularProfile();
+        return new NoteCreationCoordinatorImpl(activity, NoteServiceFactory.getForProfile(profile));
     }
 }

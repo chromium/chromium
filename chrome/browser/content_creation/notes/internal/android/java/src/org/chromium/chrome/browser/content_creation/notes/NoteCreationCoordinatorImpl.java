@@ -10,35 +10,42 @@ import android.view.View;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordinator;
+import org.chromium.components.content_creation.notes.NoteService;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
  * Responsible for notes main UI and its subcomponents.
  */
 public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator {
-    private Activity mActivity;
-    private NoteCreationDialog mDialog;
+    private final Activity mActivity;
+    private final ModelList mListModel;
+    private final NoteCreationMediator mMediator;
+    private final NoteCreationDialog mDialog;
+
     private TopBarCoordinator mTopBarCoordinator;
 
-    @Override
-    public void initialize(Activity activity) {
+    public NoteCreationCoordinatorImpl(Activity activity, NoteService noteService) {
         mActivity = activity;
+
+        mListModel = new ModelList();
+
+        mMediator = new NoteCreationMediator(mListModel, noteService);
+
         mDialog = new NoteCreationDialog();
         mDialog.initDialog(this::onViewCreated);
     }
 
     @Override
     public void showDialog() {
-        if (mDialog != null) {
-            FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
-            mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
-        }
+        FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
+        mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
 
     /**
      * Dismiss the main dialog.
      */
     public void dismissDialog() {
-        if (mDialog != null) mDialog.dismiss();
+        mDialog.dismiss();
     }
 
     /**
