@@ -225,10 +225,16 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
       // will be re-inserted after us.
       if (LayoutBlock* cb = ContainingBlock()) {
         cb->RemovePositionedObjects(this, kNewContainingBlock);
-        if (IsOutOfFlowPositioned()) {
+        if (IsOutOfFlowPositioned() && !cb->IsLayoutNGObject()) {
           // Insert this object into containing block's positioned descendants
           // list in case the parent won't layout. This is needed especially
           // there are descendants scheduled for overflow recalc.
+          //
+          // Only do this if the containing block is a legacy object, to let
+          // LayoutNG decide when to insert positioned objects. In particular,
+          // we don't want that if the OOF participates in block fragmentation,
+          // since an OOF will then be laid out as a child of a fragmentainer,
+          // rather than its actual containing block.
           cb->InsertPositionedObject(this);
         }
       }
