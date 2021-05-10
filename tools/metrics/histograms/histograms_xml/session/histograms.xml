@@ -73,6 +73,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Session.SessionData.CleanupTime" units="ms"
+    expires_after="M95">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Records the duration of a session-only cookies and site data deletion when
+    the deletion is finished. Only recorded for users with Clear on Exit
+    settings.
+  </summary>
+</histogram>
+
+<histogram name="Session.SessionData.StatusFromLastSession"
+    enum="SessionDataStatus" expires_after="M95">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Records whether cookie deletion on previous session exit succeeded. Only
+    recorded on startup for users with Clear on Exit settings.
+  </summary>
+</histogram>
+
 <histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
   <owner>yiningwang@google.com</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

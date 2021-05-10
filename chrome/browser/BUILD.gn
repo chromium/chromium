@@ -1525,8 +1525,6 @@ static_library("browser") {
     "sessions/restore_on_startup_policy_handler.h",
     "sessions/session_common_utils.cc",
     "sessions/session_common_utils.h",
-    "sessions/session_data_deleter.cc",
-    "sessions/session_data_deleter.h",
     "sessions/session_tab_helper_factory.cc",
     "sessions/session_tab_helper_factory.h",
     "sessions/tab_restore_service_factory.cc",
@@ -6237,6 +6235,8 @@ static_library("browser") {
 
   if (enable_session_service) {
     sources += [
+      "sessions/session_data_deleter.cc",
+      "sessions/session_data_deleter.h",
       "sessions/session_data_service.cc",
       "sessions/session_data_service.h",
       "sessions/session_data_service_factory.cc",

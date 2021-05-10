@@ -4,7 +4,10 @@
 
 #include "chrome/browser/sessions/session_data_service_factory.h"
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/session_data_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -26,8 +29,10 @@ SessionDataServiceFactory::SessionDataServiceFactory()
 SessionDataServiceFactory::~SessionDataServiceFactory() = default;
 
 KeyedService* SessionDataServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new SessionDataService(static_cast<Profile*>(profile));
+    content::BrowserContext* browser_context) const {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto deleter = std::make_unique<SessionDataDeleter>(profile);
+  return new SessionDataService(profile, std::move(deleter));
 }
 
 bool SessionDataServiceFactory::ServiceIsCreatedWithBrowserContext() const {

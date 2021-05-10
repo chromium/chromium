@@ -417,6 +417,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #endif
 namespace {
@@ -1000,6 +1001,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   RegisterSessionServiceLogProfilePrefs(registry);
+  SessionDataService::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
