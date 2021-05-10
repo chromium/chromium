@@ -270,7 +270,7 @@ const base::Feature kOmniboxPedalsDefaultIconColored{
 
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
-    "OmniboxKeywordSearchButton", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxKeywordSearchButton", enabled_by_default_desktop_only};
 
 // Enables new UI changes indicating focus and hover states.
 const base::Feature kOmniboxRefinedFocusState{"OmniboxRefinedFocusState",

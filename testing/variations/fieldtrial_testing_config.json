@@ -5298,25 +5298,6 @@
             ]
         }
     ],
-    "OmniboxButtonRowPedalsDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ButtonRowWithPedalsAndKeywordButton",
-                    "enable_features": [
-                        "OmniboxKeywordSearchButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxDNSInterceptionChecksPolicyRollout": [
         {
             "platforms": [
