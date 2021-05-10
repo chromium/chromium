@@ -56,10 +56,16 @@ if (enable_me2me_host) {
     outputs = [ "$root_build_dir/remoting/crd-url-forwarder.desktop" ]
   }
 
+  copy("remoting_me2me_host_copy_setup_url_forwarder_script") {
+    sources = [ "setup_url_forwarder.py" ]
+    outputs = [ "$root_build_dir/remoting/setup-url-forwarder" ]
+  }
+
   group("remoting_dev_me2me_host") {
     deps = [
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_script",
+      ":remoting_me2me_host_copy_setup_url_forwarder_script",
       ":remoting_me2me_host_copy_url_forwarder_desktop_entry",
       ":remoting_me2me_host_copy_user_session",
       ":remoting_me2me_host_copy_user_session_wrapper",

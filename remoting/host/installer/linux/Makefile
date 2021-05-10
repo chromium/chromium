@@ -47,6 +47,8 @@ install:
 	  "$(INSTALL_DIR)"
 	install "$(SRC_DIR)/remoting/host/installer/linux/Xsession" \
 	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/linux/setup_url_forwarder.py" \
+	  "$(INSTALL_DIR)/setup-url-forwarder"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
