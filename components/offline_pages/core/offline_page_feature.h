@@ -11,6 +11,7 @@
 namespace offline_pages {
 
 extern const base::Feature kOffliningRecentPagesFeature;
+extern const base::Feature kOfflinePagesCTFeature;
 extern const base::Feature kOfflinePagesLivePageSharingFeature;
 extern const base::Feature kBackgroundLoaderForDownloadsFeature;
 extern const base::Feature kPrefetchingOfflinePagesFeature;
@@ -29,6 +30,9 @@ extern const char kPrefetchingOfflinePagesExperimentsOption[];
 
 // Returns true if offlining of recent pages (aka 'Last N pages') is enabled.
 bool IsOffliningRecentPagesEnabled();
+
+// Returns true if offline CT features are enabled.  See crbug.com/620421.
+bool IsOfflinePagesCTEnabled();
 
 // Returns true if live page sharing of offline page is enabled.
 bool IsOfflinePagesLivePageSharingEnabled();

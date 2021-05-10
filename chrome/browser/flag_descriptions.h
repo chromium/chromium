@@ -1823,6 +1823,9 @@ extern const char kOfflineIndicatorChoiceDescription[];
 extern const char kOfflineIndicatorV2Name[];
 extern const char kOfflineIndicatorV2Description[];
 
+extern const char kOfflinePagesCtName[];
+extern const char kOfflinePagesCtDescription[];
+
 extern const char kOfflinePagesCtV2Name[];
 extern const char kOfflinePagesCtV2Description[];
 
