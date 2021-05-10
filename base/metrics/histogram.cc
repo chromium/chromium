@@ -159,10 +159,9 @@ class Histogram::Factory {
 HistogramBase* Histogram::Factory::Build() {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name_);
   if (!histogram) {
-    // TODO(gayane): |HashMetricName()| is called again in Histogram
     // constructor. Refactor code to avoid the additional call.
-    bool should_record =
-        StatisticsRecorder::ShouldRecordHistogram(HashMetricName(name_));
+    bool should_record = StatisticsRecorder::ShouldRecordHistogram(
+        HashMetricNameAs32Bits(name_));
     if (!should_record)
       return DummyHistogram::GetInstance();
     // To avoid racy destruction at shutdown, the following will be leaked.

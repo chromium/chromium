@@ -339,7 +339,7 @@ void StatisticsRecorder::SetRecordChecker(
 }
 
 // static
-bool StatisticsRecorder::ShouldRecordHistogram(uint64_t histogram_hash) {
+bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
   const AutoLock auto_lock(lock_.Get());
   EnsureGlobalRecorderWhileLocked();
   return !top_->record_checker_ ||

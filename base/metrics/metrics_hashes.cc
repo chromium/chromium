@@ -22,12 +22,26 @@ inline uint64_t DigestToUInt64(const base::MD5Digest& digest) {
   return base::NetToHost64(value);
 }
 
+// Converts the 4-byte prefix of an MD5 hash into a uint32_t value.
+inline uint32_t DigestToUInt32(const base::MD5Digest& digest) {
+  uint32_t value;
+  DCHECK_GE(sizeof(digest.a), sizeof(value));
+  memcpy(&value, digest.a, sizeof(value));
+  return base::NetToHost32(value);
+}
+
 }  // namespace
 
 uint64_t HashMetricName(base::StringPiece name) {
   base::MD5Digest digest;
   base::MD5Sum(name.data(), name.size(), &digest);
   return DigestToUInt64(digest);
+}
+
+uint32_t HashMetricNameAs32Bits(base::StringPiece name) {
+  base::MD5Digest digest;
+  base::MD5Sum(name.data(), name.size(), &digest);
+  return DigestToUInt32(digest);
 }
 
 }  // namespace metrics

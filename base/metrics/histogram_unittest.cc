@@ -43,8 +43,8 @@ class TestRecordHistogramChecker : public RecordHistogramChecker {
   ~TestRecordHistogramChecker() override = default;
 
   // RecordHistogramChecker:
-  bool ShouldRecord(uint64_t histogram_hash) const override {
-    return histogram_hash != HashMetricName(kExpiredHistogramName);
+  bool ShouldRecord(uint32_t histogram_hash) const override {
+    return histogram_hash != HashMetricNameAs32Bits(kExpiredHistogramName);
   }
 };
 

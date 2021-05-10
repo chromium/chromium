@@ -22,13 +22,13 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   // list of explicitly allowed histogram names as a comma-separated string.
   // Histograms in the |allowlist_str| are logged even if their hash is in the
   // |expired_histograms_hashes|.
-  ExpiredHistogramsChecker(const uint64_t* expired_histogram_hashes,
+  ExpiredHistogramsChecker(const uint32_t* expired_histogram_hashes,
                            size_t size,
                            const std::string& allowlist_str);
   ~ExpiredHistogramsChecker() override;
 
   // Checks if the given |histogram_hash| corresponds to an expired histogram.
-  bool ShouldRecord(uint64_t histogram_hash) const override;
+  bool ShouldRecord(uint32_t histogram_hash) const override;
 
  private:
   // Initializes the |allowlist_| array of histogram hashes that should be
@@ -36,13 +36,13 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   void InitAllowlist(const std::string& allowlist_str);
 
   // Array of expired histogram hashes.
-  const uint64_t* const expired_histogram_hashes_;
+  const uint32_t* const expired_histogram_hashes_;
 
   // Size of the |expired_histogram_hashes_|.
   const size_t size_;
 
   // Set of expired histogram hashes that should be recorded.
-  std::set<uint64_t> allowlist_;
+  std::set<uint32_t> allowlist_;
 
   DISALLOW_COPY_AND_ASSIGN(ExpiredHistogramsChecker);
 };

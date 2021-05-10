@@ -16,6 +16,10 @@ namespace base {
 // for metric names.
 BASE_EXPORT uint64_t HashMetricName(base::StringPiece name);
 
+// Computes a uint32_t hash of a given string based on its MD5 hash. This
+// can be more suitable for contexts where memory use is a concern.
+BASE_EXPORT uint32_t HashMetricNameAs32Bits(base::StringPiece name);
+
 }  // namespace metrics
 
 #endif  // BASE_METRICS_METRICS_HASHES_H_

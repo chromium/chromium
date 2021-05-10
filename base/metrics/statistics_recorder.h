@@ -209,9 +209,10 @@ class BASE_EXPORT StatisticsRecorder {
   // Checks if the given histogram should be recorded based on the
   // ShouldRecord() method of the record checker. If the record checker is not
   // set, returns true.
+  // |histogram_hash| corresponds to the result of HashMetricNameAs32Bits().
   //
   // This method is thread safe.
-  static bool ShouldRecordHistogram(uint64_t histogram_hash);
+  static bool ShouldRecordHistogram(uint32_t histogram_hash);
 
   // Sorts histograms by name.
   static Histograms Sort(Histograms histograms);

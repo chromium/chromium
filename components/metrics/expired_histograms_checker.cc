@@ -15,7 +15,7 @@
 namespace metrics {
 
 ExpiredHistogramsChecker::ExpiredHistogramsChecker(
-    const uint64_t* expired_histogram_hashes,
+    const uint32_t* expired_histogram_hashes,
     size_t size,
     const std::string& allowlist_str)
     : expired_histogram_hashes_(expired_histogram_hashes), size_(size) {
@@ -24,7 +24,7 @@ ExpiredHistogramsChecker::ExpiredHistogramsChecker(
 
 ExpiredHistogramsChecker::~ExpiredHistogramsChecker() {}
 
-bool ExpiredHistogramsChecker::ShouldRecord(uint64_t histogram_hash) const {
+bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
   // If histogram is explicitly allowed then it should always be recorded.
   if (base::Contains(allowlist_, histogram_hash))
     return true;
@@ -36,7 +36,7 @@ void ExpiredHistogramsChecker::InitAllowlist(const std::string& allowlist_str) {
   std::vector<base::StringPiece> allowlist_names = base::SplitStringPiece(
       allowlist_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (base::StringPiece name : allowlist_names)
-    allowlist_.insert(base::HashMetricName(name));
+    allowlist_.insert(base::HashMetricNameAs32Bits(name));
 }
 
 }  // namespace metrics

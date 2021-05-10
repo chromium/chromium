@@ -20,7 +20,7 @@ _CURRENT_MILESTONE_RE = re.compile(r"MAJOR=([0-9]{2,3})\n")
 _MILESTONE_EXPIRY_RE = re.compile(r"\AM([0-9]{2,3})")
 
 _SCRIPT_NAME = "generate_expired_histograms_array.py"
-_HASH_DATATYPE = "uint64_t"
+_HASH_DATATYPE = "uint32_t"
 _HEADER = """// Generated from {script_name}. Do not edit!
 
 #ifndef {include_guard}
@@ -149,7 +149,8 @@ def _GetCurrentMilestone(content, regex):
 
 def _HashName(name):
   """Returns hash for the given histogram |name|."""
-  return "0x" + hashlib.md5(name.encode()).hexdigest()[:16]
+  # This corresponds to HashMetricNameAs32Bits() in C++
+  return "0x" + hashlib.md5(name.encode()).hexdigest()[:8]
 
 
 def _GetHashToNameMap(histograms_names):
@@ -175,7 +176,7 @@ def _GenerateHeaderFileContent(header_filename, namespace,
   include_guard = re.sub("[^A-Z]", "_", header_filename.upper()) + "_"
   if not histograms_map:
     # Some platforms don't allow creating empty arrays.
-    histograms_map["0x0000000000000000"] = "Dummy.Histogram"
+    histograms_map["0x00000000"] = "Dummy.Histogram"
   hashes = "\n".join([
       "  {hash},  // {name}".format(hash=value, name=histograms_map[value])
       for value in sorted(histograms_map.keys())
