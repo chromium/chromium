@@ -135,8 +135,6 @@ source_set("common") {
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
-    "service_worker/service_worker_loader_helpers.cc",
-    "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_utils.cc",
     "service_worker/service_worker_utils.h",
     "set_process_title.cc",

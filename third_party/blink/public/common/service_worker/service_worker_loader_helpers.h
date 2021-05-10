@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
-#define CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
@@ -11,6 +11,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 
@@ -18,11 +19,11 @@ namespace network {
 struct ResourceRequest;
 }
 
-namespace content {
+namespace blink {
 
 // Helper functions for service worker classes that use URLLoader
 //(e.g., ServiceWorkerMainResourceLoader and ServiceWorkerSubresourceLoader).
-class ServiceWorkerLoaderHelpers {
+class BLINK_COMMON_EXPORT ServiceWorkerLoaderHelpers {
  public:
   // Populates |out_head| with given |response|.
   static void SaveResponseInfo(const blink::mojom::FetchAPIResponse& response,
@@ -45,6 +46,6 @@ class ServiceWorkerLoaderHelpers {
       mojo::ScopedDataPipeConsumerHandle* handle_out);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_

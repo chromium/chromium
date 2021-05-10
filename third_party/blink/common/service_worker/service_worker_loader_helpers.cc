@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/service_worker/service_worker_loader_helpers.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 
 #include <limits>
 #include <memory>
@@ -22,7 +22,7 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "ui/base/page_transition_types.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 // Calls |callback| when Blob reading is complete.
@@ -171,4 +171,4 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
   return net::OK;
 }
 
-}  // namespace content
+}  // namespace blink

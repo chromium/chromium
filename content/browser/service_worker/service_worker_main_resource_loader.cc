@@ -21,11 +21,11 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
-#include "content/common/service_worker/service_worker_loader_helpers.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 
 namespace content {
 
@@ -339,7 +339,8 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK_EQ(status_, Status::kStarted);
 
-  ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, response_head_.get());
+  blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(*response,
+                                                      response_head_.get());
 
   response_head_->did_service_worker_navigation_preload =
       did_navigation_preload_;
@@ -363,8 +364,8 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
   base::Optional<net::RedirectInfo> redirect_info =
-      ServiceWorkerLoaderHelpers::ComputeRedirectInfo(resource_request_,
-                                                      *response_head_);
+      blink::ServiceWorkerLoaderHelpers::ComputeRedirectInfo(resource_request_,
+                                                             *response_head_);
   if (redirect_info) {
     TRACE_EVENT_WITH_FLOW2(
         "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
@@ -401,7 +402,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
     DCHECK(response->blob->blob.is_valid());
     body_as_blob_.Bind(std::move(response->blob->blob));
     mojo::ScopedDataPipeConsumerHandle data_pipe;
-    int error = ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
+    int error = blink::ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
         &body_as_blob_, response->blob->size,
         base::BindOnce(&ServiceWorkerMainResourceLoader::OnBlobReadingComplete,
                        weak_factory_.GetWeakPtr()),
