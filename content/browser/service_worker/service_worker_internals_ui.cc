@@ -253,7 +253,15 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   PartitionObserver(int partition_id,
                     WeakPtr<ServiceWorkerInternalsHandler> handler)
       : partition_id_(partition_id), handler_(handler) {}
-  ~PartitionObserver() override = default;
+  ~PartitionObserver() override {
+    if (handler_) {
+      // We need to remove PartitionObserver from the list of
+      // ServiceWorkerContextCoreObserver.
+      scoped_refptr<ServiceWorkerContextWrapper> context;
+      if (handler_->GetServiceWorkerContext(partition_id_, &context))
+        context->RemoveObserver(this);
+    }
+  }
   // ServiceWorkerContextCoreObserver overrides:
   void OnStarting(int64_t version_id) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -416,8 +424,8 @@ void ServiceWorkerInternalsHandler::RegisterMessages() {
 void ServiceWorkerInternalsHandler::OnJavascriptDisallowed() {
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
-  // Safe to use base::Unretained(this) because
-  // ForEachStoragePartition is synchronous.
+  // Safe to use base::Unretained(this) because ForEachStoragePartition is
+  // synchronous.
   browser_context->ForEachStoragePartition(base::BindRepeating(
       &ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition,
       base::Unretained(this)));
@@ -553,7 +561,7 @@ void ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition(
   context->RemoveObserver(observer.get());
 }
 
-void ServiceWorkerInternalsHandler::FindContext(
+void ServiceWorkerInternalsHandler::FindStoragePartitionById(
     int partition_id,
     StoragePartition** result_partition,
     StoragePartition* storage_partition) const {
@@ -570,8 +578,8 @@ bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
       web_ui()->GetWebContents()->GetBrowserContext();
   StoragePartition* result_partition(nullptr);
   browser_context->ForEachStoragePartition(base::BindRepeating(
-      &ServiceWorkerInternalsHandler::FindContext, base::Unretained(this),
-      partition_id, &result_partition));
+      &ServiceWorkerInternalsHandler::FindStoragePartitionById,
+      base::Unretained(this), partition_id, &result_partition));
   if (!result_partition)
     return false;
   *context = static_cast<ServiceWorkerContextWrapper*>(
