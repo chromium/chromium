@@ -314,10 +314,14 @@ TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
   request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kNotAllowedError));
-  ;
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
 }
 
 TEST(PaymentRequestTest, ShowConsumesUserActivation) {
@@ -333,6 +337,8 @@ TEST(PaymentRequestTest, ShowConsumesUserActivation) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&(scope.GetFrame())));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
 }
 
 TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {

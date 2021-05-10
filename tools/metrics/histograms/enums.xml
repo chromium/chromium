@@ -32411,6 +32411,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3900" label="ComputePressureObserver_Observe"/>
   <int value="3901" label="ComputePressureObserver_Stop"/>
   <int value="3902" label="WebAppWindowControlsOverlay"/>
+  <int value="3903" label="PaymentRequestShowWithoutGestureOrToken"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

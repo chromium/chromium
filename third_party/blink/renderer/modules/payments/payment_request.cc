@@ -833,6 +833,9 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
           GetExecutionContext())) {
     payment_request_allowed |= local_frame->IsPaymentRequestTokenActive();
     if (!payment_request_allowed) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kPaymentRequestShowWithoutGestureOrToken);
+
       String message =
           "PaymentRequest.show() requires either transient user activation or "
           "delegated payment request capability";
