@@ -88,17 +88,23 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public Account[] getAccountsSync() throws AccountManagerDelegateException {
-        if (!hasGetAccountsPermission() || !isGooglePlayServicesAvailable()) {
-            // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
-            // so don't report any accounts if Google Play Services are out of date.
-            return new Account[] {};
+    public Account[] getAccounts() {
+        if (hasGetAccountsPermission() && isGooglePlayServicesAvailable()) {
+            long startTime = SystemClock.elapsedRealtime();
+            Account[] accounts =
+                    mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            recordElapsedTimeHistogram("Signin.AndroidGetAccountsTime_AccountManager",
+                    SystemClock.elapsedRealtime() - startTime);
+            return accounts;
         }
-        long now = SystemClock.elapsedRealtime();
-        Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-        long elapsed = SystemClock.elapsedRealtime() - now;
-        recordElapsedTimeHistogram("Signin.AndroidGetAccountsTime_AccountManager", elapsed);
-        return accounts;
+        // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
+        // so don't report any accounts if Google Play Services are out of date.
+        return new Account[] {};
+    }
+
+    @Deprecated
+    protected Account[] getAccountsSync() throws AccountManagerDelegateException {
+        return getAccounts();
     }
 
     @Override

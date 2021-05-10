@@ -279,11 +279,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     private List<Account> getAllAccounts() {
-        try {
-            return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccountsSync()));
-        } catch (AccountManagerDelegateException ex) {
-            return Collections.emptyList();
-        }
+        return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
     }
 
     private List<Account> getFilteredAccounts() {

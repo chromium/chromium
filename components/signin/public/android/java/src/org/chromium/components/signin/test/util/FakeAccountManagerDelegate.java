@@ -71,7 +71,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public Account[] getAccountsSync() {
+    public Account[] getAccounts() {
         ArrayList<Account> result = new ArrayList<>();
         synchronized (mLock) {
             for (AccountHolder ah : mAccounts) {

@@ -31,10 +31,10 @@ public interface AccountManagerDelegate {
     void attachAccountsChangeObserver(AccountsChangeObserver observer);
 
     /**
-     * Get all the accounts synchronously.
+     * Get all the accounts on device synchronously.
      */
     @WorkerThread
-    Account[] getAccountsSync() throws AccountManagerDelegateException;
+    Account[] getAccounts();
 
     /**
      * Get an auth token.

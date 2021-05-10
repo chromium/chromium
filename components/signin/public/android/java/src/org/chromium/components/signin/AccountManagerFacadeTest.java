@@ -41,14 +41,14 @@ public class AccountManagerFacadeTest {
         private final CallbackHelper mBlockGetAccounts = new CallbackHelper();
 
         @Override
-        public Account[] getAccountsSync() {
+        public Account[] getAccounts() {
             // Blocks thread that's trying to get accounts from the delegate.
             try {
                 mBlockGetAccounts.waitForFirst();
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
-            return super.getAccountsSync();
+            return super.getAccounts();
         }
 
         void unblockGetAccounts() {
