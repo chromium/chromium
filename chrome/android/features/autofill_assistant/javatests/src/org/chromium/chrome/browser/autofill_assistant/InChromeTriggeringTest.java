@@ -87,7 +87,7 @@ public class InChromeTriggeringTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures("AutofillAssistantInChromeTriggering")
+    @Features.EnableFeatures("AutofillAssistantInTabTriggering")
     public void triggerImplicitlyOnSupportedSite() {
         AutofillAssistantTestServiceRequestSender testServiceRequestSender =
                 new AutofillAssistantTestServiceRequestSender();

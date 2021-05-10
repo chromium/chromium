@@ -296,8 +296,12 @@ void Starter::CheckSettings() {
   bool prev_fetch_trigger_scripts_on_navigation =
       fetch_trigger_scripts_on_navigation_;
   fetch_trigger_scripts_on_navigation_ =
-      base::FeatureList::IsEnabled(
-          features::kAutofillAssistantInChromeTriggering) &&
+      ((base::FeatureList::IsEnabled(
+            features::kAutofillAssistantInCCTTriggering) &&
+        is_custom_tab_) ||
+       (base::FeatureList::IsEnabled(
+            features::kAutofillAssistantInTabTriggering) &&
+        !is_custom_tab_)) &&
       proactive_help_setting_enabled && msbb_setting_enabled;
 
   // If there is a pending startup, re-check that the settings are still

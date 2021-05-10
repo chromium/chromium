@@ -36,10 +36,15 @@ const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether Autofill Assistant should enable in-Chrome triggering, i.e., without
-// requiring first party trigger surfaces.
-const base::Feature kAutofillAssistantInChromeTriggering{
-    "AutofillAssistantInChromeTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
+// Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting
+// and showing trigger scripts in CCTs without explicit user request.
+const base::Feature kAutofillAssistantInCCTTriggering{
+    "AutofillAssistantInCctTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether Autofill Assistant should enable in-tab triggering, i.e., requesting
+// and showing trigger scripts in regular tabs without explicit user request.
+const base::Feature kAutofillAssistantInTabTriggering{
+    "AutofillAssistantInTabTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to show the "Send feedback" chip while in an error state.
 const base::Feature kAutofillAssistantFeedbackChip{
