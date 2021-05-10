@@ -19,7 +19,6 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
-import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -129,11 +128,11 @@ public abstract class PageInfoControllerDelegate {
 
     /**
      * Initialize viewParams with Offline Page UI info, if any.
-     * @param viewParams The PageInfoViewParams to set state on.
+     * @param viewParams The PageInfoViewV2.Params to set state on.
      * @param runAfterDismiss Used to set "open Online" button callback for offline page.
      */
     public void initOfflinePageUiParams(
-            PageInfoViewParams viewParams, Consumer<Runnable> runAfterDismiss) {
+            PageInfoViewV2.Params viewParams, Consumer<Runnable> runAfterDismiss) {
         viewParams.openOnlineButtonShown = false;
     }
 

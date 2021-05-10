@@ -20,7 +20,6 @@ import android.view.Window;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
@@ -39,8 +38,6 @@ public class PageInfoDialog {
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
     @NonNull
-    private final PageInfoView mPageInfoView;
-    @Nullable
     private final PageInfoContainer mPageInfoContainer;
     @NonNull
     private final ViewGroup mScrollView;
@@ -65,18 +62,15 @@ public class PageInfoDialog {
      * standard dialog (using modal dialogs).
      *
      * @param context The context used for creating the dialog.
-     * @param pageInfoView The pageInfoView shown inside the dialog.
-     * @param containerView The pageInfoContainer the dialog is shown in (only in the new UI).
+     * @param containerView The pageInfoContainer the dialog is shown in.
      * @param isSheet Whether the dialog should appear as a sheet.
      * @param manager The dialog's manager used for modal dialogs.
      * @param controller The dialog's controller.
      *
      */
-    public PageInfoDialog(Context context, @NonNull PageInfoView pageInfoView,
-            @Nullable PageInfoContainer pageInfoContainer, View containerView, boolean isSheet,
-            @NonNull ModalDialogManager manager,
+    public PageInfoDialog(Context context, @NonNull PageInfoContainer pageInfoContainer,
+            View containerView, boolean isSheet, @NonNull ModalDialogManager manager,
             @NonNull ModalDialogProperties.Controller controller) {
-        mPageInfoView = pageInfoView;
         mPageInfoContainer = pageInfoContainer;
         mIsSheet = isSheet;
         mManager = manager;
@@ -99,11 +93,11 @@ public class PageInfoDialog {
                 // a height.
                 mScrollView.removeOnLayoutChangeListener(this);
                 mScrollView.setVisibility(View.VISIBLE);
-                createAllAnimations(true, null).start();
+                createDialogSlideAnimaton(true, null).start();
             }
         });
 
-        mScrollView.addView(pageInfoContainer != null ? pageInfoContainer : pageInfoView);
+        mScrollView.addView(pageInfoContainer);
 
         if (isSheet) {
             mSheetDialog = createSheetDialog(context, mScrollView);
@@ -162,7 +156,7 @@ public class PageInfoDialog {
                     // Dismiss the modal dialogs without any custom animations.
                     super.dismiss();
                 } else {
-                    createAllAnimations(false, () -> {
+                    createDialogSlideAnimaton(false, () -> {
                         // onAnimationEnd is called during the final frame of the animation.
                         // Delay the cleanup by a tiny amount to give this frame a chance to
                         // be displayed before we destroy the dialog.
@@ -225,35 +219,30 @@ public class PageInfoDialog {
     }
 
     /**
-     * Create an animator to slide in the entire dialog from the top of the screen.
+     * Create an animator to show/hide the entire dialog as a slide animation.
+     * On phones the dialog is slid in as a sheet. Otherwise, the default fade-in is used.
      */
-    private Animator createDialogSlideAnimaton(boolean isEnter, View view) {
-        final float animHeight = -view.getHeight();
-        ObjectAnimator translateAnim;
-        if (isEnter) {
-            view.setTranslationY(animHeight);
-            translateAnim = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f);
-            translateAnim.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+    private Animator createDialogSlideAnimaton(boolean isEnter, Runnable onAnimationEnd) {
+        Animator dialogAnimation;
+        if (mIsSheet) {
+            final float animHeight = -mScrollView.getHeight();
+            ObjectAnimator translateAnim;
+            if (isEnter) {
+                mScrollView.setTranslationY(animHeight);
+                translateAnim = ObjectAnimator.ofFloat(mScrollView, View.TRANSLATION_Y, 0f);
+                translateAnim.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+            } else {
+                translateAnim = ObjectAnimator.ofFloat(mScrollView, View.TRANSLATION_Y, animHeight);
+                translateAnim.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+            }
+            translateAnim.setDuration(ENTER_EXIT_DURATION_MS);
+            dialogAnimation = translateAnim;
         } else {
-            translateAnim = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, animHeight);
-            translateAnim.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+            dialogAnimation = new AnimatorSet();
         }
-        translateAnim.setDuration(ENTER_EXIT_DURATION_MS);
-        return translateAnim;
-    }
 
-    /**
-     * Create an animator to show/hide the entire dialog. On phones the dialog is slid in as a
-     * sheet. Otherwise, the default fade-in is used.
-     */
-    private Animator createAllAnimations(boolean isEnter, Runnable onAnimationEnd) {
-        Animator dialogAnimation = mIsSheet ? createDialogSlideAnimaton(isEnter, (View) mScrollView)
-                                            : new AnimatorSet();
-        Animator viewAnimation = mPageInfoView.createEnterExitAnimation(isEnter);
-        AnimatorSet allAnimations = new AnimatorSet();
-        if (isEnter) allAnimations.setStartDelay(ENTER_START_DELAY_MS);
-        allAnimations.playTogether(dialogAnimation, viewAnimation);
-        allAnimations.addListener(new AnimatorListenerAdapter() {
+        if (isEnter) dialogAnimation.setStartDelay(ENTER_START_DELAY_MS);
+        dialogAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mCurrentAnimation = null;
@@ -262,7 +251,7 @@ public class PageInfoDialog {
             }
         });
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
-        mCurrentAnimation = allAnimations;
-        return allAnimations;
+        mCurrentAnimation = dialogAnimation;
+        return dialogAnimation;
     }
 }

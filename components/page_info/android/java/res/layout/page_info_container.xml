@@ -41,7 +41,7 @@
 
             <view
                 android:id="@+id/page_info_url"
-                class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
+                class="org.chromium.components.page_info.ElidedUrlTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -63,28 +63,6 @@
             android:src="@drawable/btn_close"
             app:tint="@color/default_icon_color"
             android:visibility="gone"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/page_info_preview_message_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:gravity="center"
-        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
-        android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
-        android:visibility="gone">
-
-        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-            android:id="@+id/page_info_preview_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/page_info_popup_button_padding_sides"
-            android:includeFontPadding="false"
-            android:lineSpacingExtra="6dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            app:drawableHeight="@dimen/page_info_favicon_size"
-            app:drawableWidth="@dimen/page_info_favicon_size" />
     </LinearLayout>
 
     <LinearLayout

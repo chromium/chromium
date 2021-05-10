@@ -7,62 +7,95 @@ package org.chromium.components.page_info;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
-import java.util.Collections;
-import java.util.List;
+import android.widget.TextView;
 
 /**
- * Represents the view inside the second version of the page info popup.
+ * Represents the view inside the page info popup.
  */
-public class PageInfoViewV2 extends PageInfoView {
-    // Components specific to this PageInfoView
+public class PageInfoViewV2 extends FrameLayout implements OnClickListener {
     private LinearLayout mRowWrapper;
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
     private PageInfoRowView mHistoryRow;
     private Button mForgetSiteButton;
+    private TextView mHttpsImageCompressionMessage;
+    private Button mInstantAppButton;
+    private Button mOpenOnlineButton;
+    private Runnable mOnUiClosingCallback;
 
-    public PageInfoViewV2(Context context, PageInfoView.PageInfoViewParams params) {
+    /**  Parameters to configure the view of the page info popup. */
+    public static class Params {
+        public boolean instantAppButtonShown = true;
+        public boolean openOnlineButtonShown = true;
+        public boolean httpsImageCompressionMessageShown;
+        public Runnable instantAppButtonClickCallback;
+        public Runnable openOnlineButtonClickCallback;
+        public Runnable onUiClosingCallback;
+    }
+
+    public PageInfoViewV2(Context context, Params params) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info_v2, this, true);
         init(params);
     }
 
-    @Override
-    protected void init(PageInfoView.PageInfoViewParams params) {
-        super.init(params);
+    private void init(Params params) {
+        initRowWrapper();
+        initConnection();
+        initPermissions();
+        initCookies(params);
+        initHistory();
+        initHttpsImageCompression(params);
+        initInstantApp(params);
+        initOpenOnline(params);
+    }
+
+    private void initRowWrapper() {
         mRowWrapper = findViewById(R.id.page_info_row_wrapper);
         initializePageInfoViewChild(mRowWrapper, true, null);
-        initHistory(params);
     }
 
-    @Override
-    protected void initUrlTitle(PageInfoView.PageInfoViewParams params) {
-        // URL is initialized in PageInfoContainer.
-    }
-
-    @Override
-    protected void initConnection(PageInfoView.PageInfoViewParams params) {
+    private void initConnection() {
         mConnectionRow = findViewById(R.id.page_info_connection_row);
     }
 
-    @Override
-    protected void initPermissions(PageInfoView.PageInfoViewParams params) {
+    private void initPermissions() {
         mPermissionsRow = findViewById(R.id.page_info_permissions_row);
     }
 
-    @Override
-    protected void initCookies(PageInfoView.PageInfoViewParams params) {
+    private void initCookies(Params params) {
         mCookiesRow = findViewById(R.id.page_info_cookies_row);
         mOnUiClosingCallback = params.onUiClosingCallback;
     }
 
-    protected void initHistory(PageInfoView.PageInfoViewParams params) {
+    private void initHistory() {
         mHistoryRow = findViewById(R.id.page_info_history_row);
         mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
+    }
+
+    private void initHttpsImageCompression(Params params) {
+        mHttpsImageCompressionMessage =
+                findViewById(R.id.page_info_lite_mode_https_image_compression_message);
+        initializePageInfoViewChild(
+                mHttpsImageCompressionMessage, params.httpsImageCompressionMessageShown, null);
+    }
+
+    private void initInstantApp(Params params) {
+        mInstantAppButton = findViewById(R.id.page_info_instant_app_button);
+        initializePageInfoViewChild(mInstantAppButton, params.instantAppButtonShown,
+                params.instantAppButtonClickCallback);
+    }
+
+    private void initOpenOnline(Params params) {
+        mOpenOnlineButton = findViewById(R.id.page_info_open_online_button);
+        // The open online button should not fade in.
+        initializePageInfoViewChild(mOpenOnlineButton, params.openOnlineButtonShown,
+                params.openOnlineButtonClickCallback);
     }
 
     public PageInfoRowView getConnectionRowView() {
@@ -85,13 +118,32 @@ public class PageInfoViewV2 extends PageInfoView {
         return mForgetSiteButton;
     }
 
-    @Override
-    public void toggleUrlTruncation() {
-        throw new RuntimeException();
+    public void disableInstantAppButton() {
+        mInstantAppButton.setEnabled(false);
     }
 
+    private void initializePageInfoViewChild(View child, boolean shown, Runnable clickCallback) {
+        child.setVisibility(shown ? View.VISIBLE : View.GONE);
+        child.setTag(R.id.page_info_click_callback, clickCallback);
+        if (clickCallback == null) return;
+        child.setOnClickListener(this);
+    }
+
+    // FrameLayout override.
     @Override
-    protected List<View> collectAnimatableViews() {
-        return Collections.emptyList();
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mOnUiClosingCallback.run();
+    }
+
+    // OnClickListener interface.
+    @Override
+    public void onClick(View view) {
+        Object clickCallbackObj = view.getTag(R.id.page_info_click_callback);
+        if (!(clickCallbackObj instanceof Runnable)) {
+            throw new IllegalStateException("Unable to find click callback for view: " + view);
+        }
+        Runnable clickCallback = (Runnable) clickCallbackObj;
+        clickCallback.run();
     }
 }

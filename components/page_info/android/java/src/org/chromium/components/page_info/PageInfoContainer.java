@@ -26,18 +26,12 @@ public class PageInfoContainer extends FrameLayout {
 
     /**  Parameters to configure the view of page info subpage. */
     public static class Params {
-        // Whether the URL title should be shown.
-        public boolean urlTitleShown;
         // The URL to be shown at the top of the page.
         public CharSequence url;
         // The length of the URL's origin in number of characters.
         public int urlOriginLength;
         // The URL to show in truncated state.
         public String truncatedUrl;
-        // If the page has preview UI shown.
-        public boolean previewUIShown;
-        // The icon used for preview UI.
-        public Drawable previewUIIcon;
         // Whether the close button is displayed.
         public boolean showCloseButton;
 
@@ -46,9 +40,8 @@ public class PageInfoContainer extends FrameLayout {
         public Runnable backButtonClickCallback;
         public Runnable closeButtonClickCallback;
     }
-    private PageInfoView.ElidedUrlTextView mExpandedUrlTitle;
+    private ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
-    private TextView mPreviewMessage;
 
     private final ViewGroup mWrapper;
     private final ViewGroup mContent;
@@ -78,16 +71,6 @@ public class PageInfoContainer extends FrameLayout {
         initializeUrlView(mTruncatedUrlTitle, params);
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         mTruncatedUrlTitle.setText(params.truncatedUrl);
-
-        View urlWrapper = findViewById(R.id.page_info_url_wrapper);
-        urlWrapper.setVisibility(params.urlTitleShown ? VISIBLE : GONE);
-
-        mPreviewMessage = findViewById(R.id.page_info_preview_message);
-        mPreviewMessage.setText(R.string.page_info_preview_message);
-        mPreviewMessage.setCompoundDrawablesRelative(params.previewUIIcon, null, null, null);
-
-        View previewWrapper = findViewById(R.id.page_info_preview_message_wrapper);
-        previewWrapper.setVisibility(params.previewUIShown ? VISIBLE : GONE);
 
         ChromeImageButton closeButton = findViewById(R.id.page_info_close);
         closeButton.setVisibility(params.showCloseButton ? VISIBLE : GONE);

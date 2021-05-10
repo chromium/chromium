@@ -55,15 +55,6 @@
         style="@style/TextButton"/>
 
     <TextView
-        android:id="@+id/page_info_preview_load_original"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/page_info_popup_padding_vertical"
-        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/page_info_lite_mode_https_image_compression_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
