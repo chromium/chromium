@@ -5,9 +5,6 @@
 #ifndef SERVICES_AUDIO_DEBUG_RECORDING_H_
 #define SERVICES_AUDIO_DEBUG_RECORDING_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"

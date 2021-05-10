@@ -5,8 +5,6 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"

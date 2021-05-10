@@ -5,8 +5,6 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_entry_builder_base.h"

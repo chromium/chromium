@@ -5,8 +5,6 @@
 #ifndef SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_SESSION_SERVICE_H_
 #define SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_SESSION_SERVICE_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"

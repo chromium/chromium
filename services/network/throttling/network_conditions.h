@@ -5,9 +5,6 @@
 #ifndef SERVICES_NETWORK_THROTTLING_NETWORK_CONDITIONS_H_
 #define SERVICES_NETWORK_THROTTLING_NETWORK_CONDITIONS_H_
 
-#include <string>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 

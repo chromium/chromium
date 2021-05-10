@@ -5,8 +5,6 @@
 #ifndef SERVICES_SHAPE_DETECTION_SHAPE_DETECTION_SERVICE_H_
 #define SERVICES_SHAPE_DETECTION_SHAPE_DETECTION_SERVICE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"

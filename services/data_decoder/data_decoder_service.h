@@ -5,8 +5,6 @@
 #ifndef SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"

@@ -5,9 +5,6 @@
 #ifndef SERVICES_SERVICE_MANAGER_SERVICE_PROCESS_LAUNCHER_H_
 #define SERVICES_SERVICE_MANAGER_SERVICE_PROCESS_LAUNCHER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"

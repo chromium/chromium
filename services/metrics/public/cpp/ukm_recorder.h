@@ -5,8 +5,6 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"

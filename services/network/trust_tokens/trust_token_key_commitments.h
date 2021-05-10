@@ -5,9 +5,6 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENTS_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENTS_H_
 
-#include <map>
-#include <memory>
-
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"

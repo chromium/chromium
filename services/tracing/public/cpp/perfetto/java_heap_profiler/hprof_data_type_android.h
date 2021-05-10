@@ -5,6 +5,9 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_DATA_TYPE_ANDROID_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_DATA_TYPE_ANDROID_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 namespace tracing {
 
 // These are the possible primitive types that can be read in by the parser.

@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 #define SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

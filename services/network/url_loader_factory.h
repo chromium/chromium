@@ -5,9 +5,6 @@
 #ifndef SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 
-#include <memory>
-#include <set>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

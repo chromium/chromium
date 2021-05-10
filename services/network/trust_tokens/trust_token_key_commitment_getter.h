@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENT_GETTER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENT_GETTER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "url/origin.h"

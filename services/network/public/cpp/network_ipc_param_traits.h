@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_IPC_PARAM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_IPC_PARAM_TRAITS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/pickle.h"
 #include "ipc/ipc_param_traits.h"

@@ -5,8 +5,6 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_H_
 #define SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 

@@ -5,8 +5,6 @@
 #ifndef SERVICES_AUDIO_DEVICE_NOTIFIER_H_
 #define SERVICES_AUDIO_DEVICE_NOTIFIER_H_
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "base/system/system_monitor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
