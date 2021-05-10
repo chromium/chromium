@@ -111,14 +111,21 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         // exists because of a lint error that we suppress below.
         @SuppressWarnings("WrongConstant")
         private void init(int width, int height) {
-            // Due to how ImageReader works, it is an error to attempt to acquire more than
-            // |maxBitmapsToAcquire|. We need 1 acquire to convert to a bitmap, and 2 to acquire
-            // and discard any images that are queued (by animations).
-            final int maxBitmapsToAcquire = 3;
-            mReaderDelegate = ImageReader.newInstance(
-                    width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
-            mReaderDelegate.setOnImageAvailableListener(this, sHandler);
-            mState = new State(0, 0, 0, null);
+            try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::init")) {
+                // Due to how ImageReader works, it is an error to attempt to acquire more than
+                // |maxBitmapsToAcquire|. We need 1 acquire to convert to a bitmap, and 2 to acquire
+                // and discard any images that are queued (by animations).
+                final int maxBitmapsToAcquire = 3;
+                if (mReaderDelegate != null) {
+                    // Inform the GPU that we can clean up the ImageReader and associated GPU memory
+                    // and contexts, prevents unneeded callbacks as well.
+                    mReaderDelegate.close();
+                }
+                mReaderDelegate = ImageReader.newInstance(
+                        width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
+                mReaderDelegate.setOnImageAvailableListener(this, sHandler);
+                mState = new State(0, 0, 0, null);
+            }
         }
 
         public void onLayoutChange(int width, int height) {
