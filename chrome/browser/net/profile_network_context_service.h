@@ -14,7 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -170,9 +170,9 @@ class ProfileNetworkContextService
   PrefChangeRegistrar pref_change_registrar_;
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  ScopedObserver<content_settings::CookieSettings,
-                 content_settings::CookieSettings::Observer>
-      cookie_settings_observer_{this};
+  base::ScopedObservation<content_settings::CookieSettings,
+                          content_settings::CookieSettings::Observer>
+      cookie_settings_observation_{this};
 
   // Used to post schedule CT policy updates
   base::OneShotTimer ct_policy_update_timer_;
