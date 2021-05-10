@@ -39,7 +39,13 @@
   #p3 { top:150px;}
   #p4 { top:150px; left:250px;}
   #p5 { top:250px;}
-  #p6 { overflow-y: scroll; }
+  #p6 {
+    top: 50px;
+    left:150px;
+    width: 300px;
+    height: 300px;
+    overflow-y: scroll;
+  }
   popup { border: 5px solid red; }
 </style>
 
@@ -167,12 +173,13 @@
     },'Dragging from an open popup outside an open popup should leave the popup open');
 
     popup6.show();
+    assert_equals(popup6.scrollTop,0,'popup6 should start non-scrolled');
     await new test_driver.Actions()
        .scroll(0, 0, 0, 50, {origin: popup6})
        .send();
     test(t => {
       assert_true(popup6.open,'popup6 should stay open');
-      assert_equals(popup1.scrollTop,50,'popup6 should scroll');
+      assert_equals(popup6.scrollTop,50,'popup6 should be scrolled');
       popup6.hide();
     },'Scrolling within a popup should not close the popup');
 

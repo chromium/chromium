@@ -271,7 +271,9 @@ void HTMLPopupElement::HandleLightDismiss(const Event& event) {
   auto& document = target_node->GetDocument();
   DCHECK(document.PopupShowing());
   const AtomicString& event_type = event.type();
-  if (event_type == event_type_names::kClick) {
+  if (event_type == event_type_names::kClick ||
+      event_type == event_type_names::kScroll) {
+    // For click or scroll, hide everything up to the clicked/scrolled element.
     document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
@@ -279,9 +281,6 @@ void HTMLPopupElement::HandleLightDismiss(const Event& event) {
       // Escape key just pops the topmost <popup> off the stack.
       document.HideTopmostPopupElement();
     }
-  } else if (event_type == event_type_names::kScroll) {
-    // Close all popups upon scroll.
-    document.HideAllPopupsUntil(nullptr);
   }
 }
 
