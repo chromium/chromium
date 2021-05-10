@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/interaction/element_identifier.h"

@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/select_to_speak_metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

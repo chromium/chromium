@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

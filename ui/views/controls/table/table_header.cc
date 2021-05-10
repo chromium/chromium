@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"

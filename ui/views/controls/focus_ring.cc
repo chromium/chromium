@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "ui/accessibility/ax_enums.mojom.h"

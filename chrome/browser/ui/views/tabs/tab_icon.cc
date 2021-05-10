@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/elapsed_timer.h"

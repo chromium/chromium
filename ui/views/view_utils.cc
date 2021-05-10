@@ -4,6 +4,10 @@
 
 #include "ui/views/view_utils.h"
 
+#include <sstream>
+
+#include "base/logging.h"
+
 namespace views {
 
 ViewDebugWrapperImpl::ViewDebugWrapperImpl(View* view) : view_(view) {}

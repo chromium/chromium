@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/image_operations.h"

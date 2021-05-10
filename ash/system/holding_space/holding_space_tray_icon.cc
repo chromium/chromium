@@ -18,6 +18,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

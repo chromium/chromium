@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/rtl.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"

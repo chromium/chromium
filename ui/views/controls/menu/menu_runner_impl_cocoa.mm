@@ -4,6 +4,7 @@
 
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
+#include "base/i18n/rtl.h"
 #include "base/mac/mac_util.h"
 #import "base/message_loop/message_pump_mac.h"
 #import "skia/ext/skia_utils_mac.h"

@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_container_view.h"
+#include "base/i18n/rtl.h"
 
 namespace ash {
 

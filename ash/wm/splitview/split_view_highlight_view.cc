@@ -9,6 +9,7 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"

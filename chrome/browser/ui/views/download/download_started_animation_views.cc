@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_started_animation.h"
 
+#include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"

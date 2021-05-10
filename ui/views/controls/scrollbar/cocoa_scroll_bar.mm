@@ -5,6 +5,7 @@
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
