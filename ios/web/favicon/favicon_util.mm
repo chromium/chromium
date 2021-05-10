@@ -23,7 +23,7 @@ bool ExtractFaviconURL(const base::ListValue* favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
   BOOL has_favicon = NO;
-  for (const base::Value& favicon : *favicons) {
+  for (const base::Value& favicon : favicons->GetList()) {
     if (!favicon.is_dict())
       return false;
 
