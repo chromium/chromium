@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -58,7 +58,8 @@ class WorkerTaskProvider : public TaskProvider,
   void StartUpdating() override;
   void StopUpdating() override;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   // Observes all types of workers for a given profile.
   base::flat_map<Profile*, std::unique_ptr<PerProfileWorkerTaskTracker>>

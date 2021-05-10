@@ -25,19 +25,20 @@ PerProfileWorkerTaskTracker::PerProfileWorkerTaskTracker(
   // Dedicated workers:
   content::DedicatedWorkerService* dedicated_worker_service =
       storage_partition->GetDedicatedWorkerService();
-  scoped_dedicated_worker_service_observer_.Add(dedicated_worker_service);
+  scoped_dedicated_worker_service_observation_.Observe(
+      dedicated_worker_service);
   dedicated_worker_service->EnumerateDedicatedWorkers(this);
 
   // Shared workers:
   content::SharedWorkerService* shared_worker_service =
       storage_partition->GetSharedWorkerService();
-  scoped_shared_worker_service_observer_.Add(shared_worker_service);
+  scoped_shared_worker_service_observation_.Observe(shared_worker_service);
   shared_worker_service->EnumerateSharedWorkers(this);
 
   // Service workers:
   content::ServiceWorkerContext* service_worker_context =
       storage_partition->GetServiceWorkerContext();
-  scoped_service_worker_context_observer_.Add(service_worker_context);
+  scoped_service_worker_context_observation_.Observe(service_worker_context);
 
   for (const auto& kv :
        service_worker_context->GetRunningServiceWorkerInfos()) {

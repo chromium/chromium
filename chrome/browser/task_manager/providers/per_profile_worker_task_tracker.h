@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/service_worker_context.h"
@@ -116,25 +116,25 @@ class PerProfileWorkerTaskTracker
   WorkerTaskProvider* const worker_task_provider_;  // Owner.
 
   // For dedicated workers:
-  ScopedObserver<content::DedicatedWorkerService,
-                 content::DedicatedWorkerService::Observer>
-      scoped_dedicated_worker_service_observer_{this};
+  base::ScopedObservation<content::DedicatedWorkerService,
+                          content::DedicatedWorkerService::Observer>
+      scoped_dedicated_worker_service_observation_{this};
 
   base::flat_map<blink::DedicatedWorkerToken, std::unique_ptr<WorkerTask>>
       dedicated_worker_tasks_;
 
   // For shared workers:
-  ScopedObserver<content::SharedWorkerService,
-                 content::SharedWorkerService::Observer>
-      scoped_shared_worker_service_observer_{this};
+  base::ScopedObservation<content::SharedWorkerService,
+                          content::SharedWorkerService::Observer>
+      scoped_shared_worker_service_observation_{this};
 
   base::flat_map<blink::SharedWorkerToken, std::unique_ptr<WorkerTask>>
       shared_worker_tasks_;
 
   // For service workers:
-  ScopedObserver<content::ServiceWorkerContext,
-                 content::ServiceWorkerContextObserver>
-      scoped_service_worker_context_observer_{this};
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_service_worker_context_observation_{this};
 
   base::flat_map<int64_t /*version_id*/, std::unique_ptr<WorkerTask>>
       service_worker_tasks_;

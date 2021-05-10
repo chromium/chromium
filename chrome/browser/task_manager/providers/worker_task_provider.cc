@@ -30,10 +30,10 @@ void WorkerTaskProvider::OnProfileAdded(Profile* profile) {
   // It is possible for this method to be called multiple times for the same
   // profile, if the profile loads an extension during initialization which also
   // triggers this logic path. https://crbug.com/1065798.
-  if (observed_profiles_.IsObserving(profile))
+  if (observed_profiles_.IsObservingSource(profile))
     return;
 
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
 
   auto per_profile_worker_task_tracker =
       std::make_unique<PerProfileWorkerTaskTracker>(this, profile);
@@ -53,7 +53,7 @@ void WorkerTaskProvider::OnOffTheRecordProfileCreated(Profile* off_the_record) {
 void WorkerTaskProvider::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
 
   auto it = per_profile_worker_task_trackers_.find(profile);
   DCHECK(it != per_profile_worker_task_trackers_.end());
@@ -102,7 +102,7 @@ void WorkerTaskProvider::StopUpdating() {
   // Stop observing profile creation and destruction.
   if (g_browser_process && g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
-  observed_profiles_.RemoveAll();
+  observed_profiles_.RemoveAllObservations();
 
   // Clear all ProfileWorkerTaskProvider instances to remove existing tasks.
   per_profile_worker_task_trackers_.clear();
