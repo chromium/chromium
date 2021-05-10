@@ -26,7 +26,6 @@
 namespace media {
 
 class Camera3AController;
-class CameraAppDeviceImpl;
 class CameraHalDelegate;
 class RequestManager;
 
@@ -269,8 +268,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   base::OnceClosure device_close_callback_;
 
   std::queue<base::OnceClosure> on_reconfigured_callbacks_;
-
-  base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
 
   uint32_t device_api_version_;
 

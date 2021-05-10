@@ -307,8 +307,11 @@ void CameraDeviceDelegate::AllocateAndStart(
   device_context_ = device_context;
   device_context_->SetState(CameraDeviceContext::State::kStarting);
 
-  if (camera_app_device_) {
-    camera_app_device_->SetCameraDeviceContext(device_context_);
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
+  if (camera_app_device) {
+    camera_app_device->SetCameraDeviceContext(device_context_);
   }
 
   auto camera_info = camera_hal_delegate_->GetCameraInfoFromDeviceId(
@@ -370,8 +373,11 @@ void CameraDeviceDelegate::StopAndDeAllocate(
   // CameraDeviceContext::State::kStopping.
   DCHECK_NE(device_context_->GetState(), CameraDeviceContext::State::kStopping);
 
-  if (camera_app_device_) {
-    camera_app_device_->SetCameraDeviceContext(nullptr);
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
+  if (camera_app_device) {
+    camera_app_device->SetCameraDeviceContext(nullptr);
   }
 
   device_close_callback_ = std::move(device_close_callback);
