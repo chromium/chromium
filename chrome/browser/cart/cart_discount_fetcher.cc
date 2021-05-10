@@ -93,5 +93,6 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     CartDiscountFetcherCallback callback,
     std::unique_ptr<EndpointResponse> responses) {
   // TODO(meiliang): parse response;
-  std::move(callback).Run();
+  CartDiscountMap result;
+  std::move(callback).Run(std::move(result));
 }

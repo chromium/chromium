@@ -5,8 +5,11 @@
 #define CHROME_BROWSER_CART_CART_DISCOUNT_FETCHER_H_
 
 #include <memory>
+#include <unordered_map>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/cart/cart_db.h"
+#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {
@@ -15,7 +18,13 @@ class PendingSharedURLLoaderFactory;
 
 class CartDiscountFetcher {
  public:
-  using CartDiscountFetcherCallback = base::OnceCallback<void(void)>;
+  // base::flat_map is used here for optimization, since the number of carts are
+  // expected to be low (< 100) at this stage. Need to use std::map when number
+  // gets larger.
+  using CartDiscountMap =
+      base::flat_map<std::string, std::vector<cart_db::DiscountInfoProto>>;
+
+  using CartDiscountFetcherCallback = base::OnceCallback<void(CartDiscountMap)>;
 
   virtual ~CartDiscountFetcher();
 
