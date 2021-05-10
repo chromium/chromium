@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/dbus/concierge_client.h"
@@ -179,6 +180,7 @@ bool BorealisContextManagerImpl::IsRunning() {
 
 void BorealisContextManagerImpl::ShutDownBorealis(
     base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback) {
+  CloseBorealisSplashScreenView();
   // Get the context we are shutting down, either from an in-progress startup or
   // from the running one.
   std::unique_ptr<BorealisContext> shutdown_context;
@@ -253,6 +255,7 @@ void BorealisContextManagerImpl::OnVmStopped(
   if (context_ && context_->vm_name() == signal.name() &&
       signal.owner_id() ==
           chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
+    CloseBorealisSplashScreenView();
     // If |context_| exists, it's a "running" Borealis instance which we didn't
     // request to shut down.
     context_->NotifyUnexpectedVmShutdown();
