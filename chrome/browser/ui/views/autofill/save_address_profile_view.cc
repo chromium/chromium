@@ -319,8 +319,8 @@ void SaveAddressProfileView::AddedToWidget() {
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE),
-      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK),
+      *bundle.GetImageSkiaNamed(IDR_SAVE_ADDRESS),
+      *bundle.GetImageSkiaNamed(IDR_SAVE_ADDRESS_DARK),
       base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
                           base::Unretained(GetBubbleFrameView())));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
