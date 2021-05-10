@@ -306,7 +306,6 @@ source_set("unit_tests") {
       "seat_unittest.cc",
       "shared_memory_unittest.cc",
       "shell_surface_unittest.cc",
-      "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
       "surface_unittest.cc",
       "text_input_unittest.cc",

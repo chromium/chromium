@@ -74,12 +74,6 @@ ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window);
 // requested grab.
 Surface* GetTargetSurfaceForLocatedEvent(const ui::LocatedEvent* event);
 
-// Returns the focused surface for given 'focused_window'.  If a surface is
-// attached to the window, this will return that surface.  If the window is
-// either the shell surface's window, or host window, it will return the root
-// surface, otherwise returns nullptr.
-Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* focused_window);
-
 // Allows the |window| to activate itself for the duration of |timeout|. Revokes
 // any existing permission.
 void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout);

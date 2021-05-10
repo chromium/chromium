@@ -43,6 +43,27 @@
 namespace exo {
 namespace {
 
+Surface* GetEffectiveFocus(aura::Window* window) {
+  if (!window)
+    return nullptr;
+  Surface* const surface = Surface::AsSurface(window);
+  if (surface)
+    return surface;
+  ShellSurfaceBase* shell_surface_base = nullptr;
+  for (auto* current = window; current && !shell_surface_base;
+       current = current->parent()) {
+    shell_surface_base = GetShellSurfaceBaseForWindow(current);
+  }
+  // Make sure the |window| is the toplevel or a host window, but not
+  // another window added to the toplevel.
+  if (shell_surface_base &&
+      (shell_surface_base->GetWidget()->GetNativeWindow() == window ||
+       shell_surface_base->host_window()->Contains(window))) {
+    return shell_surface_base->root_surface();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 Seat::Seat(std::unique_ptr<DataExchangeDelegate> delegate)
@@ -99,8 +120,7 @@ void Seat::RemoveObserver(SeatObserver* observer) {
 }
 
 Surface* Seat::GetFocusedSurface() {
-  return GetTargetSurfaceForKeyboardFocus(
-      WMHelper::GetInstance()->GetFocusedWindow());
+  return GetEffectiveFocus(WMHelper::GetInstance()->GetFocusedWindow());
 }
 
 void Seat::StartDrag(DataSource* source,
@@ -269,7 +289,7 @@ void Seat::OnAllReadsFinished(
 
 void Seat::OnWindowFocused(aura::Window* gained_focus,
                            aura::Window* lost_focus) {
-  Surface* const surface = GetTargetSurfaceForKeyboardFocus(gained_focus);
+  Surface* const surface = GetEffectiveFocus(gained_focus);
   for (auto& observer : observers_) {
     observer.OnSurfaceFocusing(surface);
   }

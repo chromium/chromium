@@ -49,6 +49,9 @@
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
+#include "ash/wm/resize_shadow.h"
+#include "ash/wm/resize_shadow_controller.h"
+
 namespace exo {
 
 using ShellSurfaceTest = test::ExoTestBase;

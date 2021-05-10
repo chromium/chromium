@@ -125,13 +125,12 @@ UILockController::~UILockController() {
 }
 
 void UILockController::OnKeyEvent(ui::KeyEvent* event) {
-  // TODO(oshima): Rather than handling key event here, add a hook in
-  // keyboard.cc to intercept key event and handle this.
-
-  // If no surface is focused, let another handler process the event.
-  aura::Window* window = static_cast<aura::Window*>(event->target());
-  if (!GetTargetSurfaceForKeyboardFocus(window))
+  // If the event target is not an exo::Surface, let another handler process the
+  // event.
+  if (!GetShellRootSurface(static_cast<aura::Window*>(event->target())) &&
+      !Surface::AsSurface(static_cast<aura::Window*>(event->target()))) {
     return;
+  }
 
   if (event->code() == ui::DomCode::ESCAPE &&
       (event->flags() & kExcludedFlags) == 0) {

@@ -192,6 +192,7 @@ Surface* GetTargetSurfaceForLocatedEvent(
 
     aura::Window* focused =
         static_cast<aura::Window*>(targeter->FindTargetForEvent(window, event));
+
     if (focused) {
       Surface* surface = Surface::AsSurface(focused);
       if (focused != window)
@@ -221,27 +222,6 @@ Surface* GetTargetSurfaceForLocatedEvent(
     event_target->ConvertEventToTarget(parent_window, event);
     window = parent_window;
   }
-}
-
-Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* window) {
-  if (!window)
-    return nullptr;
-  Surface* const surface = Surface::AsSurface(window);
-  if (surface)
-    return surface;
-  ShellSurfaceBase* shell_surface_base = nullptr;
-  for (auto* current = window; current && !shell_surface_base;
-       current = current->parent()) {
-    shell_surface_base = GetShellSurfaceBaseForWindow(current);
-  }
-  // Make sure the |window| is the toplevel or a host window, but not
-  // another window added to the toplevel.
-  if (shell_surface_base && !shell_surface_base->HasOverlay() &&
-      (shell_surface_base->GetWidget()->GetNativeWindow() == window ||
-       shell_surface_base->host_window()->Contains(window))) {
-    return shell_surface_base->root_surface();
-  }
-  return nullptr;
 }
 
 void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout) {
