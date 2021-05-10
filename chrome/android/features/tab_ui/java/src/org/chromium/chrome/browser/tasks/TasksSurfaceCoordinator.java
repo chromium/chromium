@@ -85,7 +85,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         if (hasMVTiles) {
             MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
             mMostVisitedList = new MostVisitedListCoordinator(activity, mvTilesLayout,
-                    mPropertyModel, parentTabSupplier, activity.getSnackbarManager());
+                    mPropertyModel, parentTabSupplier, activity.getSnackbarManager(),
+                    activity.getWindowAndroid());
             mMostVisitedList.initialize();
         }
     }

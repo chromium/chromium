@@ -156,7 +156,7 @@ public class TileRenderer {
                     VectorDrawableCompat.create(mResources, R.drawable.ic_apps_blue_24dp, mTheme));
             tile.setType(TileVisualType.ICON_DEFAULT);
 
-            if (LibraryLoader.getInstance().isInitialized()) {
+            if (LibraryLoader.getInstance().isInitialized() && setupDelegate != null) {
                 // One task to load actual icon.
                 LargeIconBridge.LargeIconCallback bridgeCallback =
                         setupDelegate.createIconLoadCallback(tile);
@@ -172,9 +172,8 @@ public class TileRenderer {
         }
 
         tileView.initialize(tile, mTitleLinesCount);
-        setupDelegate.updateTileViewLayout(tileView);
 
-        if (!LibraryLoader.getInstance().isInitialized()) {
+        if (!LibraryLoader.getInstance().isInitialized() || setupDelegate == null) {
             return tileView;
         }
 
