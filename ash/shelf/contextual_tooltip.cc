@@ -260,7 +260,7 @@ void ClearPrefs() {
       Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
       prefs::kContextualTooltips);
   base::DictionaryValue* nudges_dict = update.Get();
-  if (nudges_dict && !nudges_dict->empty())
+  if (nudges_dict && !nudges_dict->DictEmpty())
     nudges_dict->Clear();
 }
 
