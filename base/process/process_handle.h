@@ -8,8 +8,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <iosfwd>
+
 #include "base/base_export.h"
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -21,6 +22,8 @@
 #endif
 
 namespace base {
+
+class FilePath;
 
 // ProcessHandle is a platform specific type which represents the underlying OS
 // handle to a process.

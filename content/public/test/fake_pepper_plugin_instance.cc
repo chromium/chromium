@@ -4,6 +4,7 @@
 
 #include "content/public/test/fake_pepper_plugin_instance.h"
 
+#include "base/files/file_path.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 

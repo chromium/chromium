@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <ostream>
+
 #include "base/check.h"
 #include "components/crash/core/app/crash_export_thunks.h"
 

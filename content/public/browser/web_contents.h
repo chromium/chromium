@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
@@ -51,6 +50,11 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+namespace base {
+class FilePath;
+class TimeTicks;
+}  // namespace base
+
 namespace blink {
 namespace web_pref {
 struct WebPreferences;
@@ -59,10 +63,6 @@ struct Manifest;
 struct UserAgentOverride;
 struct RendererPreferences;
 }  // namespace blink
-
-namespace base {
-class TimeTicks;
-}
 
 namespace device {
 namespace mojom {

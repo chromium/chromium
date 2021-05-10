@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"

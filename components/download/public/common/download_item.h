@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/supports_user_data.h"

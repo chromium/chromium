@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"

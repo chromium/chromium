@@ -7,6 +7,7 @@
 
 #include "base/allocator/partition_allocator/oom_callback.h"
 #include "base/compiler_specific.h"
+#include "base/immediate_crash.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 

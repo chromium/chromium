@@ -15,6 +15,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/process/memory.h"

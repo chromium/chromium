@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

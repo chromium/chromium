@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/download/android/jni_headers/DownloadManagerBridge_jni.h"
 #include "components/download/public/common/download_features.h"
 #include "url/gurl.h"

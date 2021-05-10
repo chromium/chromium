@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom-forward.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-forward.h"
@@ -24,6 +23,7 @@
 class GURL;
 
 namespace base {
+class FilePath;
 class Time;
 }
 
