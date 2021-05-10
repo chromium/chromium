@@ -25,7 +25,7 @@
 
 @property(nonatomic, weak) id<WelcomeScreenViewControllerDelegate> delegate;
 
-// Whether the metrics reporting check box is selected.
+// Whether the metrics reporting checkbox is selected.
 @property(nonatomic, readonly, assign) BOOL checkBoxSelected;
 
 @end

@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
 
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,16 +38,18 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
 @dynamic delegate;
 
 - (void)viewDidLoad {
-  // TODO(crbug.com/1189815): Use final strings and enable localization.
-  self.titleText = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-                       ? @"Test - Built for your iPad"
-                       : @"Test - Built for your iPhone";
-  self.subtitleText = @"Test - Get more done with a simple, secure and "
-                      @"faster-than-ever Google Chrome";
+  self.titleText =
+      IsIPadIdiom()
+          ? l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD)
+          : l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
+  self.subtitleText =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
   self.bannerImage = [UIImage imageNamed:@"welcome_screen_banner"];
   self.isTallBanner = YES;
   self.scrollToEndMandatory = YES;
-  self.primaryActionString = @"Test - Accept and Continue";
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON);
 
   self.metricsConsentButton = [self createMetricsConsentButton];
   [self.specificContentView addSubview:self.metricsConsentButton];
@@ -86,9 +92,8 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
 - (CheckboxButton*)createMetricsConsentButton {
   CheckboxButton* button = [[CheckboxButton alloc] initWithFrame:CGRectZero];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  // TODO(crbug.com/1189815): Use final strings and enable localization.
-  button.labelText = @"Test - Help improve Chrome by sending usage statistics "
-                     @"and crash reports to Google";
+  button.labelText =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT);
   button.selected = YES;
   [button addTarget:self
                 action:@selector(didTapMetricsButton)
@@ -127,10 +132,8 @@ NSString* const kTermsOfServiceUrl = @"internal://terms-of-service";
   };
   NSDictionary* linkAttributes =
       @{NSLinkAttributeName : [NSURL URLWithString:kTermsOfServiceUrl]};
-  // TODO(crbug.com/1189815): Use final strings and enable localization.
   NSAttributedString* attributedText = AttributedStringFromStringWithLink(
-      @"Test - By continuing, you agree to the BEGIN_LINKTerms of "
-      @"ServiceEND_LINK",
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
       textAttributes, linkAttributes);
   textView.attributedText = attributedText;
 

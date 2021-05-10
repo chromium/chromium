@@ -37,13 +37,16 @@ source_set("welcome_ui") {
     "//base",
     "//components/metrics",
     "//components/prefs",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

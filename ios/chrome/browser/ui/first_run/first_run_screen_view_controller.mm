@@ -9,6 +9,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -257,10 +259,11 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
               [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
         };
 
-        // TODO(crbug.com/1186762): Use final string and add localization.
         NSMutableAttributedString* attributedString =
-            [[NSMutableAttributedString alloc] initWithString:@"More - testing"
-                                                   attributes:textAttributes];
+            [[NSMutableAttributedString alloc]
+                initWithString:l10n_util::GetNSString(
+                                   IDS_IOS_FIRST_RUN_SCREEN_READ_MORE)
+                    attributes:textAttributes];
 
         // Use |ceilf()| when calculating the icon's bounds to ensure the
         // button's content height does not shrink by fractional points, as the
