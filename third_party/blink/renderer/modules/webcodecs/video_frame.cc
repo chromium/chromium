@@ -322,7 +322,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   // A potential optimization could use PaintImage::DecodeYuv() to decode
   // directly into a media::VideoFrame. This would improve VideoFrame from <img>
   // creation, but probably such users should be using ImageDecoder directly.
+  //
+  // TODO(crbug.com/1031051): PaintImage::GetSkImage() is being deprecated as we
+  // move to OOPR canvas2D. In OOPR mode it will return null so we fall back to
+  // GetSwSkImage(). This area should be updated once VideoFrame can wrap
+  // mailboxes.
   auto sk_image = image->PaintImageForCurrentFrame().GetSkImage();
+  if (!sk_image)
+    sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
   if (sk_image->isLazyGenerated())
     sk_image = sk_image->makeRasterImage();
 
