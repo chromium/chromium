@@ -24,6 +24,7 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   // AsyncSuggestionsSource overrides
   void RequestSuggestions(
       const std::string& preceding_text,
+      const ime::TextSuggestionMode& suggestion_mode,
       const std::vector<ime::TextCompletionCandidate>& completion_candidates,
       RequestSuggestionsCallback callback) override;
   bool IsAvailable() override;

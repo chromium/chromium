@@ -9,8 +9,10 @@
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 
 namespace chromeos {
+namespace {
 
 using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
 
 std::vector<TextSuggestion> CombineResults(
     const std::vector<TextSuggestion>& first,
@@ -21,6 +23,8 @@ std::vector<TextSuggestion> CombineResults(
   combined.insert(combined.end(), second.begin(), second.end());
   return combined;
 }
+
+}  // namespace
 
 SuggestionsCollector::SuggestionsCollector(
     SuggestionsSource* assistive_suggester,
@@ -44,7 +48,7 @@ void SuggestionsCollector::GatherSuggestions(
   }
 
   suggestions_service_client_->RequestSuggestions(
-      request->text, request->completion_candidates,
+      request->text, request->mode, request->completion_candidates,
       base::BindOnce(&SuggestionsCollector::OnSuggestionsGathered,
                      base::Unretained(this), std::move(callback),
                      assistive_suggestions));

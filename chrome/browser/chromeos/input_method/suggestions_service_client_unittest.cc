@@ -14,10 +14,10 @@
 namespace chromeos {
 namespace {
 
-using TextCompletionCandidate = ::chromeos::ime::TextCompletionCandidate;
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using ::chromeos::ime::TextCompletionCandidate;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 class SuggestionsServiceClientTest : public testing::Test {
  public:
@@ -48,20 +48,47 @@ TEST_F(SuggestionsServiceClientTest, ReturnsResultsFromMojoService) {
 
   std::vector<TextSuggestion> returned_results;
   client.RequestSuggestions(
-      "this is some text", std::vector<TextCompletionCandidate>{},
+      /*preceding_text=*/"this is some text",
+      /*suggestion_mode=*/TextSuggestionMode::kCompletion,
+      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*callback=*/
       base::BindLambdaForTesting(
           [&](const std::vector<TextSuggestion>& results) {
             returned_results = results;
           }));
 
   std::vector<TextSuggestion> expected_results = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hi there"},
   };
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(returned_results, expected_results);
+}
+
+TEST_F(SuggestionsServiceClientTest, DoesntRequestPredictionCandidates) {
+  machine_learning::FakeServiceConnectionImpl fake_service_connection;
+  machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+  SuggestionsServiceClient client;
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<TextSuggestion> returned_results;
+  client.RequestSuggestions(
+      /*preceding_text=*/"this is some text",
+      /*suggestion_mode=*/TextSuggestionMode::kPrediction,
+      /*completion_candidates=*/std::vector<TextCompletionCandidate>{},
+      /*callback=*/
+      base::BindLambdaForTesting(
+          [&](const std::vector<TextSuggestion>& results) {
+            returned_results = results;
+          }));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(returned_results.empty());
 }
 
 }  // namespace

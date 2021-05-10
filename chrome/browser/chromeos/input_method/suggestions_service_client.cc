@@ -28,8 +28,8 @@ base::Optional<TextSuggestion> ToTextSuggestion(
 
   return TextSuggestion{
       // TODO(crbug/1146266): Introduce suggestion mode to suggestion service
-      // interface. For the moment, everything is a prediction.
-      .mode = TextSuggestionMode::kPrediction,
+      // interface. For the moment, everything is a completion.
+      .mode = TextSuggestionMode::kCompletion,
       .type = TextSuggestionType::kMultiWord,
       .text = candidate->get_multi_word()->text};
 }
@@ -55,9 +55,13 @@ SuggestionsServiceClient::~SuggestionsServiceClient() = default;
 
 void SuggestionsServiceClient::RequestSuggestions(
     const std::string& preceding_text,
+    const ime::TextSuggestionMode& suggestion_mode,
     const std::vector<ime::TextCompletionCandidate>& completion_candidates,
     RequestSuggestionsCallback callback) {
-  if (!IsAvailable()) {
+  if (!IsAvailable() ||
+      suggestion_mode != ime::TextSuggestionMode::kCompletion) {
+    // TODO(crbug/1146266): Support prediction requests when suggestion mojo
+    // service introduces suggestion_mode to interface.
     std::move(callback).Run({});
     return;
   }

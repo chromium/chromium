@@ -16,10 +16,10 @@
 namespace chromeos {
 namespace {
 
-using TextCompletionCandidate = ::chromeos::ime::TextCompletionCandidate;
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using ::chromeos::ime::TextCompletionCandidate;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 class FakeAssistiveSuggester : public SuggestionsSource {
  public:
@@ -37,6 +37,7 @@ class FakeSuggestionsService : public AsyncSuggestionsSource {
  public:
   void RequestSuggestions(
       const std::string& preceding_text,
+      const ime::TextSuggestionMode& suggestion_mode,
       const std::vector<TextCompletionCandidate>& completion_candidates,
       RequestSuggestionsCallback callback) override {
     std::move(callback).Run(suggestions_);
@@ -58,7 +59,7 @@ class FakeSuggestionsService : public AsyncSuggestionsSource {
 class SuggestionsCollectorTest : public ::testing::Test {
  public:
   void SetUp() override {
-    multi_word_result_ = TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+    multi_word_result_ = TextSuggestion{.mode = TextSuggestionMode::kCompletion,
                                         .type = TextSuggestionType::kMultiWord,
                                         .text = "hello there"};
 

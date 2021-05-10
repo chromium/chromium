@@ -36,6 +36,7 @@ class AsyncSuggestionsSource {
   // returned in the callback passed.
   virtual void RequestSuggestions(
       const std::string& preceding_text,
+      const ime::TextSuggestionMode& suggestion_mode,
       const std::vector<ime::TextCompletionCandidate>& completion_candidates,
       RequestSuggestionsCallback callback) = 0;
 
