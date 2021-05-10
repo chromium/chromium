@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -85,7 +85,7 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
   // access on the UI thread, and may be null.
   extensions::ActivityLog* activity_log_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedObservation<Profile, ProfileObserver> observed_profile_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionMessageFilter);
 };

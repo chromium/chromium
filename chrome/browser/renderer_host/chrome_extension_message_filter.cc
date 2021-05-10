@@ -61,7 +61,7 @@ ChromeExtensionMessageFilter::ChromeExtensionMessageFilter(Profile* profile)
       profile_(profile),
       activity_log_(extensions::ActivityLog::GetInstance(profile)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observed_profiles_.Add(profile);
+  observed_profile_.Observe(profile);
 }
 
 ChromeExtensionMessageFilter::~ChromeExtensionMessageFilter() {
@@ -232,7 +232,8 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
 
 void ChromeExtensionMessageFilter::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile_, profile);
-  observed_profiles_.Remove(profile_);
+  DCHECK(observed_profile_.IsObservingSource(profile_));
+  observed_profile_.Reset();
   profile_ = nullptr;
   activity_log_ = nullptr;
 }
