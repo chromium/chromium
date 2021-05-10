@@ -1315,4 +1315,19 @@ TEST_F(InputMethodChromeOSTest, DoesNotResetEngineWithNoComposition) {
   EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
 }
 
+TEST_F(InputMethodChromeOSTest, CommitTextThenKeyEventOnlyInsertsOnce) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ime.CommitText(
+      u"a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ui::KeyEvent key(ET_KEY_PRESSED, VKEY_A, EF_NONE);
+  ime.DispatchKeyEvent(&key);
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(/*handled=*/true);
+
+  EXPECT_EQ(fake_text_input_client.text(), u"a");
+}
+
 }  // namespace ui

@@ -688,6 +688,8 @@ void InputMethodChromeOS::CommitText(
       GetTextInputClient()->InsertText(text, cursor_behavior);
       typing_session_manager_.CommitCharacters(text.length());
     }
+    SendFakeProcessKeyEvent(false);
+    result_text_.clear();
     result_text_cursor_ = 0;
   }
 }
