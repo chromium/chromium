@@ -6821,6 +6821,9 @@ crbug.com/1093041 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-r
 crbug.com/1093041 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Pass Failure Timeout ]
 crbug.com/1146560 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Pass Failure Timeout ]
 
+# Sheriff 2021-05-10
+crbug.com/1207319 external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html [ Pass Timeout ]
+
 # Sheriff 2021-05-04
 crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
 crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Timeout ]
