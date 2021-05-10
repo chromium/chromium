@@ -172,15 +172,19 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
   DCHECK(is_valid_);
 
   SkPixmap pixmap = pixmap_;
+  // If |pixmap_| is not sRGB, then |srgb_skia_image| is a sRGB-converted copy
+  // of the |pixmap_|, and |pixmap| is set to point to its pixels.
+  // https://crbug.com/1206674
+  sk_sp<SkImage> srgb_skia_image = nullptr;
   if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
     // toDataURL always encodes in sRGB and does not include the color space
     // information.
-    sk_sp<SkImage> skia_image = nullptr;
     if (pixmap.colorSpace()) {
       if (!pixmap.colorSpace()->isSRGB()) {
-        skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
-        skia_image = skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
-        if (!skia_image->peekPixels(&pixmap))
+        auto skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
+        srgb_skia_image =
+            srgb_skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
+        if (!srgb_skia_image->peekPixels(&pixmap))
           return "data:,";
         MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
       }
