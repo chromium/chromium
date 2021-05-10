@@ -15,9 +15,9 @@
 #include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/core/SkShader.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size_f.h"
+
+class SkShader;
 
 namespace gpu {
 struct Mailbox;

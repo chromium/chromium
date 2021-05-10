@@ -24,6 +24,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"

@@ -6,6 +6,7 @@
 #define UI_GFX_DISPLAY_COLOR_SPACES_H_
 
 #include <string>
+#include <vector>
 
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"

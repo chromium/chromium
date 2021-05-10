@@ -6,15 +6,17 @@
 #define CC_PAINT_SKOTTIE_WRAPPER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 
 class SkCanvas;
+struct SkRect;
+
 namespace cc {
 
 // A wrapper over Skia's Skottie object that can be shared by multiple

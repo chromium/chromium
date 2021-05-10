@@ -5,17 +5,18 @@
 #ifndef CC_PAINT_PAINT_FLAGS_H_
 #define CC_PAINT_PAINT_FLAGS_H_
 
+#include <utility>
+
 #include "base/compiler_specific.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_shader.h"
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
-#include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
-#include "third_party/skia/include/core/SkShader.h"
+
+class SkCanvas;
 
 namespace cc {
 class PaintFilter;

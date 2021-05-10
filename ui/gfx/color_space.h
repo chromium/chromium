@@ -9,15 +9,17 @@
 
 #include <iosfwd>
 #include <string>
-#include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
+
+struct skcms_Matrix3x3;
+struct skcms_TransferFunction;
+class SkColorSpace;
+class SkMatrix44;
 
 // These forward declarations are used to give IPC code friend access to private
 // fields of gfx::ColorSpace for the purpose of serialization and
