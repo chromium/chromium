@@ -172,6 +172,7 @@ try_.builder(
     name = "branch-config-verifier",
     executable = "recipe:branch_configuration/tester",
     main_list_view = "try",
+    os = os.LINUX_BIONIC_REMOVE,
     properties = {
         "branch_script": "infra/config/scripts/branch.py",
         "branch_types": ["standard", "lts"],
