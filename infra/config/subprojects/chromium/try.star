@@ -1852,6 +1852,7 @@ try_.chromium_win_builder(
     cores = 16,
     ssd = True,
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(),
 )
