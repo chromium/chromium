@@ -77,7 +77,7 @@ bool GetOpenWithLinksFromDictionaryValue(
   if (!value->GetAsDictionary(&dictionary_value))
     return false;
 
-  result->reserve(dictionary_value->size());
+  result->reserve(dictionary_value->DictSize());
   for (base::DictionaryValue::Iterator iter(*dictionary_value);
        !iter.IsAtEnd(); iter.Advance()) {
     std::string string_value;
