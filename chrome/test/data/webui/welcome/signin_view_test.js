@@ -35,7 +35,7 @@ suite('SigninViewTest', function() {
   });
 
   test('sign-in button', function() {
-    const signinButton = testElement.$$('cr-button');
+    const signinButton = testElement.shadowRoot.querySelector('cr-button');
     assertTrue(!!signinButton);
 
     signinButton.click();
@@ -44,7 +44,7 @@ suite('SigninViewTest', function() {
   });
 
   test('no-thanks button', function() {
-    const noThanksButton = testElement.$$('button');
+    const noThanksButton = testElement.shadowRoot.querySelector('button');
     assertTrue(!!noThanksButton);
     noThanksButton.click();
     return testWelcomeBrowserProxy.whenCalled('handleUserDecline');

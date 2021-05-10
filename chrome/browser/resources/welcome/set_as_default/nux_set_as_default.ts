@@ -16,16 +16,16 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface} from '../navigation_behavior.js';
+import {navigateToNextStep, NavigationMixin, NavigationMixinInterface} from '../navigation_behavior.js';
 import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
 const NuxSetAsDefaultElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior, NavigationBehavior], PolymerElement) as {
+    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement)) as
+    {
       new (): PolymerElement & WebUIListenerBehaviorInterface &
-      NavigationBehaviorInterface
+      NavigationMixinInterface
     };
 
 /** @polymer */

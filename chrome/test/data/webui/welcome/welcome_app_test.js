@@ -79,8 +79,9 @@ suite('WelcomeWelcomeAppTest', function() {
   test('shows landing page by default', function() {
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
-    assertTrue(!!testElement.$$('landing-view'));
-    assertTrue(testElement.$$('landing-view').classList.contains('active'));
+    assertTrue(!!testElement.shadowRoot.querySelector('landing-view'));
+    assertTrue(testElement.shadowRoot.querySelector('landing-view')
+                   .classList.contains('active'));
   });
 
   test('new user route (can set default)', function() {
@@ -153,7 +154,8 @@ suite('WelcomeWelcomeAppTest', function() {
         // Use the existence of the nux-set-as-default as indication of
         // whether or not the promise is resolved with the expected result.
         assertEquals(
-            expectedDefaultExists, !!testElement.$$('nux-set-as-default'));
+            expectedDefaultExists,
+            !!testElement.shadowRoot.querySelector('nux-set-as-default'));
       });
     }
 

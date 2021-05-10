@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from 'chrome://welcome/navigation_behavior.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {navigateTo, navigateToNextStep, NavigationMixin, Routes} from 'chrome://welcome/navigation_behavior.js';
 
 import {eventToPromise} from '../test_util.m.js';
 
@@ -12,43 +12,52 @@ suite('NavigationBehaviorTest', function() {
   let callOrders = [];
 
   suiteSetup(function() {
-    Polymer({
-      is: 'test-element',
+    class TestElement extends NavigationMixin
+    (PolymerElement) {
+      static get is() {
+        return 'test-element';
+      }
 
-      behaviors: [NavigationBehavior],
+      static get properties() {
+        return {
+          subtitle: {
+            type: String,
+            value: 'My subtitle',
+          },
+        };
+      }
 
-      properties: {
-        subtitle: {
-          type: String,
-          value: 'My subtitle',
-        },
-      },
+      static get template() {
+        return html``;
+      }
 
-      ready: function() {
+      ready() {
+        super.ready();
         this.reset();
-      },
+      }
 
-      onRouteEnter: function() {
+      onRouteEnter() {
         this.enterCalled = true;
         callOrders.push('enter');
-      },
+      }
 
-      onRouteChange: function() {
+      onRouteChange() {
         this.changeCalled = true;
         callOrders.push('change');
-      },
+      }
 
-      onRouteExit: function() {
+      onRouteExit() {
         this.exitCalled = true;
         callOrders.push('exit');
-      },
+      }
 
-      reset: function() {
+      reset() {
         this.enterCalled = false;
         this.changeCalled = false;
         this.exitCalled = false;
       }
-    });
+    }
+    customElements.define(TestElement.is, TestElement);
   });
 
   setup(function() {

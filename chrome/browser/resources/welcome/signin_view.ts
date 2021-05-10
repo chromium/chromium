@@ -10,9 +10,9 @@ import './shared/onboarding_background.js';
 import './shared/splash_pages_shared_css.js';
 import '../strings.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior, NavigationBehaviorInterface} from './navigation_behavior.js';
+import {NavigationMixin} from './navigation_behavior.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
@@ -23,9 +23,7 @@ export interface SigninViewElement {
   };
 }
 
-const SigninViewElementBase =
-    mixinBehaviors([NavigationBehavior], PolymerElement) as
-    {new (): PolymerElement & NavigationBehaviorInterface};
+const SigninViewElementBase = NavigationMixin(PolymerElement);
 
 /** @polymer */
 export class SigninViewElement extends SigninViewElementBase {

@@ -6,10 +6,10 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
- * @fileoverview The NavigationBehavior is in charge of manipulating and
+ * @fileoverview The NavigationMixin is in charge of manipulating and
  *     watching window.history.state changes. The page is using the history
  *     state object to remember state instead of changing the URL directly,
  *     because the flow requires that users can use browser-back/forward to
@@ -50,10 +50,10 @@ if (!history.state || !history.state.route || !history.state.step) {
   }
 }
 
-const routeObservers: Set<NavigationBehaviorInterface> = new Set();
-let currentRouteElement: NavigationBehaviorInterface|null;
+const routeObservers: Set<NavigationMixinInterface> = new Set();
+let currentRouteElement: NavigationMixinInterface|null;
 
-// Notifies all the elements that extended NavigationBehavior.
+// Notifies all the elements that extended NavigationMixin.
 function notifyObservers() {
   if (currentRouteElement) {
     currentRouteElement.onRouteExit();
@@ -74,7 +74,7 @@ function notifyObservers() {
 
   // If currentRouteElement is not null, it means there was a new route.
   if (currentRouteElement) {
-    (currentRouteElement as NavigationBehaviorInterface).notifyRouteEnter();
+    (currentRouteElement as NavigationMixinInterface).notifyRouteEnter();
   }
 }
 
@@ -111,79 +111,90 @@ export function navigateTo(route: Routes, step: number) {
   notifyObservers();
 }
 
+type Constructor<T> = new (...args: any[]) => T;
+
 /**
  * Elements can override onRoute(Change|Enter|Exit) to handle route changes.
  * Order of hooks being called:
  *   1) onRouteExit() on the old route
  *   2) onRouteChange() on all subscribed routes
  *   3) onRouteEnter() on the new route
- *
- * @polymerBehavior
  */
-export const NavigationBehavior = {
-  subtitle: '',
+export const NavigationMixin = dedupingMixin(
+    <T extends Constructor<PolymerElement>>(superClass: T): T&
+    Constructor<NavigationMixinInterface> => {
+      class NavigationMixin extends superClass {
+        static get properties() {
+          return {
+            subtitle: String,
+          };
+        }
 
-  attached() {
-    assert(!routeObservers.has(this));
-    routeObservers.add(this);
-    const route = (history.state.route as Routes);
-    const step = history.state.step;
+        subtitle?: string;
 
-    // history state was set when page loaded, so when the element first
-    // attaches, call the route-change handler to initialize first.
-    this.onRouteChange(route, step);
+        connectedCallback() {
+          super.connectedCallback();
 
-    // Modules are only attached to DOM if they're for the current route, so
-    // as long as the id of an element matches up to the current step, it
-    // means that element is for the current route.
-    // TODO(crbug.com/1189595): Figure out the proper way of making TS
-    // understand that this class is an HTMLElement.
-    if ((this as any).id === `step-${step}`) {
-      currentRouteElement = this;
-      this.notifyRouteEnter();
-    }
-  },
+          assert(!routeObservers.has(this));
+          routeObservers.add(this);
+          const route = (history.state.route as Routes);
+          const step = history.state.step;
 
-  /**
-   * Notifies elements that route was entered and updates the state of the
-   * app based on the new route.
-   */
-  notifyRouteEnter(): void {
-    this.onRouteEnter();
-    this.updateFocusForA11y();
-    this.updateTitle();
-  },
+          // history state was set when page loaded, so when the element first
+          // attaches, call the route-change handler to initialize first.
+          this.onRouteChange(route, step);
 
-  /** Called to update focus when progressing through the modules. */
-  updateFocusForA11y(): void {
-    // TODO(crbug.com/1189595): Figure out the proper way of making TS
-    // understand that this class is also a LegacyElementMixin
-    const header = (this as any).$$('h1');
-    if (header) {
-      afterNextRender(this, () => header.focus());
-    }
-  },
+          // Modules are only attached to DOM if they're for the current route,
+          // so as long as the id of an element matches up to the current step,
+          // it means that element is for the current route.
+          if (this.id === `step-${step}`) {
+            currentRouteElement = this;
+            this.notifyRouteEnter();
+          }
+        }
 
-  updateTitle(): void {
-    let title = loadTimeData.getString('headerText');
-    if (this.subtitle) {
-      title += ' - ' + this.subtitle;
-    }
-    document.title = title;
-  },
+        /**
+         * Notifies elements that route was entered and updates the state of the
+         * app based on the new route.
+         */
+        notifyRouteEnter(): void {
+          this.onRouteEnter();
+          this.updateFocusForA11y();
+          this.updateTitle();
+        }
 
-  detached() {
-    assert(routeObservers.delete(this));
-  },
+        /** Called to update focus when progressing through the modules. */
+        updateFocusForA11y(): void {
+          const header = this.shadowRoot!.querySelector('h1');
+          if (header) {
+            afterNextRender(this, () => header.focus());
+          }
+        }
 
-  onRouteChange(_route: Routes, _step: number): void{},
-  onRouteEnter(): void{},
-  onRouteExit(): void{},
-  onRouteUnload(): void {}
-};
+        updateTitle(): void {
+          let title = loadTimeData.getString('headerText');
+          if (this.subtitle) {
+            title += ' - ' + this.subtitle;
+          }
+          document.title = title;
+        }
 
-export interface NavigationBehaviorInterface {
-  subtitle: string;
+        disconnectedCallback() {
+          super.disconnectedCallback();
+          assert(routeObservers.delete(this));
+        }
+
+        onRouteChange(_route: Routes, _step: number): void {}
+        onRouteEnter(): void {}
+        onRouteExit(): void {}
+        onRouteUnload(): void {}
+      }
+
+      return NavigationMixin;
+    });
+
+export interface NavigationMixinInterface {
+  subtitle?: string;
   notifyRouteEnter(): void;
   updateFocusForA11y(): void;
   updateTitle(): void;

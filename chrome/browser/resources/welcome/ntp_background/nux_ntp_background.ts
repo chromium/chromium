@@ -17,7 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface} from '../navigation_behavior.js';
+import {navigateToNextStep, NavigationMixin, NavigationMixinInterface} from '../navigation_behavior.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {stepIndicatorModel} from '../shared/nux_types.js';
 
@@ -33,10 +33,8 @@ export interface NuxNtpBackgroundElement {
 }
 
 const NuxNtpBackgroundElementBase =
-    mixinBehaviors([I18nBehavior, NavigationBehavior], PolymerElement) as {
-      new ():
-          PolymerElement & NavigationBehaviorInterface & I18nBehaviorInterface
-    };
+    mixinBehaviors([I18nBehavior], NavigationMixin(PolymerElement)) as
+    {new (): PolymerElement & NavigationMixinInterface & I18nBehaviorInterface};
 
 /** @polymer */
 export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {

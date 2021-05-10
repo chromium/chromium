@@ -55,8 +55,8 @@ AccessibilityTest.define('WelcomeA11y', {
       assertEquals(
           'Make Chrome your own',
           document.body.querySelector('welcome-app')
-              .$$('landing-view')
-              .$$('h1')
+              .shadowRoot.querySelector('landing-view')
+              .shadowRoot.querySelector('h1')
               .textContent);
     },
   },

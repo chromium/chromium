@@ -15,9 +15,9 @@ import '../strings.m.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
+import {NavigationMixin, Routes} from './navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
@@ -51,9 +51,7 @@ export interface WelcomeAppElement {
   };
 }
 
-const WelcomeAppElementBase =
-    mixinBehaviors([NavigationBehavior], PolymerElement) as
-    {new (): PolymerElement & NavigationBehaviorInterface};
+const WelcomeAppElementBase = NavigationMixin(PolymerElement);
 
 /** @polymer */
 export class WelcomeAppElement extends WelcomeAppElementBase {
