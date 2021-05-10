@@ -109,8 +109,12 @@ void JavaScriptAppModalDialogCocoa::OnAlertFinished(
       controller_->OnClose();
       break;
   }
-  if (Browser* browser = BrowserList::GetInstance()->GetLastActive())
-    browser->window()->Show();
+  if (![NSApp keyWindow]) {
+    // If key wasn't restored after showing an alert, focus the most recent
+    // browser.
+    if (Browser* browser = BrowserList::GetInstance()->GetLastActive())
+      browser->window()->Show();
+  }
   delete this;
 }
 
