@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
@@ -26,6 +27,9 @@
 @property(nonatomic, assign, readonly)
     ios::ChromeIdentityService* chromeIdentityService;
 
+// Pref service to retrieve preference values.
+@property(nonatomic, assign) PrefService* prefService;
+
 @end
 
 @implementation IdentityChooserMediator
@@ -33,12 +37,27 @@
 @synthesize consumer = _consumer;
 @synthesize selectedIdentity = _selectedIdentity;
 
+- (instancetype)initWithPrefService:(PrefService*)prefService {
+  if (self = [super init]) {
+    _prefService = prefService;
+  }
+  return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService);
+}
+
 - (void)start {
   _identityServiceObserver =
       std::make_unique<ChromeIdentityServiceObserverBridge>(self);
   _browserProviderObserver =
       std::make_unique<ChromeBrowserProviderObserverBridge>(self);
   [self loadIdentitySection];
+}
+
+- (void)disconnect {
+  self.prefService = nullptr;
 }
 
 - (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
@@ -71,9 +90,14 @@
 // Creates the identity section with its header item, and all the identity items
 // based on the ChromeIdentity.
 - (void)loadIdentitySection {
+  if (!self.prefService) {
+    return;
+  }
+
   // Create all the identity items.
   NSArray<ChromeIdentity*>* identities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay();
+      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
+          self.prefService);
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
   for (ChromeIdentity* identity in identities) {
     TableViewIdentityItem* item =
@@ -109,10 +133,15 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
+  if (!self.prefService) {
+    return;
+  }
+
   [self loadIdentitySection];
   // Updates the selection.
   NSArray* allIdentities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay();
+      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
+          self.prefService);
   if (![allIdentities containsObject:self.selectedIdentity]) {
     if (allIdentities.count) {
       self.selectedIdentity = allIdentities[0];

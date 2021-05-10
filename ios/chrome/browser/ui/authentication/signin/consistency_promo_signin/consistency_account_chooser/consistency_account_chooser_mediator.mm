@@ -54,8 +54,6 @@
   DCHECK(!self.prefService);
 }
 
-#pragma mark - Public
-
 - (void)disconnect {
   self.prefService = nullptr;
 }

@@ -16,7 +16,10 @@ source_set("identity_chooser") {
   deps = [
     ":identity_chooser_ui",
     "//base",
+    "//components/prefs",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

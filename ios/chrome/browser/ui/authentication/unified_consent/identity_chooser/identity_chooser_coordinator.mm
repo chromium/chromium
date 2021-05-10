@@ -8,6 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
@@ -78,7 +80,9 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       UIModalPresentationCustom;
 
   // Creates the mediator.
-  self.identityChooserMediator = [[IdentityChooserMediator alloc] init];
+  self.identityChooserMediator = [[IdentityChooserMediator alloc]
+      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
+
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.
   self.identityChooserViewController.presentationDelegate = self;
@@ -88,6 +92,12 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       presentViewController:self.identityChooserViewController
                    animated:YES
                  completion:nil];
+}
+
+- (void)stop {
+  [super stop];
+  [self.identityChooserMediator disconnect];
+  self.identityChooserMediator = nil;
 }
 
 #pragma mark - Setters/Getters

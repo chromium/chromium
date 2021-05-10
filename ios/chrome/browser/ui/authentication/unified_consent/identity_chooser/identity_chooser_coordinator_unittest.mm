@@ -83,6 +83,7 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:@"1"];
   EXPECT_NSEQ(identity, coordinator_.selectedIdentity);
+  [coordinator_ stop];
 }
 
 TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
@@ -98,4 +99,5 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:@"1"];
   EXPECT_NSEQ(nil, coordinator_.selectedIdentity);
+  [coordinator_ stop];
 }

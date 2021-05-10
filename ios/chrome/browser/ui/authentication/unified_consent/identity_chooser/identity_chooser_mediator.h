@@ -9,10 +9,17 @@
 
 @class ChromeIdentity;
 @protocol IdentityChooserConsumer;
+class PrefService;
 
 // A mediator object that monitors updates of chrome identities, and updates the
 // IdentityChooserViewController.
 @interface IdentityChooserMediator : NSObject
+
+// The designated initializer.
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Selected Chrome identity.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
@@ -21,6 +28,9 @@
 
 // Starts this mediator.
 - (void)start;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 // Selects an identity with a Gaia ID.
 - (void)selectIdentityWithGaiaID:(NSString*)gaiaID;

@@ -16,6 +16,7 @@ source_set("unified_consent") {
     ":unified_consent_ui",
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
