@@ -100,12 +100,6 @@ content::RenderFrameHost* FindFrameMaybeUnsafe(
                    handle->GetFrameTreeNodeId());
 }
 
-// TODO(crbug.com/1194678): Remove this level of abstraction.
-void RecordFeatureUsage(content::RenderFrameHost* rfh,
-                        blink::mojom::WebFeature web_feature) {
-  MetricsWebContentsObserver::RecordFeatureUsage(rfh, web_feature);
-}
-
 std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
                                     bool will_unload_adframe) {
   const char kChromeStatusMessage[] =
@@ -1274,8 +1268,8 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
 
   // Record this UMA regardless of if we actually unload or not, as sending
   // reports is subject to the same noise and throttling as the intervention.
-  RecordFeatureUsage(render_frame_host,
-                     blink::mojom::WebFeature::kHeavyAdIntervention);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      render_frame_host, blink::mojom::WebFeature::kHeavyAdIntervention);
 
   ADS_HISTOGRAM("HeavyAds.InterventionType2", UMA_HISTOGRAM_ENUMERATION,
                 FrameVisibility::kAnyVisibility,
