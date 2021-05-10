@@ -157,6 +157,9 @@ used when committed.
     you are interested in.
 *   [Shutdown](shutdown.md) - Explains the steps of Chrome shutdown, to make it
     easier to determine where to add a new shutdown operation.
+*   [API Keys](api_keys.md) - When you need access to Google APIs for a custom
+    build, fork, integration of stock Chromium, or are building ChromiumOS (for
+    login).
 
 ### Testing
 *   [Running and Debugging Web Tests](testing/web_tests.md)
