@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
 
   PrefService* prefs = browser()->profile()->GetPrefs();
   const base::ListValue* list_url = prefs->GetList(policy_prefs::kUrlBlocklist);
-  EXPECT_EQ(list_url->Find(base::Value("file://*")), list_url->end());
+  EXPECT_EQ(list_url->Find(base::Value("file://*")), list_url->GetList().end());
 
   base::ListValue disabledscheme;
   disabledscheme.AppendString("file");
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
   FlushBlacklistPolicy();
 
   list_url = prefs->GetList(policy_prefs::kUrlBlocklist);
-  EXPECT_NE(list_url->Find(base::Value("file://*")), list_url->end());
+  EXPECT_NE(list_url->Find(base::Value("file://*")), list_url->GetList().end());
 
   // Whitelist one folder and blacklist an another just inside.
   base::ListValue whitelist;
