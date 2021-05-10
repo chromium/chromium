@@ -384,7 +384,7 @@ class ScriptsSmokeTest(unittest.TestCase):
           tempdir, 'fake_gtest')
       output_paths.SetUp()
       return_code = run_performance_tests.execute_gtest_perf_test(
-          fake_command_generator, output_paths)
+          fake_command_generator, output_paths, is_unittest=True)
       self.assertEqual(return_code, 1)
       with open(output_paths.test_results) as fh:
         json_test_results = json.load(fh)

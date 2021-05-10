@@ -51,6 +51,7 @@ cd tools/perf
 import argparse
 import json
 import os
+import requests
 import shutil
 import sys
 import time
@@ -255,6 +256,7 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
           benchmark_name: {
               'expected': 'PASS',
               'actual': 'FAIL' if return_code else 'PASS',
+              'is_unexpected': True if return_code else False,
           },
       },
       'interrupted': False,
@@ -270,7 +272,44 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
     json.dump(output_json, fh)
 
 
-def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False):
+def upload_simple_test_results(return_code, benchmark_name):
+  # TODO(crbug.com/1115658): Fix to upload results for each test rather than
+  # this summary.
+  try:
+    with open(os.environ['LUCI_CONTEXT']) as f:
+      sink = json.load(f)['result_sink']
+  except KeyError:
+    return
+
+  if return_code:
+    summary = '<p>Benchmark failed with status code %d</p>' % return_code
+  else:
+    summary = '<p>Benchmark passed</p>'
+
+  result_json = {
+      'testResults': [{
+        'testId': benchmark_name,
+        'expected': not return_code,
+        'status': 'FAIL' if return_code else 'PASS',
+        'summaryHtml': summary,
+        'tags': [{'key': 'exit_code', 'value': str(return_code)}],
+      }]
+  }
+
+  res = requests.post(
+      url='http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' %
+      sink['address'],
+      headers={
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'ResultSink %s' % sink['auth_token'],
+      },
+      data=json.dumps(result_json))
+  res.raise_for_status()
+
+
+def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
+                            is_unittest=False):
   start = time.time()
 
   env = os.environ.copy()
@@ -334,6 +373,8 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False):
     return_code = 1
   write_simple_test_results(return_code, output_paths.test_results,
                             output_paths.name)
+  if not is_unittest:
+    upload_simple_test_results(return_code, output_paths.name)
 
   print_duration(
       'executing gtest %s' % command_generator.executable_name, start)
