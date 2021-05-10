@@ -293,6 +293,7 @@
       <part file="browsing_data_strings.grdp" />
       <part file="live_caption_strings.grdp" />
       <part file="components_settings_strings.grdp" />
+      <part file="content_creation_strings.grdp" />
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
