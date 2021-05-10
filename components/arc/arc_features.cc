@@ -38,6 +38,11 @@ const base::Feature kEnableRegularToChildTransitionFeature{
 const base::Feature kEnableUnifiedAudioFocusFeature{
     "ArcEnableUnifiedAudioFocus", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether ARC handles unmanaged->managed account transition.
+const base::Feature kEnableUnmanagedToManagedTransitionFeature{
+    "ArcEnableUnmanagedToManagedTransitionFeature",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls ARC Unspecialized Application Processes.
 // When enabled, Android creates a pool of processes
 // that will start applications so that zygote doesn't have to wake.

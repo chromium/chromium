@@ -49,6 +49,9 @@ ToLoginManagerManagementTransition(ArcSupervisionTransition transition) {
     case ArcSupervisionTransition::REGULAR_TO_CHILD:
       return login_manager::
           UpgradeArcContainerRequest_ManagementTransition_REGULAR_TO_CHILD;
+    case ArcSupervisionTransition::UNMANAGED_TO_MANAGED:
+      return login_manager::
+          UpgradeArcContainerRequest_ManagementTransition_UNMANAGED_TO_MANAGED;
   }
 }
 

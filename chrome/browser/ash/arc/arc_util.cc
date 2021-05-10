@@ -585,6 +585,8 @@ ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
       base::FeatureList::IsEnabled(kEnableChildToRegularTransitionFeature);
   const bool is_regular_to_child_enabled =
       base::FeatureList::IsEnabled(kEnableRegularToChildTransitionFeature);
+  const bool is_unmanaged_to_managed_enabled =
+      base::FeatureList::IsEnabled(kEnableUnmanagedToManagedTransitionFeature);
 
   switch (supervision_transition) {
     case ArcSupervisionTransition::NO_TRANSITION:
@@ -598,6 +600,9 @@ ArcSupervisionTransition GetSupervisionTransition(const Profile* profile) {
       if (!is_regular_to_child_enabled)
         return ArcSupervisionTransition::NO_TRANSITION;
       break;
+    case ArcSupervisionTransition::UNMANAGED_TO_MANAGED:
+      if (!is_unmanaged_to_managed_enabled)
+        return ArcSupervisionTransition::NO_TRANSITION;
   }
   return supervision_transition;
 }

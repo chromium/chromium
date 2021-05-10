@@ -21,6 +21,9 @@ enum class ArcSupervisionTransition : int {
   // Regular user is transitioning to a child account, need to enable
   // supervision.
   REGULAR_TO_CHILD = 2,
+  // Unmanaged user is transitioning to a managed state, need to enable
+  // management.
+  UNMANAGED_TO_MANAGED = 3,
 };
 
 std::ostream& operator<<(std::ostream& os,

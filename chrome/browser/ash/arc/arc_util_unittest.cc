@@ -34,6 +34,7 @@
 #include "chromeos/dbus/fake_oobe_configuration_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -726,6 +727,32 @@ TEST_F(ChromeArcUtilTest, ArcStartModeWithoutPlayStore) {
       {"", "--arc-availability=installed",
        "--arc-start-mode=always-start-with-no-play-store"});
   EXPECT_FALSE(IsPlayStoreAvailable());
+}
+
+TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  profile()->GetPrefs()->SetInteger(
+      arc::prefs::kArcSupervisionTransition,
+      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+
+  EXPECT_EQ(GetSupervisionTransition(profile()),
+            arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED);
+}
+
+TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      arc::kEnableUnmanagedToManagedTransitionFeature);
+
+  profile()->GetPrefs()->SetInteger(
+      arc::prefs::kArcSupervisionTransition,
+      static_cast<int>(arc::ArcSupervisionTransition::UNMANAGED_TO_MANAGED));
+
+  EXPECT_EQ(GetSupervisionTransition(profile()),
+            arc::ArcSupervisionTransition::NO_TRANSITION);
 }
 
 class ArcOobeTest : public ChromeArcUtilTest {

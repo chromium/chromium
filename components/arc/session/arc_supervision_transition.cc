@@ -16,6 +16,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "CHILD_TO_REGULAR";
     case ArcSupervisionTransition::REGULAR_TO_CHILD:
       return os << "REGULAR_TO_CHILD";
+    case ArcSupervisionTransition::UNMANAGED_TO_MANAGED:
+      return os << "UNMANAGED_TO_MANAGED";
   }
   NOTREACHED() << "Unexpected value for ArcSupervisionTransition: "
                << static_cast<int>(supervision_transition);
