@@ -4684,11 +4684,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [iterator->second stop];
     _ntpCoordinatorsForWebStates.erase(iterator);
   }
-
-  // Ignore changes while the tab grid is visible (or while suspended).
-  // The display will be refreshed when this view becomes active again.
-  if (!self.visible || !self.webUsageEnabled)
-    return;
 }
 
 - (void)webStateList:(WebStateList*)webStateList
