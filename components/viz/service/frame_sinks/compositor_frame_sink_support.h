@@ -377,9 +377,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
-  // Represents whether the DocumentTransition feature is enabled.
-  bool document_transitions_enabled_;
-
   // Number of frames skipped during throttling since last BeginFrame sent.
   uint64_t frames_throttled_since_last_ = 0;
 

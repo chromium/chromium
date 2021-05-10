@@ -889,6 +889,11 @@ const base::Feature kScopeMemoryCachePerContext{
 const base::Feature kEnablePenetratingImageSelection{
     "EnablePenetratingImageSelection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, permits shared/root element transitions. See
+// https://github.com/WICG/shared-element-transitions.
+const base::Feature kDocumentTransition{"DocumentTransition",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 const base::Feature kBackgroundTracingPerformanceMark{

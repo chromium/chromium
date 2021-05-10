@@ -1035,7 +1035,7 @@
   {
     "prefix": "document-transition",
     "bases": ["wpt_internal/document-transition"],
-    "args": ["--enable-features=DocumentTransition",
+    "args": ["--enable-blink-features=DocumentTransition",
              "--enable-threaded-compositing",
              "--enable-gpu-rasterization"]
   },

@@ -5375,10 +5375,6 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
     support->OnBeginFrame(args);
   }
 
-  void EnableDocumentTransitions(CompositorFrameSinkSupport* support) {
-    support->document_transitions_enabled_ = true;
-  }
-
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -8512,7 +8508,6 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
   FakeCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
-  EnableDocumentTransitions(support.get());
 
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(support->frame_sink_id(), local_surface_id);

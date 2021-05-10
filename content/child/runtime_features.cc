@@ -241,7 +241,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},
     {wf::EnableDocumentPolicy, features::kDocumentPolicy},
     {wf::EnableDocumentPolicyNegotiation, features::kDocumentPolicyNegotiation},
-    {wf::EnableDocumentTransition, features::kDocumentTransition},
     {wf::EnableExpensiveBackgroundTimerThrottling,
      features::kExpensiveBackgroundTimerThrottling},
     {wf::EnableFencedFrames, blink::features::kFencedFrames,

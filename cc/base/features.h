@@ -50,13 +50,6 @@ CC_BASE_EXPORT extern const base::Feature kHudDisplayForPerformanceMetrics;
 // When enabled, some jank is injected to the animation/scrolling pipeline.
 CC_BASE_EXPORT extern const base::Feature kJankInjectionAblationFeature;
 
-// Controls the DocumentTransition feature. More information at
-// third_party/blink/renderer/core/document_transition/README.md
-CC_BASE_EXPORT extern const base::Feature kDocumentTransition;
-
-// Helper for DocumentTransition feature.
-CC_BASE_EXPORT bool IsDocumentTransitionEnabled();
-
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

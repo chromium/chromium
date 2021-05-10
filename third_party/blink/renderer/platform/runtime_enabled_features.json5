@@ -818,8 +818,9 @@
     },
     {
       // Document transitions, including shared element transitions.
-      // See https://github.com/WICG/proposals/issues/12.
-      name: "DocumentTransition"
+      // See https://github.com/WICG/shared-element-transitions
+      name: "DocumentTransition",
+      origin_trial_feature_name: "DocumentTransition"
     },
     {
       name: "DocumentWrite",

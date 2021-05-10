@@ -72,8 +72,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       power_mode_voter_(
           is_root ? nullptr
                   : power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-                        "PowerModeVoter.Animation")),
-      document_transitions_enabled_(features::IsDocumentTransitionEnabled()) {
+                        "PowerModeVoter.Animation")) {
   surface_animation_manager_.SetDirectiveFinishedCallback(
       base::BindRepeating(&CompositorFrameSinkSupport::
                               OnCompositorFrameTransitionDirectiveProcessed,
@@ -163,7 +162,7 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   // Let the animation manager process any new directives on the surface.
   const auto& transition_directives =
       surface->GetActiveFrameMetadata().transition_directives;
-  if (document_transitions_enabled_ && !transition_directives.empty()) {
+  if (!transition_directives.empty()) {
     bool started_animation =
         surface_animation_manager_.ProcessTransitionDirectives(
             transition_directives, surface->GetSurfaceSavedFrameStorage());
