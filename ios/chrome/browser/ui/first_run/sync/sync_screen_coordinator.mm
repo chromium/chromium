@@ -50,15 +50,14 @@
 }
 
 - (void)start {
-  // TODO(crbug.com/1189840): Check if sync screen need to be shown.
-  // if not:
-  // [self.delegate willFinishPresenting]
-  // if yes:
-  // DCHECK if an user identity is existed.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  DCHECK(authenticationService->GetAuthenticatedIdentity());
+
+  if (!authenticationService->GetAuthenticatedIdentity()) {
+    // Don't show sync screen if no logged-in user account.
+    return [self.delegate willFinishPresenting];
+  }
 
   self.viewController = [[SyncScreenViewController alloc] init];
   self.viewController.delegate = self;
