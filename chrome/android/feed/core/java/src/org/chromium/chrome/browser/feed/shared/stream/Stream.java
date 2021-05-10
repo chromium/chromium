@@ -12,7 +12,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
-import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -46,12 +45,6 @@ public interface Stream {
      * @param newHeaderCount The new number of headers.
      */
     void notifyNewHeaderCount(int newHeaderCount);
-
-    /** @param listener A {@link ScrollListener}, which activates when this stream is bound. */
-    void addScrollListener(ScrollListener listener);
-
-    /** @param listener The previously added {@link ScrollListener} to be removed. */
-    void removeScrollListener(ScrollListener listener);
 
     /**
      * @param listener A {@link ContentChangedListener} which activates when the content changes

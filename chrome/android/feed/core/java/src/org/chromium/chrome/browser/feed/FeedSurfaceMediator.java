@@ -15,6 +15,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity;
@@ -210,7 +212,9 @@ public class FeedSurfaceMediator
 
     private final NativePageNavigationDelegate mPageNavigationDelegate;
 
-    private @Nullable ScrollListener mStreamScrollListener;
+    private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
+    private final ObserverList<ScrollListener> mScrollListeners =
+            new ObserverList<ScrollListener>();
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SignInPromo mSignInPromo;
@@ -379,8 +383,6 @@ public class FeedSurfaceMediator
      * TODO(huayinz): Introduce a Model for these properties.
      */
     private void initializePropertiesForStream() {
-        Stream stream = mCoordinator.getStream();
-
         if (mHasHeader) {
             mSectionHeaderModel.set(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
                     new FeedSurfaceHeaderSelectedCallback());
@@ -430,11 +432,40 @@ public class FeedSurfaceMediator
             unbindStream();
         }
 
+        mStreamScrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                for (ScrollListener listener : mScrollListeners) {
+                    listener.onScrollStateChanged(newState);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView v, int dx, int dy) {
+                if (mSnapScrollHelper != null) {
+                    mSnapScrollHelper.handleScroll();
+                }
+                for (ScrollListener listener : mScrollListeners) {
+                    listener.onScrolled(dx, dy);
+                }
+            }
+        };
+        mCoordinator.getRecyclerView().addOnScrollListener(mStreamScrollListener);
+
         initStreamHeaderViews();
 
         mMemoryPressureCallback =
                 pressure -> mCoordinator.getRecyclerView().getRecycledViewPool().clear();
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
+    }
+
+    void addScrollListener(ScrollListener listener) {
+        mScrollListeners.addObserver(listener);
+    }
+
+    void removeScrollListener(ScrollListener listener) {
+        mScrollListeners.removeObserver(listener);
     }
 
     private void addHeaderAndStream(
@@ -509,21 +540,6 @@ public class FeedSurfaceMediator
                 mCoordinator.getHybridListRenderer());
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
-        if (mSnapScrollHelper != null) {
-            mStreamScrollListener = new ScrollListener() {
-                @Override
-                public void onScrollStateChanged(int state) {}
-
-                @Override
-                public void onScrolled(int dx, int dy) {
-                    mSnapScrollHelper.handleScroll();
-                }
-
-                @Override
-                public void onHeaderOffsetChanged(int verticalOffset) {}
-            };
-            mCurrentStream.addScrollListener(mStreamScrollListener);
-        }
     }
 
     void onContentsChanged() {
@@ -542,10 +558,6 @@ public class FeedSurfaceMediator
 
     private void unbindStream() {
         if (mCurrentStream == null) return;
-        if (mStreamScrollListener != null) {
-            mCurrentStream.removeScrollListener(mStreamScrollListener);
-            mStreamScrollListener = null;
-        }
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
         mCurrentStream.unbind();
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
@@ -632,7 +644,7 @@ public class FeedSurfaceMediator
         if (stream == null) return;
 
         if (mStreamScrollListener != null) {
-            stream.removeScrollListener(mStreamScrollListener);
+            mCoordinator.getRecyclerView().removeOnScrollListener(mStreamScrollListener);
             mStreamScrollListener = null;
         }
 

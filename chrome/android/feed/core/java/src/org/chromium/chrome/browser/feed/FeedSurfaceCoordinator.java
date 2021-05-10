@@ -183,16 +183,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
         public void addScrollListener(ScrollListener listener) {
-            if (mStream == null) return;
+            if (mRecyclerView == null) return;
 
-            mStream.addScrollListener(listener);
+            mMediator.addScrollListener(listener);
         }
 
         @Override
         public void removeScrollListener(ScrollListener listener) {
-            if (mStream == null) return;
+            if (mRecyclerView == null) return;
 
-            mStream.removeScrollListener(listener);
+            mMediator.removeScrollListener(listener);
         }
 
         @Override

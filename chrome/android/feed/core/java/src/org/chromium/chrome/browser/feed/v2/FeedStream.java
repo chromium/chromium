@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionType;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
@@ -394,10 +393,8 @@ public class FeedStream implements Stream {
 
     private final Activity mActivity;
     private final long mNativeFeedStream;
-    private final ObserverList<ScrollListener> mScrollListeners =
-            new ObserverList<ScrollListener>();
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
-            new ObserverList<ContentChangedListener>();
+            new ObserverList<>();
     private final ObserverList<InteractionsListener> mInteractionListeners = new ObserverList<>();
     private final NativePageNavigationDelegate mNavigationDelegate;
     private final boolean mIsInterestFeed;
@@ -490,15 +487,6 @@ public class FeedStream implements Stream {
                 checkScrollingForLoadMore(dy);
                 FeedStreamJni.get().reportStreamScrollStart(mNativeFeedStream, FeedStream.this);
                 mScrollReporter.trackScroll(dx, dy);
-                for (ScrollListener listener : mScrollListeners) {
-                    listener.onScrolled(dx, dy);
-                }
-            }
-            @Override
-            public void onScrollStateChanged(RecyclerView v, int newState) {
-                for (ScrollListener listener : mScrollListeners) {
-                    listener.onScrollStateChanged(newState);
-                }
             }
         };
         // Only watch for unread content on the web feed, not for-you feed.
@@ -599,16 +587,6 @@ public class FeedStream implements Stream {
     public void toggledArticlesListVisible(boolean visible) {
         FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
                 visible ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
-    }
-
-    @Override
-    public void addScrollListener(ScrollListener listener) {
-        mScrollListeners.addObserver(listener);
-    }
-
-    @Override
-    public void removeScrollListener(ScrollListener listener) {
-        mScrollListeners.removeObserver(listener);
     }
 
     @Override
