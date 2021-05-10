@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -154,11 +154,11 @@ class WebAppsBase : public apps::PublisherBase,
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
-      registrar_observer_{this};
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+      registrar_observation_{this};
 
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observer_{this};
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 
   web_app::WebAppProvider* provider_ = nullptr;
 

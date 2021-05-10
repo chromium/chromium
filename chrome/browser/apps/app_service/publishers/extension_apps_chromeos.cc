@@ -19,7 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -101,7 +101,7 @@ ExtensionAppsChromeOs::ExtensionAppsChromeOs(
 }
 
 ExtensionAppsChromeOs::~ExtensionAppsChromeOs() {
-  app_window_registry_.RemoveAll();
+  app_window_registry_.Reset();
 
   // In unit tests, AppServiceProxy might be ReInitializeForTesting, so
   // ExtensionApps might be destroyed without calling Shutdown, so arc_prefs_
@@ -156,11 +156,11 @@ void ExtensionAppsChromeOs::ObserveArc() {
 }
 
 void ExtensionAppsChromeOs::Initialize() {
-  app_window_registry_.Add(extensions::AppWindowRegistry::Get(profile()));
+  app_window_registry_.Observe(extensions::AppWindowRegistry::Get(profile()));
 
   media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 
-  notification_display_service_.Add(
+  notification_display_service_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
 
   profile_pref_change_registrar_.Init(profile()->GetPrefs());
@@ -490,7 +490,8 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
 
 void ExtensionAppsChromeOs::OnNotificationDisplayServiceDestroyed(
     NotificationDisplayService* service) {
-  notification_display_service_.Remove(service);
+  DCHECK(notification_display_service_.IsObservingSource(service));
+  notification_display_service_.Reset();
 }
 
 bool ExtensionAppsChromeOs::MaybeAddNotification(

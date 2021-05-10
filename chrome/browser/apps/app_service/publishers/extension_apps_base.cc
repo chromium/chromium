@@ -14,7 +14,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -331,8 +331,8 @@ void ExtensionAppsBase::Initialize(
   DCHECK(profile_);
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kExtension);
 
-  prefs_observer_.Add(extensions::ExtensionPrefs::Get(profile_));
-  registry_observer_.Add(extensions::ExtensionRegistry::Get(profile_));
+  prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
   app_service_ = app_service.get();
 }
 
@@ -564,7 +564,8 @@ void ExtensionAppsBase::OnExtensionLastLaunchTimeChanged(
 
 void ExtensionAppsBase::OnExtensionPrefsWillBeDestroyed(
     extensions::ExtensionPrefs* prefs) {
-  prefs_observer_.Remove(prefs);
+  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  prefs_observation_.Reset();
 }
 
 void ExtensionAppsBase::OnExtensionLoaded(

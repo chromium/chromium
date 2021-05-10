@@ -65,8 +65,8 @@ WebAppsBase::~WebAppsBase() = default;
 
 void WebAppsBase::Shutdown() {
   if (provider_) {
-    registrar_observer_.RemoveAll();
-    content_settings_observer_.RemoveAll();
+    registrar_observation_.Reset();
+    content_settings_observation_.Reset();
   }
 }
 
@@ -149,8 +149,8 @@ void WebAppsBase::Initialize(
   provider_ = web_app::WebAppProvider::Get(profile_);
   DCHECK(provider_);
 
-  registrar_observer_.Add(&provider_->registrar());
-  content_settings_observer_.Add(
+  registrar_observation_.Observe(&provider_->registrar());
+  content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
   web_app_launch_manager_ =
@@ -390,7 +390,7 @@ void WebAppsBase::OnWebAppManifestUpdated(const web_app::AppId& app_id,
 }
 
 void WebAppsBase::OnAppRegistrarDestroyed() {
-  registrar_observer_.RemoveAll();
+  registrar_observation_.Reset();
 }
 
 void WebAppsBase::OnWebAppLocallyInstalledStateChanged(

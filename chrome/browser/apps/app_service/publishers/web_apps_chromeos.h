@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -190,8 +189,8 @@ class WebAppsChromeOs : public WebAppsBase,
 
   MediaRequests media_requests_;
 
-  ScopedObserver<NotificationDisplayService,
-                 NotificationDisplayService::Observer>
+  base::ScopedObservation<NotificationDisplayService,
+                          NotificationDisplayService::Observer>
       notification_display_service_{this};
 
   AppNotifications app_notifications_;

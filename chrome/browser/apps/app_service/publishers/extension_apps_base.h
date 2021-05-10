@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -183,11 +183,12 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
-  ScopedObserver<extensions::ExtensionPrefs, extensions::ExtensionPrefsObserver>
-      prefs_observer_{this};
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionPrefs,
+                          extensions::ExtensionPrefsObserver>
+      prefs_observation_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
 
   using EnableFlowPtr = std::unique_ptr<ExtensionAppsEnableFlow>;
   std::map<std::string, EnableFlowPtr> enable_flow_map_;

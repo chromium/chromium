@@ -138,7 +138,7 @@ void WebAppsChromeOs::Initialize() {
 
   media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 
-  notification_display_service_.Add(
+  notification_display_service_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
 
   badge_manager_ = badging::BadgeManagerFactory::GetForProfile(profile());
@@ -611,7 +611,8 @@ void WebAppsChromeOs::OnNotificationClosed(const std::string& notification_id) {
 
 void WebAppsChromeOs::OnNotificationDisplayServiceDestroyed(
     NotificationDisplayService* service) {
-  notification_display_service_.Remove(service);
+  DCHECK(notification_display_service_.IsObservingSource(service));
+  notification_display_service_.Reset();
 }
 
 bool WebAppsChromeOs::MaybeAddNotification(const std::string& app_id,

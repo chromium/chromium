@@ -519,19 +519,19 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
       intent_helper_bridge->SetAdaptiveIconDelegate(
           &arc_activity_adaptive_icon_impl_);
     }
-    arc_intent_helper_observer_.Add(intent_helper_bridge);
+    arc_intent_helper_observation_.Observe(intent_helper_bridge);
   }
 
   // There is no MessageCenterController for unit tests, so observe when the
   // MessageCenterController is created in production code.
   if (ash::ArcNotificationsHostInitializer::Get()) {
-    notification_initializer_observer_.Add(
+    notification_initializer_observation_.Observe(
         ash::ArcNotificationsHostInitializer::Get());
   }
 
   auto* instance_registry = &proxy->InstanceRegistry();
   if (instance_registry) {
-    instance_registry_observer_.Add(instance_registry);
+    instance_registry_observation_.Observe(instance_registry);
   }
 
   if (base::FeatureList::IsEnabled(ash::features::kWebApkGenerator)) {
@@ -576,7 +576,7 @@ void ArcApps::Shutdown() {
     intent_helper_bridge->SetAdaptiveIconDelegate(nullptr);
   }
 
-  arc_intent_helper_observer_.RemoveAll();
+  arc_intent_helper_observation_.Reset();
 }
 
 void ArcApps::Connect(
@@ -1215,12 +1215,13 @@ void ArcApps::OnPreferredAppsChanged() {
 void ArcApps::OnSetArcNotificationsInstance(
     ash::ArcNotificationManagerBase* arc_notification_manager) {
   DCHECK(arc_notification_manager);
-  notification_observer_.Add(arc_notification_manager);
+  notification_observation_.Observe(arc_notification_manager);
 }
 
 void ArcApps::OnArcNotificationInitializerDestroyed(
     ash::ArcNotificationsHostInitializer* initializer) {
-  notification_initializer_observer_.Remove(initializer);
+  DCHECK(notification_initializer_observation_.IsObservingSource(initializer));
+  notification_initializer_observation_.Reset();
 }
 
 void ArcApps::OnNotificationUpdated(const std::string& notification_id,
@@ -1264,7 +1265,8 @@ void ArcApps::OnNotificationRemoved(const std::string& notification_id) {
 
 void ArcApps::OnArcNotificationManagerDestroyed(
     ash::ArcNotificationManagerBase* notification_manager) {
-  notification_observer_.Remove(notification_manager);
+  DCHECK(notification_observation_.IsObservingSource(notification_manager));
+  notification_observation_.Reset();
 }
 
 void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
@@ -1288,7 +1290,8 @@ void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
 void ArcApps::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* instance_registry) {
-  instance_registry_observer_.Remove(instance_registry);
+  DCHECK(instance_registry_observation_.IsObservingSource(instance_registry));
+  instance_registry_observation_.Reset();
 }
 
 void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,

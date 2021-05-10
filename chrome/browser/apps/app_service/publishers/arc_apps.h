@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
@@ -218,21 +218,23 @@ class ArcApps : public KeyedService,
 
   std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 
-  ScopedObserver<arc::ArcIntentHelperBridge, arc::ArcIntentHelperObserver>
-      arc_intent_helper_observer_{this};
+  base::ScopedObservation<arc::ArcIntentHelperBridge,
+                          arc::ArcIntentHelperObserver>
+      arc_intent_helper_observation_{this};
 
-  ScopedObserver<ash::ArcNotificationsHostInitializer,
-                 ash::ArcNotificationsHostInitializer::Observer>
-      notification_initializer_observer_{this};
+  base::ScopedObservation<ash::ArcNotificationsHostInitializer,
+                          ash::ArcNotificationsHostInitializer::Observer>
+      notification_initializer_observation_{this};
 
-  ScopedObserver<ash::ArcNotificationManagerBase,
-                 ash::ArcNotificationManagerBase::Observer>
-      notification_observer_{this};
+  base::ScopedObservation<ash::ArcNotificationManagerBase,
+                          ash::ArcNotificationManagerBase::Observer>
+      notification_observation_{this};
 
   AppNotifications app_notifications_;
 
-  ScopedObserver<apps::InstanceRegistry, apps::InstanceRegistry::Observer>
-      instance_registry_observer_{this};
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 
   bool settings_app_is_active_ = false;
 
