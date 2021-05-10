@@ -51,6 +51,7 @@ bool g_replaced_default_zone = false;
 namespace {
 
 bool g_oom_killer_enabled;
+bool g_allocator_shims_failed_to_install;
 
 // Starting with Mac OS X 10.7, the zone allocators set up by the system are
 // read-only, to prevent them from being overwritten in an attack. However,
@@ -62,7 +63,11 @@ bool g_oom_killer_enabled;
 // and returns (in the out parameters) a region of memory (if any) to be
 // re-protected when modifications are complete. This approach assumes that
 // there is no contention for the protection of this memory.
-void DeprotectMallocZone(ChromeMallocZone* default_zone,
+//
+// Returns true if the malloc zone was properly de-protected, or false
+// otherwise. If this function returns false, the out parameters are invalid and
+// the region does not need to be re-protected.
+bool DeprotectMallocZone(ChromeMallocZone* default_zone,
                          vm_address_t* reprotection_start,
                          vm_size_t* reprotection_length,
                          vm_prot_t* reprotection_value) {
@@ -74,7 +79,10 @@ void DeprotectMallocZone(ChromeMallocZone* default_zone,
       vm_region_64(mach_task_self(), reprotection_start, reprotection_length,
                    VM_REGION_BASIC_INFO_64,
                    reinterpret_cast<vm_region_info_t>(&info), &count, &unused);
-  MACH_CHECK(result == KERN_SUCCESS, result) << "vm_region_64";
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "vm_region_64";
+    return false;
+  }
 
   // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
   // balance it with a deallocate in case this ever changes. See
@@ -82,13 +90,18 @@ void DeprotectMallocZone(ChromeMallocZone* default_zone,
   // https://opensource.apple.com/source/xnu/xnu-6153.11.26/osfmk/vm/vm_map.c .
   mach_port_deallocate(mach_task_self(), unused);
 
+  if (!(info.max_protection & VM_PROT_WRITE)) {
+    LOG(ERROR) << "Invalid max_protection " << info.max_protection;
+    return false;
+  }
+
   // Does the region fully enclose the zone pointers? Possibly unwarranted
   // simplification used: using the size of a full version 10 malloc zone rather
   // than the actual smaller size if the passed-in zone is not version 10.
-  CHECK(*reprotection_start <= reinterpret_cast<vm_address_t>(default_zone));
+  DCHECK(*reprotection_start <= reinterpret_cast<vm_address_t>(default_zone));
   vm_size_t zone_offset = reinterpret_cast<vm_address_t>(default_zone) -
                           reinterpret_cast<vm_address_t>(*reprotection_start);
-  CHECK(zone_offset + sizeof(ChromeMallocZone) <= *reprotection_length);
+  DCHECK(zone_offset + sizeof(ChromeMallocZone) <= *reprotection_length);
 
   if (info.protection & VM_PROT_WRITE) {
     // No change needed; the zone is already writable.
@@ -100,8 +113,12 @@ void DeprotectMallocZone(ChromeMallocZone* default_zone,
     result =
         vm_protect(mach_task_self(), *reprotection_start, *reprotection_length,
                    false, info.protection | VM_PROT_WRITE);
-    MACH_CHECK(result == KERN_SUCCESS, result) << "vm_protect";
+    if (result != KERN_SUCCESS) {
+      MACH_LOG(ERROR, result) << "vm_protect";
+      return false;
+    }
   }
+  return true;
 }
 
 #if !defined(ADDRESS_SANITIZER)
@@ -499,6 +516,10 @@ void UninterceptMallocZonesForTesting() {
   ClearAllMallocZonesForTesting();
 }
 
+bool AreMallocZonesIntercepted() {
+  return !g_allocator_shims_failed_to_install;
+}
+
 namespace {
 
 void ShimNewMallocZonesAndReschedule(base::Time end_time,
@@ -543,8 +564,12 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
   vm_address_t reprotection_start = 0;
   vm_size_t reprotection_length = 0;
   vm_prot_t reprotection_value = VM_PROT_NONE;
-  DeprotectMallocZone(zone, &reprotection_start, &reprotection_length,
-                      &reprotection_value);
+  bool success = DeprotectMallocZone(zone, &reprotection_start,
+                                     &reprotection_length, &reprotection_value);
+  if (!success) {
+    g_allocator_shims_failed_to_install = true;
+    return;
+  }
 
   CHECK(functions->malloc && functions->calloc && functions->valloc &&
         functions->free && functions->realloc);
@@ -571,7 +596,7 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
     kern_return_t result =
         vm_protect(mach_task_self(), reprotection_start, reprotection_length,
                    false, reprotection_value);
-    MACH_CHECK(result == KERN_SUCCESS, result) << "vm_protect";
+    MACH_DCHECK(result == KERN_SUCCESS, result) << "vm_protect";
   }
 }
 

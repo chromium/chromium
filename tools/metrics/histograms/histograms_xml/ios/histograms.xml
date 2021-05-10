@@ -21,6 +21,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
+    expires_after="2022-01-28">
+  <owner>rohitrao@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Whether or not the allocator shim was installed successfully. False
+    indicates an unexpected error at the OS level which merits investigation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2021-09-24">
   <owner>ajuma@chromium.org</owner>

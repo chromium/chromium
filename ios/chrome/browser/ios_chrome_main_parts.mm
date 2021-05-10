@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/ios/ios_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
@@ -72,6 +73,7 @@
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "base/allocator/allocator_interception_mac.h"
 #include "base/allocator/allocator_shim.h"
 #endif
 
@@ -98,12 +100,9 @@ void SetProtectionLevel(const base::FilePath& file_path, id level) {
 // Do not install allocator shim on iOS 13.4 due to high crash volume on this
 // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
 // when/if the bug gets fixed.
-//
-// Do not install allocator shim for now, until it's clear why Chrome crashes
-// on iOS 14.3+ on startup.
-// TODO(crbug.com/1150599): Remove this workaround when/if the bug gets fixed.
 bool ShouldInstallAllocatorShim() {
-  return false;
+  return !base::ios::IsRunningOnOrLater(13, 4, 0) ||
+         base::ios::IsRunningOnOrLater(13, 5, 0);
 }
 #endif
 
@@ -204,13 +203,19 @@ void IOSChromeMainParts::PreCreateThreads() {
   // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
   // when/if the bug gets fixed.
   if (ShouldInstallAllocatorShim()) {
-    // Start heap profiling as early as possible so it can start recording
-    // memory allocations. Requires the allocator shim to be enabled.
-    heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
-    metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-        base::BindRepeating(
-            &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
-    heap_profiler_controller_->Start();
+    bool malloc_intercepted = base::allocator::AreMallocZonesIntercepted();
+    base::UmaHistogramBoolean("IOS.Allocator.ShimInstalled",
+                              malloc_intercepted);
+
+    if (malloc_intercepted) {
+      // Start heap profiling as early as possible so it can start recording
+      // memory allocations. Requires the allocator shim to be enabled.
+      heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
+      metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+          base::BindRepeating(
+              &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
+      heap_profiler_controller_->Start();
+    }
   }
 #endif
 

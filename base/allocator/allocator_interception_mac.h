@@ -46,6 +46,10 @@ BASE_EXPORT void InterceptAllocationsMac();
 // Also calls ClearAllMallocZonesForTesting.
 BASE_EXPORT void UninterceptMallocZonesForTesting();
 
+// Returns true if allocations are successfully being intercepted for all malloc
+// zones.
+bool AreMallocZonesIntercepted();
+
 // Periodically checks for, and shims new malloc zones. Stops checking after 1
 // minute.
 BASE_EXPORT void PeriodicallyShimNewMallocZones();
