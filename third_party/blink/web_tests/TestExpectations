@@ -61,6 +61,8 @@ crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wss [ Pass 
 # Tests are flaky after a WPT import
 crbug.com/1204961 [ Mac ] external/wpt/websockets/stream/tentative/abort.any.html?wpt_flags=h2 [ Pass Failure ]
 crbug.com/1204961 [ Mac ] external/wpt/websockets/stream/tentative/constructor.any.sharedworker.html?wpt_flags=h2 [ Pass Failure ]
+# Flaking on WebKit Linux MSAN
+crbug.com/1207373 [ Linux ] external/wpt/uievents/order-of-events/mouse-events/mousemove-across.html [ Pass Failure ]
 
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
