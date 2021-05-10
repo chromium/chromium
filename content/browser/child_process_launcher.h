@@ -13,7 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
+#include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/common/content_export.h"
@@ -190,6 +192,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // more discussion of Linux implementation details.
   ChildProcessTerminationInfo GetChildTerminationInfo(bool known_dead);
 
+  // Gather the lifetime process metrics and save them to histograms. Call
+  // right before the process is about to go away.
+  void RecordProcessLifetimeMetrics();
+
   // Changes whether the process runs in the background or not.  Only call
   // this after the process has started.
   void SetProcessPriority(const ChildProcessLauncherPriority& priority);
@@ -225,6 +231,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.
   internal::ChildProcessLauncherHelper::Process process_;
+  base::TimeTicks process_start_time_;
 
   ChildProcessTerminationInfo termination_info_;
   bool starting_;

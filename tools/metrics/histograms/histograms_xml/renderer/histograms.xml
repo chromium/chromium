@@ -285,6 +285,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Renderer.TotalCPUUse{Lifetime}" units="ms"
+    expires_after="2022-05-06">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Total CPU utilization of a renderer, read just before the process is about
+    to go away. Total CPU time can exceed the total process lifetime. This is
+    because CPU use of N seconds can be spread out over M threads. Example: A
+    Renderer having 4 threads active for a period of 1 minute in parallel will
+    use 4 minutes of CPU time. Not recorded on Android.
+  </summary>
+  <token key="Lifetime">
+    <variant name="" summary="Applies to all lifetimes."/>
+    <variant name=".LongLived"
+        summary="Renderer process was alive for more than a minute."/>
+    <variant name=".ShortLived"
+        summary="Renderer process was alive for up to one minute."/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.ViewportZoomBugCount" enum="BooleanHit"
     expires_after="M77">
   <owner>kkhorimoto@chromium.org</owner>

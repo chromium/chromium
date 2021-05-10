@@ -12,11 +12,18 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/process/launch.h"
+#include "base/process/process_metrics.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+
+#if defined(OS_MAC)
+#include "content/browser/child_process_task_port_provider_mac.h"
+#endif
 
 namespace content {
 
@@ -88,6 +95,7 @@ void ChildProcessLauncher::Notify(
   process_ = std::move(process);
 
   if (process_.process.IsValid()) {
+    process_start_time_ = base::TimeTicks::Now();
     client_->OnProcessLaunched();
   } else {
     termination_info_.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
@@ -123,6 +131,17 @@ ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
     return termination_info_;
   }
 
+#if !defined(OS_ANDROID)
+  // GetTerminationInfo() invokes base::GetTerminationStatus() which reaps the
+  // zombie process info, after which it's not longer readable. This is why
+  // RecordProcessLifetimeMetrics() needs to called before that happens.
+  //
+  // Not done on Android since there sandboxed child processes run under a
+  // different user/uid, and the browser doesn't have permission to access
+  // the /proc dirs for the child processes. For the Android solution look at
+  // content/common/android/cpu_time_metrics.h.
+  RecordProcessLifetimeMetrics();
+#endif
   termination_info_ = helper_->GetTerminationInfo(process_, known_dead);
 
   // POSIX: If the process crashed, then the kernel closed the socket for it and
@@ -143,6 +162,46 @@ bool ChildProcessLauncher::Terminate(int exit_code) {
   return IsStarting() ? false
                       : ChildProcessLauncherHelper::TerminateProcess(
                             GetProcess(), exit_code);
+}
+
+void ChildProcessLauncher::RecordProcessLifetimeMetrics() {
+#if defined(OS_MAC)
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(
+          process_.process.Handle(),
+          ChildProcessTaskPortProvider::GetInstance());
+#else
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(process_.process.Handle());
+#endif
+
+  const base::TimeDelta process_lifetime =
+      base::TimeTicks::Now() - process_start_time_;
+  const base::TimeDelta process_total_cpu_use =
+      process_metrics->GetCumulativeCPUUsage();
+
+  constexpr base::TimeDelta kShortLifetime = base::TimeDelta::FromMinutes(1);
+  if (process_lifetime <= kShortLifetime) {
+    // Bucketing chosen by looking at AverageCPU2.RendererProcess in UMA. Only a
+    // renderer at the 99.9th percentile of this metric would overflow.
+    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse.ShortLived",
+                               process_total_cpu_use,
+                               base::TimeDelta::FromMilliseconds(1),
+                               base::TimeDelta::FromSeconds(30), 100);
+  } else {
+    // Bucketing chosen by looking at AverageCPU2.RendererProcess and
+    // Renderer.ProcessLifetime values in UMA. Only a renderer at the 99th
+    // percentile of both of those values combined will overflow.
+    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse.LongLived",
+                               process_total_cpu_use,
+                               base::TimeDelta::FromMilliseconds(1),
+                               base::TimeDelta::FromHours(3), 100);
+  }
+
+  // Global measurement. Bucketing identical to LongLivedRenders.
+  UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.TotalCPUUse", process_total_cpu_use,
+                             base::TimeDelta::FromMilliseconds(1),
+                             base::TimeDelta::FromHours(3), 100);
 }
 
 // static
