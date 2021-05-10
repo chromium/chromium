@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
 #define CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_PAGE_HANDLER_H_
 
-#include <memory>
-
 #include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

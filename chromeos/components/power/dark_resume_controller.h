@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
 #define CHROMEOS_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 #define CHROMEOS_DBUS_FAKE_OOBE_CONFIGURATION_CLIENT_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "chromeos/dbus/oobe_configuration_client.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"

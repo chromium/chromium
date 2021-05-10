@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
-#include <memory>
-
 #include "chromeos/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"

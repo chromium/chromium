@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_LACROS_LACROS_TEST_HELPER_H_
 #define CHROMEOS_LACROS_LACROS_TEST_HELPER_H_
 
-#include <memory>
-
 #include "base/auto_reset.h"
 #include "chromeos/lacros/lacros_service.h"
 

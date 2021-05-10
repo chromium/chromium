@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_INPUT_PROVIDER_IMPL_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/macros.h"
 #include "chromeos/services/libassistant/audio/audio_input_impl.h"

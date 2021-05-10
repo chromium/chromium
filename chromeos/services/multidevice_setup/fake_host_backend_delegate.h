@@ -5,9 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 
-#include <utility>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"

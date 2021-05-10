@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_SHARED_CONSTANTS_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_SHARED_CONSTANTS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 
 namespace chromeos {

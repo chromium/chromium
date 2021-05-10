@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_SCHEDULER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_CONNECTION_SCHEDULER_H_
 
-#include <memory>
+#include <stddef.h>
 
 #include "chromeos/components/phonehub/connection_scheduler.h"
 

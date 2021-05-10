@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
 #define CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/feature_list.h"
 

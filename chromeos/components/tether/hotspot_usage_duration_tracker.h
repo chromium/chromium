@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 #define CHROMEOS_COMPONENTS_TETHER_HOTSPOT_USAGE_DURATION_TRACKER_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/components/tether/active_host.h"

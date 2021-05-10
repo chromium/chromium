@@ -12,8 +12,6 @@
 #ifndef CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
 #define CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
 
-#include <string>
-
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/chromeos_export.h"

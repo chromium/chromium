@@ -5,9 +5,6 @@
 #ifndef CHROMEOS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 #define CHROMEOS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 
-#include <string>
-
-
 namespace chromeos {
 
 struct NetworkProfile;

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_CONNECTION_H_
 #define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_CONNECTION_H_
 
-#include <string>
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

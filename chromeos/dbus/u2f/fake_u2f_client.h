@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_U2F_FAKE_U2F_CLIENT_H_
 #define CHROMEOS_DBUS_U2F_FAKE_U2F_CLIENT_H_
 
-#include <map>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "chromeos/dbus/u2f/u2f_client.h"

@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PREF_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PREF_MANAGER_H_
 
-#include <string>
-#include <vector>
+#include <stdint.h>
 
 #include "base/macros.h"
 

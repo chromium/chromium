@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_SCANNER_H_
 
 #include <ostream>
-#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"

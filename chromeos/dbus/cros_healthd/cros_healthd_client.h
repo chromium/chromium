@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
 #define CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"

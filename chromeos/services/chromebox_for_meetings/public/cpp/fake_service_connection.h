@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 #define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 
-#include <string>
 #include "base/bind.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
