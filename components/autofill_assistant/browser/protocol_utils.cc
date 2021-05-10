@@ -417,7 +417,7 @@ std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
   GetTriggerScriptsRequestProto request_proto;
   request_proto.set_url(url.spec());
   *request_proto.mutable_client_context() = client_context;
-  *request_proto.mutable_debug_script_parameters() =
+  *request_proto.mutable_script_parameters() =
       script_parameters.ToProto(/* only_trigger_script_allowlisted = */ true);
 
   std::string serialized_request_proto;

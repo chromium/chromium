@@ -340,7 +340,7 @@ TEST_F(ProtocolUtilsTest, CreateGetTriggerScriptsRequest) {
           GURL("http://example.com/"), client_context_proto_, parameters)));
 
   AssertClientContext(request.client_context());
-  EXPECT_THAT(request.debug_script_parameters(),
+  EXPECT_THAT(request.script_parameters(),
               UnorderedElementsAreArray(
                   ScriptParameters(std::map<std::string, std::string>{
                                        {"DEBUG_BUNDLE_ID", "123"}})

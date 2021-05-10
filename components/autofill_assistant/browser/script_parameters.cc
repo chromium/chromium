@@ -82,9 +82,9 @@ const char kIntent[] = "INTENT";
 
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
-constexpr std::array<const char*, 5> kAllowlistedTriggerScriptParameters = {
-    "DEBUG_BUNDLE_ID", "DEBUG_BUNDLE_VERSION", "DEBUG_SOCKET_ID",
-    "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION"};
+constexpr std::array<const char*, 6> kAllowlistedTriggerScriptParameters = {
+    "DEBUG_BUNDLE_ID",    "DEBUG_BUNDLE_VERSION",    "DEBUG_SOCKET_ID",
+    "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION", kIntent};
 
 // Parameters to specify details before the first backend roundtrip.
 const char kDetailsShowInitialParameterName[] = "DETAILS_SHOW_INITIAL";

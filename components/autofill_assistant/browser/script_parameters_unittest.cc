@@ -62,7 +62,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                                   {"DEBUG_SOCKET_ID", "678"},
                                   {"FALLBACK_BUNDLE_ID", "fallback_id"},
                                   {"key_b", "value_b"},
-                                  {"FALLBACK_BUNDLE_VERSION", "fallback_ver"}}};
+                                  {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
+                                  {"INTENT", "FAKE_INTENT"}}};
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
               UnorderedElementsAreArray(std::map<std::string, std::string>(
@@ -72,7 +73,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                    {"DEBUG_SOCKET_ID", "678"},
                    {"FALLBACK_BUNDLE_ID", "fallback_id"},
                    {"key_b", "value_b"},
-                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"}})));
+                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
+                   {"INTENT", "FAKE_INTENT"}})));
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
               UnorderedElementsAreArray(std::map<std::string, std::string>(
@@ -80,7 +82,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                    {"DEBUG_BUNDLE_VERSION", "version"},
                    {"DEBUG_SOCKET_ID", "678"},
                    {"FALLBACK_BUNDLE_ID", "fallback_id"},
-                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"}})));
+                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
+                   {"INTENT", "FAKE_INTENT"}})));
 }
 
 TEST(ScriptParametersTest, SpecialScriptParameters) {

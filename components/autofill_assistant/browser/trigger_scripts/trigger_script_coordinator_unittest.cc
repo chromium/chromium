@@ -212,7 +212,7 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
         EXPECT_THAT(request.url(), Eq(kFakeDeepLink));
 
         std::map<std::string, std::string> params;
-        for (const auto& param : request.debug_script_parameters()) {
+        for (const auto& param : request.script_parameters()) {
           params[param.name()] = param.value();
         }
         EXPECT_THAT(params, UnorderedElementsAreArray(expected_script_params));

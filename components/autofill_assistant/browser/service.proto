@@ -529,8 +529,8 @@ message GetTriggerScriptsRequestProto {
   // NOTE: Currently, this will only contain the Chrome version number for
   // privacy reasons.
   optional ClientContextProto client_context = 2;
-  // Optional debug script parameters.
-  repeated ScriptParameterProto debug_script_parameters = 3;
+  // Optional script parameters.
+  repeated ScriptParameterProto script_parameters = 3;
 }
 
 // The RPC response to a |GetTriggerScriptsRequestProto|.
