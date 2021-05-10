@@ -73,4 +73,15 @@ void WebApkInstallQueue::OnConnectionClosed() {
   connection_ready_ = false;
 }
 
+std::unique_ptr<WebApkInstallTask> WebApkInstallQueue::PopTaskForTest() {
+  DCHECK(!current_install_);
+  std::unique_ptr<WebApkInstallTask> task;
+  if (!pending_installs_.empty()) {
+    task = std::move(pending_installs_.front());
+    pending_installs_.pop_front();
+  }
+
+  return task;
+}
+
 }  // namespace apps

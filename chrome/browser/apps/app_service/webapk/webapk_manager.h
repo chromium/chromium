@@ -34,14 +34,18 @@ class WebApkManager : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  apps::WebApkInstallQueue* GetInstallQueueForTest();
+
  private:
   bool IsAppEligibleForWebApk(const apps::AppUpdate& app);
-  void QueueInstall(const AppUpdate& update);
+  void QueueInstall(const apps::AppUpdate& update);
 
   Profile* profile_;
   apps::AppServiceProxyBase* proxy_;
   ash::ApkWebAppService* apk_service_;
   web_app::AppRegistrar& web_app_registrar_;
+
+  bool initialized_;
 
   std::unique_ptr<apps::WebApkInstallQueue> install_queue_;
 };

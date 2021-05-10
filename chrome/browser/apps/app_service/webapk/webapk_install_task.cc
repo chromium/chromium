@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -311,7 +312,13 @@ void WebApkInstallTask::OnInstallComplete(
     ResultCallback callback,
     arc::mojom::WebApkInstallResult result) {
   VLOG(1) << "WebAPK installation finished with result " << result;
-  std::move(callback).Run(result == arc::mojom::WebApkInstallResult::kSuccess);
+
+  bool success = result == arc::mojom::WebApkInstallResult::kSuccess;
+  if (success) {
+    webapk_prefs::AddWebApk(profile_, app_id_, package_name);
+  }
+
+  std::move(callback).Run(success);
 }
 
 }  // namespace apps

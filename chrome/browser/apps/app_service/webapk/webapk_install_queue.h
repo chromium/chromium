@@ -34,6 +34,8 @@ class WebApkInstallQueue
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
+  std::unique_ptr<WebApkInstallTask> PopTaskForTest();
+
  private:
   void PostMaybeStartNext();
   void MaybeStartNext();

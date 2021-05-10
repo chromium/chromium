@@ -42,6 +42,8 @@ class WebApkInstallTask {
 
   void Start(ResultCallback callback);
 
+  const std::string& app_id() { return app_id_; }
+
  private:
   void OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
                     ResultCallback callback,

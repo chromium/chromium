@@ -36,9 +36,6 @@ class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
   ApkWebAppServiceFactory();
   ~ApkWebAppServiceFactory() override;
 
-  // KeyedServiceBaseFactory:
-  bool ServiceIsNULLWhileTesting() const override;
-
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
@@ -198,6 +199,13 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 1);
   ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
             "org.chromium.webapk.some_package");
+
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_EQ(*apps::webapk_prefs::GetWebApkPackageName(profile(), app_id),
+            "org.chromium.webapk.some_package");
 }
 
 TEST_F(WebApkInstallTaskTest, ShareTarget) {
@@ -246,6 +254,7 @@ TEST_F(WebApkInstallTaskTest, NoIconInManifest) {
   auto app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
 
   ASSERT_FALSE(InstallWebApk(app_id));
+  ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedServerCall) {
@@ -257,6 +266,7 @@ TEST_F(WebApkInstallTaskTest, FailedServerCall) {
   ASSERT_FALSE(InstallWebApk(app_id));
 
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 0);
+  ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
@@ -271,4 +281,5 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
   ASSERT_FALSE(InstallWebApk(app_id));
   ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
             "org.chromium.webapk.some_package");
+  ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
 }

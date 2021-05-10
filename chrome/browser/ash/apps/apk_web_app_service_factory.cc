@@ -40,10 +40,6 @@ ApkWebAppServiceFactory::ApkWebAppServiceFactory()
 
 ApkWebAppServiceFactory::~ApkWebAppServiceFactory() {}
 
-bool ApkWebAppServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}
-
 KeyedService* ApkWebAppServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
