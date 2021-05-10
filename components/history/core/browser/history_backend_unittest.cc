@@ -3186,17 +3186,17 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
             (std::pair<URLID, VisitID>{2, 2}));
   EXPECT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 3}));
-  backend_->AddAnnotatedVisit({1, {true}, {}});
-  backend_->AddAnnotatedVisit({3, {false}, {}});
-  backend_->AddAnnotatedVisit({2, {true}, {}});
+  backend_->AddContextAnnotationsForVisit(1, {true});
+  backend_->AddContextAnnotationsForVisit(3, {false});
+  backend_->AddContextAnnotationsForVisit(2, {true});
   EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
   // Annotated visits should have a visit IDs.
-  EXPECT_DCHECK_DEATH(backend_->AddAnnotatedVisit({0, {true}, {}}));
+  EXPECT_DCHECK_DEATH(backend_->AddContextAnnotationsForVisit(0, {true}));
   EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
   // Annotated visits without an associated visit should not be added.
-  backend_->AddAnnotatedVisit({4, {true}, {}});
+  backend_->AddContextAnnotationsForVisit(4, {true});
   EXPECT_EQ(add_url_and_visit("http://3.com/"),
             (std::pair<URLID, VisitID>{3, 4}));
   EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
@@ -3205,7 +3205,7 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(add_url_and_visit("http://4.com/"),
             (std::pair<URLID, VisitID>{4, 5}));
   delete_visit(5);
-  backend_->AddAnnotatedVisit({5, {true}, {}});
+  backend_->AddContextAnnotationsForVisit(5, {true});
   EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 3u);
 
   // Verify only the correct annotated visits are retrieved ordered recent

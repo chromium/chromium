@@ -170,10 +170,9 @@ void MemoriesService::CompleteVisitContextAnnotationsIfReady(int64_t nav_id) {
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
     if (base::FeatureList::IsEnabled(kMemories)) {
       if (kPersistContextAnnotationsInHistoryDb.Get())
-        history_service_->AddAnnotatedVisit(
-            {visit_context_annotations.visit_row.visit_id,
-             visit_context_annotations.context_annotations,
-             {}});
+        history_service_->AddContextAnnotationsForVisit(
+            visit_context_annotations.visit_row.visit_id,
+            visit_context_annotations.context_annotations);
       else
         visits_.push_back({visit_context_annotations.url_row,
                            visit_context_annotations.visit_row,

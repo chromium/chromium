@@ -501,7 +501,9 @@ class HistoryService : public KeyedService {
   // Clusters ------------------------------------------------------------------
 
   // Add a `AnnotatedVisitRow`.
-  void AddAnnotatedVisit(const AnnotatedVisitRow& row);
+  void AddContextAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContextAnnotations& visit_context_annotations);
 
   // Get all `AnnotatedVisitRow`s and map them to `AnnotatedVisit`s.
   using GetAnnotatedVisitsCallback =

@@ -428,7 +428,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Clusters ------------------------------------------------------------------
 
-  void AddAnnotatedVisit(const AnnotatedVisitRow& row);
+  void AddContextAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContextAnnotations& visit_context_annotations);
 
   std::vector<AnnotatedVisit> GetAnnotatedVisits(int max_results);
 

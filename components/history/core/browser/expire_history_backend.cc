@@ -473,8 +473,8 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
         effects->affected_urls[visit.url_id] = row;
     }
 
-    // Delete content annotations associated with visit.
-    main_db_->DeleteContentAnnotationsForVisit(visit.visit_id);
+    // Delete content & context annotations associated with visit.
+    main_db_->DeleteAnnotationsForVisit(visit.visit_id);
   }
 }
 

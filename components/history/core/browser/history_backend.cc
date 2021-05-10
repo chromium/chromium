@@ -487,7 +487,7 @@ void HistoryBackend::SetFlocAllowed(ContextID context_id,
 void HistoryBackend::AddContentModelAnnotationsForVisit(
     VisitID visit_id,
     const VisitContentModelAnnotations& model_annotations) {
-  TRACE_EVENT0("browser", "HistoryBackend::AddContentAnnotationsForVisit");
+  TRACE_EVENT0("browser", "HistoryBackend::AddContentModelAnnotationsForVisit");
 
   if (!db_)
     return;
@@ -1419,13 +1419,15 @@ void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
 
 // Clusters --------------------------------------------------------------------
 
-void HistoryBackend::AddAnnotatedVisit(const AnnotatedVisitRow& row) {
-  TRACE_EVENT0("browser", "HistoryBackend::AddAnnotatedVisit");
-  DCHECK(row.visit_id);
+void HistoryBackend::AddContextAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContextAnnotations& visit_context_annotations) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddContextAnnotationsForVisit");
+  DCHECK(visit_id);
   VisitRow visit_row;
-  if (!db_ || !db_->GetRowForVisit(row.visit_id, &visit_row))
+  if (!db_ || !db_->GetRowForVisit(visit_id, &visit_row))
     return;
-  db_->AddAnnotatedVisit(row);
+  db_->AddContextAnnotationsForVisit(visit_id, visit_context_annotations);
   ScheduleCommit();
 }
 
@@ -1444,7 +1446,7 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
       annotated_visits.push_back(
           {url_row, visit_row, row.context_annotations, {}});
     } else {
-      db_->DeleteAnnotatedVisit(row.visit_id);
+      db_->DeleteAnnotationsForVisit(row.visit_id);
       deleted_any_visits = true;
     }
   }

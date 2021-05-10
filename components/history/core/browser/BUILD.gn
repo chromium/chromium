@@ -7,8 +7,6 @@ static_library("browser") {
     "browsing_history_driver.h",
     "browsing_history_service.cc",
     "browsing_history_service.h",
-    "cluster_visit_database.cc",
-    "cluster_visit_database.h",
     "domain_mixing_metrics.cc",
     "domain_mixing_metrics.h",
     "download_constants.h",
@@ -199,7 +197,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browsing_history_service_unittest.cc",
-    "cluster_visit_database_unittest.cc",
     "domain_mixing_metrics_unittest.cc",
     "download_slice_info_unittest.cc",
     "expire_history_backend_unittest.cc",
