@@ -1471,11 +1471,18 @@ bool MainThreadSchedulerImpl::IsHighPriorityWorkAnticipated() {
 }
 
 bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
+  recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork Start");
+
   helper_.CheckOnValidThread();
-  if (helper_.IsShutdown())
+  if (helper_.IsShutdown()) {
+    recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork #1");
     return false;
+  }
 
   MaybeUpdatePolicy();
+
+  recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork #2");
+
   // We only yield if there's a urgent task to be run now, or we are expecting
   // one soon (touch start).
   // Note: even though the control queue has the highest priority we don't yield
@@ -1529,6 +1536,7 @@ void MainThreadSchedulerImpl::RunIdleTasksForTesting(
 void MainThreadSchedulerImpl::MaybeUpdatePolicy() {
   helper_.CheckOnValidThread();
   if (policy_may_need_update_.IsSet()) {
+    recordreplay::Assert("MainThreadSchedulerImpl::MaybeUpdatePolicy #1");
     UpdatePolicy();
   }
 }
