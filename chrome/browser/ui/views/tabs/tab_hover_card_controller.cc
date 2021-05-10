@@ -201,6 +201,10 @@ bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
 void TabHoverCardController::UpdateHoverCard(
     Tab* tab,
     TabController::HoverCardUpdateType update_type) {
+  // Never display a hover card for a closing tab.
+  if (tab && tab->closing())
+    tab = nullptr;
+
   // Update this ASAP so that if we try to fade-in and we have the wrong target
   // then when the fade timer elapses we won't incorrectly try to fade in on the
   // wrong tab.
@@ -301,17 +305,18 @@ void TabHoverCardController::UpdateOrShowCard(
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
-                       base::Unretained(this), true));
+                       base::Unretained(this), true, tab));
   } else {
     DCHECK_EQ(target_tab_, tab);
-    ShowHoverCard(is_initial);
+    ShowHoverCard(is_initial, tab);
   }
 }
 
-void TabHoverCardController::ShowHoverCard(bool is_initial) {
+void TabHoverCardController::ShowHoverCard(bool is_initial,
+                                           const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
-  // or if the anchor is gone.
-  if (hover_card_ || !target_tab_)
+  // or if the anchor is gone or changed.
+  if (hover_card_ || target_tab_ != intended_tab)
     return;
 
   CreateHoverCard(target_tab_);
@@ -547,8 +552,16 @@ void TabHoverCardController::OnPreviewImageAvaialble(
     TabHoverCardThumbnailObserver* observer,
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
-  if (waiting_for_preview_)
-    metrics_->ImageLoadedForTab(target_tab_);
+
+  const bool was_waiting_for_preview = waiting_for_preview_;
   waiting_for_preview_ = false;
+
+  // The hover card could be destroyed before the preview image is delivered.
+  if (!hover_card_)
+    return;
+  if (was_waiting_for_preview && target_tab_)
+    metrics_->ImageLoadedForTab(target_tab_);
+  // Can still set image on a fading-out hover card (we can change this behavior
+  // later if we want).
   hover_card_->SetPreviewImage(thumbnail_image);
 }
