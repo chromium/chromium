@@ -1164,6 +1164,8 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   EXPECT_TRUE(deleted_profiles);
   EXPECT_EQ(1U, deleted_profiles->GetList().size());
 
+  content::RunAllTasksUntilIdle();
+
   // Verify that there is an active profile.
   Profile* initial_profile = browser()->profile();
   EXPECT_EQ(1U, g_browser_process->profile_manager()->GetNumberOfProfiles());
