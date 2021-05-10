@@ -48,9 +48,9 @@ OomInterventionTabHelper::OomInterventionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
-          web_contents->GetBrowserContext())),
-      scoped_observer_(this) {
-  scoped_observer_.Add(crash_reporter::CrashMetricsReporter::GetInstance());
+          web_contents->GetBrowserContext())) {
+  scoped_observation_.Observe(
+      crash_reporter::CrashMetricsReporter::GetInstance());
 }
 
 OomInterventionTabHelper::~OomInterventionTabHelper() = default;

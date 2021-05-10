@@ -8,7 +8,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
@@ -121,9 +121,9 @@ class OomInterventionTabHelper
   base::TimeTicks last_navigation_timestamp_;
   base::TimeTicks start_monitor_timestamp_;
 
-  ScopedObserver<crash_reporter::CrashMetricsReporter,
-                 crash_reporter::CrashMetricsReporter::Observer>
-      scoped_observer_;
+  base::ScopedObservation<crash_reporter::CrashMetricsReporter,
+                          crash_reporter::CrashMetricsReporter::Observer>
+      scoped_observation_{this};
 
   base::WeakPtrFactory<OomInterventionTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
