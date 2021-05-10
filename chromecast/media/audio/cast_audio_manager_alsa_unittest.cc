@@ -71,7 +71,7 @@ TEST_F(CastAudioManagerAlsaTest, MakeAudioInputStream) {
       kDefaultAudioParams, kDefaultAlsaDevice,
       base::BindRepeating(&OnLogMessage));
   ASSERT_TRUE(stream);
-  EXPECT_TRUE(stream->Open());
+  EXPECT_EQ(::media::AudioInputStream::OpenOutcome::kSuccess, stream->Open());
   stream->Close();
 }
 
