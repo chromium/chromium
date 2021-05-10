@@ -37,6 +37,7 @@ class SystemClock;
 
 namespace chromeos {
 class InSessionPasswordChangeManager;
+class KernelFeatureManager;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
 }  // namespace chromeos
@@ -69,6 +70,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   void InitializeSchedulerConfigurationManager();
   void ShutdownSchedulerConfigurationManager();
+
+  void InitializeKernelFeatureManager();
+  void ShutdownKernelFeatureManager();
 
   // Initializes all services that need the primary profile. Gets called as soon
   // as the primary profile is available, which implies that the primary user
@@ -103,6 +107,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   chromeos::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
+  }
+
+  chromeos::KernelFeatureManager* kernel_feature_manager() {
+    return kernel_feature_manager_.get();
   }
 
   ash::system::DeviceDisablingManager* device_disabling_manager() {
@@ -197,6 +205,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<chromeos::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
+  std::unique_ptr<chromeos::KernelFeatureManager> kernel_feature_manager_;
 
   BrowserRestoreObserver browser_restore_observer;
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include <string>
 
 // feature_list.h is a widely included header and its size impacts build
 // time. Try not to raise this limit unless necessary. See
@@ -12,9 +13,6 @@
 #endif
 
 #include <stddef.h>
-
-#include <utility>
-#include <vector>
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -533,15 +531,45 @@ bool FeatureList::IsFeatureEnabled(const Feature& feature) {
 
 FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
   DCHECK(initialized_);
-  DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
-  auto it = overrides_.find(feature.name);
+  return GetAssociatedFieldTrialByFeatureName(feature.name);
+}
+
+const base::FeatureList::OverrideEntry*
+FeatureList::GetOverrideEntryByFeatureName(StringPiece name) {
+  DCHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(std::string(name))) << name;
+
+  auto it = overrides_.find(name);
   if (it != overrides_.end()) {
     const OverrideEntry& entry = it->second;
-    return entry.field_trial;
+    return &entry;
   }
+  return nullptr;
+}
 
+FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
+    StringPiece name) {
+  DCHECK(initialized_);
+
+  const base::FeatureList::OverrideEntry* entry =
+      GetOverrideEntryByFeatureName(name);
+  if (entry) {
+    return entry->field_trial;
+  }
+  return nullptr;
+}
+
+FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(StringPiece name) {
+  DCHECK(initialized_);
+
+  const base::FeatureList::OverrideEntry* entry =
+      GetOverrideEntryByFeatureName(name);
+  if (entry &&
+      entry->overridden_state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) {
+    return entry->field_trial;
+  }
   return nullptr;
 }
 

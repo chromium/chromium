@@ -225,6 +225,14 @@ class BASE_EXPORT FeatureList {
   void GetCommandLineFeatureOverrides(std::string* enable_overrides,
                                       std::string* disable_overrides);
 
+  // Returns the field trial associated with the given feature |name|. Used for
+  // getting the FieldTrial without requiring a struct Feature.
+  base::FieldTrial* GetAssociatedFieldTrialByFeatureName(StringPiece name);
+
+  // Get associated field trial for the given feature |name| only if override
+  // enables it.
+  FieldTrial* GetEnabledFieldTrialByFeatureName(StringPiece name);
+
   // Returns whether the given |feature| is enabled. Must only be called after
   // the singleton instance has been registered via SetInstance(). Additionally,
   // a feature with a given name must only have a single corresponding Feature
@@ -312,6 +320,11 @@ class BASE_EXPORT FeatureList {
     // the trial, so |overridden_by_field_trial| will be set to true.
     OverrideEntry(OverrideState overridden_state, FieldTrial* field_trial);
   };
+
+  // Returns the override for the field trial associated with the given feature
+  // |name| or null if the feature is not found.
+  const base::FeatureList::OverrideEntry* GetOverrideEntryByFeatureName(
+      StringPiece name);
 
   // Finalizes the initialization state of the FeatureList, so that no further
   // overrides can be registered. This is called by SetInstance() on the

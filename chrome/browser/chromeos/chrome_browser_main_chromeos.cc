@@ -74,6 +74,7 @@
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/ash/system/kernel_feature_manager.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
@@ -648,6 +649,8 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   g_browser_process->platform_part()->InitializeSchedulerConfigurationManager();
   arc_service_launcher_ = std::make_unique<arc::ArcServiceLauncher>(
       g_browser_process->platform_part()->scheduler_configuration_manager());
+
+  g_browser_process->platform_part()->InitializeKernelFeatureManager();
 
   session_termination_manager_ =
       std::make_unique<chromeos::SessionTerminationManager>();
@@ -1332,6 +1335,8 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   arc_kiosk_app_manager_.reset();
   web_kiosk_app_manager_.reset();
   chrome_keyboard_controller_client_.reset();
+
+  g_browser_process->platform_part()->ShutdownKernelFeatureManager();
 
   // All ARC related modules should have been shut down by this point, so
   // destroy ARC.
