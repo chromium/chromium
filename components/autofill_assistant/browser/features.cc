@@ -37,12 +37,16 @@ const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting
-// and showing trigger scripts in CCTs without explicit user request.
+// and showing trigger scripts in CCTs without explicit user request. This
+// requires also specifying valid URL heuristics via
+// |kAutofillAssistantUrlHeuristics| to take effect.
 const base::Feature kAutofillAssistantInCCTTriggering{
     "AutofillAssistantInCctTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Whether Autofill Assistant should enable in-tab triggering, i.e., requesting
 // and showing trigger scripts in regular tabs without explicit user request.
+// This requires also specifying valid URL heuristics via
+// |kAutofillAssistantUrlHeuristics| to take effect.
 const base::Feature kAutofillAssistantInTabTriggering{
     "AutofillAssistantInTabTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -59,6 +63,12 @@ const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
 
 const base::Feature kAutofillAssistantProactiveHelp{
     "AutofillAssistantProactiveHelp", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Used to configure the start heuristics for
+// |kAutofillAssistantInCctTriggering| and/or
+// |kAutofillAssistantInTabTriggering|.
+const base::Feature kAutofillAssistantUrlHeuristics{
+    "AutofillAssistantUrlHeuristics", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use Chrome's TabHelper system to deal with the life cycle of WebContent's
 // depending Autofill Assistant objects.

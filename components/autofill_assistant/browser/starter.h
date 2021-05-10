@@ -117,7 +117,7 @@ class Starter : public content::WebContentsObserver {
       base::Optional<TriggerScriptProto> trigger_script = base::nullopt);
 
   // Called when the heuristic result for |url| is available.
-  void OnHeuristicMatch(const GURL& url, bool result);
+  void OnHeuristicMatch(const GURL& url, base::Optional<std::string> intent);
 
   // Returns whether there is a currently pending call to |Start| or not.
   bool IsStartupPending() const;

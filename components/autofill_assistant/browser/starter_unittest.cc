@@ -74,6 +74,23 @@ class StarterTest : public content::RenderViewHostTestHarness {
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
 
+    // Must be initialized before |starter_| is instantiated to take effect.
+    enable_fake_heuristic_ = std::make_unique<base::test::ScopedFeatureList>();
+    enable_fake_heuristic_->InitAndEnableFeatureWithParameters(
+        features::kAutofillAssistantUrlHeuristics, {{"json_parameters",
+                                                     R"(
+          {
+            "heuristics":[
+              {
+                "intent":"FAKE_INTENT_CART",
+                "conditionSet":{
+                  "urlContains":"cart"
+                }
+              }
+            ]
+          }
+          )"}});
+
     starter_ = std::make_unique<Starter>(
         web_contents(), &fake_platform_delegate_, &ukm_recorder_,
         mock_runtime_manager_.GetWeakPtr(),
@@ -262,6 +279,7 @@ class StarterTest : public content::RenderViewHostTestHarness {
       std::unique_ptr<TriggerContext> trigger_context,
       const base::Optional<TriggerScriptProto>& trigger_script)>>
       mock_start_regular_script_callback_;
+  std::unique_ptr<base::test::ScopedFeatureList> enable_fake_heuristic_;
 };
 
 TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {

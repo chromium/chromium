@@ -244,20 +244,21 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url) {
                           weak_ptr_factory_.GetWeakPtr(), url));
 }
 
-void Starter::OnHeuristicMatch(const GURL& url, bool result) {
-  if (!result || IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
+void Starter::OnHeuristicMatch(const GURL& url,
+                               base::Optional<std::string> intent) {
+  if (!intent || IsStartupPending() || !fetch_trigger_scripts_on_navigation_) {
     return;
   }
 
   // TODO(arbesser): add new command line switches to allow adding debug script
   // parameters, like DEBUG_SOCKET_ID
   Start(std::make_unique<TriggerContext>(
-      std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
-          {"ENABLED", "true"},
-          {"START_IMMEDIATELY", "false"},
-          {"REQUEST_TRIGGER_SCRIPT", "true"},
-          {"ORIGINAL_DEEPLINK", url.spec()},
-          {"INTENT", kShoppingAssistedCheckout}}),
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"ENABLED", "true"},
+                                             {"START_IMMEDIATELY", "false"},
+                                             {"REQUEST_TRIGGER_SCRIPT", "true"},
+                                             {"ORIGINAL_DEEPLINK", url.spec()},
+                                             {"INTENT", *intent}}),
       TriggerContext::Options{/* experiment_ids = */ std::string(),
                               /* is_cct = */ is_custom_tab_,
                               /* onboarding_shown = */ false,

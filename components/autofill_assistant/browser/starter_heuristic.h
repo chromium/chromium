@@ -5,8 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 
+#include <string>
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_matcher_factory.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -21,20 +27,47 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   StarterHeuristic(const StarterHeuristic&) = delete;
   StarterHeuristic& operator=(const StarterHeuristic&) = delete;
 
-  // Runs the heuristic against |url|. Returns true if a trigger script might be
-  // available for |url|. This method runs on a worker thread and notifies the
-  // caller via |callback| when done.
-  void RunHeuristicAsync(const GURL& url,
-                         base::OnceCallback<void(bool result)> callback) const;
+  // Runs the heuristic against |url| and invokes the callback with the matching
+  // intent or base::nullopt if there is none. Since we currently do not
+  // support intent disambiguation in cases where more than one intent is
+  // matching for a given URL, this will return the intent of the first matching
+  // condition-set specified in the config.
+  //
+  // Note that this method runs on a worker thread, not on the caller's thread.
+  // The callback will be invoked on the caller's sequence.
+  void RunHeuristicAsync(
+      const GURL& url,
+      base::OnceCallback<void(base::Optional<std::string> intent)> callback)
+      const;
 
  private:
   friend class base::RefCountedThreadSafe<StarterHeuristic>;
   friend class StarterHeuristicTest;
   ~StarterHeuristic();
 
-  // Runs the heuristic against |url|. Returns true if a trigger script might be
-  // available for |url|.
-  bool IsHeuristicMatch(const GURL& url) const;
+  // Initializes the heuristic from the heuristic trial parameters. If there is
+  // no trial or parsing fails, the heuristic will be empty and as such always
+  // report base::nullopt. However, if you want to disable implicit startup,
+  // you should disable the dedicated in-CCT and/or in-Tab triggering trials
+  // instead to prevent the heuristic from being called in the first place.
+  void InitFromTrialParams();
+
+  // Runs the heuristic against |url|. Returns the matching intent or
+  // base::nullopt if there is none.
+  base::Optional<std::string> IsHeuristicMatch(const GURL& url) const;
+
+  // The set of denylisted domains that will always return false before
+  // considering any of the intent heuristics.
+  base::flat_set<std::string> denylisted_domains_;
+
+  // The URL matcher containing one URLMatcherConditionSet per supported intent.
+  url_matcher::URLMatcher url_matcher_;
+
+  // Arbitrary mapping of matcher IDs to intent strings. This mapping is built
+  // dynamically to allow the heuristic to work on intents that are otherwise
+  // unknown to the client.
+  base::flat_map<url_matcher::URLMatcherConditionSet::ID, std::string>
+      matcher_id_to_intent_map_;
 };
 
 }  // namespace autofill_assistant

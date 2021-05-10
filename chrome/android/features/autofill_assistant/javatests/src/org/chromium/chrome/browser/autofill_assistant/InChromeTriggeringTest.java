@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -85,10 +84,33 @@ public class InChromeTriggeringTest {
                 .build();
     }
 
+    /**
+     * Tests a simple trigger heuristic that checks URLs for the appearance of 'cart'.
+     *
+     * {
+     *   "heuristics":[
+     *     {
+     *       "intent":"SHOPPING_ASSISTED_CHECKOUT",
+     *       "conditionSet":{
+     *         "urlMatches":".*cart.*"
+     *       }
+     *     }
+     *   ]
+     * }
+     */
     @Test
     @MediumTest
-    @Features.EnableFeatures("AutofillAssistantInTabTriggering")
-    public void triggerImplicitlyOnSupportedSite() {
+    // clang-format off
+    @CommandLineFlags.
+    Add({"enable-features=AutofillAssistantInTabTriggering<FakeStudyName,"
+              +"AutofillAssistantUrlHeuristics<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:json_parameters/"
+              +"%7B%22heuristics%22%3A%5B%7B%22intent%22%3A%22SHOPPING_ASSISTED_CHECKOUT"
+              +"%22%2C%22conditionSet%22%3A%7B%22urlMatches%22%3A%22.*cart.*%22%7D%7D%5D%7D"})
+    // clang-format on
+    public void
+    triggerImplicitlyOnSupportedSite() {
         AutofillAssistantTestServiceRequestSender testServiceRequestSender =
                 new AutofillAssistantTestServiceRequestSender();
         testServiceRequestSender.setNextResponse(
