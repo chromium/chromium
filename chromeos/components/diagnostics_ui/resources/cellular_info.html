@@ -1,4 +1,17 @@
 <style include="diagnostics-shared diagnostics-fonts">
 </style>
 
-<div id="cellularInfoContainer">Cellular</div>
+<div id="cellularInfoContainer">
+  <data-point id="state" header="State"
+    value="[[network.state]]">
+  </data-point>
+  <data-point id="name" header="Name"
+    value="[[network.name]]">
+  </data-point>
+  <data-point id="guid" header="Guid"
+    value="[[network.guid]]">
+  </data-point>
+  <data-point id="macAddress" header="MAC Address"
+    value="[[network.macAddress]]">
+  </data-point>
+</div>

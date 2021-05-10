@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cellular_info.js';
+import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -30,6 +31,7 @@ export function cellularInfoTestSuite() {
         /** @type {!CellularInfoElement} */ (
             document.createElement('cellular-info'));
     assertTrue(!!cellularInfoElement);
+    cellularInfoElement.network = fakeCellularNetwork;
     document.body.appendChild(cellularInfoElement);
 
     return flushTasks();
@@ -37,8 +39,16 @@ export function cellularInfoTestSuite() {
 
   test('CellularInfoPopulated', () => {
     return initializeCellularInfo().then(() => {
-      dx_utils.assertElementContainsText(
-          cellularInfoElement.$$('#cellularInfoContainer'), 'Cellular');
+      const dataPoints = dx_utils.getDataPointElements(
+          cellularInfoElement, '#cellularInfoContainer');
+      dx_utils.assertTextContains(
+          `${dataPoints[0].value}`, `${fakeCellularNetwork.state}`);
+      dx_utils.assertTextContains(
+          dataPoints[1].value, fakeCellularNetwork.name);
+      dx_utils.assertTextContains(
+          dataPoints[2].value, fakeCellularNetwork.guid);
+      dx_utils.assertTextContains(
+          dataPoints[3].value, fakeCellularNetwork.macAddress);
     });
   });
 }

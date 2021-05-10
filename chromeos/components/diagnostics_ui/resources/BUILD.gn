@@ -59,6 +59,7 @@ js_library("battery_status_card") {
 
 js_library("cellular_info") {
   deps = [
+    ":data_point",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
