@@ -363,7 +363,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
       shortcuts_icons->SetDictionary(curr_icon, std::move(shortcut_icons));
     }
 
-    if (!shortcuts_icons->empty())
+    if (!shortcuts_icons->DictEmpty())
       root->Set(keys::kWebAppShortcutIcons, std::move(shortcuts_icons));
 
     if (!linked_shortcut_items->empty()) {

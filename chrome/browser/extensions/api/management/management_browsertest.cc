@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   ASSERT_TRUE(extensions::ExtensionManagementFactory::GetForBrowserContext(
                   browser()->profile())
                   ->GetForceInstallList()
-                  ->empty())
+                  ->DictEmpty())
       << kForceInstallNotEmptyHelp;
 
   base::ListValue forcelist;
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_TRUE(extensions::ExtensionManagementFactory::GetForBrowserContext(
                   browser()->profile())
                   ->GetForceInstallList()
-                  ->empty())
+                  ->DictEmpty())
       << kForceInstallNotEmptyHelp;
 
   // User install of the extension.

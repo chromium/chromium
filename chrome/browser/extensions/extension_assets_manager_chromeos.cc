@@ -232,7 +232,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
     if (!CleanUpExtension(*it, extension_info, live_extension_paths)) {
       return false;
     }
-    if (extension_info->empty())
+    if (extension_info->DictEmpty())
       shared_extensions->RemoveKey(*it);
   }
 
@@ -474,7 +474,7 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
       extension_info->RemoveKey(*it);
     }
   }
-  if (extension_info->empty()) {
+  if (extension_info->DictEmpty()) {
     shared_extensions->RemoveKey(id);
     // Don't remove extension dir in shared location. It will be removed by GC
     // when it is safe to do so, and this avoids a race condition between

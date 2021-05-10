@@ -330,7 +330,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
   if (base::PathService::Get(base_path_id_, &base_path_)) {
     ReadExternalExtensionPrefFile(prefs.get());
 
-    if (!prefs->empty())
+    if (!prefs->DictEmpty())
       LOG(WARNING) << "You are using an old-style extension deployment method "
                       "(external_extensions.json), which will soon be "
                       "deprecated. (see http://developer.chrome.com/"
@@ -345,7 +345,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
   // If we have any records to process, then we must have
   // read at least one .json file.  If so, then we should have
   // set |base_path_|.
-  if (!prefs->empty())
+  if (!prefs->DictEmpty())
     CHECK(!base_path_.empty());
 
   content::GetUIThreadTaskRunner({})->PostTask(
