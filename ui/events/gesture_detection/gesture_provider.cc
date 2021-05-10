@@ -254,17 +254,14 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     bool first_scale = false;
     if (!pinch_event_sent_) {
       first_scale = true;
-      Send(CreateGesture(ET_GESTURE_PINCH_BEGIN,
-                         e.GetPointerId(),
-                         e.GetToolType(),
-                         detector.GetEventTime(),
-                         detector.GetFocusX(),
-                         detector.GetFocusY(),
-                         detector.GetFocusX() + e.GetRawOffsetX(),
-                         detector.GetFocusY() + e.GetRawOffsetY(),
-                         e.GetPointerCount(),
-                         GetBoundingBox(e, ET_GESTURE_PINCH_BEGIN),
-                         e.GetFlags()));
+      GestureEventDetails details(ET_GESTURE_PINCH_BEGIN);
+      details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+      Send(CreateGesture(
+          details, e.GetPointerId(), e.GetToolType(), detector.GetEventTime(),
+          detector.GetFocusX(), detector.GetFocusY(),
+          detector.GetFocusX() + e.GetRawOffsetX(),
+          detector.GetFocusY() + e.GetRawOffsetY(), e.GetPointerCount(),
+          GetBoundingBox(e, ET_GESTURE_PINCH_BEGIN), e.GetFlags()));
     }
 
     if (std::abs(detector.GetCurrentSpan() - detector.GetPreviousSpan()) <
@@ -541,33 +538,6 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                                  size_t touch_point_count,
                                  const gfx::RectF& bounding_box,
                                  int flags) const {
-    return GestureEventData(details,
-                            motion_event_id,
-                            primary_tool_type,
-                            time,
-                            x,
-                            y,
-                            raw_x,
-                            raw_y,
-                            touch_point_count,
-                            bounding_box,
-                            flags,
-                            0U);
-  }
-
-  GestureEventData CreateGesture(EventType type,
-                                 int motion_event_id,
-                                 MotionEvent::ToolType primary_tool_type,
-                                 base::TimeTicks time,
-                                 float x,
-                                 float y,
-                                 float raw_x,
-                                 float raw_y,
-                                 size_t touch_point_count,
-                                 const gfx::RectF& bounding_box,
-                                 int flags) const {
-    GestureEventDetails details(type);
-    details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
     return GestureEventData(details,
                             motion_event_id,
                             primary_tool_type,
@@ -885,16 +855,13 @@ void GestureProvider::OnTouchEventHandlingBegin(const MotionEvent& event) {
     case MotionEvent::Action::POINTER_DOWN:
       if (gesture_begin_end_types_enabled_) {
         const int action_index = event.GetActionIndex();
+        GestureEventDetails details(ET_GESTURE_BEGIN);
+        details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
         gesture_listener_->Send(gesture_listener_->CreateGesture(
-            ET_GESTURE_BEGIN,
-            event.GetPointerId(),
-            event.GetToolType(),
-            event.GetEventTime(),
-            event.GetX(action_index),
-            event.GetY(action_index),
-            event.GetRawX(action_index),
-            event.GetRawY(action_index),
-            event.GetPointerCount(),
+            details, event.GetPointerId(), event.GetToolType(),
+            event.GetEventTime(), event.GetX(action_index),
+            event.GetY(action_index), event.GetRawX(action_index),
+            event.GetRawY(action_index), event.GetPointerCount(),
             gesture_listener_->GetBoundingBox(event, ET_GESTURE_BEGIN),
             event.GetFlags()));
       }

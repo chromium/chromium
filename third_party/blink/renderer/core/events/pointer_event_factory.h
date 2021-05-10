@@ -96,6 +96,9 @@ class CORE_EXPORT PointerEventFactory {
                        const FloatPoint& position_in_screen,
                        WebInputEvent::Type event_type);
 
+  static const char* PointerTypeNameForWebPointPointerType(
+      WebPointerProperties::PointerType type);
+
  private:
   // We use int64_t to cover the whole range for PointerId with no
   // deleted hash value.
@@ -114,6 +117,14 @@ class CORE_EXPORT PointerEventFactory {
     }
     int RawId() const { return second; }
   } IncomingId;
+
+  using IncomingIdToPointerIdMap =
+      HashMap<IncomingId,
+              PointerId,
+              WTF::PairHash<int, int>,
+              WTF::PairHashTraits<WTF::UnsignedWithZeroKeyHashTraits<int>,
+                                  WTF::UnsignedWithZeroKeyHashTraits<int>>>;
+
   typedef struct PointerAttributes {
     IncomingId incoming_id;
     bool is_active_buttons;
@@ -153,12 +164,7 @@ class CORE_EXPORT PointerEventFactory {
       LocalDOMWindow* view);
 
   PointerId current_id_;
-  HashMap<IncomingId,
-          PointerId,
-          WTF::PairHash<int, int>,
-          WTF::PairHashTraits<WTF::UnsignedWithZeroKeyHashTraits<int>,
-                              WTF::UnsignedWithZeroKeyHashTraits<int>>>
-      pointer_incoming_id_mapping_;
+  IncomingIdToPointerIdMap pointer_incoming_id_mapping_;
   PointerIdKeyMap<PointerAttributes> pointer_id_mapping_;
   int primary_id_[static_cast<int>(
                       WebPointerProperties::PointerType::kMaxValue) +

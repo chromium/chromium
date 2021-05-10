@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
+#include "third_party/blink/renderer/core/input/gesture_manager.h"
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
@@ -104,6 +105,7 @@ void PointerEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(pending_pointer_capture_target_);
   visitor->Trace(touch_event_manager_);
   visitor->Trace(mouse_event_manager_);
+  visitor->Trace(gesture_manager_);
 }
 
 PointerEventManager::PointerEventBoundaryEventDispatcher::
@@ -465,6 +467,12 @@ WebInputEventResult PointerEventManager::DispatchTouchPointerEvent(
             : nullptr);
 
     if (pointer_event) {
+      if (pointer_event->type() == event_type_names::kPointerdown) {
+        if (gesture_manager_.Get()) {
+          gesture_manager_->NotifyCurrentPointerDownId(
+              pointer_event->pointerId());
+        }
+      }
       result = SendTouchPointerEvent(pointer_event_target.target_element,
                                      pointer_event, web_pointer_event.hovering);
     } else {
@@ -1113,6 +1121,10 @@ void PointerEventManager::SetLastPointerPositionForFrameBoundary(
 
 void PointerEventManager::RemoveLastMousePosition() {
   pointer_event_factory_.RemoveLastPosition(PointerEventFactory::kMouseId);
+}
+
+void PointerEventManager::SetGestureManager(GestureManager* gesture_manager) {
+  gesture_manager_ = Member<GestureManager>(gesture_manager);
 }
 
 }  // namespace blink

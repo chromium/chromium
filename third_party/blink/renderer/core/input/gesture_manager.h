@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 
+#include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -54,6 +55,13 @@ class CORE_EXPORT GestureManager final
   // position.
   void SendContextMenuEventTouchDragEnd(const WebMouseEvent&);
 
+  // Used by PointerEventManager to notify GestureManager when a pointerdown
+  // pointerevent is dispatched. GestureManager is interested in knowing
+  // the pointerId of pointerdown event because it uses this pointer id
+  // to populate the pointerId for click and auxclick pointer events it
+  // generates.
+  void NotifyCurrentPointerDownId(PointerId pointer_id);
+
  private:
   WebInputEventResult HandleGestureShowPress();
   WebInputEventResult HandleGestureTapDown(
@@ -92,6 +100,10 @@ class CORE_EXPORT GestureManager final
   bool gesture_context_menu_deferred_;
 
   gfx::PointF long_press_position_in_root_frame_;
+
+  // The pointerId remapped by PointerEventFactory for the pointer event
+  // stream that generated the last pointerdown event
+  PointerId last_pointerdown_event_pointer_id_;
 
   const Member<SelectionController> selection_controller_;
 };

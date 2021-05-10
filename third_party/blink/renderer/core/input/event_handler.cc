@@ -245,7 +245,9 @@ EventHandler::EventHandler(LocalFrame& frame)
                                                *selection_controller_)),
       active_interval_timer_(frame.GetTaskRunner(TaskType::kUserInteraction),
                              this,
-                             &EventHandler::ActiveIntervalTimerFired) {}
+                             &EventHandler::ActiveIntervalTimerFired) {
+  pointer_event_manager_->SetGestureManager(gesture_manager_.Get());
+}
 
 void EventHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);

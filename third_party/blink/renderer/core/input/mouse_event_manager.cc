@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/drag_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -347,8 +348,11 @@ WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
   SetElementUnderMouse(target_element, canvas_region_id, web_mouse_event);
-  return DispatchMouseEvent(element_under_mouse_, event_type, web_mouse_event,
-                            canvas_region_id, nullptr, nullptr);
+  return DispatchMouseEvent(
+      element_under_mouse_, event_type, web_mouse_event, canvas_region_id,
+      nullptr, nullptr, false, web_mouse_event.id,
+      PointerEventFactory::PointerTypeNameForWebPointPointerType(
+          web_mouse_event.pointer_type));
 }
 
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(

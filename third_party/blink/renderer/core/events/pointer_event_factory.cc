@@ -21,24 +21,6 @@ inline int ToInt(WebPointerProperties::PointerType t) {
   return static_cast<int>(t);
 }
 
-const char* PointerTypeNameForWebPointPointerType(
-    WebPointerProperties::PointerType type) {
-  // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
-  switch (type) {
-    case WebPointerProperties::PointerType::kUnknown:
-      return "";
-    case WebPointerProperties::PointerType::kTouch:
-      return "touch";
-    case WebPointerProperties::PointerType::kPen:
-      return "pen";
-    case WebPointerProperties::PointerType::kMouse:
-      return "mouse";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 uint16_t ButtonToButtonsBitfield(WebPointerProperties::Button button) {
 #define CASE_BUTTON_TO_BUTTONS(enumLabel)       \
   case WebPointerProperties::Button::enumLabel: \
@@ -634,6 +616,26 @@ PointerId PointerEventFactory::GetPointerEventId(
   if (pointer_incoming_id_mapping_.Contains(id))
     return pointer_incoming_id_mapping_.at(id);
   return kInvalidId;
+}
+
+// static
+const char* PointerEventFactory::PointerTypeNameForWebPointPointerType(
+    WebPointerProperties::PointerType type) {
+  switch (type) {
+    case WebPointerProperties::PointerType::kUnknown:
+      return "";
+    case WebPointerProperties::PointerType::kTouch:
+      return "touch";
+    case WebPointerProperties::PointerType::kPen:
+      return "pen";
+    case WebPointerProperties::PointerType::kMouse:
+      return "mouse";
+    default:
+      // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
+      // See spec https://github.com/w3c/pointerevents/issues/134
+      NOTREACHED();
+      return "";
+  }
 }
 
 }  // namespace blink
