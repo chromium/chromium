@@ -39,7 +39,7 @@ class SodaInstallerImpl : public SodaInstaller,
   base::FilePath GetLanguagePath() const override;
 
   // SodaInstaller:
-  void InstallLanguage(PrefService* profile_prefs,
+  void InstallLanguage(const std::string& language,
                        PrefService* global_prefs) override;
   bool IsSodaInstalled() const override;
   bool IsLanguageInstalled(

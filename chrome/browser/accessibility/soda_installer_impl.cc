@@ -104,11 +104,11 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
   }
 }
 
-void SodaInstallerImpl::InstallLanguage(PrefService* profile_prefs,
+void SodaInstallerImpl::InstallLanguage(const std::string& language,
                                         PrefService* global_prefs) {
   language_installed_ = false;
   component_updater::RegisterSodaLanguageComponent(
-      g_browser_process->component_updater(), profile_prefs, global_prefs,
+      g_browser_process->component_updater(), language, global_prefs,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
                      weak_factory_.GetWeakPtr()));
 

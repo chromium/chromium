@@ -82,11 +82,10 @@ class SodaInstaller {
 
   // Installs the user-selected SODA language model. Called by CaptionController
   // when the kLiveCaptionEnabled or kLiveCaptionLanguageCode preferences
-  // change. `profile_prefs` is passed to share Live Captions preferences:
-  // whether it is enabled, which language to download, and what the download
-  // filepath should be. `global_prefs` is passed as part of component
-  // registration for the non-ChromeOS implementation.
-  virtual void InstallLanguage(PrefService* profile_prefs,
+  // change. `language` is a localized language e.g. "en-US". `global_prefs` is
+  // passed as part of component registration for the non-ChromeOS
+  // implementation.
+  virtual void InstallLanguage(const std::string& language,
                                PrefService* global_prefs) = 0;
 
   // Returns whether or not SODA is installed on this device. Will return a

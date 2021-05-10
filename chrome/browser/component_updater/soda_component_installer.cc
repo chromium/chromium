@@ -241,7 +241,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 
 void RegisterSodaLanguageComponent(
     ComponentUpdateService* cus,
-    PrefService* profile_prefs,
+    const std::string& language,
     PrefService* global_prefs,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -249,8 +249,7 @@ void RegisterSodaLanguageComponent(
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       media::IsLiveCaptionFeatureEnabled()) {
     base::Optional<speech::SodaLanguagePackComponentConfig> config =
-        speech::GetLanguageComponentConfig(
-            profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+        speech::GetLanguageComponentConfig(language);
     if (config) {
       RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
                                         std::move(on_ready_callback));

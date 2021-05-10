@@ -122,7 +122,8 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
 void CaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
     speech::SodaInstaller::GetInstance()->InstallLanguage(
-        profile_->GetPrefs(), g_browser_process->local_state());
+        profile_->GetPrefs()->GetString(prefs::kLiveCaptionLanguageCode),
+        g_browser_process->local_state());
 }
 
 bool CaptionController::IsLiveCaptionEnabled() {

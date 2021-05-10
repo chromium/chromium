@@ -34,8 +34,9 @@ void SodaInstaller::Init(PrefService* profile_prefs,
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     speech::SodaInstaller::GetInstance()->InstallSoda(global_prefs);
-    speech::SodaInstaller::GetInstance()->InstallLanguage(profile_prefs,
-                                                          global_prefs);
+    speech::SodaInstaller::GetInstance()->InstallLanguage(
+        profile_prefs->GetString(prefs::kLiveCaptionLanguageCode),
+        global_prefs);
   } else {
     base::Time deletion_time =
         global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
