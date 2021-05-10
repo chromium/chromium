@@ -137,7 +137,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   }
   EXPECT_TRUE(parent2.pods.empty());
   EXPECT_TRUE(parent2.strs.empty());
-  EXPECT_TRUE(parent2.blob.additional_properties.empty());
+  EXPECT_TRUE(parent2.blob.additional_properties.DictEmpty());
   EXPECT_FALSE(parent2.choice.as_string.get());
   ASSERT_TRUE(parent2.choice.as_movable_pod.get());
   EXPECT_EQ(objects_movable::FOO_BAZ, parent2.choice.as_movable_pod->foo);

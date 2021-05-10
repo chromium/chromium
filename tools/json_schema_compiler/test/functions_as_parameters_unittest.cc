@@ -28,7 +28,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
     value.SetKey("event_callback", function_dict.Clone());
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
-    EXPECT_TRUE(out.event_callback.empty());
+    EXPECT_TRUE(out.event_callback.DictEmpty());
   }
 }
 
