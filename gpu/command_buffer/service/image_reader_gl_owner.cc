@@ -123,9 +123,11 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 
 ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<gles2::AbstractTexture> texture,
-    Mode mode)
+    Mode mode,
+    scoped_refptr<SharedContextState> context_state)
     : TextureOwner(false /* binds_texture_on_image_update */,
-                   std::move(texture)),
+                   std::move(texture),
+                   std::move(context_state)),
       loader_(base::android::AndroidImageReader::GetInstance()),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -188,40 +190,33 @@ ImageReaderGLOwner::ImageReaderGLOwner(
 ImageReaderGLOwner::~ImageReaderGLOwner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Clear the texture before we return, so that it can OnTextureDestroyed() if
-  // it hasn't already.  This will do nothing if it has already been destroyed.
-  ClearAbstractTexture();
+  // Call ReleaseResources() if it hasn't already. This will do nothing if the
+  // texture and other resources has already been destroyed due to context loss.
+  ReleaseResources();
 
   DCHECK_EQ(image_refs_.size(), 0u);
 }
 
-void ImageReaderGLOwner::OnTextureDestroyed(gles2::AbstractTexture*) {
-  // The AbstractTexture is being destroyed.  This can happen if, for example,
-  // the video decoder's gl context is lost.  Remember that the platform texture
-  // might not be gone; it's possible for the gl decoder (and AbstractTexture)
-  // to be destroyed via, e.g., renderer crash, but the platform texture is
-  // still shared with some other gl context.
+void ImageReaderGLOwner::ReleaseResources() {
+  // Either TextureOwner is being destroyed or the TextureOwner's shared context
+  // is lost. Cleanup is it hasn't already.
+  if (image_reader_) {
+    // Now we can stop listening to new images.
+    loader_.AImageReader_setImageListener(image_reader_, nullptr);
 
-  // This should only be called once.  Note that even during construction,
-  // there's a check that |image_reader_| is constructed.  Otherwise, errors
-  // during init might cause us to get here without an image reader.
-  DCHECK(image_reader_);
+    // Delete all images before closing the associated image reader.
+    for (auto& image_ref : image_refs_)
+      loader_.AImage_delete(image_ref.first);
 
-  // Now we can stop listening to new images.
-  loader_.AImageReader_setImageListener(image_reader_, nullptr);
+    // Delete the image reader.
+    loader_.AImageReader_delete(image_reader_);
+    image_reader_ = nullptr;
 
-  // Delete all images before closing the associated image reader.
-  for (auto& image_ref : image_refs_)
-    loader_.AImage_delete(image_ref.first);
-
-  // Delete the image reader.
-  loader_.AImageReader_delete(image_reader_);
-  image_reader_ = nullptr;
-
-  // Clean up the ImageRefs which should now be a no-op since there is no valid
-  // |image_reader_|.
-  image_refs_.clear();
-  current_image_ref_.reset();
+    // Clean up the ImageRefs which should now be a no-op since there is no
+    // valid |image_reader_|.
+    image_refs_.clear();
+    current_image_ref_.reset();
+  }
 }
 
 void ImageReaderGLOwner::SetFrameAvailableCallback(

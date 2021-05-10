@@ -34,6 +34,7 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   gl::GLImage* GetImage() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
+  void NotifyOnContextLost() override;
 
   // Called when our decoder is going away, so that we can try to clean up.
   scoped_refptr<TexturePassthrough> OnDecoderWillDestroy();

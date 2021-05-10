@@ -35,7 +35,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/service/abstract_texture_impl_shared_context_state.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"

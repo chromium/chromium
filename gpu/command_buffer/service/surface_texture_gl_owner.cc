@@ -23,8 +23,11 @@
 namespace gpu {
 
 SurfaceTextureGLOwner::SurfaceTextureGLOwner(
-    std::unique_ptr<gles2::AbstractTexture> texture)
-    : TextureOwner(true /*binds_texture_on_update */, std::move(texture)),
+    std::unique_ptr<gles2::AbstractTexture> texture,
+    scoped_refptr<SharedContextState> context_state)
+    : TextureOwner(true /*binds_texture_on_update */,
+                   std::move(texture),
+                   std::move(context_state)),
       surface_texture_(gl::SurfaceTexture::Create(GetTextureId())),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -35,12 +38,12 @@ SurfaceTextureGLOwner::SurfaceTextureGLOwner(
 SurfaceTextureGLOwner::~SurfaceTextureGLOwner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Clear the texture before we return, so that it can OnTextureDestroyed() if
-  // it hasn't already.
-  ClearAbstractTexture();
+  // Do ReleaseResources() if it hasn't already. This will do nothing if it
+  // has already been destroyed.
+  ReleaseResources();
 }
 
-void SurfaceTextureGLOwner::OnTextureDestroyed(gles2::AbstractTexture*) {
+void SurfaceTextureGLOwner::ReleaseResources() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Make sure that the SurfaceTexture isn't using the GL objects.

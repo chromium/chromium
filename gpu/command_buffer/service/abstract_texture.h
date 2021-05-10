@@ -93,6 +93,9 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // has a current context.
   virtual void SetCleanupCallback(CleanupCallback cleanup_callback) = 0;
 
+  // Used to notify the AbstractTexture if the context is lost.
+  virtual void NotifyOnContextLost() = 0;
+
   unsigned int service_id() const { return GetTextureBase()->service_id(); }
 };
 

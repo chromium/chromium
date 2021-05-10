@@ -31,9 +31,6 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
       .WillByDefault(Invoke([](base::OnceClosure cb) { std::move(cb).Run(); }));
 }
 
-MockTextureOwner::~MockTextureOwner() {
-  // TextureOwner requires this.
-  ClearAbstractTexture();
-}
+MockTextureOwner::~MockTextureOwner() {}
 
 }  // namespace gpu

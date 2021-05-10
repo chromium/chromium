@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/single_thread_task_runner.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/gl_bindings.h"
@@ -24,7 +25,6 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace base
 
 namespace gpu {
-class SharedContextState;
 class TextureBase;
 namespace gles2 {
 class AbstractTexture;
@@ -37,8 +37,11 @@ class AbstractTexture;
 // be called on any thread. It's safe to keep and drop refptrs to it on any
 // thread; it will be automatically destructed on the thread it was constructed
 // on.
+// TextureOwner also is a shared context lost observer to get notified if the
+// TextureOwner's shared context is lost.
 class GPU_GLES2_EXPORT TextureOwner
-    : public base::RefCountedDeleteOnSequence<TextureOwner> {
+    : public base::RefCountedDeleteOnSequence<TextureOwner>,
+      public SharedContextState::ContextLostObserver {
  public:
   // Creates a GL texture using the current platform GL context and returns a
   // new TextureOwner attached to it. Returns null on failure.
@@ -60,7 +63,8 @@ class GPU_GLES2_EXPORT TextureOwner
   };
   static scoped_refptr<TextureOwner> Create(
       std::unique_ptr<gles2::AbstractTexture> texture,
-      Mode mode);
+      Mode mode,
+      scoped_refptr<SharedContextState> context_state);
 
   // Create a texture that's appropriate for a TextureOwner.
   static std::unique_ptr<gles2::AbstractTexture> CreateTexture(
@@ -121,33 +125,36 @@ class GPU_GLES2_EXPORT TextureOwner
 
   bool binds_texture_on_update() const { return binds_texture_on_update_; }
 
+  // SharedContextState::ContextLostObserver implementation.
+  void OnContextLost() override;
+
  protected:
   friend class base::RefCountedDeleteOnSequence<TextureOwner>;
   friend class base::DeleteHelper<TextureOwner>;
 
   // |texture| is the texture that we'll own.
   TextureOwner(bool binds_texture_on_update,
-               std::unique_ptr<gles2::AbstractTexture> texture);
-  virtual ~TextureOwner();
-
-  // Drop |texture_| immediately.  Will call OnTextureDestroyed immediately if
-  // it hasn't been called before (e.g., due to lost context).
-  // Subclasses must call this before they complete destruction, else
-  // OnTextureDestroyed might be called when we drop |texture_|, which is not
-  // defined once subclass destruction has completed.
-  void ClearAbstractTexture();
+               std::unique_ptr<gles2::AbstractTexture> texture,
+               scoped_refptr<SharedContextState> context_state);
+  ~TextureOwner() override;
 
   // Called when |texture_| signals that the platform texture will be destroyed.
-  // See AbstractTexture::SetCleanupCallback.
-  virtual void OnTextureDestroyed(gles2::AbstractTexture*) = 0;
+  virtual void ReleaseResources() = 0;
 
   gles2::AbstractTexture* texture() const { return texture_.get(); }
 
  private:
+  friend class MockTextureOwner;
+
+  // To be used by MockTextureOwner.
+  TextureOwner(bool binds_texture_on_update,
+               std::unique_ptr<gles2::AbstractTexture> texture);
+
   // Set to true if the updating the image for this owner will automatically
   // bind it to the texture target.
   const bool binds_texture_on_update_;
 
+  scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<gles2::AbstractTexture> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

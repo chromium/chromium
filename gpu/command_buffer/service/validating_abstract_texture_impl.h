@@ -39,6 +39,7 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   gl::GLImage* GetImage() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
+  void NotifyOnContextLost() override;
 
   // Called when our decoder is going away, so that we can try to clean up.
   void OnDecoderWillDestroy(bool have_context);

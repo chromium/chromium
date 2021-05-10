@@ -32,6 +32,7 @@ class MockAbstractTexture
   MOCK_CONST_METHOD0(GetImage, gl::GLImage*());
   MOCK_METHOD0(SetCleared, void());
   MOCK_METHOD1(SetCleanupCallback, void(CleanupCallback));
+  MOCK_METHOD0(NotifyOnContextLost, void());
 
  private:
   // May be null.

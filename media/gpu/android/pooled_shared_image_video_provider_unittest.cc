@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "gpu/command_buffer/service/abstract_texture_impl_shared_context_state.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "media/gpu/android/mock_shared_image_video_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"

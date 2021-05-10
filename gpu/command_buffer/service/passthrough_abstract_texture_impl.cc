@@ -102,6 +102,10 @@ void PassthroughAbstractTextureImpl::SetCleanupCallback(CleanupCallback cb) {
   cleanup_cb_ = std::move(cb);
 }
 
+void PassthroughAbstractTextureImpl::NotifyOnContextLost() {
+  NOTIMPLEMENTED();
+}
+
 scoped_refptr<TexturePassthrough>
 PassthroughAbstractTextureImpl::OnDecoderWillDestroy() {
   // Make sure that destruction_cb_ does nothing when destroyed, since

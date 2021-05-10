@@ -104,8 +104,8 @@ target(link_target_type, "gles2_sources") {
 
   sources = [
     "abstract_texture.h",
-    "abstract_texture_impl_shared_context_state.cc",
-    "abstract_texture_impl_shared_context_state.h",
+    "abstract_texture_impl.cc",
+    "abstract_texture_impl.h",
     "buffer_manager.cc",
     "buffer_manager.h",
     "client_service_map.h",

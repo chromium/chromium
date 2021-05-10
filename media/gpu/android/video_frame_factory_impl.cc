@@ -88,7 +88,7 @@ static void AllocateTextureOwnerOnGpuThread(
 
   std::move(init_cb).Run(gpu::TextureOwner::Create(
       gpu::TextureOwner::CreateTexture(shared_context_state),
-      GetTextureOwnerMode(overlay_mode, copy_mode)));
+      GetTextureOwnerMode(overlay_mode, copy_mode), shared_context_state));
 }
 
 }  // namespace

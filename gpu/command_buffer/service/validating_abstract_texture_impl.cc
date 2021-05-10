@@ -133,6 +133,10 @@ ErrorState* ValidatingAbstractTextureImpl::GetErrorState() const {
   return decoder_context_->GetErrorState();
 }
 
+void ValidatingAbstractTextureImpl::NotifyOnContextLost() {
+  NOTIMPLEMENTED();
+}
+
 void ValidatingAbstractTextureImpl::OnDecoderWillDestroy(bool have_context) {
   // If we don't have a context, then notify the TextureRef not to delete itself
   // if this is the last reference.

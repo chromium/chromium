@@ -10,7 +10,11 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
@@ -45,6 +49,16 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
     context_->Initialize(surface_.get(), gl::GLContextAttribs());
     ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
 
+    GpuDriverBugWorkarounds workarounds;
+    workarounds.max_texture_size = INT_MAX - 1;
+    auto context_state = base::MakeRefCounted<SharedContextState>(
+        share_group_, surface_, context_,
+        false /* use_virtualized_gl_contexts */, base::DoNothing());
+    context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    auto feature_info =
+        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
+    context_state->InitializeGL(GpuPreferences(), std::move(feature_info));
+
     // Create a texture.
     glGenTextures(1, &texture_id_);
 
@@ -52,7 +66,8 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
         std::make_unique<MockAbstractTexture>(texture_id_);
     abstract_texture_ = texture->AsWeakPtr();
     surface_texture_ = SurfaceTextureGLOwner::Create(
-        std::move(texture), TextureOwner::Mode::kSurfaceTextureInsecure);
+        std::move(texture), TextureOwner::Mode::kSurfaceTextureInsecure,
+        std::move(context_state));
     texture_id_ = surface_texture_->GetTextureId();
     EXPECT_TRUE(abstract_texture_);
   }

@@ -34,7 +34,7 @@ class MockTextureOwner : public TextureOwner {
   MOCK_METHOD0(UpdateTexImage, void());
   MOCK_METHOD0(EnsureTexImageBound, void());
   MOCK_METHOD0(ReleaseBackBuffers, void());
-  MOCK_METHOD1(OnTextureDestroyed, void(gpu::gles2::AbstractTexture*));
+  MOCK_METHOD0(ReleaseResources, void());
   MOCK_METHOD1(SetFrameAvailableCallback, void(const base::RepeatingClosure&));
   MOCK_METHOD3(GetCodedSizeAndVisibleRect,
                bool(gfx::Size rotated_visible_size,
