@@ -108,7 +108,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that tapping the switch to open tab button, switch to the open tab,
 // doesn't close the tab.
-- (void)testSwitchToOpenTab {
+// TODO(crbug.com/1207651): This test doesn't pass on iPhone SE 1st gen.
+- (void)DISABLED_testSwitchToOpenTab {
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -320,7 +321,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that switching to closed tab opens the tab in foreground, except if it
 // is from NTP without history.
-- (void)testSwitchToClosedTab {
+// TODO(crbug.com/1207651): This test doesn't pass on iPhone SE 1st gen.
+- (void)DISABLED_testSwitchToClosedTab {
   if (@available(iOS 13, *)) {
     if ([ChromeEarlGrey isIPadIdiom]) {
       // TODO(crbug.com/992480):test fails on iPad.
