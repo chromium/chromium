@@ -2664,7 +2664,7 @@ WebRequestInternalEventHandledFunction::Run() {
     base::DictionaryValue* value = NULL;
     EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(4, &value));
 
-    if (!value->empty()) {
+    if (!value->DictEmpty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
                                     ->GetInstallTime(extension_id_safe());
       response =
