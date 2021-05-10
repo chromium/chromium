@@ -251,11 +251,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>erikchen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is only recorded on iOS. This measures the sum of
     PrivateMemoryFootprint and SharedMemoryFootprint, which is possible because
-    iOS is single-process.
+    Chromium on iOS is single-process. Note that this does not include memory
+    consumed by WebKit-launched processes, such as the WebContent and Network
+    processes.
+
+    Emitted when closing a log in order to upload it. This happens shortly after
+    startup and again at regular intervals (usually 5 minutes, regardless of the
+    type of network connection). Not emitted in logs that are closed when Chrome
+    loses focus or closes. Yet, it is emitted on logs that are constructed from
+    data persisted from a previous session, i.e., persisted from an unclean
+    shutdown.
+
+    Many changes in memory usage on iOS come from changes to WebKit, rather than
+    changes within Chromium code. To assess whether a change in this metric is
+    caused by a WebKit change, split by OS version. WebKit changes always come
+    with an OS version change.
+
+    As with other memory metrics, memory use tends to increase over time.
+    Restarts due to OS or Chrome updates tend to make this metric drop.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
