@@ -14,7 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -129,8 +129,7 @@ class TranslateManagerRenderViewHostTest
             base::Unretained(this))),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        infobar_observer_(this) {}
+                &test_url_loader_factory_)) {}
 
 #if !defined(USE_AURA) && !defined(OS_MAC)
   // Ensure that we are testing under the bubble UI.
@@ -360,10 +359,6 @@ class TranslateManagerRenderViewHostTest
     removed_infobars_.insert(infobar->delegate());
   }
 
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {
-    infobar_observer_.Remove(manager);
-  }
-
   MOCK_METHOD1(OnPreferenceChanged, void(const std::string&));
 
  protected:
@@ -390,11 +385,12 @@ class TranslateManagerRenderViewHostTest
         ->translate_driver()
         ->set_translate_max_reload_attempts(0);
 
-    infobar_observer_.Add(infobar_manager());
+    infobar_observation_.Observe(infobar_manager());
   }
 
   void TearDown() override {
-    infobar_observer_.Remove(infobar_manager());
+    DCHECK(infobar_observation_.IsObservingSource(infobar_manager()));
+    infobar_observation_.Reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
     TranslateService::ShutdownForTesting();
@@ -459,8 +455,9 @@ class TranslateManagerRenderViewHostTest
   std::unique_ptr<MockTranslateBubbleFactory> bubble_factory_;
   FakeTranslateAgent fake_agent_;
 
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TranslateManagerRenderViewHostTest);
 };
