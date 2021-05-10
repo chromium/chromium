@@ -14,7 +14,7 @@ ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
   // backend can handle automatically adding the search terms as the user
   // navigates.
   if (history_service_)
-    history_service_observer_.Add(history_service_);
+    history_service_observation_.Observe(history_service_);
 }
 
 ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() {
@@ -28,7 +28,7 @@ void ChromeTemplateURLServiceClient::Shutdown() {
   // Remove self from |history_service_| observers in the shutdown phase of the
   // two-phases since KeyedService are not supposed to use a dependend service
   // after the Shutdown call.
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ChromeTemplateURLServiceClient::SetOwner(TemplateURLService* owner) {
