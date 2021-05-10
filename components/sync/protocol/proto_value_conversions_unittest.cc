@@ -155,7 +155,7 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
 
   std::unique_ptr<base::DictionaryValue> value(
       BookmarkSpecificsToValue(specifics));
-  EXPECT_FALSE(value->empty());
+  EXPECT_FALSE(value->DictEmpty());
   std::string encoded_time;
   EXPECT_TRUE(value->GetString("creation_time_us", &encoded_time));
   EXPECT_EQ(base::NumberToString(creation_time.ToInternalValue()),
@@ -234,13 +234,13 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
 
   std::unique_ptr<base::DictionaryValue> value_with_specifics(
       ClientToServerMessageToValue(message, true /* include_specifics */));
-  EXPECT_FALSE(value_with_specifics->empty());
+  EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "commit.entries"));
 
   std::unique_ptr<base::DictionaryValue> value_without_specifics(
       ClientToServerMessageToValue(message, false /* include_specifics */));
-  EXPECT_FALSE(value_without_specifics->empty());
+  EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(
       ValueHasSpecifics(*(value_without_specifics.get()), "commit.entries"));
 }
@@ -255,13 +255,13 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
 
   std::unique_ptr<base::DictionaryValue> value_with_specifics(
       ClientToServerResponseToValue(message, true /* include_specifics */));
-  EXPECT_FALSE(value_with_specifics->empty());
+  EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "get_updates.entries"));
 
   std::unique_ptr<base::DictionaryValue> value_without_specifics(
       ClientToServerResponseToValue(message, false /* include_specifics */));
-  EXPECT_FALSE(value_without_specifics->empty());
+  EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(ValueHasSpecifics(*(value_without_specifics.get()),
                                  "get_updates.entries"));
 }
