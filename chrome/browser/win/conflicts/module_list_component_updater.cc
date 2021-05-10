@@ -33,8 +33,7 @@ ModuleListComponentUpdater::ModuleListComponentUpdater(
     const base::RepeatingClosure& on_module_list_component_not_updated_callback)
     : module_list_component_id_(module_list_component_id),
       on_module_list_component_not_updated_callback_(
-          on_module_list_component_not_updated_callback),
-      observer_(this) {
+          on_module_list_component_not_updated_callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ModuleListComponentUpdater::InitializeOnUIThread,
@@ -47,7 +46,7 @@ void ModuleListComponentUpdater::InitializeOnUIThread() {
   auto* component_update_service = g_browser_process->component_updater();
 
   // Observe the component updater service to know the result of the update.
-  observer_.Add(component_update_service);
+  observation_.Observe(component_update_service);
 
   component_update_service->MaybeThrottle(module_list_component_id_,
                                           base::DoNothing());

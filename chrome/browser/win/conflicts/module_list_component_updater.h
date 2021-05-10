@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "components/component_updater/component_updater_service.h"
 
@@ -48,9 +48,9 @@ class ModuleListComponentUpdater
 
   // Observes the component update service when an update to the Module List
   // component was forced.
-  ScopedObserver<component_updater::ComponentUpdateService,
-                 component_updater::ComponentUpdateService::Observer>
-      observer_;
+  base::ScopedObservation<component_updater::ComponentUpdateService,
+                          component_updater::ComponentUpdateService::Observer>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ModuleListComponentUpdater);
 };
