@@ -163,37 +163,39 @@ class StarterTest : public content::RenderViewHostTestHarness {
     return !ukm_recorder_.GetEntriesByName(entry_name).empty();
   }
 
-  bool UkmLiteScriptStarted(Metrics::LiteScriptStarted state,
-                            const GURL& source_url = GURL(kExampleDeeplink)) {
+  bool UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted state,
+      const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptStarted",
                              "LiteScriptStarted", static_cast<int64_t>(state),
                              source_url);
   }
 
-  bool UkmLiteScriptFinished(Metrics::LiteScriptFinishedState state,
-                             const GURL& source_url = GURL(kExampleDeeplink)) {
+  bool UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState state,
+      const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptFinished",
                              "LiteScriptFinished", static_cast<int64_t>(state),
                              source_url);
   }
 
-  bool UkmLiteScriptOnboarding(
-      Metrics::LiteScriptOnboarding result,
+  bool UkmTriggerScriptOnboarding(
+      Metrics::TriggerScriptOnboarding result,
       const GURL& source_url = GURL(kExampleDeeplink)) {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptOnboarding",
                              "LiteScriptOnboarding",
                              static_cast<int64_t>(result), source_url);
   }
 
-  bool UkmLiteScriptStarted() {
+  bool UkmTriggerScriptStarted() {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptStarted");
   }
 
-  bool UkmLiteScriptFinished() {
+  bool UkmTriggerScriptFinished() {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptFinished");
   }
 
-  bool UkmLiteScriptOnboarding() {
+  bool UkmTriggerScriptOnboarding() {
     return RecordedUkmMetric("AutofillAssistant.LiteScriptOnboarding");
   }
 
@@ -271,9 +273,9 @@ TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(params), options));
 
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -291,10 +293,10 @@ TEST_F(StarterTest, TriggerScriptFailsWithoutInitialUrl) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(params), options));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_NO_INITIAL_URL));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::NO_INITIAL_URL));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -312,10 +314,10 @@ TEST_F(StarterTest, FailWithoutMandatoryScriptParameter) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(params), options));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_MANDATORY_PARAMETER_MISSING));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted::MANDATORY_PARAMETER_MISSING));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -337,10 +339,10 @@ TEST_F(StarterTest, FailWhenFeatureDisabled) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(params), options));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_FEATURE_DISABLED));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::FEATURE_DISABLED));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -368,9 +370,9 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
               Eq(0));
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(true));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -401,9 +403,9 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
               Eq(1));
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(true));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_SUCCEEDED,
@@ -495,9 +497,9 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
               Eq(1));
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(false));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_FAILED,
@@ -523,9 +525,9 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
       std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.GetOnboardingAccepted(), Eq(false));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -552,10 +554,10 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options()));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted::PROACTIVE_TRIGGERING_DISABLED));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -579,10 +581,10 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options()));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted::PROACTIVE_TRIGGERING_DISABLED));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -632,12 +634,12 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
       std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED));
-  EXPECT_TRUE(UkmLiteScriptOnboarding(
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED));
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::FIRST_TIME_USER));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED));
+  EXPECT_TRUE(UkmTriggerScriptOnboarding(
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -662,11 +664,11 @@ TEST_F(StarterTest, Base64TriggerScriptFailsForInvalidBase64) {
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options()));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR));
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::RETURNING_USER));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR));
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -692,10 +694,10 @@ TEST_F(StarterTest, Base64TriggerScriptFailsIfProactiveHelpIsDisabled) {
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options()));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted::PROACTIVE_TRIGGERING_DISABLED));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -735,12 +737,12 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
       std::make_unique<ScriptParameters>(script_parameters), options));
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED));
-  EXPECT_TRUE(UkmLiteScriptOnboarding(
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED));
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::FIRST_TIME_USER));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED));
+  EXPECT_TRUE(UkmTriggerScriptOnboarding(
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -769,11 +771,11 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, HideTriggerScript);
   fake_platform_delegate_.is_custom_tab_ = false;
   starter_->CheckSettings();
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED));
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::RETURNING_USER));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED));
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
 }
 
 TEST_F(StarterTest, CancelPendingTriggerScriptWhenHandlingNewStartupRequest) {
@@ -798,8 +800,8 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenHandlingNewStartupRequest) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{}));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_CANCELED));
+  EXPECT_TRUE(
+      UkmTriggerScriptFinished(Metrics::TriggerScriptFinishedState::CANCELED));
 }
 
 TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
@@ -820,9 +822,9 @@ TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
 
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.different.com"));
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -860,13 +862,13 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.different.com"));
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_FIRST_TIME_USER));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE));
-  EXPECT_TRUE(UkmLiteScriptOnboarding(
-      Metrics::LiteScriptOnboarding::
-          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION));
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::FIRST_TIME_USER));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE));
+  EXPECT_TRUE(UkmTriggerScriptOnboarding(
+      Metrics::TriggerScriptOnboarding::
+          ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -901,9 +903,9 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.different.com"));
 
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -934,9 +936,9 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{}));
 
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -980,14 +982,14 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
       ->NavigateAndCommit(GURL("https://www.some-website.com/cart"));
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::RETURNING_USER,
+                              GURL("https://www.some-website.com/cart")));
+  EXPECT_TRUE(UkmTriggerScriptFinished(
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED,
       GURL("https://www.some-website.com/cart")));
-  EXPECT_TRUE(UkmLiteScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED,
-      GURL("https://www.some-website.com/cart")));
-  EXPECT_TRUE(UkmLiteScriptOnboarding(
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,
+  EXPECT_TRUE(UkmTriggerScriptOnboarding(
+      Metrics::TriggerScriptOnboarding::ONBOARDING_ALREADY_ACCEPTED,
       GURL("https://www.some-website.com/cart")));
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
@@ -1037,11 +1039,11 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
   starter_->CheckSettings();
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
-      GURL("https://www.some-website.com/cart")));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::RETURNING_USER,
+                              GURL("https://www.some-website.com/cart")));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -1088,11 +1090,11 @@ TEST_F(StarterTest, StartTriggerScriptBeforeRedirectRecordsUkmForTargetUrl) {
   simulator->Redirect(GURL("https://signin.example.com"));
   simulator->Commit();
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
-      GURL("https://signin.example.com")));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::RETURNING_USER,
+                              GURL("https://signin.example.com")));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -1136,11 +1138,11 @@ TEST_F(StarterTest, RedirectFailsDuringPendingTriggerScriptStart) {
   // Note that this impression is recorded for the last URL that a navigation-
   // start event occurred for. We never reached the target domain, so this is
   // unfortunately the best we can do.
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_NAVIGATION_ERROR,
-      GURL("https://redirect.com/to/www/example/com")));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(
+      UkmTriggerScriptStarted(Metrics::TriggerScriptStarted::NAVIGATION_ERROR,
+                              GURL("https://redirect.com/to/www/example/com")));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",
@@ -1180,11 +1182,10 @@ TEST_F(StarterTest, StartTriggerScriptDuringRedirectRecordsUkmForTargetUrl) {
   simulator->Redirect(GURL(kExampleDeeplink));
   simulator->Commit();
 
-  EXPECT_TRUE(UkmLiteScriptStarted(
-      Metrics::LiteScriptStarted::LITE_SCRIPT_RETURNING_USER,
-      GURL(kExampleDeeplink)));
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_TRUE(UkmTriggerScriptStarted(
+      Metrics::TriggerScriptStarted::RETURNING_USER, GURL(kExampleDeeplink)));
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -1220,9 +1221,9 @@ TEST_F(StarterTest, RegularStartupDoesNotWaitForNavigationToFinish) {
   simulator->Redirect(GURL(kExampleDeeplink));
   simulator->Commit();
 
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectUniqueSample(
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
@@ -1250,9 +1251,9 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfAlreadyRunning) {
       ->NavigateAndCommit(GURL("https://www.example.com/cart"));
 
   task_environment()->RunUntilIdle();
-  EXPECT_FALSE(UkmLiteScriptStarted());
-  EXPECT_FALSE(UkmLiteScriptFinished());
-  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  EXPECT_FALSE(UkmTriggerScriptStarted());
+  EXPECT_FALSE(UkmTriggerScriptFinished());
+  EXPECT_FALSE(UkmTriggerScriptOnboarding());
   histogram_tester_.ExpectTotalCount(
       "Android.AutofillAssistant.FeatureModuleInstallation", 0u);
   histogram_tester_.ExpectTotalCount("Android.AutofillAssistant.OnBoarding",

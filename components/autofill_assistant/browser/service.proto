@@ -545,7 +545,7 @@ message GetTriggerScriptsResponseProto {
 
   // The amount of time a trigger script may evaluate trigger conditions while
   // invisible. If a trigger script is invisible for this amount of time, it
-  // will automatically finish with LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT.
+  // will automatically finish with TRIGGER_CONDITION_TIMEOUT.
   // If not specified, there is no automatic timeout.
   //
   // This is only counted while no trigger script is shown, and the time is

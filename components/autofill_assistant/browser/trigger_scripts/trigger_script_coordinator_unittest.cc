@@ -120,7 +120,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   }
 
   void AssertRecordedFinishedState(TriggerUIType type,
-                                   Metrics::LiteScriptFinishedState state) {
+                                   Metrics::TriggerScriptFinishedState state) {
     auto entries =
         ukm_recorder_.GetEntriesByName("AutofillAssistant.LiteScriptFinished");
     ASSERT_THAT(entries.size(), Eq(1u));
@@ -134,7 +134,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   // Make sure that an UKM entry with |state| has been recorded
   // |expected_times|, and has been associated each time with |type|.
   void AssertRecordedShownToUserState(TriggerUIType type,
-                                      Metrics::LiteScriptShownToUser state,
+                                      Metrics::TriggerScriptShownToUser state,
                                       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
         "AutofillAssistant.LiteScriptShownToUser");
@@ -151,9 +151,9 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(expected_times, actual_times);
   }
 
-  void AssertRecordedLiteScriptOnboardingState(
+  void AssertRecordedTriggerScriptOnboardingState(
       TriggerUIType type,
-      Metrics::LiteScriptOnboarding state,
+      Metrics::TriggerScriptOnboarding state,
       int expected_times) {
     auto entries = ukm_recorder_.GetEntriesByName(
         "AutofillAssistant.LiteScriptOnboarding");
@@ -175,7 +175,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   NiceMock<MockServiceRequestSender>* mock_request_sender_;
   NiceMock<MockWebController>* mock_web_controller_;
   base::MockCallback<base::OnceCallback<void(
-      Metrics::LiteScriptFinishedState result,
+      Metrics::TriggerScriptFinishedState result,
       std::unique_ptr<TriggerContext> trigger_context,
       base::Optional<TriggerScriptProto> trigger_script)>>
       mock_callback_;
@@ -241,13 +241,12 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnBackendRequestFailed) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
   EXPECT_CALL(
       mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED, _,
-          _));
+      Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
   AssertRecordedFinishedState(
       UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
+      Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
@@ -255,26 +254,26 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid"));
   EXPECT_CALL(
       mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR,
-          _, _));
+      Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
   AssertRecordedFinishedState(
       UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
+      Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE, _,
+          _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
-  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
+  AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
+      Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
@@ -440,14 +439,15 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION, _,
+          _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_SESSION);
-  AssertRecordedFinishedState(CART_RETURNING_USER,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION);
+  AssertRecordedFinishedState(
+      CART_RETURNING_USER,
+      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
@@ -469,14 +469,15 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER, _,
+          _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::CANCEL_FOREVER);
-  AssertRecordedFinishedState(CART_RETURNING_USER,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER);
+  AssertRecordedFinishedState(
+      CART_RETURNING_USER,
+      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
@@ -537,12 +538,11 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   // Navigating to non-whitelisted domain is not ok.
   EXPECT_CALL(
       mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE,
-          _, _));
+      Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE, _, _));
   SimulateNavigateToUrl(GURL("https://example.different.com/page"));
   AssertRecordedFinishedState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
+      Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
@@ -580,13 +580,14 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, /* response = */ ""));
   // However, when the tab becomes visible again, the trigger script is
   // restarted and thus fails if the tab is still on an unsupported domain.
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE, _,
+          _));
   SimulateWebContentsVisibilityChanged(content::Visibility::VISIBLE);
-  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
+  AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
+      Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
@@ -608,8 +609,8 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   coordinator_->OnBottomSheetClosedWithSwipe();
   AssertRecordedShownToUserState(
-      CART_RETURNING_USER,
-      Metrics::LiteScriptShownToUser::LITE_SCRIPT_SWIPE_DISMISSED, 1);
+      CART_RETURNING_USER, Metrics::TriggerScriptShownToUser::SWIPE_DISMISSED,
+      1);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
@@ -639,13 +640,14 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
+          _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
       UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
@@ -684,13 +686,14 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
 
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
+          _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
       UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
@@ -757,13 +760,14 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  EXPECT_CALL(mock_callback_, Run(Metrics::LiteScriptFinishedState::
-                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT,
-                                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT, _,
+          _));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
       UNSPECIFIED_TRIGGER_UI_TYPE,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+      Metrics::TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
@@ -848,8 +852,7 @@ TEST_F(TriggerScriptCoordinatorTest,
 
   EXPECT_CALL(
       mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE,
-          _, _));
+      Run(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE, _, _));
   SimulateNavigateToUrl(GURL("http://example.different.com/page"));
 }
 
@@ -869,14 +872,12 @@ TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).WillOnce([&]() {
     coordinator_->OnTriggerScriptShown(/* success = */ false);
   });
-  EXPECT_CALL(
-      mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW, _, _));
+  EXPECT_CALL(mock_callback_,
+              Run(Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW, _, _));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
   AssertRecordedFinishedState(
-      CART_RETURNING_USER,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
+      CART_RETURNING_USER, Metrics::TriggerScriptFinishedState::FAILED_TO_SHOW);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
@@ -895,16 +896,16 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(mock_callback_,
-              Run(Metrics::LiteScriptFinishedState::
-                      LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING,
-                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING,
+          _, _));
   fake_platform_delegate_.proactive_help_enabled_ = false;
   SimulateWebContentsInteractabilityChanged(false);
   SimulateWebContentsInteractabilityChanged(true);
-  AssertRecordedFinishedState(UNSPECIFIED_TRIGGER_UI_TYPE,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
+  AssertRecordedFinishedState(
+      UNSPECIFIED_TRIGGER_UI_TYPE,
+      Metrics::TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
@@ -968,20 +969,18 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(
-      mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED, _,
-          testing::Optional(response.trigger_scripts(0))));
+  EXPECT_CALL(mock_callback_,
+              Run(Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED, _,
+                  testing::Optional(response.trigger_scripts(0))));
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  AssertRecordedLiteScriptOnboardingState(
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
-      1);
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED, 1);
   AssertRecordedFinishedState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest,
@@ -1018,32 +1017,29 @@ TEST_F(TriggerScriptCoordinatorTest,
   fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  EXPECT_CALL(
-      mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED, _,
-          testing::Optional(response.trigger_scripts(0))));
+  EXPECT_CALL(mock_callback_,
+              Run(Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED, _,
+                  testing::Optional(response.trigger_scripts(0))));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
   fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::ACCEPTED;
   fake_platform_delegate_.show_onboarding_result_shown_ = true;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(4));
-  AssertRecordedLiteScriptOnboardingState(
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
-      1);
-  AssertRecordedLiteScriptOnboardingState(
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED, 1);
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
-      1);
-  AssertRecordedLiteScriptOnboardingState(
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_ACCEPTED, 1);
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::
-          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
+      Metrics::TriggerScriptOnboarding::
+          ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
       1);
   AssertRecordedFinishedState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest,
@@ -1065,10 +1061,10 @@ TEST_F(TriggerScriptCoordinatorTest,
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(mock_callback_,
-              Run(Metrics::LiteScriptFinishedState::
-                      LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED,
-                  _, _));
+  EXPECT_CALL(
+      mock_callback_,
+      Run(Metrics::TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED,
+          _, _));
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(1);
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(0);
   fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::REJECTED;
@@ -1076,13 +1072,12 @@ TEST_F(TriggerScriptCoordinatorTest,
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
   EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
-  AssertRecordedLiteScriptOnboardingState(
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
-      1);
-  AssertRecordedFinishedState(CART_RETURNING_USER,
-                              Metrics::LiteScriptFinishedState::
-                                  LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED);
+      Metrics::TriggerScriptOnboarding::ONBOARDING_SEEN_AND_REJECTED, 1);
+  AssertRecordedFinishedState(
+      CART_RETURNING_USER,
+      Metrics::TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
@@ -1101,22 +1096,19 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  EXPECT_CALL(
-      mock_callback_,
-      Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED, _,
-          _));
+  EXPECT_CALL(mock_callback_,
+              Run(Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED, _, _));
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(0);
   fake_platform_delegate_.onboarding_accepted_ = true;
   fake_platform_delegate_.show_onboarding_result_shown_ = false;
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
 
-  AssertRecordedLiteScriptOnboardingState(
+  AssertRecordedTriggerScriptOnboardingState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,
-      1);
+      Metrics::TriggerScriptOnboarding::ONBOARDING_ALREADY_ACCEPTED, 1);
   AssertRecordedFinishedState(
       CART_RETURNING_USER,
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+      Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED);
 }
 
 }  // namespace autofill_assistant

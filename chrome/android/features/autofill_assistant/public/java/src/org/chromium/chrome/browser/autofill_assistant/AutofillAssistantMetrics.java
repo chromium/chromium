@@ -9,10 +9,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
-import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.strings.IntentStrings;
-import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -57,25 +55,6 @@ public class AutofillAssistantMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.FeatureModuleInstallation", metric,
                 FeatureModuleInstallation.MAX_VALUE + 1);
-    }
-
-    /**
-     * UKM metric. Records the finish of a lite script.
-     *
-     * The events recorded by this call lacks a trigger type. This is appropriate
-     * when the trigger type is not yet known, because the Trigger protos sent by
-     * the server have not been processed yet. If trigger protos are available,
-     * record the metric from C++.
-     */
-    public static void recordLiteScriptFinished(
-            WebContents webContents, @LiteScriptFinishedState int finishedState) {
-        if (!areWebContentsValid(webContents)) {
-            return;
-        }
-        new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
-                /* eventName = */ "AutofillAssistant.LiteScriptFinished",
-                /* metricName = */ "LiteScriptFinished",
-                /* metricValue = */ finishedState);
     }
 
     /**

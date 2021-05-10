@@ -60,7 +60,7 @@ class Metrics {
 
   // The different ways that autofill assistant can stop. Note that this only
   // covers regular onboarding. Trigger script onboarding is covered by
-  // LiteScriptOnboarding.
+  // TriggerScriptOnboarding.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
   // org.chromium.chrome.browser.autofill_assistant.metrics)
@@ -149,200 +149,190 @@ class Metrics {
     kMaxValue = DFM_ALREADY_INSTALLED
   };
 
-  // Whether a lite script was running invisibly or visible to the user.
-  //
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: LiteScriptShownToUser
+  // Whether a trigger script was running invisibly or visible to the user.
   //
   // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantLiteScriptShownToUser enum listing in
+  // AutofillAssistantTriggerScriptShownToUser enum listing in
   // tools/metrics/histograms/enums.xml and the description in
   // tools/metrics/ukm/ukm.xml as necessary.
-  enum class LiteScriptShownToUser {
-    // The number of times a lite script was successfully fetched and started.
+  enum class TriggerScriptShownToUser {
+    // The number of times a trigger script was successfully fetched and
+    // started.
     // Can happen multiple times per run (in case of tab switch).
-    LITE_SCRIPT_RUNNING = 0,
-    // The number of times a lite script was shown to the user. Can happen
+    RUNNING = 0,
+    // The number of times a trigger script was shown to the user. Can happen
     // multiple times per run.
-    LITE_SCRIPT_SHOWN_TO_USER = 1,
+    SHOWN_TO_USER = 1,
     // Since Chrome M-88. The user tapped the 'not now' button. Can happen
     // multiple times per run.
-    LITE_SCRIPT_NOT_NOW = 2,
-    // Since Chrome M-88. The lite script was automatically hidden due to the
+    NOT_NOW = 2,
+    // Since Chrome M-88. The trigger script was automatically hidden due to the
     // trigger condition no longer being true. Can happen multiple times per
     // run.
-    LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE = 3,
+    HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE = 3,
     // Since Chrome M-88. The user swipe-dismissed the bottom sheet. Depending
     // on configuration, this may happen multiple times per run.
-    LITE_SCRIPT_SWIPE_DISMISSED = 4,
+    SWIPE_DISMISSED = 4,
 
-    kMaxValue = LITE_SCRIPT_SWIPE_DISMISSED
+    kMaxValue = SWIPE_DISMISSED
   };
 
-  // The different ways a user might have opted out of the lite script
+  // The different ways a user might have opted out of the trigger script
   // experience.
   //
   // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantLiteScriptStarted enum listing in
+  // AutofillAssistantTriggerScriptStarted enum listing in
   // tools/metrics/histograms/enums.xml and the description in
   // tools/metrics/ukm/ukm.xml as necessary.
-  enum class LiteScriptStarted {
+  enum class TriggerScriptStarted {
     // Device did not have DFM downloaded.
-    LITE_SCRIPT_DFM_UNAVAILABLE = 0,
-    // User has not seen the lite script before and will see first time
+    DFM_UNAVAILABLE = 0,
+    // User has not seen the trigger script before and will see first time
     // experience.
-    LITE_SCRIPT_FIRST_TIME_USER = 3,
+    FIRST_TIME_USER = 3,
     // User has seen the first-time experience before and will see returning
     // user experience.
-    LITE_SCRIPT_RETURNING_USER = 4,
+    RETURNING_USER = 4,
     // Since Chrome M-88. The proactive trigger setting is disabled. The user
     // has either chosen 'never show again' in the prompt or manually disabled
     // the setting in Chrome settings.
-    LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED = 5,
+    PROACTIVE_TRIGGERING_DISABLED = 5,
     // Since Chrome M-88. Intended as a catch-all. This is reported as soon as a
     // lite-script intent is received (of course, only for people with MSBB
     // enabled).
-    LITE_SCRIPT_INTENT_RECEIVED = 6,
+    INTENT_RECEIVED = 6,
     // Since Chrome M-91. A required Chrome feature was disabled.
-    LITE_SCRIPT_FEATURE_DISABLED = 7,
+    FEATURE_DISABLED = 7,
     // Since Chrome M-91. No initial url was set, neither in ORIGINAL_DEEPLINK
     // nor in the intent data.
-    LITE_SCRIPT_NO_INITIAL_URL = 8,
+    NO_INITIAL_URL = 8,
     // Since Chrome M-91. A mandatory script parameter was missing.
-    LITE_SCRIPT_MANDATORY_PARAMETER_MISSING = 9,
+    MANDATORY_PARAMETER_MISSING = 9,
     // Since Chrome M-92. The user never navigated to a different domain.
-    LITE_SCRIPT_NAVIGATED_AWAY = 10,
+    NAVIGATED_AWAY = 10,
     // Since Chrome M-92. The navigation to the target domain failed.
-    LITE_SCRIPT_NAVIGATION_ERROR = 11,
+    NAVIGATION_ERROR = 11,
 
     // DEPRECATED, only sent by Chrome M-86 and M-87.
     //
-    // User has explicitly rejected the lite script two times and thus opted
+    // User has explicitly rejected the trigger script two times and thus opted
     // out of  the experience.
-    LITE_SCRIPT_CANCELED_TWO_TIMES = 1,
+    CANCELED_TWO_TIMES = 1,
     // User has rejected the onboarding and thus opted out of the experience.
-    LITE_SCRIPT_ONBOARDING_REJECTED = 2,
+    ONBOARDING_REJECTED = 2,
 
-    kMaxValue = LITE_SCRIPT_NAVIGATION_ERROR
+    kMaxValue = NAVIGATION_ERROR
   };
 
-  // The different ways in which a lite script may finish.
-  //
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: LiteScriptFinishedState
+  // The different ways in which a trigger script may finish.
   //
   // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantLiteScriptFinished enum listing in
+  // AutofillAssistantTriggerScriptFinished enum listing in
   // tools/metrics/histograms/enums.xml and the description in
   // tools/metrics/ukm/ukm.xml as necessary.
-  enum class LiteScriptFinishedState {
+  enum class TriggerScriptFinishedState {
     // Communication with backend failed.
-    LITE_SCRIPT_GET_ACTIONS_FAILED = 3,
+    GET_ACTIONS_FAILED = 3,
     // Failed to parse the proto sent by the backend.
-    LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR = 4,
-    // Lite script failed due to a navigation event to a non-allowed domain.
-    LITE_SCRIPT_PROMPT_FAILED_NAVIGATE = 9,
-    // Lite script succeeded. The user accepted the prompt.
-    LITE_SCRIPT_PROMPT_SUCCEEDED = 13,
+    GET_ACTIONS_PARSE_ERROR = 4,
+    // Trigger script failed due to a navigation event to a non-allowed domain.
+    PROMPT_FAILED_NAVIGATE = 9,
+    // Trigger script succeeded. The user accepted the prompt.
+    PROMPT_SUCCEEDED = 13,
     // Since Chrome M-88. The user tapped the 'cancel for this session' button.
-    LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION = 14,
+    PROMPT_FAILED_CANCEL_SESSION = 14,
     // Since Chrome M-88. The user tapped the 'never show again' button.
-    LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER = 15,
+    PROMPT_FAILED_CANCEL_FOREVER = 15,
     // Since Chrome M-88. The trigger script has timed out. This indicates that
     // trigger conditions were evaluated for >= timeout without success. Time is
-    // only counted while the tab is visible and the lite script is invisible.
+    // only counted while the tab is visible and the trigger script is
+    // invisible.
     // The timeout resets on tab change.
-    LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT = 17,
+    TRIGGER_CONDITION_TIMEOUT = 17,
     // Since Chrome M-88. A navigation error occurred, leading to Chrome showing
     // an error page.
-    LITE_SCRIPT_NAVIGATION_ERROR = 18,
+    NAVIGATION_ERROR = 18,
     // Since Chrome M-88. The tab was closed while the prompt was visible.
-    LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE = 19,
+    WEB_CONTENTS_DESTROYED_WHILE_VISIBLE = 19,
     // Since Chrome M-88. The tab was closed while the prompt was invisible.
-    LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE = 20,
+    WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE = 20,
     // Since Chrome M-88. The RPC to fetch the trigger scripts returned with an
     // empty response.
-    LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE = 21,
+    NO_TRIGGER_SCRIPT_AVAILABLE = 21,
     // Since Chrome M-88. The trigger script failed to show. This can happen,
     // for example, if the activity was changed after triggering (e.g.,
     // switching from CCT to regular tab).
-    LITE_SCRIPT_FAILED_TO_SHOW = 22,
+    FAILED_TO_SHOW = 22,
     // Since Chrome M-88. The proactive help switch was enabled at start, but
     // then manually disabled in the Chrome settings.
-    LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING = 23,
+    DISABLED_PROACTIVE_HELP_SETTING = 23,
     // Since Chrome M-88. The client failed to base64-decode the trigger script
     // specified in the script parameters.
-    LITE_SCRIPT_BASE64_DECODING_ERROR = 24,
+    BASE64_DECODING_ERROR = 24,
     // The user rejected the bottom sheet onboarding
-    LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED = 25,
+    BOTTOMSHEET_ONBOARDING_REJECTED = 25,
     // Transitioning from CCT to regular tab is currently not supported.
-    LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED = 26,
+    CCT_TO_TAB_NOT_SUPPORTED = 26,
     // The current trigger script was canceled. This typically happens when a
     // new startup request takes precedence.
-    LITE_SCRIPT_CANCELED = 27,
+    CANCELED = 27,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
     //
-    // The lite script failed for an unknown reason.
-    LITE_SCRIPT_UNKNOWN_FAILURE = 0,
+    // The trigger script failed for an unknown reason.
+    UNKNOWN_FAILURE = 0,
     // Can happen when users close the tab or similar.
-    LITE_SCRIPT_SERVICE_DELETED = 1,
+    SERVICE_DELETED = 1,
     // |GetActions| was asked to retrieve a wrong script path.
-    LITE_SCRIPT_PATH_MISMATCH = 2,
+    PATH_MISMATCH = 2,
     // One or multiple unsafe actions were contained in script.
-    LITE_SCRIPT_UNSAFE_ACTIONS = 5,
+    UNSAFE_ACTIONS = 5,
     // The mini script is invalid. A valid script must contain a prompt
     // (browse=true) action and end in a prompt(browse=false) action.
-    LITE_SCRIPT_INVALID_SCRIPT = 6,
+    INVALID_SCRIPT = 6,
     // The prompt(browse) action failed due to a navigation event to a
     // non-allowed domain.
-    LITE_SCRIPT_BROWSE_FAILED_NAVIGATE = 7,
+    BROWSE_FAILED_NAVIGATE = 7,
     // The prompt(browse) action failed for an unknown reason.
-    LITE_SCRIPT_BROWSE_FAILED_OTHER = 8,
+    BROWSE_FAILED_OTHER = 8,
     // The prompt(regular) action failed because the condition to show it was no
     // longer true.
-    LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE = 10,
+    PROMPT_FAILED_CONDITION_NO_LONGER_TRUE = 10,
     // The prompt(regular) action failed because the user tapped the close chip.
-    LITE_SCRIPT_PROMPT_FAILED_CLOSE = 11,
+    PROMPT_FAILED_CLOSE = 11,
     // The prompt(regular) action failed for an unknown reason.
-    LITE_SCRIPT_PROMPT_FAILED_OTHER = 12,
+    PROMPT_FAILED_OTHER = 12,
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
-    LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
+    PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_CANCELED
+    kMaxValue = CANCELED
   };
 
   // The different ways a user who has successfully completed a light script may
   // accept or reject the onboarding
   //
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: LiteScriptOnboarding
-  //
   // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantLiteScriptOnboarding enum listing in
+  // AutofillAssistantTriggerScriptOnboarding enum listing in
   // tools/metrics/histograms/enums.xml and the description in
   // tools/metrics/ukm/ukm.xml as necessary.
-  enum class LiteScriptOnboarding {
+  enum class TriggerScriptOnboarding {
     // The user has seen and accepted the onboarding.
-    LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED = 0,
+    ONBOARDING_SEEN_AND_ACCEPTED = 0,
     // The user has seen and rejected the onboarding.
-    LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED = 1,
+    ONBOARDING_SEEN_AND_REJECTED = 1,
     // The user has already accepted the onboarding in the past.
-    LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED = 2,
+    ONBOARDING_ALREADY_ACCEPTED = 2,
     // The user has seen and dismissed the onboarding.
-    LITE_SCRIPT_ONBOARDING_SEEN_AND_DISMISSED = 3,
+    ONBOARDING_SEEN_AND_DISMISSED = 3,
     // The onboarding was interrupted by a website navigation.
-    LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION = 4,
+    ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION = 4,
 
-    kMaxValue = LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
+    kMaxValue = ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
   };
 
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
@@ -353,26 +343,26 @@ class Metrics {
   static void RecordPaymentRequestMandatoryPostalCode(bool required,
                                                       bool initially_right,
                                                       bool success);
-  static void RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
-                                      ukm::SourceId source_id,
-                                      LiteScriptStarted event);
-  static void RecordLiteScriptStarted(ukm::UkmRecorder* ukm_recorder,
-                                      ukm::SourceId source_id,
-                                      StartupUtil::StartupMode startup_mode,
-                                      bool feature_module_installed,
-                                      bool is_first_time_user);
-  static void RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
-                                       ukm::SourceId source_id,
-                                       TriggerUIType trigger_ui_type,
-                                       LiteScriptFinishedState event);
-  static void RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
+  static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
+                                         ukm::SourceId source_id,
+                                         TriggerScriptStarted event);
+  static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
+                                         ukm::SourceId source_id,
+                                         StartupUtil::StartupMode startup_mode,
+                                         bool feature_module_installed,
+                                         bool is_first_time_user);
+  static void RecordTriggerScriptFinished(ukm::UkmRecorder* ukm_recorder,
                                           ukm::SourceId source_id,
                                           TriggerUIType trigger_ui_type,
-                                          LiteScriptShownToUser event);
-  static void RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
-                                         ukm::SourceId source_id,
-                                         TriggerUIType trigger_ui_type,
-                                         LiteScriptOnboarding event);
+                                          TriggerScriptFinishedState event);
+  static void RecordTriggerScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
+                                             ukm::SourceId source_id,
+                                             TriggerUIType trigger_ui_type,
+                                             TriggerScriptShownToUser event);
+  static void RecordTriggerScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
+                                            ukm::SourceId source_id,
+                                            TriggerUIType trigger_ui_type,
+                                            TriggerScriptOnboarding event);
   static void RecordOnboardingResult(OnBoarding event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
 
@@ -507,7 +497,7 @@ class Metrics {
   }
 
   friend std::ostream& operator<<(std::ostream& out,
-                                  const LiteScriptFinishedState& state) {
+                                  const TriggerScriptFinishedState& state) {
 #ifdef NDEBUG
     // Non-debugging builds write the enum number.
     out << static_cast<int>(state);
@@ -515,92 +505,89 @@ class Metrics {
 #else
     // Debugging builds write a string representation of |state|.
     switch (state) {
-      case LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED:
-        out << "LITE_SCRIPT_GET_ACTIONS_FAILED";
+      case TriggerScriptFinishedState::GET_ACTIONS_FAILED:
+        out << "GET_ACTIONS_FAILED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR:
-        out << "LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR";
+      case TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR:
+        out << "GET_ACTIONS_PARSE_ERROR";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE:
-        out << "LITE_SCRIPT_PROMPT_FAILED_NAVIGATE";
+      case TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE:
+        out << "PROMPT_FAILED_NAVIGATE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED:
-        out << "LITE_SCRIPT_PROMPT_SUCCEEDED";
+      case TriggerScriptFinishedState::PROMPT_SUCCEEDED:
+        out << "PROMPT_SUCCEEDED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION:
-        out << "LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION";
+      case TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION:
+        out << "PROMPT_FAILED_CANCEL_SESSION";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER:
-        out << "LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER";
+      case TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_FOREVER:
+        out << "PROMPT_FAILED_CANCEL_FOREVER";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT:
-        out << "LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT";
+      case TriggerScriptFinishedState::TRIGGER_CONDITION_TIMEOUT:
+        out << "TRIGGER_CONDITION_TIMEOUT";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_NAVIGATION_ERROR:
-        out << "LITE_SCRIPT_NAVIGATION_ERROR";
+      case TriggerScriptFinishedState::NAVIGATION_ERROR:
+        out << "NAVIGATION_ERROR";
         break;
-      case LiteScriptFinishedState::
-          LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE:
-        out << "LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE";
+      case TriggerScriptFinishedState::WEB_CONTENTS_DESTROYED_WHILE_VISIBLE:
+        out << "WEB_CONTENTS_DESTROYED_WHILE_VISIBLE";
         break;
-      case LiteScriptFinishedState::
-          LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE:
-        out << "LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE";
+      case TriggerScriptFinishedState::WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE:
+        out << "WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE:
-        out << "LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE";
+      case TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE:
+        out << "NO_TRIGGER_SCRIPT_AVAILABLE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW:
-        out << "LITE_SCRIPT_FAILED_TO_SHOW";
+      case TriggerScriptFinishedState::FAILED_TO_SHOW:
+        out << "FAILED_TO_SHOW";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING:
-        out << "LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING";
+      case TriggerScriptFinishedState::DISABLED_PROACTIVE_HELP_SETTING:
+        out << "DISABLED_PROACTIVE_HELP_SETTING";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR:
-        out << "LITE_SCRIPT_BASE64_DECODING_ERROR";
+      case TriggerScriptFinishedState::BASE64_DECODING_ERROR:
+        out << "BASE64_DECODING_ERROR";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED:
-        out << "LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED";
+      case TriggerScriptFinishedState::BOTTOMSHEET_ONBOARDING_REJECTED:
+        out << "BOTTOMSHEET_ONBOARDING_REJECTED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE:
-        out << "LITE_SCRIPT_UNKNOWN_FAILURE";
+      case TriggerScriptFinishedState::UNKNOWN_FAILURE:
+        out << "UNKNOWN_FAILURE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED:
-        out << "LITE_SCRIPT_SERVICE_DELETED";
+      case TriggerScriptFinishedState::SERVICE_DELETED:
+        out << "SERVICE_DELETED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PATH_MISMATCH:
-        out << "LITE_SCRIPT_PATH_MISMATCH";
+      case TriggerScriptFinishedState::PATH_MISMATCH:
+        out << "PATH_MISMATCH";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_UNSAFE_ACTIONS:
-        out << "LITE_SCRIPT_UNSAFE_ACTIONS";
+      case TriggerScriptFinishedState::UNSAFE_ACTIONS:
+        out << "UNSAFE_ACTIONS";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_INVALID_SCRIPT:
-        out << "LITE_SCRIPT_INVALID_SCRIPT";
+      case TriggerScriptFinishedState::INVALID_SCRIPT:
+        out << "INVALID_SCRIPT";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_NAVIGATE:
-        out << "LITE_SCRIPT_BROWSE_FAILED_NAVIGATE";
+      case TriggerScriptFinishedState::BROWSE_FAILED_NAVIGATE:
+        out << "BROWSE_FAILED_NAVIGATE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_OTHER:
-        out << "LITE_SCRIPT_BROWSE_FAILED_OTHER";
+      case TriggerScriptFinishedState::BROWSE_FAILED_OTHER:
+        out << "BROWSE_FAILED_OTHER";
         break;
-      case LiteScriptFinishedState::
-          LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
-        out << "LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE";
+      case TriggerScriptFinishedState::PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
+        out << "PROMPT_FAILED_CONDITION_NO_LONGER_TRUE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE:
-        out << "LITE_SCRIPT_PROMPT_FAILED_CLOSE";
+      case TriggerScriptFinishedState::PROMPT_FAILED_CLOSE:
+        out << "PROMPT_FAILED_CLOSE";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_OTHER:
-        out << "LITE_SCRIPT_PROMPT_FAILED_OTHER";
+      case TriggerScriptFinishedState::PROMPT_FAILED_OTHER:
+        out << "PROMPT_FAILED_OTHER";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SWIPE_DISMISSED:
-        out << "LITE_SCRIPT_PROMPT_SWIPE_DISMISSED";
+      case TriggerScriptFinishedState::PROMPT_SWIPE_DISMISSED:
+        out << "PROMPT_SWIPE_DISMISSED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED:
-        out << "LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED";
+      case TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED:
+        out << "CCT_TO_TAB_NOT_SUPPORTED";
         break;
-      case LiteScriptFinishedState::LITE_SCRIPT_CANCELED:
-        out << "LITE_SCRIPT_CANCELED";
+      case TriggerScriptFinishedState::CANCELED:
+        out << "CANCELED";
         break;
         // Do not add default case to force compilation error for new values.
     }

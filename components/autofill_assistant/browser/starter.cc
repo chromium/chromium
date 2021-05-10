@@ -40,7 +40,7 @@ namespace {
 // mark users as being in either the control or the experiment group to allow
 // for aggregation of UKM metrics.
 const char kTriggerScriptExperimentSyntheticFieldTrialName[] =
-    "AutofillAssistantLiteScriptExperiment";
+    "AutofillAssistantTriggerScriptExperiment";
 const char kTriggerScriptExperimentGroup[] = "Experiment";
 const char kTriggerScriptControlGroup[] = "Control";
 
@@ -195,11 +195,11 @@ void Starter::DidFinishNavigation(
       }
       // Note: this will record for the current domain, not the target domain.
       // There seems to be no way to avoid this.
-      Metrics::RecordLiteScriptStarted(
+      Metrics::RecordTriggerScriptStarted(
           ukm_recorder_, next_ukm_source_id_,
           navigation_handle->IsErrorPage()
-              ? Metrics::LiteScriptStarted::LITE_SCRIPT_NAVIGATION_ERROR
-              : Metrics::LiteScriptStarted::LITE_SCRIPT_NAVIGATED_AWAY);
+              ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
+              : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
       CancelPendingStartup(base::nullopt);
     } else {
       // Regular startup was interrupted (most likely during the onboarding).
@@ -317,12 +317,12 @@ void Starter::CheckSettings() {
         }
         // Trigger scripts are not allowed to persist when transitioning from
         // CCT to regular tab.
-        CancelPendingStartup(Metrics::LiteScriptFinishedState::
-                                 LITE_SCRIPT_CCT_TO_TAB_NOT_SUPPORTED);
+        CancelPendingStartup(
+            Metrics::TriggerScriptFinishedState::CCT_TO_TAB_NOT_SUPPORTED);
         return;
       default:
-        CancelPendingStartup(Metrics::LiteScriptFinishedState::
-                                 LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
+        CancelPendingStartup(Metrics::TriggerScriptFinishedState::
+                                 DISABLED_PROACTIVE_HELP_SETTING);
         return;
     }
   } else if (!prev_fetch_trigger_scripts_on_navigation &&
@@ -334,7 +334,7 @@ void Starter::CheckSettings() {
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());
-  CancelPendingStartup(Metrics::LiteScriptFinishedState::LITE_SCRIPT_CANCELED);
+  CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -360,9 +360,9 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
       !startup_url.has_value()) {
     // Fail immediately if there is no deeplink domain to wait for.
     // Note: this will record the impression for the current domain.
-    Metrics::RecordLiteScriptStarted(
+    Metrics::RecordTriggerScriptStarted(
         ukm_recorder_, next_ukm_source_id_,
-        Metrics::LiteScriptStarted::LITE_SCRIPT_NO_INITIAL_URL);
+        Metrics::TriggerScriptStarted::NO_INITIAL_URL);
     OnStartDone(/* start_regular_script = */ false);
     return;
   }
@@ -377,7 +377,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   // Record startup metrics for trigger scripts as soon as possible to establish
   // a baseline.
   if (IsTriggerScriptContext(*pending_trigger_context_)) {
-    Metrics::RecordLiteScriptStarted(
+    Metrics::RecordTriggerScriptStarted(
         ukm_recorder_, next_ukm_source_id_, startup_mode,
         platform_delegate_->GetFeatureModuleInstalled(),
         platform_delegate_->GetIsFirstTimeUser());
@@ -399,7 +399,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 }
 
 void Starter::CancelPendingStartup(
-    base::Optional<Metrics::LiteScriptFinishedState> state) {
+    base::Optional<Metrics::TriggerScriptFinishedState> state) {
   if (!IsStartupPending()) {
     return;
   }
@@ -477,12 +477,11 @@ void Starter::StartTriggerScript() {
       service_request_sender = CreateBase64TriggerScriptRequestSender(
           script_parameters.GetBase64TriggerScriptsResponseProto().value());
       if (!service_request_sender) {
-        Metrics::RecordLiteScriptFinished(
+        Metrics::RecordTriggerScriptFinished(
             ukm_recorder_, next_ukm_source_id_, UNSPECIFIED_TRIGGER_UI_TYPE,
-            Metrics::LiteScriptFinishedState::
-                LITE_SCRIPT_BASE64_DECODING_ERROR);
+            Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR);
         OnTriggerScriptFinished(
-            Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR,
+            Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR,
             std::move(pending_trigger_context_), base::nullopt);
         return;
       }
@@ -521,7 +520,7 @@ void Starter::StartTriggerScript() {
 }
 
 void Starter::OnTriggerScriptFinished(
-    Metrics::LiteScriptFinishedState state,
+    Metrics::TriggerScriptFinishedState state,
     std::unique_ptr<TriggerContext> trigger_context,
     base::Optional<TriggerScriptProto> trigger_script) {
   // Update caches on error or user-cancel.
@@ -529,17 +528,15 @@ void Starter::OnTriggerScriptFinished(
     std::string domain = url_utils::GetOrganizationIdentifyingDomain(
         trigger_script_coordinator_->GetDeeplink());
     switch (state) {
-      case Metrics::LiteScriptFinishedState::
-          LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE:
-      case Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED:
+      case Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE:
+      case Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED:
         cached_failed_trigger_script_fetches_->Put(domain,
                                                    tick_clock_->NowTicks());
         ClearStaleCacheEntries(
             cached_failed_trigger_script_fetches_,
             tick_clock_->NowTicks() - kMaxFailedTriggerScriptsCacheDuration);
         break;
-      case Metrics::LiteScriptFinishedState::
-          LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION:
+      case Metrics::TriggerScriptFinishedState::PROMPT_FAILED_CANCEL_SESSION:
         user_denylisted_domains_.Put(domain, tick_clock_->NowTicks());
         ClearStaleCacheEntries(
             &user_denylisted_domains_,
@@ -561,7 +558,7 @@ void Starter::OnTriggerScriptFinished(
       FROM_HERE, base::BindOnce(&Starter::DeleteTriggerScriptCoordinator,
                                 weak_ptr_factory_.GetWeakPtr()));
 
-  if (state != Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED) {
+  if (state != Metrics::TriggerScriptFinishedState::PROMPT_SUCCEEDED) {
     OnStartDone(/* start_regular_script = */ false);
     return;
   }

@@ -80,14 +80,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void Start(const GURL& deeplink_url,
              std::unique_ptr<TriggerContext> trigger_context,
              base::OnceCallback<void(
-                 Metrics::LiteScriptFinishedState result,
+                 Metrics::TriggerScriptFinishedState result,
                  std::unique_ptr<TriggerContext> trigger_context,
                  base::Optional<TriggerScriptProto> trigger_script)> callback);
 
   // Stops the currently running trigger script. Hides any currently shown UI
   // (both trigger script UI and onboarding, if applicable) and returns |state|
   // as the reason for stopping in the pending callback.
-  void Stop(Metrics::LiteScriptFinishedState state);
+  void Stop(Metrics::TriggerScriptFinishedState state);
 
   // Performs |action|. This is usually invoked by the UI as a result of user
   // interactions.
@@ -146,7 +146,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void RunOutOfScheduleTriggerConditionCheck();
 
   void RunCallback(TriggerUIType trigger_ui_type,
-                   Metrics::LiteScriptFinishedState state,
+                   Metrics::TriggerScriptFinishedState state,
                    const base::Optional<TriggerScriptProto>& trigger_script);
 
   // Value of trigger_ui_type for the currently visible script, if there is one.
@@ -162,7 +162,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   std::unique_ptr<UiDelegate> ui_delegate_;
 
   // The callback to run once the current trigger script flow has finished.
-  base::OnceCallback<void(Metrics::LiteScriptFinishedState,
+  base::OnceCallback<void(Metrics::TriggerScriptFinishedState,
                           std::unique_ptr<TriggerContext> trigger_context,
                           base::Optional<TriggerScriptProto>)>
       callback_;
@@ -217,7 +217,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       base::TimeDelta::FromMilliseconds(1000);
 
   // The number of times the trigger condition may be evaluated. If this reaches
-  // 0, the trigger script stops with |LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT|.
+  // 0, the trigger script stops with |TRIGGER_CONDITION_TIMEOUT|.
   // -1 means no limit.
   //
   // This number is defined by the timeout (specified in proto) divided by
@@ -233,7 +233,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId ukm_source_id_;
 
-  // Flag to ensure that we only get one LiteScriptFinished event per run.
+  // Flag to ensure that we only get one TriggerScriptFinished event per run.
   bool finished_state_recorded_ = false;
 
   // True while the onboarding is being displayed.

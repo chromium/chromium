@@ -78,7 +78,7 @@ class Starter : public content::WebContentsObserver {
   // This will also hide any currently shown UI (such as a trigger script or the
   // onboarding).
   void CancelPendingStartup(
-      base::Optional<Metrics::LiteScriptFinishedState> state);
+      base::Optional<Metrics::TriggerScriptFinishedState> state);
 
   // Installs the feature module if necessary, otherwise directly invokes
   // |OnFeatureModuleInstalled|.
@@ -96,7 +96,7 @@ class Starter : public content::WebContentsObserver {
   // Stops the startup if the trigger script failed or was user-cancelled.
   // Otherwise, proceeds with the start of the regular script.
   void OnTriggerScriptFinished(
-      Metrics::LiteScriptFinishedState state,
+      Metrics::TriggerScriptFinishedState state,
       std::unique_ptr<TriggerContext> trigger_context,
       base::Optional<TriggerScriptProto> trigger_script);
 
