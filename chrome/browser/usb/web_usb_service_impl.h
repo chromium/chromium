@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -95,11 +95,12 @@ class WebUsbServiceImpl
   // A UsbDeviceClient tracks a UsbDevice pipe that has been passed to Blink.
   std::vector<std::unique_ptr<UsbDeviceClient>> device_clients_;
 
-  ScopedObserver<UsbChooserContext, UsbChooserContext::DeviceObserver>
-      device_observer_;
-  ScopedObserver<permissions::ObjectPermissionContextBase,
-                 permissions::ObjectPermissionContextBase::PermissionObserver>
-      permission_observer_;
+  base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
+      device_observation_{this};
+  base::ScopedObservation<
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
+      permission_observation_{this};
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};
 

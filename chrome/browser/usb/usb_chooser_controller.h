@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -64,8 +64,8 @@ class UsbChooserController : public ChooserController,
 
   content::WebContents* const web_contents_;
   base::WeakPtr<UsbChooserContext> chooser_context_;
-  ScopedObserver<UsbChooserContext, UsbChooserContext::DeviceObserver>
-      observer_;
+  base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
+      observation_{this};
 
   // Each pair is a (device guid, device name).
   std::vector<std::pair<std::string, std::u16string>> devices_;

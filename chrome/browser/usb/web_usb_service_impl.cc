@@ -80,9 +80,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
     content::RenderFrameHost* render_frame_host,
     base::WeakPtr<WebUsbChooser> usb_chooser)
     : render_frame_host_(render_frame_host),
-      usb_chooser_(std::move(usb_chooser)),
-      device_observer_(this),
-      permission_observer_(this) {
+      usb_chooser_(std::move(usb_chooser)) {
   DCHECK(render_frame_host_);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
@@ -109,10 +107,10 @@ void WebUsbServiceImpl::BindReceiver(
   // the OnDeviceRemoved event will be delivered here after it is delivered
   // to UsbChooserContext, meaning that all ephemeral permission checks in
   // OnDeviceRemoved() will fail.
-  if (!device_observer_.IsObservingSources())
-    device_observer_.Add(chooser_context_);
-  if (!permission_observer_.IsObservingSources())
-    permission_observer_.Add(chooser_context_);
+  if (!device_observation_.IsObserving())
+    device_observation_.Observe(chooser_context_);
+  if (!permission_observation_.IsObserving())
+    permission_observation_.Observe(chooser_context_);
 }
 
 bool WebUsbServiceImpl::HasDevicePermission(
@@ -268,8 +266,8 @@ void WebUsbServiceImpl::OnDeviceManagerConnectionError() {
   receivers_.Clear();
 
   // Remove itself from UsbChooserContext's ObserverList.
-  device_observer_.RemoveAll();
-  permission_observer_.RemoveAll();
+  device_observation_.Reset();
+  permission_observation_.Reset();
 }
 
 // device::mojom::UsbDeviceClient implementation:
@@ -297,7 +295,7 @@ void WebUsbServiceImpl::RemoveDeviceClient(const UsbDeviceClient* client) {
 
 void WebUsbServiceImpl::OnConnectionError() {
   if (receivers_.empty()) {
-    device_observer_.RemoveAll();
-    permission_observer_.RemoveAll();
+    device_observation_.Reset();
+    permission_observation_.Reset();
   }
 }

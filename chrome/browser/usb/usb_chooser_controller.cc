@@ -93,8 +93,7 @@ UsbChooserController::UsbChooserController(
                         IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME),
       filters_(std::move(device_filters)),
       callback_(std::move(callback)),
-      web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
-      observer_(this) {
+      web_contents_(WebContents::FromRenderFrameHost(render_frame_host)) {
   RenderFrameHost* main_frame = web_contents_->GetMainFrame();
   origin_ = main_frame->GetLastCommittedOrigin();
   Profile* profile =
@@ -231,7 +230,7 @@ void UsbChooserController::OnDeviceRemoved(
 }
 
 void UsbChooserController::OnDeviceManagerConnectionError() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 // Get a list of devices that can be shown in the chooser bubble UI for
@@ -250,7 +249,7 @@ void UsbChooserController::GotUsbDeviceList(
   // Listen to UsbChooserContext for OnDeviceAdded/Removed events after the
   // enumeration.
   if (chooser_context_)
-    observer_.Add(chooser_context_.get());
+    observation_.Observe(chooser_context_.get());
 
   if (view())
     view()->OnOptionsInitialized();
