@@ -28,10 +28,10 @@ class FidoAuthenticationStrikeDatabase : public StrikeDatabaseIntegratorBase {
   // Strikes to add when user opts-out from settings page.
   static const int kStrikesToAddWhenUserOptsOut;
 
-  std::string GetProjectPrefix() override;
-  int GetMaxStrikesLimit() override;
-  base::Optional<int64_t> GetExpiryTimeMicros() override;
-  bool UniqueIdsRequired() override;
+  std::string GetProjectPrefix() const override;
+  int GetMaxStrikesLimit() const override;
+  base::Optional<int64_t> GetExpiryTimeMicros() const override;
+  bool UniqueIdsRequired() const override;
 };
 
 }  // namespace autofill

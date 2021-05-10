@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -323,6 +324,75 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   // |unique_id_1| and |unique_id_2| should have no more unexpired strikes.
   EXPECT_EQ(0, strike_database_->GetStrikes(unique_id_1));
   EXPECT_EQ(0, strike_database_->GetStrikes(unique_id_2));
+}
+
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest, CountEntries) {
+  strike_database_->SetUniqueIdsRequired(true);
+  const std::string unique_id_1 = "111";
+  const std::string unique_id_2 = "222";
+  const std::string unique_id_3 = "333";
+
+  EXPECT_EQ(0U, strike_database_->CountEntries());
+  strike_database_->AddStrike(unique_id_1);
+  EXPECT_EQ(1U, strike_database_->CountEntries());
+  strike_database_->AddStrike(unique_id_1);
+  EXPECT_EQ(1U, strike_database_->CountEntries());
+
+  strike_database_->AddStrike(unique_id_2);
+  strike_database_->AddStrike(unique_id_3);
+  EXPECT_EQ(3U, strike_database_->CountEntries());
+}
+
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest, ClearStrikesForKeys) {
+  strike_database_->SetUniqueIdsRequired(true);
+  const std::string unique_id_1 = "111";
+  const std::string unique_id_2 = "222";
+  const std::string unique_id_3 = "333";
+
+  strike_database_->AddStrike(unique_id_1);
+  strike_database_->AddStrike(unique_id_2);
+  strike_database_->AddStrike(unique_id_3);
+  EXPECT_EQ(3U, strike_database_->CountEntries());
+
+  std::vector<std::string> keys_to_clear = {
+      strike_database_->GetKey(unique_id_1),
+      strike_database_->GetKey(unique_id_2)};
+  strike_database_->ClearStrikesForKeys(keys_to_clear);
+
+  EXPECT_EQ(1U, strike_database_->CountEntries());
+
+  EXPECT_EQ(0, strike_database_->GetStrikes(unique_id_1));
+  EXPECT_EQ(0, strike_database_->GetStrikes(unique_id_2));
+  EXPECT_EQ(1, strike_database_->GetStrikes(unique_id_3));
+}
+
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest, IdFromKey) {
+  strike_database_->SetUniqueIdsRequired(true);
+  const std::string unique_id = "111";
+  std::string key = strike_database_->GetKey(unique_id);
+  ASSERT_EQ(key, "StrikeDatabaseIntegratorTest__111");
+  EXPECT_EQ(unique_id, strike_database_->GetIdFromKey(key));
+}
+
+TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+       LimitTheNumberOfElements) {
+  strike_database_->SetUniqueIdsRequired(true);
+  for (size_t i = 1; i <= 10; i++) {
+    strike_database_->AddStrike(base::NumberToString(i));
+    EXPECT_EQ(i, strike_database_->CountEntries());
+  }
+  // Once the 11th element is added the cleanup should reduce the number of
+  // elements to 5. Note that the index here is chosen to be smaller than the
+  // previous indices. The purpose is to ensure that the deletion is actually
+  // done in the order of time stamp and not index.
+  strike_database_->AddStrike(base::NumberToString(0));
+  EXPECT_EQ(5U, strike_database_->CountEntries());
+
+  // Verify that the oldest 6 elements have been deleted.
+  for (size_t i = 1; i <= 10; i++) {
+    EXPECT_EQ(i <= 6 ? 0 : 1,
+              strike_database_->GetStrikes(base::NumberToString(i)));
+  }
 }
 
 }  // namespace autofill

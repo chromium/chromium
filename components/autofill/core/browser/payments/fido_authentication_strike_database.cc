@@ -20,23 +20,23 @@ FidoAuthenticationStrikeDatabase::FidoAuthenticationStrikeDatabase(
   RemoveExpiredStrikes();
 }
 
-FidoAuthenticationStrikeDatabase::~FidoAuthenticationStrikeDatabase() {}
+FidoAuthenticationStrikeDatabase::~FidoAuthenticationStrikeDatabase() = default;
 
-std::string FidoAuthenticationStrikeDatabase::GetProjectPrefix() {
+std::string FidoAuthenticationStrikeDatabase::GetProjectPrefix() const {
   return "FidoAuthentication";
 }
 
-int FidoAuthenticationStrikeDatabase::GetMaxStrikesLimit() {
+int FidoAuthenticationStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<int64_t>
-FidoAuthenticationStrikeDatabase::GetExpiryTimeMicros() {
+base::Optional<int64_t> FidoAuthenticationStrikeDatabase::GetExpiryTimeMicros()
+    const {
   // Expiry time is six months.
-  return (int64_t)1000000 * 60 * 60 * 24 * 30 * 6;
+  return static_cast<int64_t>(1000000) * 60 * 60 * 24 * 30 * 6;
 }
 
-bool FidoAuthenticationStrikeDatabase::UniqueIdsRequired() {
+bool FidoAuthenticationStrikeDatabase::UniqueIdsRequired() const {
   return false;
 }
 

@@ -26,22 +26,23 @@ StrikeDatabaseIntegratorTestStrikeDatabase::
 }
 
 StrikeDatabaseIntegratorTestStrikeDatabase::
-    ~StrikeDatabaseIntegratorTestStrikeDatabase() {}
+    ~StrikeDatabaseIntegratorTestStrikeDatabase() = default;
 
-std::string StrikeDatabaseIntegratorTestStrikeDatabase::GetProjectPrefix() {
+std::string StrikeDatabaseIntegratorTestStrikeDatabase::GetProjectPrefix()
+    const {
   return kProjectPrefix;
 }
 
-int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() {
+int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() const {
   return kMaxStrikesLimit;
 }
 
 base::Optional<int64_t>
-StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeMicros() {
+StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeMicros() const {
   return expiry_time_micros_;
 }
 
-bool StrikeDatabaseIntegratorTestStrikeDatabase::UniqueIdsRequired() {
+bool StrikeDatabaseIntegratorTestStrikeDatabase::UniqueIdsRequired() const {
   return unique_ids_required_;
 }
 
@@ -50,4 +51,14 @@ void StrikeDatabaseIntegratorTestStrikeDatabase::SetUniqueIdsRequired(
   unique_ids_required_ = unique_ids_required;
 }
 
+base::Optional<size_t>
+StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntries() const {
+  return maximum_entries_;
+}
+
+base::Optional<size_t>
+StrikeDatabaseIntegratorTestStrikeDatabase::GetMaximumEntriesAfterCleanup()
+    const {
+  return maximum_entries_after_cleanup_;
+}
 }  // namespace autofill

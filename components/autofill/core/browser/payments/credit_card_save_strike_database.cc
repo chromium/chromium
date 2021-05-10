@@ -14,22 +14,23 @@ CreditCardSaveStrikeDatabase::CreditCardSaveStrikeDatabase(
   RemoveExpiredStrikes();
 }
 
-CreditCardSaveStrikeDatabase::~CreditCardSaveStrikeDatabase() {}
+CreditCardSaveStrikeDatabase::~CreditCardSaveStrikeDatabase() = default;
 
-std::string CreditCardSaveStrikeDatabase::GetProjectPrefix() {
+std::string CreditCardSaveStrikeDatabase::GetProjectPrefix() const {
   return "CreditCardSave";
 }
 
-int CreditCardSaveStrikeDatabase::GetMaxStrikesLimit() {
+int CreditCardSaveStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<int64_t> CreditCardSaveStrikeDatabase::GetExpiryTimeMicros() {
+base::Optional<int64_t> CreditCardSaveStrikeDatabase::GetExpiryTimeMicros()
+    const {
   // Expiry time is 6 months.
-  return (int64_t)1000000 * 60 * 60 * 24 * 180;
+  return static_cast<int64_t>(1000000) * 60 * 60 * 24 * 180;
 }
 
-bool CreditCardSaveStrikeDatabase::UniqueIdsRequired() {
+bool CreditCardSaveStrikeDatabase::UniqueIdsRequired() const {
   return true;
 }
 

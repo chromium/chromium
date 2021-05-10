@@ -26,7 +26,7 @@ class StrikeDatabaseIntegratorBase {
 
   // Returns whether or not strike count for |id| has reached the strike limit
   // set by GetMaxStrikesLimit().
-  bool IsMaxStrikesLimitReached(const std::string& id = kSharedId);
+  bool IsMaxStrikesLimitReached(const std::string& id = kSharedId) const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
   int AddStrike(const std::string& id = kSharedId);
@@ -44,7 +44,7 @@ class StrikeDatabaseIntegratorBase {
   int RemoveStrikes(int strikes_decrease, const std::string& id = kSharedId);
 
   // Returns strike count from in-memory cache.
-  int GetStrikes(const std::string& id = kSharedId);
+  int GetStrikes(const std::string& id = kSharedId) const;
 
   // Removes all database entries from in-memory cache and underlying
   // ProtoDatabase.
@@ -54,10 +54,33 @@ class StrikeDatabaseIntegratorBase {
   // ProtoDatabase for the whole project.
   void ClearAllStrikes();
 
+  // Count strike entries for this project.
+  size_t CountEntries() const;
+
  protected:
+  // Runs a cleanup routine to remove the stored strike elements with the oldest
+  // update timestamps when `NumberOfEntriesExceedsLimits()`. The number of
+  // elements should be reduced to `GetMaximumEntriesAfterCleanup()`.
+  void LimitNumberOfStoredEntries();
+
+  // Returns true if the number of stored entries exceeds the limit.
+  bool NumberOfEntriesExceedsLimits() const;
+
   // Removes one strike for each key where it has been longer than
   // GetExpiryTimeMicros() since |last_update_timestamp|.
   void RemoveExpiredStrikes();
+
+  // Removes all database entries from in-memory cache and underlying
+  // ProtoDatabase for keys in `keys`.
+  void ClearStrikesForKeys(const std::vector<std::string>& keys);
+
+  // Get a readonly reference to the cache.
+  const std::map<std::string, StrikeData>& GetStrikeCache() const {
+    return strike_database_->strike_map_cache_;
+  }
+
+  // Returns the id the key was built from with `GetKey(id)`.
+  std::string GetIdFromKey(const std::string& key) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowsingDataRemoverDelegateTest,
@@ -72,6 +95,10 @@ class StrikeDatabaseIntegratorBase {
                            RemoveExpiredStrikesUniqueIdTest);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            RemoveExpiredStrikesTestLogsUMA);
+  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+                           IdFromKey);
+  FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
+                           ClearStrikesForKeys);
   friend class SaveCardInfobarEGTestHelper;
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
@@ -83,28 +110,37 @@ class StrikeDatabaseIntegratorBase {
   // unique IDs always specify |id| instead of relying on the default shared
   // value, while projects where unique IDs are unnecessary always fall back to
   // the default shared value.
-  void CheckIdUniqueness(std::string id) {
+  void CheckIdUniqueness(const std::string& id) const {
     DCHECK(UniqueIdsRequired() == (id != kSharedId));
   }
 
   // Generates key based on project-specific string identifier.
-  std::string GetKey(const std::string& id);
+  std::string GetKey(const std::string& id) const;
+
+  // Returns the maximum number of entries that should be stored for this
+  // project prefix. base::nullopt means that there is no limit.
+  virtual base::Optional<size_t> GetMaximumEntries() const;
+
+  // Returns the maximum number of entries that should remain after a cleanup.
+  // This number should be smaller then `GetMaximumEntries()` to create some
+  // headroom. base::nullopt means that `GetMaximumEntries()` should be used.
+  virtual base::Optional<size_t> GetMaximumEntriesAfterCleanup() const;
 
   // Returns a prefix unique to each project, which will be used to create
   // database key.
-  virtual std::string GetProjectPrefix() = 0;
+  virtual std::string GetProjectPrefix() const = 0;
 
   // Returns the maximum number of strikes after which the project's Autofill
   // opportunity stops being offered.
-  virtual int GetMaxStrikesLimit() = 0;
+  virtual int GetMaxStrikesLimit() const = 0;
 
   // Returns the time after which the most recent strike should expire. If the
   // Optional is empty, then strikes don't expire.
-  virtual base::Optional<int64_t> GetExpiryTimeMicros() = 0;
+  virtual base::Optional<int64_t> GetExpiryTimeMicros() const = 0;
 
   // Returns whether or not a unique string identifier is required for every
   // strike in this project.
-  virtual bool UniqueIdsRequired() = 0;
+  virtual bool UniqueIdsRequired() const = 0;
 };
 
 }  // namespace autofill

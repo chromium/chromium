@@ -29,10 +29,10 @@ class LocalCardMigrationStrikeDatabase : public StrikeDatabaseIntegratorBase {
   // migration.
   static const int kStrikesToAddWhenCardsDeselectedAtMigration;
 
-  std::string GetProjectPrefix() override;
-  int GetMaxStrikesLimit() override;
-  base::Optional<int64_t> GetExpiryTimeMicros() override;
-  bool UniqueIdsRequired() override;
+  std::string GetProjectPrefix() const override;
+  int GetMaxStrikesLimit() const override;
+  base::Optional<int64_t> GetExpiryTimeMicros() const override;
+  bool UniqueIdsRequired() const override;
 };
 
 }  // namespace autofill

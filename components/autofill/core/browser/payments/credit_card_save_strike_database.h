@@ -20,10 +20,10 @@ class CreditCardSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
   explicit CreditCardSaveStrikeDatabase(StrikeDatabase* strike_database);
   ~CreditCardSaveStrikeDatabase() override;
 
-  std::string GetProjectPrefix() override;
-  int GetMaxStrikesLimit() override;
-  base::Optional<int64_t> GetExpiryTimeMicros() override;
-  bool UniqueIdsRequired() override;
+  std::string GetProjectPrefix() const override;
+  int GetMaxStrikesLimit() const override;
+  base::Optional<int64_t> GetExpiryTimeMicros() const override;
+  bool UniqueIdsRequired() const override;
 };
 
 }  // namespace autofill
