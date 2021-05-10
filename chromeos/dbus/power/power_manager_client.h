@@ -238,6 +238,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // will be called asynchronously.
   virtual void RequestStatusUpdate() = 0;
 
+  // Requests all peripheral batteries have status re-issued.
+  // Observer::PeripheralBatteryStatusReceived() will be called asynchronously,
+  virtual void RequestAllPeripheralBatteryUpdate() = 0;
+
   // Requests the current thermal state.
   virtual void RequestThermalState() = 0;
 

@@ -348,6 +348,18 @@ class PowerManagerClientImpl : public PowerManagerClient {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void RequestAllPeripheralBatteryUpdate() override {
+    POWER_LOG(USER) << "RequestAllPeripheralBatteryUpdate";
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kRefreshAllPeripheralBatteryMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &PowerManagerClientImpl::OnRefreshAllPeripheralBatteryMethod,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   void RequestThermalState() override {
     POWER_LOG(USER) << "RequestThermalState";
     dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
@@ -804,6 +816,14 @@ class PowerManagerClientImpl : public PowerManagerClient {
       POWER_LOG(ERROR) << "Unable to decode "
                        << power_manager::kGetPowerSupplyPropertiesMethod
                        << " response";
+    }
+  }
+
+  void OnRefreshAllPeripheralBatteryMethod(dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kRefreshAllPeripheralBatteryMethod;
+      return;
     }
   }
 
