@@ -853,7 +853,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
   }
   pref_object->key = name;
   pref_object->type = GetType(name, value->type());
-  pref_object->value.reset(value->DeepCopy());
+  pref_object->value = base::Value::ToUniquePtrValue(value->Clone());
 #endif
 
   return pref_object;
@@ -884,7 +884,8 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object = std::make_unique<settings_api::PrefObject>();
     pref_object->key = pref->name();
     pref_object->type = GetType(name, pref->GetType());
-    pref_object->value.reset(pref->GetValue()->DeepCopy());
+    pref_object->value =
+        base::Value::ToUniquePtrValue(pref->GetValue()->Clone());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -936,7 +937,8 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
         settings_api::ControlledBy::CONTROLLED_BY_USER_POLICY;
     pref_object->enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
-    pref_object->recommended_value.reset(recommended->DeepCopy());
+    pref_object->recommended_value =
+        base::Value::ToUniquePtrValue(recommended->Clone());
     return pref_object;
   }
 

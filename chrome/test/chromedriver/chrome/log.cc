@@ -74,7 +74,7 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
     TruncateString(&data);
     return std::make_unique<base::Value>(data);
   }
-  return std::unique_ptr<base::Value>(value->DeepCopy());
+  return base::Value::ToUniquePtrValue(value->Clone());
 }
 
 }  // namespace

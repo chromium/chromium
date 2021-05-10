@@ -108,7 +108,7 @@ std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
   base::Value* result;
   if (!result_wrapper.Get(0, &result))
     return nullptr;
-  return std::unique_ptr<base::Value>(result->DeepCopy());
+  return base::Value::ToUniquePtrValue(result->Clone());
 }
 
 GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {

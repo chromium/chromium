@@ -87,8 +87,10 @@ NetworkUIData::NetworkUIData(const base::Value& dict) {
 
   const base::Value* user_settings_value =
       dict.FindKeyOfType(kKeyUserSettings, base::Value::Type::DICTIONARY);
-  if (user_settings_value)
-    user_settings_.reset(user_settings_value->DeepCopy());
+  if (user_settings_value) {
+    user_settings_ =
+        base::Value::ToUniquePtrValue(user_settings_value->Clone());
+  }
 }
 
 NetworkUIData::~NetworkUIData() = default;

@@ -73,7 +73,7 @@ void SetOriginStatus(Profile* profile,
       ->GetSettingsMap(profile)
       ->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-          base::WrapUnique(dict.DeepCopy()));
+          base::Value::ToUniquePtrValue(dict.Clone()));
 }
 
 void RevokePermission(const GURL& origin, Profile* profile) {

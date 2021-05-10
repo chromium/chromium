@@ -310,7 +310,7 @@ class MergeToEffective : public MergeSettingsAndPolicies {
       // dictionaries contained a value for it.
     }
     if (result)
-      return base::WrapUnique(result->DeepCopy());
+      return base::Value::ToUniquePtrValue(result->Clone());
     return nullptr;
   }
 
@@ -380,7 +380,7 @@ class MergeToAugmented : public MergeToEffective {
       // controlled by policy. Return the plain active value instead of an
       // augmented dictionary.
       if (values.active_setting)
-        return base::WrapUnique(values.active_setting->DeepCopy());
+        return base::Value::ToUniquePtrValue(values.active_setting->Clone());
       return nullptr;
     }
 
@@ -402,7 +402,7 @@ class MergeToAugmented : public MergeToEffective {
       }
       if (values.active_setting) {
         // Unmanaged networks have assigned (active) values.
-        return base::WrapUnique(values.active_setting->DeepCopy());
+        return base::Value::ToUniquePtrValue(values.active_setting->Clone());
       }
       LOG(ERROR) << "Field has no effective value: " << key;
       return nullptr;

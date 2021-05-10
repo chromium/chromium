@@ -309,7 +309,7 @@ void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
   DCHECK(!info || !value ||
          info->IsDefaultSettingValid(ValueToContentSetting(value)));
   default_settings_[content_type] =
-      value ? base::WrapUnique(value->DeepCopy())
+      value ? base::Value::ToUniquePtrValue(value->Clone())
             : ContentSettingToValue(GetDefaultValue(content_type));
 }
 

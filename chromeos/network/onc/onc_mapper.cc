@@ -62,7 +62,7 @@ std::unique_ptr<base::Value> Mapper::MapPrimitive(
     const OncValueSignature& signature,
     const base::Value& onc_primitive,
     bool* error) {
-  return base::WrapUnique(onc_primitive.DeepCopy());
+  return base::Value::ToUniquePtrValue(onc_primitive.Clone());
 }
 
 void Mapper::MapFields(const OncValueSignature& object_signature,

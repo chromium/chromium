@@ -318,8 +318,8 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.
-  std::unique_ptr<base::DictionaryValue> options(
-      static_cast<base::DictionaryValue*>(utterance->GetOptions()->DeepCopy()));
+  std::unique_ptr<base::DictionaryValue> options = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(utterance->GetOptions()->Clone()));
   if (options->FindKey(constants::kRequiredEventTypesKey))
     options->Remove(constants::kRequiredEventTypesKey, NULL);
   if (options->FindKey(constants::kDesiredEventTypesKey))

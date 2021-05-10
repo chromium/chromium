@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "components/prefs/pref_service.h"
 
 using base::SequencedTaskRunner;
@@ -72,8 +73,9 @@ void PrefMemberBase::UpdateValueFromPref(base::OnceClosure callback) const {
   DCHECK(pref);
   if (!internal())
     CreateInternal();
-  internal()->UpdateValue(pref->GetValue()->DeepCopy(), pref->IsManaged(),
-                          pref->IsUserModifiable(), std::move(callback));
+  internal()->UpdateValue(
+      base::Value::ToUniquePtrValue(pref->GetValue()->Clone()).release(),
+      pref->IsManaged(), pref->IsUserModifiable(), std::move(callback));
 }
 
 void PrefMemberBase::VerifyPref() const {

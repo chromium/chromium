@@ -51,7 +51,7 @@ std::unique_ptr<base::Value> PopStringToStringDictionary(
 }  // namespace
 
 ValueMatcher::ValueMatcher(const base::Value& value)
-    : expected_value_(value.DeepCopy()) {}
+    : expected_value_(base::Value::ToUniquePtrValue(value.Clone())) {}
 
 bool ValueMatcher::MatchAndExplain(const base::Value& value,
                                    MatchResultListener* listener) const {

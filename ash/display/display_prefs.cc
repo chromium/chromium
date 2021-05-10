@@ -476,8 +476,9 @@ void StoreDisplayLayoutPref(PrefService* pref_service,
   std::unique_ptr<base::Value> layout_value(new base::DictionaryValue());
   if (pref_data->HasKey(name)) {
     base::Value* value = nullptr;
-    if (pref_data->Get(name, &value) && value != nullptr)
-      layout_value.reset(value->DeepCopy());
+    if (pref_data->Get(name, &value) && value != nullptr) {
+      layout_value = base::Value::ToUniquePtrValue(value->Clone());
+    }
   }
   if (display::DisplayLayoutToJson(display_layout, layout_value.get()))
     pref_data->Set(name, std::move(layout_value));

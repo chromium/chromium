@@ -106,7 +106,7 @@ const std::string& TtsUtteranceImpl::GetText() {
 }
 
 void TtsUtteranceImpl::SetOptions(const base::Value* options) {
-  options_.reset(options->DeepCopy());
+  options_ = base::Value::ToUniquePtrValue(options->Clone());
 }
 
 const base::Value* TtsUtteranceImpl::GetOptions() {

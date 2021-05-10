@@ -296,7 +296,7 @@ bool OwnerSettingsServiceAsh::Set(const std::string& setting,
   if (!IsOwner() && !IsOwnerInTests(user_id_))
     return false;
 
-  pending_changes_[setting] = base::WrapUnique(value.DeepCopy());
+  pending_changes_[setting] = base::Value::ToUniquePtrValue(value.Clone());
 
   em::ChromeDeviceSettingsProto settings;
   if (tentative_settings_.get()) {

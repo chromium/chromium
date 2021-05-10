@@ -408,10 +408,8 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
       return std::make_unique<base::Value>(timezone->GetValue()->Clone());
     }
     // TODO(crbug.com/697817): Convert CrosSettings::Get to take a unique_ptr.
-    return base::WrapUnique<base::Value>(
-        ash::CrosSettings::Get()
-            ->GetPref(chromeos::kSystemTimezone)
-            ->DeepCopy());
+    return base::Value::ToUniquePtrValue(
+        ash::CrosSettings::Get()->GetPref(chromeos::kSystemTimezone)->Clone());
   }
 
   if (property_name == kPropertySupportedTimezones) {

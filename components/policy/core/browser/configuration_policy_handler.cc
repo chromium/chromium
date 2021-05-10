@@ -393,7 +393,7 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
   if (!value)
     return true;
 
-  output->reset(value->DeepCopy());
+  *output = base::Value::ToUniquePtrValue(value->Clone());
   std::string error_path;
   std::string error;
   bool result =

@@ -280,7 +280,7 @@ std::unique_ptr<base::Value> PrefModelAssociator::MergePreference(
   }
 
   // If this is not a specially handled preference, server wins.
-  return base::WrapUnique(server_value.DeepCopy());
+  return base::Value::ToUniquePtrValue(server_value.Clone());
 }
 
 bool PrefModelAssociator::CreatePrefSyncData(
