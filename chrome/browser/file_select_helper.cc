@@ -555,9 +555,9 @@ void FileSelectHelper::RunFileChooser(
   render_frame_host_ = render_frame_host;
   web_contents_ = WebContents::FromRenderFrameHost(render_frame_host);
   listener_ = std::move(listener);
-  observer_.RemoveAll();
+  observation_.Reset();
   content::WebContentsObserver::Observe(web_contents_);
-  observer_.Add(render_frame_host_->GetRenderViewHost()->GetWidget());
+  observation_.Observe(render_frame_host_->GetRenderViewHost()->GetWidget());
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -754,7 +754,8 @@ void FileSelectHelper::EnumerateDirectoryEnd() {
 void FileSelectHelper::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
   render_frame_host_ = nullptr;
-  observer_.Remove(widget_host);
+  DCHECK(observation_.IsObservingSource(widget_host));
+  observation_.Reset();
 }
 
 void FileSelectHelper::RenderFrameHostChanged(
