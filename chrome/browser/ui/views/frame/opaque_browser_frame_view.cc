@@ -204,7 +204,7 @@ void OpaqueBrowserFrameView::InitViews() {
   window_title_->SetSubpixelRenderingEnabled(false);
   window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-  AddChildView(window_title_);
+  AddChildView(window_title_.get());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -179,7 +180,7 @@ class PdfViewWebPluginTest : public testing::Test {
         << window_rect.ToString();
   }
 
-  FakeContainerWrapper* wrapper_ptr_;
+  CheckedPtr<FakeContainerWrapper> wrapper_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
 
   // Provides the cc::PaintCanvas for painting.

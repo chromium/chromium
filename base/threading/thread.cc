@@ -162,7 +162,7 @@ bool Thread::StartWithOptions(const Options& options) {
   if (options.delegate) {
     DCHECK(!options.message_pump_factory);
     DCHECK(!options.task_queue_time_domain);
-    delegate_ = WrapUnique(options.delegate);
+    delegate_ = WrapUnique(options.delegate.get());
   } else if (options.message_pump_factory) {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         MessagePumpType::CUSTOM, options.message_pump_factory,

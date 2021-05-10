@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace content {
 class BrowserContext;
@@ -50,7 +51,7 @@ class SharingHubModel {
   // A list of Sharing Hub actions in order in which they appear.
   std::vector<SharingHubAction> action_list_;
 
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubModel);
 };

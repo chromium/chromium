@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -142,9 +143,9 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
  private:
   // TODO(https://crbug.com/1048719): Extract the logic to manage a linked list
   // of WebContentsObservers to a helper class.
-  PageLoadTrackerDecoratorHelper* const outer_;
-  WebContentsObserver* prev_ GUARDED_BY_CONTEXT(sequence_checker_);
-  WebContentsObserver* next_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const CheckedPtr<PageLoadTrackerDecoratorHelper> outer_;
+  CheckedPtr<WebContentsObserver> prev_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CheckedPtr<WebContentsObserver> next_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum class LoadingState {
     // Initial state.

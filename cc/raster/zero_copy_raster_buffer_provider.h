@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/raster/raster_buffer_provider.h"
 
@@ -63,9 +64,9 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
-  base::WaitableEvent* shutdown_event_ = nullptr;
-  viz::ContextProvider* compositor_context_provider_;
+  CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  CheckedPtr<base::WaitableEvent> shutdown_event_ = nullptr;
+  CheckedPtr<viz::ContextProvider> compositor_context_provider_;
   viz::ResourceFormat tile_format_;
 };
 

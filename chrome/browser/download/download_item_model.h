@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -112,7 +113,7 @@ class DownloadItemModel : public DownloadUIModel,
   // The DownloadItem that this model represents. Note that DownloadItemModel
   // itself shouldn't maintain any state since there can be more than one
   // DownloadItemModel in use with the same DownloadItem.
-  download::DownloadItem* download_;
+  CheckedPtr<download::DownloadItem> download_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadItemModel);
 };

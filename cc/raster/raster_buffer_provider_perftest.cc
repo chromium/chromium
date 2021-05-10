@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -239,7 +240,7 @@ class PerfRasterTaskImpl : public PerfTileTask {
   ~PerfRasterTaskImpl() override = default;
 
  private:
-  ResourcePool* const pool_;
+  const CheckedPtr<ResourcePool> pool_;
   ResourcePool::InUsePoolResource resource_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
 };

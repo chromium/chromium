@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/layers/layer.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -57,7 +58,7 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   ui::ViewAndroid parent_view_;
   ui::ViewAndroid native_view_;
   std::unique_ptr<MockRenderWidgetHost> host_;
-  RenderWidgetHostViewAndroid* render_widget_host_view_android_;
+  CheckedPtr<RenderWidgetHostViewAndroid> render_widget_host_view_android_;
 
   BrowserTaskEnvironment task_environment_;
 

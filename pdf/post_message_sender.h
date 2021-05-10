@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
+
 namespace base {
 class Value;
 }  // namespace base
@@ -49,7 +51,7 @@ class PostMessageSender final {
 
   v8::Isolate* isolate_;
 
-  blink::WebPluginContainer* container_ = nullptr;
+  CheckedPtr<blink::WebPluginContainer> container_ = nullptr;
 };
 
 }  // namespace chrome_pdf

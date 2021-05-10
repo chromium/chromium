@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_HOST_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -58,7 +59,7 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   // not exist.
   CaptionController* GetCaptionController();
 
-  content::RenderFrameHost* frame_host_;
+  CheckedPtr<content::RenderFrameHost> frame_host_;
 };
 
 }  // namespace captions

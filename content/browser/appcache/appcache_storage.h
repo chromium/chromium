@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/appcache/appcache_working_set.h"
@@ -234,8 +235,8 @@ class CONTENT_EXPORT AppCacheStorage {
   // allow all pending callbacks to that delegate to be easily cancelled.
   struct CONTENT_EXPORT DelegateReference :
       public base::RefCounted<DelegateReference> {
-    Delegate* delegate;
-    AppCacheStorage* storage;
+    CheckedPtr<Delegate> delegate;
+    CheckedPtr<AppCacheStorage> storage;
 
     DelegateReference(Delegate* delegate, AppCacheStorage* storage);
 
@@ -285,7 +286,7 @@ class CONTENT_EXPORT AppCacheStorage {
    private:
     void OnReadComplete(int result);
 
-    AppCacheStorage* storage_;
+    CheckedPtr<AppCacheStorage> storage_;
     GURL manifest_url_;
     int64_t response_id_;
     std::unique_ptr<AppCacheResponseReader> reader_;

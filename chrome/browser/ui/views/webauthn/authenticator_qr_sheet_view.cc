@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 
 #include "base/base64url.h"
+#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "components/qr_code_generator/dino_image.h"
@@ -202,14 +203,14 @@ class AuthenticatorQRViewCentered : public views::View {
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     qr_view_ = new QRView(qr_data);
-    AddChildView(qr_view_);
+    AddChildView(qr_view_.get());
   }
 
   void RefreshQRCode(const std::string& new_qr_data) {
     qr_view_->RefreshQRCode(new_qr_data);
   }
 
-  QRView* qr_view_;
+  CheckedPtr<QRView> qr_view_;
 };
 
 BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)

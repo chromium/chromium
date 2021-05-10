@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -61,7 +62,7 @@ class ConversionStorageSqlTest : public testing::Test {
 
  private:
   std::unique_ptr<ConversionStorage> storage_;
-  ConfigurableStorageDelegate* delegate_ = nullptr;
+  CheckedPtr<ConfigurableStorageDelegate> delegate_ = nullptr;
   base::SimpleTestClock clock_;
 };
 

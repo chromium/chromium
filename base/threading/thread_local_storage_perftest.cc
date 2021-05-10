@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/simple_thread.h"
@@ -86,7 +87,7 @@ class TLSThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* const start_event_;
+  const CheckedPtr<WaitableEvent> start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
 

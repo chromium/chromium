@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -52,7 +53,7 @@ class AuctionRunner {
     BidState(BidState&&);
     ~BidState();
 
-    mojom::BiddingInterestGroup* bidder = nullptr;
+    CheckedPtr<mojom::BiddingInterestGroup> bidder = nullptr;
 
     // true if the generateBid() callback passed to the BidderWorklet's
     // constructor has been invoked. This may indicated either successful

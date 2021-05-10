@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -115,7 +116,7 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
   }
 
  private:
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   data_decoder::DataDecoder data_decoder_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageAnnotatorClient);

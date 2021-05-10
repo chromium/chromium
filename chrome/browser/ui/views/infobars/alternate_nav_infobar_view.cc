@@ -37,15 +37,15 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
   DCHECK_NE(std::u16string::npos, offset);
   label_1_text_ = message_text.substr(0, offset);
   label_1_ = CreateLabel(label_1_text_);
-  AddChildView(label_1_);
+  AddChildView(label_1_.get());
 
   link_text_ = delegate_ptr->GetLinkText();
   link_ = CreateLink(link_text_);
-  AddChildView(link_);
+  AddChildView(link_.get());
 
   label_2_text_ = message_text.substr(offset);
   label_2_ = CreateLabel(label_2_text_);
-  AddChildView(label_2_);
+  AddChildView(label_2_.get());
 }
 
 AlternateNavInfoBarView::~AlternateNavInfoBarView() {

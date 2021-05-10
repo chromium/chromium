@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -211,7 +212,7 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   void RecordActionAccuracyOnTearDown();
 
   // Used to get keyed services.
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
 
   // Maps from target url (href) to navigation score.
   std::unordered_map<std::string, std::unique_ptr<NavigationScore>>
@@ -313,13 +314,13 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   ukm::SourceId ukm_source_id_;
 
   // UKM recorder
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
+  CheckedPtr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
 
   // The URL of the current page.
   GURL document_url_;
 
   // WebContents of the current page.
-  const content::WebContents* web_contents_;
+  CheckedPtr<const content::WebContents> web_contents_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -341,9 +342,9 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<InstallFinalizer> install_finalizer_;
 
   // Owned by icon_manager_:
-  TestFileUtils* file_utils_ = nullptr;
+  CheckedPtr<TestFileUtils> file_utils_ = nullptr;
   // Owned by install_task_:
-  TestDataRetriever* data_retriever_ = nullptr;
+  CheckedPtr<TestDataRetriever> data_retriever_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest arc_test_;
@@ -354,7 +355,7 @@ class WebAppInstallTaskTest : public WebAppTest {
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  TestInstallFinalizer* test_install_finalizer_ = nullptr;
+  CheckedPtr<TestInstallFinalizer> test_install_finalizer_ = nullptr;
 };
 
 class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {

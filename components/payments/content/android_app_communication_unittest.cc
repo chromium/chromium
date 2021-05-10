@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
@@ -82,7 +83,7 @@ class AndroidAppCommunicationTest : public testing::Test {
 
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::Optional<std::string> error_;
   std::vector<std::unique_ptr<AndroidAppDescription>> apps_;
   bool is_ready_to_pay_ = false;

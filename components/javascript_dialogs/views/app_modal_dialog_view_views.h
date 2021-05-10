@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -56,7 +57,7 @@ class AppModalDialogViewViews : public AppModalDialogView,
 #endif  // IS_CHROMEOS_LACROS
 
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  CheckedPtr<views::MessageBoxView> message_box_view_;
 
   DISALLOW_COPY_AND_ASSIGN(AppModalDialogViewViews);
 };

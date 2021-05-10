@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
@@ -159,8 +160,8 @@ class OpenXrController {
       button_action_map_;
   std::unordered_map<OpenXrAxisType, XrAction> axis_action_map_;
 
-  const OpenXRPathHelper* path_helper_;
-  const OpenXrExtensionHelper* extension_helper_;
+  CheckedPtr<const OpenXRPathHelper> path_helper_;
+  CheckedPtr<const OpenXrExtensionHelper> extension_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(OpenXrController);
 };

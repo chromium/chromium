@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/sandbox_origin_database_interface.h"
 
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
   bool GetLastPathNumber(int* number);
 
   base::FilePath file_system_directory_;
-  leveldb::Env* env_override_;
+  CheckedPtr<leveldb::Env> env_override_;
   std::unique_ptr<leveldb::DB> db_;
   base::Time last_reported_time_;
   DISALLOW_COPY_AND_ASSIGN(SandboxOriginDatabase);

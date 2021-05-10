@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 
@@ -61,7 +62,7 @@ class GESTURE_DETECTION_EXPORT MotionEventBuffer {
                            base::TimeTicks resample_time);
   void FlushWithoutResampling(MotionEventVector events);
 
-  MotionEventBufferClient* const client_;
+  const CheckedPtr<MotionEventBufferClient> client_;
 
   // An ordered vector of buffered events.
   MotionEventVector buffered_events_;

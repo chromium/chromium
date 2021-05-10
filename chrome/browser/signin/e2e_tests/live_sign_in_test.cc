@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -170,8 +171,8 @@ class SignInTestObserver : public IdentityManager::Observer,
         primary_account_id);
   }
 
-  signin::IdentityManager* const identity_manager_;
-  AccountReconcilor* const reconcilor_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  const CheckedPtr<AccountReconcilor> reconcilor_;
   base::RunLoop run_loop_;
 
   bool are_expectations_set = false;

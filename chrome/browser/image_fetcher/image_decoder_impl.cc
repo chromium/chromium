@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -29,7 +30,7 @@ class ImageDecoderImpl::DecodeImageRequest
 
   void OnDecodeImageFailed() override;
 
-  ImageDecoderImpl* decoder_;
+  CheckedPtr<ImageDecoderImpl> decoder_;
 
   // The callback to call after the request completed.
   image_fetcher::ImageDecodedCallback callback_;

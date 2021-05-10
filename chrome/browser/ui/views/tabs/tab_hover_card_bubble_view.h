@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 
 #include "base/callback_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -58,12 +59,12 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  views::Label* title_label_ = nullptr;
-  FadeLabel* title_fade_label_ = nullptr;
+  CheckedPtr<views::Label> title_label_ = nullptr;
+  CheckedPtr<FadeLabel> title_fade_label_ = nullptr;
   base::Optional<TabAlertState> alert_state_;
-  views::Label* domain_label_ = nullptr;
-  FadeLabel* domain_fade_label_ = nullptr;
-  views::ImageView* preview_image_ = nullptr;
+  CheckedPtr<views::Label> domain_label_ = nullptr;
+  CheckedPtr<FadeLabel> domain_fade_label_ = nullptr;
+  CheckedPtr<views::ImageView> preview_image_ = nullptr;
 
   const bool using_rounded_corners_;
 };

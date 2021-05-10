@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gtest_util.h"
@@ -43,7 +44,7 @@ class BasicLockTestThread : public SimpleThread {
     }
   }
 
-  CheckedLock* const lock_;
+  const CheckedPtr<CheckedLock> lock_;
   int acquired_;
 
   DISALLOW_COPY_AND_ASSIGN(BasicLockTestThread);
@@ -72,7 +73,7 @@ class BasicLockAcquireAndWaitThread : public SimpleThread {
     lock_->Release();
   }
 
-  CheckedLock* const lock_;
+  const CheckedPtr<CheckedLock> lock_;
   WaitableEvent lock_acquire_event_;
   WaitableEvent main_thread_continue_event_;
 

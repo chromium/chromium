@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -45,7 +46,7 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   ContentSettingsType content_type_;
   base::RunLoop run_loop_;
 

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/navigation_entry.h"
@@ -106,10 +107,10 @@ class RendererTask : public Task,
                content::RenderProcessHost* render_process_host);
 
   // The WebContents of the task this object represents.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // The render process host of the task this object represents.
-  content::RenderProcessHost* render_process_host_;
+  CheckedPtr<content::RenderProcessHost> render_process_host_;
 
   // The Mojo service wrapper that will provide us with the V8 memory usage and
   // the WebCache resource stats of the render process represented by this

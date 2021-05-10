@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "net/socket/socket_test_util.h"
@@ -84,7 +85,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
       ssl_error_callbacks_;
   SSLInfo ssl_info_;
   bool ssl_fatal_;
-  URLRequest* url_request_;
+  CheckedPtr<URLRequest> url_request_;
   AuthChallengeInfo auth_challenge_info_;
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 
