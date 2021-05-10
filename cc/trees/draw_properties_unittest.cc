@@ -3112,9 +3112,12 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
 
   UpdateActiveTreeDrawProperties(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(device_scale_factor, root->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(device_scale_factor, child->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(device_scale_factor, child2->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(device_scale_factor, device_scale_factor),
+            root->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(device_scale_factor, device_scale_factor),
+            child->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(device_scale_factor, device_scale_factor),
+            child2->GetIdealContentsScale());
 
   EXPECT_EQ(1u, GetRenderSurfaceList().size());
 
@@ -3218,38 +3221,36 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
 
   float device_scale_factor = 2.5f;
   float page_scale_factor = 3.f;
+  float contents_scale_factor = device_scale_factor * page_scale_factor;
   host_impl()->active_tree()->SetPageScaleOnActiveTree(page_scale_factor);
 
   UpdateActiveTreeDrawProperties(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(device_scale_factor * page_scale_factor,
-                  parent->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(device_scale_factor * page_scale_factor,
-                  perspective_surface->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(contents_scale_factor, contents_scale_factor),
+            parent->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(contents_scale_factor, contents_scale_factor),
+            perspective_surface->GetIdealContentsScale());
   // Ideal scale is the max 2d scale component of the combined transform up to
   // the nearest render target. Here this includes the layer transform as well
   // as the device and page scale factors.
   gfx::Transform transform = scale_small_matrix;
-  transform.Scale(device_scale_factor * page_scale_factor,
-                  device_scale_factor * page_scale_factor);
+  transform.Scale(contents_scale_factor, contents_scale_factor);
   gfx::Vector2dF scales =
       gfx::ComputeTransform2dScaleComponents(transform, 0.f);
-  float max_2d_scale = std::max(scales.x(), scales.y());
-  EXPECT_FLOAT_EQ(max_2d_scale, scale_surface->GetIdealContentsScaleKey());
+  EXPECT_EQ(scales, scale_surface->GetIdealContentsScale());
 
   // The ideal scale will draw 1:1 with its render target space along
   // the larger-scale axis.
   gfx::Vector2dF target_space_transform_scales =
       gfx::ComputeTransform2dScaleComponents(
           scale_surface->draw_properties().target_space_transform, 0.f);
-  EXPECT_FLOAT_EQ(max_2d_scale, std::max(target_space_transform_scales.x(),
-                                         target_space_transform_scales.y()));
+  EXPECT_EQ(scales, target_space_transform_scales);
 
   EXPECT_EQ(3u, GetRenderSurfaceList().size());
 
   gfx::Transform expected_parent_draw_transform;
-  expected_parent_draw_transform.Scale(device_scale_factor * page_scale_factor,
-                                       device_scale_factor * page_scale_factor);
+  expected_parent_draw_transform.Scale(contents_scale_factor,
+                                       contents_scale_factor);
   EXPECT_TRANSFORMATION_MATRIX_EQ(expected_parent_draw_transform,
                                   parent->DrawTransform());
 
@@ -3257,16 +3258,15 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   // with the screen, and then scaled during drawing.
   gfx::Transform expected_perspective_surface_draw_transform;
   expected_perspective_surface_draw_transform.Translate(
-      device_scale_factor * page_scale_factor * perspective_surface_offset.x(),
-      device_scale_factor * page_scale_factor * perspective_surface_offset.y());
+      contents_scale_factor * perspective_surface_offset.x(),
+      contents_scale_factor * perspective_surface_offset.y());
   expected_perspective_surface_draw_transform.PreconcatTransform(
       perspective_matrix);
   expected_perspective_surface_draw_transform.PreconcatTransform(
       scale_small_matrix);
   gfx::Transform expected_perspective_surface_layer_draw_transform;
   expected_perspective_surface_layer_draw_transform.Scale(
-      device_scale_factor * page_scale_factor,
-      device_scale_factor * page_scale_factor);
+      contents_scale_factor, contents_scale_factor);
   EXPECT_TRANSFORMATION_MATRIX_EQ(
       expected_perspective_surface_draw_transform,
       GetRenderSurface(perspective_surface)->draw_transform());
@@ -3320,13 +3320,14 @@ TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
   float expected_ideal_scale =
       device_scale_factor * page_scale_factor * initial_parent_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_FLOAT_EQ(expected_ideal_scale, parent->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
+            parent->GetIdealContentsScale());
 
   expected_ideal_scale = device_scale_factor * page_scale_factor *
                          initial_parent_scale * initial_child_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_FLOAT_EQ(expected_ideal_scale,
-                  child_scale->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
+            child_scale->GetIdealContentsScale());
 }
 
 TEST_F(DrawPropertiesScalingTest, IdealScaleForAnimatingLayer) {
@@ -3356,11 +3357,13 @@ TEST_F(DrawPropertiesScalingTest, IdealScaleForAnimatingLayer) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_FLOAT_EQ(initial_parent_scale, parent->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(initial_parent_scale, initial_parent_scale),
+            parent->GetIdealContentsScale());
   // Animating layers compute ideal scale in the same way as when
   // they are static.
-  EXPECT_FLOAT_EQ(initial_child_scale * initial_parent_scale,
-                  child_scale->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(initial_child_scale * initial_parent_scale,
+                           initial_child_scale * initial_parent_scale),
+            child_scale->GetIdealContentsScale());
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfaceTransformsInHighDPI) {
@@ -5953,10 +5956,10 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
 
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(mask)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), ImplOf(root)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(2.f, 3.f), ImplOf(child1)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(2.f, 3.f), ImplOf(mask)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(4.f, 5.f), ImplOf(child2)->GetIdealContentsScale());
 
   EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -5968,10 +5971,11 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
   float device_scale_factor = 4.0f;
   CommitAndActivate(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(child1)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(mask)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(20.f, ImplOf(child2)->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(4.f, 4.f), ImplOf(root)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(8.f, 12.f), ImplOf(child1)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(8.f, 12.f), ImplOf(mask)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(16.f, 20.f),
+            ImplOf(child2)->GetIdealContentsScale());
 
   EXPECT_FLOAT_EQ(32.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(12.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6022,10 +6026,11 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
 
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(1.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), ImplOf(root)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(1.f, 1.f),
+            ImplOf(page_scale)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(2.f, 3.f), ImplOf(child1)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(4.f, 5.f), ImplOf(child2)->GetIdealContentsScale());
 
   EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6039,10 +6044,12 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   host()->SetPageScaleFactorAndLimits(3.f, 3.f, 3.f);
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(9.f, ImplOf(child1)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(15.f, ImplOf(child2)->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), ImplOf(root)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(3.f, 3.f),
+            ImplOf(page_scale)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(6.f, 9.f), ImplOf(child1)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(12.f, 15.f),
+            ImplOf(child2)->GetIdealContentsScale());
 
   EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(9.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6055,10 +6062,13 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   device_scale_factor = 4.0f;
   CommitAndActivate(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(36.f, ImplOf(child1)->GetIdealContentsScaleKey());
-  EXPECT_FLOAT_EQ(60.f, ImplOf(child2)->GetIdealContentsScaleKey());
+  EXPECT_EQ(gfx::Vector2dF(4.f, 4.f), ImplOf(root)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(12.f, 12.f),
+            ImplOf(page_scale)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(24.f, 36.f),
+            ImplOf(child1)->GetIdealContentsScale());
+  EXPECT_EQ(gfx::Vector2dF(48.f, 60.f),
+            ImplOf(child2)->GetIdealContentsScale());
 
   EXPECT_FLOAT_EQ(96.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(36.f, MaximumAnimationToScreenScale(ImplOf(child1)));

@@ -265,7 +265,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(15.f, layer->GetIdealContentsScaleKey());
+    EXPECT_EQ(gfx::Vector2dF(15.f, 15.f), layer->GetIdealContentsScale());
   }
   // Ensure that we don't fall below the device scale factor.
   {
@@ -275,7 +275,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScaleKey());
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
   // Ensure that large scales don't end up extremely large.
   {
@@ -285,7 +285,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(127.f, layer->GetIdealContentsScaleKey());
+    EXPECT_EQ(gfx::Vector2dF(127.f, 127.f), layer->GetIdealContentsScale());
   }
   // Test case from crbug.com/766021.
   {
@@ -296,7 +296,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScaleKey());
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
 }
 
