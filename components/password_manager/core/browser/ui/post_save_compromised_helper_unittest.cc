@@ -4,11 +4,14 @@
 
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -26,13 +29,14 @@ using testing::Return;
 constexpr char kSignonRealm[] = "https://example.com/";
 constexpr char16_t kUsername[] = u"user";
 constexpr char16_t kUsername2[] = u"user2";
+constexpr char16_t kUsername3[] = u"user3";
 
 InsecureCredential CreateInsecureCredential(
     base::StringPiece16 username,
-    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore,
+    IsMuted muted = IsMuted(false)) {
   InsecureCredential compromised(kSignonRealm, std::u16string(username),
-                                 base::Time(), InsecureType::kLeaked,
-                                 IsMuted(false));
+                                 base::Time(), InsecureType::kLeaked, muted);
   compromised.in_store = store;
   return compromised;
 }
@@ -187,6 +191,55 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
   WaitForPasswordStore();
   EXPECT_EQ(BubbleType::kPasswordUpdatedSafeState, helper.bubble_type());
   EXPECT_EQ(0u, helper.compromised_count());
+}
+
+TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    true);
+
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+  std::vector<InsecureCredential> saved = {CreateInsecureCredential(
+      kUsername, PasswordForm::Store::kProfileStore, IsMuted(true))};
+  PostSaveCompromisedHelper helper({saved}, kUsername);
+  base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
+  EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
+  saved = {};
+  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
+      .WillOnce(Return(saved));
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
+  WaitForPasswordStore();
+  EXPECT_EQ(BubbleType::kPasswordUpdatedSafeState, helper.bubble_type());
+  EXPECT_EQ(0u, helper.compromised_count());
+}
+
+TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
+                                    true);
+
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+  std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};
+  PostSaveCompromisedHelper helper({saved}, kUsername);
+  base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
+  EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
+  saved = {
+      CreateInsecureCredential(kUsername2),
+      CreateInsecureCredential(kUsername3, PasswordForm::Store::kProfileStore,
+                               IsMuted(true)),
+  };
+  EXPECT_CALL(*profile_store(), GetAllInsecureCredentialsImpl)
+      .WillOnce(Return(saved));
+  helper.AnalyzeLeakedCredentials(profile_store(), account_store(), prefs(),
+                                  callback.Get());
+  WaitForPasswordStore();
+  EXPECT_EQ(BubbleType::kPasswordUpdatedWithMoreToFix, helper.bubble_type());
+  EXPECT_EQ(1u, helper.compromised_count());
 }
 
 namespace {

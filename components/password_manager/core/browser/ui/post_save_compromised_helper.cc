@@ -5,7 +5,9 @@
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -61,6 +63,13 @@ void PostSaveCompromisedHelper::OnGetAllInsecureCredentials(
     std::vector<InsecureCredential> insecure_credentials) {
   const bool compromised_password_changed =
       current_leak_ && !base::Contains(insecure_credentials, *current_leak_);
+  if (base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
+    // We want to show bubble even if updated insecure credentials was muted,
+    // this is why muted credentials are erased after computing
+    // 'compromised_password_changed';
+    base::EraseIf(insecure_credentials,
+                  [](const auto& credential) { return credential.is_muted; });
+  }
   if (compromised_password_changed) {
     bubble_type_ = insecure_credentials.empty()
                        ? BubbleType::kPasswordUpdatedSafeState
