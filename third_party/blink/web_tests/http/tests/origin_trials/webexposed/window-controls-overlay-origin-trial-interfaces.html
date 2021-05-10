@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 WebAppWindowControlsOverlay --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A575gUHU1CTce2Sm57yw18bSHkyVyRYy1TVVF8rbyNfSLqkQV0lyZ8eNtu7pSoiG1jHlsf+1GZif6861vtTmpwgAAABjeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViQXBwV2luZG93Q29udHJvbHNPdmVybGF5IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>Window Controls Overlay API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script src="/serviceworker/resources/test-helpers.js"></script>
+<script>
+'use strict'
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'WindowControlsOverlay': ['visible', 'getBoundingClientRect', 'ongeometrychange']
+  });
+}, 'Window Controls Overlay API interfaces and properties in Origin-Trial enabled document.');
+
+</script>

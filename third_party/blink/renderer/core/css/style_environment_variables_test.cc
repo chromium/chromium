@@ -69,7 +69,8 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   void InitializeTestPageWithVariableNamed(LocalFrame& frame,
                                            const UADefinedVariable name) {
     InitializeTestPageWithVariableNamed(
-        frame, StyleEnvironmentVariables::GetVariableName(name));
+        frame, StyleEnvironmentVariables::GetVariableName(
+                   name, /*feature_context=*/nullptr));
   }
 
   void SimulateNavigation() {
@@ -85,7 +86,8 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   const String& GetRootVariableValue(UADefinedVariable name) {
     CSSVariableData* data =
         StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
-            StyleEnvironmentVariables::GetVariableName(name));
+            StyleEnvironmentVariables::GetVariableName(
+                name, /*feature_context=*/nullptr));
     EXPECT_NE(nullptr, data);
     return data->BackingStrings()[0];
   }
@@ -359,8 +361,8 @@ TEST_F(StyleEnvironmentVariablesTest,
       UADefinedVariable::kSafeAreaInsetRight,
       UADefinedVariable::kSafeAreaInsetBottom};
   for (const auto& variable : variables) {
-    const AtomicString name =
-        StyleEnvironmentVariables::GetVariableName(variable);
+    const AtomicString name = StyleEnvironmentVariables::GetVariableName(
+        variable, /*feature_context=*/nullptr);
     printf("0x%x\n",
            DocumentStyleEnvironmentVariables::GenerateHashFromName(name));
   }

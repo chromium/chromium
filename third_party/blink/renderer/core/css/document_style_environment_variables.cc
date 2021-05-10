@@ -45,6 +45,11 @@ CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
   return StyleEnvironmentVariables::ResolveVariable(name);
 }
 
+const FeatureContext* DocumentStyleEnvironmentVariables::GetFeatureContext()
+    const {
+  return document_->GetExecutionContext();
+}
+
 CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name) {
   return ResolveVariable(name, true /* record_metrics */);

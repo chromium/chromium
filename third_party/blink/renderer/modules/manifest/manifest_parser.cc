@@ -402,7 +402,8 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     mojom::blink::DisplayMode display_enum =
         DisplayModeFromString(display_enum_string.Utf8());
 
-    if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled() &&
+    if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+            feature_context_) &&
         display_enum == mojom::blink::DisplayMode::kWindowControlsOverlay) {
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }

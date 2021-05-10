@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class FeatureContext;
+
 // UADefinedVariable contains all the user agent defined environment variables.
 // When adding a new variable the string equivalent needs to be added to
 // |GetVariableName|.
@@ -70,7 +72,11 @@ class CORE_EXPORT StyleEnvironmentVariables
   static StyleEnvironmentVariables& GetRootInstance();
 
   // Gets the name of a |UADefinedVariable| as a string.
-  static const AtomicString GetVariableName(UADefinedVariable);
+  // |feature_context| is required for a RuntimeEnabledFeatures check for a
+  // variable in origin trial, otherwise nullptr can be passed.
+  static const AtomicString GetVariableName(
+      UADefinedVariable variable,
+      const FeatureContext* feature_context);
 
   // Create a new instance bound to |parent|.
   static scoped_refptr<StyleEnvironmentVariables> Create(
@@ -99,6 +105,8 @@ class CORE_EXPORT StyleEnvironmentVariables
   // Stringify |value| and append 'px'. Helper for setting variables that are
   // CSS lengths.
   static String FormatPx(int value);
+
+  virtual const FeatureContext* GetFeatureContext() const;
 
  protected:
   friend class StyleEnvironmentVariablesTest;

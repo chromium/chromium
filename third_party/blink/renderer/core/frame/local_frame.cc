@@ -1572,8 +1572,10 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
         UADefinedVariable::kFoldBottom, UADefinedVariable::kFoldLeft,
         UADefinedVariable::kFoldWidth,  UADefinedVariable::kFoldHeight,
     };
-    for (auto var : vars_to_remove)
-      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(var));
+    for (auto var : vars_to_remove) {
+      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
+          var, /*feature_context=*/nullptr));
+    }
   }
 }
 

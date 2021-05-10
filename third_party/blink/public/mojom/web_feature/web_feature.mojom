@@ -3214,6 +3214,7 @@ enum WebFeature {
   kComputePressureObserver_Constructor = 3899,
   kComputePressureObserver_Observe = 3900,
   kComputePressureObserver_Stop = 3901,
+  kWebAppWindowControlsOverlay = 3902,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

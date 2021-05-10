@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-
 namespace blink {
 
 namespace {
@@ -69,7 +68,8 @@ StyleEnvironmentVariables& StyleEnvironmentVariables::GetRootInstance() {
 
 // static
 const AtomicString StyleEnvironmentVariables::GetVariableName(
-    UADefinedVariable variable) {
+    UADefinedVariable variable,
+    const FeatureContext* feature_context) {
   switch (variable) {
     case UADefinedVariable::kSafeAreaInsetTop:
       return "safe-area-inset-top";
@@ -116,16 +116,20 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
       return "fold-height";
     case UADefinedVariable::kTitlebarAreaX:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
+      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+          feature_context));
       return "titlebar-area-x";
     case UADefinedVariable::kTitlebarAreaY:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
+      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+          feature_context));
       return "titlebar-area-y";
     case UADefinedVariable::kTitlebarAreaWidth:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
+      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+          feature_context));
       return "titlebar-area-width";
     case UADefinedVariable::kTitlebarAreaHeight:
-      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
+      DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
+          feature_context));
       return "titlebar-area-height";
     default:
       break;
@@ -181,7 +185,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
 
 void StyleEnvironmentVariables::SetVariable(const UADefinedVariable name,
                                             const String& value) {
-  SetVariable(GetVariableName(name), value);
+  SetVariable(GetVariableName(name, GetFeatureContext()), value);
 }
 
 void StyleEnvironmentVariables::RemoveVariable(const AtomicString& name) {
@@ -212,6 +216,10 @@ void StyleEnvironmentVariables::DetachFromParent() {
 
 String StyleEnvironmentVariables::FormatPx(int value) {
   return String::Format("%dpx", value);
+}
+
+const FeatureContext* StyleEnvironmentVariables::GetFeatureContext() const {
+  return nullptr;
 }
 
 void StyleEnvironmentVariables::ClearForTesting() {
