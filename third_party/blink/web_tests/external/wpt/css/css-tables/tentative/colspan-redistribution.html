@@ -216,28 +216,30 @@ Cells get 98/294, table by rule#1 98px/0.2 + 32 = 522</p>
 </table>
 </div>
 
-<p 12 class="testdesc">Colspan&gt;1:Auto/400 C0:50%/150 C1:30%/150 C2:20/Auto
+<p 12 class="testdesc">Colspan&gt;1:Auto/468 C0:50%/150 C1:30%/150 C2:20/Auto
 This tests conflict resolution where min-width > redistributed min width.
-400-8px distributed max width tries to redistribute as 245|147, but gets constrained to 245|150 in Chrome.
-table width from C0 245/0.5 + 4*8 = 522
-table width from C1 150/0.3 + 4*8 = 532
-C0 = 50% of 500 = 250, C1 = 30% of 500 = 150 , C2 gets the remaining 100</p>
-<p class="error">Chrome/FF/Edge end up with tables of different widths: 532/590/685. Chrome's 2nd span cell seems 'most correct' at its original max width of 150. In FF, extra min-width seems to cause more width to be redistributed. If you hover over 30%/150 cell, its min width will change to 100px, and all browsers will agree.</p>
-<style>
-  .test12:hover {
-    width:100px !important;
-  }
-</style>
-<table data-expected-width="532">
+Colspanned redistribution: distributed 468-8 = 460 over C0/C1
+Colspanned 468px needs to distribute 460px over C0/C1.
+C0 percent size is 50% * 460 = 230
+C1 percent size is 30% * 460 = 138, defaults to min size of 150
+Column 1 size is 230 + 50%/80% * 80 = 280px
+Column 2 size is 150 + 30%/80% * 80 = 180px
+Column 3 remains 20px
+Assignable table inline size
+C1 dominates estimate: 180/30% + 4*8 = 632
+Compute final column widths from assignable table size:
+C0 = 50% of 600 = 300 C1 = 30% of 600 = 180 , C2 gets the remaining 120</p>
+<table data-expected-width="632">
   <tr>
-    <td style="width:50%" data-expected-width="250"><div style="width:150px">50%/150px</div></td>
-    <td style="width:30%" data-expected-width="150"><div class="test12" style="width:150px">30%/150px</div></td>
-    <td style="width:20px" data-expected-width="100">x</td>
+    <td style="width:50%" data-expected-width="300"><div style="width:150px">50%/150px</div></td>
+    <td style="width:30%" data-expected-width="180"><div style="width:150px">30%/150px</div></td>
+    <td style="width:20px" data-expected-width="120">x</td>
   </tr>
   <tr>
-    <td colspan=2 style=""><div style="width:400px">400px min</div></td>
+    <td colspan=2 style=""><div style="width:468px">408px min</div></td>
   </tr>
 </table>
+
 
 <p 13 class="testdesc"> Colspan&gt;1:Auto/400px C0:50%/75px/125px, C1:30%/75px/125px C2:20px/Auto
 Colspan&gt;1 cell distribution over different percentages.

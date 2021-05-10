@@ -919,6 +919,7 @@ crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-gi
 crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/
+crbug.com/958381 external/wpt/css/css-tables/tentative/colspan-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
 
