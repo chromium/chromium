@@ -59,19 +59,18 @@ void AuctionRunner::StartBidding() {
     bid_state->bidder = bidder.get();
     // TODO(morlovich): Straight skip if URL is missing.
     bid_state->bidder_worklet = std::make_unique<BidderWorklet>(
-        url_loader_factory_.get(), bidder->Clone(),
+        &auction_v8_helper_, url_loader_factory_.get(), bidder->Clone(),
         auction_config_->auction_signals, PerBuyerSignals(bid_state),
         browser_signals_->top_frame_origin,
         browser_signals_->seller.Serialize(), auction_start_time_,
-        &auction_v8_helper_,
         base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                        base::Unretained(this), bid_state));
   }
 
   // Also initiate the script fetch for the seller script.
   seller_worklet_ = std::make_unique<SellerWorklet>(
-      url_loader_factory_.get(), auction_config_->decision_logic_url,
-      &auction_v8_helper_,
+      &auction_v8_helper_, url_loader_factory_.get(),
+      auction_config_->decision_logic_url,
       base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,
                      base::Unretained(this)));
 }
@@ -79,13 +78,13 @@ void AuctionRunner::StartBidding() {
 void AuctionRunner::OnGenerateBidComplete(
     BidState* state,
     base::Optional<BidderWorklet::Bid> bid,
-    std::vector<std::string> error_msgs) {
+    const std::vector<std::string>& errors) {
   DCHECK(!state->bid_generate_complete);
   DCHECK_GT(outstanding_bids_, 0);
 
   --outstanding_bids_;
 
-  errors_.insert(errors_.end(), error_msgs.begin(), error_msgs.end());
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
   state->bid_generate_complete = true;
   state->bid_result = std::move(bid);
 
@@ -95,9 +94,8 @@ void AuctionRunner::OnGenerateBidComplete(
 
 void AuctionRunner::OnSellerWorkletLoaded(
     bool load_result,
-    base::Optional<std::string> error_msg) {
-  if (error_msg.has_value())
-    errors_.push_back(std::move(error_msg).value());
+    const std::vector<std::string>& errors) {
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
 
   if (load_result) {
     seller_loaded_ = true;
@@ -227,9 +225,9 @@ void AuctionRunner::ReportBidWin(const BidState* best_bid) {
 void AuctionRunner::OnReportBidWinComplete(
     const BidState* best_bid,
     const base::Optional<GURL>& bidder_report_url,
-    const std::vector<std::string>& error_msgs) {
+    const std::vector<std::string>& errors) {
   bidder_report_url_ = bidder_report_url;
-  errors_.insert(errors_.end(), error_msgs.begin(), error_msgs.end());
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
   ReportSuccess(best_bid);
 }
 

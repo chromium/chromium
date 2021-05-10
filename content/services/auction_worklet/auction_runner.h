@@ -75,12 +75,12 @@ class AuctionRunner {
   void StartBidding();
   void OnGenerateBidComplete(BidState* state,
                              base::Optional<BidderWorklet::Bid> bid,
-                             std::vector<std::string> errors_msgs);
+                             const std::vector<std::string>& errors);
 
   // True if all bid results and the seller script load are complete.
   bool ReadyToScore() const { return outstanding_bids_ == 0 && seller_loaded_; }
   void OnSellerWorkletLoaded(bool load_result,
-                             base::Optional<std::string> error_msg);
+                             const std::vector<std::string>& errors);
 
   // Calls into the seller to asynchronously each of outstanding bids, in
   // series. Once there are no outstanding bids, proceeds to selecting the

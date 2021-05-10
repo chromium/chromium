@@ -110,11 +110,10 @@ class BidderWorkletTest : public testing::Test {
   void RunGenerateBidWithReturnValueExpectingResult(
       const std::string& raw_return_value,
       const base::Optional<BidderWorklet::Bid> expected_bid,
-      std::vector<std::string> expected_error_msgs =
-          std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>()) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), expected_bid,
-        expected_error_msgs);
+        expected_errors);
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -122,19 +121,17 @@ class BidderWorkletTest : public testing::Test {
   void RunGenerateBidWithJavascriptExpectingResult(
       const std::string& javascript,
       const base::Optional<BidderWorklet::Bid> expected_bid,
-      std::vector<std::string> expected_error_msgs =
-          std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunGenerateBidExpectingResult(expected_bid, expected_error_msgs);
+    RunGenerateBidExpectingResult(expected_bid, expected_errors);
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
   void RunGenerateBidExpectingResult(
       const base::Optional<BidderWorklet::Bid> expected_bid,
-      std::vector<std::string> expected_error_msgs =
-          std::vector<std::string>()) {
+      std::vector<std::string> expected_errors = std::vector<std::string>()) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
     EXPECT_EQ(expected_bid.has_value(), bid_.has_value());
@@ -143,7 +140,7 @@ class BidderWorkletTest : public testing::Test {
       EXPECT_EQ(expected_bid->bid, bid_->bid);
       EXPECT_EQ(expected_bid->render_url, bid_->render_url);
     }
-    EXPECT_EQ(expected_error_msgs, bid_error_msgs_);
+    EXPECT_EQ(expected_errors, bid_errors_);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
@@ -151,11 +148,11 @@ class BidderWorkletTest : public testing::Test {
   void RunReportWinWithFunctionBodyExpectingResult(
       const std::string& function_body,
       const base::Optional<GURL>& expected_report_url,
-      const std::vector<std::string>& expected_error_msgs =
+      const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     RunReportWinWithJavascriptExpectingResult(
         CreateReportWinScript(function_body), expected_report_url,
-        expected_error_msgs);
+        expected_errors);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
@@ -163,19 +160,19 @@ class BidderWorkletTest : public testing::Test {
   void RunReportWinWithJavascriptExpectingResult(
       const std::string& javascript,
       const base::Optional<GURL>& expected_report_url,
-      const std::vector<std::string>& expected_error_msgs =
+      const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunReportWinExpectingResult(expected_report_url, expected_error_msgs);
+    RunReportWinExpectingResult(expected_report_url, expected_errors);
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
   // supplied result.
   void RunReportWinExpectingResult(
       const base::Optional<GURL>& expected_report_url,
-      const std::vector<std::string>& expected_error_msgs =
+      const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     auto bidder_worket = CreateWorkletAndGenerateBid();
     ASSERT_TRUE(bidder_worket);
@@ -185,11 +182,11 @@ class BidderWorkletTest : public testing::Test {
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
-            [&run_loop, &expected_report_url, &expected_error_msgs](
+            [&run_loop, &expected_report_url, &expected_errors](
                 const base::Optional<GURL>& report_url,
-                const std::vector<std::string>& error_msgs) {
+                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
-              EXPECT_EQ(expected_error_msgs, error_msgs);
+              EXPECT_EQ(expected_errors, errors);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -228,7 +225,7 @@ class BidderWorkletTest : public testing::Test {
                                          std::move(bidding_browser_signals));
 
     auto bidder_worket = std::make_unique<BidderWorklet>(
-        &url_loader_factory_, std::move(bidding_interest_group),
+        &v8_helper_, &url_loader_factory_, std::move(bidding_interest_group),
         null_auction_signals_
             ? base::nullopt
             : base::make_optional<std::string>(auction_signals_),
@@ -236,7 +233,7 @@ class BidderWorkletTest : public testing::Test {
             ? base::nullopt
             : base::make_optional<std::string>(per_buyer_signals_),
         browser_signal_top_window_origin_, browser_signal_seller_,
-        auction_start_time_, &v8_helper_,
+        auction_start_time_,
         base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
                        base::Unretained(this)));
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -248,9 +245,7 @@ class BidderWorkletTest : public testing::Test {
   }
 
   const base::Optional<BidderWorklet::Bid>& bid() const { return bid_; }
-  const std::vector<std::string> bid_error_msgs() const {
-    return bid_error_msgs_;
-  }
+  const std::vector<std::string> bid_errors() const { return bid_errors_; }
 
  protected:
   std::vector<mojo::StructPtr<mojom::PreviousWin>> CloneWinList(
@@ -263,9 +258,9 @@ class BidderWorkletTest : public testing::Test {
   }
 
   void CreateWorkletCallback(base::Optional<BidderWorklet::Bid> bid,
-                             std::vector<std::string> error_msgs) {
+                             const std::vector<std::string>& errors) {
     bid_ = std::move(bid);
-    bid_error_msgs_ = std::move(error_msgs);
+    bid_errors_ = errors;
     load_script_run_loop_->Quit();
   }
 
@@ -313,7 +308,7 @@ class BidderWorkletTest : public testing::Test {
 
   // Values passed to the GenerateBidCallback().
   base::Optional<BidderWorklet::Bid> bid_;
-  std::vector<std::string> bid_error_msgs_;
+  std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
@@ -334,9 +329,9 @@ TEST_F(BidderWorkletTest, CompileError) {
   EXPECT_FALSE(CreateWorkletAndGenerateBid());
 
   EXPECT_FALSE(bid());
-  ASSERT_EQ(1u, bid_error_msgs().size());
-  EXPECT_THAT(bid_error_msgs()[0], StartsWith("https://url.test/:1 "));
-  EXPECT_THAT(bid_error_msgs()[0], HasSubstr("SyntaxError"));
+  ASSERT_EQ(1u, bid_errors().size());
+  EXPECT_THAT(bid_errors()[0], StartsWith("https://url.test/:1 "));
+  EXPECT_THAT(bid_errors()[0], HasSubstr("SyntaxError"));
 }
 
 // Test parsing of return values.
@@ -997,8 +992,8 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     // case it's due to something like passing non-JSON to JSON parameter which
     // user code should be unable to trigger, and for which we thus do not
     // produce an error message.
-    std::vector<std::string> expect_error_msgs;
-    std::vector<std::string> expect_error_msgs_array;
+    std::vector<std::string> expect_errors;
+    std::vector<std::string> expect_errors_array;
   } kStringTestCases[] = {
       {
           "auctionSignals",
@@ -1055,7 +1050,7 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
           base::StringPrintf("sendReportTo(%s)", test_case.name),
           test_case.is_json ? base::Optional<GURL>()
                             : GURL("https://foo.test/"),
-          {test_case.expect_error_msgs});
+          {test_case.expect_errors});
     } else {
       // JSON values passed the generateBid() result in failures there, before
       // reportWin is called.
@@ -1067,7 +1062,7 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     RunReportWinWithFunctionBodyExpectingResult(
         base::StringPrintf("sendReportTo(%s[0])", test_case.name),
         test_case.is_json ? GURL("https://foo.test/") : base::Optional<GURL>(),
-        {test_case.expect_error_msgs_array});
+        {test_case.expect_errors_array});
 
     SetDefaultParameters();
   }
@@ -1185,9 +1180,9 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
             [&run_loop](const base::Optional<GURL>& report_url,
-                        const std::vector<std::string>& error_msgs) {
+                        const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
-              EXPECT_TRUE(error_msgs.empty());
+              EXPECT_TRUE(errors.empty());
               run_loop.Quit();
             }));
     run_loop.Run();

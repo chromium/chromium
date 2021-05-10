@@ -30,7 +30,7 @@ class SellerWorklet {
  public:
   using LoadWorkletCallback =
       base::OnceCallback<void(bool success,
-                              base::Optional<std::string> error_msg)>;
+                              const std::vector<std::string>& errors)>;
 
   // Callback for ScoreAd(). On success, `score` is the positive score returned
   // by the script. On failure, it's 0. `errors` is a vector of any errors that
@@ -59,9 +59,9 @@ class SellerWorklet {
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
   // Must be destroyed before `v8_helper`.
-  SellerWorklet(network::mojom::URLLoaderFactory* url_loader_factory,
+  SellerWorklet(AuctionV8Helper* v8_helper,
+                network::mojom::URLLoaderFactory* url_loader_factory,
                 const GURL& script_source_url,
-                AuctionV8Helper* v8_helper,
                 LoadWorkletCallback load_worklet_callback);
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -94,14 +94,15 @@ class SellerWorklet {
 
  private:
   void OnDownloadComplete(
-      LoadWorkletCallback load_worklet_callback,
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
       base::Optional<std::string> error_msg);
 
-  const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;
+
+  const GURL script_source_url_;
   std::unique_ptr<WorkletLoader> worklet_loader_;
 
+  LoadWorkletCallback load_worklet_callback_;
   // Compiled script, not bound to any context. Can be repeatedly bound to
   // different context and executed, without persisting any state.
   std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script_;

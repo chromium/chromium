@@ -131,16 +131,18 @@ void InvokeReportResultCallbackAsync(
 }  // namespace
 
 SellerWorklet::SellerWorklet(
+    AuctionV8Helper* v8_helper,
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& script_source_url,
-    AuctionV8Helper* v8_helper,
     LoadWorkletCallback load_worklet_callback)
-    : script_source_url_(script_source_url), v8_helper_(v8_helper) {
-  DCHECK(load_worklet_callback);
+    : v8_helper_(v8_helper),
+      script_source_url_(script_source_url),
+      load_worklet_callback_(std::move(load_worklet_callback)) {
+  DCHECK(load_worklet_callback_);
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory, script_source_url, v8_helper,
-      base::BindOnce(&SellerWorklet::OnDownloadComplete, base::Unretained(this),
-                     std::move(load_worklet_callback)));
+      base::BindOnce(&SellerWorklet::OnDownloadComplete,
+                     base::Unretained(this)));
 }
 
 SellerWorklet::~SellerWorklet() = default;
@@ -310,13 +312,17 @@ void SellerWorklet::ReportResult(
 }
 
 void SellerWorklet::OnDownloadComplete(
-    LoadWorkletCallback load_worklet_callback,
     std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
     base::Optional<std::string> error_msg) {
+  DCHECK(load_worklet_callback_);
+
   worklet_loader_.reset();
   worklet_script_ = std::move(worklet_script);
-  std::move(load_worklet_callback)
-      .Run(worklet_script_ != nullptr, std::move(error_msg));
+  std::vector<std::string> errors;
+  if (error_msg)
+    errors.emplace_back(std::move(error_msg).value());
+  std::move(load_worklet_callback_)
+      .Run(worklet_script_ != nullptr /* success */, errors);
 }
 
 }  // namespace auction_worklet

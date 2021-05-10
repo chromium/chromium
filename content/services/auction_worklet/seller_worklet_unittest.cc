@@ -199,7 +199,7 @@ class SellerWorkletTest : public testing::Test {
 
     create_worklet_succeeded_ = false;
     auto seller_worket = std::make_unique<SellerWorklet>(
-        &url_loader_factory_, url_, &v8_helper_,
+        &v8_helper_, &url_loader_factory_, url_,
         base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
                        base::Unretained(this)));
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -212,15 +212,13 @@ class SellerWorkletTest : public testing::Test {
 
  protected:
   void CreateWorkletCallback(bool success,
-                             base::Optional<std::string> error_msg) {
+                             const std::vector<std::string>& errors) {
     create_worklet_succeeded_ = success;
-    error_msg_ = std::move(error_msg);
+    last_errors_ = errors;
     if (success)
-      EXPECT_FALSE(error_msg_.has_value());
+      EXPECT_TRUE(last_errors_.empty());
     load_script_run_loop_->Quit();
   }
-
-  std::string last_error_msg() { return error_msg_.value_or("Not an error"); }
 
   base::test::TaskEnvironment task_environment_;
 
@@ -245,7 +243,7 @@ class SellerWorkletTest : public testing::Test {
   // synchronously.
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
   bool create_worklet_succeeded_ = false;
-  base::Optional<std::string> error_msg_;
+  std::vector<std::string> last_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;
@@ -255,15 +253,18 @@ TEST_F(SellerWorkletTest, NetworkError) {
   url_loader_factory_.AddResponse(url_.spec(), CreateBasicSellAdScript(),
                                   net::HTTP_NOT_FOUND);
   EXPECT_FALSE(CreateWorklet());
-  EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
-            last_error_msg());
+  EXPECT_EQ(
+      std::vector<std::string>{
+          "Failed to load https://url.test/ HTTP status = 404 Not Found."},
+      last_errors_);
 }
 
 TEST_F(SellerWorkletTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
-  EXPECT_THAT(last_error_msg(), StartsWith("https://url.test/:1 "));
-  EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
+  ASSERT_EQ(1u, last_errors_.size());
+  EXPECT_THAT(last_errors_[0], StartsWith("https://url.test/:1 "));
+  EXPECT_THAT(last_errors_[0], HasSubstr("SyntaxError"));
 }
 
 // Test parsing of return values.

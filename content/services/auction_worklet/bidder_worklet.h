@@ -72,23 +72,23 @@ class BidderWorklet {
 
   // If no bid is generated, `bid` is null.
   //
-  // `error_msgs` contains error messages for debugging. This isn't guaranteed
+  // `errors` contains error messages for debugging. This isn't guaranteed
   // to be produced for all failures, so should not be checked to identify
   // bidding failures errors. It's also possible for there to be an error
   // message on success, in the case the trusted bidding signals failed to load
-  // - auctions will still be run without it, but `error_msgs` will be populated
+  // - auctions will still be run without it, but `errors` will be populated
   // with information about the load failure.
   using LoadScriptAndGenerateBidCallback =
       base::OnceCallback<void(base::Optional<Bid> bid,
-                              std::vector<std::string> error_msgs)>;
+                              const std::vector<std::string>& errors)>;
 
   // `report_url` is the URL to request to report displaying the ad. It is
-  // nullopt on error or if report is requested. `error_msgs` is a list of
-  // errors that occurred, if any. `error_msgs` may be non-empty on success, or
+  // nullopt on error or if report is requested. `errors` is a list of
+  // errors that occurred, if any. `errors` may be non-empty on success, or
   // empty on failure.
   using ReportWinCallback =
       base::OnceCallback<void(const base::Optional<GURL>& report_url,
-                              const std::vector<std::string>& error_msgs)>;
+                              const std::vector<std::string>& errors)>;
 
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
@@ -98,6 +98,7 @@ class BidderWorklet {
   //
   // Data is cached and will be reused ReportWin().
   BidderWorklet(
+      AuctionV8Helper* v8_helper,
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojom::BiddingInterestGroupPtr bidding_interest_group,
       const base::Optional<std::string>& auction_signals_json,
@@ -105,7 +106,6 @@ class BidderWorklet {
       const url::Origin& browser_signal_top_window_origin,
       const std::string& browser_signal_seller,
       base::Time auction_start_time,
-      AuctionV8Helper* v8_helper,
       LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
@@ -139,8 +139,9 @@ class BidderWorklet {
   void InvokeBidCallbackOnError(
       base::Optional<std::string> error_msg = base::nullopt);
 
-  const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;
+
+  const GURL script_source_url_;
   const mojom::BiddingInterestGroupPtr bidding_interest_group_;
 
   LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback_;
