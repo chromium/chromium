@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "components/subresource_redirect/proto/robots_rules.pb.h"
 
 namespace subresource_redirect {

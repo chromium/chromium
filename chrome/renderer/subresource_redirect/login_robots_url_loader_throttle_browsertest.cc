@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
+#include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -117,10 +118,18 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
         blink::features::kSubresourceRedirect);
   }
 
-  void SetUpRobotsRules(const std::string& origin,
+  void SetUpRobotsRules(const std::string& origin_str,
                         const std::vector<RobotsRule>& patterns) {
-    login_robots_decider_agent_->UpdateRobotsRulesForTesting(
-        url::Origin::Create(GURL(origin)), GetRobotsRulesProtoString(patterns));
+    const auto origin = url::Origin::Create(GURL(origin_str));
+    RobotsRulesParserCache& robots_rules_parser_cache =
+        RobotsRulesParserCache::Get();
+    if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
+      robots_rules_parser_cache.CreateRobotsRulesParser(
+          origin, base::TimeDelta::FromSeconds(2));
+    }
+    EXPECT_TRUE(robots_rules_parser_cache.DoRobotsRulesParserExist(origin));
+    robots_rules_parser_cache.UpdateRobotsRules(
+        origin, GetRobotsRulesProtoString(patterns));
   }
 
   std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
@@ -198,6 +207,18 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       {true, true, network::mojom::RequestDestination::kImage,
        blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
        "http://www.test.com/test.jpg", false},
+      {true, true, network::mojom::RequestDestination::kImage,
+       blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+       "http://www.test.com/test.jpg", false},
+      {true, true, network::mojom::RequestDestination::kImage,
+       blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON, "mailto:foo@bar.com",
+       false},
+      {true, true, network::mojom::RequestDestination::kImage,
+       blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+       "data:image/png;base64,"
+       "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/"
+       "w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+       false},
   };
 
   for (const TestCase& test_case : kTestCases) {

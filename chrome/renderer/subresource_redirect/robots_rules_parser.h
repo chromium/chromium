@@ -17,9 +17,12 @@
 namespace subresource_redirect {
 
 // Holds the robots rules for a singe origin, and enables checking whether an
-// url path is allowed or disallowed. Also supports a timeout to receive the
-// robots rules after which it will be treated as a full disallow. The check
-// result is delivered via callback asynchronously.
+// url path is allowed or disallowed.  This check result is returned immediately
+// if available, or delivered via callback asynchronously (when rules are not
+// yet available). Also supports a timeout to receive the robots rules after
+// which it will be treated as a full disallow. This class also tracks the
+// routing_id of the rules check requests, and that is used to invalidate the
+// previous check requests when a new navigation starts in the render frame.
 class RobotsRulesParser {
  public:
   // The final result of robots rule retrieval.
@@ -38,8 +41,10 @@ class RobotsRulesParser {
     kTimedout,                // Timeout in retrieving the robots rules
     kDisallowedAfterTimeout,  // Timeout got triggered already, and the resource
                               // was disallowed
-    kInvalidated,  // The result check was invalidated, before robots rules are
-                   // received or timeout triggered.
+    kInvalidated,   // The result check was invalidated, before robots rules are
+                    // received or timeout triggered.
+    kEntryMissing,  // The robots rules parser entry for the origin was missing
+                    // in the cache.
   };
 
   enum class RulesReceiveState {

@@ -5,6 +5,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
+#include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -55,10 +56,18 @@ class RedirectResultReceiver {
 class SubresourceRedirectLoginRobotsDeciderAgentTest
     : public ChromeRenderViewTest {
  public:
-  void SetUpRobotsRules(const std::string& origin,
+  void SetUpRobotsRules(const std::string& origin_str,
                         const std::vector<RobotsRule>& patterns) {
-    login_robots_decider_agent_->UpdateRobotsRulesForTesting(
-        url::Origin::Create(GURL(origin)), GetRobotsRulesProtoString(patterns));
+    const auto origin = url::Origin::Create(GURL(origin_str));
+    RobotsRulesParserCache& robots_rules_parser_cache =
+        RobotsRulesParserCache::Get();
+    if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
+      robots_rules_parser_cache.CreateRobotsRulesParser(
+          origin, base::TimeDelta::FromSeconds(2));
+    }
+    EXPECT_TRUE(robots_rules_parser_cache.DoRobotsRulesParserExist(origin));
+    robots_rules_parser_cache.UpdateRobotsRules(
+        origin, GetRobotsRulesProtoString(patterns));
   }
 
   bool ShouldRedirectSubresource(const std::string& url) {

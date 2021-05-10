@@ -1628,6 +1628,7 @@ if (!is_android) {
       "../renderer/subresource_redirect/login_robots_decider_agent_browsertest.cc",
       "../renderer/subresource_redirect/login_robots_url_loader_throttle_browsertest.cc",
       "../renderer/subresource_redirect/public_image_hints_decider_agent_browsertest.cc",
+      "../renderer/subresource_redirect/robots_rules_parser_cache_browsertest.cc",
       "../renderer/subresource_redirect/subresource_redirect_renderer_browsertest.cc",
       "../renderer/translate/per_frame_translate_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",

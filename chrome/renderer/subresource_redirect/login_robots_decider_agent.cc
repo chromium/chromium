@@ -6,7 +6,6 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
@@ -19,13 +18,6 @@ namespace subresource_redirect {
 
 namespace {
 
-// Returns the robots rules parser cache that is shared across the RenderFrames
-// in the renderer.
-RobotsRulesParserCache& GetRobotsRulesParserCache() {
-  static base::NoDestructor<RobotsRulesParserCache> instance;
-  return *instance;
-}
-
 // Converts the RobotsRulesParser::CheckResult enum to SubresourceRedirectResult
 // enum.
 SubresourceRedirectResult ConvertToRedirectResult(
@@ -35,6 +27,7 @@ SubresourceRedirectResult ConvertToRedirectResult(
       return SubresourceRedirectResult::kRedirectable;
     case RobotsRulesParser::CheckResult::kDisallowed:
     case RobotsRulesParser::CheckResult::kInvalidated:
+    case RobotsRulesParser::CheckResult::kEntryMissing:
       return SubresourceRedirectResult::kIneligibleRobotsDisallowed;
     case RobotsRulesParser::CheckResult::kTimedout:
     case RobotsRulesParser::CheckResult::kDisallowedAfterTimeout:
@@ -65,6 +58,7 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(url.SchemeIsHTTPOrHTTPS());
   DCHECK(url.is_valid());
   num_should_redirect_checks_++;
 
@@ -73,26 +67,24 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     return redirect_result_;
   }
 
-  // Trigger the robots rules fetch if needed.
-  const auto origin = url::Origin::Create(url);
   RobotsRulesParserCache& robots_rules_parser_cache =
-      GetRobotsRulesParserCache();
-  if (!robots_rules_parser_cache.DoRobotsRulesExist(origin)) {
-    // base::Unretained can be used here since the |robots_rules_parser_cache|
-    // is never destructed.
+      RobotsRulesParserCache::Get();
+  const auto origin = url::Origin::Create(url);
+  DCHECK(!origin.opaque());
+  if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
+    // Create the robots rules parser and start the fetch as well.
+    robots_rules_parser_cache.CreateRobotsRulesParser(
+        origin, num_should_redirect_checks_ <= GetFirstKSubresourceLimit()
+                    ? GetRobotsRulesReceiveFirstKSubresourceTimeout()
+                    : GetRobotsRulesReceiveTimeout());
     GetSubresourceRedirectServiceRemote()->GetRobotsRules(
-        origin,
-        base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
-                       base::Unretained(&robots_rules_parser_cache), origin));
+        origin, base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
+                               robots_rules_parser_cache.GetWeakPtr(), origin));
   }
-  auto rules_receive_timeout =
-      num_should_redirect_checks_ <= GetFirstKSubresourceLimit()
-          ? GetRobotsRulesReceiveFirstKSubresourceTimeout()
-          : GetRobotsRulesReceiveTimeout();
 
   base::Optional<RobotsRulesParser::CheckResult> result =
       robots_rules_parser_cache.CheckRobotsRules(
-          routing_id(), url, rules_receive_timeout,
+          routing_id(), url,
           base::BindOnce(
               &LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -127,7 +119,9 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
   PublicResourceDeciderAgent::ReadyToCommitNavigation(document_loader);
   redirect_result_ = SubresourceRedirectResult::kUnknown;
   num_should_redirect_checks_ = 0;
-  GetRobotsRulesParserCache().InvalidatePendingRequests(routing_id());
+  // Invalidate the previous requests that were started by previous navigation,
+  // for the current frame.
+  RobotsRulesParserCache::Get().InvalidatePendingRequests(routing_id());
 }
 
 void LoginRobotsDeciderAgent::SetLoggedInState(bool is_logged_in) {
@@ -151,12 +145,6 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
   // subresource compression on non logged-in pages.
   DCHECK(ShouldEnableRobotsRulesFetching());
   NOTREACHED();
-}
-
-void LoginRobotsDeciderAgent::UpdateRobotsRulesForTesting(
-    const url::Origin& origin,
-    const base::Optional<std::string>& rules) {
-  GetRobotsRulesParserCache().UpdateRobotsRules(origin, rules);
 }
 
 }  // namespace subresource_redirect

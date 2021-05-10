@@ -33,9 +33,6 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   friend class SubresourceRedirectLoginRobotsDeciderAgentTest;
   friend class SubresourceRedirectLoginRobotsURLLoaderThrottleTest;
 
-  void UpdateRobotsRulesForTesting(const url::Origin& origin,
-                                   const base::Optional<std::string>& rules);
-
   // content::RenderFrameObserver:
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
