@@ -184,6 +184,8 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const DrawImage& image,
     const TracingInfo& tracing_info,
     DecodeTaskType task_type) {
+  recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal Start");
+
   CacheKey key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_space(),
                                        image.paint_image()));
@@ -193,13 +195,17 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
 
   // If the target size is empty, we can skip this image during draw (and thus
   // we don't need to decode it or ref it).
-  if (key.target_size().IsEmpty())
+  if (key.target_size().IsEmpty()) {
+    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #1");
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
-  if (!UseCacheForDrawImage(image))
+  if (!UseCacheForDrawImage(image)) {
+    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #2");
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
   base::AutoLock lock(lock_);
 
@@ -239,9 +245,11 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
 
   // If we already have a locked entry, then we can just use that. Otherwise
   // we'll have to create a task.
-  if (cache_entry->is_locked)
+  if (cache_entry->is_locked) {
+    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #3");
     return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
   scoped_refptr<TileTask>& task =
       task_type == DecodeTaskType::USE_IN_RASTER_TASKS
@@ -253,6 +261,8 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     task = base::MakeRefCounted<SoftwareImageDecodeTaskImpl>(
         this, key, image.paint_image(), task_type, tracing_info);
   }
+
+  recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal Done");
   return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
 }
 
