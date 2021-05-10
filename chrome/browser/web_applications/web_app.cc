@@ -299,6 +299,10 @@ void WebApp::SetManifestId(const base::Optional<std::string>& manifest_id) {
   manifest_id_ = manifest_id;
 }
 
+void WebApp::SetFileHandlerPermissionBlocked(bool permission_blocked) {
+  file_handler_permission_blocked_ = permission_blocked;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -458,6 +462,9 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   for (const apps::FileHandler& file_handler : app.file_handlers_)
     out << Indent(file_handler) << std::endl;
 
+  out << "file_handler_permission_blocked:"
+      << app.file_handler_permission_blocked_ << std::endl;
+
   out << "share_target:" << std::endl << Indent(app.share_target_) << std::endl;
 
   out << "additional_search_terms:" << std::endl;
@@ -545,7 +552,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.capture_links_,
         app.manifest_url_,
         app.manifest_id_,
-        app.client_data_.system_web_app_data
+        app.client_data_.system_web_app_data,
+        app.file_handler_permission_blocked_
         // clang-format on
     );
   };

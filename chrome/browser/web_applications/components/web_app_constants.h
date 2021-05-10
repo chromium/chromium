@@ -265,6 +265,17 @@ constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
 // chrome:// web applications are exempt from this limit.
 constexpr size_t kMaxFileHandlers = 10;
 
+// Expected file handler update actions to be taken by OsIntegrationManager
+// during UpdateOsHooks.
+enum class FileHandlerUpdateAction {
+  // Perform update, removing and re-adding all file handlers.
+  kUpdate = 0,
+  // Remove all file handlers.
+  kRemove = 1,
+  // Do not perform update.
+  kNoUpdate = 2,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CONSTANTS_H_

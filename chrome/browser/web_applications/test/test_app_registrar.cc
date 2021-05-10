@@ -137,6 +137,11 @@ const apps::FileHandlers* TestAppRegistrar::GetAppFileHandlers(
   return nullptr;
 }
 
+bool TestAppRegistrar::IsAppFileHandlerPermissionBlocked(
+    const web_app::AppId& app_id) const {
+  return false;
+}
+
 base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);

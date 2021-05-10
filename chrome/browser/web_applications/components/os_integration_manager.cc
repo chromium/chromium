@@ -234,13 +234,13 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     std::unique_ptr<ShortcutInfo> old_shortcut,
-    bool file_handlers_need_os_update,
+    FileHandlerUpdateAction file_handlers_need_os_update,
     const WebApplicationInfo& web_app_info) {
   if (g_suppress_os_hooks_for_testing_)
     return;
 
-  if (file_handlers_need_os_update)
-    UpdateFileHandlers(app_id, std::move(old_shortcut));
+  UpdateFileHandlersWithShortcutInfo(app_id, file_handlers_need_os_update,
+                                     std::move(old_shortcut));
 
   UpdateShortcuts(app_id, old_name);
   UpdateShortcutsMenu(app_id, web_app_info);
@@ -552,18 +552,43 @@ void OsIntegrationManager::UpdateUrlHandlers(
 
 void OsIntegrationManager::UpdateFileHandlers(
     const AppId& app_id,
+    FileHandlerUpdateAction file_handlers_need_os_update) {
+  GetShortcutInfoForApp(
+      app_id,
+      base::BindOnce(&OsIntegrationManager::UpdateFileHandlersWithShortcutInfo,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     file_handlers_need_os_update));
+}
+
+void OsIntegrationManager::UpdateFileHandlersWithShortcutInfo(
+    const AppId& app_id,
+    FileHandlerUpdateAction file_handlers_need_os_update,
     std::unique_ptr<ShortcutInfo> info) {
   if (!IsFileHandlingAPIAvailable(app_id))
     return;
 
-  // Update file handlers via complete uninstallation, then reinstallation.
-  auto callback = base::BindOnce(&OsIntegrationManager::RegisterFileHandlers,
-                                 weak_ptr_factory_.GetWeakPtr(), app_id,
-                                 base::DoNothing::Once<bool>());
+  base::OnceClosure callback_after_removal;
+  switch (file_handlers_need_os_update) {
+    case FileHandlerUpdateAction::kNoUpdate:
+      return;
+    case FileHandlerUpdateAction::kUpdate:
+      callback_after_removal =
+          base::BindOnce(&OsIntegrationManager::RegisterFileHandlers,
+                         weak_ptr_factory_.GetWeakPtr(), app_id,
+                         base::DoNothing::Once<bool>());
+      break;
+    case FileHandlerUpdateAction::kRemove:
+      callback_after_removal = base::DoNothing::Once();
+      break;
+  }
+
+  // Update file handlers via complete uninstallation, then potential
+  // reinstallation.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&OsIntegrationManager::UnregisterFileHandlers,
-                                weak_ptr_factory_.GetWeakPtr(), app_id,
-                                std::move(info), std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&OsIntegrationManager::UnregisterFileHandlers,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, std::move(info),
+                     std::move(callback_after_removal)));
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(

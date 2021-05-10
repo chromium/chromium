@@ -122,8 +122,10 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   // Update:
   MOCK_METHOD(void,
-              UpdateFileHandlers,
-              (const AppId& app_id, std::unique_ptr<ShortcutInfo> info),
+              UpdateFileHandlersWithShortcutInfo,
+              (const AppId& app_id,
+               FileHandlerUpdateAction file_handlers_need_os_update,
+               std::unique_ptr<ShortcutInfo> info),
               (override));
   MOCK_METHOD(void,
               UpdateShortcuts,
@@ -306,12 +308,16 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   WebApplicationInfo web_app_info;
   base::StringPiece old_name = "test-name";
 
-  EXPECT_CALL(manager, UpdateFileHandlers(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager,
+              UpdateFileHandlersWithShortcutInfo(
+                  app_id, FileHandlerUpdateAction::kUpdate, testing::_))
+      .Times(1);
   EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name)).Times(1);
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
 
-  manager.UpdateOsHooks(app_id, old_name, nullptr, true, web_app_info);
+  manager.UpdateOsHooks(app_id, old_name, nullptr,
+                        FileHandlerUpdateAction::kUpdate, web_app_info);
 }
 
 }  // namespace

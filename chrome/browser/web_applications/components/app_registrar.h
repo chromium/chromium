@@ -108,6 +108,7 @@ class AppRegistrar {
       const AppId& app_id) const = 0;
   virtual const apps::FileHandlers* GetAppFileHandlers(
       const AppId& app_id) const = 0;
+  virtual bool IsAppFileHandlerPermissionBlocked(const AppId& app_id) const = 0;
 
   // Returns the start_url with launch_query_params appended to the end if any.
   GURL GetAppLaunchUrl(const AppId& app_id) const;
