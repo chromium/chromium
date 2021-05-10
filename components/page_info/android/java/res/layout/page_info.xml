@@ -32,24 +32,6 @@
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
-        <TextView
-            android:id="@+id/page_info_connection_summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_connection_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="8dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:visibility="gone" />
-
         <View
             android:id="@+id/page_info_preview_separator"
             android:layout_marginTop="16dp"

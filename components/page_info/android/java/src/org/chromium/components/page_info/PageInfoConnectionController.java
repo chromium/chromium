@@ -4,12 +4,17 @@
 
 package org.chromium.components.page_info;
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorRes;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -22,18 +27,25 @@ public class PageInfoConnectionController
         implements PageInfoSubpageController, ConnectionInfoView.ConnectionInfoDelegate {
     private PageInfoMainController mMainController;
     private final WebContents mWebContents;
+    private final PageInfoRowView mRowView;
+    private final PageInfoControllerDelegate mDelegate;
     private final VrHandler mVrHandler;
-    private PageInfoRowView mRowView;
+    private final String mContentPublisher;
+    private final boolean mIsInternalPage;
     private String mTitle;
     private ConnectionInfoView mInfoView;
     private ViewGroup mContainer;
 
     public PageInfoConnectionController(PageInfoMainController mainController, PageInfoRowView view,
-            WebContents webContents, VrHandler vrHandler) {
+            WebContents webContents, PageInfoControllerDelegate delegate, String publisher,
+            boolean isInternalPage) {
         mMainController = mainController;
-        mWebContents = webContents;
-        mVrHandler = vrHandler;
         mRowView = view;
+        mWebContents = webContents;
+        mDelegate = delegate;
+        mVrHandler = mDelegate.getVrHandler();
+        mContentPublisher = publisher;
+        mIsInternalPage = isInternalPage;
     }
 
     private void launchSubpage() {
@@ -76,18 +88,77 @@ public class PageInfoConnectionController
         }
     }
 
-    public void setConnectionInfo(PageInfoView.ConnectionInfoParams params) {
+    /**
+     * Whether to show a 'Details' link to the connection info popup.
+     */
+    private boolean isConnectionDetailsLinkVisible() {
+        // If Paint Preview is being shown, it completely obstructs the WebContents and users
+        // cannot interact with it. Hence, showing connection details is not relevant.
+        return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
+                && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
+    }
+
+    /**
+     * Sets the connection security summary and detailed description strings. These strings may be
+     * overridden based on the state of the Android UI.
+     */
+    public void setSecurityDescription(String summary, String details) {
+        // Display the appropriate connection message.
+        SpannableStringBuilder messageBuilder = new SpannableStringBuilder();
+        CharSequence title = null;
+        CharSequence subtitle = null;
+        boolean hasClickCallback;
+
+        assert mRowView.getContext() != null;
+        if (mContentPublisher != null) {
+            messageBuilder.append(mRowView.getContext().getString(
+                    R.string.page_info_domain_hidden, mContentPublisher));
+        } else if (mDelegate.isShowingPaintPreviewPage()) {
+            messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
+        } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
+            messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
+        } else {
+            if (!summary.isEmpty()) {
+                title = summary;
+            }
+            messageBuilder.append(details);
+        }
+
+        if (isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
+            messageBuilder.append(" ");
+            SpannableString detailsText =
+                    new SpannableString(mRowView.getContext().getString(R.string.details_link));
+            final ForegroundColorSpan blueSpan =
+                    new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
+                            mRowView.getContext().getResources(), R.color.default_text_color_link));
+            detailsText.setSpan(
+                    blueSpan, 0, detailsText.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            messageBuilder.append(detailsText);
+        }
+
+        // When a preview is being shown for a secure page, the security message is not shown. Thus,
+        // messageBuilder maybe empty.
+        if (messageBuilder.length() > 0) {
+            subtitle = messageBuilder;
+        }
+        hasClickCallback = isConnectionDetailsLinkVisible();
+
+        setConnectionInfo(title, subtitle, hasClickCallback);
+    }
+
+    private void setConnectionInfo(
+            CharSequence title, CharSequence subtitle, boolean hasClickCallback) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        mTitle = params.summary != null ? params.summary.toString() : null;
+        mTitle = title != null ? title.toString() : null;
         rowParams.title = mTitle;
-        rowParams.subtitle = params.message;
+        rowParams.subtitle = subtitle;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
         rowParams.iconResId = SecurityStatusIcon.getSecurityIconResource(securityLevel,
                 /*isSmallDevice=*/false,
                 /*skipIconForNeutralState=*/false);
         rowParams.iconTint = getSecurityIconColor(securityLevel);
-        if (params.clickCallback != null) rowParams.clickCallback = this::launchSubpage;
+        if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }
 

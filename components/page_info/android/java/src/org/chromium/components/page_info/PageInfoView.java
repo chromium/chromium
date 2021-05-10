@@ -146,7 +146,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     /**  Parameters to configure the view of the page info popup. */
     public static class PageInfoViewParams {
         public boolean urlTitleShown = true;
-        public boolean connectionMessageShown = true;
         public boolean instantAppButtonShown = true;
         public boolean openOnlineButtonShown = true;
 
@@ -158,13 +157,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
         public CharSequence url;
         public int urlOriginLength;
-    }
-
-    /**  Parameters to configure the view of the connection message. */
-    public static class ConnectionInfoParams {
-        public CharSequence message;
-        public CharSequence summary;
-        public Runnable clickCallback;
     }
 
     protected static final int FADE_DURATION_MS = 200;
@@ -180,8 +172,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected Runnable mOnUiClosingCallback;
 
     // Components specific to this PageInfoView
-    private TextView mConnectionSummary;
-    private TextView mConnectionMessage;
     private TextView mHttpsImageCompressionMessage;
 
     public PageInfoView(Context context) {
@@ -217,11 +207,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     }
 
     protected void initConnection(PageInfoViewParams params) {
-        mConnectionSummary = findViewById(R.id.page_info_connection_summary);
-        mConnectionMessage = findViewById(R.id.page_info_connection_message);
-        // Hide the connection summary until its text is set.
-        initializePageInfoViewChild(mConnectionSummary, false, null);
-        initializePageInfoViewChild(mConnectionMessage, params.connectionMessageShown, null);
+        // TODO(crbug.com/1182193): Remove function and restructure init at the end of cleanup.
     }
 
     protected void initHttpsImageCompression(PageInfoViewParams params) {
@@ -256,21 +242,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mOnUiClosingCallback.run();
-    }
-
-    public void setConnectionInfo(ConnectionInfoParams params) {
-        if (params.summary != null) {
-            mConnectionSummary.setVisibility(View.VISIBLE);
-            mConnectionSummary.setText(params.summary);
-        }
-        if (params.message != null) {
-            mConnectionMessage.setVisibility(View.VISIBLE);
-            mConnectionMessage.setText(params.message);
-            if (params.clickCallback != null) {
-                mConnectionMessage.setTag(R.id.page_info_click_callback, params.clickCallback);
-                mConnectionMessage.setOnClickListener(this);
-            }
-        }
     }
 
     public void showHttpsImageCompressionInfo(boolean show) {
@@ -316,8 +287,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     protected List<View> collectAnimatableViews() {
         List<View> animatableViews = new ArrayList<>();
         animatableViews.add(mUrlTitle);
-        animatableViews.add(mConnectionSummary);
-        animatableViews.add(mConnectionMessage);
         animatableViews.add(mHttpsImageCompressionMessage);
         animatableViews.add(mInstantAppButton);
 

@@ -5,10 +5,6 @@
 <resources>
     <dimen name="page_info_favicon_size">16dp</dimen>
 
-    <!-- Connection info popup dimensions -->
-    <dimen name="connection_info_padding_thin">16dp</dimen>
-    <dimen name="connection_info_padding_wide">24dp</dimen>
-
     <!-- Page Info Popup Dimensions -->
     <dimen name="page_info_popup_padding_sides">16dp</dimen>
     <dimen name="page_info_popup_padding_vertical">12dp</dimen>

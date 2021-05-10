@@ -13,9 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.Settings;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.Window;
@@ -26,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
@@ -38,7 +35,6 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
-import org.chromium.components.page_info.PageInfoView.ConnectionInfoParams;
 import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -104,9 +100,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // The security level of the page (a valid ConnectionSecurityLevel).
     private int mSecurityLevel;
 
-    // The name of the content publisher, if any.
-    private String mContentPublisher;
-
     // Observer for dismissing dialog if web contents get destroyed, navigate etc.
     private WebContentsObserver mWebContentsObserver;
 
@@ -164,7 +157,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         mWindowAndroid = webContents.getTopLevelNativeWindow();
         mContext = mWindowAndroid.getContext().get();
-        mContentPublisher = publisher;
 
         viewParams.urlTitleClickCallback = () -> {
             // Expand/collapse the displayed URL title.
@@ -271,8 +263,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mContainer.showPage(mView, null, null);
 
         PageInfoViewV2 view2 = (PageInfoViewV2) mView;
-        mConnectionController = new PageInfoConnectionController(
-                this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
+        mConnectionController = new PageInfoConnectionController(this, view2.getConnectionRowView(),
+                mWebContents, mDelegate, publisher, mIsInternalPage);
         mPermissionsController =
                 new PageInfoPermissionsController(this, view2.getPermissionsRowView(), mDelegate,
                         mFullUrl.getSpec(), highlightedPermission);
@@ -347,16 +339,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         }
     }
 
-    /**
-     * Whether to show a 'Details' link to the connection info popup.
-     */
-    private boolean isConnectionDetailsLinkVisible() {
-        // If Paint Preview is being shown, it completely obstructs the WebContents and users
-        // cannot interact with it. Hence, showing connection details is not relevant.
-        return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
-                && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
-    }
-
     private void setupForgetSiteButton(Button button) {
         button.setOnClickListener((View v) -> {
             recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
@@ -410,59 +392,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      */
     @CalledByNative
     private void setSecurityDescription(String summary, String details) {
-        ConnectionInfoParams connectionInfoParams = new ConnectionInfoParams();
-
-        // Display the appropriate connection message.
-        SpannableStringBuilder messageBuilder = new SpannableStringBuilder();
-        assert mContext != null;
-        if (mContentPublisher != null) {
-            messageBuilder.append(
-                    mContext.getString(R.string.page_info_domain_hidden, mContentPublisher));
-        } else if (mDelegate.isShowingPaintPreviewPage()) {
-            messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
-        } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
-            messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
-        } else {
-            if (!summary.isEmpty()) {
-                connectionInfoParams.summary = summary;
-            }
-            messageBuilder.append(details);
-        }
-
-        if (isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
-            messageBuilder.append(" ");
-            SpannableString detailsText =
-                    new SpannableString(mContext.getString(R.string.details_link));
-            final ForegroundColorSpan blueSpan =
-                    new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                            mContext.getResources(), R.color.default_text_color_link));
-            detailsText.setSpan(
-                    blueSpan, 0, detailsText.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            messageBuilder.append(detailsText);
-        }
-
-        // When a preview is being shown for a secure page, the security message is not shown. Thus,
-        // messageBuilder maybe empty.
-        if (messageBuilder.length() > 0) {
-            connectionInfoParams.message = messageBuilder;
-        }
-        if (isConnectionDetailsLinkVisible()) {
-            connectionInfoParams.clickCallback = () -> {
-                runAfterDismiss(() -> {
-                    if (!mWebContents.isDestroyed()) {
-                        recordAction(PageInfoAction.PAGE_INFO_SECURITY_DETAILS_OPENED);
-                        ConnectionInfoView.show(mContext, mWebContents,
-                                mDelegate.getModalDialogManager(), mDelegate.getVrHandler());
-                    }
-                });
-            };
-        }
-
-        if (mIsV2Enabled) {
-            mConnectionController.setConnectionInfo(connectionInfoParams);
-        } else {
-            mView.setConnectionInfo(connectionInfoParams);
-        }
+        mConnectionController.setSecurityDescription(summary, details);
     }
 
     @Override

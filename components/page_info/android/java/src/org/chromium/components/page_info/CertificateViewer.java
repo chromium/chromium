@@ -55,7 +55,7 @@ public class CertificateViewer implements OnItemSelectedListener {
     public CertificateViewer(Context context) {
         mContext = context;
         mPadding =
-                (int) context.getResources().getDimension(R.dimen.connection_info_padding_wide) / 2;
+                (int) context.getResources().getDimension(R.dimen.page_info_popup_padding_vertical);
         mDialog = null;
     }
 

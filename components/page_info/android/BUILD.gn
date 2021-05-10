@@ -50,7 +50,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_tune_24dp.xml",
     "java/res/drawable/page_info_bg.xml",
     "java/res/layout/connection_info.xml",
-    "java/res/layout/connection_info_v2.xml",
     "java/res/layout/page_info.xml",
     "java/res/layout/page_info_container.xml",
     "java/res/layout/page_info_row.xml",
@@ -59,7 +58,6 @@ android_resources("java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
-    "java/res/values/styles.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
   deps = [
