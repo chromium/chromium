@@ -440,8 +440,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool() /* digital_asset_links_enabled */));
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.
+// TODO(https://crbug.com1207573): re-enable when flakiness is fixed.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_NonIdn_NoMatch DISABLED_NonIdn_NoMatch
+#else
+#define MAYBE_NonIdn_NoMatch NonIdn_NoMatch
+#endif
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       NonIdn_NoMatch) {
+                       MAYBE_NonIdn_NoMatch) {
   TestInterstitialNotShown(browser(), GetURL("google.com"));
   CheckNoUkm();
 }
