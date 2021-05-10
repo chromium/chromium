@@ -15,9 +15,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteProperties.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/top_bar/TopBarView.java",
   ]
+
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -26,8 +30,10 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/notes/android:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.content_creation.internal"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
