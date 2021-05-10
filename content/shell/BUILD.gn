@@ -476,6 +476,13 @@ if (is_android) {
     ]
     info_plist_target = ":content_shell_plist"
     data_deps = [ ":content_shell_app" ]
+
+    if (is_component_build) {
+      ldflags = [
+        "-rpath",
+        "@executable_path/../Frameworks",
+      ]
+    }
   }
 } else {
   executable("content_shell") {
@@ -635,27 +642,35 @@ if (is_mac) {
     deps = [
       ":content_shell_angle_library",
       ":content_shell_app",
-      ":content_shell_framework_helpers",
-      ":content_shell_framework_resources",
-      ":content_shell_swiftshader_library",
       "//content/public/app",
       "//content/public/common",
       "//third_party/icu:icudata",
+    ]
+
+    bundle_deps = [
+      ":content_shell_framework_helpers",
+      ":content_shell_framework_resources",
+      ":content_shell_swiftshader_library",
     ]
 
     if (enable_plugins) {
       deps += [ ":content_shell_framework_plugins" ]
     }
 
-    # Both the main :content_shell and :content_shell_helper_app executables
-    # need to link the framework. Because they are at different directory
-    # depths, using @executable_path as the install_name would require using
-    # install_name_tool on one of the executables. However install_name_tool
-    # only operates in-place, which is problematic to express in GN. Instead,
-    # use rpath-based loading.
-    ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
+    if (!is_component_build) {
+      # Specify a sensible install_name for static builds. The library is
+      # dlopen()ed so this is not used to resolve the module.
+      ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
+    } else {
+      # Both the main :content_shell and :content_shell_helper_app executables
+      # need to link the framework. Because they are at different directory
+      # depths, using @executable_path as the install_name would require using
+      # install_name_tool on one of the executables. However install_name_tool
+      # only operates in-place, which is problematic to express in GN. Instead,
+      # use rpath-based loading.
+      ldflags =
+          [ "-Wl,-install_name,@rpath/$output_name.framework/$output_name" ]
 
-    if (is_component_build) {
       # Set up the rpath for the framework so that it can find dylibs in the
       # root output directory. The framework is at
       # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Content Shell Framework
@@ -700,15 +715,28 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
       deps = [ "//sandbox/mac:seatbelt" ]
-      ldflags = [
-        # The helper is in Content Shell.app/Contents/Frameworks/
-        #     Content Shell Framework.framework/Versions/C/Helpers/
-        #     Content Shell Helper.app/Contents/MacOS/
-        # so set rpath up to the base.
-        "-rpath",
-        "@executable_path/../../../../../../../../../..",
-      ]
+
       info_plist_target = ":content_shell_helper_plist"
+
+      if (is_component_build) {
+        ldflags = [
+          # The helper is in Content Shell.app/Contents/Frameworks/
+          #     Content Shell Framework.framework/Versions/C/Helpers/
+          #     Content Shell Helper.app/Contents/MacOS/
+          # so set rpath up to the base.
+          "-rpath",
+          "@executable_path/../../../../../../../../../..",
+
+          # ... and up to Contents/Frameworks.
+          "-rpath",
+          "@executable_path/../../../../../../..",
+        ]
+
+        # In a component build, the framework is directly linked to the
+        # executable because dlopen() and loading all the dependent dylibs
+        # is time-consuming, see https://crbug.com/1197495.
+        deps += [ ":content_shell_framework+link_nested" ]
+      }
     }
   }
 
@@ -726,7 +754,14 @@ if (is_mac) {
     testonly = true
     sources = [ "$root_out_dir/$content_shell_framework_name.framework" ]
     outputs = [ "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}" ]
-    public_deps = [ ":content_shell_framework" ]
+    if (is_component_build) {
+      # In a component build, the framework is directly linked to the
+      # executable because dlopen() and loading all the dependent dylibs
+      # is time-consuming, see https://crbug.com/1197495.
+      public_deps = [ ":content_shell_framework+link" ]
+    } else {
+      public_deps = [ ":content_shell_framework" ]
+    }
   }
 
   bundle_data("content_shell_resources_bundle_data") {

@@ -103,13 +103,18 @@ template("mac_info_plist") {
 #         (optional) string array, 'key=value' pairs for extra fields which are
 #         specified in a source Info.plist template.
 #
-# This template provides two targets for the resulting framework bundle. The
+# This template provides three targets for the resulting framework bundle. The
 # link-time behavior varies depending on which of the two targets below is
 # added as a dependency:
 #   - $target_name only adds a build-time dependency. Targets that depend on
 #     it will not link against the framework.
 #   - $target_name+link adds a build-time and link-time dependency. Targets
 #     that depend on it will link against the framework.
+#   - $target_name+link_nested adds a build-time and link-time dependency, but
+#     only on the shared library and not the fully-assembled framework bundle.
+#     This should only be used for other nested binary components of the
+#     framework bundle (e.g. Helpers) that themselves depend on the main shared
+#     library of the framework bundle.
 #
 # The build-time-only dependency is used for when a target needs to use the
 # framework either only for resources, or because the target loads it at run-
@@ -170,7 +175,7 @@ template("mac_info_plist") {
 # See "gn help shared_library" for more information on arguments supported
 # by shared library target.
 template("mac_framework_bundle") {
-  assert(defined(invoker.deps),
+  assert(defined(invoker.deps) || defined(invoker.public_deps),
          "Dependencies must be specified for $target_name")
   assert(invoker.framework_version != "", "framework_version is required")
   assert(defined(invoker.framework_contents), "framework_contents is required")
@@ -278,7 +283,10 @@ template("mac_framework_bundle") {
                              "output_name",
                              "visibility",
                            ])
-    visibility = [ ":$_shared_library_bundle_data" ]
+    visibility = [
+      ":$_shared_library_bundle_data",
+      ":${_framework_target}+link_nested",
+    ]
     output_name = _output_name
     output_prefix_override = true
     output_extension = ""
@@ -356,6 +364,21 @@ template("mac_framework_bundle") {
       public_configs = []
     }
     public_configs += [ ":$_framework_public_config" ]
+  }
+
+  group(_target_name + "+link_nested") {
+    forward_variables_from(invoker,
+                           [
+                             "public_configs",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    # Depend only on the shared library. Nested code will be a dependency of
+    # the create_bundle target, which would be cyclic with depending on the
+    # framework itself. This is sufficient to link; for loading, a proper
+    # install_name should be set.
+    public_deps = [ ":$_link_shared_library_target" ]
   }
 }
 

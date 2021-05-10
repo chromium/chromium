@@ -472,6 +472,15 @@ if (is_win) {
     }
 
     if (is_component_build) {
+      # In a component build, the framework is directly linked to the
+      # executable because dlopen() and loading all the dependent dylibs
+      # is time-consuming, see https://crbug.com/1197495.
+      deps += [ ":chrome_framework+link" ]
+      ldflags = [
+        "-rpath",
+        "@executable_path/../Frameworks",
+      ]
+
       # The Framework is packaged inside the .app bundle. But when using the
       # component build, all the dependent shared libraries of :chrome_dll are
       # not packaged within the framework. This data_deps line makes all of
@@ -687,11 +696,20 @@ if (is_win) {
       ldflags = []
 
       if (is_component_build) {
+        # In a component build, the framework is directly linked to the
+        # executable because dlopen() and loading all the dependent dylibs
+        # is time-consuming, see https://crbug.com/1197495.
+        deps += [ ":chrome_framework+link_nested" ]
+
         ldflags += [
           # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/MacOS
           # so set rpath up to the base.
           "-rpath",
           "@loader_path/../../../../../../../../../..",
+
+          # ... and up to Contents/Frameworks.
+          "-rpath",
+          "@executable_path/../../../../../../..",
         ]
       }
 
@@ -1113,7 +1131,7 @@ if (is_win) {
 
     public_deps = [ ":chrome_dll" ]
 
-    deps = [
+    bundle_deps = [
       ":angle_library",
       ":chrome_framework_helpers",
       ":chrome_framework_plugins",
@@ -1126,12 +1144,10 @@ if (is_win) {
     ]
 
     if (is_chrome_branded) {
-      deps += [ ":preinstalled_apps" ]
+      bundle_deps += [ ":preinstalled_apps" ]
     }
 
-    ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
-
-    ldflags += [
+    ldflags = [
       "-compatibility_version",
       chrome_dylib_version,
       "-current_version",
@@ -1139,8 +1155,17 @@ if (is_win) {
       "-Wl,-order_file," + rebase_path("app/framework.order", root_build_dir),
     ]
 
-    if (is_component_build) {
+    if (!is_component_build) {
+      # Specify a sensible install_name for static builds. The library is
+      # dlopen()ed so this is not used to resolve the module.
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+    } else {
+      # In the component build, both the :chrome_app and various
+      # :chrome_helper* targets directly link to the Framework target. Use
+      # @rpath-based loading so that the dylib ID does not have to be changed
+      # with install_name_tool.
       ldflags += [
+        "-Wl,-install_name,@rpath/$chrome_framework_name.framework/$chrome_framework_name",
         "-rpath",
         "@loader_path/../../../../../..",
         "-Wl,-reexport_library,libchrome_dll.dylib",
@@ -1177,7 +1202,14 @@ if (is_win) {
     }
   } else {
     group("verify_chrome_framework_order") {
-      public_deps = [ ":chrome_framework" ]
+      if (is_component_build) {
+        # In a component build, the framework is directly linked to the
+        # executable because dlopen() and loading all the dependent dylibs
+        # is time-consuming, see https://crbug.com/1197495.
+        public_deps = [ ":chrome_framework+link" ]
+      } else {
+        public_deps = [ ":chrome_framework" ]
+      }
     }
   }
 
