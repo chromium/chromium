@@ -103,8 +103,8 @@ bool GpuMemoryBufferImplDXGI::Map() {
   }
 
   DCHECK(!shared_memory_handle_);
-  DCHECK(gpu_memory_buffer_manager_);
-  DCHECK(shared_memory_pool_);
+  CHECK(gpu_memory_buffer_manager_);
+  CHECK(shared_memory_pool_);
 
   shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
       gfx::BufferSizeForBufferFormat(size_, format_));

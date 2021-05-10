@@ -393,7 +393,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
                   buffer_context_->GetGpuMemoryBuffer()->GetSize(),
                   buffer_context_->GetGpuMemoryBuffer()->GetFormat(),
                   gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
-                  video_capture_impl_.gpu_factories_->GpuMemoryBufferManager());
+                  video_capture_impl_.gpu_factories_->GpuMemoryBufferManager(),
+                  video_capture_impl_.pool_);
     }
   }
   // After initializing, either |frame_| or |gpu_memory_buffer_| has been set.
