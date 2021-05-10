@@ -81,11 +81,7 @@ Polymer({
 
   /** @private */
   onDisableOrPrefChange_() {
-    if (this.controlDisabled()) {
-      this.removeAttribute('actionable');
-    } else {
-      this.setAttribute('actionable', '');
-    }
+    this.toggleAttribute('effectively-disabled_', this.controlDisabled());
   },
 
   /**
