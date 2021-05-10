@@ -7363,6 +7363,21 @@
             ]
         }
     ],
+    "SyncWindowDestruction": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Async",
+                    "disable_features": [
+                        "SyncWindowDestruction"
+                    ]
+                }
+            ]
+        }
+    ],
     "SynchronousPageFlipTesting": [
         {
             "platforms": [
