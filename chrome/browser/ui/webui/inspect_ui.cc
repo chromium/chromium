@@ -698,7 +698,7 @@ void InspectUI::SetPortForwardingDefaults() {
   }
 
   // Do nothing if user already took explicit action.
-  if (enabled || !config->empty())
+  if (enabled || !config->DictEmpty())
     return;
 
   base::DictionaryValue default_config;
