@@ -1934,7 +1934,7 @@
   {
     "name": "enable-image-reader",
     "owners": [ "vikassoni", "liberato" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-immersive-fullscreen-toolbar",
