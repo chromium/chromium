@@ -924,7 +924,7 @@ size_t TranslatePrefs::GetListSize(const char* pref_id) const {
 
 bool TranslatePrefs::IsDictionaryEmpty(const char* pref_id) const {
   const base::DictionaryValue* dict = prefs_->GetDictionary(pref_id);
-  return (dict == nullptr || dict->empty());
+  return (dict == nullptr || dict->DictEmpty());
 }
 
 }  // namespace translate
