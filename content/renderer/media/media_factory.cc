@@ -265,6 +265,11 @@ enum class MediaPlayerType {
 // Helper function returning whether SurfaceLayer should be enabled.
 blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
     MediaPlayerType type) {
+#if defined(OS_ANDROID)
+  if (!::features::UseSurfaceLayerForVideo())
+    return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
+#endif
+
   if (type != MediaPlayerType::kMediaStream)
     return blink::WebMediaPlayer::SurfaceLayerMode::kAlways;
 

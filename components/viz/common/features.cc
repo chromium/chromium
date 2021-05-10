@@ -123,6 +123,13 @@ const base::Feature kUsePlatformDelegatedInk{"UsePlatformDelegatedInk",
 const base::Feature kWebViewVulkanIntermediateBuffer{
     "WebViewVulkanIntermediateBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+// Hardcoded as disabled for WebView to have a different default for
+// UseSurfaceLayerForVideo from chrome.
+const base::Feature kUseSurfaceLayerForVideoDefault{
+    "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
@@ -232,5 +239,15 @@ base::Optional<int> ShouldDrawPredictedInkPoints() {
 bool ShouldUsePlatformDelegatedInk() {
   return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
+
+#if defined(OS_ANDROID)
+bool UseSurfaceLayerForVideo() {
+  // Allow enabling UseSurfaceLayerForVideo if webview is using surface control.
+  if (::features::IsAndroidSurfaceControlEnabled()) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
+}
+#endif
 
 }  // namespace features
