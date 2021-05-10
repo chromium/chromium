@@ -6373,7 +6373,7 @@
       },
       'V8 Blink Linux Debug': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
