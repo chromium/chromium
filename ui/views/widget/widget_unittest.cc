@@ -90,7 +90,6 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
     gfx::NativeWindow target_window) {
   auto generator =
       std::make_unique<ui::test::EventGenerator>(root_window, target_window);
-  generator->set_assume_window_at_origin(false);
   return generator;
 }
 

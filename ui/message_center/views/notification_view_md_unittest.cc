@@ -508,11 +508,11 @@ TEST_F(NotificationViewMDTest, UpdateButtonsStateTest) {
   EXPECT_EQ(views::Button::STATE_NORMAL,
             notification_view()->action_buttons_[0]->GetState());
 
-  // Now construct a mouse move event 1 pixel inside the boundary of the action
-  // button.
-  gfx::Point cursor_location(1, 1);
-  views::View::ConvertPointToWidget(notification_view()->action_buttons_[0],
-                                    &cursor_location);
+  // Now construct a mouse move event inside the boundary of the action button.
+  gfx::Point cursor_location = notification_view()
+                                   ->action_buttons_[0]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint();
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));
   generator.MoveMouseTo(cursor_location);
@@ -525,11 +525,10 @@ TEST_F(NotificationViewMDTest, UpdateButtonsStateTest) {
   EXPECT_EQ(views::Button::STATE_HOVERED,
             notification_view()->action_buttons_[0]->GetState());
 
-  // Now construct a mouse move event 1 pixel outside the boundary of the
-  // widget.
-  cursor_location = gfx::Point(-1, -1);
-  views::View::ConvertPointToWidget(notification_view()->action_buttons_[0],
-                                    &cursor_location);
+  // Now construct a mouse move event outside the boundary of the widget.
+  cursor_location =
+      notification_view()->action_buttons_[0]->GetBoundsInScreen().origin() +
+      gfx::Vector2d(-1, -1);
   generator.MoveMouseTo(cursor_location);
 
   EXPECT_EQ(views::Button::STATE_NORMAL,
@@ -552,11 +551,11 @@ TEST_F(NotificationViewMDTest, UpdateButtonCountTest) {
   EXPECT_EQ(views::Button::STATE_NORMAL,
             notification_view()->action_buttons_[1]->GetState());
 
-  // Now construct a mouse move event 1 pixel inside the boundary of the action
-  // button.
-  gfx::Point cursor_location(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[0],
-                                    &cursor_location);
+  // Now construct a mouse move event inside the boundary of the action button.
+  gfx::Point cursor_location = notification_view()
+                                   ->action_buttons_[0]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint();
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));
   generator.MoveMouseTo(cursor_location);
@@ -573,11 +572,10 @@ TEST_F(NotificationViewMDTest, UpdateButtonCountTest) {
             notification_view()->action_buttons_[0]->GetState());
   EXPECT_EQ(1u, notification_view()->action_buttons_.size());
 
-  // Now construct a mouse move event 1 pixel outside the boundary of the
-  // widget.
-  cursor_location = gfx::Point(-1, -1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[0],
-                                    &cursor_location);
+  // Now construct a mouse move event outside the boundary of the widget.
+  cursor_location =
+      notification_view()->action_buttons_[0]->GetBoundsInScreen().origin() +
+      gfx::Vector2d(-1, -1);
   generator.MoveMouseTo(cursor_location);
 
   EXPECT_EQ(views::Button::STATE_NORMAL,
@@ -600,11 +598,11 @@ TEST_F(NotificationViewMDTest, TestActionButtonClick) {
     notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
-  // Now construct a mouse click event 1 pixel inside the boundary of the action
-  // button.
-  gfx::Point cursor_location(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[1],
-                                    &cursor_location);
+  // Now construct a mouse click event inside the boundary of the action button.
+  gfx::Point cursor_location = notification_view()
+                                   ->action_buttons_[1]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
 
@@ -629,11 +627,11 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
     notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
-  // Now construct a mouse click event 1 pixel inside the boundary of the action
-  // button.
-  gfx::Point cursor_location(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[1],
-                                    &cursor_location);
+  // Now construct a mouse click event inside the boundary of the action button.
+  gfx::Point cursor_location = notification_view()
+                                   ->action_buttons_[1]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
 
@@ -669,11 +667,11 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
   // Reset values.
   delegate_->Reset();
 
-  // Now construct a mouse click event 1 pixel inside the boundary of the action
-  // button.
-  cursor_location = gfx::Point(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[1],
-                                    &cursor_location);
+  // Now construct a mouse click event inside the boundary of the action button.
+  cursor_location = notification_view()
+                        ->action_buttons_[0]
+                        ->GetBoundsInScreen()
+                        .CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
 
@@ -691,9 +689,10 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
   }
 
   // Submit by clicking the reply button.
-  cursor_location = gfx::Point(1, 1);
-  views::View::ConvertPointToScreen(
-      notification_view()->inline_reply_->button(), &cursor_location);
+  cursor_location = notification_view()
+                        ->inline_reply_->button()
+                        ->GetBoundsInScreen()
+                        .CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
   EXPECT_EQ(1, delegate_->clicked_button_index());
@@ -717,11 +716,11 @@ TEST_F(NotificationViewMDTest, TestInlineReplyRemovedByUpdate) {
     notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
-  // Now construct a mouse click event 1 pixel inside the boundary of the action
-  // button.
-  gfx::Point cursor_location(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->action_buttons_[1],
-                                    &cursor_location);
+  // Now construct a mouse click event inside the boundary of the action button.
+  gfx::Point cursor_location = notification_view()
+                                   ->action_buttons_[1]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint();
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
 
@@ -981,10 +980,9 @@ TEST_F(NotificationViewMDTest, ExpandLongMessage) {
   // user interaction.
   EXPECT_FALSE(notification_view()->IsManuallyExpandedOrCollapsed());
 
-  // Construct a mouse click event 1 pixel inside the header.
-  gfx::Point done_cursor_location(1, 1);
-  views::View::ConvertPointToScreen(notification_view()->header_row_,
-                                    &done_cursor_location);
+  // Construct a mouse click event inside the header.
+  gfx::Point done_cursor_location =
+      notification_view()->header_row_->GetBoundsInScreen().CenterPoint();
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));
   generator.MoveMouseTo(done_cursor_location);
@@ -1179,10 +1177,11 @@ TEST_F(NotificationViewMDTest, UpdateInSettings) {
 
   // Inline settings will be shown by clicking settings button.
   EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
-  gfx::Point settings_cursor_location(1, 1);
-  views::View::ConvertPointToTarget(
-      notification_view()->control_buttons_view_->settings_button(),
-      notification_view(), &settings_cursor_location);
+  gfx::Point settings_cursor_location =
+      notification_view()
+          ->control_buttons_view_->settings_button()
+          ->GetBoundsInScreen()
+          .CenterPoint();
   generator.MoveMouseTo(settings_cursor_location);
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
@@ -1207,10 +1206,11 @@ TEST_F(NotificationViewMDTest, InlineSettings) {
 
   // Inline settings will be shown by clicking settings button.
   EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
-  gfx::Point settings_cursor_location(1, 1);
-  views::View::ConvertPointToTarget(
-      notification_view()->control_buttons_view_->settings_button(),
-      notification_view(), &settings_cursor_location);
+  gfx::Point settings_cursor_location =
+      notification_view()
+          ->control_buttons_view_->settings_button()
+          ->GetBoundsInScreen()
+          .CenterPoint();
   generator.MoveMouseTo(settings_cursor_location);
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
@@ -1226,11 +1226,13 @@ TEST_F(NotificationViewMDTest, InlineSettings) {
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 #endif
 
-  // Construct a mouse click event 1 pixel inside the done button.
-  gfx::Point done_cursor_location(1, 1);
-  views::View::ConvertPointToTarget(notification_view()->settings_done_button_,
-                                    notification_view(), &done_cursor_location);
+  // Construct a mouse click event over the done button.
+  gfx::Point done_cursor_location =
+      notification_view()
+          ->settings_done_button_->GetBoundsInScreen()
+          .CenterPoint();
   generator.MoveMouseTo(done_cursor_location);
+
   generator.ClickLeftButton();
 
   // Just clicking Done button should not change the setting.
@@ -1241,11 +1243,9 @@ TEST_F(NotificationViewMDTest, InlineSettings) {
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 
-  // Construct a mouse click event 1 pixel inside the block all button.
-  gfx::Point block_cursor_location(1, 1);
-  views::View::ConvertPointToTarget(notification_view()->block_all_button_,
-                                    notification_view(),
-                                    &block_cursor_location);
+  // Construct a mouse click event inside the block all button.
+  gfx::Point block_cursor_location =
+      notification_view()->block_all_button_->GetBoundsInScreen().CenterPoint();
   generator.MoveMouseTo(block_cursor_location);
   generator.ClickLeftButton();
   generator.MoveMouseTo(done_cursor_location);
@@ -1267,10 +1267,11 @@ TEST_F(NotificationViewMDTest, InlineSettingsInkDropAnimation) {
 
   // Inline settings will be shown by clicking settings button.
   EXPECT_FALSE(notification_view()->settings_row_->GetVisible());
-  gfx::Point settings_cursor_location(1, 1);
-  views::View::ConvertPointToTarget(
-      notification_view()->control_buttons_view_->settings_button(),
-      notification_view(), &settings_cursor_location);
+  gfx::Point settings_cursor_location =
+      notification_view()
+          ->control_buttons_view_->settings_button()
+          ->GetBoundsInScreen()
+          .CenterPoint();
   generator.MoveMouseTo(settings_cursor_location);
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());

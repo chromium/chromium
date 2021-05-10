@@ -57,7 +57,6 @@ class ColorChooserTest : public views::ViewsTestBase {
     widget_->GetContentsView()->AddChildView(std::move(view));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget_.get()), widget_->GetNativeWindow());
-    generator_->set_assume_window_at_origin(false);
   }
 
   void TearDown() override {
