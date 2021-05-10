@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.attribution_reporting;
 
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 /**
  * Factory for creating instances of the AttributionIntentHandler from the attribution_reporting
  * module.
@@ -13,6 +16,10 @@ public class AttributionIntentHandlerFactory {
      * @return a AttributionIntentHandler instance.
      */
     public static AttributionIntentHandler create() {
-        return new NoopAttributionIntentHandler();
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)) {
+            return new AttributionIntentHandlerImpl();
+        } else {
+            return new NoopAttributionIntentHandler();
+        }
     }
 }

@@ -9,6 +9,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/attribution_reporting/android:java",
+    "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
