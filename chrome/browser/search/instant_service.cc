@@ -851,7 +851,7 @@ bool InstantService::IsCustomBackgroundDisabledByPolicy() {
       pref_service_->IsManagedPreference(prefs::kNtpCustomBackgroundDict);
   if (managed) {
     DCHECK(
-        pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict)->empty());
+        pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict)->DictEmpty());
   }
   return managed;
 }
