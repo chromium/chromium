@@ -79,7 +79,7 @@ builder(
 builder(
     name = "linux_chromium_bot_db_exporter",
     executable = "recipe:findit/chromium/export_bot_db",
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
     properties = {
         "gs_bucket": "findit-for-me",
         "gs_object": "bot_db.json",
