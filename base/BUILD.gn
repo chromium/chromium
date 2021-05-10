@@ -1925,6 +1925,8 @@ component("base") {
         "allocator/partition_allocator/starscan/object_bitmap.h",
         "allocator/partition_allocator/starscan/pcscan.cc",
         "allocator/partition_allocator/starscan/pcscan.h",
+        "allocator/partition_allocator/starscan/pcscan_internal.cc",
+        "allocator/partition_allocator/starscan/pcscan_internal.h",
         "allocator/partition_allocator/starscan/pcscan_scheduling.cc",
         "allocator/partition_allocator/starscan/pcscan_scheduling.h",
         "allocator/partition_allocator/starscan/raceful_worklist.h",

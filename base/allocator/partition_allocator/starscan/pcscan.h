@@ -28,8 +28,6 @@
 namespace base {
 namespace internal {
 
-class PCScanTask;
-
 [[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
 
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
@@ -101,6 +99,7 @@ class BASE_EXPORT PCScan final {
   class PCScanThread;
   friend class PCScanTask;
   friend class PCScanTest;
+  friend class PCScanInternal;
 
   enum class State : uint8_t {
     // PCScan task is not scheduled.
