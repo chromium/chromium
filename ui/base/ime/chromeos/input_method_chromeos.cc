@@ -398,6 +398,7 @@ bool InputMethodChromeOS::SetComposingRange(
         PendingSetCompositionRange{composition_range, non_empty_text_spans};
     return true;
   } else {
+    composing_text_ = true;
     return client->SetCompositionFromExistingText(composition_range,
                                                   non_empty_text_spans);
   }
