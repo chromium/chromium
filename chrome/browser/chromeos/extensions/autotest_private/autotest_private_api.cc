@@ -2838,7 +2838,7 @@ class AssistantInteractionHelper
     // which results in a round trip due to the need to fetch device state
     // on the client and return that to the server as part of a follow-up
     // interaction.
-    if (result_.empty())
+    if (result_.DictEmpty())
       return;
 
     query_status_->SetKey("queryResponse", std::move(result_));
