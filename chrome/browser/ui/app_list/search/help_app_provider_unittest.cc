@@ -23,7 +23,7 @@ namespace test {
 namespace {
 void ExpectDiscoverTabChip(ChromeSearchResult* result) {
   EXPECT_EQ("help-app://discover", result->id());
-  EXPECT_EQ("Build a game", base::UTF16ToASCII(result->title()));
+  EXPECT_EQ("Make your own game", base::UTF16ToASCII(result->title()));
   EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
   EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
 }

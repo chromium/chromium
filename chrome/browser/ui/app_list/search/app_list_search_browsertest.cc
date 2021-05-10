@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 
   ChromeSearchResult* result = FindResult("help-app://discover");
   ASSERT_TRUE(result);
-  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Build a game");
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Make your own game");
 
   // Open the search result. This should open the help app at the expected url.
   size_t num_browsers = chrome::GetTotalBrowserCount();

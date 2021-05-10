@@ -318,7 +318,7 @@ Try tapping the mic to ask me anything.
         Perks
       </message>
       <message name="IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP" desc="Text for the suggestion chip to view a magazine showing the user how they could build/code/develop a game. [CHAR_LIMIT=24]">
-        Build a game
+        Make your own game
       </message>
       <message name="IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP" desc="Text for the suggestion chip to view updated patch notes are available. [CHAR_LIMIT=24]">
         What's new with Chrome OS
