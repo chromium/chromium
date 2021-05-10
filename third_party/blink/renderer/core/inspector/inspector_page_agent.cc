@@ -35,6 +35,7 @@
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
@@ -68,6 +69,7 @@
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_devtools_support.h"
@@ -1211,6 +1213,120 @@ CreateGatedAPIFeaturesArray(LocalDOMWindow* window) {
   return features;
 }
 
+protocol::Page::OriginTrialTokenStatus CreateOriginTrialTokenStatus(
+    blink::OriginTrialTokenStatus status) {
+  switch (status) {
+    case blink::OriginTrialTokenStatus::kSuccess:
+      return protocol::Page::OriginTrialTokenStatusEnum::Success;
+    case blink::OriginTrialTokenStatus::kNotSupported:
+      return protocol::Page::OriginTrialTokenStatusEnum::NotSupported;
+    case blink::OriginTrialTokenStatus::kInsecure:
+      return protocol::Page::OriginTrialTokenStatusEnum::Insecure;
+    case blink::OriginTrialTokenStatus::kExpired:
+      return protocol::Page::OriginTrialTokenStatusEnum::Expired;
+    case blink::OriginTrialTokenStatus::kWrongOrigin:
+      return protocol::Page::OriginTrialTokenStatusEnum::WrongOrigin;
+    case blink::OriginTrialTokenStatus::kInvalidSignature:
+      return protocol::Page::OriginTrialTokenStatusEnum::InvalidSignature;
+    case blink::OriginTrialTokenStatus::kMalformed:
+      return protocol::Page::OriginTrialTokenStatusEnum::Malformed;
+    case blink::OriginTrialTokenStatus::kWrongVersion:
+      return protocol::Page::OriginTrialTokenStatusEnum::WrongVersion;
+    case blink::OriginTrialTokenStatus::kFeatureDisabled:
+      return protocol::Page::OriginTrialTokenStatusEnum::FeatureDisabled;
+    case blink::OriginTrialTokenStatus::kTokenDisabled:
+      return protocol::Page::OriginTrialTokenStatusEnum::TokenDisabled;
+    case blink::OriginTrialTokenStatus::kFeatureDisabledForUser:
+      return protocol::Page::OriginTrialTokenStatusEnum::FeatureDisabledForUser;
+  }
+}
+
+protocol::Page::OriginTrialStatus CreateOriginTrialStatus(
+    blink::OriginTrialStatus status) {
+  switch (status) {
+    case blink::OriginTrialStatus::kEnabled:
+      return protocol::Page::OriginTrialStatusEnum::Enabled;
+    case blink::OriginTrialStatus::kValidTokenNotProvided:
+      return protocol::Page::OriginTrialStatusEnum::ValidTokenNotProvided;
+    case blink::OriginTrialStatus::kOSNotSupported:
+      return protocol::Page::OriginTrialStatusEnum::OSNotSupported;
+    case blink::OriginTrialStatus::kTrialNotAllowed:
+      return protocol::Page::OriginTrialStatusEnum::TrialNotAllowed;
+  }
+}
+
+protocol::Page::OriginTrialUsageRestriction CreateOriginTrialUsageRestriction(
+    blink::TrialToken::UsageRestriction blink_restriction) {
+  switch (blink_restriction) {
+    case blink::TrialToken::UsageRestriction::kNone:
+      return protocol::Page::OriginTrialUsageRestrictionEnum::None;
+    case blink::TrialToken::UsageRestriction::kSubset:
+      return protocol::Page::OriginTrialUsageRestrictionEnum::Subset;
+  }
+}
+
+std::unique_ptr<protocol::Page::OriginTrialToken> CreateOriginTrialToken(
+    const blink::TrialToken& blink_trial_token) {
+  return protocol::Page::OriginTrialToken::create()
+      .setOrigin(SecurityOrigin::CreateFromUrlOrigin(blink_trial_token.origin())
+                     ->ToRawString())
+      .setIsThirdParty(blink_trial_token.is_third_party())
+      .setMatchSubDomains(blink_trial_token.match_subdomains())
+      .setExpiryTime(blink_trial_token.expiry_time().ToDoubleT())
+      .setTrialName(blink_trial_token.feature_name().c_str())
+      .setUsageRestriction(CreateOriginTrialUsageRestriction(
+          blink_trial_token.usage_restriction()))
+      .build();
+}
+
+std::unique_ptr<protocol::Page::OriginTrialTokenWithStatus>
+CreateOriginTrialTokenWithStatus(
+    const blink::OriginTrialTokenResult& blink_token_result) {
+  auto result =
+      protocol::Page::OriginTrialTokenWithStatus::create()
+          .setRawTokenText(blink_token_result.raw_token)
+          .setStatus(CreateOriginTrialTokenStatus(blink_token_result.status))
+          .build();
+
+  if (blink_token_result.parsed_token.has_value()) {
+    result->setParsedToken(
+        CreateOriginTrialToken(*blink_token_result.parsed_token));
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::Page::OriginTrial> CreateOriginTrial(
+    const blink::OriginTrialResult& blink_trial_result) {
+  auto tokens_with_status = std::make_unique<
+      protocol::Array<protocol::Page::OriginTrialTokenWithStatus>>();
+
+  for (const auto& blink_token_result : blink_trial_result.token_results) {
+    tokens_with_status->push_back(
+        CreateOriginTrialTokenWithStatus(blink_token_result));
+  }
+
+  return protocol::Page::OriginTrial::create()
+      .setTrialName(blink_trial_result.trial_name)
+      .setStatus(CreateOriginTrialStatus(blink_trial_result.status))
+      .setTokensWithStatus(std::move(tokens_with_status))
+      .build();
+}
+
+std::unique_ptr<protocol::Array<protocol::Page::OriginTrial>>
+CreateOriginTrials(LocalDOMWindow* window) {
+  auto trials =
+      std::make_unique<protocol::Array<protocol::Page::OriginTrial>>();
+  // Note: `blink::OriginTrialContext` is initialized when
+  // `blink::ExecutionContext` is created. `GetOriginTrialContext()` should
+  // not return nullptr.
+  const blink::OriginTrialContext* context = window->GetOriginTrialContext();
+  DCHECK(context);
+  for (const auto& entry : context->GetOriginTrialResultsForDevtools()) {
+    trials->push_back(CreateOriginTrial(entry.value));
+  }
+  return trials;
+}
+
 }  // namespace
 
 std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
@@ -1257,6 +1373,9 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
   } else {
     frame_object->setAdFrameType(protocol::Page::AdFrameTypeEnum::None);
   }
+  auto origin_trials = CreateOriginTrials(frame->DomWindow());
+  if (!origin_trials->empty())
+    frame_object->setOriginTrials(std::move(origin_trials));
   return frame_object;
 }
 
