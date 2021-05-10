@@ -3725,7 +3725,9 @@ void RenderProcessHostImpl::Cleanup() {
 
   // We cannot clean up twice; if this fails, there is an issue with our
   // control flow.
-  DCHECK(!deleting_soon_);
+  //
+  // TODO(crbug.com/1200340): Revert this to a DCHECK after some investigation.
+  CHECK(!deleting_soon_);
 
   DCHECK_EQ(0, pending_views_);
 
