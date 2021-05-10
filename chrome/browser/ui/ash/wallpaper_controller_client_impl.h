@@ -15,6 +15,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class AccountId;
+class ValueStore;
 
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
@@ -42,6 +43,7 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
+  void MigrateCollectionIdFromChromeApp() override;
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
@@ -97,6 +99,7 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   bool IsActiveUserWallpaperControlledByPolicy();
   ash::WallpaperInfo GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
+  void MigrateCollectionIdFromValueStoreForTesting(ValueStore* storage);
 
  private:
   // Initialize the controller for this client and some wallpaper directories.
@@ -113,6 +116,13 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   bool ShouldShowUserNamesOnLogin() const;
 
   base::FilePath GetDeviceWallpaperImageFilePath();
+
+  // Retrieves the collection id from the value store that backs chrome.storage
+  // for the old chrome app and passes it to wallpaper controller to store.
+  // This differs from |MigrateCollectionIdFromChromeApp|, which gets the value
+  // store associated with the current user to pass into this function, and is
+  // exposed to the wallpaper controller.
+  void MigrateCollectionIdFromValueStore(ValueStore* storage);
 
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;

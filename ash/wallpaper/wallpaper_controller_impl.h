@@ -291,6 +291,7 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsActiveUserWallpaperControlledByPolicy() override;
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
+  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;

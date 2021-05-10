@@ -35,6 +35,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int remove_always_on_top_wallpaper_count() const {
     return remove_always_on_top_wallpaper_count_;
   }
+  const std::string& collection_id() const { return collection_id_; }
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
@@ -104,6 +105,7 @@ class TestWallpaperController : public ash::WallpaperController {
   bool IsActiveUserWallpaperControlledByPolicy() override;
   ash::WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
+  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
 
  private:
   bool was_client_set_ = false;
@@ -112,6 +114,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int set_custom_wallpaper_count_ = 0;
   int show_always_on_top_wallpaper_count_ = 0;
   int remove_always_on_top_wallpaper_count_ = 0;
+  std::string collection_id_;
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 

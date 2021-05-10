@@ -67,6 +67,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
 
+using ash::prefs::kWallpaperCollectionId;
 using color_utils::ColorProfile;
 using color_utils::LumaRange;
 using color_utils::SaturationRange;
@@ -615,9 +616,12 @@ void WallpaperControllerImpl::RegisterLocalStatePrefs(
 // static
 void WallpaperControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      prefs::kSyncableWallpaperInfo,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  using user_prefs::PrefRegistrySyncable;
+
+  registry->RegisterDictionaryPref(prefs::kSyncableWallpaperInfo,
+                                   PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(kWallpaperCollectionId, std::string(),
+                               PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 // static
@@ -1546,12 +1550,17 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   AccountId account_id = GetActiveAccountId();
   WallpaperInfo local_info;
   WallpaperInfo synced_info;
+
   // Migrate wallpaper info to syncable prefs.
   if (!GetSyncedWallpaperInfo(account_id, &synced_info) &&
       GetLocalWallpaperInfo(account_id, &local_info) &&
       IsWallpaperTypeSyncable(local_info.type)) {
     SetSyncedWallpaperInfo(account_id, local_info);
   }
+
+  if (!pref_service->FindPreference(kWallpaperCollectionId)->HasUserSetting())
+    wallpaper_controller_client_->MigrateCollectionIdFromChromeApp();
+
   OnPrefChanged();
 }
 
@@ -2255,10 +2264,6 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
   if (!CanSetUserWallpaper(account_id))
     return;
   switch (info.type) {
-    case DAILY:
-      // TODO (b/178216755): Implement rotating wallpapers.
-      NOTIMPLEMENTED();
-      break;
     case CUSTOMIZED:
       // TODO (b/180736877): Implement getting synced wallpaper image and
       // setting it as the wallpaper.
@@ -2269,6 +2274,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
         wallpaper_controller_client_->SetDefaultWallpaper(account_id, true);
       }
       break;
+    case DAILY:
     case ONLINE:
       SetOnlineWallpaperIfExists(
           account_id, info.location, info.layout, false,
@@ -2316,6 +2322,14 @@ constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
     case WALLPAPER_TYPE_COUNT:
       return false;
   }
+}
+
+void WallpaperControllerImpl::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  PrefService* pref_service = GetUserPrefServiceSyncable(GetActiveAccountId());
+  if (!pref_service)
+    return;
+  pref_service->SetString(kWallpaperCollectionId, collection_id);
 }
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/hash/sha1.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -34,15 +35,21 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/value_store/value_store.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+
+using extension_misc::kWallpaperManagerId;
 
 namespace {
 
 // Known user keys.
 const char kWallpaperFilesId[] = "wallpaper-files-id";
+constexpr char kChromeAppDailyRefreshInfoPref[] = "daily-refresh-info-key";
+constexpr char kChromeAppCollectionId[] = "collectionId";
 
 WallpaperControllerClientImpl* g_wallpaper_controller_client_instance = nullptr;
 
@@ -431,6 +438,11 @@ bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
 }
 
+void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(
+    ValueStore* storage) {
+  MigrateCollectionIdFromValueStore(storage);
+}
+
 void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
   wallpaper_controller_->SetDevicePolicyWallpaperPath(
       GetDeviceWallpaperImageFilePath());
@@ -483,13 +495,12 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
 
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (proxy->AppRegistryCache().GetAppType(
-          extension_misc::kWallpaperManagerId) ==
+  if (proxy->AppRegistryCache().GetAppType(kWallpaperManagerId) ==
       apps::mojom::AppType::kUnknown) {
     return;
   }
   proxy->Launch(
-      extension_misc::kWallpaperManagerId,
+      kWallpaperManagerId,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
@@ -507,8 +518,7 @@ void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
       extensions::events::WALLPAPER_PRIVATE_ON_CLOSE_PREVIEW_WALLPAPER,
       extensions::api::wallpaper_private::OnClosePreviewWallpaper::kEventName,
       std::move(event_args));
-  event_router->DispatchEventToExtension(extension_misc::kWallpaperManagerId,
-                                         std::move(event));
+  event_router->DispatchEventToExtension(kWallpaperManagerId, std::move(event));
 }
 
 void WallpaperControllerClientImpl::SetDefaultWallpaper(
@@ -532,6 +542,27 @@ void WallpaperControllerClientImpl::SetDefaultWallpaper(
                                              show_wallpaper);
 }
 
+void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
+  const extensions::Extension* extension =
+      extension_registry->GetInstalledExtension(kWallpaperManagerId);
+
+  // Although not now, there will be a day where this application no longer
+  // exists.
+  if (!extension) {
+    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    return;
+  }
+
+  auto* storage_frontend = extensions::StorageFrontend::Get(profile);
+  storage_frontend->RunWithStorage(
+      extension, extensions::settings_namespace::LOCAL,
+      base::BindOnce(
+          &WallpaperControllerClientImpl::MigrateCollectionIdFromValueStore,
+          weak_factory_.GetWeakPtr()));
+}
+
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
   ash::CrosSettings::Get()->GetBoolean(
@@ -543,4 +574,42 @@ base::FilePath
 WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
   return base::FilePath(
       local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
+}
+
+void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStore(
+    ValueStore* storage) {
+  using ReadResult = ValueStore::ReadResult;
+
+  if (!storage) {
+    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    return;
+  }
+
+  const std::string chrome_app_daily_refresh_info_pref(
+      kChromeAppDailyRefreshInfoPref);
+
+  ReadResult result = storage->Get(chrome_app_daily_refresh_info_pref);
+  if (!result.status().ok()) {
+    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    return;
+  }
+
+  const std::string* daily_refresh_info_string =
+      result.settings().FindStringKey(chrome_app_daily_refresh_info_pref);
+  if (!daily_refresh_info_string) {
+    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    return;
+  }
+
+  const base::Optional<base::Value> daily_refresh_info =
+      base::JSONReader::Read(*daily_refresh_info_string);
+  if (!daily_refresh_info) {
+    wallpaper_controller_->SetDailyRefreshCollectionId(std::string());
+    return;
+  }
+
+  const std::string* collection_id =
+      daily_refresh_info->FindStringKey(kChromeAppCollectionId);
+  wallpaper_controller_->SetDailyRefreshCollectionId(
+      collection_id ? *collection_id : std::string());
 }

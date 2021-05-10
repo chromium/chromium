@@ -173,6 +173,7 @@ ASH_PUBLIC_EXPORT extern const char kSuggestLogoutAfterClosingLastWindow[];
 ASH_PUBLIC_EXPORT extern const char kUserWallpaperInfo[];
 ASH_PUBLIC_EXPORT extern const char kWallpaperColors[];
 ASH_PUBLIC_EXPORT extern const char kSyncableWallpaperInfo[];
+ASH_PUBLIC_EXPORT extern const char kWallpaperCollectionId[];
 
 ASH_PUBLIC_EXPORT extern const char kUserBluetoothAdapterEnabled[];
 ASH_PUBLIC_EXPORT extern const char kSystemBluetoothAdapterEnabled[];

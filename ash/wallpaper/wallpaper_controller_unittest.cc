@@ -59,6 +59,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/views/widget/widget.h"
 
+using ash::prefs::kWallpaperCollectionId;
 using session_manager::SessionState;
 
 namespace ash {
@@ -2891,6 +2892,9 @@ TEST_F(WallpaperControllerTest, MigrateWallpaperInfo) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
   WallpaperInfo expected_info{InfoWithType(CUSTOMIZED)};
   PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
@@ -2904,6 +2908,9 @@ TEST_F(WallpaperControllerTest,
        MigrateWallpaperInfoDoesntHappenWhenSyncedInfoAlreadyExists) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
 
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(CUSTOMIZED),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
@@ -2923,6 +2930,9 @@ TEST_F(WallpaperControllerTest,
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
   SimulateUserLogin(account_id_1.GetUserEmail());
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
                           GetProfilePrefService(account_id_1),
@@ -2931,8 +2941,7 @@ TEST_F(WallpaperControllerTest,
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(THIRDPARTY),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
 
-  TestWallpaperControllerClient client;
-  controller_->SetClient(&client);
+  client.ResetCounts();
 
   controller_->OnActiveUserPrefServiceChanged(
       GetProfilePrefService(account_id_1));
@@ -3027,6 +3036,66 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), ONLINE);
+}
+
+TEST_F(WallpaperControllerTest,
+       ActiveUserPrefServiceChangedMigratesCollectionId) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(account_id_1.GetUserEmail());
+  EXPECT_EQ(client.migrate_collection_id_from_chrome_app_count(), 1u);
+}
+
+TEST_F(
+    WallpaperControllerTest,
+    ActiveUserPrefServiceChangedSyncedMigrateDoesntHappenAfterSetCollectionId) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(account_id_1.GetUserEmail());
+  controller_->SetDailyRefreshCollectionId("fun_collection");
+
+  EXPECT_EQ(client.migrate_collection_id_from_chrome_app_count(), 1u);
+
+  ClearLogin();
+  SimulateUserLogin(account_id_1.GetUserEmail());
+  EXPECT_EQ(client.migrate_collection_id_from_chrome_app_count(), 1u);
+}
+
+TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionId) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  std::string expected{"fun_collection"};
+  SimulateUserLogin(kUser1);
+  controller_->SetDailyRefreshCollectionId(expected);
+  PrefService* pref_service = GetProfilePrefService(account_id_1);
+  std::string actual = pref_service->GetString(kWallpaperCollectionId);
+  EXPECT_EQ(expected, actual);
+}
+
+TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionIdNullCollectionId) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+  controller_->SetDailyRefreshCollectionId(std::string());
+  PrefService* pref_service = GetProfilePrefService(account_id_1);
+  std::string actual = pref_service->GetString(kWallpaperCollectionId);
+  EXPECT_EQ("", actual);
 }
 
 }  // namespace ash

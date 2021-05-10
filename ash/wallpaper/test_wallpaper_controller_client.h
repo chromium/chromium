@@ -27,6 +27,9 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t set_default_wallpaper_count() const {
     return set_default_wallpaper_count_;
   }
+  size_t migrate_collection_id_from_chrome_app_count() const {
+    return migrate_collection_id_from_chrome_app_count_;
+  }
 
   void ResetCounts();
 
@@ -35,11 +38,13 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
+  void MigrateCollectionIdFromChromeApp() override;
 
  private:
   size_t open_count_ = 0;
   size_t close_preview_count_ = 0;
   size_t set_default_wallpaper_count_ = 0;
+  size_t migrate_collection_id_from_chrome_app_count_ = 0;
 };
 
 }  // namespace ash

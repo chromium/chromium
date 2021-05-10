@@ -267,6 +267,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // should be visible.
   virtual bool ShouldShowWallpaperSetting() = 0;
 
+  // Set and store the collection id used to update refreshable wallpapers.
+  // Empty if daily refresh is not enabled.
+  virtual void SetDailyRefreshCollectionId(
+      const std::string& collection_id) = 0;
+
  protected:
   static WallpaperController* g_instance_;
 };

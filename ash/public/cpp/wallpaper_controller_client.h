@@ -24,6 +24,10 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Sets the default wallpaper and removes the file for the previous wallpaper.
   virtual void SetDefaultWallpaper(const AccountId& account_id,
                                    bool show_wallpaper) = 0;
+
+  // Retrieves the current collection id from the Wallpaper Picker Chrome App
+  // for migration.
+  virtual void MigrateCollectionIdFromChromeApp() = 0;
 };
 
 }  // namespace ash

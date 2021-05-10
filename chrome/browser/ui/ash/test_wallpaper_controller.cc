@@ -18,6 +18,7 @@ void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
 
 void TestWallpaperController::ClearCounts() {
   remove_user_wallpaper_count_ = 0;
+  collection_id_ = std::string();
 }
 
 void TestWallpaperController::SetClient(
@@ -207,4 +208,9 @@ ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() {
 bool TestWallpaperController::ShouldShowWallpaperSetting() {
   NOTIMPLEMENTED();
   return false;
+}
+
+void TestWallpaperController::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  collection_id_ = collection_id;
 }
