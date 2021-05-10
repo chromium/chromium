@@ -128,8 +128,8 @@ TtsEngineExtensionObserverChromeOS::GetInstance(Profile* profile) {
 
 TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
     Profile* profile)
-    : extension_registry_observer_(this), profile_(profile) {
-  extension_registry_observer_.Add(
+    : profile_(profile) {
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 
   extensions::EventRouter* event_router =
