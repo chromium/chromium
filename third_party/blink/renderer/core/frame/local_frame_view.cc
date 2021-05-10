@@ -4924,9 +4924,11 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
     result.painter_memory_usage +=
         paint_artifact_compositor_->ApproximateUnsharedMemoryUsage();
   }
-  if (auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer()) {
-    result.painter_memory_usage +=
-        root->ApproximateUnsharedMemoryUsageRecursive();
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    if (auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer()) {
+      result.painter_memory_usage +=
+          root->ApproximateUnsharedMemoryUsageRecursive();
+    }
   }
 }
 
