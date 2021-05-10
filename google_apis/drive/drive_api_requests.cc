@@ -822,7 +822,7 @@ bool InitiateUploadExistingFileRequest::GetContentData(
   }
 
   AttachProperties(properties_, &root);
-  if (root.empty())
+  if (root.DictEmpty())
     return false;
 
   *upload_content_type = util::kContentTypeApplicationJson;
