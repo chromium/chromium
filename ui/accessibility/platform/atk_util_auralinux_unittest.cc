@@ -44,6 +44,12 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
   AtkUtilAuraLinuxTest(const AtkUtilAuraLinuxTest&) = delete;
   AtkUtilAuraLinuxTest& operator=(const AtkUtilAuraLinuxTest&) = delete;
 
+  void TearDown() override {
+    AXPlatformNodeTest::TearDown();
+    // These tests set AtSpiReady to true. Reset to initial state.
+    AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(false);
+  }
+
  private:
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
