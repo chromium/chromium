@@ -1192,6 +1192,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="NavigationPredictor.ActionTaken"
     enum="NavigationPredictorActionTaken" expires_after="M85">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <summary>
     Tracks action taken by navigation predictor. Recorded at the time of page
@@ -1201,6 +1204,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="NavigationPredictor.CountOfStartedPrerenders"
     units="count" expires_after="M85">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <summary>
@@ -1212,6 +1218,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="NavigationPredictor.CountOfURLsAboveThreshold"
     units="count" expires_after="M85">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <summary>
@@ -1223,6 +1232,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="NavigationPredictor.CountOfURLsInPredictedSet"
     units="count" expires_after="M89">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <summary>
@@ -1248,7 +1260,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NavigationPredictor.IsPubliclyRoutable" enum="Boolean"
-    expires_after="2021-10-25">
+    expires_after="2021-08-22">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <summary>
@@ -1260,6 +1275,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="NavigationPredictor.LinkClickedPrerenderResult"
     enum="NavigationPredictorLinkClickedPrerenderResult" expires_after="M85">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -1272,6 +1290,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="NavigationPredictor.SearchEnginePreconnector.IsBrowserAppLikelyInForeground"
     enum="BooleanForeground" expires_after="M95">
+  <obsolete>
+    Removed 04/2020.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <summary>

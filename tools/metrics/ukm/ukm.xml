@@ -2209,6 +2209,12 @@ be describing additional metrics about the same event.
 
     This event is not recorded on machines with low-resolution clocks.
   </summary>
+  <metric name="AnchorElementMetricsIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for anchor elements, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="Animate">
     <summary>
       The time spent in main frame animation, between navigation and First
@@ -2456,6 +2462,26 @@ be describing additional metrics about the same event.
 
     This event is not recorded on machines with low-resolution clocks.
   </summary>
+  <metric name="AnchorElementMetricsIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for anchor elements, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="AnchorElementMetricsIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      anchor elements, in microseconds.
+    </summary>
+  </metric>
   <metric name="Animate">
     <summary>
       The time taken for main frame animation in microseconds during the sampled
@@ -9868,12 +9894,22 @@ be describing additional metrics about the same event.
 <event name="NavigationPredictorPageLinkClick">
   <owner>ryansturm@chromium.org</owner>
   <summary>
-    Sent on an in-page link click. An integer from 0-10 (1-indexed),
-    corresponding to the index of that anchor element in the list of top ten
-    anchor elements on that page, sorted by their navigation scores. If an
-    anchor element is clicked that is not on the top ten list, 0 is returned.
+    Sent on an in-page link click.
   </summary>
-  <metric name="AnchorElementIndex"/>
+  <metric name="AnchorElementIndex">
+    <summary>
+      An integer (0-indexed), corresponding to the index of that anchor element
+      in the list of top ten anchor elements on that page, sorted by their
+      navigation scores. If an anchor element is clicked that is not in
+      NavigationPredictorAnchorElementMetrics, -1 is returned.
+    </summary>
+  </metric>
+  <metric name="HrefUnchanged">
+    <summary>
+      1 if the href of the anchor element at the time the click is handled is
+      the same as the href when the element was created. 0 if the href changed.
+    </summary>
+  </metric>
 </event>
 
 <event name="NavigationPredictorPageLinkMetrics" singular="True">

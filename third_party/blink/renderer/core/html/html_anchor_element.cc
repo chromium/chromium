@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -418,7 +417,11 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                       WebFeature::kAnchorClickDispatchForNonConnectedNode);
   }
 
-  AnchorElementMetrics::MaybeReportClickedMetricsOnClick(this);
+  Document& top_document = GetDocument().TopDocument();
+  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
+    AnchorElementMetricsSender::From(top_document)
+        ->MaybeReportClickedMetricsOnClick(*this);
+  }
 
   StringBuilder url;
   url.Append(StripLeadingAndTrailingHTMLSpaces(
@@ -560,8 +563,9 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
   LogAddElementIfIsolatedWorldAndInDocument("a", html_names::kHrefAttr);
 
   Document& top_document = GetDocument().TopDocument();
-  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document))
+  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
+  }
 
   return request;
 }

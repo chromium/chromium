@@ -31,6 +31,7 @@
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/portal_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/prefetch_proxy_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/previews_ukm_observer.h"
@@ -180,6 +181,8 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
       SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
           web_contents()->GetBrowserContext()));
   tracker->AddObserver(std::make_unique<DataUseMetricsObserver>());
+  tracker->AddObserver(
+      std::make_unique<PageAnchorsMetricsObserver>(tracker->GetWebContents()));
   std::unique_ptr<TranslatePageLoadMetricsObserver> translate_observer =
       TranslatePageLoadMetricsObserver::CreateIfNeeded(
           tracker->GetWebContents());

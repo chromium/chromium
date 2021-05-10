@@ -4970,47 +4970,10 @@
                 {
                     "name": "Enabled_Logistic_Precision_15_M79_20191029",
                     "params": {
-                        "area_rank_scale": "0",
-                        "clickable_space_scale": "1040",
-                        "contains_image_scale": "787000",
-                        "iframe_link_total_scale": "0",
-                        "image_link_total_scale": "-11600",
-                        "increment_link_total_scale": "36100",
-                        "is_in_iframe_scale": "0",
-                        "is_same_host_scale": "918000",
-                        "is_url_incremented_scale": "4790000",
-                        "link_total_scale": "-19700",
-                        "median_link_location_scale": "-3",
-                        "normalize_scores": "false",
-                        "prefetch_after_preconnect": "true",
-                        "prefetch_url_score_threshold": "2250000",
-                        "ratio_area_scale": "13000",
-                        "ratio_distance_root_top_scale": "-15",
-                        "same_origin_link_total_scale": "3110",
-                        "viewport_height_scale": "-50",
-                        "viewport_width_scale": "76"
+                        "random_anchor_sampling_period": "100"
                     },
                     "enable_features": [
                         "NavigationPredictor"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NavigationPredictorMultiplePrerenders": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Limit_5",
-                    "params": {
-                        "prerender_limit": "5"
-                    },
-                    "enable_features": [
-                        "NavigationPredictorMultiplePrerenders"
                     ]
                 }
             ]

@@ -9,7 +9,6 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -20,9 +19,33 @@ namespace blink {
 
 class Document;
 class HTMLAnchorElement;
+class IntersectionObserver;
+class IntersectionObserverEntry;
+class AnchorElementMetrics;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
+//
+// The high level approach is:
+// 1) When HTMLAnchorElements are inserted into the DOM,
+//    AnchorElementMetricsSender::AddAnchorElement is called and a reference to
+//    the element is stored. We also add the element to the intersection
+//    observer that watches for elements entering the viewport. The first time
+//    this happens, the sender is created, which registers itself for lifecycle
+//    callbacks.
+// 2) If any elements enter the viewport, the intersection observer will call
+//    AnchorElementMetricsSender::UpdateVisibleAnchors. Elements are collected
+//    in entered_viewport_messages_ and will be reported after the next layout.
+// 3) On the next layout, AnchorElementMetricsSender::DidFinishLifecycleUpdate
+//    is called, and it goes over the collected anchor elements. Elements that
+//    are visible are reported to the browser via ReportNewAnchorElements. The
+//    anchor elements collected in AnchorElementMetricsSender are all dropped.
+//    In particular, this drops elements that are not visible. They will never
+//    be reported even if they become visible later, unless the are reinserted
+//    into the DOM. This is not ideal, but simpler, keeps resource usage low,
+//    and seems to work well enough on the sites I've looked at. Also, elements
+//    that entered the viewport will be reported using
+//    ReportAnchorElementsEnteredViewport.
 class CORE_EXPORT AnchorElementMetricsSender final
     : public GarbageCollected<AnchorElementMetricsSender>,
       public LocalFrameView::LifecycleNotificationObserver,
@@ -46,20 +69,20 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // AnchorElementMetricsSender.
   static bool HasAnchorElementMetricsSender(Document& document);
 
-  // Sends metrics of anchor element clicked by the user to the browser.
-  void SendClickedAnchorMetricsToBrowser(
-      mojom::blink::AnchorElementMetricsPtr metric);
-
-  // Sends metrics of visible anchor elements to the browser.
-  void SendAnchorMetricsVectorToBrowser(
-      Vector<mojom::blink::AnchorElementMetricsPtr> metrics,
-      const IntSize& viewport_size);
+  // Report the link click to the browser process, so long as the anchor
+  // is an HTTP(S) link.
+  void MaybeReportClickedMetricsOnClick(
+      const HTMLAnchorElement& anchor_element);
 
   // Adds an anchor element to |anchor_elements_|.
   void AddAnchorElement(HTMLAnchorElement& element);
 
-  // Returns the stored |anchor_elements_|.
-  const HeapHashSet<Member<HTMLAnchorElement>>& GetAnchorElements() const;
+  HeapMojoRemote<mojom::blink::AnchorElementMetricsHost>* MetricsHost();
+
+  // Creates AnchorElementMetrics from anchor element if possible. Then records
+  // the metrics, and sends them to the browser process.
+  void UpdateVisibleAnchors(
+      const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   void Trace(Visitor*) const override;
 
@@ -68,16 +91,16 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();
 
-  // Browser host to which the anchor element metrics are sent.
+  // Use WeakMember to make sure we don't leak memory on long-lived pages.
+  HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
+
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost> metrics_host_;
 
-  // Collection of anchor elements in the document. Use a HashSet to ensure that
-  // an element is inserted at most once.
-  HeapHashSet<Member<HTMLAnchorElement>> anchor_elements_;
+  Member<IntersectionObserver> intersection_observer_;
 
-  // If |has_onload_report_sent_| is true, |anchor_elements_| will not accept
-  // new anchor elements.
-  bool has_onload_report_sent_ = false;
+  WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
+      entered_viewport_messages_;
+  WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
 
   DISALLOW_COPY_AND_ASSIGN(AnchorElementMetricsSender);
 };
