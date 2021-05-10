@@ -303,6 +303,7 @@ bool UtilityProcessHost::StartProcess() {
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
       network::switches::kUseFirstPartySet,
+      network::switches::kIpAddressSpaceOverrides,
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       switches::kSchedulerBoostUrgent,
 #endif

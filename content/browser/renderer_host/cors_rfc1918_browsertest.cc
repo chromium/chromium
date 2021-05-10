@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,64 +19,38 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/test_content_browser_client.h"
-#include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
 
-constexpr char kInsecureHost[] = "foo.test";
+// These domains are mapped to the IP addresses above using the
+// `--host-resolver-rules` command-line switch. The exact values come from the
+// embedded HTTPS server, which has certificates for these domains
+constexpr char kLocalHost[] = "a.test";
+constexpr char kPrivateHost[] = "b.test";
+constexpr char kPublicHost[] = "c.test";
 
+// Path to a default response served by all servers in this test.
 constexpr char kDefaultPath[] = "/defaultresponse";
 
+// Path to a response with the `treat-as-public-address` CSP directive.
 constexpr char kTreatAsPublicAddressPath[] =
     "/set-header?Content-Security-Policy: treat-as-public-address";
-
-GURL SecureURL(const net::EmbeddedTestServer& server, const std::string& path) {
-  // http://localhost is considered secure. Relying on this is easier than using
-  // the HTTPS test server, since that server cannot lie about its domain name,
-  // so we have to use localhost anyway.
-  return server.GetURL(path);
-}
-
-GURL InsecureURL(const net::EmbeddedTestServer& server,
-                 const std::string& path) {
-  // The mock resolver is set to resolve anything to 127.0.0.1, so we use
-  // http://foo.test as an insecure origin.
-  return server.GetURL(kInsecureHost, path);
-}
-
-GURL SecureDefaultURL(const net::EmbeddedTestServer& server) {
-  return SecureURL(server, kDefaultPath);
-}
-
-GURL InsecureDefaultURL(const net::EmbeddedTestServer& server) {
-  return InsecureURL(server, kDefaultPath);
-}
-
-GURL SecureTreatAsPublicAddressURL(const net::EmbeddedTestServer& server) {
-  return SecureURL(server, kTreatAsPublicAddressPath);
-}
-
-GURL InsecureTreatAsPublicAddressURL(const net::EmbeddedTestServer& server) {
-  return InsecureURL(server, kTreatAsPublicAddressPath);
-}
 
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
 // The snippet evaluates to a boolean promise which resolves to true iff the
 // fetch was successful. The promise never rejects, as doing so makes it hard
 // to assert failure.
-std::string FetchSubresourceScript(const std::string& url_spec) {
+std::string FetchSubresourceScript(const GURL& url) {
   return JsReplace(
       R"(fetch($1).then(
            response => response.ok,
@@ -86,111 +59,7 @@ std::string FetchSubresourceScript(const std::string& url_spec) {
              return false;
            });
       )",
-      url_spec);
-}
-
-// Returns an IP address in the private address space.
-net::IPAddress PrivateAddress() {
-  return net::IPAddress(10, 0, 1, 2);
-}
-
-// Returns an IP address in the public address space.
-net::IPAddress PublicAddress() {
-  return net::IPAddress(40, 0, 1, 2);
-}
-
-// Minimal response headers for an intercepted response to be successful.
-constexpr base::StringPiece kMinimalResponseHeaders =  // force line break
-    R"(HTTP/1.0 200 OK
-Content-type: text/html
-
-)";
-
-// Minimal response headers for an intercepted response to be an error page.
-constexpr base::StringPiece kMinimalErrorResponseHeaders =
-    "HTTP/1.0 404 Not Found";
-
-// Minimal response body containing an HTML document.
-constexpr base::StringPiece kMinimalHtmlBody = R"(
-<html>
-<head></head>
-<body></body>
-</html>
-)";
-
-// Wraps the URLLoaderInterceptor method of the same name, asserts success.
-//
-// Note: ASSERT_* macros can only be used in functions returning void.
-void WriteResponseBody(base::StringPiece body,
-                       network::mojom::URLLoaderClient* client) {
-  ASSERT_EQ(content::URLLoaderInterceptor::WriteResponseBody(body, client),
-            MOJO_RESULT_OK);
-}
-
-// Helper for MaybeInterceptWithFakeEndPoint.
-network::mojom::URLResponseHeadPtr BuildInterceptedResponseHead(
-    const net::IPEndPoint& endpoint,
-    bool should_succeed) {
-  auto response = network::mojom::URLResponseHead::New();
-  base::StringPiece headers_string =
-      should_succeed ? kMinimalResponseHeaders : kMinimalErrorResponseHeaders;
-  response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(headers_string));
-  if (should_succeed)
-    response->headers->GetMimeType(&response->mime_type);
-  response->remote_endpoint = endpoint;
-  return response;
-}
-
-// Helper for InterceptorWithFakeEndPointInternal.
-bool MaybeInterceptWithFakeEndPoint(
-    const GURL& intercepted_url,
-    const net::IPEndPoint& endpoint,
-    bool should_succeed,
-    content::URLLoaderInterceptor::RequestParams* params) {
-  const GURL& request_url = params->url_request.url;
-  if (request_url != intercepted_url) {
-    LOG(INFO) << "MaybeInterceptWithFakeEndPoint: ignoring request to "
-              << request_url;
-    return false;
-  }
-
-  LOG(INFO) << "MaybeInterceptWithFakeEndPoint: intercepting request to "
-            << request_url;
-
-  params->client->OnReceiveResponse(
-      BuildInterceptedResponseHead(endpoint, should_succeed));
-  WriteResponseBody(kMinimalHtmlBody, params->client.get());
-  return true;
-}
-
-std::unique_ptr<content::URLLoaderInterceptor>
-InterceptorWithFakeEndPointInternal(const GURL& url,
-                                    const net::IPEndPoint& endpoint,
-                                    bool should_succeed) {
-  LOG(INFO) << "Starting to intercept requests to " << url
-            << " with fake endpoint " << endpoint.ToString();
-  return std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
-      &MaybeInterceptWithFakeEndPoint, url, endpoint, should_succeed));
-}
-
-// The returned interceptor intercepts requests to |url|, fakes its network
-// endpoint to reflect the value of |endpoint|, and responds OK with a minimal
-// HTML body.
-std::unique_ptr<content::URLLoaderInterceptor> InterceptorWithFakeEndPoint(
-    const GURL& url,
-    const net::IPEndPoint& endpoint) {
-  return InterceptorWithFakeEndPointInternal(url, endpoint,
-                                             /* should_succeed=*/true);
-}
-
-// The returned interceptor intercepts requests to |url|, fakes its network
-// endpoint to reflect the value of |endpoint|, and responds with a 404 error.
-std::unique_ptr<content::URLLoaderInterceptor> FailInterceptorWithFakeEndPoint(
-    const GURL& url,
-    const net::IPEndPoint& endpoint) {
-  return InterceptorWithFakeEndPointInternal(url, endpoint,
-                                             /* should_succeed=*/false);
+      url);
 }
 
 // A |ContentBrowserClient| implementation that allows modifying the return
@@ -235,27 +104,119 @@ class ContentBrowserClientRegistration {
   ContentBrowserClient* const old_client_;
 };
 
+// A `net::EmbeddedTestServer` that only starts on demand and pretends to be
+// in a particular IP address space.
+//
+// NOTE(titouan): The IP address space overrides CLI switch is copied to utility
+// processes when said processes are started. If we start a lazy server after
+// the network process has started, any updates we make to our own CLI switches
+// will not propagate to the network process, yielding inconsistent results.
+// These tests currently do not rely on this behavior - the IP address space of
+// documents is calculated in the browser process, and all network resources
+// fetched in this test are `local`. If we want to fix this, we can get rid of
+// the fancy lazy-initialization and simply start all servers at test fixture
+// construction time, then set up the CLI switch in `SetUpCommandLine()`.
+class LazyServer {
+ public:
+  LazyServer(net::EmbeddedTestServer::Type type,
+             network::mojom::IPAddressSpace ip_address_space,
+             base::FilePath test_data_path)
+      : type_(type),
+        ip_address_space_(ip_address_space),
+        test_data_path_(std::move(test_data_path)) {}
+
+  net::EmbeddedTestServer& Get() {
+    if (!server_) {
+      Initialize();
+    }
+    return *server_;
+  }
+
+ private:
+  void Initialize() {
+    server_ = std::make_unique<net::EmbeddedTestServer>(type_);
+
+    // Use a certificate valid for multiple domains, which we can use to
+    // distinguish `local`, `private` and `public` address spaces.
+    server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    server_->AddDefaultHandlers(test_data_path_);
+    EXPECT_TRUE(server_->Start());
+
+    AddCommandLineOverride();
+  }
+
+  // Sets up the command line in order for this server to be considered a part
+  // of `ip_address_space_`, irrespective of the actual IP it binds to.
+  void AddCommandLineOverride() const {
+    DCHECK(server_);
+
+    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+    std::string switch_str = command_line.GetSwitchValueASCII(
+        network::switches::kIpAddressSpaceOverrides);
+
+    // If `switch_str` was empty, we prepend an empty value by unconditionally
+    // adding a comma before the new entry. This empty value is ignored by the
+    // switch parsing logic.
+    base::StrAppend(&switch_str,
+                    {
+                        ",",
+                        server_->host_port_pair().ToString(),
+                        "=",
+                        IPAddressSpaceToSwitchValue(ip_address_space_),
+                    });
+
+    command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                   switch_str);
+  }
+
+  static base::StringPiece IPAddressSpaceToSwitchValue(
+      network::mojom::IPAddressSpace space) {
+    switch (space) {
+      case network::mojom::IPAddressSpace::kLocal:
+        return "local";
+      case network::mojom::IPAddressSpace::kPrivate:
+        return "private";
+      case network::mojom::IPAddressSpace::kPublic:
+        return "public";
+      default:
+        ADD_FAILURE() << "Unhandled address space " << space;
+        return "";
+    }
+  }
+
+  net::EmbeddedTestServer::Type type_;
+  network::mojom::IPAddressSpace ip_address_space_;
+  base::FilePath test_data_path_;
+  std::unique_ptr<net::EmbeddedTestServer> server_;
+};
+
 }  // namespace
 
-// It is hard to test this feature fully at the integration test level. Indeed,
-// there is no good way to inject a fake endpoint value into the URLLoader code
-// that performs the CORS-RFC1918 checks. The most intrusive injection
-// primitive, URLLoaderInterceptor, cannot be made to work as it bypasses the
-// network service entirely. Intercepted subresource requests therefore do not
-// execute the code under test and are never blocked.
+// This being an integration/browser test, we concentrate on a few behaviors
+// relevant to Private Network Access:
 //
-// We are able to intercept top-level navigations, which allows us to test that
-// the correct address space is committed in the client security state for
-// local, private and public IP addresses.
+//  - testing the values of important properties on top-level documents:
+//    - address space
+//    - secure context bit
+//    - private network request policy
+//  - testing the inheritance semantics of these properties
+//  - testing the correct handling of the CSP: treat-as-public-address directive
+//  - testing that insecure private network requests are blocked when the right
+//    feature flag is enabled
+//  - and a few other odds and ends
 //
-// We further test that given a client security state with each IP address
-// space, subresource requests served by local IP addresses fail unless
-// initiated from the same address space. This provides integration testing
-// coverage for both success and failure cases of the code under test.
+// We use the `--ip-address-space-overrides` command-line switch to test against
+// `private` and `public` address spaces, even though all responses are actually
+// served from localhost. Combined with host resolver rules, this lets us define
+// three different domains that map to the different address spaces:
 //
-// Finally, we have unit tests that test all possible combinations of source and
+//  - `a.test` is `local`
+//  - `b.test` is `private`
+//  - `c.test` is `public`
+//
+// We also have unit tests that test all possible combinations of source and
 // destination IP address spaces in services/network/url_loader_unittest.cc.
-// Those cover fetches to other address spaces than local.
 class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
  public:
   RenderFrameHostImpl* root_frame_host() {
@@ -266,25 +227,72 @@ class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
  protected:
   // Allows subclasses to construct instances with different features enabled.
   explicit CorsRfc1918BrowserTestBase(
-      const std::vector<base::Feature>& enabled_features) {
+      const std::vector<base::Feature>& enabled_features)
+      : insecure_local_server_(net::EmbeddedTestServer::TYPE_HTTP,
+                               network::mojom::IPAddressSpace::kLocal,
+                               GetTestDataFilePath()),
+        insecure_private_server_(net::EmbeddedTestServer::TYPE_HTTP,
+                                 network::mojom::IPAddressSpace::kPrivate,
+                                 GetTestDataFilePath()),
+        insecure_public_server_(net::EmbeddedTestServer::TYPE_HTTP,
+                                network::mojom::IPAddressSpace::kPublic,
+                                GetTestDataFilePath()),
+        secure_local_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                             network::mojom::IPAddressSpace::kLocal,
+                             GetTestDataFilePath()),
+        secure_private_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                               network::mojom::IPAddressSpace::kPrivate,
+                               GetTestDataFilePath()),
+        secure_public_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                              network::mojom::IPAddressSpace::kPublic,
+                              GetTestDataFilePath()) {
     feature_list_.InitWithFeatures(enabled_features, {});
-
-    StartServer();
   }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
-    // |kInsecureHost| serves as an insecure alternative to `localhost`.
-    // This must be called on the main thread lest it segfaults.
-    host_resolver()->AddRule(kInsecureHost, "127.0.0.1");
+    // Rules must be added on the main thread, otherwise `AddRule()` segfaults.
+    host_resolver()->AddRule(kLocalHost, "127.0.0.1");
+    host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
+    host_resolver()->AddRule(kPublicHost, "127.0.0.1");
+  }
+
+  GURL InsecureLocalURL(const std::string& path) {
+    return insecure_local_server_.Get().GetURL(kLocalHost, path);
+  }
+
+  GURL InsecurePrivateURL(const std::string& path) {
+    return insecure_private_server_.Get().GetURL(kPrivateHost, path);
+  }
+
+  GURL InsecurePublicURL(const std::string& path) {
+    return insecure_public_server_.Get().GetURL(kPublicHost, path);
+  }
+
+  GURL SecureLocalURL(const std::string& path) {
+    return secure_local_server_.Get().GetURL(kLocalHost, path);
+  }
+
+  GURL SecurePrivateURL(const std::string& path) {
+    return secure_private_server_.Get().GetURL(kPrivateHost, path);
+  }
+
+  GURL SecurePublicURL(const std::string& path) {
+    return secure_public_server_.Get().GetURL(kPublicHost, path);
   }
 
  private:
-  // Constructor helper. We cannot use ASSERT_* macros in constructors.
-  void StartServer() { ASSERT_TRUE(embedded_test_server()->Start()); }
-
   base::test::ScopedFeatureList feature_list_;
+
+  // All servers are started on demand. Most tests require the use of one or
+  // two servers, never six at the same time.
+  LazyServer insecure_local_server_;
+  LazyServer insecure_private_server_;
+  LazyServer insecure_public_server_;
+  LazyServer secure_local_server_;
+  LazyServer secure_private_server_;
+  LazyServer secure_public_server_;
 };
 
 // Test with insecure private network requests blocked, excluding navigations.
@@ -318,10 +326,10 @@ class CorsRfc1918BrowserTestNoBlocking : public CorsRfc1918BrowserTestBase {
 // are blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestBlockNavigations,
                        IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
 
-  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+  GURL url = InsecureLocalURL("/empty.html");
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 
@@ -354,10 +362,10 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestBlockNavigations,
 // the navigation is not blocked in this case.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeFromInsecureTreatAsPublicToLocalIsNotBlocked) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
 
-  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+  GURL url = InsecureLocalURL("/empty.html");
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 
@@ -383,11 +391,11 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        CspReportOnlyTreatAsPublicAddressIgnored) {
   EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureURL(*embedded_test_server(),
-                           "/set-header?Content-Security-Policy-Report-Only: "
-                           "treat-as-public-address")));
+      shell(),
+      InsecureLocalURL("/set-header?Content-Security-Policy-Report-Only: "
+                       "treat-as-public-address")));
 
-  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+  GURL url = InsecureLocalURL("/empty.html");
 
   TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
 
@@ -415,10 +423,9 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionFromInsecurePublictoLocalIsNotBlockedInMainFrame) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
-  GURL url = InsecureDefaultURL(*embedded_test_server());
+  GURL url = InsecureLocalURL(kDefaultPath);
   TestNavigationManager navigation_manager(shell()->web_contents(), url);
 
   base::StringPiece script_template = R"(
@@ -444,10 +451,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionFromInsecurePublictoLocalIsBlockedInChildFrame) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
-  GURL url = InsecureDefaultURL(*embedded_test_server());
+  GURL url = InsecureLocalURL(kDefaultPath);
   TestNavigationManager navigation_manager(shell()->web_contents(), url);
 
   base::StringPiece script_template = R"(
@@ -486,10 +492,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionGetFromInsecurePublictoLocalIsBlockedInChildFrame) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
-  GURL target_url = InsecureDefaultURL(*embedded_test_server());
+  GURL target_url = InsecureLocalURL(kDefaultPath);
 
   // The page navigates to `url` followed by an empty query: '?'.
   GURL expected_url = GURL(target_url.spec() + "?");
@@ -541,8 +546,12 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
   // We're left with a RenderFrameHost containing the default
   // ClientSecurityState values.
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
-      shell(), embedded_test_server()->GetURL("/nocontent")));
+  //
+  // Serve the response from a secure public server, to confirm that none of
+  // the connection's properties are reflected in the committed document, which
+  // is not a secure context and belongs to the `local` address space.
+  EXPECT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell(), SecurePublicURL("/nocontent")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -601,8 +610,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForFileURL) {
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        ClientSecurityStateForInsecureLocalAddress) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -613,42 +621,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       ClientSecurityStateForSecureLocalAddress) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       ClientSecurityStateForTreatAsPublicAddress) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-  EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-}
-
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       ClientSecurityStateForPrivateAddress) {
-  // Intercept the page load and pretend it came from a public IP.
-
-  const GURL url = InsecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+                       ClientSecurityStateForInsecurePrivateAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -659,21 +633,62 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       ClientSecurityStateForPublicAddress) {
-  // Intercept the page load and pretend it came from a public IP.
-
-  const GURL url = InsecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+                       ClientSecurityStateForInsecurePublicAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSecureLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSecurePrivateAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSecurePublicAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForTreatAsPublicAddress) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
 }
@@ -700,14 +715,9 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // end up with the response IPAddressSpace.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        ClientSecurityStateForSpecialSchemeViewSourcePublic) {
-  // Intercept the page load and pretend it came from a public IP.
-  const GURL url = SecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
-
+  const GURL url = SecurePublicURL(kDefaultPath);
   EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+
   EXPECT_FALSE(
       root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
 
@@ -722,14 +732,9 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // Variation of above test with a private address.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        ClientSecurityStateForSpecialSchemeViewSourcePrivate) {
-  // Intercept the page load and pretend it came from a private IP.
-  const GURL url = SecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
-
+  const GURL url = SecurePrivateURL(kDefaultPath);
   EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+
   EXPECT_FALSE(
       root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
 
@@ -743,17 +748,12 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 // The chrome-error:// scheme should only ever appear in origins. It shouldn't
 // affect the IPAddressSpace computation. This test verifies that we end up with
-// the response IPAddressSpace.
+// the response IPAddressSpace. Error pages should not be considered secure
+// contexts however.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        ClientSecurityStateForSpecialSchemeChromeErrorPublic) {
-  // Intercept the page load and pretend it came from a public IP.
-  const GURL url = SecureDefaultURL(*embedded_test_server());
+  EXPECT_FALSE(NavigateToURL(shell(), SecurePublicURL("/empty404.html")));
 
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = FailInterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
-
-  EXPECT_FALSE(NavigateToURL(shell(), url));
   EXPECT_FALSE(
       root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
 
@@ -768,14 +768,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // Variation of above test with a private address.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        ClientSecurityStateForSpecialSchemeChromeErrorPrivate) {
-  // Intercept the page load and pretend it came from a public IP.
-  const GURL url = SecureDefaultURL(*embedded_test_server());
+  EXPECT_FALSE(NavigateToURL(shell(), SecurePrivateURL("/empty404.html")));
 
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = FailInterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
-
-  EXPECT_FALSE(NavigateToURL(shell(), url));
   EXPECT_FALSE(
       root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
 
@@ -1074,8 +1068,7 @@ RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForAboutBlankFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1090,8 +1083,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForAboutBlankFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1107,8 +1099,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForAboutBlankFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromAboutBlank(root_frame_host());
@@ -1125,8 +1116,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForAboutBlankFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromAboutBlank(root_frame_host());
@@ -1145,8 +1135,7 @@ IN_PROC_BROWSER_TEST_F(
 // address space is `public`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForAboutBlankFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1164,8 +1153,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // address space is `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForAboutBlankFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1185,8 +1173,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // Compare and contrast against the above tests without "noopener".
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeNoOpenerAddressSpaceForAboutBlankIsLocal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window =
       OpenWindowFromAboutBlankNoOpener(root_frame_host());
@@ -1202,8 +1189,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1218,8 +1204,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForInitialEmptyDocFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1235,8 +1220,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
@@ -1253,8 +1237,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForInitialEmptyDocFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
@@ -1273,8 +1256,7 @@ IN_PROC_BROWSER_TEST_F(
 // opener's address space is `public`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1292,8 +1274,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // opener's address space is `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForInitialEmptyDocFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1313,8 +1294,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // Compare and contrast against the above tests without "noopener".
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeNoOpenerAddressSpaceForInitialEmptyDocIsLocal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window =
       OpenWindowInitialEmptyDocNoOpener(root_frame_host());
@@ -1330,8 +1310,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForAboutSrcdocFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1346,8 +1325,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForAboutSrcdocFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1363,8 +1341,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForAboutSrcdocFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromSrcdoc(root_frame_host());
@@ -1381,8 +1358,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForAboutSrcdocFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromSrcdoc(root_frame_host());
@@ -1398,8 +1374,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForDataURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1414,8 +1389,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForDataURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1431,8 +1405,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForDataURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromDataURL(root_frame_host());
@@ -1448,8 +1421,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        SandboxedIframeInheritsAddressSpaceForDataURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromDataURL(root_frame_host());
@@ -1465,8 +1437,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForJavascriptURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
@@ -1482,8 +1453,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForJavascriptURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
@@ -1499,8 +1469,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForJavascriptURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1515,8 +1484,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForJavascriptURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(
       root_frame_host(), "var injectedCodeWasExecuted = true");
@@ -1535,8 +1503,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeNoOpenerAddressSpaceForJavascriptURLIsLocal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURLNoOpener(
       root_frame_host(), "var injectedCodeWasExecuted = true");
@@ -1557,8 +1524,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForBlobURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1573,8 +1539,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForBlobURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1590,8 +1555,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForBlobURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromBlob(root_frame_host());
@@ -1607,8 +1571,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        SandboxedIframeInheritsAddressSpaceForBlobURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromBlob(root_frame_host());
@@ -1624,8 +1587,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForBlobURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1640,8 +1602,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForBlobURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1656,8 +1617,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForFilesystemURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1672,8 +1632,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsAddressSpaceForFilesystemURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1689,8 +1648,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForFilesystemURLFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromFilesystem(root_frame_host());
@@ -1707,8 +1665,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsAddressSpaceForFilesystemURLFromLocal) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromFilesystem(root_frame_host());
@@ -1724,8 +1681,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForAboutBlankFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1739,8 +1695,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForAboutBlankFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1755,8 +1710,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForAboutBlankFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromAboutBlank(root_frame_host());
@@ -1772,8 +1726,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForAboutBlankFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromAboutBlank(root_frame_host());
@@ -1788,8 +1741,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsSecureContextForAboutBlankFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1803,8 +1755,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsSecureContextForAboutBlankFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1819,8 +1770,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     IframeInheritsSecureContextForInitialEmptyDocFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1835,8 +1785,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     IframeInheritsSecureContextForInitialEmptyDocFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1851,8 +1800,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForInitialEmptyDocFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
@@ -1868,8 +1816,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForInitialEmptyDocFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildInitialEmptyDoc(root_frame_host());
@@ -1885,8 +1832,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     OpeneeInheritsSecureContextForInitialEmptyDocFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1901,8 +1847,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     OpeneeInheritsSecureContextForInitialEmptyDocFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -1916,8 +1861,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForAboutSrcdocFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1931,8 +1875,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForAboutSrcdocFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1947,8 +1890,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForAboutSrcdocFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromSrcdoc(root_frame_host());
@@ -1964,8 +1906,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForAboutSrcdocFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromSrcdoc(root_frame_host());
@@ -1980,8 +1921,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForDataURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -1995,8 +1935,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForDataURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -2011,8 +1950,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForDataURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromDataURL(root_frame_host());
@@ -2028,8 +1966,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForDataURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromDataURL(root_frame_host());
@@ -2044,8 +1981,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForJavascriptURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
@@ -2061,8 +1997,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     IframeInheritsSecureContextForJavascriptURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddChildFromJavascriptURL(root_frame_host());
@@ -2078,8 +2013,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     OpeneeInheritsSecureContextForJavascriptURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -2093,8 +2027,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsSecureContextForJavascriptURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -2108,8 +2041,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForBlobURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -2123,8 +2055,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForBlobURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -2139,8 +2070,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForBlobURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromBlob(root_frame_host());
@@ -2156,8 +2086,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForBlobURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromBlob(root_frame_host());
@@ -2172,8 +2101,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsSecureContextForBlobURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -2187,8 +2115,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsSecureContextForBlobURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* window = OpenWindowFromBlob(root_frame_host());
   ASSERT_NE(nullptr, window);
@@ -2202,8 +2129,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        IframeInheritsSecureContextForFilesystemURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -2218,8 +2144,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     IframeInheritsSecureContextForFilesystemURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
@@ -2234,8 +2159,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForFilesystemURLFromSecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromFilesystem(root_frame_host());
@@ -2251,8 +2175,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     SandboxedIframeInheritsSecureContextForFilesystemURLFromInsecure) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   RenderFrameHostImpl* child_frame =
       AddSandboxedChildFromFilesystem(root_frame_host());
@@ -2271,14 +2194,11 @@ IN_PROC_BROWSER_TEST_F(
 // This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
                        InsecurePageCannotRequestFile) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page cannot load a `file:` URL.
-  EXPECT_EQ(
-      false,
-      EvalJs(root_frame_host(),
-             FetchSubresourceScript(GetTestUrl("", "empty.html").spec())));
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
 }
 
 // This test verifies that even with the blocking feature disabled, a secure
@@ -2287,14 +2207,11 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
 // This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
                        SecurePageCannotRequestFile) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Check that the page cannot load a `file:` URL.
-  EXPECT_EQ(
-      false,
-      EvalJs(root_frame_host(),
-             FetchSubresourceScript(GetTestUrl("", "empty.html").spec())));
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
 }
 
 // This test verifies that with the blocking feature disabled, the private
@@ -2302,8 +2219,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
 // to warn about insecure requests.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
                        PrivateNetworkPolicyIsWarnByDefault) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2319,24 +2235,21 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
 //  - from an insecure page with the "treat-as-public-address" CSP directive
 //  - to a local IP address
 // are not blocked.
-//
-// TODO(titouan): Make this pass. Request is currently blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
                        PrivateNetworkRequestIsNotBlockedByDefault) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
   EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block insecure requests.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        PrivateNetworkPolicyIsBlockByDefault) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2355,7 +2268,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     FromInsecureTreatAsPublicToLocalWithPolicySetToAllowIsNotBlocked) {
-  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL url = InsecureLocalURL(kTreatAsPublicAddressPath);
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
@@ -2375,7 +2288,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that the page can load a local resource.
   EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that child frames with distinct origins from their parent
@@ -2383,7 +2297,7 @@ IN_PROC_BROWSER_TEST_F(
 // origin of the child document instead.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        PrivateNetworkRequestPolicyCalculatedPerOrigin) {
-  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
@@ -2392,11 +2306,10 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   // correct PrivateNetworkRequestPolicy.
   ContentBrowserClientRegistration registration(&client);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  RenderFrameHostImpl* child_frame = AddChildFromURL(
-      root_frame_host(), SecureDefaultURL(*embedded_test_server()));
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), SecureLocalURL(kDefaultPath));
 
   network::mojom::ClientSecurityStatePtr security_state =
       child_frame->BuildClientSecurityState();
@@ -2412,7 +2325,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     PrivateNetworkRequestPolicyInheritedWithOriginForInitialEmptyDoc) {
-  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
@@ -2439,7 +2352,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     PrivateNetworkRequestPolicyInheritedWithOriginForAboutBlank) {
-  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
@@ -2466,7 +2379,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     PrivateNetworkRequestPolicyNotInheritedWithOriginForDataURL) {
-  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+  GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
   client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
@@ -2494,12 +2407,13 @@ IN_PROC_BROWSER_TEST_F(
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        FromSecureTreatAsPublicToLocalIsNotBlocked) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
 
-  // Check that the page can load a local resource.
-  EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+  // Check that the page can load a local resource. We load it from a secure
+  // origin to avoid running afoul of mixed content restrictions.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2508,12 +2422,13 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // are blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        FromInsecureTreatAsPublicToLocalIsBlocked) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
 
   // Check that the page cannot load a local resource.
   EXPECT_EQ(false,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2522,19 +2437,12 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 //  are blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        FromInsecurePublicToLocalIsBlocked) {
-  // Intercept the page load and pretend it came from a public IP.
-
-  const GURL url = InsecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PublicAddress(), embedded_test_server()->port()));
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   // Check that the page cannot load a local resource.
   EXPECT_EQ(false,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2543,19 +2451,12 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 //  are blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        FromInsecurePrivateToLocalIsBlocked) {
-  // Intercept the page load and pretend it came from a private IP.
-
-  const GURL url = InsecureDefaultURL(*embedded_test_server());
-
-  // Use the same port as the server, so that the fetch is not cross-origin.
-  auto interceptor = InterceptorWithFakeEndPoint(
-      url, net::IPEndPoint(PrivateAddress(), embedded_test_server()->port()));
-
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   // Check that the page cannot load a local resource.
   EXPECT_EQ(false,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2564,12 +2465,12 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 //  are not blocked.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        FromInsecureLocalToLocalIsNotBlocked) {
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a local resource.
   EXPECT_EQ(true,
-            EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLocalURL("/image.jpg"))));
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2581,18 +2482,16 @@ IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     FromSecurePublicEmbeddedInInsecureLocalToLocalIsBlocked) {
   // First navigate to an insecure page served by a local IP address.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Then embed a secure public iframe.
-  GURL iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
-  std::string script = base::ReplaceStringPlaceholders(
+  std::string script = JsReplace(
       R"(
         const iframe = document.createElement("iframe");
-        iframe.src = "$1";
+        iframe.src = $1;
         document.body.appendChild(iframe);
       )",
-      {iframe_url.spec()}, nullptr);
+      SecurePublicURL(kDefaultPath));
   EXPECT_TRUE(ExecJs(root_frame_host(), script));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
@@ -2614,7 +2513,8 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 
   // Check that the iframe cannot load a local resource.
-  EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
+  EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript(
+                                           InsecureLocalURL("/image.jpg"))));
 }
 
 }  // namespace content
