@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
-import android.app.Activity;
 import android.graphics.Point;
 import android.support.test.InstrumentationRegistry;
 import android.util.DisplayMetrics;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -56,28 +56,6 @@ public class NavigationHandlerTest {
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
     private static final int PAGELOAD_TIMEOUT_MS = 4000;
-
-    private static class ActivityStateListener implements ApplicationStatus.ActivityStateListener {
-        private final @ActivityState int mInitState;
-        private @ActivityState int mCurState;
-
-        private ActivityStateListener(@ActivityState int state) {
-            mInitState = mCurState = state;
-        }
-
-        @Override
-        public void onActivityStateChange(Activity activity, int newState) {
-            mCurState = newState;
-        }
-
-        private boolean isUpdated() {
-            return mCurState != mInitState;
-        }
-
-        private @ActivityState int getState() {
-            return mCurState;
-        }
-    }
 
     private EmbeddedTestServer mTestServer;
     private HistoryNavigationLayout mNavigationLayout;
@@ -182,16 +160,8 @@ public class NavigationHandlerTest {
     @SmallTest
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
-        final Activity activity = mActivityTestRule.getActivity();
-        ActivityStateListener stateListener =
-                new ActivityStateListener(ApplicationStatus.getStateForActivity(activity));
-        ApplicationStatus.registerStateListenerForAllActivities(stateListener);
         swipeFromEdge(LEFT_EDGE);
-        CriteriaHelper.pollUiThread(stateListener::isUpdated);
-        ApplicationStatus.unregisterActivityStateListener(stateListener);
-        Assert.assertThat(stateListener.getState(),
-                Matchers.isOneOf(
-                        ActivityState.STOPPED, ActivityState.PAUSED, ActivityState.DESTROYED));
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     @Test
