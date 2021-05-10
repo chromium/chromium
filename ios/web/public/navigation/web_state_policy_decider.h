@@ -120,6 +120,15 @@ class WebStatePolicyDecider {
                                             const RequestInfo& request_info);
 
   // Asks the decider whether the navigation corresponding to |response| should
+  // be allowed to display an error page if an error occurs. Defaults to
+  // true if not overridden. This can be used to suppress error pages in certain
+  // cases such as attempting to upgrade an omnibox navigation to HTTPS. In that
+  // scenario, failed upgrade attempts (e.g. due to SSL or DNS resolution
+  // errors) should immediately fall back to HTTP without showing an error page.
+  virtual bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
+                                                 bool for_main_frame);
+
+  // Asks the decider whether the navigation corresponding to |response| should
   // be allowed to continue. Defaults to PolicyDecision::Allow() if not
   // overridden. |for_main_frame| indicates whether the frame being navigated is
   // the main frame. Called before WebStateObserver::DidFinishNavigation. Calls

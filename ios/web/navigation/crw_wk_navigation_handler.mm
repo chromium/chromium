@@ -523,8 +523,11 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
        IsPlaceholderUrl(responseURL)) ||
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
        [CRWErrorPageHelper isErrorPageFileURL:responseURL])) {
-    handler(WKNavigationResponsePolicyAllow);
-    return;
+    if (self.webStateImpl->ShouldAllowErrorPageToBeDisplayed(
+            WKResponse.response, WKResponse.forMainFrame)) {
+      handler(WKNavigationResponsePolicyAllow);
+      return;
+    }
   }
 
   if (self.pendingNavigationInfo.unsafeRedirect) {

@@ -123,6 +123,9 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
                WebStatePolicyDecider::PolicyDecision(
                    NSURLRequest* request,
                    const WebStatePolicyDecider::RequestInfo& request_info));
+
+  MOCK_METHOD2(ShouldAllowErrorPageToBeDisplayed,
+               bool(NSURLResponse* response, bool for_main_frame));
   MOCK_METHOD3(
       ShouldAllowResponse,
       void(NSURLResponse* response,
@@ -707,7 +710,38 @@ TEST_F(WebStateImplTest, PolicyDeciderTest) {
     EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
   }
 
-  // Test that WebStateDestroyed() is called.
+  NSURL* error_url = [NSURL URLWithString:@"chrome://invalid"];
+  NSURLResponse* error_response =
+      [[NSURLResponse alloc] initWithURL:error_url
+                                MIMEType:@"text/html"
+                   expectedContentLength:0
+                        textEncodingName:nil];
+
+  WebStatePolicyDecider::RequestInfo error_request_info_main_frame(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_main_frame=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(decider, ShouldAllowErrorPageToBeDisplayed(error_response, true))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(decider2, ShouldAllowErrorPageToBeDisplayed(error_response, true))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(
+      web_state_->ShouldAllowErrorPageToBeDisplayed(error_response, true));
+
+  // If at least one decider doesn't allow displaying error pages, web state
+  // shouldn't allow them either.
+  EXPECT_CALL(decider, ShouldAllowErrorPageToBeDisplayed(error_response, true))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(decider2, ShouldAllowErrorPageToBeDisplayed(error_response, true))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(
+      web_state_->ShouldAllowErrorPageToBeDisplayed(error_response, true));
+
   EXPECT_CALL(decider, WebStateDestroyed()).Times(1);
   EXPECT_CALL(decider2, WebStateDestroyed()).Times(1);
   web_state_.reset();

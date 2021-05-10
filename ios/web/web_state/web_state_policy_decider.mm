@@ -70,6 +70,12 @@ WebStatePolicyDecider::PolicyDecision WebStatePolicyDecider::ShouldAllowRequest(
   return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
+bool WebStatePolicyDecider::ShouldAllowErrorPageToBeDisplayed(
+    NSURLResponse* response,
+    bool for_main_frame) {
+  return true;
+}
+
 void WebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,

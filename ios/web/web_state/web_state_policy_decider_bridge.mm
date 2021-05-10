@@ -28,6 +28,17 @@ WebStatePolicyDeciderBridge::ShouldAllowRequest(
   return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
+bool WebStatePolicyDeciderBridge::ShouldAllowErrorPageToBeDisplayed(
+    NSURLResponse* response,
+    bool for_main_frame) {
+  if ([decider_ respondsToSelector:@selector
+                (shouldAllowErrorPageToBeDisplayed:forMainFrame:)]) {
+    return [decider_ shouldAllowErrorPageToBeDisplayed:response
+                                          forMainFrame:for_main_frame];
+  }
+  return true;
+}
+
 void WebStatePolicyDeciderBridge::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,

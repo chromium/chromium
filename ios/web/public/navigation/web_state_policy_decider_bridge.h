@@ -19,6 +19,10 @@
            requestInfo:
                (const web::WebStatePolicyDecider::RequestInfo&)requestInfo;
 
+// Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
+- (bool)shouldAllowErrorPageToBeDisplayed:(NSURLResponse*)response
+                             forMainFrame:(BOOL)forMainFrame;
+
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowResponse|.
 - (void)
     decidePolicyForNavigationResponse:(NSURLResponse*)response
@@ -46,6 +50,9 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
       NSURLResponse* response,
       bool for_main_frame,
       base::OnceCallback<void(PolicyDecision)> callback) override;
+
+  bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
+                                         bool for_main_frame) override;
 
  private:
   // CRWWebStatePolicyDecider which receives forwarded calls.
