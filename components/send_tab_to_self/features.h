@@ -20,6 +20,10 @@ extern const base::Feature kSendTabToSelfWhenSignedIn;
 // hardcoded list of share targets, for UI work & debugging.
 extern const base::Feature kSendTabToSelfUseFakeBackend;
 
+// If this feature is enabled, show received tabs in a new UI next to the
+// profile icon rather than in a system notification.
+extern const base::Feature kSendTabToSelfV2;
+
 // Returns whether the receiving components of the feature is enabled on this
 // device. This doesn't rely on the SendTabToSelfSyncService to be actively up
 // and ready.

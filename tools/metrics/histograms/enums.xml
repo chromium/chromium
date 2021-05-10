@@ -44628,6 +44628,7 @@ from previous Chrome versions.
   <int value="-1893668420"
       label="AutofillSaveCreditCardUsesStrikeSystem:enabled"/>
   <int value="-1893019071" label="CSSOMViewScrollCoordinates:disabled"/>
+  <int value="-1892758622" label="SendTabToSelfV2:disabled"/>
   <int value="-1892555086" label="disable-compositor-animation-timelines"/>
   <int value="-1892000374" label="SeccompSandboxAndroid:enabled"/>
   <int value="-1890374564" label="OobeRecommendAppsScreen:disabled"/>
@@ -46404,6 +46405,7 @@ from previous Chrome versions.
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
   <int value="-371397346" label="ChromeOSSharingHub:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
+  <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>

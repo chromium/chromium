@@ -4713,6 +4713,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "send-tab-to-self-v2",
+    "owners": ["kmilka", "chrome-sharing-eng@google.com"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "send-tab-to-self-when-signed-in",
     "owners": ["victorvianna@google.com", "mastiz@chromium.org"],
     "expiry_milestone": 92

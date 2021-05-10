@@ -6998,6 +6998,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfWhenSignedInDescription, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfWhenSignedIn)},
 
+    {"send-tab-to-self-v2", flag_descriptions::kSendTabToSelfV2Name,
+     flag_descriptions::kSendTabToSelfV2Description, kOsAll,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},
+
 #if defined(OS_ANDROID)
     {"mobile-pwa-install-use-bottom-sheet",
      flag_descriptions::kMobilePwaInstallUseBottomSheetName,
