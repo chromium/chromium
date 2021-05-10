@@ -115,40 +115,40 @@ MediaSessionUserAction MediaSessionActionToUserAction(
     media_session::mojom::MediaSessionAction action) {
   switch (action) {
     case media_session::mojom::MediaSessionAction::kPlay:
-      return MediaSessionUserAction::Play;
+      return MediaSessionUserAction::kPlay;
     case media_session::mojom::MediaSessionAction::kPause:
-      return MediaSessionUserAction::Pause;
+      return MediaSessionUserAction::kPause;
     case media_session::mojom::MediaSessionAction::kPreviousTrack:
-      return MediaSessionUserAction::PreviousTrack;
+      return MediaSessionUserAction::kPreviousTrack;
     case media_session::mojom::MediaSessionAction::kNextTrack:
-      return MediaSessionUserAction::NextTrack;
+      return MediaSessionUserAction::kNextTrack;
     case media_session::mojom::MediaSessionAction::kSeekBackward:
-      return MediaSessionUserAction::SeekBackward;
+      return MediaSessionUserAction::kSeekBackward;
     case media_session::mojom::MediaSessionAction::kSeekForward:
-      return MediaSessionUserAction::SeekForward;
+      return MediaSessionUserAction::kSeekForward;
     case media_session::mojom::MediaSessionAction::kSkipAd:
-      return MediaSessionUserAction::SkipAd;
+      return MediaSessionUserAction::kSkipAd;
     case media_session::mojom::MediaSessionAction::kStop:
-      return MediaSessionUserAction::Stop;
+      return MediaSessionUserAction::kStop;
     case media_session::mojom::MediaSessionAction::kSeekTo:
-      return MediaSessionUserAction::SeekTo;
+      return MediaSessionUserAction::kSeekTo;
     case media_session::mojom::MediaSessionAction::kScrubTo:
-      return MediaSessionUserAction::ScrubTo;
+      return MediaSessionUserAction::kScrubTo;
     case media_session::mojom::MediaSessionAction::kEnterPictureInPicture:
-      return MediaSessionUserAction::EnterPictureInPicture;
+      return MediaSessionUserAction::kEnterPictureInPicture;
     case media_session::mojom::MediaSessionAction::kExitPictureInPicture:
-      return MediaSessionUserAction::ExitPictureInPicture;
+      return MediaSessionUserAction::kExitPictureInPicture;
     case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
-      return MediaSessionUserAction::SwitchAudioDevice;
+      return MediaSessionUserAction::kSwitchAudioDevice;
     case media_session::mojom::MediaSessionAction::kToggleMicrophone:
-      return MediaSessionUserAction::ToggleMicrophone;
+      return MediaSessionUserAction::kToggleMicrophone;
     case media_session::mojom::MediaSessionAction::kToggleCamera:
-      return MediaSessionUserAction::ToggleCamera;
+      return MediaSessionUserAction::kToggleCamera;
     case media_session::mojom::MediaSessionAction::kHangUp:
-      return MediaSessionUserAction::HangUp;
+      return MediaSessionUserAction::kHangUp;
   }
   NOTREACHED();
-  return MediaSessionUserAction::Play;
+  return MediaSessionUserAction::kPlay;
 }
 
 // If the string is not empty then push it to the back of a vector.
@@ -486,7 +486,7 @@ void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
 
 void MediaSessionImpl::RecordSessionDuck() {
   uma_helper_.RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemTransientDuck);
+      MediaSessionSuspendedSource::kSystemTransientDuck);
 }
 
 void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
@@ -558,7 +558,7 @@ void MediaSessionImpl::Resume(SuspendType suspend_type) {
     }
 
     MediaSessionUmaHelper::RecordMediaSessionUserAction(
-        MediaSessionUmaHelper::MediaSessionUserAction::PlayDefault, focused_);
+        MediaSessionUmaHelper::MediaSessionUserAction::kPlayDefault, focused_);
   }
 
   // When the resume requests comes from another source than system, audio focus
@@ -594,7 +594,7 @@ void MediaSessionImpl::Suspend(SuspendType suspend_type) {
     }
 
     MediaSessionUmaHelper::RecordMediaSessionUserAction(
-        MediaSessionUserAction::PauseDefault, focused_);
+        MediaSessionUserAction::kPauseDefault, focused_);
   }
 
   OnSuspendInternal(suspend_type, State::SUSPENDED);
@@ -612,7 +612,8 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
       DidReceiveAction(media_session::mojom::MediaSessionAction::kStop);
     } else {
       MediaSessionUmaHelper::RecordMediaSessionUserAction(
-          MediaSessionUmaHelper::MediaSessionUserAction::StopDefault, focused_);
+          MediaSessionUmaHelper::MediaSessionUserAction::kStopDefault,
+          focused_);
     }
   }
 
@@ -815,17 +816,17 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
 
   switch (suspend_type) {
     case SuspendType::kUI:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::UI);
+      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kUI);
       break;
     case SuspendType::kSystem:
       switch (new_state) {
         case State::SUSPENDED:
           uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::SystemTransient);
+              MediaSessionSuspendedSource::kSystemTransient);
           break;
         case State::INACTIVE:
           uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::SystemPermanent);
+              MediaSessionSuspendedSource::kSystemPermanent);
           break;
         case State::ACTIVE:
           NOTREACHED();
@@ -833,7 +834,7 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
       }
       break;
     case SuspendType::kContent:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::CONTENT);
+      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kCONTENT);
       break;
   }
 

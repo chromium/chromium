@@ -77,13 +77,14 @@ struct ActionMappingEntry {
 };
 
 ActionMappingEntry kActionMappings[] = {
-    {MediaSessionAction::kPlay, MediaSessionUserAction::Play},
-    {MediaSessionAction::kPause, MediaSessionUserAction::Pause},
-    {MediaSessionAction::kPreviousTrack, MediaSessionUserAction::PreviousTrack},
-    {MediaSessionAction::kNextTrack, MediaSessionUserAction::NextTrack},
-    {MediaSessionAction::kSeekBackward, MediaSessionUserAction::SeekBackward},
-    {MediaSessionAction::kSeekForward, MediaSessionUserAction::SeekForward},
-    {MediaSessionAction::kSkipAd, MediaSessionUserAction::SkipAd},
+    {MediaSessionAction::kPlay, MediaSessionUserAction::kPlay},
+    {MediaSessionAction::kPause, MediaSessionUserAction::kPause},
+    {MediaSessionAction::kPreviousTrack,
+     MediaSessionUserAction::kPreviousTrack},
+    {MediaSessionAction::kNextTrack, MediaSessionUserAction::kNextTrack},
+    {MediaSessionAction::kSeekBackward, MediaSessionUserAction::kSeekBackward},
+    {MediaSessionAction::kSeekForward, MediaSessionUserAction::kSeekForward},
+    {MediaSessionAction::kSkipAd, MediaSessionUserAction::kSkipAd},
 };
 
 }  // anonymous namespace
@@ -135,7 +136,7 @@ TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUISuspend) {
       GetHistogramSamplesSinceTestStart("Media.Session.UserAction"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample>(
-                   MediaSessionUserAction::PauseDefault)));
+                   MediaSessionUserAction::kPauseDefault)));
 }
 
 TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUISuspendWithAction) {
@@ -148,7 +149,7 @@ TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUISuspendWithAction) {
       GetHistogramSamplesSinceTestStart("Media.Session.UserAction"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample>(
-                   MediaSessionUserAction::Pause)));
+                   MediaSessionUserAction::kPause)));
 }
 
 TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnSystemSuspend) {
@@ -172,7 +173,7 @@ TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUIResume) {
       GetHistogramSamplesSinceTestStart("Media.Session.UserAction"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample>(
-                   MediaSessionUserAction::PlayDefault)));
+                   MediaSessionUserAction::kPlayDefault)));
 }
 
 TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUIResumeWithAction) {
@@ -186,7 +187,7 @@ TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUIResumeWithAction) {
       GetHistogramSamplesSinceTestStart("Media.Session.UserAction"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample>(
-                   MediaSessionUserAction::Play)));
+                   MediaSessionUserAction::kPlay)));
 }
 
 TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnSystemResume) {
@@ -212,7 +213,7 @@ TEST_F(MediaSessionImplUmaTest, RecordPauseDefaultOnUIStop) {
       GetHistogramSamplesSinceTestStart("Media.Session.UserAction"));
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample>(
-                   MediaSessionUserAction::StopDefault)));
+                   MediaSessionUserAction::kStopDefault)));
 }
 
 // This should never happen but just check this to be safe.

@@ -65,7 +65,7 @@ TEST_F(MediaSessionUmaHelperTest, CreateAndKillDoesNothing) {
 
 TEST_F(MediaSessionUmaHelperTest, SuspendRegisterImmediately) {
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemTransient);
+      MediaSessionSuspendedSource::kSystemTransient);
 
   std::unique_ptr<base::HistogramSamples> samples(
       GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
@@ -77,11 +77,11 @@ TEST_F(MediaSessionUmaHelperTest, SuspendRegisterImmediately) {
 
 TEST_F(MediaSessionUmaHelperTest, MultipleSuspend) {
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemTransient);
+      MediaSessionSuspendedSource::kSystemTransient);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemPermanent);
+      MediaSessionSuspendedSource::kSystemPermanent);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::UI);
+      MediaSessionSuspendedSource::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
       GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
@@ -93,17 +93,17 @@ TEST_F(MediaSessionUmaHelperTest, MultipleSuspend) {
 
 TEST_F(MediaSessionUmaHelperTest, MultipleSuspendSame) {
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemPermanent);
+      MediaSessionSuspendedSource::kSystemPermanent);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemTransient);
+      MediaSessionSuspendedSource::kSystemTransient);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::UI);
+      MediaSessionSuspendedSource::kUI);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemTransient);
+      MediaSessionSuspendedSource::kSystemTransient);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::SystemPermanent);
+      MediaSessionSuspendedSource::kSystemPermanent);
   media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::UI);
+      MediaSessionSuspendedSource::kUI);
 
   std::unique_ptr<base::HistogramSamples> samples(
       GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
