@@ -271,7 +271,7 @@ PushMessagingServiceImpl::PushMessagingServiceImpl(Profile* profile)
 
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllSources());
-  refresh_observer_.Add(&refresher_);
+  refresh_observation_.Observe(&refresher_);
 }
 
 PushMessagingServiceImpl::~PushMessagingServiceImpl() = default;

@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
@@ -423,8 +423,9 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   PushMessagingRefresher refresher_;
 
-  ScopedObserver<PushMessagingRefresher, PushMessagingRefresher::Observer>
-      refresh_observer_{this};
+  base::ScopedObservation<PushMessagingRefresher,
+                          PushMessagingRefresher::Observer>
+      refresh_observation_{this};
   // A multiset containing one entry for each in-flight push message delivery,
   // keyed by the receiver's app id.
   std::multiset<std::string> in_flight_message_deliveries_;
