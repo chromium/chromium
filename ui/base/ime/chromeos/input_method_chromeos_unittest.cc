@@ -1288,4 +1288,31 @@ TEST_F(InputMethodChromeOSTest, CommitTextReplacesSelection) {
   EXPECT_EQ(fake_text_input_client.text(), u"");
 }
 
+TEST_F(InputMethodChromeOSTest, ResetsEngineWithComposition) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetTextAndSelection(u"hello ", gfx::Range(6, 6));
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ui::CompositionText composition;
+  composition.text = u"world";
+  ime.UpdateCompositionText(composition, /*cursor_pos=*/5, /*visible=*/true);
+  ime.CancelComposition(&fake_text_input_client);
+
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
+}
+
+TEST_F(InputMethodChromeOSTest, DoesNotResetEngineWithNoComposition) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ime.CommitText(
+      u"hello",
+      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ime.CancelComposition(&fake_text_input_client);
+
+  EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
+}
+
 }  // namespace ui

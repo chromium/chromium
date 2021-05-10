@@ -454,13 +454,15 @@ void InputMethodChromeOS::ResetContext(bool reset_engine) {
   if (IsPasswordOrNoneInputFieldFocused() || !GetTextInputClient())
     return;
 
+  const bool was_composing = composing_text_;
+
   pending_composition_ = base::nullopt;
   result_text_.clear();
   result_text_cursor_ = 0;
   composing_text_ = false;
   composition_changed_ = false;
 
-  if (reset_engine && GetEngine())
+  if (reset_engine && was_composing && GetEngine())
     GetEngine()->Reset();
 
   character_composer_.Reset();
