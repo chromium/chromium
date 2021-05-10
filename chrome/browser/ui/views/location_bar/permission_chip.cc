@@ -134,7 +134,7 @@ void PermissionChip::Show(bool always_open_bubble) {
 
 void PermissionChip::ExpandAnimationEnded() {
   StartCollapseTimer();
-  if (should_start_open_)
+  if (should_start_open_ && !IsBubbleShowing())
     OpenBubble();
 }
 
