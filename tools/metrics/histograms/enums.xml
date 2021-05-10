@@ -71588,6 +71588,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="FEED"/>
 </enum>
 
+<enum name="ShareSourceAndroid">
+  <int value="0" label="ANDROID_SHARE_SHEET"/>
+  <int value="1" label="CHROME_SHARE_SHEET"/>
+  <int value="2" label="DIRECT_SHARE"/>
+</enum>
+
 <enum name="SharingActionSource">
 <!--
   SharingActionSource must be kept in sync with ValidSharingActionSource defined

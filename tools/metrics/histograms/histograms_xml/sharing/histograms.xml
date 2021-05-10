@@ -21,6 +21,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
+    expires_after="2022-05-04">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>sophey@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    The UI surface that started any share attempt. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.ClickToCallAppsToShow" units="apps"
     expires_after="2021-10-25">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
