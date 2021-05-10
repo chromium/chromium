@@ -133,7 +133,7 @@ DataReductionProxyChromeSettings::MigrateDataReductionProxyOffProxyPrefsHelper(
     return PROXY_PREF_NOT_CLEARED;
 
   // Clear empty "proxy" dictionary created by a bug. See http://crbug/448172.
-  if (dict->empty()) {
+  if (dict->DictEmpty()) {
     prefs->ClearPref(proxy_config::prefs::kProxy);
     return PROXY_PREF_CLEARED_EMPTY;
   }
