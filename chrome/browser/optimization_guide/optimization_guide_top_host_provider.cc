@@ -130,7 +130,7 @@ void OptimizationGuideTopHostProvider::
   DCHECK(pref_service_
              ->GetDictionary(
                  optimization_guide::prefs::kHintsFetcherTopHostBlocklist)
-             ->empty());
+             ->DictEmpty());
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   auto* engagement_service =
@@ -237,7 +237,7 @@ void OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlocklist(
   }
   blocklist_pref->RemovePath(optimization_guide::HashHostForDictionary(
       navigation_handle->GetURL().host()));
-  if (blocklist_pref->empty()) {
+  if (blocklist_pref->DictEmpty()) {
     blocklist_pref->Clear();
     pref_service->SetInteger(
         optimization_guide::prefs::kHintsFetcherTopHostBlocklistState,
