@@ -645,7 +645,7 @@ const base::Feature kReleaseNotesSuggestionChip{
 
 // Enables or disables showing a link to the Media app in the Scan app.
 const base::Feature kScanAppMediaLink{"ScanAppMediaLink",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables use of Searchable PDF file type in the Scan app.
 const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
