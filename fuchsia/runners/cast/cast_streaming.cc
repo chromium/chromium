@@ -46,19 +46,6 @@ bool IsAppConfigForCastStreaming(
 
 void ApplyCastStreamingContextParams(
     fuchsia::web::CreateContextParams* params) {
-  // Disable the HARDWARE_VIDEO_DECODER_ONLY tag.
-  // TODO(crbug.com/1078227): Remove HARDWARE_VIDEO_DECODER_ONLY once it is
-  // no longer set in CastRunner::CommonContextParams(). For now, this is
-  // required to enable software decoders.
-  *params->mutable_features() &=
-      ~fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY;
-
-  // Disable the WIDEVINE_CDM tag.
-  // TODO(crbug.com/1069746): Remove this once WIDEVINE_CDM is no longer set in
-  // CastRunner::CommonContextParams().
-  *params->mutable_features() &=
-      ~fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
-
   *params->mutable_features() |= fuchsia::web::ContextFeatureFlags::NETWORK;
 
   // Set the content directory with the streaming app.

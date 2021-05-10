@@ -111,6 +111,16 @@ void DeleteStagedForDeletionDirectoryIfExists() {
                << " ms";
 }
 
+// TODO(crbug.com/1134719): Consider removing this flag once Media Capabilities
+// is supported.
+void EnsureSoftwareVideoDecodersAreDisabled(
+    ::fuchsia::web::ContextFeatureFlags* features) {
+  if ((*features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) {
+    *features |= fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY;
+  }
+}
+
 // Populates |params| with web data settings. Web data persistence is only
 // enabled if a soft quota is explicitly specified via config-data.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
@@ -523,23 +533,16 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
     LOG(WARNING) << "Running in headless mode.";
     *params.mutable_features() |= fuchsia::web::ContextFeatureFlags::HEADLESS;
   } else {
-    // TODO(crbug.com/1078227): Remove HARDWARE_VIDEO_DECODER_ONLY.
     *params.mutable_features() |=
         fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
-        fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY |
         fuchsia::web::ContextFeatureFlags::VULKAN;
   }
-
-  // TODO(crbug.com/1166790): Fetch UserAgent version strings from Agent.
-  params.set_user_agent_product("CrKey");
-  params.set_user_agent_version("1.52.999999");
 
   // When tests require that VULKAN be disabled, DRM must also be disabled.
   if (disable_vulkan_for_test_) {
     *params.mutable_features() &=
         ~(fuchsia::web::ContextFeatureFlags::VULKAN |
-          fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
-          fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER_ONLY);
+          fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER);
   }
 
   // If there is a list of headers to exempt from CORS checks, pass the list
@@ -553,10 +556,16 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
 
 fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
-  params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
   *params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS;
+  EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
+  params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
+
+  // TODO(crbug.com/1166790): Fetch UserAgent version strings from Agent.
+  params.set_user_agent_product("CrKey");
+  params.set_user_agent_version("1.52.999999");
+
   zx_status_t status = main_services_->ConnectClient(
       params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "ConnectClient failed";
@@ -582,6 +591,7 @@ fuchsia::web::CreateContextParams
 CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
     std::vector<fuchsia::web::ContentDirectoryProvider> content_directories) {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
+  EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
   params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   params.set_content_directories(std::move(content_directories));
   zx_status_t status = isolated_services_->ConnectClient(
@@ -593,8 +603,8 @@ CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
 fuchsia::web::CreateContextParams
 CastRunner::GetIsolatedContextParamsForCastStreaming() {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
-  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   ApplyCastStreamingContextParams(&params);
+  params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   // TODO(crbug.com/1069746): Use a different FilteredServiceDirectory for Cast
   // Streaming Contexts.
   zx_status_t status = main_services_->ConnectClient(
