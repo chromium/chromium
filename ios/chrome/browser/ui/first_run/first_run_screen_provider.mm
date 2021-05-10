@@ -10,14 +10,11 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Screen array.
-FirstRunScreenType screens[] = {};
-}
-
 @interface FirstRunScreenProvider ()
 
-@property(nonatomic) int index;
+@property(nonatomic, assign) NSInteger index;
+
+@property(nonatomic, strong) NSArray* screens;
 
 @end
 
@@ -26,26 +23,28 @@ FirstRunScreenType screens[] = {};
 - (instancetype)init {
   self = [super init];
   if (self) {
-    SetupScreens();
+    [self setupScreens];
     _index = -1;
   }
   return self;
 }
 
 - (FirstRunScreenType)nextScreenType {
-  DCHECK(screens);
-  DCHECK(self.index == -1 || screens[self.index] != kFirstRunCompleted);
-  return screens[++self.index];
+  DCHECK(self.screens);
+  DCHECK(self.index == -1 ||
+         ![self.screens[self.index] isEqual:@(kFirstRunCompleted)]);
+  return static_cast<FirstRunScreenType>(
+      [self.screens[++self.index] integerValue]);
 }
 
 #pragma mark - Private
-void SetupScreens() {
+
+// Sets the screens up.
+- (void)setupScreens {
   // TODO(crbug.com/1195198): Add logic to generate a custimizeed screen
   // order.
-  screens[0] = kWelcomeAndConsent;
-  screens[1] = kSignIn;
-  screens[2] = kSync;
-  screens[3] = kFirstRunCompleted;
+  _screens =
+      @[ @(kWelcomeAndConsent), @(kSignIn), @(kSync), @(kFirstRunCompleted) ];
 }
 
 @end
