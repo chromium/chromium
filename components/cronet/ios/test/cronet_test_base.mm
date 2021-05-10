@@ -41,6 +41,7 @@
 }
 
 - (void)reset {
+  _semaphores = [NSMutableDictionary dictionaryWithCapacity:0];
   _responseDataPerTask = [NSMutableDictionary dictionaryWithCapacity:0];
   _errorPerTask = [NSMutableDictionary dictionaryWithCapacity:0];
   _totalBytesReceivedPerTask = [NSMutableDictionary dictionaryWithCapacity:0];
@@ -107,11 +108,12 @@
 // nanoseconds, a value of 0 or less means do not ever time out.
 - (BOOL)waitForDone:(NSURLSessionDataTask*)task
         withTimeout:(int64_t)timeout_ns {
-  dispatch_semaphore_t _semaphore = [self getSemaphoreForTask:task];
+  BOOL request_completed = NO;
+  dispatch_semaphore_t semaphore = [self getSemaphoreForTask:task];
   if (timeout_ns > 0) {
-    BOOL request_completed =
+    request_completed =
         dispatch_semaphore_wait(
-            _semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout_ns)) == 0;
+            semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout_ns)) == 0;
     if (!request_completed) {
       // Cancel the pending request; otherwise, the request is still active and
       // may invoke the delegate methods later.
@@ -120,11 +122,18 @@
       // Give the canceled request some time to execute didCompleteWithError
       // method with NSURLErrorCancelled error code.
       dispatch_semaphore_wait(
-          _semaphore, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
+          semaphore, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
     }
-    return request_completed;
+  } else {
+    request_completed =
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER) == 0;
   }
-  return dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER) == 0;
+  @synchronized(_semaphores) {
+    if (request_completed) {
+      [_semaphores removeObjectForKey:task];
+    }
+  }
+  return request_completed;
 }
 
 - (void)URLSession:(NSURLSession*)session
