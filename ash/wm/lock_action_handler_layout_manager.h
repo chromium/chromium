@@ -5,8 +5,6 @@
 #ifndef ASH_WM_LOCK_ACTION_HANDLER_LAYOUT_MANAGER_H_
 #define ASH_WM_LOCK_ACTION_HANDLER_LAYOUT_MANAGER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/lock_screen_action/lock_screen_action_background_observer.h"

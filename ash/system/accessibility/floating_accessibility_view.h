@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_FLOATING_ACCESSIBILITY_VIEW_H_
 
-#include <vector>
-
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"

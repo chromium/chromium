@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_MODEL_VIRTUAL_KEYBOARD_MODEL_H_
 #define ASH_SYSTEM_MODEL_VIRTUAL_KEYBOARD_MODEL_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "base/macros.h"

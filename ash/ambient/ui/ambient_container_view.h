@@ -5,8 +5,6 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_CONTAINER_VIEW_H_
 #define ASH_AMBIENT_UI_AMBIENT_CONTAINER_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/view.h"

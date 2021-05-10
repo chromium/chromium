@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_SHELF_CONTROL_BUTTON_H_
 #define ASH_SHELF_SHELF_CONTROL_BUTTON_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button.h"
 #include "base/macros.h"

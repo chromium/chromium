@@ -5,8 +5,6 @@
 #ifndef ASH_WM_PIP_PIP_WINDOW_RESIZER_H_
 #define ASH_WM_PIP_PIP_WINDOW_RESIZER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/wm/window_resizer.h"
 #include "base/macros.h"

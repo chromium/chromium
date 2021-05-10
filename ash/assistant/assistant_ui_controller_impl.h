@@ -5,10 +5,6 @@
 #ifndef ASH_ASSISTANT_ASSISTANT_UI_CONTROLLER_IMPL_H_
 #define ASH_ASSISTANT_ASSISTANT_UI_CONTROLLER_IMPL_H_
 
-#include <map>
-#include <memory>
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model.h"

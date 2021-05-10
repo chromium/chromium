@@ -5,8 +5,6 @@
 #ifndef ASH_DRAG_DROP_DRAG_IMAGE_VIEW_H_
 #define ASH_DRAG_DROP_DRAG_IMAGE_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/base/dragdrop/drag_drop_types.h"

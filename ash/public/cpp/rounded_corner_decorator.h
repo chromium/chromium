@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_ROUNDED_CORNER_DECORATOR_H_
 #define ASH_PUBLIC_CPP_ROUNDED_CORNER_DECORATOR_H_
 
-#include <memory>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"

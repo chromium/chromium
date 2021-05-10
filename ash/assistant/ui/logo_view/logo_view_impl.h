@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_UI_LOGO_VIEW_LOGO_VIEW_IMPL_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/ui/logo_view/shape/mic_part_shape.h"

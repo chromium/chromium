@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_ACCESSIBILITY_FEATURE_DISABLE_DIALOG_H_
 #define ASH_SYSTEM_ACCESSIBILITY_ACCESSIBILITY_FEATURE_DISABLE_DIALOG_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

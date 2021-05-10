@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <vector>
-
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"

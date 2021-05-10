@@ -5,8 +5,6 @@
 #ifndef ASH_WM_DESKS_CLOSE_DESK_BUTTON_H_
 #define ASH_WM_DESKS_CLOSE_DESK_BUTTON_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/gfx/color_palette.h"

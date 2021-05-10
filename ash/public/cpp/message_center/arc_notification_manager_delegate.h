@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_H_
 #define ASH_PUBLIC_CPP_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_H_
 
-#include <string>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
 

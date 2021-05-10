@@ -5,8 +5,6 @@
 #ifndef ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 #define ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 
-#include <string>
-
 #include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/controls/button/label_button.h"

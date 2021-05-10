@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_IMPL_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_IMPL_H_
 
-#include <string>
-
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "base/macros.h"
 

@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_SHELF_TEST_API_H_
 #define ASH_PUBLIC_CPP_SHELF_TEST_API_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 
 namespace views {

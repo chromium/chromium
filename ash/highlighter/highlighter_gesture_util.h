@@ -5,8 +5,6 @@
 #ifndef ASH_HIGHLIGHTER_HIGHLIGHTER_GESTURE_UTIL_H_
 #define ASH_HIGHLIGHTER_HIGHLIGHTER_GESTURE_UTIL_H_
 
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 

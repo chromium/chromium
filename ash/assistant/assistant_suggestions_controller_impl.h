@@ -5,8 +5,6 @@
 #ifndef ASH_ASSISTANT_ASSISTANT_SUGGESTIONS_CONTROLLER_IMPL_H_
 #define ASH_ASSISTANT_ASSISTANT_SUGGESTIONS_CONTROLLER_IMPL_H_
 
-#include <memory>
-
 #include "ash/assistant/model/assistant_suggestions_model.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/assistant_state.h"

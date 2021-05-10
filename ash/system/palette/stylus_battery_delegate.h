@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_PALETTE_STYLUS_BATTERY_DELEGATE_H_
 #define ASH_SYSTEM_PALETTE_STYLUS_BATTERY_DELEGATE_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "base/callback_forward.h"

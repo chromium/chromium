@@ -5,8 +5,6 @@
 #ifndef ASH_KEYBOARD_UI_KEYBOARD_UTIL_H_
 #define ASH_KEYBOARD_UI_KEYBOARD_UTIL_H_
 
-#include <string>
-
 #include "ash/keyboard/ui/keyboard_export.h"
 
 // Global utility functions for the virtual keyboard.

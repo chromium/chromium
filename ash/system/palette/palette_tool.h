@@ -5,10 +5,6 @@
 #ifndef ASH_SYSTEM_PALETTE_PALETTE_TOOL_H_
 #define ASH_SYSTEM_PALETTE_PALETTE_TOOL_H_
 
-#include <map>
-#include <memory>
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "ash/system/palette/palette_ids.h"
 #include "base/callback.h"

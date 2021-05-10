@@ -5,8 +5,6 @@
 #ifndef ASH_WM_PIP_PIP_POSITIONER_H_
 #define ASH_WM_PIP_PIP_POSITIONER_H_
 
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

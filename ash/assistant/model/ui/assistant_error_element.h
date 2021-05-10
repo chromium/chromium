@@ -5,8 +5,6 @@
 #ifndef ASH_ASSISTANT_MODEL_UI_ASSISTANT_ERROR_ELEMENT_H_
 #define ASH_ASSISTANT_MODEL_UI_ASSISTANT_ERROR_ELEMENT_H_
 
-#include <string>
-
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/component_export.h"
 

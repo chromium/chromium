@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_HOME_TO_OVERVIEW_NUDGE_CONTROLLER_H_
 #define ASH_SHELF_HOME_TO_OVERVIEW_NUDGE_CONTROLLER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"

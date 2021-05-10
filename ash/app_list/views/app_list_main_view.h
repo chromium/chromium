@@ -5,8 +5,6 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_
 #define ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_
 
-#include <string>
-
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"

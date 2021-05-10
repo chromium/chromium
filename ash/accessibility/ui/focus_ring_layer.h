@@ -5,8 +5,6 @@
 #ifndef ASH_ACCESSIBILITY_UI_FOCUS_RING_LAYER_H_
 #define ASH_ACCESSIBILITY_UI_FOCUS_RING_LAYER_H_
 
-#include <memory>
-
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "base/macros.h"
 #include "base/optional.h"

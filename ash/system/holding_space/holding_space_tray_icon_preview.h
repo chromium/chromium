@@ -5,9 +5,6 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_TRAY_ICON_PREVIEW_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_TRAY_ICON_PREVIEW_H_
 
-#include <memory>
-#include <string>
-
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"

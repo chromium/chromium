@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_PHONEHUB_ONBOARDING_VIEW_H_
 #define ASH_SYSTEM_PHONEHUB_ONBOARDING_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/tray/tray_bubble_view.h"

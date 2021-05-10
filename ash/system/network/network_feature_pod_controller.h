@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_CONTROLLER_H_
 
-#include <string>
-
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"
 

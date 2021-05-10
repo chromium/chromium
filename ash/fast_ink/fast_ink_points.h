@@ -5,8 +5,6 @@
 #ifndef ASH_FAST_INK_FAST_INK_POINTS_H_
 #define ASH_FAST_INK_FAST_INK_POINTS_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"

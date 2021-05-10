@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_H_
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"

@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_SWIPE_HOME_TO_OVERVIEW_CONTROLLER_H_
 #define ASH_SHELF_SWIPE_HOME_TO_OVERVIEW_CONTROLLER_H_
 
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"

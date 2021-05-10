@@ -5,9 +5,6 @@
 #ifndef ASH_ASSISTANT_MODEL_ASSISTANT_ALARM_TIMER_MODEL_OBSERVER_H_
 #define ASH_ASSISTANT_MODEL_ASSISTANT_ALARM_TIMER_MODEL_OBSERVER_H_
 
-#include <map>
-#include <string>
-
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"

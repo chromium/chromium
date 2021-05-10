@@ -5,8 +5,6 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_WALLPAPER_CONTROLLER_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_WALLPAPER_CONTROLLER_H_
 
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/optional.h"
