@@ -274,7 +274,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 void PrefHashFilter::ClearFromExternalStore(
     HashStoreContents* external_validation_hash_store_contents,
     const base::DictionaryValue* changed_paths_and_macs) {
-  DCHECK(!changed_paths_and_macs->empty());
+  DCHECK(!changed_paths_and_macs->DictEmpty());
 
   for (base::DictionaryValue::Iterator it(*changed_paths_and_macs);
        !it.IsAtEnd(); it.Advance()) {
@@ -287,7 +287,7 @@ void PrefHashFilter::FlushToExternalStore(
     std::unique_ptr<HashStoreContents> external_validation_hash_store_contents,
     std::unique_ptr<base::DictionaryValue> changed_paths_and_macs,
     bool write_success) {
-  DCHECK(!changed_paths_and_macs->empty());
+  DCHECK(!changed_paths_and_macs->DictEmpty());
   DCHECK(external_validation_hash_store_contents);
   if (!write_success)
     return;

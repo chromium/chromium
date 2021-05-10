@@ -83,7 +83,7 @@ TEST_F(PrefHashStoreImplTest, ComputeNullSplitMacs) {
       pref_hash_store.ComputeSplitMacs("foo.bar", nullptr);
 
   ASSERT_TRUE(computed_macs);
-  EXPECT_TRUE(computed_macs->empty());
+  EXPECT_TRUE(computed_macs->DictEmpty());
 }
 
 TEST_F(PrefHashStoreImplTest, AtomicHashStoreAndCheck) {

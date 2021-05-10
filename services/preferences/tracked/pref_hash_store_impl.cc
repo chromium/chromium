@@ -207,7 +207,7 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(
   // Treat NULL and empty the same; otherwise we would need to store a hash for
   // the entire dictionary (or some other special beacon) to differentiate these
   // two cases which are really the same for dictionaries.
-  if (!initial_split_value || initial_split_value->empty())
+  if (!initial_split_value || initial_split_value->DictEmpty())
     return has_hashes ? ValueState::CLEARED : ValueState::UNCHANGED;
 
   if (!has_hashes)
