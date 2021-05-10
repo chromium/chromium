@@ -2910,7 +2910,7 @@ TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
   model_->PopulateApps(2);
 
   // Start cardified apps grid.
-  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
 
   EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
@@ -2923,9 +2923,9 @@ TEST_P(AppsGridViewCardifiedStateTest,
        PeekingCardOnLastPageAfterCreatingNewPage) {
   // Create only one page with two apps.
   model_->PopulateApps(2);
-  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
-  gfx::Point to_in_next_page =
+  const gfx::Point to_in_next_page =
       test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
 
   // Drag the first item to the next page to create another page.
@@ -2937,6 +2937,91 @@ TEST_P(AppsGridViewCardifiedStateTest,
   EXPECT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
 
   EndDrag(apps_grid_view_, false /*cancel*/);
+}
+
+TEST_P(AppsGridViewCardifiedStateTest, AppsGridIsCardifiedDuringDrag) {
+  // Create only one page with two apps.
+  model_->PopulateApps(2);
+
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+
+  EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
+
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+}
+
+TEST_P(AppsGridViewCardifiedStateTest,
+       DragWithinFolderDoesNotEnterCardifiedState) {
+  // Creates a folder item and open it.
+  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
+  model_->CreateAndPopulateFolderWithApps(kTotalItems);
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+  AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
+  const gfx::Point from =
+      folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 0).CenterPoint();
+
+  // Drag the first folder child within the folder.
+  InitiateDrag(AppsGridView::MOUSE, from, folder_apps_grid_view());
+  const gfx::Point to =
+      folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, folder_apps_grid_view(), 10 /*steps*/);
+  // The folder item reparent timer should not be triggered.
+  ASSERT_FALSE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+}
+
+TEST_P(AppsGridViewCardifiedStateTest, DragOutsideFolderEntersCardifiedState) {
+  // Create a folder item with some apps and open it.
+  model_->CreateAndPopulateFolderWithApps(3);
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+  AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
+  const gfx::Point from =
+      folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 0).CenterPoint();
+
+  // Drag the first folder child out of the folder.
+  AppListItemView* drag_view =
+      InitiateDrag(AppsGridView::MOUSE, from, folder_apps_grid_view());
+  const gfx::Point to =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height()
+                    /*padding to completely exit folder view*/);
+  UpdateDrag(AppsGridView::MOUSE, to, folder_apps_grid_view(), 10 /*steps*/);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
+
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+}
+
+TEST_P(AppsGridViewCardifiedStateTest,
+       DragItemIntoFolderStaysCaInCardifiedState) {
+  // Create a folder item with some apps. Add another app to the main grid.
+  model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+
+  // Dragging item_1 over folder to expand it.
+  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+
+  EXPECT_TRUE(apps_grid_view_->cardified_state_for_testing());
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+  test_api_->WaitForItemMoveAnimationDone();
+  test_api_->LayoutToIdealBounds();
 }
 
 }  // namespace test
