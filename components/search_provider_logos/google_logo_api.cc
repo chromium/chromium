@@ -169,7 +169,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
     return nullptr;
 
   // If there is no logo today, the "ddljson" dictionary will be empty.
-  if (ddljson->empty()) {
+  if (ddljson->DictEmpty()) {
     *parsing_failed = false;
     return nullptr;
   }
