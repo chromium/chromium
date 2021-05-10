@@ -33,7 +33,6 @@ CC_BASE_EXPORT extern const char kFrameId[];
 CC_BASE_EXPORT extern const char kLayerId[];
 CC_BASE_EXPORT extern const char kLayerTreeId[];
 CC_BASE_EXPORT extern const char kPixelRefId[];
-CC_BASE_EXPORT extern const char kPresentationTimestamp[];
 
 CC_BASE_EXPORT extern const char kImageDecodeTask[];
 CC_BASE_EXPORT extern const char kBeginFrame[];
@@ -185,31 +184,10 @@ DidBeginFrame(int layer_tree_host_id, base::TimeTicks begin_frame_timestamp) {
       layer_tree_host_id);
 }
 
-constexpr uint64_t GetUniqueIDFromLayerTreeHostIdAndFrameToken(
-    int layer_tree_host_id,
-    uint32_t frame_token) {
-  return static_cast<uint64_t>(layer_tree_host_id) << 32 |
-         static_cast<uint64_t>(frame_token);
-}
-
-inline void CC_BASE_EXPORT DidDrawFrame(int layer_tree_host_id,
-                                        uint32_t frame_token) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(internal::CategoryName::kTimelineFrame,
-                                    internal::kDrawFrame,
-                                    GetUniqueIDFromLayerTreeHostIdAndFrameToken(
-                                        layer_tree_host_id, frame_token),
-                                    internal::kLayerTreeId, layer_tree_host_id);
-}
-
-inline void CC_BASE_EXPORT
-DidPresentFrame(int layer_tree_host_id,
-                uint32_t frame_token,
-                base::TimeTicks presentation_timestamp) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      internal::CategoryName::kTimelineFrame, internal::kDrawFrame,
-      GetUniqueIDFromLayerTreeHostIdAndFrameToken(layer_tree_host_id,
-                                                  frame_token),
-      internal::kPresentationTimestamp, presentation_timestamp);
+inline void CC_BASE_EXPORT DidDrawFrame(int layer_tree_host_id) {
+  TRACE_EVENT_INSTANT1(internal::CategoryName::kTimelineFrame,
+                       internal::kDrawFrame, TRACE_EVENT_SCOPE_THREAD,
+                       internal::kLayerTreeId, layer_tree_host_id);
 }
 
 inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {

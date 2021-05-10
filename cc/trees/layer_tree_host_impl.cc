@@ -2040,8 +2040,6 @@ void LayerTreeHostImpl::DidReceiveCompositorFrameAck() {
 void LayerTreeHostImpl::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
-  devtools_instrumentation::DidPresentFrame(
-      id_, frame_token, details.presentation_feedback.timestamp);
   PresentationTimeCallbackBuffer::PendingCallbacks activated_callbacks =
       presentation_time_callbacks_.PopPendingCallbacks(frame_token);
 
@@ -2427,7 +2425,7 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   active_tree_->ResetAllChangeTracking();
 
   active_tree_->set_has_ever_been_drawn(true);
-  devtools_instrumentation::DidDrawFrame(id_, frame_token);
+  devtools_instrumentation::DidDrawFrame(id_);
   benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
       rendering_stats_instrumentation_->TakeImplThreadRenderingStats());
 
