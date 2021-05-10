@@ -308,16 +308,14 @@ bool NGFragmentItem::IsEmptyLineBox() const {
   return LineBoxType() == NGLineBoxType::kEmptyLineBox;
 }
 
-bool NGFragmentItem::IsGeneratedText() const {
-  if (Type() == kGeneratedText) {
-    DCHECK_EQ(TextType(), NGTextType::kLayoutGenerated);
-    return true;
-  }
-  DCHECK_NE(TextType(), NGTextType::kLayoutGenerated);
+bool NGFragmentItem::IsStyleGeneratedText() const {
   if (Type() == kText || Type() == kSVGText)
     return GetLayoutObject()->IsStyleGenerated();
-  NOTREACHED();
   return false;
+}
+
+bool NGFragmentItem::IsGeneratedText() const {
+  return IsLayoutGeneratedText() || IsStyleGeneratedText();
 }
 
 bool NGFragmentItem::IsListMarker() const {
@@ -467,6 +465,26 @@ NGTextOffset NGFragmentItem::TextOffset() const {
     return {0, generated_text_.text.length()};
   NOTREACHED();
   return {};
+}
+
+unsigned NGFragmentItem::StartOffsetInContainer(
+    const NGInlineCursor& container) const {
+  DCHECK_EQ(Type(), kGeneratedText);
+  DCHECK(!IsEllipsis());
+  // Hyphens don't have the text offset in the container. Find the closest
+  // previous text fragment.
+  DCHECK_EQ(container.Current().Item(), this);
+  NGInlineCursor cursor(container);
+  for (cursor.MoveToPrevious(); cursor; cursor.MoveToPrevious()) {
+    const NGInlineCursorPosition& current = cursor.Current();
+    if (current->IsText() && !current->IsLayoutGeneratedText())
+      return current->EndOffset();
+    // A box doesn't have the offset either.
+    if (current->Type() == kBox && !current->IsInlineBox())
+      break;
+  }
+  NOTREACHED();
+  return 0;
 }
 
 StringView NGFragmentItem::Text(const NGFragmentItems& items) const {

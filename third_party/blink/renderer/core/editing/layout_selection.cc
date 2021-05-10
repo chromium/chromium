@@ -660,10 +660,33 @@ LayoutTextSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 // LayoutText and not of each fragment for it.
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
     const NGInlineCursor& cursor) const {
+  const NGInlineCursorPosition& current = cursor.Current();
+  if (!current.IsLayoutGeneratedText())
+    return ComputeSelectionStatus(cursor, current.TextOffset());
+
   // We don't paint selection on ellipsis.
-  if (cursor.Current().IsEllipsis())
+  if (current.IsEllipsis())
     return {0, 0, SelectSoftLineBreak::kNotSelected};
-  const NGTextOffset offset = cursor.Current().TextOffset();
+
+  // Layout-generated text does not have corresponding text in the DOM. Find if
+  // the previous character is selected. This is a soft-hyphen character if the
+  // hyphen is generated from it, or the character before the hyphen if
+  // automatic hyphenation.
+  const unsigned offset = current->StartOffsetInContainer(cursor);
+  DCHECK_GT(offset, 0u);
+  LayoutSelectionStatus status =
+      ComputeSelectionStatus(cursor, {offset - 1, offset});
+  if (!status.HasValidRange())
+    return status;
+  // Make |LayoutSelectionStatus| to select the whole text of the hyphen.
+  status.start = 0;
+  status.end = current->TextLength();
+  return status;
+}
+
+LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
+    const NGInlineCursor& cursor,
+    const NGTextOffset& offset) const {
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   switch (GetSelectionStateFor(cursor.Current())) {

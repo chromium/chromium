@@ -1318,4 +1318,42 @@ TEST_F(NGLayoutSelectionTest, WBRStatus) {
             ComputeLayoutSelectionStateForCursor(*layout_wbr));
 }
 
+TEST_F(NGLayoutSelectionTest, SoftHyphen0to1) {
+  SetSelectionAndUpdateLayoutSelection(
+      "<div id='container' style='width:3ch'>^0|123&shy;456</div>");
+  auto* element = GetElementById("container");
+  auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
+  NGInlineCursor cursor(*block_flow);
+  while (!cursor.Current()->IsLayoutGeneratedText())
+    cursor.MoveToNext();
+  auto status = Selection().ComputeLayoutSelectionStatus(cursor);
+  EXPECT_FALSE(status.HasValidRange());
+}
+
+TEST_F(NGLayoutSelectionTest, SoftHyphen0to4) {
+  SetSelectionAndUpdateLayoutSelection(
+      "<div id='container' style='width:3ch'>^0123|&shy;456</div>");
+  auto* element = GetElementById("container");
+  auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
+  NGInlineCursor cursor(*block_flow);
+  while (!cursor.Current()->IsLayoutGeneratedText())
+    cursor.MoveToNext();
+  auto status = Selection().ComputeLayoutSelectionStatus(cursor);
+  EXPECT_FALSE(status.HasValidRange());
+}
+
+TEST_F(NGLayoutSelectionTest, SoftHyphen1to5) {
+  SetSelectionAndUpdateLayoutSelection(
+      "<div id='container' style='width:3ch'>0^123&shy;|456</div>");
+  auto* element = GetElementById("container");
+  auto* block_flow = To<LayoutBlockFlow>(element->GetLayoutObject());
+  NGInlineCursor cursor(*block_flow);
+  while (!cursor.Current()->IsLayoutGeneratedText())
+    cursor.MoveToNext();
+  auto status = Selection().ComputeLayoutSelectionStatus(cursor);
+  EXPECT_TRUE(status.HasValidRange());
+  EXPECT_EQ(LayoutSelectionStatus(0u, 1u, SelectSoftLineBreak::kNotSelected),
+            status);
+}
+
 }  // namespace blink

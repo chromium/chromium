@@ -343,9 +343,9 @@ class CORE_EXPORT NGFragmentItem final {
   //  * ellipsis            kGeneratedText
   //  * first-letter-part   kText
   //  * list marker         kGeneratedText
-  //  * soft hyphen         kGeneratedText
-  // TODO(yosin): When we implement |kGeneratedText|, we rename this function
-  // to avoid confliction with |kGeneratedText|.
+  //  * hyphen (soft/auto)  kGeneratedText
+  bool IsLayoutGeneratedText() const { return Type() == kGeneratedText; }
+  bool IsStyleGeneratedText() const;
   bool IsGeneratedText() const;
 
   bool IsSymbolMarker() const {
@@ -361,6 +361,12 @@ class CORE_EXPORT NGFragmentItem final {
   unsigned StartOffset() const { return TextOffset().start; }
   unsigned EndOffset() const { return TextOffset().end; }
   unsigned TextLength() const { return TextOffset().Length(); }
+
+  // Layout-generated text has two offsets; one for its own generated string,
+  // and the other for the container. |TextOffset| returns the former, while
+  // this function returns the latter.
+  unsigned StartOffsetInContainer(const NGInlineCursor& container) const;
+
   StringView Text(const NGFragmentItems& items) const;
   String GeneratedText() const {
     DCHECK_EQ(Type(), kGeneratedText);

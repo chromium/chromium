@@ -35,6 +35,7 @@ class LayoutObject;
 class LayoutText;
 class NGInlineCursor;
 class NGInlineCursorPosition;
+struct NGTextOffset;
 class FrameSelection;
 struct LayoutSelectionStatus;
 struct LayoutTextSelectionStatus;
@@ -77,6 +78,8 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   void Trace(Visitor*) const;
 
  private:
+  LayoutSelectionStatus ComputeSelectionStatus(const NGInlineCursor&,
+                                               const NGTextOffset&) const;
   SelectionState ComputeSelectionStateFromOffsets(SelectionState state,
                                                   unsigned start_offset,
                                                   unsigned end_offset) const;
