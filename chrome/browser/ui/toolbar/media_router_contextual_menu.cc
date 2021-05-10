@@ -9,6 +9,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/event_page_request_manager.h"
@@ -137,8 +138,8 @@ void MediaRouterContextualMenu::ExecuteCommand(int command_id,
       break;
     case IDC_MEDIA_ROUTER_HELP:
       ShowSingletonTab(browser_, GURL(kCastHelpCenterPageUrl));
-      base::RecordAction(base::UserMetricsAction(
-          "MediaRouter_Ui_Navigate_Help"));
+      base::RecordAction(
+          base::UserMetricsAction("MediaRouter_Ui_Navigate_Help"));
       break;
     case IDC_MEDIA_ROUTER_LEARN_MORE:
       ShowSingletonTab(browser_, GURL(kCastLearnMorePageUrl));
@@ -171,6 +172,13 @@ void MediaRouterContextualMenu::ToggleMediaRemoting() {
 }
 
 void MediaRouterContextualMenu::ReportIssue() {
+  if (base::FeatureList::IsEnabled(media_router::kCastFeedbackDialog)) {
+    ShowSingletonTab(
+        browser_,
+        GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));
+    return;
+  }
+
   // Opens feedback page loaded from the media router extension.
   // This is temporary until feedback UI is redesigned.
   media_router::EventPageRequestManager* request_manager =

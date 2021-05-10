@@ -4905,6 +4905,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The source of discovery for a newly-created Cast sink.</summary>
 </histogram>
 
+<histogram name="MediaRouter.Cast.Feedback.Event"
+    enum="MediaRouterCastFeedbackEvent" expires_after="2022-05-01">
+  <owner>jrw@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>Events related to the WebUI Cast feedback dialog.</summary>
+</histogram>
+
 <histogram name="MediaRouter.Cast.LaunchSessionRequest.SupportedAppTypes"
     enum="ReceiverAppTypeSet" expires_after="2021-06-08">
   <owner>muyaoxu@google.com</owner>

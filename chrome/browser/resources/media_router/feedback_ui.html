@@ -170,7 +170,7 @@ pre {
       </div>
       <textarea placeholder="$i18n{yourAnswer}"
                 rows="8" cols="60"
-                value="{{feedbackDescription_::input}}">
+                value="{{comments_::input}}">
       </textarea>
     </div>
     <template is="dom-if"
@@ -263,9 +263,10 @@ pre {
           <span class="required-message"
                 hidden="[[sufficientFeedback_]]">*</span>
         </div>
-        <cr-input placeholder="$i18n{yourAnswer}"
-                  value="{{comments_}}">
-        </cr-input>
+        <textarea placeholder="$i18n{yourAnswer}"
+                  rows="8" cols="60"
+                  value="{{comments_::input}}">
+        </textarea>
       </div>
     </template>
     <template is="dom-if"
@@ -322,8 +323,10 @@ pre {
           <span class="required-message"
                 hidden="[[sufficientFeedback_]]">*</span>
         </div>
-        <cr-input type="text" value="{{comments_}}"
-                  placeholder="$i18n{yourAnswer}"></cr-input>
+        <textarea placeholder="$i18n{yourAnswer}"
+                  rows="8" cols="60"
+                  value="{{comments_::input}}">
+        </textarea>
       </div>
     </template>
     <div class="question">
@@ -345,7 +348,7 @@ pre {
     <div id="form-buttons">
       <cr-button class="cancel-button"
                  on-click="onCancel_">
-        $i18n{cancelButton}
+        $i18n{cancel}
       </cr-button>
       <cr-button class="action-button"
                  on-click="onSubmit_"
@@ -354,6 +357,18 @@ pre {
       </cr-button>
     </div>
   </div>
+
+  <cr-dialog id="sendDialog">
+    <div slot="body">
+      [[sendDialogText_]]
+    </div>
+    <div slot="button-container">
+      <cr-button on-click="onSendDialogOk_"
+                 hidden="[[!sendDialogIsInteractive_]]">
+        $i18n{ok}
+      </cr-button>
+    </div>
+  </cr-dialog>
 
   <cr-dialog id="logsDialog">
     <div slot="title">$i18n{logsHeader}</div>

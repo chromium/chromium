@@ -15,7 +15,6 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-
 /** @enum {string} */
 const FeedbackType = {
   BUG: 'Bug',
@@ -25,7 +24,36 @@ const FeedbackType = {
   OTHER: 'Other'
 };
 
+/**
+ * Keep in sync with UMA MediaRouterCastFeedbackEvent enum.
+ * @enum {number}
+ */
+const FeedbackEvent = {
+  OPENED: 0,
+  SENDING: 1,
+  RESENDING: 2,
+  SUCCEEDED: 3,
+  FAILED: 4,
+  MAX_VALUE: 4,
+};
+
+const MAX_SEND_ATTEMPTS = 4;
+const RESEND_DELAY_MS = 10000;
+
 export class FeedbackUiElement extends PolymerElement {
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.feedbackSent_ = false;
+
+    chrome.feedbackPrivate.getUserEmail(email => {
+      this.userEmail_ = email;
+    });
+
+    this.recordEvent_(FeedbackEvent.OPENED);
+  }
+
   static get is() {
     return 'feedback-ui';
   }
@@ -43,9 +71,6 @@ export class FeedbackUiElement extends PolymerElement {
 
       /** @private */
       comments_: String,
-
-      /** @private */
-      feedbackDescription_: String,
 
       /**
        * Possible values of |feedbackType_| for use in HTML.
@@ -66,7 +91,10 @@ export class FeedbackUiElement extends PolymerElement {
       },
 
       /** @private */
-      hasNetworkSoftware_: Boolean,
+      hasNetworkSoftware_: String,
+
+      /** @private */
+      networkDescription_: String,
 
       /** @private */
       logData_: {
@@ -79,6 +107,12 @@ export class FeedbackUiElement extends PolymerElement {
       /** @private */
       projectedContentUrl_: String,
 
+      /** @private */
+      sendDialogText_: String,
+
+      /** @private */
+      sendDialogIsInteractive_: Boolean,
+
       /**
        * Set by onFeedbackChanged_() to control whether the "submit" button is
        * active.
@@ -86,7 +120,9 @@ export class FeedbackUiElement extends PolymerElement {
        */
       sufficientFeedback_: {
         type: Boolean,
-        value: false,
+        computed:
+            'computeSufficientFeedback_(feedbackType_, videoSmoothness_, ' +
+            'videoQuality_, audioQuality_, comments_, visibleInSetup_)',
       },
 
       /** @private */
@@ -99,16 +135,8 @@ export class FeedbackUiElement extends PolymerElement {
       videoSmoothness_: String,
 
       /** @private */
-      visibleInSetup_: Boolean,
+      visibleInSetup_: String,
     };
-  }
-
-  static get observers() {
-    return [
-      'onFeedbackChanged_(feedbackType_, videoSmoothness_, ' +
-          'videoQuality_, audioQuality_, feedbackDescription_, ' +
-          'comments_, visibleInSetup_)',
-    ];
   }
 
   /** @override */
@@ -122,19 +150,16 @@ export class FeedbackUiElement extends PolymerElement {
   }
 
   /** @private */
-  onFeedbackChanged_() {
+  computeSufficientFeedback_() {
     switch (this.feedbackType_) {
       case FeedbackType.MIRRORING_QUALITY:
-        this.sufficientFeedback_ = Boolean(
+        return Boolean(
             this.videoSmoothness_ || this.videoQuality_ || this.audioQuality_ ||
             this.comments_);
-        break;
       case FeedbackType.DISCOVERY:
-        this.sufficientFeedback_ =
-            Boolean(this.visibleInSetup_ || this.comments_);
-        break;
+        return Boolean(this.visibleInSetup_ || this.comments_);
       default:
-        this.sufficientFeedback_ = Boolean(this.feedbackDescription_);
+        return Boolean(this.comments_);
     }
   }
 
@@ -170,14 +195,121 @@ export class FeedbackUiElement extends PolymerElement {
 
   /** @private */
   onSubmit_() {
-    // TODO(jrw): Submit feedback data.
-    console.log('onSubmit_');
+    const parts = [`Type: ${this.feedbackType_}`, ''];
+    const append = (label, value) => {
+      if (value) {
+        parts.push(`${label}: ${value}`);
+      }
+    };
+
+    switch (this.feedbackType_) {
+      case FeedbackType.MIRRORING_QUALITY:
+        append('Video Smoothness', this.videoSmoothness_);
+        append('Video Quality', this.videoQuality_);
+        append('Audio', this.audioQuality_);
+        append('Projected Content/URL', this.projectedContentUrl_);
+        append('Comments', this.comments_);
+        break;
+      case FeedbackType.DISCOVERY:
+        append('Chromecast Visible in Setup', this.visibleInSetup_);
+        append(
+            'Using VPN/proxy/firewall/NAS Software', this.hasNetworkSoftware_);
+        append('Network Description', this.networkDescription_);
+        append('Comments', this.comments_);
+        break;
+      default:
+        parts.push(this.comments_);
+        break;
+    }
+
+    const feedback = {
+      productId: 85561,
+      description: parts.join('\n'),
+      email: this.userEmail_,
+      flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
+      categoryTag: 'dev',
+    };
+    if (this.attachLogs_) {
+      feedback.attachedFile = {
+        name: 'log.json',
+        data: new Blob([this.logData_]),
+      };
+    }
+
+    this.updateSendDialog_(FeedbackEvent.SENDING, 'sending', false);
+    this.$.sendDialog.showModal();
+    this.trySendFeedback_(feedback, 0, 0);
+  }
+
+  /**
+   * Schedules an attempt to send feedback after |delayMs| milliseconds.
+   * @param {!chrome.feedbackPrivate.FeedbackInfo} feedback
+   * @param {number} failureCount
+   * @param {number} delayMs
+   * @private
+   */
+  trySendFeedback_(feedback, failureCount, delayMs) {
+    setTimeout(() => {
+      const sendStartTime = Date.now();
+      chrome.feedbackPrivate.sendFeedback(
+          feedback, (status, landingPageType) => {
+            if (status == chrome.feedbackPrivate.Status.SUCCESS) {
+              this.feedbackSent_ = true;
+              this.updateSendDialog_(
+                  FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
+            } else if (failureCount < MAX_SEND_ATTEMPTS) {
+              this.updateSendDialog_(
+                  FeedbackEvent.RESENDING, 'resending', false);
+              const sendDuration = Date.now() - sendStartTime;
+              this.trySendFeedback_(
+                  feedback, failureCount + 1,
+                  Math.max(0, RESEND_DELAY_MS - sendDuration));
+            } else {
+              this.updateSendDialog_(FeedbackEvent.FAILED, 'sendFail', true);
+            }
+          });
+    }, delayMs);
+  }
+
+  /**
+   * Records an event using UMA.
+   * @param {FeedbackEvent} event
+   * @private
+   */
+  recordEvent_(event) {
+    chrome.send(
+        'metricsHandler:recordInHistogram',
+        ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
+  }
+
+  /**
+   * Updates the status of the "send" dialog and records the event.
+   * @param {FeedbackEvent} event
+   * @param {string} stringKey
+   * @param {boolean} isInteractive
+   * @private
+   */
+  updateSendDialog_(event, stringKey, isInteractive) {
+    this.recordEvent_(event);
+    this.sendDialogText_ = loadTimeData.getString(stringKey);
+    this.sendDialogIsInteractive_ = isInteractive;
+  }
+
+  /** @private */
+  onSendDialogOk_() {
+    if (this.feedbackSent_) {
+      chrome.send('close');
+    } else {
+      this.$.sendDialog.close();
+    }
   }
 
   /** @private */
   onCancel_() {
-    // TODO(jrw): Cancel in-progress submission of feedback data.
-    console.log('onCancel_');
+    if (!this.comments_ ||
+        confirm(loadTimeData.getString('discardConfirmation'))) {
+      chrome.send('close');
+    }
   }
 
   /** @private */

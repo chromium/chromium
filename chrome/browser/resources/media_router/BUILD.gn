@@ -68,6 +68,7 @@ js_library("feedback_ui") {
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = [ "$externs_path/feedback_private.js" ]
 }
 
 js_library("media_router_internals") {

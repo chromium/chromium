@@ -175,9 +175,6 @@ video files, instead of all files.">
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_HEADER" desc="Header of the Media Router feedback page.">
   Tell us what's happening with Google Cast.
   </message>
-  <message name="IDS_MEDIA_ROUTER_FEEDBACK_OK" desc="Text for 'OK' button.">
-    OK
-  </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_YOUR_ANSWER" desc="Placeholder text for inputs in the feedback form.">
     Your answer
   </message>
@@ -211,11 +208,11 @@ video files, instead of all files.">
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD" desc="Text for the email field in the feedback form.">
     Email (optional):
   </message>
-  <message name="IDS_MEDIA_ROUTER_FEEDBACK_CANCEL_BUTTON" desc="Text for the cancel button.">
-    Cancel
-  </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_SEND_BUTTON" desc="Text for the send feedback button.">
     Send Feedback
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_DISCARD_CONFIRMATION" desc="Text in the confirmation that the user does not want to submit feedback.">
+    Do you want to discard the feedback?
   </message>
 
   <!-- Cast feedback dialog: feedback types -->
@@ -287,9 +284,6 @@ video files, instead of all files.">
   </message>
 
   <!-- Cast feedback dialog: steps of sending feedback -->
-  <message name="IDS_MEDIA_ROUTER_FEEDBACK_DISCARD_CONFIRMATION" desc="Text in the confirmation that the user does not want to submitfeedback.">
-    Do you want to discard the feedback?
-  </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_SENDING" desc="Shown while we're attempting to send feedback.">
     Sending feedback...
   </message>

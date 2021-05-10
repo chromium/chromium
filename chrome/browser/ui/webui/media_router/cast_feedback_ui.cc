@@ -7,20 +7,31 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/media_router_feedback_resources.h"
 #include "chrome/grit/media_router_feedback_resources_map.h"
+#include "components/media_router/browser/logger_impl.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace media_router {
 
 CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false),
+    : content::WebUIController(web_ui),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()) {
   content::WebUIDataSource* source =
@@ -35,9 +46,10 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       {"audioPoor", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_POOR},
       {"audioQuality", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_QUALITY},
       {"audioUnintelligible", IDS_MEDIA_ROUTER_FEEDBACK_AUDIO_UNINTELLIGIBLE},
-      {"cancelButton", IDS_MEDIA_ROUTER_FEEDBACK_CANCEL_BUTTON},
+      {"cancelButton", IDS_CANCEL},
       {"contentQuestion", IDS_MEDIA_ROUTER_FEEDBACK_CONTENT_QUESTION},
       {"didNotTry", IDS_MEDIA_ROUTER_FEEDBACK_DID_NOT_TRY},
+      {"discardConfirmation", IDS_MEDIA_ROUTER_FEEDBACK_DISCARD_CONFIRMATION},
       {"emailField", IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD},
       {"fineLogsWarning", IDS_MEDIA_ROUTER_FEEDBACK_FINE_LOGS_WARNING},
       {"header", IDS_MEDIA_ROUTER_FEEDBACK_HEADER},
@@ -51,7 +63,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       {"networkSameWifi", IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_SAME_WIFI},
       {"networkWiredPc", IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC},
       {"no", IDS_MEDIA_ROUTER_FEEDBACK_NO},
-      {"ok", IDS_MEDIA_ROUTER_FEEDBACK_OK},
+      {"ok", IDS_OK},
       {"privacyDataUsage", IDS_MEDIA_ROUTER_FEEDBACK_PRIVACY_DATA_USAGE},
       {"prompt", IDS_MEDIA_ROUTER_FEEDBACK_PROMPT},
       {"required", IDS_MEDIA_ROUTER_FEEDBACK_REQUIRED},
@@ -99,8 +111,12 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
           IDS_MEDIA_ROUTER_FEEDBACK_SETUP_VISIBILITY_QUESTION,
           u"https://support.google.com/chromecast?p=set_up_chromecast"));
 
-  // TODO(jrw): Attach real log data.
-  source->AddString("logData", "dummy log data");
+  // Supply media router log data to UI.
+  MediaRouter* const router =
+      media_router::MediaRouterFactory::GetApiForBrowserContext(
+          web_contents_->GetBrowserContext());
+  LoggerImpl* const logger = router->GetLogger();
+  source->AddString("logData", logger->GetLogsAsJson());
 
   webui::SetupWebUIDataSource(
       source,
@@ -109,10 +125,19 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
 
   content::WebUIDataSource::Add(profile_, source);
+
+  web_ui->RegisterMessageCallback(
+      "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,
+                                   base::Unretained(this)));
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CastFeedbackUI)
 
 CastFeedbackUI::~CastFeedbackUI() = default;
+
+void CastFeedbackUI::OnCloseMessage(const base::ListValue*) {
+  web_contents_->GetDelegate()->CloseContents(web_contents_);
+}
 
 }  // namespace media_router

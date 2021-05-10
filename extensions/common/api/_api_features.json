@@ -182,7 +182,8 @@
       "channel": "stable",
       "contexts": ["webui"],
       "matches": [
-        "chrome://feedback/*"
+        "chrome://feedback/*",
+        "chrome://cast-feedback/*"
       ]
     }
   ],

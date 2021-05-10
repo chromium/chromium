@@ -48,6 +48,10 @@ extern const base::Feature kAllowAllSitesToInitiateMirroring;
 // If enabled, meetings appear as receivers in the Cast menu.
 extern const base::Feature kCastToMeetingFromCastDialog;
 
+// If enabled, the WebUI Cast feedback dialog is used instead of using the
+// version in the Media Router component extension.
+extern const base::Feature kCastFeedbackDialog;
+
 namespace prefs {
 // Pref name for the enterprise policy for allowing Cast devices on all IPs.
 constexpr char kMediaRouterCastAllowAllIPs[] =

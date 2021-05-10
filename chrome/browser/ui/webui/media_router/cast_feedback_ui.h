@@ -6,25 +6,31 @@
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_CAST_FEEDBACK_UI_H_
 
 #include "base/macros.h"
-#include "ui/webui/mojo_web_ui_controller.h"
+#include "content/public/browser/web_ui_controller.h"
+
+class Profile;
+
+namespace base {
+class ListValue;
+}
 
 namespace content {
 class WebContents;
 class WebUI;
 }  // namespace content
 
-class Profile;
-
 namespace media_router {
 
 // The main object controlling the Cast feedback
 // (chrome://cast-feedback) page.
-class CastFeedbackUI : public ui::MojoWebUIController {
+class CastFeedbackUI : public content::WebUIController {
  public:
   explicit CastFeedbackUI(content::WebUI* web_ui);
   ~CastFeedbackUI() override;
 
  private:
+  void OnCloseMessage(const base::ListValue*);
+
   Profile* const profile_;
   content::WebContents* const web_contents_;
 
