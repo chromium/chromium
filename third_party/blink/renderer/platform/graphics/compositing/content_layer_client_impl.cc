@@ -72,10 +72,9 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
     auto json = std::make_unique<JSONObject>();
     json->SetString("data", it->ToString());
-    json->SetArray("displayItems",
-                   DisplayItemList::DisplayItemsAsJSON(
-                       it->begin_index, it.DisplayItems(),
-                       DisplayItemList::kShowOnlyDisplayItemTypes));
+    json->SetArray("displayItems", DisplayItemList::DisplayItemsAsJSON(
+                                       it->begin_index, it.DisplayItems(),
+                                       DisplayItemList::kCompact));
     paint_chunk_debug_data_->PushObject(std::move(json));
   }
 #endif

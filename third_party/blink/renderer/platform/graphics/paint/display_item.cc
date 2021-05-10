@@ -200,14 +200,27 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
   }
 }
 
-WTF::String DisplayItem::AsDebugString() const {
+String DisplayItem::AsDebugString() const {
   auto json = std::make_unique<JSONObject>();
   PropertiesAsJSON(*json);
   return json->ToPrettyJSONString();
 }
 
-void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
-  json.SetString("id", GetId().ToString());
+String DisplayItem::IdAsString() const {
+  if (IsTombstone())
+    return "TOMBSTONE " + GetId().ToString();
+  return GetId().ToString();
+}
+
+void DisplayItem::PropertiesAsJSON(JSONObject& json,
+                                   bool client_known_to_be_alive) const {
+  json.SetString("id", IdAsString());
+  json.SetString("clientDebugName",
+                 Client().SafeDebugName(client_known_to_be_alive));
+  if (client_known_to_be_alive) {
+    json.SetString("invalidation", PaintInvalidationReasonToString(
+                                       Client().GetPaintInvalidationReason()));
+  }
   json.SetString("visualRect", VisualRect().ToString());
   if (GetRasterEffectOutset() != RasterEffectOutset::kNone) {
     json.SetDouble(
@@ -215,9 +228,9 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
         GetRasterEffectOutset() == RasterEffectOutset::kHalfPixel ? 0.5 : 1);
   }
 
-  if (IsTombstone()) {
-    json.SetBoolean("ISTOMBSTONE", true);
-  } else if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
+  if (IsTombstone())
+    return;
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(this)) {
     drawing->PropertiesAsJSONImpl(json);
   } else if (auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(this)) {
     foreign_layer->PropertiesAsJSONImpl(json);

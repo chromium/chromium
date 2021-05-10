@@ -238,9 +238,11 @@ class PLATFORM_EXPORT DisplayItem {
   bool DrawsContent() const { return draws_content_; }
 
 #if DCHECK_IS_ON()
-  static WTF::String TypeAsDebugString(DisplayItem::Type);
-  WTF::String AsDebugString() const;
-  void PropertiesAsJSON(JSONObject&) const;
+  static String TypeAsDebugString(DisplayItem::Type);
+  String AsDebugString() const;
+  String IdAsString() const;
+  void PropertiesAsJSON(JSONObject&,
+                        bool client_known_to_be_alive = false) const;
 #endif
 
  protected:

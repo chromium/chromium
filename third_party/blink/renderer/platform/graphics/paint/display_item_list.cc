@@ -21,32 +21,17 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
     const DisplayItemRange& display_items,
     JsonFlags flags) {
   auto json_array = std::make_unique<JSONArray>();
-  if (flags & kCompact) {
-    DCHECK(!(flags & kShowPaintRecords))
-        << "kCompact cannot show paint records";
-    DCHECK(!(flags & kShowOnlyDisplayItemTypes))
-        << "kCompact cannot show display item types";
-    for (auto& item : display_items)
-      json_array->PushString(item.GetId().ToString());
-  } else {
-    wtf_size_t i = first_item_index;
-    for (auto& item : display_items) {
+  wtf_size_t i = first_item_index;
+  DCHECK(!(flags & kCompact) || !(flags & kShowPaintRecords))
+      << "kCompact and kShowPaintRecords are exclusive";
+  for (auto& item : display_items) {
+    if (flags & kCompact) {
+      json_array->PushString(
+          String::Format("%u: %s", i, item.IdAsString().Utf8().data()));
+    } else {
       auto json = std::make_unique<JSONObject>();
-
-      json->SetInteger("index", i++);
-
-      if (flags & kShowOnlyDisplayItemTypes) {
-        json->SetString("type", DisplayItem::TypeAsDebugString(item.GetType()));
-      } else {
-        json->SetString("clientDebugName", item.Client().SafeDebugName(
-                                               flags & kClientKnownToBeAlive));
-        if (flags & kClientKnownToBeAlive) {
-          json->SetString("invalidation",
-                          PaintInvalidationReasonToString(
-                              item.Client().GetPaintInvalidationReason()));
-        }
-        item.PropertiesAsJSON(*json);
-      }
+      json->SetInteger("index", i);
+      item.PropertiesAsJSON(*json, flags & kClientKnownToBeAlive);
 
       if ((flags & kShowPaintRecords) && item.IsDrawing()) {
         const auto& drawing_item = To<DrawingDisplayItem>(item);
@@ -56,6 +41,7 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
 
       json_array->PushObject(std::move(json));
     }
+    i++;
   }
   return json_array;
 }

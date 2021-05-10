@@ -181,10 +181,9 @@ class PLATFORM_EXPORT DisplayItemList {
     kDefault = 0,
     kClientKnownToBeAlive = 1,
     // Only show a compact representation of the display item list. This flag
-    // cannot be used with additional flags such as kShowPaintRecords.
+    // cannot be used with kShowPaintRecords.
     kCompact = 1 << 1,
     kShowPaintRecords = 1 << 2,
-    kShowOnlyDisplayItemTypes = 1 << 3
   };
   typedef unsigned JsonFlags;
 
