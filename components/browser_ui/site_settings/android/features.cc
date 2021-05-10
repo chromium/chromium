@@ -10,6 +10,6 @@
 namespace browser_ui {
 
 const base::Feature kActionableContentSettings{
-    "ActionableContentSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ActionableContentSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace browser_ui
