@@ -110,12 +110,11 @@ class OsIntegrationManager {
 
   // Update all needed OS hooks for the web app.
   // virtual for testing
-  virtual void UpdateOsHooks(
-      const AppId& app_id,
-      base::StringPiece old_name,
-      std::unique_ptr<ShortcutInfo> old_shortcut,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebApplicationInfo& web_app_info);
+  virtual void UpdateOsHooks(const AppId& app_id,
+                             base::StringPiece old_name,
+                             std::unique_ptr<ShortcutInfo> old_shortcut,
+                             bool file_handlers_need_os_update,
+                             const WebApplicationInfo& web_app_info);
 
   // Proxy calls for AppShortcutManager.
   // virtual for testing
@@ -163,10 +162,6 @@ class OsIntegrationManager {
   virtual void UpdateUrlHandlers(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback);
-
-  virtual void UpdateFileHandlers(
-      const AppId& app_id,
-      FileHandlerUpdateAction file_handlers_need_os_update);
 
  protected:
   AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
@@ -243,10 +238,8 @@ class OsIntegrationManager {
   virtual void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebApplicationInfo& web_app_info);
-  virtual void UpdateFileHandlersWithShortcutInfo(
-      const AppId& app_id,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      std::unique_ptr<ShortcutInfo> info);
+  virtual void UpdateFileHandlers(const AppId& app_id,
+                                  std::unique_ptr<ShortcutInfo> info);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);

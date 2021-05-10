@@ -27,6 +27,7 @@
 
 namespace web_app {
 namespace test {
+namespace {
 
 void WaitUntilReady(WebAppProvider* provider) {
   if (provider->on_registry_ready().is_signaled())
@@ -36,6 +37,8 @@ void WaitUntilReady(WebAppProvider* provider) {
   provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
+
+}  // namespace
 
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

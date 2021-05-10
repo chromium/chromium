@@ -182,7 +182,6 @@ downloaded_icon_sizes_maskable:
 shortcuts_menu_item_infos:
 downloaded_shortcuts_menu_icons_sizes:
 file_handlers:
-file_handler_permission_blocked:0
 share_target:
   nullopt
 additional_search_terms:
@@ -313,7 +312,6 @@ file_handlers:
     accept:
       mime_type: application/33849121404+bar
       file_extensions: .33849121404a .33849121404b
-file_handler_permission_blocked:0
 share_target:
   action: https://example.com/path/target/1210958276
   method: POST

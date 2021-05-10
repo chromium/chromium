@@ -329,8 +329,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-  app->SetFileHandlerPermissionBlocked(false);
-
   WebApp::SyncFallbackData sync_fallback_data;
   sync_fallback_data.name = "Sync" + name;
   sync_fallback_data.theme_color = synced_theme_color;

@@ -173,8 +173,7 @@ void FileHandlerManager::DisableForceEnabledFileHandlingOriginTrial(
 
 const apps::FileHandlers* FileHandlerManager::GetEnabledFileHandlers(
     const AppId& app_id) {
-  if (AreFileHandlersEnabled(app_id) && IsFileHandlingAPIAvailable(app_id) &&
-      !registrar_->IsAppFileHandlerPermissionBlocked(app_id))
+  if (AreFileHandlersEnabled(app_id) && IsFileHandlingAPIAvailable(app_id))
     return GetAllFileHandlers(app_id);
 
   return nullptr;

@@ -195,6 +195,4 @@ message WebAppProto {
   // Last time the Badging API was used.
   // ms since the Unix epoch. See sync/base/time.h.
   optional int64 last_badging_time = 31;
-
-  optional bool file_handler_permission_blocked = 32;
 }

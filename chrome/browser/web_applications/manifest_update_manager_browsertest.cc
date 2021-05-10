@@ -1557,66 +1557,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
-                       BlockPermissionRemoveFileHandlers) {
-  constexpr char kFileHandlerManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "minimal-ui",
-      "file_handlers": [
-        {
-          "action": "/?plaintext",
-          "name": "Plain Text",
-          "accept": {
-            "text/plain": ["$1"]
-          }
-        }
-      ],
-      "icons": $2
-    }
-  )";
-
-  OverrideManifest(kFileHandlerManifestTemplate,
-                   {".txt", kInstallableIconList});
-  AppId app_id = InstallWebApp();
-  const WebAppRegistrar* registrar =
-      GetProvider().registrar().AsWebAppRegistrar();
-  const WebApp* web_app = registrar->GetAppById(app_id);
-
-  EXPECT_FALSE(web_app->file_handler_permission_blocked());
-  ASSERT_FALSE(web_app->file_handlers().empty());
-  const auto& old_file_handler = web_app->file_handlers()[0];
-  ASSERT_FALSE(old_file_handler.accept.empty());
-  auto old_extensions = old_file_handler.accept[0].file_extensions;
-  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  const GURL url = GetAppURL();
-  const GURL origin = url.GetOrigin();
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-  // Set permission to BLOCK.
-  map->SetContentSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING,
-                                     CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // App should be updated to permission blocked by
-  // `WebAppInstallFinalizer::OnContentSettingChanged`.
-  EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
-  // Update manifest.
-  OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
-  // Manifest update task should preserve the permission blocked state.
-  EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFindsDeletedFileHandler) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {

@@ -15,18 +15,12 @@ class GURL;
 class Profile;
 
 namespace web_app {
-
-class WebAppProvider;
-
 namespace test {
 
 // Start the WebAppProvider and subsystems, and wait for startup to complete.
 // Disables auto-install of system web apps and default web apps. Intended for
 // unit tests, not browser tests.
 void AwaitStartWebAppProviderAndSubsystems(Profile* profile);
-
-// Wait until the provided WebAppProvider is ready.
-void WaitUntilReady(WebAppProvider* provider);
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,

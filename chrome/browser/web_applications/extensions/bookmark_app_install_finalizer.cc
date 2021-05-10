@@ -297,8 +297,7 @@ void BookmarkAppInstallFinalizer::OnExtensionUpdated(
     std::unique_ptr<web_app::ShortcutInfo> old_shortcut;
     os_integration_manager().UpdateOsHooks(
         extension->id(), old_name, std::move(old_shortcut),
-        /*file_handlers_need_os_update=*/
-        web_app::FileHandlerUpdateAction::kNoUpdate, web_app_info);
+        /*file_handlers_need_os_update=*/false, web_app_info);
     registrar().NotifyWebAppManifestUpdated(extension->id(), old_name);
   }
   std::move(callback).Run(extension->id(),

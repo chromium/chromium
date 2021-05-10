@@ -178,11 +178,6 @@ const apps::FileHandlers* BookmarkAppRegistrar::GetAppFileHandlers(
   return nullptr;
 }
 
-bool BookmarkAppRegistrar::IsAppFileHandlerPermissionBlocked(
-    const web_app::AppId& app_id) const {
-  return false;
-}
-
 base::Optional<GURL> BookmarkAppRegistrar::GetAppScopeInternal(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

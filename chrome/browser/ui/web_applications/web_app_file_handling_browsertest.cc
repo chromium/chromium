@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -26,16 +25,10 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -668,65 +661,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
             content::EvalJs(web_content, "window.launchParams.files.length"));
   EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_content, "window.launchParams.files[0].name"));
-}
-
-class WebAppFileHandlingPolicyBrowserTest
-    : public WebAppFileHandlingBrowserTest {
- public:
-  // Set the file handling policy to BLOCK the app between the PRE test and the
-  // actual test.
-  void SetUpInProcessBrowserTestFixture() override {
-    if (GetTestPreCount() == 0) {
-      SetFileHandlingBlockPolicy();
-    }
-  }
-
- private:
-  void SetFileHandlingBlockPolicy() {
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-
-    policy::PolicyMap values;
-    base::Value list(base::Value::Type::LIST);
-    list.Append(base::Value("https://app.com"));
-    policy::PolicyMap::Entry entry_list(
-        policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-        policy::POLICY_SOURCE_CLOUD, std::move(list), nullptr);
-
-    values.Set(policy::key::kFileHandlingBlockedForUrls, std::move(entry_list));
-    provider_.UpdateChromePolicy(values);
-  }
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
-                       PRE_PolicySettingsBlockedUrl) {
-  InstallFileHandlingPWA();
-  EXPECT_EQ(registrar().GetAppIds().size(), 1u);
-  EXPECT_FALSE(registrar()
-                   .AsWebAppRegistrar()
-                   ->GetAppById(app_id())
-                   ->file_handler_permission_blocked());
-}
-
-// Test that the app's `file_handler_permission_blocked` state should be updated
-// on WebAppProvider system setup based on current permission settings.
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
-                       PolicySettingsBlockedUrl) {
-  auto* provider = web_app::WebAppProvider::Get(profile());
-  DCHECK(provider);
-  web_app::test::WaitUntilReady(provider);
-
-  std::vector<web_app::AppId> app_ids = registrar().GetAppIds();
-  EXPECT_EQ(app_ids.size(), 1u);
-  EXPECT_TRUE(registrar()
-                  .AsWebAppRegistrar()
-                  ->GetAppById(app_ids[0])
-                  ->file_handler_permission_blocked());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
