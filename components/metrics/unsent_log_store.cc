@@ -172,9 +172,6 @@ void UnsentLogStore::MarkStagedLogAsSent() {
 
 void UnsentLogStore::TrimAndPersistUnsentLogs() {
   ListPrefUpdate update(local_state_, log_data_pref_name_);
-  // TODO(crbug.com/859477): Verify that the preference has been properly
-  // registered.
-  CHECK(update.Get());
   TrimLogs();
   WriteLogsToPrefList(update.Get());
 }

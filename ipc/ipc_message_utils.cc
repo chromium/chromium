@@ -145,11 +145,6 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       }
       break;
     }
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    default:
-      CHECK(false);
-      break;
   }
 }
 
