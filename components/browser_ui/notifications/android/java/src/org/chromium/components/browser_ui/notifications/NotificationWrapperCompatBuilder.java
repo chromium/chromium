@@ -316,6 +316,12 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
+    public NotificationWrapperBuilder setTimeoutAfter(long ms) {
+        mBuilder.setTimeoutAfter(ms);
+        return this;
+    }
+
+    @Override
     public NotificationWrapper buildWithBigContentView(RemoteViews view) {
         assert mMetadata != null;
         return new NotificationWrapper(mBuilder.setCustomBigContentView(view).build(), mMetadata);

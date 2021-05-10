@@ -334,6 +334,14 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
+    public NotificationWrapperBuilder setTimeoutAfter(long ms) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ApiHelperForO.setTimeoutAfter(mBuilder, ms);
+        }
+        return this;
+    }
+
+    @Override
     @SuppressWarnings("deprecation")
     public NotificationWrapper buildWithBigContentView(RemoteViews view) {
         assert mMetadata != null;

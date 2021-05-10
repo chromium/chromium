@@ -121,6 +121,11 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setCategory(String category);
 
+    /**
+     * Sets the lifetime of a notification. Does nothing prior to Oreo.
+     */
+    NotificationWrapperBuilder setTimeoutAfter(long ms);
+
     NotificationWrapper buildWithBigContentView(RemoteViews bigView);
 
     NotificationWrapper buildWithBigTextStyle(String bigText);

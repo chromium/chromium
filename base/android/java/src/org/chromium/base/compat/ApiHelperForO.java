@@ -122,6 +122,11 @@ public final class ApiHelperForO {
         return builder.setChannelId(channelId);
     }
 
+    /** See {@link Notification.Builder#setTimeoutAfter(long)}. */
+    public static Notification.Builder setTimeoutAfter(Notification.Builder builder, long ms) {
+        return builder.setTimeoutAfter(ms);
+    }
+
     /**
      * See {@link
      * ConnectivityManager#registerDefaultNetworkCallback(ConnectivityManager.NetworkCallback,
