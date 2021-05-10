@@ -395,7 +395,7 @@ void RenderWidgetHostViewChildFrame::Destroy() {
   delete this;
 }
 
-void RenderWidgetHostViewChildFrame::SetTooltipText(
+void RenderWidgetHostViewChildFrame::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text) {
   if (!frame_connector_)
     return;
@@ -411,7 +411,7 @@ void RenderWidgetHostViewChildFrame::SetTooltipText(
     return;
 
   if (cursor_manager->IsViewUnderCursor(this))
-    root_view->DisplayTooltipText(tooltip_text);
+    root_view->UpdateTooltip(tooltip_text);
 }
 
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {

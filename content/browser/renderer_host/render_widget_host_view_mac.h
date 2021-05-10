@@ -130,8 +130,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void Destroy() override;
-  void SetTooltipText(const std::u16string& tooltip_text) override;
-  void DisplayTooltipText(const std::u16string& tooltip_text) override;
+  void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
+  void UpdateTooltip(const std::u16string& tooltip_text) override;
   gfx::Size GetRequestedRendererSize() override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
@@ -527,6 +527,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // provided.
   using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
   void GetPageTextForSpeech(SpeechCallback callback);
+
+  // Calls RenderWidgetHostNSView::SetTooltipText and call the observer's
+  // OnTooltipTextUpdated() function, if not null.
+  void SetTooltipText(const std::u16string& tooltip_text);
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.

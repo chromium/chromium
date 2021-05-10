@@ -5400,7 +5400,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
 
   // Simulate a tooltip.
   std::u16string tooltip_text(u"The tooltip!");
-  view_->SetTooltipText(tooltip_text);
+  view_->UpdateTooltipUnderCursor(tooltip_text);
   EXPECT_FALSE(widget_host_->is_hidden());
   EXPECT_EQ(tooltip_text, view_->tooltip_);
 

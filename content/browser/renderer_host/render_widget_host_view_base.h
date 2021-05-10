@@ -456,12 +456,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Tells the View to destroy itself.
   virtual void Destroy();
 
-  // Tells the View that the tooltip text for the current mouse position over
-  // the page has changed.
-  virtual void SetTooltipText(const std::u16string& tooltip_text) = 0;
+  // Calls UpdateTooltip if the view is under the cursor.
+  virtual void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) {}
 
-  // Displays the requested tooltip on the screen.
-  virtual void DisplayTooltipText(const std::u16string& tooltip_text) {}
+  // Updates the tooltip text and displays the requested tooltip on the screen.
+  // An empty string will clear a visible tooltip.
+  virtual void UpdateTooltip(const std::u16string& tooltip_text) {}
 
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.

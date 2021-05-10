@@ -1075,9 +1075,9 @@ void RenderWidgetHostViewAndroid::Destroy() {
   delete this;
 }
 
-void RenderWidgetHostViewAndroid::SetTooltipText(
+void RenderWidgetHostViewAndroid::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text) {
-  // Tooltips don't makes sense on Android.
+  // Tooltips don't make sense on Android.
 }
 
 void RenderWidgetHostViewAndroid::UpdateBackgroundColor() {

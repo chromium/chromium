@@ -129,8 +129,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void RenderProcessGone() override;
   void ShowWithVisibility(Visibility web_contents_visibility) override;
   void Destroy() override;
-  void SetTooltipText(const std::u16string& tooltip_text) override;
-  void DisplayTooltipText(const std::u16string& tooltip_text) override;
+  void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
+  void UpdateTooltip(const std::u16string& tooltip_text) override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(
@@ -597,6 +597,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   blink::mojom::FrameWidgetInputHandler*
   GetFrameWidgetInputHandlerForFocusedWidget();
+
+  void SetTooltipText(const std::u16string& tooltip_text);
 
   aura::Window* window_;
 

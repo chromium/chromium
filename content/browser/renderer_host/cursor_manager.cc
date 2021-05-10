@@ -29,7 +29,7 @@ void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   // though this is only guaranteed if the view's tooltip is non-empty, so
   // clearing here is important. Tooltips sent from the previous view will be
   // ignored.
-  root_view_->DisplayTooltipText(std::u16string());
+  root_view_->UpdateTooltip(std::u16string());
   view_under_cursor_ = view;
   WebCursor cursor(ui::mojom::CursorType::kPointer);
 

@@ -2516,7 +2516,7 @@ void RenderWidgetHostImpl::SetToolTipText(
       base::i18n::WrapStringWithRTLFormatting(&wrapped_tooltip_text);
     }
   }
-  view_->SetTooltipText(wrapped_tooltip_text);
+  view_->UpdateTooltipUnderCursor(wrapped_tooltip_text);
 }
 
 void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {

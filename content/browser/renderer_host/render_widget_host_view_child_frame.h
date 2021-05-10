@@ -105,7 +105,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void Destroy() override;
-  void SetTooltipText(const std::u16string& tooltip_text) override;
+  void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void GestureEventAck(const blink::WebGestureEvent& event,
                        blink::mojom::InputEventResultState ack_result) override;
   // Since the URL of content rendered by this class is not displayed in

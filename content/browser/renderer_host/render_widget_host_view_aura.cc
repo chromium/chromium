@@ -755,24 +755,21 @@ void RenderWidgetHostViewAura::Destroy() {
     delete this;
 }
 
-void RenderWidgetHostViewAura::SetTooltipText(
+void RenderWidgetHostViewAura::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text) {
   if (GetCursorManager()->IsViewUnderCursor(this))
-    DisplayTooltipText(tooltip_text);
+    UpdateTooltip(tooltip_text);
 }
 
-void RenderWidgetHostViewAura::DisplayTooltipText(
+void RenderWidgetHostViewAura::UpdateTooltip(
     const std::u16string& tooltip_text) {
-  tooltip_ = tooltip_text;
-  if (tooltip_observer_for_testing_)
-    tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
+  SetTooltipText(tooltip_text);
 
-  aura::Window* root_window = window_->GetRootWindow();
-  wm::TooltipClient* tooltip_client = wm::GetTooltipClient(root_window);
+  auto* tooltip_client = wm::GetTooltipClient(window_->GetRootWindow());
   if (tooltip_client) {
-    tooltip_client->UpdateTooltip(window_);
     // Content tooltips should be visible indefinitely.
     tooltip_client->SetHideTooltipTimeout(window_, {});
+    tooltip_client->UpdateTooltip(window_);
   }
 }
 
@@ -2709,6 +2706,13 @@ RenderWidgetHostViewAura::GetFrameWidgetInputHandlerForFocusedWidget() {
   if (!focused_widget)
     return nullptr;
   return focused_widget->GetFrameWidgetInputHandler();
+}
+
+void RenderWidgetHostViewAura::SetTooltipText(
+    const std::u16string& tooltip_text) {
+  tooltip_ = tooltip_text;
+  if (tooltip_observer_for_testing_)
+    tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
 }
 
 }  // namespace content

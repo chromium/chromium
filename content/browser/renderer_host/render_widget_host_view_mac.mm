@@ -733,17 +733,15 @@ void RenderWidgetHostViewMac::Destroy() {
   delete this;
 }
 
-void RenderWidgetHostViewMac::SetTooltipText(
+void RenderWidgetHostViewMac::UpdateTooltipUnderCursor(
     const std::u16string& tooltip_text) {
   if (GetCursorManager()->IsViewUnderCursor(this))
-    DisplayTooltipText(tooltip_text);
+    UpdateTooltip(tooltip_text);
 }
 
-void RenderWidgetHostViewMac::DisplayTooltipText(
+void RenderWidgetHostViewMac::UpdateTooltip(
     const std::u16string& tooltip_text) {
-  ns_view_->SetTooltipText(tooltip_text);
-  if (tooltip_observer_for_testing_)
-    tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
+  SetTooltipText(tooltip_text);
 }
 
 viz::ScopedSurfaceIdAllocator
@@ -1123,7 +1121,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewMac::LockMouse(
   ns_view_->SetCursorLocked(true);
 
   // Clear the tooltip window.
-  ns_view_->SetTooltipText(std::u16string());
+  SetTooltipText(std::u16string());
 
   return blink::mojom::PointerLockResult::kSuccess;
 }
@@ -1630,7 +1628,7 @@ void RenderWidgetHostViewMac::ForwardMouseEvent(
     host()->ForwardMouseEvent(web_event);
 
   if (web_event.GetType() == WebInputEvent::Type::kMouseLeave)
-    ns_view_->SetTooltipText(std::u16string());
+    SetTooltipText(std::u16string());
 }
 
 void RenderWidgetHostViewMac::ForwardWheelEvent(
@@ -2125,6 +2123,13 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     ns_view_->ShowDictionaryOverlay(std::move(attributed_string),
                                     updated_baseline_point);
   }
+}
+
+void RenderWidgetHostViewMac::SetTooltipText(
+    const std::u16string& tooltip_text) {
+  ns_view_->SetTooltipText(tooltip_text);
+  if (tooltip_observer_for_testing_)
+    tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {
