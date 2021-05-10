@@ -1167,6 +1167,17 @@
           'shards': 2,
         },
       },
+      'Mac11 Tests': {
+        # TODO(crbug.com/1206401): Restore to defaults when there is enough
+        # capacity.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-4',
+            }
+          ],
+        },
+      },
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
