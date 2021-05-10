@@ -53,7 +53,7 @@ UtilitySandboxedProcessLauncherDelegate::
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
 #if !defined(OS_MAC)
-      sandbox_type_ == sandbox::policy::SandboxType::kSharingService ||
+      sandbox_type_ == sandbox::policy::SandboxType::kService ||
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition;
   DCHECK(supported_sandbox_type);

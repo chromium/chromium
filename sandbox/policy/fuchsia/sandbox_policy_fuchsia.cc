@@ -141,7 +141,7 @@ const SandboxConfig* GetConfigForSandboxType(SandboxType type) {
     case SandboxType::kPpapi:
     case SandboxType::kPrintBackend:
     case SandboxType::kPrintCompositor:
-    case SandboxType::kSharingService:
+    case SandboxType::kService:
     case SandboxType::kSpeechRecognition:
     case SandboxType::kUtility:
       return &kEmptySandboxConfig;

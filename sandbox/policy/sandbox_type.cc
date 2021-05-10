@@ -60,7 +60,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kTts:
 #endif
 #if !defined(OS_MAC)
-    case SandboxType::kSharingService:
+    case SandboxType::kService:
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     case SandboxType::kZygoteIntermediateSandbox:
@@ -126,7 +126,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kTts:
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_MAC)
-    case SandboxType::kSharingService:
+    case SandboxType::kService:
 #endif
     case SandboxType::kSpeechRecognition:
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
@@ -235,8 +235,8 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
     case SandboxType::kVideoCapture:
       return switches::kVideoCaptureSandbox;
 #if !defined(OS_MAC)
-    case SandboxType::kSharingService:
-      return switches::kSharingServiceSandbox;
+    case SandboxType::kService:
+      return switches::kServiceSandbox;
 #endif
     case SandboxType::kSpeechRecognition:
       return switches::kSpeechRecognitionSandbox;

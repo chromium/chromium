@@ -251,7 +251,7 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
   }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kSharingService) {
+  if (sandbox_type_ == sandbox::policy::SandboxType::kService) {
     auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
