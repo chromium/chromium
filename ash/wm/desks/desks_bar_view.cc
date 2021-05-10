@@ -290,7 +290,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateDefaultDeskButton>(this));
   zero_state_new_desk_button_ = scroll_view_contents_->AddChildView(
-      std::make_unique<ZeroStateNewDeskButton>());
+      std::make_unique<ZeroStateNewDeskButton>(this));
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
 
@@ -752,9 +752,10 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     }
   }
 
-  if (!initializing_bar_view) {
-    // Focus on the newly created name view to encourge users to rename their
-    // desks.
+  // If we're not initializing the desk bar and |should_name_nudge_| is true,
+  // focus on the newly created name view to encourage users to rename their
+  // desks.
+  if (!initializing_bar_view && should_name_nudge_) {
     auto* newly_added_name_view = mini_views_.back()->desk_name_view();
     newly_added_name_view->RequestFocus();
 
@@ -766,6 +767,8 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     auto* highlight_controller = GetHighlightController();
     if (highlight_controller->IsFocusHighlightVisible())
       highlight_controller->MoveHighlightToView(newly_added_name_view);
+
+    should_name_nudge_ = false;
   }
 
   Layout();

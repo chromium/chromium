@@ -71,6 +71,10 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   bool dragged_item_over_bar() const { return dragged_item_over_bar_; }
 
+  void set_should_name_nudge(bool should_name_nudge) {
+    should_name_nudge_ = should_name_nudge;
+  }
+
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
@@ -255,6 +259,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Contents of |scroll_view_|, which includes |mini_views_| and
   // |expanded_state_new_desk_button_| currently.
   views::View* scroll_view_contents_ = nullptr;
+
+  // If this is true, when `UpdateNewMiniViews()` is called, the newly created
+  // mini view's name view will be focused and |should_name_nudge_| will be
+  // reset.
+  bool should_name_nudge_ = false;
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateNewDeskButton* zero_state_new_desk_button_ = nullptr;

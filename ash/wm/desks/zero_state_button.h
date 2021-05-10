@@ -104,7 +104,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
 // ExpandedStateNewDeskButton.
 class ASH_EXPORT ZeroStateNewDeskButton : public DeskButtonBase {
  public:
-  ZeroStateNewDeskButton();
+  ZeroStateNewDeskButton(DesksBarView* bar_view);
   ZeroStateNewDeskButton(const ZeroStateNewDeskButton&) = delete;
   ZeroStateNewDeskButton& operator=(const ZeroStateNewDeskButton&) = delete;
   ~ZeroStateNewDeskButton() override = default;
@@ -118,6 +118,9 @@ class ASH_EXPORT ZeroStateNewDeskButton : public DeskButtonBase {
   // views::Button:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+
+ private:
+  DesksBarView* bar_view_;
 };
 
 }  // namespace ash

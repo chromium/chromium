@@ -32,9 +32,11 @@ constexpr int kCornerRadius = 4;
 // The button belongs to ExpandedStateNewDeskButton.
 class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
  public:
-  InnerNewDeskButton(ExpandedStateNewDeskButton* outer_button)
+  InnerNewDeskButton(ExpandedStateNewDeskButton* outer_button,
+                     DesksBarView* bar_view)
       : DeskButtonBase(std::u16string(), kBorderCornerRadius, kCornerRadius),
-        outer_button_(outer_button) {
+        outer_button_(outer_button),
+        bar_view_(bar_view) {
     paint_contents_only_ = true;
   }
   InnerNewDeskButton(const InnerNewDeskButton&) = delete;
@@ -53,6 +55,7 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
   void OnButtonPressed() override {
     auto* controller = DesksController::Get();
     if (controller->CanCreateDesks()) {
+      bar_view_->set_should_name_nudge(true);
       controller->NewDesk(DesksCreationRemovalSource::kButton);
       UpdateButtonState();
     }
@@ -86,6 +89,7 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
 
  private:
   ExpandedStateNewDeskButton* outer_button_;
+  DesksBarView* bar_view_;
 };
 
 }  // namespace
@@ -93,7 +97,7 @@ class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
 ExpandedStateNewDeskButton::ExpandedStateNewDeskButton(DesksBarView* bar_view)
     : bar_view_(bar_view),
       new_desk_button_(
-          AddChildView(std::make_unique<InnerNewDeskButton>(this))),
+          AddChildView(std::make_unique<InnerNewDeskButton>(this, bar_view))),
       label_(AddChildView(std::make_unique<views::Label>())) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

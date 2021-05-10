@@ -186,6 +186,7 @@ gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
 }
 
 void ZeroStateDefaultDeskButton::OnButtonPressed() {
+  bar_view_->set_should_name_nudge(true);
   bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                 /*expanding_bar_view=*/true);
 }
@@ -200,8 +201,9 @@ void ZeroStateDefaultDeskButton::UpdateLabelText() {
 // -----------------------------------------------------------------------------
 // ZeroStateNewDeskButton:
 
-ZeroStateNewDeskButton::ZeroStateNewDeskButton()
-    : DeskButtonBase(std::u16string(), kCornerRadius, kCornerRadius) {
+ZeroStateNewDeskButton::ZeroStateNewDeskButton(DesksBarView* bar_view)
+    : DeskButtonBase(std::u16string(), kCornerRadius, kCornerRadius),
+      bar_view_(bar_view) {
   highlight_on_hover_ = false;
 }
 
@@ -219,6 +221,7 @@ gfx::Size ZeroStateNewDeskButton::CalculatePreferredSize() const {
 }
 
 void ZeroStateNewDeskButton::OnButtonPressed() {
+  bar_view_->set_should_name_nudge(true);
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   highlight_on_hover_ = false;
 }

@@ -4135,6 +4135,85 @@ TEST_F(DesksTest, NameNudges) {
   }
 }
 
+// Tests that name nudges works with multiple displays. When a user
+// clicks/touches the new desk button, the newly created DeskNameView that
+// resides on the same DesksBarView as the clicked button should be focused.
+// See crbug.com/1206013.
+TEST_F(DesksTest, NameNudgesMultiDisplay) {
+  UpdateDisplay("800x800,800x800");
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Retrieve the desks bar view for each root window.
+  auto root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, root_windows.size());
+  const auto* desks_bar_view_1 =
+      GetOverviewGridForRoot(root_windows[0])->desks_bar_view();
+  const auto* desks_bar_view_2 =
+      GetOverviewGridForRoot(root_windows[1])->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view_1->IsZeroState());
+  ASSERT_TRUE(desks_bar_view_2->IsZeroState());
+
+  // Click on the zero state default desk button for the second root window.
+  auto* zero_state_default_desk_button_2 =
+      desks_bar_view_2->zero_state_default_desk_button();
+  EXPECT_TRUE(zero_state_default_desk_button_2->GetEnabled());
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(zero_state_default_desk_button_2, event_generator);
+
+  // The desk bar should not be in the zero state anymore and the existing
+  // desk's name view should be focused, but not cleared.
+  EXPECT_FALSE(desks_bar_view_2->IsZeroState());
+  EXPECT_EQ(1u, desks_bar_view_2->mini_views().size());
+  auto* desk_name_view_2 = desks_bar_view_2->mini_views()[0]->desk_name_view();
+  EXPECT_TRUE(desk_name_view_2->HasFocus());
+  EXPECT_EQ(DesksController::GetDeskDefaultName(/*desk_index=*/0),
+            desk_name_view_2->GetText());
+
+  // Restart overview to reset the zero state.
+  overview_controller->EndOverview();
+  overview_controller->StartOverview();
+  desks_bar_view_1 = GetOverviewGridForRoot(root_windows[0])->desks_bar_view();
+  desks_bar_view_2 = GetOverviewGridForRoot(root_windows[1])->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view_1->IsZeroState());
+  ASSERT_TRUE(desks_bar_view_2->IsZeroState());
+
+  // Click on the new desk button on the first root window.
+  auto* new_desk_button_1 = desks_bar_view_1->zero_state_new_desk_button();
+  EXPECT_TRUE(new_desk_button_1->GetEnabled());
+  ClickOnView(new_desk_button_1, event_generator);
+
+  // There should be 2 desks now and the name view on the first root window
+  // should be focused. Each new name view on the 2 root windows should be
+  // empty.
+  EXPECT_EQ(2u, desks_bar_view_1->mini_views().size());
+  auto* desk_name_view_1 = desks_bar_view_1->mini_views()[1]->desk_name_view();
+  desk_name_view_2 = desks_bar_view_2->mini_views()[1]->desk_name_view();
+  EXPECT_TRUE(desk_name_view_1->HasFocus());
+  EXPECT_FALSE(desk_name_view_2->HasFocus());
+  EXPECT_EQ(std::u16string(), desk_name_view_1->GetText());
+  EXPECT_EQ(std::u16string(), desk_name_view_2->GetText());
+
+  // Tap on the new desk button on the second root window.
+  auto* new_desk_button_2 = desks_bar_view_2->expanded_state_new_desk_button();
+  EXPECT_TRUE(new_desk_button_2->GetEnabled());
+  GestureTapOnView(new_desk_button_2, event_generator);
+
+  // There should be 3 desks now and the name view on the second root window
+  // should be focused. Each new name view on the 2 root windows should be
+  // empty.
+  EXPECT_EQ(3u, desks_bar_view_1->mini_views().size());
+  desk_name_view_1 = desks_bar_view_1->mini_views()[2]->desk_name_view();
+  desk_name_view_2 = desks_bar_view_2->mini_views()[2]->desk_name_view();
+  EXPECT_FALSE(desk_name_view_1->HasFocus());
+  EXPECT_TRUE(desk_name_view_2->HasFocus());
+  EXPECT_EQ(std::u16string(), desk_name_view_1->GetText());
+  EXPECT_EQ(std::u16string(), desk_name_view_2->GetText());
+}
+
 TEST_F(DesksTest, ScrollableDesks) {
   UpdateDisplay("201x400");
   auto* overview_controller = Shell::Get()->overview_controller();
