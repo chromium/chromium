@@ -118,9 +118,9 @@ void WebAppUiManagerImpl::Start() {
     ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
   }
 
-  extensions::ExtensionSystem::Get(profile_)
-      ->app_sorting()
-      ->InitializePageOrdinalMapFromWebApps();
+  extensions::ExtensionSystem::Get(profile_)->ready().Post(
+      FROM_HERE, base::BindOnce(&WebAppUiManagerImpl::OnExtensionSystemReady,
+                                weak_ptr_factory_.GetWeakPtr()));
 
   BrowserList::AddObserver(this);
 }
@@ -242,6 +242,12 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
   }
 
   return uninstall_triggered;
+}
+
+void WebAppUiManagerImpl::OnExtensionSystemReady() {
+  extensions::ExtensionSystem::Get(profile_)
+      ->app_sorting()
+      ->InitializePageOrdinalMapFromWebApps();
 }
 
 void WebAppUiManagerImpl::OnShortcutInfoReceivedSearchShortcutLocations(

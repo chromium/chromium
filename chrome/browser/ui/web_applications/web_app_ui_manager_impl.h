@@ -83,6 +83,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   // must be true.
   const AppId GetAppIdForBrowser(Browser* browser);
 
+  void OnExtensionSystemReady();
+
   void OnShortcutInfoReceivedSearchShortcutLocations(
       const AppId& from_app,
       const AppId& app_id,
