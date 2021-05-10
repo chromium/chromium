@@ -247,8 +247,15 @@ void CameraAppDeviceImpl::SetCaptureIntent(
     SetCaptureIntentCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(capture_intent_lock_);
-  capture_intent_ = capture_intent;
+  {
+    base::AutoLock lock(capture_intent_lock_);
+    capture_intent_ = capture_intent;
+  }
+  // Reset fps range for VCD to determine it if not explicitly set by app.
+  {
+    base::AutoLock lock(fps_ranges_lock_);
+    specified_fps_range_ = {};
+  }
   std::move(callback).Run();
 }
 
