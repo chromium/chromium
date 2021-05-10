@@ -922,6 +922,14 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
+const FeatureEntry::FeatureVariation kMemoriesVariations[] = {{
+    "Persist Context",
+    (FeatureEntry::FeatureParam[]){
+        {"MemoriesPersistContextAnnotationsInHistoryDb", "true"}},
+    1,
+    nullptr,
+}};
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
 const FeatureEntry::FeatureParam kOmniboxDocumentProviderServerScoring[] = {
@@ -4461,7 +4469,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"memories", flag_descriptions::kMemoriesName,
      flag_descriptions::kMemoriesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(history_clusters::kMemories)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::kMemories,
+                                    kMemoriesVariations,
+                                    "Memories")},
 
     {"memories-debug", flag_descriptions::kMemoriesDebugName,
      flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
