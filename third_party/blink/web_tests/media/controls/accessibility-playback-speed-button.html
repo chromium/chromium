@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Media Controls: playback speed button accessibility tests</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls></video>
+<script>
+async_test(t => {
+  var video = document.querySelector('video');
+  enableTestMode(video);
+  video.src = '../content/test.ogv';
+
+video.onloadeddata = t.step_func(_ => {
+    assert_true(isPlaybackSpeedButtonEnabled(video));
+
+    var playback_speed_button = playbackSpeedButton(video);
+    var playback_speed_overflow_item = playbackSpeedOverflowItem(video);
+    assert_not_equals(playback_speed_button, null);
+    assert_not_equals(playback_speed_overflow_item, null);
+
+    assert_equals(playback_speed_button.getAttribute('aria-label'),
+                  'show playback speed menu');
+
+    assert_equals(playback_speed_overflow_item.getAttribute('aria-label'),
+                  'show playback speed menu');
+
+    clickPlaybackSpeedButton(video, t.step_func_done(function() {
+      // Get the menu that displays the list of playback speeds.
+      var playbackSpeedsList = playbackSpeedMenu(video);
+      assert_equals(playbackSpeedsList.getAttribute('aria-label'), 'Options');
+      var listHeader = playbackSpeedListHeader(video);
+      assert_equals(listHeader.getAttribute('aria-label'), 'hide playback speed menu');
+
+      const playbackSpeeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2];
+      playbackSpeeds.forEach(function(playbackSpeed, index) {
+        var playbackSpeedListItem = playbackSpeedListItemAtPlaybackRate(video, playbackSpeed);
+        assert_equals(playbackSpeedListItem.innerText, playbackSpeed == 1.0 ? 'Normal' : `${playbackSpeed}`);
+        assert_equals(playbackSpeedListItem.getAttribute('role'), 'menuitemcheckbox');
+        assert_equals(playbackSpeedListItem.getAttribute('aria-setsize'), '9');
+        assert_equals(playbackSpeedListItem.getAttribute('aria-posinset'), `${index + 1}`);
+      });
+    }));
+  });
+});
+</script>

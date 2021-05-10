@@ -975,6 +975,14 @@ below:
         hide closed captions menu
       </message>
 
+      <message name="IDS_AX_MEDIA_SHOW_PLAYBACK_SPEED_MENU_BUTTON" desc="Accessibility label for show playback speed menu button">
+        show playback speed menu
+      </message>
+
+      <message name="IDS_AX_MEDIA_HIDE_PLAYBACK_SPEED_MENU_BUTTON" desc="Accessibility label for hide playback speed menu button">
+        hide playback speed menu
+      </message>
+
       <message name="IDS_AX_MEDIA_CAST_OFF_BUTTON" desc="Accessibility label for remote playback button">
         play on remote device
       </message>
@@ -1210,6 +1218,36 @@ below:
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS_SUBMENU_TITLE" desc="Media controls overflow menu title for the closed captions submenu. The text for this overflow menu should be short.">
         Options
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED" desc="Media controls overflow menu item label for a playback speed button. The text for this overflow menu should be short.">
+        Playback speed
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE" desc="Media controls overflow menu title for the playback speed submenu. The text for this overflow menu should be short.">
+        Options
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_25X_TITLE" desc="Media controls overflow menu title for the 0.25x playback speed. The text for this overflow menu should be short.">
+        0.25
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_5X_TITLE" desc="Media controls overflow menu title for the 0.5x playback speed. The text for this overflow menu should be short.">
+        0.5
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_75X_TITLE" desc="Media controls overflow menu title for the 0.75x playback speed. The text for this overflow menu should be short.">
+        0.75
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_NORMAL_TITLE" desc="Media controls overflow menu title for the normal playback speed. The text for this overflow menu should be short.">
+        Normal
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_25X_TITLE" desc="Media controls overflow menu title for the 1.25x playback speed. The text for this overflow menu should be short.">
+        1.25
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_5X_TITLE" desc="Media controls overflow menu title for the 1.5x playback speed. The text for this overflow menu should be short.">
+        1.5
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_75X_TITLE" desc="Media controls overflow menu title for the 1.75x playback speed. The text for this overflow menu should be short.">
+        1.75
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_2X_TITLE" desc="Media controls overflow menu title for the double playback speed. The text for this overflow menu should be short.">
+        2
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_CAST" desc="Media controls overflow menu item label for a cast button.">
         Cast

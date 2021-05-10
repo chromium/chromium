@@ -59,6 +59,8 @@ class MediaControlOverlayPlayButtonElement;
 class MediaControlPanelElement;
 class MediaControlPanelEnclosureElement;
 class MediaControlPictureInPictureButtonElement;
+class MediaControlPlaybackSpeedButtonElement;
+class MediaControlPlaybackSpeedListElement;
 class MediaControlPlayButtonElement;
 class MediaControlRemainingTimeDisplayElement;
 class MediaControlScrubbingMessageElement;
@@ -127,6 +129,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void ToggleTextTrackList();
   bool TextTrackListIsWanted();
   MediaControlsTextTrackManager& GetTextTrackManager();
+
+  // Methods related to the playback speed menu.
+  void TogglePlaybackSpeedList();
+  bool PlaybackSpeedListIsWanted();
 
   // Methods related to the overflow menu.
   void OpenOverflowMenu();
@@ -367,6 +373,8 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlToggleClosedCaptionsButtonElement>
       toggle_closed_captions_button_;
   Member<MediaControlTextTrackListElement> text_track_list_;
+  Member<MediaControlPlaybackSpeedButtonElement> playback_speed_button_;
+  Member<MediaControlPlaybackSpeedListElement> playback_speed_list_;
   Member<MediaControlOverflowMenuButtonElement> overflow_menu_;
   Member<MediaControlOverflowMenuListElement> overflow_list_;
   Member<MediaControlButtonPanelElement> media_button_panel_;

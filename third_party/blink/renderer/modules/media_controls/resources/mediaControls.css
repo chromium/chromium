@@ -171,6 +171,8 @@ audio::-internal-media-controls-overflow-button,
 video::-webkit-media-controls-toggle-closed-captions-button,
 audio::-internal-media-controls-download-button,
 video::-internal-media-controls-download-button,
+audio::-internal-media-controls-playback-speed-button,
+video::-internal-media-controls-playback-speed-button,
 video::-internal-media-controls-picture-in-picture-button {
   -webkit-appearance: -internal-media-control;
   background-size: 20px;
@@ -401,6 +403,11 @@ video::-webkit-media-controls-toggle-closed-captions-button.closed-captions {
 video::-internal-media-controls-download-button,
 audio::-internal-media-controls-download-button {
   background-image: -internal-light-dark(-webkit-image-set(url(ic_download.svg) 1x), -webkit-image-set(url(ic_download_white.svg) 1x));
+}
+
+video::-internal-media-controls-playback-speed-button,
+audio::-internal-media-controls-playback-speed-button {
+  background-image: -internal-light-dark(-webkit-image-set(url(ic_playback_speed.svg) 1x), -webkit-image-set(url(ic_playback_speed_white.svg) 1x));
 }
 
 video::-internal-media-controls-overflow-button,
@@ -850,6 +857,8 @@ video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-t
 
 audio::-internal-media-controls-text-track-list,
 video::-internal-media-controls-text-track-list,
+audio::-internal-media-controls-playback-speed-list,
+video::-internal-media-controls-playback-speed-list,
 audio::-internal-media-controls-overflow-menu-list,
 video::-internal-media-controls-overflow-menu-list {
   position: fixed;
@@ -880,8 +889,12 @@ video::-internal-media-controls-overflow-menu-list.closed {
 
 audio::-internal-media-controls-text-track-list-header,
 video::-internal-media-controls-text-track-list-header,
+audio::-internal-media-controls-playback-speed-list-header,
+video::-internal-media-controls-playback-speed-list-header,
 audio::-internal-media-controls-text-track-list-item,
 video::-internal-media-controls-text-track-list-item,
+audio::-internal-media-controls-playback-speed-list-item,
+video::-internal-media-controls-playback-speed-list-item,
 audio::-internal-media-controls-overflow-menu-list-item,
 video::-internal-media-controls-overflow-menu-list-item {
   display: flex;
@@ -941,13 +954,14 @@ label[pseudo="-internal-media-controls-overflow-menu-list-item"] div span {
   text-overflow: ellipsis;
 }
 
-label[pseudo="-internal-media-controls-text-track-list-item"] span {
+label[pseudo="-internal-media-controls-text-track-list-item"] span,
+label[pseudo="-internal-media-controls-playback-speed-list-item"] span {
   line-height: normal;
   overflow: hidden;
   text-overflow: ellipsis;
   /*
    * We need to make sure the blue tick has enough space to render. The blue tick needs at least 18px
-   * so the max width the span can go is 200(text-track-list) - 58(left-padding of list-item)
+   * so the max width the span can go is 200(list) - 58(left-padding of list-item)
    * - 16(right-padding of list-item) -30(left and right margin of the checkbox) - 18(blue tick) = 78px
    */
   max-width: 78px;
@@ -1008,10 +1022,14 @@ video::-webkit-media-controls label[pseudo="-internal-media-controls-overflow-me
 
 audio::-internal-media-controls-text-track-list-header:focus,
 video::-internal-media-controls-text-track-list-header:focus,
-audio::-internal-media-controls-overflow-menu-list-item:focus,
-video::-internal-media-controls-overflow-menu-list-item:focus,
+audio::-internal-media-controls-playback-speed-list-header:focus,
+video::-internal-media-controls-playback-speed-list-header:focus,
 audio::-internal-media-controls-text-track-list-item:focus,
-video::-internal-media-controls-text-track-list-item:focus {
+video::-internal-media-controls-text-track-list-item:focus,
+audio::-internal-media-controls-playback-speed-list-item:focus,
+video::-internal-media-controls-playback-speed-list-item:focus,
+audio::-internal-media-controls-overflow-menu-list-item:focus,
+video::-internal-media-controls-overflow-menu-list-item:focus {
   background-color: -internal-light-dark(#e0e0e0, #545454);
   color: -internal-light-dark(rgba(0,0,0,0.87), rgba(255,255,255,0.87));
   outline: none;
@@ -1024,25 +1042,33 @@ video::-internal-media-controls-overflow-menu-list-item:active {
 
 audio::-internal-media-controls-text-track-list-header,
 video::-internal-media-controls-text-track-list-header,
+audio::-internal-media-controls-playback-speed-list-header,
+video::-internal-media-controls-playback-speed-list-header,
 audio::-internal-media-controls-text-track-list-item,
-video::-internal-media-controls-text-track-list-item {
+video::-internal-media-controls-text-track-list-item,
+audio::-internal-media-controls-playback-speed-list-item,
+video::-internal-media-controls-playback-speed-list-item {
   padding-left: 58px;
   justify-content: space-between;
 }
 
 audio::-internal-media-controls-text-track-list-header,
-video::-internal-media-controls-text-track-list-header {
+video::-internal-media-controls-text-track-list-header,
+audio::-internal-media-controls-playback-speed-list-header,
+video::-internal-media-controls-playback-speed-list-header {
   background-size: 18px;
   background-position: 20px center;
   background-repeat: no-repeat;
   background-image: -internal-light-dark(-webkit-image-set(url(ic_arrow_back.svg) 1x), -webkit-image-set(url(ic_arrow_back_white.svg) 1x));
 }
 
-label[pseudo="-internal-media-controls-text-track-list-item"] * {
+label[pseudo="-internal-media-controls-text-track-list-item"] *,
+label[pseudo="-internal-media-controls-playback-speed-list-item"] * {
   pointer-events: none;
 }
 
-label[pseudo="-internal-media-controls-text-track-list-item"] input {
+label[pseudo="-internal-media-controls-text-track-list-item"] input,
+label[pseudo="-internal-media-controls-playback-speed-list-item"] input {
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
@@ -1050,7 +1076,8 @@ label[pseudo="-internal-media-controls-text-track-list-item"] input {
   float: right;
 }
 
-label[pseudo="-internal-media-controls-text-track-list-item"] input:checked {
+label[pseudo="-internal-media-controls-text-track-list-item"] input:checked,
+label[pseudo="-internal-media-controls-playback-speed-list-item"] input:checked {
   background: -webkit-image-set(url(ic_check_blue.svg) 1x) no-repeat center center;
 }
 
@@ -1568,6 +1595,8 @@ video::-webkit-media-controls.test-mode input[pseudo="-webkit-media-controls-ove
   /* Overflow menu */
   audio::-internal-media-controls-text-track-list,
   video::-internal-media-controls-text-track-list,
+  audio::-internal-media-controls-playback-speed-list,
+  video::-internal-media-controls-playback-speed-list,
   audio::-internal-media-controls-overflow-menu-list,
   video::-internal-media-controls-overflow-menu-list {
     background: Window;
@@ -1577,8 +1606,12 @@ video::-webkit-media-controls.test-mode input[pseudo="-webkit-media-controls-ove
   }
   audio::-internal-media-controls-text-track-list-header,
   video::-internal-media-controls-text-track-list-header,
+  audio::-internal-media-controls-playback-speed-list-header,
+  video::-internal-media-controls-playback-speed-list-header,
   audio::-internal-media-controls-text-track-list-item,
   video::-internal-media-controls-text-track-list-item,
+  audio::-internal-media-controls-playback-speed-list-item,
+  video::-internal-media-controls-playback-speed-list-item,
   audio::-internal-media-controls-overflow-menu-list-item,
   video::-internal-media-controls-overflow-menu-list-item {
     background-color: Window;
