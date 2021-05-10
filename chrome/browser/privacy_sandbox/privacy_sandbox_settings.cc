@@ -287,13 +287,17 @@ void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
 }
 
-void PrivacySandboxSettings::OnCookiesCleared() {
+void PrivacySandboxSettings::SetFlocDataAccessibleFromNow(
+    bool reset_calculate_timer) const {
   pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
                          base::Time::Now());
 
-  for (auto& observer : observers_) {
-    observer.OnFlocDataAccessibleSinceUpdated();
-  }
+  for (auto& observer : observers_)
+    observer.OnFlocDataAccessibleSinceUpdated(reset_calculate_timer);
+}
+
+void PrivacySandboxSettings::OnCookiesCleared() {
+  SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/false);
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {

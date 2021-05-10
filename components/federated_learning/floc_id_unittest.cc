@@ -205,4 +205,17 @@ TEST_F(FlocIdUnitTest, InvalidateIdAndSaveToPrefs) {
   EXPECT_EQ(base::Time::Now(), prefs.GetTime(kFlocIdComputeTimePrefKey));
 }
 
+TEST_F(FlocIdUnitTest, ResetComputeTimeAndSaveToPrefs) {
+  TestingPrefServiceSimple prefs;
+  FlocId::RegisterPrefs(prefs.registry());
+
+  FlocId floc_id =
+      FlocId(123, base::Time::FromTimeT(1), base::Time::FromTimeT(2), 3);
+  floc_id.SaveToPrefs(&prefs);
+  EXPECT_EQ(base::Time::Now(), prefs.GetTime(kFlocIdComputeTimePrefKey));
+
+  floc_id.ResetComputeTimeAndSaveToPrefs(base::Time::FromTimeT(4), &prefs);
+  EXPECT_EQ(base::Time::FromTimeT(4), prefs.GetTime(kFlocIdComputeTimePrefKey));
+}
+
 }  // namespace federated_learning

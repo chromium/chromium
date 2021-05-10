@@ -196,13 +196,26 @@ void FlocIdProviderImpl::Shutdown() {
   g_browser_process->floc_sorting_lsh_clusters_service()->RemoveObserver(this);
 }
 
-void FlocIdProviderImpl::OnFlocDataAccessibleSinceUpdated() {
+void FlocIdProviderImpl::OnFlocDataAccessibleSinceUpdated(
+    bool reset_compute_timer) {
   // Set the |need_recompute_| flag so that we will recompute the floc
   // immediately after the in-progress one finishes, so as to avoid potential
-  // data races.
+  // data races. This function maybe have been called in response to a user
+  // deliberately resetting floc, in this case the recomputed floc should be
+  // invalid as the floc-accessible timestamp was just updated to now. The
+  // floc computation is fast so it's exceedingly unlikely to populate enough
+  // history for the recomputed ID to be valid between one floc calculation and
+  // the next.
   if (floc_computation_in_progress_) {
     need_recompute_ = true;
     return;
+  }
+
+  // Clear any pending computes and re-schedule if requested.
+  if (reset_compute_timer) {
+    compute_floc_timer_.AbandonAndStop();
+    ScheduleFlocComputation(kFlocIdScheduledUpdateInterval.Get());
+    floc_id_.ResetComputeTimeAndSaveToPrefs(base::Time::Now(), prefs_);
   }
 
   // Note: we only invalidate the floc rather than recomputing, because we don't

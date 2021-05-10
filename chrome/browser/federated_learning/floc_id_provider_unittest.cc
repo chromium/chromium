@@ -250,8 +250,8 @@ class FlocIdProviderUnitTest : public testing::Test {
     floc_id_provider_->CheckCanComputeFloc(std::move(callback));
   }
 
-  void OnFlocDataAccessibleSinceUpdated() {
-    floc_id_provider_->OnFlocDataAccessibleSinceUpdated();
+  void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) {
+    floc_id_provider_->OnFlocDataAccessibleSinceUpdated(reset_compute_timer);
   }
 
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -723,7 +723,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   set_floc_id(FlocId(123, kTime1, kTime2, 2));
 
   prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime2);
-  OnFlocDataAccessibleSinceUpdated();
+  OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/false);
 
   EXPECT_FALSE(floc_id().IsValid());
 }
@@ -739,9 +739,42 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   set_floc_id(FlocId(123, kTime1, kTime2, 2));
 
   prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime1);
-  OnFlocDataAccessibleSinceUpdated();
+  OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/false);
 
   EXPECT_TRUE(floc_id().IsValid());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       OnFlocDataAccessibeSinceUpdated_ResetComputeTimer) {
+  InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(base::Time::Now(), FlocId::ReadFromPrefs(&prefs_).compute_time());
+
+  // Move the clock forward 20 hours and update the floc available time,
+  // selecting to reset the compute timer.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(20));
+  OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/true);
+  const base::Time kResetComputeTime = base::Time::Now();
+  EXPECT_EQ(kResetComputeTime, FlocId::ReadFromPrefs(&prefs_).compute_time());
+
+  // Move the clock forward another 20 hours, moving past the default refresh
+  // interval of 24 hours. A new floc id should not have been computed as the
+  // timer was reset.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(20));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+
+  // Update the floc available time without resetting compute time.
+  OnFlocDataAccessibleSinceUpdated(
+      /*reset_compute_timer=*/false);
+  EXPECT_EQ(kResetComputeTime, FlocId::ReadFromPrefs(&prefs_).compute_time());
+
+  // Move the clock forward 5 hours, making 25 hours since the compute timer was
+  // reset, a new floc id should have been computed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(5));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, HistoryDelete_AllHistory) {

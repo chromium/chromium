@@ -41,7 +41,7 @@ class PrivacySandboxSettings : public KeyedService,
  public:
   class Observer {
    public:
-    virtual void OnFlocDataAccessibleSinceUpdated() = 0;
+    virtual void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) = 0;
   };
 
   PrivacySandboxSettings(HostContentSettingsMap* host_content_settings_map,
@@ -119,6 +119,11 @@ class PrivacySandboxSettings : public KeyedService,
 
   // Gets invoked by the UI when the user manually changed the state of the API.
   void SetPrivacySandboxEnabled(bool enabled);
+
+  // Sets the time when history is accessible for FLoC calculation to the
+  // current time, optionally resetting the time to the next FLoC id calculation
+  // if |reset_calculate_timer| is true.
+  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
 
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the

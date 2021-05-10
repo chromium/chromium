@@ -113,8 +113,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // When the floc-accessible-since time is updated (due to e.g. cookies
   // deletion), we'll either invalidate or keep using the floc. This will
   // depend on the updated time and the begin time of the history used to
-  // compute the current floc.
-  void OnFlocDataAccessibleSinceUpdated() override;
+  // compute the current floc. If |reset_compute_timer| is true the timer to
+  // re-compute the floc is reset.
+  void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) override;
 
   // On history deletion, we'll either invalidate or keep using the floc. This
   // will depend on the deletion type and the time range.

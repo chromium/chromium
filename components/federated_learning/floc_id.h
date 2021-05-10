@@ -84,6 +84,12 @@ class FlocId {
   // other unaffected field.
   void InvalidateIdAndSaveToPrefs(PrefService* prefs);
 
+  // Resets |compute_time_| to provided |compute_time| and saves it to prefs.
+  // This should at least be called if the floc compute timer is reset, to
+  // ensure that the compute cycle continues at the expected frequency.
+  void ResetComputeTimeAndSaveToPrefs(base::Time compute_time,
+                                      PrefService* prefs);
+
  private:
   friend class FlocIdTester;
 

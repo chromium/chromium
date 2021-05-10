@@ -108,6 +108,12 @@ void FlocId::InvalidateIdAndSaveToPrefs(PrefService* prefs) {
   prefs->ClearPref(kFlocIdValuePrefKey);
 }
 
+void FlocId::ResetComputeTimeAndSaveToPrefs(base::Time compute_time,
+                                            PrefService* prefs) {
+  compute_time_ = compute_time;
+  prefs->SetTime(kFlocIdComputeTimePrefKey, compute_time_);
+}
+
 // static
 FlocId FlocId::ReadFromPrefs(PrefService* prefs) {
   base::Optional<uint64_t> id;
