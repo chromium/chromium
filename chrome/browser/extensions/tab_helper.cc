@@ -179,18 +179,25 @@ void DisableBackForwardCacheIfNecessary(
   } else {
     // Compute whether we need to disable it.
     for (const auto& extension : enabled_extensions) {
-      // Skip component extensions.
-      if (Manifest::IsComponentLocation(extension->location())) {
+      // Skip component extensions and google docs pre-installed extension.
+      if (Manifest::IsComponentLocation(extension->location()) ||
+          extension->id() == extension_misc::kDocsOfflineExtensionId) {
         continue;
       }
       if (util::IsExtensionVisibleToContext(*extension, context)) {
-        // Set a user data key indicating we've disabled disabled bfcache for
-        // this context.
-        context->SetUserData(kIsBFCacheDisabledKey,
-                             std::make_unique<base::SupportsUserData::Data>());
+        VLOG(1) << "Disabled bfcache due to " << extension->short_name() << ","
+                << extension->id();
+        if (!disable_bfcache) {
+          // Set a user data key indicating we've disabled disabled bfcache for
+          // this context.
+          context->SetUserData(
+              kIsBFCacheDisabledKey,
+              std::make_unique<base::SupportsUserData::Data>());
+          disable_bfcache = true;
+        }
 
-        disable_bfcache = true;
-        break;
+        // TODO(dtapuska): Early termination disabled for now to capture VLOG(1)
+        // break;
       }
     }
   }
