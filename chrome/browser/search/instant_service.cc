@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -254,10 +254,10 @@ InstantService::InstantService(Profile* profile)
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 
-  theme_observer_.Add(native_theme_);
+  theme_observation_.Observe(native_theme_);
 
   if (background_service_)
-    background_service_observer_.Add(background_service_);
+    background_service_observation_.Observe(background_service_);
 }
 
 InstantService::~InstantService() = default;
@@ -506,9 +506,9 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
 }
 
 void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
-  theme_observer_.RemoveAll();
+  theme_observation_.Reset();
   native_theme_ = theme;
-  theme_observer_.Add(native_theme_);
+  theme_observation_.Observe(native_theme_);
 }
 
 void InstantService::Shutdown() {
@@ -543,7 +543,7 @@ void InstantService::OnNextCollectionImageAvailable() {
 
 void InstantService::OnNtpBackgroundServiceShuttingDown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  background_service_observer_.RemoveAll();
+  background_service_observation_.Reset();
   background_service_ = nullptr;
 }
 

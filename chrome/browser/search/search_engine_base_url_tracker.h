@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -48,8 +48,8 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   std::unique_ptr<SearchTermsData> search_terms_data_;
   BaseURLChangedCallback base_url_changed_callback_;
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
-      this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      observation_{this};
 
   // Used to check whether notifications from TemplateURLService indicate a
   // change that affects the default search provider.

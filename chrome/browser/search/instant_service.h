@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -328,11 +328,11 @@ class InstantService : public KeyedService,
 
   PrefService* pref_service_;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver> theme_observer_{
-      this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 
-  ScopedObserver<NtpBackgroundService, NtpBackgroundServiceObserver>
-      background_service_observer_{this};
+  base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
+      background_service_observation_{this};
 
   ui::NativeTheme* native_theme_;
 
