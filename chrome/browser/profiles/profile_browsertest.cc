@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -163,7 +164,7 @@ class ProfileDestructionWatcher : public ProfileObserver {
   ProfileDestructionWatcher() = default;
   ~ProfileDestructionWatcher() override = default;
 
-  void Watch(Profile* profile) { observed_profiles_.Add(profile); }
+  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
 
   bool destroyed() const { return destroyed_; }
 
@@ -175,12 +176,13 @@ class ProfileDestructionWatcher : public ProfileObserver {
     DCHECK(!destroyed_) << "Double profile destruction";
     destroyed_ = true;
     run_loop_.Quit();
-    observed_profiles_.Remove(profile);
+    observed_profiles_.RemoveObservation(profile);
   }
 
   bool destroyed_ = false;
   base::RunLoop run_loop_;
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfileDestructionWatcher);
 };

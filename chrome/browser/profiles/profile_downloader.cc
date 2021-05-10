@@ -43,11 +43,9 @@ constexpr char kAuthorizationHeader[] = "Bearer %s";
 }  // namespace
 
 ProfileDownloader::ProfileDownloader(ProfileDownloaderDelegate* delegate)
-    : delegate_(delegate),
-      identity_manager_(delegate_->GetIdentityManager()),
-      identity_manager_observer_(this) {
+    : delegate_(delegate), identity_manager_(delegate_->GetIdentityManager()) {
   DCHECK(delegate_);
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
 void ProfileDownloader::Start() {
@@ -142,7 +140,7 @@ void ProfileDownloader::StartFetchingOAuth2AccessToken() {
 
 ProfileDownloader::~ProfileDownloader() {
   oauth2_access_token_fetcher_.reset();
-  identity_manager_observer_.Remove(identity_manager_);
+  DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
 }
 
 void ProfileDownloader::FetchImageData() {

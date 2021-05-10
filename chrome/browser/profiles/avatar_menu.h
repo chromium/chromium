@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/buildflags.h"
@@ -188,8 +188,8 @@ class AvatarMenu :
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Observes changes to a supervised user's custodian info.
-  ScopedObserver<SupervisedUserService, SupervisedUserServiceObserver>
-      supervised_user_observer_{this};
+  base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
+      supervised_user_observation_{this};
 #endif
 
   // The storage that provides the profile attributes.

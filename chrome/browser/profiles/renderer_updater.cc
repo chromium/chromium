@@ -56,10 +56,9 @@ void GetGuestViewDefaultContentSettingRules(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }  // namespace
 
-RendererUpdater::RendererUpdater(Profile* profile)
-    : profile_(profile), identity_manager_observer_(this) {
+RendererUpdater::RendererUpdater(Profile* profile) : profile_(profile) {
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_ =
       chromeos::OAuth2LoginManagerFactory::GetForProfile(profile_);
@@ -100,7 +99,7 @@ void RendererUpdater::Shutdown() {
   oauth2_login_manager_->RemoveObserver(this);
   oauth2_login_manager_ = nullptr;
 #endif
-  identity_manager_observer_.RemoveAll();
+  identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
 }
 

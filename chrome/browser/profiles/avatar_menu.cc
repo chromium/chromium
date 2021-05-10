@@ -56,7 +56,7 @@ AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
   // Register this as an observer of the SupervisedUserService to be notified
   // of changes to the custodian info.
   if (browser_) {
-    supervised_user_observer_.Add(
+    supervised_user_observation_.Observe(
         SupervisedUserServiceFactory::GetForProfile(browser_->profile()));
   }
 #endif

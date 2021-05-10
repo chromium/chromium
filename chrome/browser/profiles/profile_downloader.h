@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -123,8 +123,9 @@ class ProfileDownloader : public ImageDecoder::ImageRequest,
   SkBitmap profile_picture_;
   PictureStatus picture_status_ = PICTURE_FAILED;
   signin::IdentityManager* identity_manager_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   bool waiting_for_account_info_ = false;
 };
 
