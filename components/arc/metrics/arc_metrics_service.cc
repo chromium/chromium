@@ -44,6 +44,40 @@ constexpr char kGmsProcessNamePrefix[] = "com.google.android.gms";
 constexpr char kBootProgressEnableScreen[] = "boot_progress_enable_screen";
 constexpr char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
 
+// App types to report.
+constexpr char kAppTypeArcAppLauncher[] = "ArcAppLauncher";
+constexpr char kAppTypeArcOther[] = "ArcOther";
+constexpr char kAppTypeFirstParty[] = "FirstParty";
+constexpr char kAppTypeGmsCore[] = "GmsCore";
+constexpr char kAppTypePlayStore[] = "PlayStore";
+constexpr char kAppTypeSystemServer[] = "SystemServer";
+constexpr char kAppTypeSystem[] = "SystemApp";
+constexpr char kAppTypeOther[] = "Other";
+
+std::string AnrSourceToTableName(mojom::AnrSource value) {
+  switch (value) {
+    case mojom::AnrSource::OTHER:
+      return kAppTypeOther;
+    case mojom::AnrSource::SYSTEM_SERVER:
+      return kAppTypeSystemServer;
+    case mojom::AnrSource::SYSTEM_APP:
+      return kAppTypeSystem;
+    case mojom::AnrSource::GMS_CORE:
+      return kAppTypeGmsCore;
+    case mojom::AnrSource::PLAY_STORE:
+      return kAppTypePlayStore;
+    case mojom::AnrSource::FIRST_PARTY:
+      return kAppTypeFirstParty;
+    case mojom::AnrSource::ARC_OTHER:
+      return kAppTypeArcOther;
+    case mojom::AnrSource::ARC_APP_LAUNCHER:
+      return kAppTypeArcAppLauncher;
+    default:
+      LOG(ERROR) << "Unrecognized source ANR " << value;
+      return kAppTypeOther;
+  }
+}
+
 std::string BootTypeToString(mojom::BootType boot_type) {
   switch (boot_type) {
     case mojom::BootType::UNKNOWN:
@@ -367,6 +401,14 @@ void ArcMetricsService::ReportClipboardDragDropEvent(
     mojom::ArcClipboardDragDropEvent event_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramEnumeration("Arc.ClipboardDragDrop", event_type);
+}
+
+void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Anr.Overall", anr->type);
+
+  base::UmaHistogramEnumeration("Arc.Anr." + AnrSourceToTableName(anr->source),
+                                anr->type);
 }
 
 void ArcMetricsService::OnWindowActivated(

@@ -116,6 +116,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The time elapsed for booting up the ARC instance.</summary>
 </histogram>
 
+<histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2022-05-01">
+  <owner>khmel@google.com</owner>
+  <owner>alanding@google.com</owner>
+  <summary>
+    Counts ANR events in the system separated by ANR type and {AnrSource}.
+  </summary>
+  <token key="AnrSource">
+    <variant name="ArcAppLauncher" summary="ARC App launcher."/>
+    <variant name="ArcOther" summary="Other ARC components."/>
+    <variant name="FirstParty" summary="First party Google apps."/>
+    <variant name="GmsCore" summary="GMS Core."/>
+    <variant name="Other" summary="Other apps."/>
+    <variant name="Overall" summary="Total statistics."/>
+    <variant name="PlayStore" summary="Play Store."/>
+    <variant name="Server" summary="System Server."/>
+    <variant name="System" summary="System components."/>
+  </token>
+</histogram>
+
 <histogram name="Arc.AppCount" units="units" expires_after="2021-10-17">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>

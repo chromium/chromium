@@ -109,6 +109,7 @@ class ArcMetricsService : public KeyedService,
   void ReportArcCorePriAbiMigBootTime(base::TimeDelta duration) override;
   void ReportClipboardDragDropEvent(
       mojom::ArcClipboardDragDropEvent event_type) override;
+  void ReportAnr(mojom::AnrPtr anr) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

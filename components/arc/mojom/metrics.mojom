@@ -1,11 +1,55 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+
+[Extensible]
+enum AnrType {
+  // Other types of ANR which are not explicitly defined.
+  UNKNOWN = 0,
+  // ANR while handling input events.
+  INPUT = 1,
+  // ANR in services.
+  SERVICE = 2,
+  // ANR in broadcasts.
+  BROADCAST = 3,
+  // ANR in content provider.
+  CONTENT_PROVIDER = 4,
+  // App custom ANR.
+  APP_REQUESTED = 5,
+};
+
+[Extensible]
+enum AnrSource {
+  // ANR coming from anything else than explicitly defined.
+  OTHER = 0,
+  // ANR coming from system server.
+  SYSTEM_SERVER = 1,
+  // ANR coming from system apps.
+  SYSTEM_APP = 2,
+  // ANR coming from GMS core.
+  GMS_CORE = 3,
+  // ANR coming from Play Store.
+  PLAY_STORE = 4,
+  // ANR coming from first party Google apps
+  FIRST_PARTY = 5,
+  // ANR coming from ARC apps other than explicitly defined.
+  ARC_OTHER = 6,
+  // ANR coming from ARC App launcher.
+  ARC_APP_LAUNCHER = 7,
+};
+
+// Describes an ANR event.
+struct Anr {
+  // Type of ANR event.
+  AnrType type;
+  // ANR source.
+  AnrSource source;
+};
 
 [Extensible]
 enum BootType {
@@ -152,7 +196,7 @@ enum ArcClipboardDragDropEvent {
   kImageDragDropFromArc = 7,
 };
 
-// Next method ID: 9
+// Next method ID: 10
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -182,6 +226,9 @@ interface MetricsHost {
   // Reports a clipboard / drag-and-drop event.
   [MinVersion=8] ReportClipboardDragDropEvent@8(
       ArcClipboardDragDropEvent event_type);
+
+  // Reports ANR event.
+  [MinVersion=9] ReportAnr@10(Anr anr);
 };
 
 // Next method ID: 3
