@@ -252,7 +252,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   // |result|.
   void RunGetRulesFunction(const Extension& extension,
                            RulesetScope scope,
-                           base::ListValue* result) {
+                           base::Value* result) {
     CHECK(result);
     scoped_refptr<ExtensionFunction> function;
     switch (scope) {
@@ -268,10 +268,10 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     function->set_extension(&extension);
     function->set_has_callback(true);
 
-    auto result_ptr =
-        base::ListValue::From(api_test_utils::RunFunctionAndReturnSingleResult(
-            function.get(), "[]" /* args */, browser_context()));
+    auto result_ptr = api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), "[]" /* args */, browser_context());
     ASSERT_TRUE(result_ptr);
+    ASSERT_TRUE(result_ptr->is_list());
     *result = std::move(*result_ptr);
   }
 
@@ -980,9 +980,9 @@ TEST_P(SingleRulesetTest, SessionRules) {
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
   VerifyPublicRulesetIDs(*extension(), {kDefaultRulesetID});
 
-  base::ListValue result;
+  base::Value result(base::Value::Type::LIST);
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_TRUE(result.empty());
+  EXPECT_TRUE(result.GetList().empty());
 
   TestRule rule_1 = CreateGenericRule();
   rule_1.id = 1;
@@ -1000,7 +1000,7 @@ TEST_P(SingleRulesetTest, SessionRules) {
 
   // No dynamic rules should be returned.
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
-  EXPECT_TRUE(result.empty());
+  EXPECT_TRUE(result.GetList().empty());
 
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
                                                  RulesetScope::kSession));
@@ -1008,7 +1008,7 @@ TEST_P(SingleRulesetTest, SessionRules) {
   EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
                                     std::cref(*rule_1.ToValue()))));
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
-  EXPECT_TRUE(result.empty());
+  EXPECT_TRUE(result.GetList().empty());
 }
 
 // Ensure an error is raised when an extension adds a session-scoped regex rule
