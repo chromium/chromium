@@ -59,6 +59,7 @@ const debug_suites_list = [
   'FakeSystemRoutineContoller',
   'MemoryCard',
   'NetworkCard',
+  'NetworkInfo',
   'NetworkList',
   'OverviewCard',
   'PercentBarChart',

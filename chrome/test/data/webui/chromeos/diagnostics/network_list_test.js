@@ -145,15 +145,34 @@ export function networkListTestSuite() {
 
   test('NetworkCardElementsPopulated', () => {
     let networkCardElements;
-    return initializeNetworkList(fakeNetworkGuidInfoList).then(async () => {
-      networkCardElements = getNetworkCardElements();
-      // The first network list observation provides guids for Cellular
-      // and WiFi. The connectivity-card is responsbile for the Ethernet
-      // guid as it's the currently active guid.
-      dx_utils.assertElementContainsText(
-          networkCardElements[0].$$('#guid'), fakeWifiNetwork.guid);
-      dx_utils.assertElementContainsText(
-          networkCardElements[1].$$('#guid'), fakeCellularNetwork.guid);
-    });
+    return initializeNetworkList(fakeNetworkGuidInfoList)
+        .then(async () => {
+          networkCardElements = getNetworkCardElements();
+          // The first network list observation provides guids for Cellular
+          // and WiFi. The connectivity-card is responsbile for the Ethernet
+          // guid as it's the currently active guid.
+          const wifiInfoElement = dx_utils.getWifiInfoElement(
+              networkCardElements[0].$$('network-info'));
+          const cellularInfoElement = dx_utils.getCellularInfoElement(
+              networkCardElements[1].$$('network-info'));
+          dx_utils.assertElementContainsText(
+              wifiInfoElement.$$('#wifiInfoContainer'), 'WiFi');
+          dx_utils.assertElementContainsText(
+              cellularInfoElement.$$('#cellularInfoContainer'), 'Cellular');
+
+          dx_utils.assertElementContainsText(
+              getConnectivityCard().$$('#activeGuid'),
+              fakeEthernetNetwork.guid);
+
+          return triggerNetworkListObserver();
+        })
+        .then(() => {
+          const cellularInfoElement = dx_utils.getCellularInfoElement(
+              networkCardElements[0].$$('network-info'));
+          dx_utils.assertElementContainsText(
+              cellularInfoElement.$$('#cellularInfoContainer'), 'Cellular');
+          dx_utils.assertElementContainsText(
+              getConnectivityCard().$$('#activeGuid'), fakeWifiNetwork.guid);
+        });
   });
 }

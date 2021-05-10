@@ -4,26 +4,14 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
-import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
-import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 export function networkCardTestSuite() {
   /** @type {?NetworkCardElement} */
   let networkCardElement = null;
-
-  /** @type {?FakeNetworkHealthProvider} */
-  let provider = null;
-
-  suiteSetup(() => {
-    provider = new FakeNetworkHealthProvider();
-    setNetworkHealthProviderForTesting(provider);
-  });
 
   setup(() => {
     document.body.innerHTML = '';
@@ -32,95 +20,24 @@ export function networkCardTestSuite() {
   teardown(() => {
     networkCardElement.remove();
     networkCardElement = null;
-    provider.reset();
   });
 
-  /**
-   * @param {string} guid
-   */
-  function initializeNetworkCard(guid) {
+  function initializeNetworkCard() {
     assertFalse(!!networkCardElement);
-    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
-    provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
-    provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
-    provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
 
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
     assertTrue(!!networkCardElement);
-    networkCardElement.guid = guid;
     document.body.appendChild(networkCardElement);
 
     return flushTasks();
   }
 
-  /**
-   * Returns the wifi-info element.
-   * @return {!WifiInfoElement}
-   */
-  function getWifiInfo() {
-    return /** @type {!WifiInfoElement} */ (networkCardElement.$$('#wifiInfo'));
-  }
-
-  /**
-   * Returns the cellular-info element.
-   * @return {!CellularInfoElement}
-   */
-  function getCellularInfo() {
-    return /** @type {!CellularInfoElement} */ (
-        networkCardElement.$$('#cellularInfo'));
-  }
-
-  /**
-   * Returns the ethernet-info element.
-   * @return {!EthernetInfoElement}
-   */
-  function getEthernetInfo() {
-    return /** @type {!EthernetInfoElement} */ (
-        networkCardElement.$$('#ethernetInfo'));
-  }
-
-  /**
-   * @param {string} guid
-   * @return {!Promise}
-   */
-  function changeGuid(guid) {
-    networkCardElement.guid = guid;
-    return flushTasks();
-  }
-
-  test('NetworkStatePopulated', () => {
-    return initializeNetworkCard('wifiGuid').then(() => {
+  test('NetworkCardInitialized', () => {
+    return initializeNetworkCard().then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#guid'), fakeWifiNetwork.guid);
+          networkCardElement.$$('#cardTitle'), 'Network');
     });
-  });
-
-  test('CorrectInfoElementShown', () => {
-    return initializeNetworkCard('wifiGuid')
-        .then(() => {
-          // wifi-info should be visible.
-          assertTrue(isVisible(getWifiInfo()));
-
-          assertFalse(isVisible(getEthernetInfo()));
-          assertFalse(isVisible(getCellularInfo()));
-          return changeGuid('cellularGuid');
-        })
-        .then(() => {
-          // cellular-info should be visible.
-          assertTrue(isVisible(getCellularInfo()));
-
-          assertFalse(isVisible(getWifiInfo()));
-          assertFalse(isVisible(getEthernetInfo()));
-          return changeGuid('ethernetGuid');
-        })
-        .then(() => {
-          // ethernet-info should be visible.
-          assertTrue(isVisible(getEthernetInfo()));
-
-          assertFalse(isVisible(getWifiInfo()));
-          assertFalse(isVisible(getCellularInfo()));
-        });
   });
 }

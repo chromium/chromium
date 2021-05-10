@@ -1,0 +1,14 @@
+<style include="diagnostics-shared diagnostics-fonts">
+</style>
+
+<div id="infoElementContainer">
+  <wifi-info id="wifiInfo"
+    hidden$="[[!isWifiNetwork_(network_.type)]]">
+  </wifi-info>
+  <ethernet-info id="ethernetInfo"
+    hidden$="[[!isEthernetNetwork_(network_.type)]]">
+  </ethernet-info>
+  <cellular-info id="cellularInfo"
+    hidden$="[[!isCellularNetwork_(network_.type)]]">
+  </cellular-info>
+</div>

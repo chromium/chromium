@@ -149,3 +149,39 @@ export function getRoutineSection(element) {
   assertTrue(!!routineSection);
   return routineSection;
 }
+
+/**
+ * Helper function for getting a wifi-info element from a
+ * network-info element.
+ * @param {?T} element
+ * @template T
+ * @return {!WifiInfoElement}
+ */
+export function getWifiInfoElement(element) {
+  return /** @type {!WifiInfoElement} */ (
+      element.shadowRoot.querySelector('wifi-info'));
+}
+
+/**
+ * Helper function for getting a cellular-info element from a
+ * network-info element.
+ * @param {?T} element
+ * @template T
+ * @return {!CellularInfoElement}
+ */
+export function getCellularInfoElement(element) {
+  return /** @type {!CellularInfoElement} */ (
+      element.shadowRoot.querySelector('cellular-info'));
+}
+
+/**
+ * Helper function for getting an ethernet-info element from a
+ * network-info element.
+ * @param {?T} element
+ * @template T
+ * @return {!EthernetInfoElement}
+ */
+export function getEthernetInfoElement(element) {
+  return /** @type {!EthernetInfoElement} */ (
+      element.shadowRoot.querySelector('ethernet-info'));
+}
