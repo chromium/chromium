@@ -83,9 +83,6 @@
 // Mediator owned by this Coordinator.
 @property(nonatomic, strong) NTPHomeMediator* ntpMediator;
 
-// Authentication Service for the user's signed-in state.
-@property(nonatomic, assign) AuthenticationService* authService;
-
 // View controller wrapping the Discover feed.
 @property(nonatomic, strong)
     DiscoverFeedWrapperViewController* discoverFeedWrapperViewController;
@@ -126,11 +123,6 @@
 
 // PrefService used by this Coordinator.
 @property(nonatomic, assign) PrefService* prefService;
-
-// Whether the feed is enabled or not. If enabled the feed can been expanded or
-// collapsed (see discoverFeedExpanded), if disabled nothing feed related will
-// be shown in the NTP.
-@property(nonatomic, assign) BOOL discoverFeedEnabled;
 
 // Whether the feed is expanded or collapsed. Collapsed
 // means the feed header is shown, but not any of the feed content.
@@ -180,6 +172,7 @@
   DCHECK(self.browser);
   DCHECK(self.webState);
   DCHECK(self.toolbarDelegate);
+  DCHECK(!self.contentSuggestionsCoordinator);
 
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     DCHECK(!self.incognitoViewController);
@@ -191,24 +184,15 @@
     return;
   }
 
-  DCHECK(!self.contentSuggestionsCoordinator);
-
-  self.discoverFeedEnabled =
-      self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
-      self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
-
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-
   self.ntpMediator = [[NTPHomeMediator alloc]
              initWithWebState:self.webState
            templateURLService:templateURLService
                     URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-                  authService:self.authService
+                  authService:AuthenticationServiceFactory::GetForBrowserState(
+                                  self.browser->GetBrowserState())
               identityManager:IdentityManagerFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
                    logoVendor:ios::GetChromeBrowserProvider()->CreateLogoVendor(
@@ -247,48 +231,22 @@
             ->GetDiscoverFeedProvider()
             ->NewFeedViewControllerWithScrollDelegate(self.browser,
                                                       self.ntpViewController);
-    if (!self.discoverFeedViewController) {
-      self.ntpViewController = nil;
-    }
   }
 
-  self.contentSuggestionsCoordinator.refactoredFeedVisible =
-      self.discoverFeedViewController;
-  self.ntpMediator.refactoredFeedVisible = self.discoverFeedViewController;
-
-  [self.contentSuggestionsCoordinator start];
-
-  // Uses refactored NTP if Discover feed was successfully fetched.
   if (self.discoverFeedViewController) {
-    self.ntpViewController.contentSuggestionsViewController =
-        self.contentSuggestionsCoordinator.viewController;
-    self.ntpViewController.panGestureHandler = self.panGestureHandler;
+    self.ntpMediator.refactoredFeedVisible = YES;
+    self.contentSuggestionsCoordinator.refactoredFeedVisible = YES;
+    [self.contentSuggestionsCoordinator start];
+    [self configureNTPAsMainViewController];
     self.ntpViewController.discoverFeedMetricsRecorder =
         discoverFeedMetricsRecorder;
-    self.ntpMediator.ntpViewController = self.ntpViewController;
-
-    self.discoverFeedWrapperViewController =
-        [[DiscoverFeedWrapperViewController alloc]
-            initWithDiscoverFeedViewController:self.discoverFeedViewController];
-
-    self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
-        initWithCollectionController:self.ntpViewController
-                    headerController:self.contentSuggestionsCoordinator
-                                         .headerController];
-
-    self.ntpViewController.discoverFeedWrapperViewController =
-        self.discoverFeedWrapperViewController;
-    self.ntpViewController.overscrollDelegate = self;
-    self.ntpViewController.ntpContentDelegate = self;
-    self.ntpViewController.identityDiscButton =
-        [self.contentSuggestionsCoordinator
-                .headerController identityDiscButton];
-
-    self.ntpViewController.headerController =
-        self.contentSuggestionsCoordinator.headerController;
-    self.ntpMediator.primaryViewController = self.ntpViewController;
-    self.ntpMediator.headerCollectionInteractionHandler =
-        self.headerSynchronizer;
+  } else {
+    self.ntpViewController = nil;
+    self.ntpMediator.refactoredFeedVisible = NO;
+    self.contentSuggestionsCoordinator.refactoredFeedVisible = NO;
+    [self.contentSuggestionsCoordinator start];
+    [self configureMainViewControllerUsing:self.contentSuggestionsCoordinator
+                                               .viewController];
   }
 
   base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
@@ -297,24 +255,6 @@
   [sceneState addObserver:self];
   self.sceneInForeground =
       sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
-
-  UIViewController* containedViewController =
-      self.discoverFeedViewController
-          ? self.ntpViewController
-          : self.contentSuggestionsCoordinator.viewController;
-
-  [containedViewController
-      willMoveToParentViewController:self.containerViewController];
-  [self.containerViewController addChildViewController:containedViewController];
-  [self.containerViewController.view addSubview:containedViewController.view];
-  [containedViewController
-      didMoveToParentViewController:self.containerViewController];
-
-  containedViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(containedViewController.view,
-                     self.containerViewController.view);
-
-  self.containedViewController = containedViewController;
 
   self.started = YES;
 }
@@ -376,6 +316,57 @@
       self.didAppearTime = base::TimeTicks();
     }
   }
+}
+
+#pragma mark - ChromeCoordinatorHelpers
+
+// Configures |self.ntpViewController| and sets it up as the main ViewController
+// managed by this Coordinator.
+- (void)configureNTPAsMainViewController {
+  self.ntpViewController.contentSuggestionsViewController =
+      self.contentSuggestionsCoordinator.viewController;
+  self.ntpViewController.panGestureHandler = self.panGestureHandler;
+  self.ntpMediator.ntpViewController = self.ntpViewController;
+
+  self.discoverFeedWrapperViewController =
+      [[DiscoverFeedWrapperViewController alloc]
+          initWithDiscoverFeedViewController:self.discoverFeedViewController];
+
+  self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
+      initWithCollectionController:self.ntpViewController
+                  headerController:self.contentSuggestionsCoordinator
+                                       .headerController];
+
+  self.ntpViewController.discoverFeedWrapperViewController =
+      self.discoverFeedWrapperViewController;
+  self.ntpViewController.overscrollDelegate = self;
+  self.ntpViewController.ntpContentDelegate = self;
+  self.ntpViewController.identityDiscButton =
+      [self.contentSuggestionsCoordinator.headerController identityDiscButton];
+
+  self.ntpViewController.headerController =
+      self.contentSuggestionsCoordinator.headerController;
+  self.ntpMediator.primaryViewController = self.ntpViewController;
+  self.ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
+
+  [self configureMainViewControllerUsing:self.ntpViewController];
+}
+
+// Configures the main ViewController managed by this Coordinator.
+- (void)configureMainViewControllerUsing:
+    (UIViewController*)containedViewController {
+  [containedViewController
+      willMoveToParentViewController:self.containerViewController];
+  [self.containerViewController addChildViewController:containedViewController];
+  [self.containerViewController.view addSubview:containedViewController.view];
+  [containedViewController
+      didMoveToParentViewController:self.containerViewController];
+
+  containedViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(containedViewController.view,
+                     self.containerViewController.view);
+
+  self.containedViewController = containedViewController;
 }
 
 #pragma mark - Properties
@@ -601,8 +592,12 @@
 
 // YES if we're using the refactored NTP and the Discover Feed is visible.
 - (BOOL)isNTPRefactoredAndFeedVisible {
+  BOOL isFeedEnabled =
+      self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
+
   return IsRefactoredNTP() && [self.discoverFeedExpanded value] &&
-         self.discoverFeedEnabled && !tests_hook::DisableDiscoverFeed();
+         isFeedEnabled && !tests_hook::DisableDiscoverFeed();
 }
 
 @end
