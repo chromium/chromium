@@ -14,7 +14,7 @@ SubresourceFilterHistoryObserver::SubresourceFilterHistoryObserver(
     : settings_manager_(settings_manager) {
   DCHECK(settings_manager_);
   DCHECK(history_service);
-  history_observer_.Add(history_service);
+  history_observation_.Observe(history_service);
 }
 
 SubresourceFilterHistoryObserver::~SubresourceFilterHistoryObserver() = default;
