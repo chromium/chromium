@@ -234,14 +234,13 @@ ACTION(InvokeEmptyConsumerWithForms) {
 class PasswordControllerTest : public ChromeWebTest {
  public:
   PasswordControllerTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+      : ChromeWebTest(std::make_unique<ChromeWebClient>()),
+        store_(new testing::NiceMock<password_manager::MockPasswordStore>()) {}
 
   ~PasswordControllerTest() override { store_->ShutdownOnUIThread(); }
 
   void SetUp() override {
     ChromeWebTest::SetUp();
-
-    store_ = new testing::NiceMock<password_manager::MockPasswordStore>();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     // When waiting for predictions is on, it makes tests more complicated.
@@ -1220,12 +1219,12 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
 // SetUp.
 class PasswordControllerTestSimple : public PlatformTest {
  public:
-  PasswordControllerTestSimple() {}
+  PasswordControllerTestSimple()
+      : store_(new testing::NiceMock<password_manager::MockPasswordStore>()) {}
 
   ~PasswordControllerTestSimple() override { store_->ShutdownOnUIThread(); }
 
   void SetUp() override {
-    store_ = new testing::NiceMock<password_manager::MockPasswordStore>();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     std::unique_ptr<TestChromeBrowserState> browser_state(builder.Build());
@@ -1286,28 +1285,6 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
       static_cast<PasswordFormManager*>(form_manager_to_save.get());
   EXPECT_TRUE(form_manager->is_submitted());
   EXPECT_FALSE(form_manager->IsPasswordUpdate());
-}
-
-// Check that if the PasswordController is told (by the PasswordManagerClient)
-// that this is Incognito, it won't enable password generation.
-TEST_F(PasswordControllerTestSimple, IncognitoPasswordGenerationDisabled) {
-  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
-
-  auto client =
-      std::make_unique<NiceMock<MockPasswordManagerClient>>(store_.get());
-  weak_client_ = client.get();
-
-  EXPECT_CALL(*weak_client_->GetPasswordFeatureManager(), IsGenerationEnabled)
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*weak_client_, IsIncognito).WillRepeatedly(Return(true));
-
-  UniqueIDDataTabHelper::CreateForWebState(&web_state_);
-  passwordController_ =
-      [[PasswordController alloc] initWithWebState:&web_state_
-                                            client:std::move(client)];
-
-  EXPECT_FALSE(
-      passwordController_.passwordManagerDriver->GetPasswordGenerationHelper());
 }
 
 // Checks that when the user set a focus on a field of a password form which was
@@ -1673,6 +1650,30 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
 }
 
 
+// Check that if the PasswordController is told (by the PasswordManagerClient)
+// that this is Incognito, it won't enable password generation.
+TEST_F(PasswordControllerTest, IncognitoPasswordGenerationDisabled) {
+    TearDown();
+    ChromeWebTest::SetUp();
+
+    PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+
+    auto client =
+    std::make_unique<NiceMock<MockPasswordManagerClient>>(store_.get());
+    weak_client_ = client.get();
+
+    EXPECT_CALL(*weak_client_->GetPasswordFeatureManager(), IsGenerationEnabled)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*weak_client_, IsIncognito).WillRepeatedly(Return(true));
+
+    UniqueIDDataTabHelper::CreateForWebState(web_state());
+    passwordController_ =
+    [[PasswordController alloc] initWithWebState:web_state()
+                                          client:std::move(client)];
+
+    EXPECT_FALSE(passwordController_.passwordManagerDriver
+                     ->GetPasswordGenerationHelper());
+}
 
 // Tests that the user is prompted to save or update password on a succesful
 // form submission.

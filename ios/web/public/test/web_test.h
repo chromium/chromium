@@ -29,13 +29,6 @@ class WebTest : public PlatformTest {
           WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
   ~WebTest() override;
 
-  void SetUp() override;
-
-  // Creates and returns a BrowserState for use in tests. The default
-  // implementation returns a FakeBrowserState, but subclasses can override this
-  // to supply a custom BrowserState.
-  virtual std::unique_ptr<BrowserState> CreateBrowserState();
-
   // Manually overrides the built in JavaScriptFeatures and those from
   // |GetWebClient()::GetJavaScriptFeatures()|. This is intended to be used to
   // replace an instance of a built in feature with one created by the test.

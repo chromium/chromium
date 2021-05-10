@@ -519,13 +519,7 @@ TEST_F(CRWWebControllerJSExecutionTest, WindowIdMissmatch) {
 // delegate method.
 class CRWWebControllerResponseTest : public CRWWebControllerTest {
  protected:
-  CRWWebControllerResponseTest() {}
-
-  void SetUp() override {
-    CRWWebControllerTest::SetUp();
-    download_delegate_ =
-        std::make_unique<FakeDownloadControllerDelegate>(download_controller());
-  }
+  CRWWebControllerResponseTest() : download_delegate_(download_controller()) {}
 
   // Calls webView:decidePolicyForNavigationResponse:decisionHandler: callback
   // and waits for decision handler call. Returns false if decision handler call
@@ -564,7 +558,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     return DownloadController::FromBrowserState(GetBrowserState());
   }
 
-  std::unique_ptr<FakeDownloadControllerDelegate> download_delegate_;
+  FakeDownloadControllerDelegate download_delegate_;
 };
 
 // Tests that webView:decidePolicyForNavigationResponse:decisionHandler: allows
@@ -582,7 +576,7 @@ TEST_F(CRWWebControllerResponseTest, AllowRendererInitiatedResponse) {
   EXPECT_EQ(WKNavigationResponsePolicyAllow, policy);
 
   // Verify that download task was not created for html response.
-  ASSERT_TRUE(download_delegate_->alive_download_tasks().empty());
+  ASSERT_TRUE(download_delegate_.alive_download_tasks().empty());
 }
 
 // Tests that webView:decidePolicyForNavigationResponse:decisionHandler: allows
@@ -602,7 +596,7 @@ TEST_F(CRWWebControllerResponseTest,
   EXPECT_EQ(WKNavigationResponsePolicyAllow, policy);
 
   // Verify that download task was not created for html response.
-  ASSERT_TRUE(download_delegate_->alive_download_tasks().empty());
+  ASSERT_TRUE(download_delegate_.alive_download_tasks().empty());
 }
 
 // Tests that webView:decidePolicyForNavigationResponse:decisionHandler: blocks
@@ -623,9 +617,9 @@ TEST_F(CRWWebControllerResponseTest,
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created (see crbug.com/949114).
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   DownloadTask* task =
-      download_delegate_->alive_download_tasks()[0].second.get();
+      download_delegate_.alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_EQ(kTestDataURL, task->GetOriginalUrl());
@@ -655,7 +649,7 @@ TEST_F(CRWWebControllerResponseTest,
   EXPECT_EQ(WKNavigationResponsePolicyAllow, policy);
 
   // Verify that download task was not created for html response.
-  ASSERT_TRUE(download_delegate_->alive_download_tasks().empty());
+  ASSERT_TRUE(download_delegate_.alive_download_tasks().empty());
 }
 
 // Tests that webView:decidePolicyForNavigationResponse:decisionHandler:
@@ -681,9 +675,9 @@ TEST_F(CRWWebControllerResponseTest, DownloadForPostRequest) {
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created with POST method (crbug.com/.
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   DownloadTask* task =
-      download_delegate_->alive_download_tasks()[0].second.get();
+      download_delegate_.alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_NSEQ(@"POST", task->GetHttpMethod());
@@ -705,9 +699,9 @@ TEST_F(CRWWebControllerResponseTest, DownloadWithNSURLResponse) {
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created.
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   DownloadTask* task =
-      download_delegate_->alive_download_tasks()[0].second.get();
+      download_delegate_.alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());
@@ -734,9 +728,9 @@ TEST_F(CRWWebControllerResponseTest, DownloadWithNSHTTPURLResponse) {
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created.
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   DownloadTask* task =
-      download_delegate_->alive_download_tasks()[0].second.get();
+      download_delegate_.alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());
@@ -763,7 +757,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadDiscardsPendingUrl) {
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created and pending URL discarded.
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   EXPECT_EQ("", web_state()->GetVisibleURL());
 }
 
@@ -785,9 +779,9 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   EXPECT_EQ(WKNavigationResponsePolicyCancel, policy);
 
   // Verify that download task was created.
-  ASSERT_EQ(1U, download_delegate_->alive_download_tasks().size());
+  ASSERT_EQ(1U, download_delegate_.alive_download_tasks().size());
   DownloadTask* task =
-      download_delegate_->alive_download_tasks()[0].second.get();
+      download_delegate_.alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());

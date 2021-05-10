@@ -159,10 +159,7 @@ void HandleScriptCommand(bool* is_called,
 // Test fixture for web::WebStateImpl class.
 class WebStateImplTest : public web::WebTest {
  protected:
-  WebStateImplTest() = default;
-
-  void SetUp() override {
-    web::WebTest::SetUp();
+  WebStateImplTest() : web::WebTest() {
     web::WebState::CreateParams params(GetBrowserState());
     web_state_ = std::make_unique<web::WebStateImpl>(params);
   }
