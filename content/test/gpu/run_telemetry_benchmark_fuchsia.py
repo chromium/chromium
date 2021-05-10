@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 """Wrapper for running Telemetry benchmarks on Fuchsia devices."""
 
+from __future__ import print_function
+
 import os
 import sys
 

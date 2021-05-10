@@ -10,6 +10,8 @@ to the browser_test_runner's sharding algorithm, to improve shard
 distribution.
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import logging

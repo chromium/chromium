@@ -3,15 +3,17 @@
 # found in the LICENSE file.
 """Helper methods for unittests."""
 
+from __future__ import print_function
+
 from unexpected_passes import data_types
 from unexpected_passes import queries
 
 
 def CreateStatsWithPassFails(passes, fails):
   stats = data_types.BuildStats()
-  for _ in xrange(passes):
+  for _ in range(passes):
     stats.AddPassedBuild()
-  for i in xrange(fails):
+  for i in range(fails):
     stats.AddFailedBuild('build_id%d' % i)
   return stats
 

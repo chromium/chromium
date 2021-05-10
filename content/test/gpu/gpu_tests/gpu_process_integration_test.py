@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import logging
 import os
 import sys
@@ -175,8 +177,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       error_message = "is not expected"
 
     if failure:
-      print 'Test failed. Printing page contents:'
-      print tab.EvaluateJavaScript('document.body.innerHTML')
+      print('Test failed. Printing page contents:')
+      print(tab.EvaluateJavaScript('document.body.innerHTML'))
       self.fail('%s %s workarounds: %s' % (workaround_name, error_message,
                                            gpu_driver_bug_workarounds))
 
@@ -357,14 +359,14 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     diff = set(recorded_workarounds).symmetric_difference(new_workarounds)
     tab = self.tab
     if len(diff) > 0:
-      print 'Test failed. Printing page contents:'
-      print tab.EvaluateJavaScript('document.body.innerHTML')
+      print('Test failed. Printing page contents:')
+      print(tab.EvaluateJavaScript('document.body.innerHTML'))
       self.fail('GPU process and expected list of driver bug '
                 'workarounds are not equal: %s != %s, diff: %s' %
                 (recorded_workarounds, new_workarounds, list(diff)))
     if recorded_disabled_gl_extensions != new_disabled_gl_extensions:
-      print 'Test failed. Printing page contents:'
-      print tab.EvaluateJavaScript('document.body.innerHTML')
+      print('Test failed. Printing page contents:')
+      print(tab.EvaluateJavaScript('document.body.innerHTML'))
       self.fail('The expected disabled gl extensions are '
                 'incorrect: %s != %s:' % (recorded_disabled_gl_extensions,
                                           new_disabled_gl_extensions))

@@ -23,6 +23,8 @@ This script is tested and works fine with the following video sites:
   * http://crosvideo.appspot.com
 """
 
+from __future__ import print_function
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
@@ -516,7 +518,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       json_path = None
       if ipg_logdir:
         json_path = os.path.join(ipg_logdir, "output.json")
-        print "Results saved in ", json_path
+        print("Results saved in ", json_path)
 
       summary = ipg_utils.ProcessResultsFromMultipleIPGRuns(
           logfiles, ipg_delay, params.outliers, json_path)

@@ -45,6 +45,8 @@ power source some time before measuring.  See "Computer setup" section here:
   https://microsoftedge.github.io/videotest/2017-04/WebdriverMethodology.html
 """
 
+from __future__ import print_function
+
 import csv
 import datetime
 import logging
@@ -305,11 +307,11 @@ def main(argv):
   for run in range(1, options.repeat + 1):
     logfile = ipg_utils.GenerateIPGLogFilename(log_prefix, options.logdir, run,
                                                options.repeat, True)
-    print "Iteration #%d out of %d" % (run, options.repeat)
+    print("Iteration #%d out of %d" % (run, options.repeat))
     results = MeasurePowerOnce(browser, logfile, options.duration,
                                options.delay, options.resolution, options.url,
                                options.fullscreen, extra_browser_args)
-    print results
+    print(results)
     all_results.append(results)
 
   now = datetime.datetime.now()

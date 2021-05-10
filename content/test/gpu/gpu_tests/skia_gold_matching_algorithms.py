@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Classes related to the possible matching algorithms for Skia Gold."""
 
+from __future__ import print_function
+
 
 class Parameters(object):
   """Constants for Skia Gold algorithm parameters.

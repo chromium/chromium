@@ -11,6 +11,8 @@ Related design doc:
 https://docs.google.com/document/d/1s3L2IYguQmPHInsKkbHh06hXCXo8ggo5iPIhOaCNwVw
 """
 
+from __future__ import print_function
+
 import enum
 import json
 import logging
@@ -182,15 +184,15 @@ def MedianLow(data):
 
 
 def MarkSection():
-  print ''
+  print('')
 
 
 def MarkExperiment(description):
-  print ''
-  print '**************************************************************'
-  print description
-  print '**************************************************************'
-  print ''
+  print('')
+  print('**************************************************************')
+  print(description)
+  print('**************************************************************')
+  print('')
 
 
 def GetBotBuilds(jsons, bot_name):

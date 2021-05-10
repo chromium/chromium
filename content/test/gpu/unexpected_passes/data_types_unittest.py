@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import unittest
 
 import mock
@@ -211,9 +213,9 @@ class MapTypeUnittest(unittest.TestCase):
 
   def _GetSampleBuildStats(self):
     build_stats = []
-    for i in xrange(8):
+    for i in range(8):
       bs = data_types.BuildStats()
-      for _ in xrange(i):
+      for _ in range(i):
         bs.AddPassedBuild()
       build_stats.append(bs)
     return build_stats

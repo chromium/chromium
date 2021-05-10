@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Methods related to querying builder information from Buildbucket."""
 
+from __future__ import print_function
+
 import fnmatch
 import json
 import logging

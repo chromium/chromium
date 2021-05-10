@@ -7,6 +7,8 @@
 This script DOES NOT run tests. run_gpu_test does that.
 """
 
+from __future__ import print_function
+
 import sys
 
 from gpu_tests import path_util

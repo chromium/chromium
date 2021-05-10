@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Various custom data types for use throughout the unexpected pass finder."""
 
+from __future__ import print_function
+
 import fnmatch
 
 

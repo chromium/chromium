@@ -11,6 +11,8 @@
 # trigger undefined-variables.
 # pylint: disable=undefined-variable
 
+from __future__ import print_function
+
 import sys
 if sys.platform.startswith('darwin'):
   import Foundation

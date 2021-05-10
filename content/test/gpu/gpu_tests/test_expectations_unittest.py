@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import gpu_project_config
 import inspect
 import itertools
@@ -257,7 +259,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
     errors = ''
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
-        for webgl_version in xrange(
+        for webgl_version in range(
             1, 2 + (test_case == webgl_conformance_test_class)):
           _ = list(
               test_case.GenerateGpuTests(
@@ -274,7 +276,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
-        for webgl_version in xrange(
+        for webgl_version in range(
             1, 2 + (test_case == webgl_conformance_test_class)):
           _ = list(
               test_case.GenerateGpuTests(
@@ -297,7 +299,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
 
     webgl_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
-    for webgl_version in xrange(1, 3):
+    for webgl_version in range(1, 3):
       _ = list(
           webgl_test_class.GenerateGpuTests(
               gpu_helper.GetMockArgs(webgl_version='%d.0.0' % webgl_version)))
@@ -310,7 +312,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
   def testForBrokenWebglExtensionExpectations(self):
     webgl_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
-    for webgl_version in xrange(1, 3):
+    for webgl_version in range(1, 3):
       tests = [
           test[0] for test in webgl_test_class.GenerateGpuTests(
               gpu_helper.GetMockArgs(webgl_version='%d.0.0' % webgl_version))

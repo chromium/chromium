@@ -18,6 +18,8 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
+from __future__ import print_function
+
 import datetime
 import json
 import logging

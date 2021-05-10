@@ -5,6 +5,8 @@
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
 # pylint: disable=too-many-lines
 
+from __future__ import print_function
+
 import os
 
 from gpu_tests import common_browser_args as cba

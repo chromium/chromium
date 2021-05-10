@@ -8,6 +8,8 @@ This is used to collect and store IPG based power measurments before they are
 deleted. This provides data to better understand IPG.
 """
 
+from __future__ import print_function
+
 import argparse
 import ast
 import csv

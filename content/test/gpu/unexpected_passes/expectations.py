@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Methods related to test expectations/expectation files."""
 
+from __future__ import print_function
+
 import collections
 import copy
 import logging
@@ -318,7 +320,7 @@ def ModifySemiStaleExpectations(stale_expectation_map, expectation_file):
       expectation_str = '%s (approx. line %d)' % (line, line_number)
 
     str_dict = _ConvertBuilderMapToPassOrderedStringDict(builder_map)
-    print '\nSemi-stale expectation:\n%s' % expectation_str
+    print('\nSemi-stale expectation:\n%s' % expectation_str)
     result_output._RecursivePrintToFile(str_dict, 1, sys.stdout)
 
     response = _WaitForUserInputOnModification()
@@ -432,7 +434,7 @@ def _WaitForUserInputOnModification():
             'modify/(r)emove: ')
   response = raw_input(prompt).lower()
   while response not in valid_inputs:
-    print 'Invalid input, valid inputs are %s' % (', '.join(valid_inputs))
+    print('Invalid input, valid inputs are %s' % (', '.join(valid_inputs)))
     response = raw_input(prompt).lower()
   return response
 

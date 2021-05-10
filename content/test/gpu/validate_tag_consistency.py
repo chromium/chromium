@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 """Script to ensure that the same tags are in all expectation files."""
 
+from __future__ import print_function
+
 import argparse
 import logging
 import os

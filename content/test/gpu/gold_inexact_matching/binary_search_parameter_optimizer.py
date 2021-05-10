@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import logging
 
 import gold_inexact_matching.base_parameter_optimizer as base_optimizer
@@ -57,7 +59,7 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
       else:
         logging.info('Found bad parameters %s', parameters)
         known_bad = midpoint
-    print 'Found optimal parameters: %s' % parameters
+    print('Found optimal parameters: %s' % parameters)
 
   def _GetStartingValues(self):
     """Gets the initial good/bad values for the binary search.

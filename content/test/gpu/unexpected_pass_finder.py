@@ -29,6 +29,8 @@ using an inline `# finder:disable` comment for a single expectation or a pair of
 `# finder:disable`/`# finder:enable` comments for a block of expectations.
 """
 
+from __future__ import print_function
+
 import argparse
 import logging
 import os
@@ -213,7 +215,7 @@ def main():
                       args.expectation_file)
 
   if stale_message:
-    print stale_message
+    print(stale_message)
   if affected_urls:
     result_output.OutputAffectedUrls(affected_urls)
 

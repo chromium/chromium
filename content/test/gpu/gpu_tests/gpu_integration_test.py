@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import logging
 import re
 import sys
@@ -537,7 +539,7 @@ class GpuIntegrationTest(
       gpu_tags.append(gpu_helper.GetSwiftShaderGLRenderer(gpu_info))
       gpu_tags.append(gpu_helper.GetCommandDecoder(gpu_info))
       if gpu_info and gpu_info.devices:
-        for ii in xrange(0, len(gpu_info.devices)):
+        for ii in range(0, len(gpu_info.devices)):
           gpu_vendor = gpu_helper.GetGpuVendorString(gpu_info, ii)
           gpu_device_id = gpu_helper.GetGpuDeviceId(gpu_info, ii)
           # The gpu device id tag will contain both the vendor and device id

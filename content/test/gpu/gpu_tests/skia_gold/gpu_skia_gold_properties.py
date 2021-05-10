@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """GPU implementation of //testing/skia_gold_common/skia_gold_properties.py."""
 
+from __future__ import print_function
+
 import subprocess
 import sys
 

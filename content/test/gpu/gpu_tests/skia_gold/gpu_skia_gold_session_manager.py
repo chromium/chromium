@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """GPU impl of //testing/skia_gold_common/skia_gold_session_manager.py."""
 
+from __future__ import print_function
+
 from gpu_tests import path_util
 
 path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'build')

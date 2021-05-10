@@ -5,6 +5,8 @@
 # It's reasonable for unittests to be messing with protected members.
 # pylint: disable=protected-access
 
+from __future__ import print_function
+
 import json
 import os
 import unittest

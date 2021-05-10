@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """String constants for commonly used browser arguments."""
 
+from __future__ import print_function
+
 AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
     '--autoplay-policy=no-user-gesture-required'
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'

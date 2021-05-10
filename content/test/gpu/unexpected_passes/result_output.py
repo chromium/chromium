@@ -6,6 +6,8 @@
 Also probably a good example of how to *not* write HTML.
 """
 
+from __future__ import print_function
+
 import collections
 import logging
 import sys
@@ -225,7 +227,7 @@ def OutputResults(stale_dict,
     file_handle.write(HTML_FOOTER)
     if should_close_file:
       file_handle.close()
-    print 'Results available at file://%s' % file_handle.name
+    print('Results available at file://%s' % file_handle.name)
   else:
     raise RuntimeError('Unsupported output format %s' % output_format)
 

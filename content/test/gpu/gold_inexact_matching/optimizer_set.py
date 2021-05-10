@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 
 class OptimizerSet(object):
   """Class to run a ParameterOptimizer for multiple tests."""
@@ -18,6 +20,6 @@ class OptimizerSet(object):
   def RunOptimization(self):
     test_names = set(self._args.test_names)
     for name in test_names:
-      print 'Running optimization for test %s' % name
+      print('Running optimization for test %s' % name)
       optimizer = self._optimizer_class(self._args, name)
       optimizer.RunOptimization()

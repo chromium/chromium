@@ -20,6 +20,8 @@
 #
 # and put the output into this file.
 
+from __future__ import print_function
+
 # yapf: disable
 FAKE_GPU_INFO = {
     'feature_status':

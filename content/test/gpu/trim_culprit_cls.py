@@ -33,6 +33,8 @@ Google Cloud console https://console.cloud.google.com/ (see drop-down menu in
 the top left corner).
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import re
@@ -148,7 +150,7 @@ def FillTrybotRuns(blamelist, trybot, project):
   """
   total_cls = len(blamelist)
   for i, entry in enumerate(blamelist):
-    print 'Getting data for CL %s/%s' % (i + 1, total_cls)
+    print('Getting data for CL %s/%s' % (i + 1, total_cls))
     largest_patchset = 0
     all_trybots = QueryTrybotsForCl(entry.cl_number, project)
     assert all_trybots
@@ -246,9 +248,9 @@ def main():
   blamelist = GetBlamelist(args.start_revision, args.end_revision)
   FillGerritUrls(blamelist)
   FillTrybotRuns(blamelist, args.trybot, args.project)
-  print '\n\nBlamelist (latest first):\n'
+  print('\n\nBlamelist (latest first):\n')
   for entry in blamelist:
-    print entry
+    print(entry)
 
 
 if __name__ == '__main__':
