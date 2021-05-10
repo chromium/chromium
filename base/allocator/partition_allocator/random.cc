@@ -4,70 +4,62 @@
 
 #include "base/allocator/partition_allocator/random.h"
 
-#include "base/lazy_instance.h"
-#include "base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/rand_util.h"
-#include "base/synchronization/lock.h"
 
 namespace base {
-
 namespace {
 
-LazyInstance<Lock>::Leaky g_lock = LAZY_INSTANCE_INITIALIZER;
+internal::PartitionLock g_lock = {};
 
-Lock& GetLock() {
-  return g_lock.Get();
-}
-
-}  // namespace
-
-// This is the same PRNG as used by tcmalloc for mapping address randomness;
-// see http://burtleburtle.net/bob/rand/smallprng.html.
+// Using XorShift128+, which is simple and widely used. See
+// https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
 struct RandomContext {
   bool initialized;
-  uint32_t a;
-  uint32_t b;
-  uint32_t c;
-  uint32_t d;
+
+  uint64_t a;
+  uint64_t b;
 };
 
-static RandomContext g_context GUARDED_BY(GetLock());
+RandomContext g_context GUARDED_BY(g_lock);
 
-namespace {
-
-RandomContext& GetRandomContext() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+RandomContext& GetRandomContext() EXCLUSIVE_LOCKS_REQUIRED(g_lock) {
   if (UNLIKELY(!g_context.initialized)) {
-    const uint64_t r1 = RandUint64();
-    const uint64_t r2 = RandUint64();
-    g_context.a = static_cast<uint32_t>(r1);
-    g_context.b = static_cast<uint32_t>(r1 >> 32);
-    g_context.c = static_cast<uint32_t>(r2);
-    g_context.d = static_cast<uint32_t>(r2 >> 32);
+    g_context.a = RandUint64();
+    g_context.b = RandUint64();
     g_context.initialized = true;
   }
+
   return g_context;
 }
 
 }  // namespace
 
 uint32_t RandomValue() {
-  AutoLock guard(GetLock());
+  internal::ScopedGuard<true> guard(g_lock);
   RandomContext& x = GetRandomContext();
-#define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
-  uint32_t e = x.a - rot(x.b, 27);
-  x.a = x.b ^ rot(x.c, 17);
-  x.b = x.c + x.d;
-  x.c = x.d + e;
-  x.d = e + x.a;
-  return x.d;
-#undef rot
+
+  uint64_t t = x.a;
+  const uint64_t s = x.b;
+
+  x.a = s;
+  t ^= t << 23;
+  t ^= t >> 17;
+  t ^= s ^ (s >> 26);
+  x.b = t;
+
+  // The generator usually returns an uint64_t, truncate it.
+  //
+  // It is noted in this paper (https://arxiv.org/abs/1810.05313) that the
+  // lowest 32 bits fail some statistical tests from the Big Crush
+  // suite. Use the higher ones instead.
+  return (t + s) >> 32;
 }
 
 void SetMmapSeedForTesting(uint64_t seed) {
-  AutoLock guard(GetLock());
+  internal::ScopedGuard<true> guard(g_lock);
   RandomContext& x = GetRandomContext();
   x.a = x.b = static_cast<uint32_t>(seed);
-  x.c = x.d = static_cast<uint32_t>(seed >> 32);
   x.initialized = true;
 }
 
