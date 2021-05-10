@@ -228,17 +228,10 @@ suite('SiteDetails', function() {
     optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
                                                 .BLUETOOTH_DEVICES] =
         'enableWebBluetoothNewPermissionsBackend';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes.FONT_ACCESS] =
-        'enableFontAccessContentSetting';
-    optionalSiteDetailsContentSettingsTypes[ContentSettingsTypes
-                                                .FILE_HANDLING] =
-        'enableFileHandlingContentSetting';
 
     const controlledSettingsCount = /** @type{string : int } */ ({});
 
     controlledSettingsCount['enableExperimentalWebPlatformFeatures'] = 2;
-    controlledSettingsCount['enableFileHandlingContentSetting'] = 1;
-    controlledSettingsCount['enableFontAccessContentSetting'] = 1;
     controlledSettingsCount['enablePaymentHandlerContentSetting'] = 1;
     controlledSettingsCount['enableSafeBrowsingSubresourceFilter'] = 1;
     controlledSettingsCount['enableWebBluetoothNewPermissionsBackend'] = 1;
@@ -375,8 +368,6 @@ suite('SiteDetails', function() {
     loadTimeData.overrideValues({
       enableExperimentalWebPlatformFeatures: true,
       enableFileSystemWriteContentSetting: true,
-      enableFontAccessContentSetting: true,
-      enableFileHandlingContentSetting: true,
       enablePaymentHandlerContentSetting: true,
       enableSafeBrowsingSubresourceFilter: true,
       enableWebBluetoothNewPermissionsBackend: true,

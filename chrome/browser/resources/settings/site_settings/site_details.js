@@ -96,26 +96,10 @@ Polymer({
     },
 
     /** @private */
-    enableFontAccessContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableFontAccessContentSetting');
-      }
-    },
-
-    /** @private */
     enableWebBluetoothNewPermissionsBackend_: {
       type: Boolean,
       value: () =>
           loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
-    },
-
-    /** @private */
-    enableFileHandlingContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableFileHandlingContentSetting');
-      }
     },
   },
 

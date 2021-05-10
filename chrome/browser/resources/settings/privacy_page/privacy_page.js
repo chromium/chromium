@@ -137,22 +137,6 @@ Polymer({
     },
 
     /** @private */
-    enableFontAccessContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableFontAccessContentSetting');
-      }
-    },
-
-    /** @private */
-    enableFileHandlingContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableFileHandlingContentSetting');
-      }
-    },
-
-    /** @private */
     enableQuietNotificationPromptsSetting_: {
       type: Boolean,
       value: () =>

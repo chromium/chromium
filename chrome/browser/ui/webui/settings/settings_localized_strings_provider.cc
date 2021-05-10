@@ -85,7 +85,6 @@
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "services/device/public/cpp/device_features.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2460,14 +2459,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("enableWebBluetoothNewPermissionsBackend",
                           base::FeatureList::IsEnabled(
                               features::kWebBluetoothNewPermissionsBackend));
-
-  html_source->AddBoolean(
-      "enableFontAccessContentSetting",
-      base::FeatureList::IsEnabled(::blink::features::kFontAccess));
-
-  html_source->AddBoolean(
-      "enableFileHandlingContentSetting",
-      base::FeatureList::IsEnabled(::blink::features::kFileHandlingAPI));
 
   // The exception placeholder should not be translated. See crbug.com/1095878.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");

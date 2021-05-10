@@ -228,10 +228,6 @@ const SiteSettingsBehaviorImpl = {
     addOrRemoveSettingWithFlag(
         ContentSettingsTypes.WINDOW_PLACEMENT,
         'enableExperimentalWebPlatformFeatures');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.FONT_ACCESS, 'enableFontAccessContentSetting');
-    addOrRemoveSettingWithFlag(
-        ContentSettingsTypes.FILE_HANDLING, 'enableFileHandlingContentSetting');
     return this.contentTypes_.slice(0);
   },
 
