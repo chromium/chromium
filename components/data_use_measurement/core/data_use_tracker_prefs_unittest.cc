@@ -67,11 +67,11 @@ TEST(DataUseTrackerPrefsTest, PrefsOnMeteredConnection) {
 
   // Verify other prefs are not set.
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->DictEmpty());
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->DictEmpty());
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->DictEmpty());
 
   // Move clock forward 10 days. New data use reported must go in a separate
   // entry in the dictionary pref.
@@ -113,13 +113,13 @@ TEST(DataUseTrackerPrefsTest, PrefsOnUnmeteredConnection) {
 
   // Verify prefs are not set.
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->DictEmpty());
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->DictEmpty());
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->DictEmpty());
   EXPECT_TRUE(
-      test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->empty());
+      test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->DictEmpty());
 }
 
 TEST(DataUseTrackerPrefsTest, TestBasicUserForeground) {
@@ -152,21 +152,21 @@ TEST(DataUseTrackerPrefsTest, TestBasicUserForeground) {
         true, test.foreground, test.user_initiated, 10);
     // Verify that the expected pref has an entry.
     EXPECT_FALSE(
-        test_prefs.GetDictionary(test.pref_expected_as_non_empty)->empty());
+        test_prefs.GetDictionary(test.pref_expected_as_non_empty)->DictEmpty());
 
     // Verify other prefs are not set.
     EXPECT_TRUE(
         test.pref_expected_as_non_empty == prefs::kDataUsedUserForeground ||
-        test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->empty());
+        test_prefs.GetDictionary(prefs::kDataUsedUserForeground)->DictEmpty());
     EXPECT_TRUE(
         test.pref_expected_as_non_empty == prefs::kDataUsedUserBackground ||
-        test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->empty());
+        test_prefs.GetDictionary(prefs::kDataUsedUserBackground)->DictEmpty());
     EXPECT_TRUE(
         test.pref_expected_as_non_empty == prefs::kDataUsedServicesForeground ||
-        test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->empty());
+        test_prefs.GetDictionary(prefs::kDataUsedServicesForeground)->DictEmpty());
     EXPECT_TRUE(
         test.pref_expected_as_non_empty == prefs::kDataUsedServicesBackground ||
-        test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->empty());
+        test_prefs.GetDictionary(prefs::kDataUsedServicesBackground)->DictEmpty());
   }
 }
 
