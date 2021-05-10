@@ -377,6 +377,11 @@ const base::Feature kFilesZipPack{"FilesZipPack",
 const base::Feature kFilesZipUnpack{"FilesZipUnpack",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables handle of `closeView` message from Gaia. The message is
+// supposed to end the flow.
+const base::Feature kGaiaCloseViewMessage{"GaiaCloseViewMessage",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Gaia reauth endpoint with deleted user customization page.
 const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -844,6 +849,10 @@ bool IsLocalSearchServiceEnabled() {
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
+}
+
+bool IsGaiaCloseViewMessageEnabled() {
+  return base::FeatureList::IsEnabled(kGaiaCloseViewMessage);
 }
 
 bool IsGaiaReauthEndpointEnabled() {

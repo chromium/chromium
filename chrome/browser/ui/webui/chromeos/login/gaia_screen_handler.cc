@@ -509,6 +509,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetBoolean("enableSyncTrustedVaultKeys",
                     IsSyncTrustedVaultKeysEnabled());
+  params.SetBoolean("enableCloseView",
+                    ash::features::IsGaiaCloseViewMessageEnabled());
 
   if (public_saml_url_fetcher_) {
     params.SetBoolean("startsOnSamlPage", true);

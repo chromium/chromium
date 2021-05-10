@@ -579,6 +579,25 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
+    enum="BooleanReceived" expires_after="2022-01-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records whether or not {MessageName} was received during the {GaiaAuthFlow}
+    authentication on the login screen. Recorded on the successful online
+    authentication only.
+  </summary>
+  <token key="GaiaAuthFlow">
+    <variant name="Gaia"/>
+    <variant name="Saml"/>
+  </token>
+  <token key="MessageName">
+    <variant name="CloseView"/>
+    <variant name="UserInfo"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Gaia.PasswordFlow" enum="BooleanStartedCompleted"
     expires_after="2022-01-01">
   <owner>rsorokin@chromium.org</owner>

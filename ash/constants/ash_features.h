@@ -187,6 +187,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFsNosymfollow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingGestureEditing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kGaiaCloseViewMessage;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kGaiaReauthEndpoint;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kGamepadVibration;
@@ -371,6 +373,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAResizingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaCloseViewMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImeSandboxEnabled();

@@ -9,6 +9,7 @@ gaia.chromeOSLogin.parent_webview_oob_url_ = 'chrome://oobe';
 gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 gaia.chromeOSLogin.initialized_ = false;
+gaia.chromeOSLogin.sendImplicitServices = true;
 
 const urlParams = new URLSearchParams(window.location.search);
 const syncTrustedVaultKeysRequestedByClient = !!urlParams.get('szkr');
@@ -77,6 +78,14 @@ gaia.chromeOSLogin.sendUserInfo = function(services) {
       gaia.chromeOSLogin.parent_webview_url_);
 };
 
+gaia.chromeOSLogin.sendCloseView = function() {
+  msg = {
+    'method': 'closeView',
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+      gaia.chromeOSLogin.parent_webview_url_);
+};
+
 gaia.chromeOSLogin.backButton = function(show) {
   var msg = {
     'method': 'backButton',
@@ -130,6 +139,8 @@ function goNext() {
       services = [];
     } else {
       console.warn("Services are not set for testing.");
+      if (gaia.chromeOSLogin.sendImplicitServices)
+        services = []
     }
 
     request = new XMLHttpRequest();
