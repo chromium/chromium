@@ -24,6 +24,8 @@ extern const base::Feature kChromeLabs;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const base::Feature kChromeTipsInMainMenu;
+
+extern const base::Feature kChromeTipsInMainMenuNewBadge;
 #endif
 
 extern const base::Feature kCommander;
