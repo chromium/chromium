@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -109,24 +111,60 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
       CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
 }
 
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceOverride) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=private");
+
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(IPAddress(10, 2, 3, 4), 80);
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+
+  response_head.remote_endpoint = IPEndPoint(IPAddress(8, 8, 8, 8), 8888);
+
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
 TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceFileURL) {
   EXPECT_EQ(IPAddressSpace::kLocal,
-            CalculateResourceAddressSpace(GURL("file:///foo"), IPAddress()));
+            CalculateResourceAddressSpace(GURL("file:///foo"), IPEndPoint()));
 }
 
 TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
-  EXPECT_EQ(IPAddressSpace::kLocal,
-            CalculateResourceAddressSpace(GURL("http:///foo.test"),
-                                          IPAddress::IPv4Localhost()));
+  EXPECT_EQ(
+      IPAddressSpace::kLocal,
+      CalculateResourceAddressSpace(
+          GURL("http://foo.test"), IPEndPoint(IPAddress::IPv4Localhost(), 80)));
   EXPECT_EQ(IPAddressSpace::kPrivate,
-            CalculateResourceAddressSpace(GURL("http:///foo.test"),
-                                          PrivateIPv4Address()));
+            CalculateResourceAddressSpace(
+                GURL("http://foo.test"), IPEndPoint(PrivateIPv4Address(), 80)));
   EXPECT_EQ(IPAddressSpace::kPublic,
-            CalculateResourceAddressSpace(GURL("http:///foo.test"),
-                                          PublicIPv4Address()));
+            CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                          IPEndPoint(PublicIPv4Address(), 80)));
   EXPECT_EQ(
       IPAddressSpace::kUnknown,
-      CalculateResourceAddressSpace(GURL("http:///foo.test"), IPAddress()));
+      CalculateResourceAddressSpace(GURL("http://foo.test"), IPEndPoint()));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=private");
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                    IPEndPoint(IPAddress(10, 2, 3, 4), 80)));
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                    IPEndPoint(IPAddress(8, 8, 8, 8), 8888)));
 }
 
 }  // namespace

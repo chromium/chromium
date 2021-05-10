@@ -830,7 +830,7 @@ void WebURLLoader::PopulateURLResponse(
   //
   // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
   response->SetAddressSpace(CalculateResourceAddressSpace(
-      KURL(response->ResponseUrl()), head.remote_endpoint.address()));
+      KURL(response->ResponseUrl()), head.remote_endpoint));
 
   WebVector<WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());

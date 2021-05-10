@@ -88,18 +88,20 @@ const char kAdditionalTrustTokenKeyCommitments[] =
 // set.
 const char kUseFirstPartySet[] = "use-first-party-set";
 
-// Specifies manual overrides to the IP address -> IP address space mapping.
+// Specifies manual overrides to the IP endpoint -> IP address space mapping.
 // This allows running local tests against "public" and "private" IP addresses.
 //
 // This switch is specified as a comma-separated list of overrides. Each
-// override is given as a colon-separated "<subnet>:<address space>" pair.
+// override is given as a colon-separated "<endpoint>:<address space>" pair.
 // Grammar, in pseudo-BNF format:
 //
 //   switch := override-list
 //   override-list := override “,” override-list | <nil>
-//   override := cidr-block “=” address-space
+//   override := ip-endpoint “=” address-space
 //   address-space := “public” | “private” | “local”
-//   cidr-block := see `net::ParseCIDRBlock()` for details
+//   ip-endpoint := ip-address ":" port
+//   ip-address := see `net::ParseURLHostnameToAddress()` for details
+//   port := integer in the [0-65535] range
 //
 // Any invalid entries in the comma-separated list are ignored.
 //

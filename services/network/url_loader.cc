@@ -1140,7 +1140,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked by CORS-RFC1918 rules.
   mojom::IPAddressSpace resource_address_space =
-      IPAddressToIPAddressSpace(info.endpoint.address());
+      IPEndPointToIPAddressSpace(info.endpoint);
   if (!CanConnectToAddressSpace(resource_address_space)) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
@@ -2202,7 +2202,7 @@ void URLLoader::ReportFlaggedResponseCookies() {
     devtools_observer->OnRawResponse(
         devtools_request_id().value(), url_request_->maybe_stored_cookies(),
         std::move(header_array), raw_response_headers,
-        IPAddressToIPAddressSpace(response_info.remote_endpoint.address()));
+        IPEndPointToIPAddressSpace(response_info.remote_endpoint));
   }
 
   if (auto* cookie_observer = GetCookieAccessObserver()) {

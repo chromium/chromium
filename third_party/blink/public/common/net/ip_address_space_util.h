@@ -13,7 +13,7 @@ class GURL;
 
 namespace net {
 
-class IPAddress;
+class IPEndPoint;
 
 }  // namespace net
 
@@ -43,7 +43,7 @@ network::mojom::IPAddressSpace BLINK_COMMON_EXPORT CalculateClientAddressSpace(
     const GURL& url,
     const network::mojom::URLResponseHead* response_head);
 
-// Given a response URL and the IP address the requested resource was fetched
+// Given a response URL and the IP endpoint the requested resource was fetched
 // from, this function calculates the IPAddressSpace of the requested resource.
 //
 // As opposed to CalculateClientAddressSpace(), this function is used to
@@ -52,7 +52,7 @@ network::mojom::IPAddressSpace BLINK_COMMON_EXPORT CalculateClientAddressSpace(
 //
 // See: https://wicg.github.io/cors-rfc1918/#integration-fetch
 network::mojom::IPAddressSpace BLINK_COMMON_EXPORT
-CalculateResourceAddressSpace(const GURL& url, const net::IPAddress& address);
+CalculateResourceAddressSpace(const GURL& url, const net::IPEndPoint& endpoint);
 
 }  // namespace blink
 

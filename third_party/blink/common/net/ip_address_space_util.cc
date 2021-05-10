@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/net/ip_address_space_util.h"
 
 #include "base/logging.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -57,18 +58,17 @@ IPAddressSpace CalculateClientAddressSpace(
   }
 
   // Otherwise, calculate the address space via the provided IP address.
-  return network::IPAddressToIPAddressSpace(
-      response_head->remote_endpoint.address());
+  return network::IPEndPointToIPAddressSpace(response_head->remote_endpoint);
 }
 
 IPAddressSpace CalculateResourceAddressSpace(const GURL& url,
-                                             const net::IPAddress& address) {
+                                             const net::IPEndPoint& endpoint) {
   if (url.SchemeIsFile()) {
     // See: https://wicg.github.io/cors-rfc1918/#file-url.
     return IPAddressSpace::kLocal;
   }
 
-  return network::IPAddressToIPAddressSpace(address);
+  return network::IPEndPointToIPAddressSpace(endpoint);
 }
 
 }  // namespace blink
