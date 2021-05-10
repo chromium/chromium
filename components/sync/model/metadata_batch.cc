@@ -11,10 +11,7 @@ namespace syncer {
 
 MetadataBatch::MetadataBatch() {}
 
-MetadataBatch::MetadataBatch(MetadataBatch&& other)
-    : metadata_map_(std::move(other.metadata_map_)) {
-  other.state_.Swap(&state_);
-}
+MetadataBatch::MetadataBatch(MetadataBatch&& other) = default;
 
 MetadataBatch::~MetadataBatch() {}
 

@@ -104,8 +104,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   void InitializeBridge(ModelType model_type = kModelType) {
     real_processor_ =
         std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            model_type, /*dump_stack=*/base::DoNothing(),
-            /*commit_only=*/false);
+            model_type, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
     bridge_ = std::make_unique<SyncableServiceBasedBridge>(
         model_type,

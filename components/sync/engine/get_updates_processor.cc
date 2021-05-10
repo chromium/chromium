@@ -208,7 +208,7 @@ void GetUpdatesProcessor::PrepareGetUpdates(
 
     sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
     if (!context.context().empty())
-      get_updates->add_client_contexts()->Swap(&context);
+      *get_updates->add_client_contexts() = std::move(context);
   }
 
   delegate_.HelpPopulateGuMessage(get_updates);
