@@ -10,6 +10,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -46,13 +49,15 @@ class WebAppsPublisherHost : public web_app::AppRegistrarObserver {
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppManifestUpdated(const web_app::AppId& app_id,
+                               base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
-
-  // TODO(crbug.com/1194709): override
-  // - OnWebAppLastLaunchTimeChanged
-  // - OnWebAppLocallyInstalledStateChanged
-  // - OnWebAppManifestUpdated
+  void OnWebAppLocallyInstalledStateChanged(const web_app::AppId& app_id,
+                                            bool is_locally_installed) override;
+  void OnWebAppLastLaunchTimeChanged(
+      const std::string& app_id,
+      const base::Time& last_launch_time) override;
 
   // TODO(crbug.com/1194709): inherit from content_settings::Observer and
   // override:
@@ -62,13 +67,15 @@ class WebAppsPublisherHost : public web_app::AppRegistrarObserver {
 
   const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
   apps::mojom::AppPtr Convert(const web_app::WebApp* web_app,
-                              apps::mojom::Readiness readiness) const;
+                              apps::mojom::Readiness readiness);
   void Publish(apps::mojom::AppPtr app);
 
   static crosapi::mojom::AppPublisher* publisher_for_testing_;
 
   Profile* const profile_;
   web_app::WebAppProvider* const provider_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       registrar_observation_{this};

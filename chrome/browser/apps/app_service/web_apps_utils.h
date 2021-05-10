@@ -42,6 +42,11 @@ apps::mojom::AppPtr ConvertWebApp(Profile* profile,
 apps::mojom::AppPtr ConvertUninstalledWebApp(const web_app::WebApp* web_app,
                                              apps::mojom::AppType app_type);
 
+// Constructs an App with only the information required to update
+// last launch time.
+apps::mojom::AppPtr ConvertLaunchedWebApp(const web_app::WebApp* web_app,
+                                          apps::mojom::AppType app_type);
+
 // Converts |uninstall_source| to a |WebappUninstallSource|.
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::mojom::UninstallSource uninstall_source);

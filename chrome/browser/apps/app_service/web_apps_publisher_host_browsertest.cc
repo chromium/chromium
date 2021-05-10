@@ -5,14 +5,28 @@
 #include "chrome/browser/apps/app_service/web_apps_publisher_host.h"
 
 #include <iterator>
+#include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_install_utils.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -42,7 +56,17 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-using WebAppsPublisherHostBrowserTest = web_app::WebAppControllerBrowserTest;
+class WebAppsPublisherHostBrowserTest
+    : public web_app::WebAppControllerBrowserTest {
+ public:
+  WebAppsPublisherHostBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kAppServiceAdaptiveIcon);
+  }
+  ~WebAppsPublisherHostBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -67,6 +91,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->readiness,
             apps::mojom::Readiness::kReady);
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
+            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
 
   {
     base::RunLoop run_loop;
@@ -82,6 +108,119 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
     EXPECT_EQ(mock_app_publisher.get_deltas().back()->readiness,
               apps::mojom::Readiness::kUninstalledByUser);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LaunchTime) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
+
+  web_app::AppId app_id = web_app::InstallWebAppFromManifest(
+      browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  mock_app_publisher.Wait();
+  ASSERT_TRUE(
+      mock_app_publisher.get_deltas().back()->last_launch_time.has_value());
+  const base::Time last_launch_time =
+      *mock_app_publisher.get_deltas().back()->last_launch_time;
+
+  LaunchWebAppBrowser(app_id);
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
+  ASSERT_TRUE(
+      mock_app_publisher.get_deltas().back()->last_launch_time.has_value());
+  EXPECT_GT(*mock_app_publisher.get_deltas().back()->last_launch_time,
+            last_launch_time);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("app.site.com", "/simple.html");
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
+
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+
+  web_app::AppId app_id;
+  {
+    const std::u16string original_description = u"Original Web App";
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->scope = app_url;
+    web_app_info->title = original_description;
+    web_app_info->description = original_description;
+    app_id = InstallWebApp(std::move(web_app_info));
+
+    mock_app_publisher.Wait();
+    EXPECT_EQ(*mock_app_publisher.get_deltas().back()->description,
+              base::UTF16ToUTF8(original_description));
+  }
+
+  {
+    const std::u16string updated_description = u"Updated Web App";
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->scope = app_url;
+    web_app_info->title = updated_description;
+    web_app_info->description = updated_description;
+
+    base::RunLoop run_loop;
+    provider().install_manager().UpdateWebAppFromInfo(
+        app_id, std::move(web_app_info),
+        /*redownload_app_icons=*/false,
+        base::BindLambdaForTesting(
+            [&run_loop](const web_app::AppId& app_id,
+                        web_app::InstallResultCode code) { run_loop.Quit(); }));
+
+    run_loop.Run();
+    mock_app_publisher.Wait();
+    EXPECT_EQ(*mock_app_publisher.get_deltas().back()->description,
+              base::UTF16ToUTF8(updated_description));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("app.site.com", "/simple.html");
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost::SetPublisherForTesting(&mock_app_publisher);
+
+  web_app::AppId app_id;
+  {
+    const std::u16string description = u"Web App";
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->scope = app_url;
+    web_app_info->title = description;
+    web_app_info->description = description;
+    app_id = InstallWebApp(std::move(web_app_info));
+
+    provider()
+        .registry_controller()
+        .AsWebAppSyncBridge()
+        ->SetAppIsLocallyInstalled(app_id,
+                                   /*is_locally_installed=*/false);
+  }
+
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
+            static_cast<IconEffects>(IconEffects::kRoundCorners |
+                                     IconEffects::kBlocked |
+                                     IconEffects::kCrOsStandardMask));
+
+  provider()
+      .registry_controller()
+      .AsWebAppSyncBridge()
+      ->SetAppIsLocallyInstalled(app_id,
+                                 /*is_locally_installed=*/true);
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
+            IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask);
 }
 
 }  // namespace apps
