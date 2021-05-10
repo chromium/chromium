@@ -172,7 +172,7 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
 
   std::unique_ptr<base::DictionaryValue> current_settings =
       maybe_settings.PassSettings();
-  return sync_state->empty()
+  return sync_state->DictEmpty()
              ? SendLocalSettingsToSync(std::move(current_settings))
              : OverwriteLocalSettingsWithSync(std::move(sync_state),
                                               std::move(current_settings));
@@ -183,12 +183,12 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
     std::unique_ptr<base::DictionaryValue> local_state) {
   DCHECK(IsOnBackendSequence());
 
-  if (local_state->empty())
+  if (local_state->DictEmpty())
     return base::nullopt;
 
   // Transform the current settings into a list of sync changes.
   ValueStoreChangeList changes;
-  while (!local_state->empty()) {
+  while (!local_state->DictEmpty()) {
     // It's not possible to iterate over a DictionaryValue and modify it at the
     // same time, so hack around that restriction.
     std::string key = base::DictionaryValue::Iterator(*local_state).key();
@@ -234,7 +234,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
   }
 
   // Add all new settings to local settings.
-  while (!sync_state->empty()) {
+  while (!sync_state->DictEmpty()) {
     // It's not possible to iterate over a DictionaryValue and modify it at the
     // same time, so hack around that restriction.
     std::string key = base::DictionaryValue::Iterator(*sync_state).key();
