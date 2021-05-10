@@ -18592,55 +18592,63 @@
       'future_on': ['chrome.*', 'chrome_os'],
       'type': 'dict',
       'schema': {
-        'type': 'array',
-        'items': {
-          'type': 'object',
-          'properties': {
-            'start': {
+        'type': 'object',
+        'properties': {
+          'entries': {
+            'type': 'array',
+            'items': {
               'type': 'object',
-              'description': '''Time interpreted in local wall-clock 24h format.''',
-              'id': 'Time',
               'properties': {
-                'hour': {
-                  'type': 'integer',
-                  'minimum': 0,
-                  'maximum': 23
+                'start': {
+                  'type': 'object',
+                  'description': '''Time interpreted in local wall-clock 24h format.''',
+                  'id': 'Time',
+                  'properties': {
+                    'hour': {
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 23
+                    },
+                    'minute': {
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 59
+                    }
+                  },
+                  'required': ['hour', 'minute']
                 },
-                'minute': {
+                'duration_mins': {
+                  'description': '''Time period (minutes) that specifies the length of the relaunch window.''',
                   'type': 'integer',
                   'minimum': 0,
-                  'maximum': 59
+                  'maximum': 1440
                 }
               },
-              'required': ['hour', 'minute']
-            },
-            'duration_mins': {
-              'description': '''Time period (minutes) that specifies the length of the relaunch window.''',
-              'type': 'integer',
-              'minimum': 0,
-              'maximum': 1440
+              'required': ['start', 'duration_mins']
             }
-          },
-          'required': ['start', 'duration_mins']
+          }
         }
       },
       'caption': '''Set the time interval for relaunch''',
       'label': '''Relaunch time window''',
-      'example_value': [
-        {
-          'start': {
-            'hour': 2,
-            'minute': 15
-          },
-          'duration_mins': 240
-        }
-      ],
+      'example_value': {
+        'entries': [
+          {
+            'start': {
+              'hour': 2,
+              'minute': 15
+            },
+            'duration_mins': 240
+          }
+        ]
+      },
       'desc': '''Specify a target time window for the end of the relaunch notification period.
 
       Users are notified of the need for a browser relaunch or device restart based on the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> and <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy settings. Browsers and devices are forcibly restarted at the end of the notification period when the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy is set to 'Required'. This <ph name="RELAUNCH_WINDOW_POLICY_NAME">RelaunchWindow</ph> policy can be used to defer the end of the notification period so that it falls within a specific time window.
 
       If this policy is not set, the default target time window for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> is between 2 AM and 4 AM. The default target time window for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is the whole day (i.e., the end of the notification period is never deferred).
 
+      Note: Though the policy can accept multiple items in <ph name="ENTRIES_FIELD_NAME">entries</ph>, all but the first item are ignored.
       Warning: Setting this policy may delay application of software updates.''',
     },
     {

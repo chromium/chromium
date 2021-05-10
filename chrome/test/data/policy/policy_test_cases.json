@@ -3551,15 +3551,17 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "RelaunchWindow": [
-            {
-              "start": {
-                "hour": 2,
-                "minute": 15
-              },
-              "duration_mins": 120
-            }
-          ]
+          "RelaunchWindow": {
+            "entries": [
+              {
+                "start": {
+                  "hour": 2,
+                  "minute": 15
+                },
+                "duration_mins": 240
+              }
+            ]
+          }
         },
         "prefs": { "browser.relaunch_window": { "location": "local_state" } }
       }
