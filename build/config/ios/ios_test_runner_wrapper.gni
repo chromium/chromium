@@ -61,6 +61,8 @@ template("ios_test_runner_wrapper") {
 
     _rebased_mac_toolchain = rebase_path("//mac_toolchain", root_build_dir)
     _rebased_xcode_path = rebase_path("//Xcode.app", root_build_dir)
+    _rebased_ios_runtime_cache_prefix =
+        rebase_path("//Runtime-ios-", root_build_dir)
 
     # --out-dir argument is specified in gn_isolate_map.pyl because
     # ${ISOLATED_OUTDIR} doesn't get resolved through this wrapper.
@@ -69,6 +71,8 @@ template("ios_test_runner_wrapper") {
       "@WrappedPath(${_rebased_xcode_path})",
       "--mac-toolchain-cmd",
       "@WrappedPath(${_rebased_mac_toolchain})",
+      "--runtime-cache-prefix",
+      "@WrappedPath(${_rebased_ios_runtime_cache_prefix})",
     ]
 
     # Default retries to 3
