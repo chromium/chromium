@@ -4926,6 +4926,14 @@ const char kWifiSyncAndroidDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[] =
+    "Allow default web app migration for Chrome OS managed users";
+const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
+    "The web app migration flags "
+    "(chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-gsuite and "
+    "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
+    "are ignored for managed Chrome OS users unless this feature is enabled.";
+
 const char kDefaultChatWebAppName[] = "Default Chat web app";
 const char kDefaultChatWebAppDescription[] =
     "Enables the Chat web app to be installed by default.";

@@ -2872,6 +2872,10 @@ extern const char kWifiSyncAndroidDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
+extern const char
+    kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[];
+
 extern const char kDefaultChatWebAppName[];
 extern const char kDefaultChatWebAppDescription[];
 

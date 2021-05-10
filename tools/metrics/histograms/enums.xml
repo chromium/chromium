@@ -46874,6 +46874,8 @@ from previous Chrome versions.
   <int value="50643563" label="MBIMode:enabled"/>
   <int value="51793504" label="protect-sync-credential-on-reauth:disabled"/>
   <int value="52150780" label="OsSettingsPolymer3:disabled"/>
+  <int value="52186948"
+      label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:enabled"/>
   <int value="52368742" label="enable-pixel-canvas-recording:disabled"/>
   <int value="54258707" label="NewTabstripAnimation:enabled"/>
   <int value="54571864" label="EnableDisplayZoomSetting:enabled"/>
@@ -48843,6 +48845,8 @@ from previous Chrome versions.
       label="AssistantEnableMediaSessionIntegration:disabled"/>
   <int value="1789517771" label="MacV2Sandbox:enabled"/>
   <int value="1789793147" label="HTTPSServerPreviewsUsingURLLoader:disabled"/>
+  <int value="1789795039"
+      label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:disabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>

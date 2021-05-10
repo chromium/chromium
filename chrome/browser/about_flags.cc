@@ -3419,6 +3419,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBypassAppBannerEngagementChecksDescription, kOsAll,
      SINGLE_VALUE_TYPE(webapps::switches::kBypassAppBannerEngagementChecks)},
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"allow-default-web-app-migration-for-chrome-os-managed-users",
+     flag_descriptions::kAllowDefaultWebAppMigrationForChromeOsManagedUsersName,
+     flag_descriptions::
+         kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
     {"enable-default-chat-web-app", flag_descriptions::kDefaultChatWebAppName,
      flag_descriptions::kDefaultChatWebAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(web_app::kDefaultChatWebApp)},
