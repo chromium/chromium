@@ -5,8 +5,6 @@
 #ifndef NET_NQE_SOCKET_WATCHER_H_
 #define NET_NQE_SOCKET_WATCHER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

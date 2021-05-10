@@ -5,9 +5,6 @@
 #ifndef NET_QUIC_PROPERTIES_BASED_QUIC_SERVER_INFO_H_
 #define NET_QUIC_PROPERTIES_BASED_QUIC_SERVER_INFO_H_
 
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_isolation_key.h"

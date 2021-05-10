@@ -8,8 +8,6 @@
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
-#include <vector>
-
 #include "base/atomicops.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"

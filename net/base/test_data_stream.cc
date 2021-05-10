@@ -4,6 +4,8 @@
 
 #include "net/base/test_data_stream.h"
 
+#include <algorithm>
+
 namespace net {
 
 TestDataStream::TestDataStream() {

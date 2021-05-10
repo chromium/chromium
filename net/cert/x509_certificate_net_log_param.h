@@ -5,8 +5,6 @@
 #ifndef NET_CERT_X509_CERTIFICATE_NET_LOG_PARAM_H_
 #define NET_CERT_X509_CERTIFICATE_NET_LOG_PARAM_H_
 
-#include <memory>
-
 #include "net/base/net_export.h"
 
 namespace base {

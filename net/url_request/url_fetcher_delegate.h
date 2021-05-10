@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "net/base/net_export.h"
 
 namespace net {

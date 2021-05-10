@@ -7,9 +7,6 @@
 
 #include <stddef.h>
 
-#include <bitset>
-#include <string>
-
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "net/log/net_log_with_source.h"

@@ -5,8 +5,6 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

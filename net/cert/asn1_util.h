@@ -5,8 +5,6 @@
 #ifndef NET_CERT_ASN1_UTIL_H_
 #define NET_CERT_ASN1_UTIL_H_
 
-#include <vector>
-
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 

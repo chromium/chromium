@@ -6,7 +6,6 @@
 #define NET_BASE_TEST_DATA_STREAM_H_
 
 #include <string.h>  // for memcpy().
-#include <algorithm>
 #include "net/base/net_export.h"
 
 // This is a class for generating an infinite stream of data which can be

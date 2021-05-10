@@ -5,9 +5,6 @@
 #ifndef NET_SPDY_SPDY_LOG_UTIL_H_
 #define NET_SPDY_SPDY_LOG_UTIL_H_
 
-#include <memory>
-#include <string>
-
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/http/http_log_util.h"

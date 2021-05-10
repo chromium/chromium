@@ -5,8 +5,6 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_THROTTLER_TEST_SUPPORT_H_
 #define NET_URL_REQUEST_URL_REQUEST_THROTTLER_TEST_SUPPORT_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

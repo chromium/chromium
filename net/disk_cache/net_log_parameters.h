@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "net/log/net_log_with_source.h"
 
 namespace net {

@@ -6,8 +6,6 @@
 #define NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_SPKI_HASH_H_
 
 #include <stdint.h>
-#include <string>
-#include <vector>
 
 #include "base/strings/string_piece.h"
 

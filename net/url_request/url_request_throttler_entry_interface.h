@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"

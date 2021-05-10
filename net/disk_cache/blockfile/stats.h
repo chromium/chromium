@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "net/base/net_export.h"

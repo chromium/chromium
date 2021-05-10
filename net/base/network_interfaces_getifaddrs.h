@@ -13,8 +13,6 @@
 // This file defines IfaddrsToNetworkInterfaceList() so it can be called in
 // unittests.
 
-#include <string>
-
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"

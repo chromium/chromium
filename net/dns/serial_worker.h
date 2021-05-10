@@ -5,8 +5,6 @@
 #ifndef NET_DNS_SERIAL_WORKER_H_
 #define NET_DNS_SERIAL_WORKER_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"

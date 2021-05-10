@@ -8,8 +8,6 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 #define NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 
-#include <set>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"

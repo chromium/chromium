@@ -5,8 +5,6 @@
 #ifndef NET_SPDY_MULTIPLEXED_SESSION_H_
 #define NET_SPDY_MULTIPLEXED_SESSION_H_
 
-#include <vector>
-
 #include "base/strings/string_piece.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
