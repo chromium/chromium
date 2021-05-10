@@ -10,7 +10,7 @@
 
 MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)
     : map_(map) {
-  observer_.Add(map_);
+  observation_.Observe(map_);
 }
 
 MockSettingsObserver::~MockSettingsObserver() {}

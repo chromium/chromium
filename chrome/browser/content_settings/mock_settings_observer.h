@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -35,8 +35,8 @@ class MockSettingsObserver : public content_settings::Observer {
   // The map that this Observer is watching.
   HostContentSettingsMap* map_;
 
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_{
-      this};
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockSettingsObserver);
 };

@@ -7,7 +7,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -55,8 +55,8 @@ class GeneratedNotificationPref
 
   Profile* const profile_;
   HostContentSettingsMap* host_content_settings_map_;
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_setting_observer_{this};
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_setting_observation_{this};
   PrefChangeRegistrar user_prefs_registrar_;
 };
 
