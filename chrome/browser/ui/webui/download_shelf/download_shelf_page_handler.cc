@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
@@ -32,6 +33,7 @@ download_shelf::mojom::DownloadItemPtr GetDownloadItemFromUIModel(
   download_item->is_paused = download->IsPaused();
   download_item->is_malicious = download_model->IsMalicious();
   download_item->mixed_content_status = download_model->GetMixedContentStatus();
+  download_item->mode = download::GetDesiredDownloadItemMode(download_model);
   download_item->original_url = download_model->GetOriginalURL();
   download_item->received_bytes = download->GetReceivedBytes();
   download_item->should_open_when_complete =
@@ -46,6 +48,11 @@ download_shelf::mojom::DownloadItemPtr GetDownloadItemFromUIModel(
   download_item->total_bytes = download->GetTotalBytes();
   download_item->warning_confirm_button_text =
       base::UTF16ToUTF8(download_model->GetWarningConfirmButtonText());
+  size_t filename_offset;
+  download_item->warning_text =
+      base::UTF16ToUTF8(download_model->GetWarningText(
+          download_model->GetFileNameToReportUser().LossyDisplayName(),
+          &filename_offset));
 
   return download_item;
 }

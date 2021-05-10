@@ -100,15 +100,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-enum class DownloadItemView::Mode {
-  kNormal,             // Showing download item.
-  kDangerous,          // Displaying the dangerous download warning.
-  kMalicious,          // Displaying the malicious download warning.
-  kMixedContentWarn,   // Displaying the mixed-content download warning.
-  kMixedContentBlock,  // Displaying the mixed-content download block error.
-  kDeepScanning,       // Displaying in-progress deep scanning information.
-};
-
 namespace {
 
 // TODO(pkasting): Replace bespoke constants in file with standard metrics from
@@ -224,19 +215,19 @@ void StyleFilename(views::StyledLabel& label, size_t pos, size_t len) {
 }
 
 // Whether we are warning about a dangerous/malicious download.
-bool is_download_warning(DownloadItemView::Mode mode) {
-  return (mode == DownloadItemView::Mode::kDangerous) ||
-         (mode == DownloadItemView::Mode::kMalicious);
+bool is_download_warning(download::DownloadItemMode mode) {
+  return (mode == download::DownloadItemMode::kDangerous) ||
+         (mode == download::DownloadItemMode::kMalicious);
 }
 
 // Whether we are in the mixed content mode.
-bool is_mixed_content(DownloadItemView::Mode mode) {
-  return (mode == DownloadItemView::Mode::kMixedContentWarn) ||
-         (mode == DownloadItemView::Mode::kMixedContentBlock);
+bool is_mixed_content(download::DownloadItemMode mode) {
+  return (mode == download::DownloadItemMode::kMixedContentWarn) ||
+         (mode == download::DownloadItemMode::kMixedContentBlock);
 }
 
 // Whether a warning label is visible.
-bool has_warning_label(DownloadItemView::Mode mode) {
+bool has_warning_label(download::DownloadItemMode mode) {
   return is_download_warning(mode) || is_mixed_content(mode);
 }
 
@@ -254,7 +245,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
     : AnimationDelegateViews(this),
       model_(std::move(model)),
       shelf_(shelf),
-      mode_(Mode::kNormal),
+      mode_(download::DownloadItemMode::kNormal),
       indeterminate_progress_timer_(
           FROM_HERE,
           base::TimeDelta::FromMilliseconds(30),
@@ -357,7 +348,7 @@ void DownloadItemView::Layout() {
       gfx::Point(width() - kEndPadding - dropdown_button_->width(),
                  CenterY(dropdown_button_->height())));
 
-  if (mode_ == Mode::kNormal) {
+  if (mode_ == download::DownloadItemMode::kNormal) {
     const int text_x =
         kStartPadding + kProgressIndicatorSize + kProgressTextPadding;
     const int text_end = dropdown_button_->GetVisible()
@@ -375,8 +366,9 @@ void DownloadItemView::Layout() {
                              text_width,
                              status_label_->GetPreferredSize().height());
   } else {
-    auto* const label =
-        (mode_ == Mode::kDeepScanning) ? deep_scanning_label_ : warning_label_;
+    auto* const label = (mode_ == download::DownloadItemMode::kDeepScanning)
+                            ? deep_scanning_label_
+                            : warning_label_;
     label->SetPosition(gfx::Point(kStartPadding * 2 + GetIcon().Size().width(),
                                   CenterY(label->height())));
 
@@ -420,7 +412,7 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
 
 void DownloadItemView::OnMouseCaptureLost() {
   // Mouse should not activate us in dangerous mode.
-  if (mode_ != Mode::kNormal)
+  if (mode_ != download::DownloadItemMode::kNormal)
     return;
 
   if (dragging_) {
@@ -457,7 +449,7 @@ void DownloadItemView::OnDownloadUpdated() {
     return;
   }
 
-  SetMode(GetDesiredMode());
+  SetMode(download::GetDesiredDownloadItemMode(model_.get()));
 
   if (model_->GetState() == download::DownloadItem::COMPLETE &&
       model_->ShouldRemoveFromShelfWhenComplete()) {
@@ -524,7 +516,7 @@ gfx::Size DownloadItemView::CalculatePreferredSize() const {
                           ? (dropdown_button_->width() + kEndPadding)
                           : 0;
 
-  if (mode_ == Mode::kNormal) {
+  if (mode_ == download::DownloadItemMode::kNormal) {
     int label_width =
         std::max(file_name_label_->GetPreferredSize().width(), kTextWidth);
     if (model_->GetDangerType() ==
@@ -536,8 +528,9 @@ gfx::Size DownloadItemView::CalculatePreferredSize() const {
              label_width + kEndPadding;
     height = file_name_label_->GetLineHeight() + status_label_->GetLineHeight();
   } else {
-    auto* const label =
-        (mode_ == Mode::kDeepScanning) ? deep_scanning_label_ : warning_label_;
+    auto* const label = (mode_ == download::DownloadItemMode::kDeepScanning)
+                            ? deep_scanning_label_
+                            : warning_label_;
     height = label->GetLineHeight() * 2;
     const gfx::Size icon_size = GetIcon().Size();
     width +=
@@ -581,9 +574,10 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   const gfx::Image* const file_icon_image =
       g_browser_process->icon_manager()->LookupIconFromFilepath(
           model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
-  const gfx::ImageSkia* file_icon = (file_icon_image && mode_ == Mode::kNormal)
-                                        ? file_icon_image->ToImageSkia()
-                                        : nullptr;
+  const gfx::ImageSkia* file_icon =
+      (file_icon_image && mode_ == download::DownloadItemMode::kNormal)
+          ? file_icon_image->ToImageSkia()
+          : nullptr;
 
   // Paint download progress.
   // TODO(pkasting): Use a child view to display this.
@@ -593,7 +587,8 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   const gfx::RectF progress_bounds(
       progress_x, progress_y, kProgressIndicatorSize, kProgressIndicatorSize);
   const download::DownloadItem::DownloadState state = model_->GetState();
-  if (mode_ == Mode::kNormal && state == download::DownloadItem::IN_PROGRESS) {
+  if (mode_ == download::DownloadItemMode::kNormal &&
+      state == download::DownloadItem::IN_PROGRESS) {
     base::TimeDelta indeterminate_progress_time =
         indeterminate_progress_time_elapsed_;
     if (!model_->IsPaused()) {
@@ -603,7 +598,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
     PaintDownloadProgress(canvas, progress_bounds, indeterminate_progress_time,
                           model_->PercentComplete());
   } else if (complete_animation_.is_animating()) {
-    DCHECK_EQ(Mode::kNormal, mode_);
+    DCHECK_EQ(download::DownloadItemMode::kNormal, mode_);
     // Loop back and forth five times.
     double start = 0, end = 5;
     if (model_->GetState() == download::DownloadItem::INTERRUPTED)
@@ -616,7 +611,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
     PaintDownloadProgress(canvas, progress_bounds, base::TimeDelta(), 100);
     canvas->Restore();
   } else if (scanning_animation_.is_animating()) {
-    DCHECK_EQ(Mode::kDeepScanning, mode_);
+    DCHECK_EQ(download::DownloadItemMode::kDeepScanning, mode_);
     const double value = gfx::Tween::DoubleValueBetween(
         scanning_animation_.GetCurrentValue(), 0, 2 * base::kPiDouble);
     const double opacity = std::sin(value + base::kPiDouble / 2) / 2 + 0.5;
@@ -640,7 +635,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   }
 
   // Overlay the warning icon if appropriate.
-  if (mode_ != Mode::kNormal) {
+  if (mode_ != download::DownloadItemMode::kNormal) {
     const gfx::ImageSkia icon = ui::ThemedVectorIcon(GetIcon().GetVectorIcon())
                                     .GetImageSkia(GetNativeTheme());
     gfx::RectF bounds = GetIconBounds();
@@ -677,26 +672,8 @@ void DownloadItemView::OnDeviceScaleFactorChanged(
   StartLoadIcons();
 }
 
-DownloadItemView::Mode DownloadItemView::GetDesiredMode() const {
-  if (model_->IsMixedContent()) {
-    const bool warn = model_->GetMixedContentStatus() ==
-                      download::DownloadItem::MixedContentStatus::WARN;
-    return warn ? Mode::kMixedContentWarn : Mode::kMixedContentBlock;
-  }
-
-  if (model_->IsDangerous() &&
-      (model_->GetState() != download::DownloadItem::CANCELLED))
-    return model_->MightBeMalicious() ? Mode::kMalicious : Mode::kDangerous;
-
-  return ((model_->GetDangerType() ==
-           download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) &&
-          (model_->GetState() != download::DownloadItem::CANCELLED))
-             ? Mode::kDeepScanning
-             : Mode::kNormal;
-}
-
-void DownloadItemView::SetMode(Mode mode) {
-  if (mode_ == mode && mode != Mode::kNormal)
+void DownloadItemView::SetMode(download::DownloadItemMode mode) {
+  if (mode_ == mode && mode != download::DownloadItemMode::kNormal)
     return;
   mode_ = mode;
   UpdateFilePathAndIcons();
@@ -718,7 +695,7 @@ void DownloadItemView::SetMode(Mode mode) {
   // status changes via the accessible alert notifications, and text change
   // notifications would be redundant.
 
-  if (mode_ == Mode::kNormal) {
+  if (mode_ == download::DownloadItemMode::kNormal) {
     UpdateAccessibleAlertAndAnimationsForNormalMode();
   } else if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
@@ -740,7 +717,7 @@ void DownloadItemView::SetMode(Mode mode) {
     UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
         IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED_ACCESSIBLE_ALERT,
         unelided_filename));
-  } else if (mode_ == Mode::kDeepScanning) {
+  } else if (mode_ == download::DownloadItemMode::kDeepScanning) {
     UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
         IDS_DEEP_SCANNING_ACCESSIBLE_ALERT, unelided_filename));
   }
@@ -749,7 +726,7 @@ void DownloadItemView::SetMode(Mode mode) {
   OnPropertyChanged(&mode_, views::kPropertyEffectsNone);
 }
 
-DownloadItemView::Mode DownloadItemView::GetMode() const {
+download::DownloadItemMode DownloadItemView::GetMode() const {
   return mode_;
 }
 
@@ -784,9 +761,9 @@ void DownloadItemView::StartLoadIcons() {
 }
 
 void DownloadItemView::UpdateLabels() {
-  file_name_label_->SetVisible(mode_ == Mode::kNormal);
+  file_name_label_->SetVisible(mode_ == download::DownloadItemMode::kNormal);
 
-  status_label_->SetVisible(mode_ == Mode::kNormal);
+  status_label_->SetVisible(mode_ == download::DownloadItemMode::kNormal);
   if (status_label_->GetVisible()) {
     const auto text_and_style = GetStatusTextAndStyle();
     status_label_->SetText(text_and_style.first);
@@ -804,7 +781,8 @@ void DownloadItemView::UpdateLabels() {
     warning_label_->SizeToFit(GetLabelWidth(*warning_label_));
   }
 
-  deep_scanning_label_->SetVisible(mode_ == Mode::kDeepScanning);
+  deep_scanning_label_->SetVisible(mode_ ==
+                                   download::DownloadItemMode::kDeepScanning);
   if (deep_scanning_label_->GetVisible()) {
     const int id = (model_->download() &&
                     safe_browsing::DeepScanningRequest::ShouldUploadBinary(
@@ -832,22 +810,24 @@ void DownloadItemView::UpdateButtons() {
   }
 
   const bool allow_open_during_deep_scan =
-      (mode_ == Mode::kDeepScanning) &&
+      (mode_ == download::DownloadItemMode::kDeepScanning) &&
       !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
            model_->profile())
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  open_button_->SetEnabled((mode_ == Mode::kNormal) || prompt_to_scan ||
-                           allow_open_during_deep_scan);
+  open_button_->SetEnabled((mode_ == download::DownloadItemMode::kNormal) ||
+                           prompt_to_scan || allow_open_during_deep_scan);
 
   open_now_button_->SetVisible(allow_open_during_deep_scan);
 
-  save_button_->SetVisible((mode_ == Mode::kDangerous) ||
-                           (mode_ == Mode::kMixedContentWarn));
+  save_button_->SetVisible(
+      (mode_ == download::DownloadItemMode::kDangerous) ||
+      (mode_ == download::DownloadItemMode::kMixedContentWarn));
   save_button_->SetText(model_->GetWarningConfirmButtonText());
 
-  discard_button_->SetVisible((mode_ == Mode::kMixedContentBlock) ||
-                              prompt_to_discard);
+  discard_button_->SetVisible(
+      (mode_ == download::DownloadItemMode::kMixedContentBlock) ||
+      prompt_to_discard);
   scan_button_->SetVisible(prompt_to_scan);
 
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
@@ -914,7 +894,7 @@ void DownloadItemView::UpdateAccessibleAlert(
 }
 
 void DownloadItemView::UpdateAnimationForDeepScanningMode() {
-  if (mode_ == Mode::kDeepScanning) {
+  if (mode_ == download::DownloadItemMode::kDeepScanning) {
     // -1 to throb indefinitely.
     scanning_animation_.StartThrobbing(-1);
   } else {
@@ -1117,7 +1097,7 @@ std::pair<std::u16string, int> DownloadItemView::GetStatusTextAndStyle() const {
 }
 
 gfx::Size DownloadItemView::GetButtonSize() const {
-  if (mode_ == Mode::kDeepScanning)
+  if (mode_ == download::DownloadItemMode::kDeepScanning)
     return open_now_button_->GetPreferredSize();
 
   gfx::Size size;
@@ -1195,7 +1175,7 @@ void DownloadItemView::UpdateDropdownButtonImage() {
 }
 
 void DownloadItemView::OpenButtonPressed() {
-  if (mode_ == Mode::kNormal) {
+  if (mode_ == download::DownloadItemMode::kNormal) {
     complete_animation_.End();
     announce_accessible_alert_soon_ = true;
     model_->OpenDownload();
@@ -1222,7 +1202,7 @@ void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
 }
 
 void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {
-  if (mode_ == Mode::kDeepScanning) {
+  if (mode_ == download::DownloadItemMode::kDeepScanning) {
     TabModalConfirmDialog::Create(
         std::make_unique<safe_browsing::DeepScanningModalDialog>(
             web_contents,
@@ -1294,17 +1274,17 @@ void DownloadItemView::ExecuteCommand(DownloadCommands::Command command) {
   commands_.ExecuteCommand(command);
 }
 
-DEFINE_ENUM_CONVERTERS(DownloadItemView::Mode,
-                       {DownloadItemView::Mode::kNormal, u"kNormal"},
-                       {DownloadItemView::Mode::kDangerous, u"kDangerous"},
-                       {DownloadItemView::Mode::kMalicious, u"kMalicious"},
-                       {DownloadItemView::Mode::kMixedContentWarn,
+DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,
+                       {download::DownloadItemMode::kNormal, u"kNormal"},
+                       {download::DownloadItemMode::kDangerous, u"kDangerous"},
+                       {download::DownloadItemMode::kMalicious, u"kMalicious"},
+                       {download::DownloadItemMode::kMixedContentWarn,
                         u"kMixedContentWarn"},
-                       {DownloadItemView::Mode::kMixedContentBlock,
+                       {download::DownloadItemMode::kMixedContentBlock,
                         u"kMixedContentBlock"})
 
 BEGIN_METADATA(DownloadItemView, views::View)
-ADD_READONLY_PROPERTY_METADATA(Mode, Mode)
+ADD_READONLY_PROPERTY_METADATA(download::DownloadItemMode, Mode)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, InProgressAccessibleAlertText)
 ADD_READONLY_PROPERTY_METADATA(gfx::RectF, IconBounds)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, ButtonSize)

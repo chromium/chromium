@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_loader.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -69,8 +70,6 @@ class DownloadItemView : public views::View,
                          public views::AnimationDelegateViews {
  public:
   METADATA_HEADER(DownloadItemView);
-
-  enum class Mode;
 
   DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
                    DownloadShelfView* shelf,
@@ -122,12 +121,9 @@ class DownloadItemView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
-  // Returns the mode that best reflects the current model state.
-  Mode GetDesiredMode() const;
-
   // Sets the current mode to |mode| and updates UI appropriately.
-  void SetMode(Mode mode);
-  Mode GetMode() const;
+  void SetMode(download::DownloadItemMode mode);
+  download::DownloadItemMode GetMode() const;
 
   // Updates the file path, and if necessary, begins loading the file icon in
   // various sizes. This may eventually result in a callback to
@@ -241,7 +237,7 @@ class DownloadItemView : public views::View,
   DownloadShelfView* const shelf_;
 
   // Mode of the download item view.
-  Mode mode_;
+  download::DownloadItemMode mode_;
 
   // The "open download" button. This button is visually transparent and fills
   // the entire bounds of the DownloadItemView, to make the DownloadItemView

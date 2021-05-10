@@ -942,6 +942,8 @@ static_library("ui") {
       "content_settings/content_setting_image_model.h",
       "content_settings/content_setting_image_model_states.cc",
       "content_settings/content_setting_image_model_states.h",
+      "download/download_item_mode.cc",
+      "download/download_item_mode.h",
       "exclusive_access/exclusive_access_bubble.cc",
       "exclusive_access/exclusive_access_bubble.h",
       "exclusive_access/exclusive_access_bubble_hide_callback.h",

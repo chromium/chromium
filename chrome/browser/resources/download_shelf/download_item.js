@@ -30,7 +30,7 @@ export class DownloadItemElement extends CustomElement {
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
   }
 
-  /** @param {!DownloadItem} value */
+  /** @param {DownloadItem} value */
   set item(value) {
     if (this.item_ === value) {
       return;

@@ -22,6 +22,10 @@ mojom("mojo_bindings") {
           cpp = "::download::DownloadDangerType"
         },
         {
+          mojom = "download_shelf.mojom.DownloadMode"
+          cpp = "::download::DownloadItemMode"
+        },
+        {
           mojom = "download_shelf.mojom.DownloadState"
           cpp = "::download::DownloadItem::DownloadState"
         },

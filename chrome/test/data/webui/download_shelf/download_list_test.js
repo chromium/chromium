@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DownloadListElement} from 'chrome://download-shelf.top-chrome/download_list.js';
-import {DangerType, DownloadItem, DownloadState, MixedContentStatus} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
+import {DangerType, DownloadItem, DownloadMode, DownloadState, MixedContentStatus} from 'chrome://download-shelf.top-chrome/download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxyImpl} from 'chrome://download-shelf.top-chrome/download_shelf_api_proxy.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
@@ -33,6 +33,7 @@ suite('DownloadListTest', function() {
       fileNameToReportUser: {path: 'test.exe'},
       isPaused,
       mixedContentStatus: MixedContentStatus.kSafe,
+      mode: DownloadMode.kNormal,
       originalUrl: {url: ''},
       receivedBytes: BigInt(1),
       shouldOpenWhenComplete: false,
@@ -42,6 +43,7 @@ suite('DownloadListTest', function() {
       tooltipText: '',
       totalBytes: BigInt(1),
       warningConfirmButtonText: '',
+      warningText: '',
     };
   }
 

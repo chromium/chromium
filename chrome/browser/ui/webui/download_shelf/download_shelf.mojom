@@ -76,6 +76,23 @@ enum DownloadState {
   kInterrupted,
 };
 
+// The security mode associated with a given download item. Maps to
+// download::DownloadItemMode in cbui/download/download_item_mode.h.
+enum DownloadMode {
+  // Showing download item.
+  kNormal,
+  // Displaying the dangerous download warning.
+  kDangerous,
+  // Displaying the malicious download warning.
+  kMalicious,
+  // Displaying the mixed-content download warning.
+  kMixedContentWarn,
+  // Displaying the mixed-content download block error.
+  kMixedContentBlock,
+  // Displaying in-progress deep scanning information.
+  kDeepScanning,
+};
+
 // Mixed content details associated with a given download item. Maps to
 // download::DownloadItem::MixedContentStatus in components/download/public/common/download_item.h.
 enum MixedContentStatus {
@@ -122,6 +139,9 @@ struct DownloadItem {
   // The mixed content status determined during download target determination.
   MixedContentStatus mixed_content_status;
 
+  // Security UI mode.
+  DownloadMode mode;
+
   // The URL of the originating request.
   url.mojom.Url original_url;
 
@@ -154,6 +174,9 @@ struct DownloadItem {
 
   // Caption text for a button for confirming a dangerous download warning.
   string warning_confirm_button_text;
+
+  // The text to display if the download is dangerous or malicious.
+  string warning_text;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

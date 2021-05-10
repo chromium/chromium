@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_MOJOM_TRAITS_H_
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_MOJOM_TRAITS_H_
 
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -128,6 +129,57 @@ struct EnumTraits<download_shelf::mojom::DangerType,
       case MojoDangerType::kBlockedUnsupportedFileType:
         *out = DownloadDangerType::
             DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
+        return true;
+    }
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct EnumTraits<download_shelf::mojom::DownloadMode,
+                  download::DownloadItemMode> {
+  using DownloadMode = download::DownloadItemMode;
+  using MojoDownloadMode = download_shelf::mojom::DownloadMode;
+
+  static MojoDownloadMode ToMojom(DownloadMode input) {
+    switch (input) {
+      case DownloadMode::kNormal:
+        return MojoDownloadMode::kNormal;
+      case DownloadMode::kDangerous:
+        return MojoDownloadMode::kDangerous;
+      case DownloadMode::kMalicious:
+        return MojoDownloadMode::kMalicious;
+      case DownloadMode::kMixedContentBlock:
+        return MojoDownloadMode::kMixedContentBlock;
+      case DownloadMode::kMixedContentWarn:
+        return MojoDownloadMode::kMixedContentWarn;
+      case DownloadMode::kDeepScanning:
+        return MojoDownloadMode::kDeepScanning;
+    }
+    NOTREACHED();
+    return MojoDownloadMode::kNormal;
+  }
+
+  static bool FromMojom(MojoDownloadMode input, DownloadMode* out) {
+    switch (input) {
+      case MojoDownloadMode::kNormal:
+        *out = DownloadMode::kNormal;
+        return true;
+      case MojoDownloadMode::kDangerous:
+        *out = DownloadMode::kDangerous;
+        return true;
+      case MojoDownloadMode::kMalicious:
+        *out = DownloadMode::kMalicious;
+        return true;
+      case MojoDownloadMode::kMixedContentBlock:
+        *out = DownloadMode::kMixedContentBlock;
+        return true;
+      case MojoDownloadMode::kMixedContentWarn:
+        *out = DownloadMode::kMixedContentWarn;
+        return true;
+      case MojoDownloadMode::kDeepScanning:
+        *out = DownloadMode::kDeepScanning;
         return true;
     }
     NOTREACHED();
