@@ -218,6 +218,13 @@ def _RunLint(lint_binary_path,
       '--disable',
       ','.join(_DISABLED_ALWAYS),
   ]
+
+  # Crashes lint itself, see b/187524311
+  # Only disable if we depend on androidx.fragment (otherwise lint fails due to
+  # non-existent check).
+  if any('androidx_fragment_fragment' in aar for aar in aars):
+    cmd.extend(['--disable', 'DialogFragmentCallbacksDetector'])
+
   if baseline:
     cmd.extend(['--baseline', baseline])
   if testonly_target:
