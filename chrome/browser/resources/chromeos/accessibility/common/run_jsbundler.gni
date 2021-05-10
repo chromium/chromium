@@ -31,8 +31,7 @@ template("run_jsbundler") {
     rewrite_rules = []
   }
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
     inputs = jsbundler_modules
     sources = invoker.sources
