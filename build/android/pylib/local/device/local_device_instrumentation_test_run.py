@@ -1129,9 +1129,6 @@ class LocalDeviceInstrumentationTestRun(
         # that implies that we aren't actively maintaining baselines for the
         # test. This helps prevent unrelated CLs from getting comments posted to
         # them.
-        # Additionally, add the ignore if we're running on a trybot and this is
-        # not our final retry attempt in order to prevent unrelated CLs from
-        # getting spammed if a test is flaky.
         should_rewrite = False
         with open(json_path) as infile:
           # All the key/value pairs in the JSON file are strings, so convert
@@ -1152,15 +1149,7 @@ class LocalDeviceInstrumentationTestRun(
         running_on_unsupported = (
             device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
                 device.product_model, []) and not fail_on_unsupported)
-        # TODO(skbug.com/10787): Remove the ignore on non-final retry once we
-        # fully switch over to using the Gerrit plugin for surfacing Gold
-        # information since it does not spam people with emails due to automated
-        # comments.
-        not_final_retry = self._env.current_try + 1 != self._env.max_tries
-        tryjob_but_not_final_retry =\
-            not_final_retry and gold_properties.IsTryjobRun()
-        should_ignore_in_gold =\
-            running_on_unsupported or tryjob_but_not_final_retry
+        should_ignore_in_gold = running_on_unsupported
         # We still want to fail the test even if we're ignoring the image in
         # Gold if we're running on a supported configuration, so
         # should_ignore_in_gold != should_hide_failure.
