@@ -1516,6 +1516,14 @@ if (!is_android) {
     if (is_chrome_branded && !is_mac) {
       public_deps = [ ":preinstalled_apps" ]
     }
+
+    if (enable_pak_file_integrity_checks) {
+      files_to_hash = [
+        "resources.pak",
+        "chrome_100_percent.pak",
+        "chrome_200_percent.pak",
+      ]
+    }
   }
 }
 
