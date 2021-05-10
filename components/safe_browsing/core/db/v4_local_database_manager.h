@@ -269,13 +269,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // "mark_as_malware", "mark_as_uws".
   void PopulateArtificialDatabase();
 
-  // Rename *.store files on disk per |kStoreFilesToRename|.
-  void RenameOldStoreFiles();
-
-  // Renames the file at |old_path| to |new_path|.
-  static void RenameStoreFile(const base::FilePath& old_path,
-                              const base::FilePath& new_path);
-
   // Schedules a full-hash check for a given set of prefixes.
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 

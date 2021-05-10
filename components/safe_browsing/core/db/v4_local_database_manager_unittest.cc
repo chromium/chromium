@@ -1513,17 +1513,16 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
 }
 
 TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
-  const std::string prefix = "SafeBrowsing.V4Store.";
   const std::string old_store_name = "UrlCsdWhitelist";
   const std::string old_name_in_use_histogram =
-      prefix + "OldFileNameInUse." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameInUse." + old_store_name;
   const std::string old_name_exists_histogram =
-      prefix + "OldFileNameExists." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameExists." + old_store_name;
   const std::string new_store_name = "UrlCsdAllowlist";
   const std::string new_name_exists_histogram =
-      prefix + "NewFileNameExists." + new_store_name;
+      "SafeBrowsing.V4Store.NewFileNameExists." + new_store_name;
   const std::string rename_status_histogram =
-      prefix + "RenameStatus." + new_store_name;
+      "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
@@ -1563,11 +1562,10 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
 }
 
 TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
-  const std::string prefix = "SafeBrowsing.V4Store.";
-  const std::string old_name_in_use_prefix = prefix + "OldFileNameInUse.";
-  const std::string old_name_exists_prefix = prefix + "OldFileNameExists.";
-  const std::string new_name_exists_prefix = prefix + "NewFileNameExists.";
-  const std::string rename_status_prefix = prefix + "RenameStatus.";
+  const std::string old_name_in_use = "SafeBrowsing.V4Store.OldFileNameInUse.";
+  const std::string old_name_exists = "SafeBrowsing.V4Store.OldFileNameExists.";
+  const std::string new_name_exists = "SafeBrowsing.V4Store.NewFileNameExists.";
+  const std::string rename_status = "SafeBrowsing.V4Store.RenameStatus.";
 
   const auto kStoreFilesToRename =
       base::MakeFixedFlatMap<std::string, std::string>({
@@ -1581,17 +1579,14 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
     const std::string& old_store_name = pair.first;
     const std::string& new_store_name = pair.second;
 
-    std::string old_name_in_use_histogram =
-        old_name_in_use_prefix + old_store_name;
+    std::string old_name_in_use_histogram = old_name_in_use + old_store_name;
     histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
-    std::string old_name_exists_histogram =
-        old_name_exists_prefix + old_store_name;
+    std::string old_name_exists_histogram = old_name_exists + old_store_name;
     histograms.ExpectTotalCount(old_name_exists_histogram, 0);
 
-    std::string new_name_exists_histogram =
-        new_name_exists_prefix + new_store_name;
+    std::string new_name_exists_histogram = new_name_exists + new_store_name;
     histograms.ExpectTotalCount(new_name_exists_histogram, 0);
-    std::string rename_status_histogram = rename_status_prefix + new_store_name;
+    std::string rename_status_histogram = rename_status + new_store_name;
     histograms.ExpectTotalCount(rename_status_histogram, 0);
 
     auto old_store_path =
@@ -1620,22 +1615,19 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
         base_dir_.GetPath().AppendASCII(new_store_name + ".store");
     ASSERT_TRUE(base::PathExists(new_store_path));
 
-    std::string old_name_in_use_histogram =
-        old_name_in_use_prefix + old_store_name;
+    std::string old_name_in_use_histogram = old_name_in_use + old_store_name;
     histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
     histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
 
-    std::string old_name_exists_histogram =
-        old_name_exists_prefix + old_store_name;
+    std::string old_name_exists_histogram = old_name_exists + old_store_name;
     histograms.ExpectTotalCount(old_name_exists_histogram, 1);
     histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
 
-    std::string new_name_exists_histogram =
-        new_name_exists_prefix + new_store_name;
+    std::string new_name_exists_histogram = new_name_exists + new_store_name;
     histograms.ExpectTotalCount(new_name_exists_histogram, 1);
     histograms.ExpectBucketCount(new_name_exists_histogram, false, 1);
 
-    std::string rename_status_histogram = rename_status_prefix + new_store_name;
+    std::string rename_status_histogram = rename_status + new_store_name;
     histograms.ExpectTotalCount(rename_status_histogram, 1);
     histograms.ExpectBucketCount(rename_status_histogram, 0, 1);
 
@@ -1646,17 +1638,16 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
 
 TEST_F(V4LocalDatabaseManagerTest,
        RenameStoreOldFileDoesNotExist_DoesNotRename) {
-  const std::string prefix = "SafeBrowsing.V4Store.";
   const std::string old_store_name = "UrlCsdWhitelist";
   const std::string old_name_in_use_histogram =
-      prefix + "OldFileNameInUse." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameInUse." + old_store_name;
   const std::string old_name_exists_histogram =
-      prefix + "OldFileNameExists." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameExists." + old_store_name;
   const std::string new_store_name = "UrlCsdAllowlist";
   const std::string new_name_exists_histogram =
-      prefix + "NewFileNameExists." + new_store_name;
+      "SafeBrowsing.V4Store.NewFileNameExists." + new_store_name;
   const std::string rename_status_histogram =
-      prefix + "RenameStatus." + new_store_name;
+      "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
@@ -1684,17 +1675,16 @@ TEST_F(V4LocalDatabaseManagerTest,
 }
 
 TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
-  const std::string prefix = "SafeBrowsing.V4Store.";
   const std::string old_store_name = "UrlCsdWhitelist";
   const std::string old_name_in_use_histogram =
-      prefix + "OldFileNameInUse." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameInUse." + old_store_name;
   const std::string old_name_exists_histogram =
-      prefix + "OldFileNameExists." + old_store_name;
+      "SafeBrowsing.V4Store.OldFileNameExists." + old_store_name;
   const std::string new_store_name = "UrlCsdAllowlist";
   const std::string new_name_exists_histogram =
-      prefix + "NewFileNameExists." + new_store_name;
+      "SafeBrowsing.V4Store.NewFileNameExists." + new_store_name;
   const std::string rename_status_histogram =
-      prefix + "RenameStatus." + new_store_name;
+      "SafeBrowsing.V4Store.RenameStatus." + new_store_name;
 
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
