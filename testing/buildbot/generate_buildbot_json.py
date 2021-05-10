@@ -1643,6 +1643,12 @@ class BBJSONGenerator(object):
         assert isinstance(test, dict)
         seen_mixins = seen_mixins.union(test.get('mixins', set()))
 
+    for variant in self.variants:
+      # Unpack the variant from variants.pyl if it's string based.
+      if isinstance(variant, str):
+        variant = self.variants[variant]
+      seen_mixins = seen_mixins.union(variant.get('mixins', set()))
+
     missing_mixins = set(self.mixins.keys()) - seen_mixins
     if missing_mixins:
       raise BBGenErr('The following mixins are unreferenced: %s. They must be'
