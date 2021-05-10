@@ -93,7 +93,7 @@ class AccountBuilder {
     account_ = std::move(account);
   }
 
-  bool IsEmpty() const { return account_.empty(); }
+  bool IsEmpty() const { return account_.DictEmpty(); }
 
   AccountBuilder& SetId(const std::string& value) {
     account_.SetStringKey("id", value);
