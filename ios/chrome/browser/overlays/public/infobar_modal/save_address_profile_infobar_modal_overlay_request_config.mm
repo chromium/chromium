@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
-#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 
@@ -27,8 +26,7 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
       static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
           infobar_->delegate());
 
-  address_ = delegate->GetEnvelopeStyleAddress(
-      GetApplicationContext()->GetApplicationLocale());
+  address_ = delegate->GetEnvelopeStyleAddress();
   emailAddress_ = delegate->GetEmailAddress();
   phoneNumber_ = delegate->GetPhoneNumber();
   current_address_profile_saved_ = infobar->accepted();

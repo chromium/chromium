@@ -55,8 +55,9 @@ using autofill_address_profile_infobar_overlays::
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];
   [self.consumer
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
-  [self.consumer setSubtitleText:base::SysUTF16ToNSString(
-                                     self.config->message_sub_text())];
+  [self.consumer
+      setSubtitleText:base::SysUTF16ToNSString(self.config->description())];
+  [self.consumer setRestrictSubtitleTextToSingleLine:YES];
 
   if (!self.config->is_update_banner()) {
     // TODO(crbug.com/1167062): Implement update address modal.

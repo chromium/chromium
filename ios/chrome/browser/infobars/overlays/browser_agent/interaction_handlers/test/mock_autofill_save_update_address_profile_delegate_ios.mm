@@ -16,9 +16,11 @@ MockAutofillSaveUpdateAddressProfileDelegateIOS::
     MockAutofillSaveUpdateAddressProfileDelegateIOS(
         const autofill::AutofillProfile& profile,
         const autofill::AutofillProfile* original_profile,
+        const std::string& locale,
         autofill::AutofillClient::AddressProfileSavePromptCallback callback)
     : AutofillSaveUpdateAddressProfileDelegateIOS(profile,
                                                   original_profile,
+                                                  locale,
                                                   std::move(callback)) {}
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
@@ -38,6 +40,6 @@ MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
     CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
         autofill::AutofillProfile profile) {
   return std::make_unique<MockAutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr,
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
       autofill::AutofillClient::AddressProfileSavePromptCallback());
 }

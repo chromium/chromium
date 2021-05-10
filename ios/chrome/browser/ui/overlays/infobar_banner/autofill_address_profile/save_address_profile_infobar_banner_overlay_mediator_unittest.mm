@@ -37,7 +37,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
-          profile, /*original_profile=*/nullptr,
+          profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
           base::BindOnce(
               ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
                     user_decision,
@@ -64,6 +64,6 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.titleText);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetMessageActionText()),
               consumer.buttonText);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetMessageDescriptionText()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
 }

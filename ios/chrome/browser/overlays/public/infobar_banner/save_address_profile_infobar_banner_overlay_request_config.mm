@@ -29,7 +29,7 @@ SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
           FromInfobarDelegate(infobar_->delegate());
   message_text_ = delegate->GetMessageText();
   button_label_text_ = delegate->GetMessageActionText();
-  message_sub_text_ = delegate->GetMessageDescriptionText();
+  description_ = delegate->GetDescription();
   is_update_banner_ = delegate->GetOriginalProfile() ? true : false;
 }
 

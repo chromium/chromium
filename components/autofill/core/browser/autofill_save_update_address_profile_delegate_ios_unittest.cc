@@ -18,7 +18,8 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr, callback.Get());
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+      callback.Get());
 
   EXPECT_CALL(
       callback,
@@ -33,10 +34,13 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestSaveAddressStrings) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr, callback.Get());
+      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+      callback.Get());
 
   EXPECT_EQ(delegate->GetMessageActionText(), std::u16string(u"Save..."));
   EXPECT_EQ(delegate->GetMessageText(), std::u16string(u"Save Address?"));
+  EXPECT_EQ(delegate->GetDescription(),
+            std::u16string(u"John H. Doe, 666 Erebus St."));
 }
 
 // Tests that the delegate returns Update Address profile strings when the
@@ -46,10 +50,12 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, &profile, callback.Get());
+      profile, &profile, /*locale=*/"en-US", callback.Get());
 
   EXPECT_EQ(delegate->GetMessageActionText(), std::u16string(u"Update..."));
   EXPECT_EQ(delegate->GetMessageText(), std::u16string(u"Update Address?"));
+  EXPECT_EQ(delegate->GetDescription(),
+            std::u16string(u"John H. Doe \x2014 666 Erebus St."));
 }
 
 }  // namespace autofill

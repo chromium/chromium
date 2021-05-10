@@ -29,8 +29,8 @@ class SaveAddressProfileBannerRequestConfig
   // The button label text.
   std::u16string button_label_text() const { return button_label_text_; }
 
-  // The message sub text.
-  std::u16string message_sub_text() const { return message_sub_text_; }
+  // The description.
+  std::u16string description() const { return description_; }
 
   // The name of the icon image.
   NSString* icon_image_name() const { return icon_image_name_; }
@@ -50,7 +50,7 @@ class SaveAddressProfileBannerRequestConfig
   // Configuration data extracted from |infobar_|'s save address profile
   // delegate.
   std::u16string message_text_;
-  std::u16string message_sub_text_;
+  std::u16string description_;
   std::u16string button_label_text_;
   NSString* icon_image_name_ = nil;
 

@@ -332,7 +332,9 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
     auto delegate =
         std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-            profile, original_profile, std::move(callback));
+            profile, original_profile,
+            GetApplicationContext()->GetApplicationLocale(),
+            std::move(callback));
     infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         std::move(delegate)));

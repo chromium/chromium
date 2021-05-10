@@ -17,6 +17,7 @@
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_TEST_FAKE_INFOBAR_BANNER_CONSUMER_H_

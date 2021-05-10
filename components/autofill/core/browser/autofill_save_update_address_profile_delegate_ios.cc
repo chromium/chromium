@@ -22,8 +22,10 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
+        const std::string& locale,
         AutofillClient::AddressProfileSavePromptCallback callback)
-    : profile_(profile),
+    : locale_(locale),
+      profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
       address_profile_save_prompt_callback_(std::move(callback)) {}
 
@@ -42,9 +44,8 @@ AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
 }
 
 std::u16string
-AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress(
-    const std::string& ui_language_code) const {
-  return ::autofill::GetEnvelopeStyleAddress(profile_, ui_language_code,
+AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress() const {
+  return ::autofill::GetEnvelopeStyleAddress(profile_, locale_,
                                              /*include_country=*/true);
 }
 
@@ -58,10 +59,11 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
   return profile_.GetRawInfo(EMAIL_ADDRESS);
 }
 
-std::u16string
-AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageDescriptionText() const {
-  // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(u"Fill forms faster in Chrome");
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
+    const {
+  return original_profile_
+             ? GetDescriptionForProfileToUpdate(*original_profile_, locale_)
+             : GetDescriptionForProfileToSave(profile_, locale_);
 }
 
 std::u16string

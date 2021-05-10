@@ -66,6 +66,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 
 // The original position of this InfobarVC view in the parent's view coordinate
 // system.
@@ -113,6 +114,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
         [[InfobarMetricsRecorder alloc] initWithType:infobarType];
     _presentsModal = presentsModal;
     _useIconBackgroundTint = YES;
+    _restrictSubtitleTextToSingleLine = NO;
   }
   return self;
 }
@@ -205,7 +207,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   self.subTitleLabel.adjustsFontForContentSizeCategory = YES;
   self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  self.subTitleLabel.numberOfLines = 0;
+  if (_restrictSubtitleTextToSingleLine) {
+    self.subTitleLabel.numberOfLines = 1;
+  } else {
+    self.subTitleLabel.numberOfLines = 0;
+  }
   // If |self.subTitleText| hasn't been set or is empty, hide the label to keep
   // the title label centered in the Y axis.
   self.subTitleLabel.hidden = !self.subtitleText.length;
@@ -435,6 +441,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint {
   _useIconBackgroundTint = useIconBackgroundTint;
+}
+
+- (void)setRestrictSubtitleTextToSingleLine:
+    (BOOL)restrictSubtitleTextToSingleLine {
+  _restrictSubtitleTextToSingleLine = restrictSubtitleTextToSingleLine;
 }
 
 #pragma mark - Private Methods

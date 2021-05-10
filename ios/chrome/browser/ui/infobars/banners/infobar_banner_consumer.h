@@ -33,6 +33,10 @@
 // The subtitle displayed by this InfobarBanner.
 - (void)setSubtitleText:(NSString*)subtitleText;
 
+// If YES, restricts the number of lines in subtitle to 1.
+- (void)setRestrictSubtitleTextToSingleLine:
+    (BOOL)restrictSubtitleTextToSingleLine;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_INFOBAR_BANNER_CONSUMER_H_

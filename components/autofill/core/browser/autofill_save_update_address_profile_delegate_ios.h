@@ -22,6 +22,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      const std::string& locale,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
@@ -34,12 +35,21 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   static AutofillSaveUpdateAddressProfileDelegateIOS* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
-  std::u16string GetEnvelopeStyleAddress(
-      const std::string& ui_language_code) const;
+  // Returns the address in envelope style in the |profile_|.
+  std::u16string GetEnvelopeStyleAddress() const;
+
+  // Returns the phone number in the |profile_|.
   std::u16string GetPhoneNumber() const;
+
+  // Returns the email address in the |profile_|.
   std::u16string GetEmailAddress() const;
-  std::u16string GetMessageDescriptionText() const;
+
+  // Returns the subtitle text to be displayed in the save/update banner.
+  std::u16string GetDescription() const;
+
+  // Returns the message button text.
   std::u16string GetMessageActionText() const;
+
   const autofill::AutofillProfile* GetProfile() const;
   const autofill::AutofillProfile* GetOriginalProfile() const;
   void set_modal_is_shown_to_true() { modal_is_shown_ = true; }
@@ -61,6 +71,9 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   // Fires the |address_profile_save_prompt_callback_| callback.
   void RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // The application locale.
+  std::string locale_;
 
   // The profile that will be saved if the user accepts.
   AutofillProfile profile_;
