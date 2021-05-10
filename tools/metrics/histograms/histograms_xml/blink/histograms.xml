@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.GetImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="2021-01-31">
+    units="microseconds * 10/sqrt(pixels)" expires_after="2022-05-10">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -144,6 +144,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: this histogram was expired from 2021-01-31 to 2021-05-10; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -216,7 +219,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.PutImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="2021-01-31">
+    units="microseconds * 10/sqrt(pixels)" expires_after="2022-05-10">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -233,6 +236,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
+
+    Warning: this histogram was expired from 2021-01-31 to 2021-05-10; data may
+    be missing.
   </summary>
 </histogram>
 
