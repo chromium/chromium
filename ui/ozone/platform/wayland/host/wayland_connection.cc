@@ -561,13 +561,22 @@ void WaylandConnection::Global(void* data,
     }
   } else if (!connection->xdg_foreign_ &&
              strcmp(interface, "zxdg_exporter_v1") == 0) {
+    auto zxdg_exporter = wl::Bind<zxdg_exporter_v1>(registry, name, version);
+    if (!zxdg_exporter) {
+      LOG(ERROR) << "Failed to bind zxdg_exporter";
+      return;
+    }
     connection->xdg_foreign_ = std::make_unique<XdgForeignWrapper>(
-        connection, wl::Bind<zxdg_exporter_v1>(registry, name, version));
+        connection, std::move(zxdg_exporter));
   } else if (!connection->drm_ && (strcmp(interface, "wl_drm") == 0) &&
              version >= kMinWlDrmVersion) {
-    auto wayland_drm = wl::Bind<struct wl_drm>(registry, name, version);
+    auto wl_drm = wl::Bind<struct wl_drm>(registry, name, version);
+    if (!wl_drm) {
+      LOG(ERROR) << "Failed to bind wl_drm";
+      return;
+    }
     connection->drm_ =
-        std::make_unique<WaylandDrm>(wayland_drm.release(), connection);
+        std::make_unique<WaylandDrm>(wl_drm.release(), connection);
   } else if (!connection->zaura_shell_ &&
              (strcmp(interface, "zaura_shell") == 0)) {
     auto zaura_shell = wl::Bind<struct zaura_shell>(
