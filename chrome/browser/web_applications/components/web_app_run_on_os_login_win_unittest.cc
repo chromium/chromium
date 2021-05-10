@@ -68,7 +68,7 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 
   void VerifyShortcutCreated() {
     std::vector<base::FilePath> shortcuts = GetShortcuts();
-    EXPECT_GT(shortcuts.size(), 0u);
+    EXPECT_EQ(shortcuts.size(), 1u);
 
     for (const base::FilePath& shortcut : shortcuts) {
       std::wstring cmd_line_string;
@@ -92,6 +92,18 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 TEST_F(WebAppRunOnOsLoginWinTest, Register) {
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
   bool result = internals::RegisterRunOnOsLogin(*shortcut_info);
+  EXPECT_TRUE(result);
+  VerifyShortcutCreated();
+}
+
+TEST_F(WebAppRunOnOsLoginWinTest, RegisterMultipleTimes) {
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  bool result = internals::RegisterRunOnOsLogin(*shortcut_info);
+  EXPECT_TRUE(result);
+  VerifyShortcutCreated();
+
+  // There should still only be one shortcut created.
+  result = internals::RegisterRunOnOsLogin(*shortcut_info);
   EXPECT_TRUE(result);
   VerifyShortcutCreated();
 }
