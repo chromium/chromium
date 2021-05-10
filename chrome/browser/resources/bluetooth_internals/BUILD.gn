@@ -255,6 +255,7 @@ generate_grd("build_grd") {
     "device_collection.js",
     "device_details_page.js",
     "device_table.js",
+    "device_utils.js",
     "devices_page.js",
     "expandable_list.js",
     "bluetooth_internals.html",

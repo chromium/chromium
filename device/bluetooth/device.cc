@@ -45,6 +45,9 @@ mojom::DeviceInfoPtr Device::ConstructDeviceInfoStruct(
     device_info->rssi->value = device->GetInquiryRSSI().value();
   }
 
+  for (auto const& it : device->GetManufacturerData())
+    device_info->manufacturer_data_map.insert_or_assign(it.first, it.second);
+
   for (auto const& it : device->GetServiceData())
     device_info->service_data_map.insert_or_assign(it.first, it.second);
 

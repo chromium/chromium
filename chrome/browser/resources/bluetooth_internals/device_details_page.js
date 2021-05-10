@@ -12,6 +12,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
+import {formatManufacturerDataMap} from './device_utils.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
 import {ServiceList} from './service_list.js';
@@ -27,6 +28,7 @@ const PROPERTY_NAMES = {
   isGattConnected: 'GATT Connected',
   'rssi.value': 'Latest RSSI',
   'services.length': 'Services',
+  manufacturerDataMap: 'Manufacturer Data',
 };
 
 /**
@@ -166,12 +168,16 @@ export class DeviceDetailsPage extends Page {
       serviceCount = services.length;
     }
 
+    const manufacturerDataMapText =
+        formatManufacturerDataMap(this.deviceInfo.manufacturerDataMap);
+
     const deviceViewObj = {
       name: this.deviceInfo.nameForDisplay,
       address: this.deviceInfo.address,
       isGattConnected: connectedText,
       'rssi.value': rssiValue,
       'services.length': serviceCount,
+      manufacturerDataMap: manufacturerDataMapText,
     };
 
     this.deviceFieldSet_.setObject(deviceViewObj);

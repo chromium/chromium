@@ -68,6 +68,10 @@ struct DeviceInfo {
   bool is_gatt_connected;
   RSSIWrapper? rssi;
 
+  // Important: the blobs associated with each key are arbitrary and untrusted.
+  // Please refer to the note on "The Rule of 2" at the top of this file.
+  map<uint16, array<uint8>> manufacturer_data_map;
+
   // Important: the blobs associated with each UUID are arbitrary and untrusted.
   // Please refer to the note on "The Rule of 2" at the top of this file.
   map<UUID, array<uint8>> service_data_map;

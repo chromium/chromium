@@ -205,6 +205,7 @@ export function fakeDeviceInfo1() {
     nameForDisplay: 'AAA',
     rssi: {value: -40},
     isGattConnected: false,
+    manufacturerDataMap: {'1': [1, 2], '2': [3, 4]},
     serviceDataMap: {},
     services: [],
   };
@@ -221,6 +222,7 @@ export function fakeDeviceInfo2() {
     nameForDisplay: 'BBB',
     rssi: null,
     isGattConnected: false,
+    manufacturerDataMap: {},
     serviceDataMap: {},
     services: [],
   };
@@ -236,6 +238,7 @@ export function fakeDeviceInfo3() {
     address: 'CC:CC:84:96:92:84',
     name: 'CCC',
     nameForDisplay: 'CCC',
+    manufacturerDataMap: {},
     serviceDataMap: {},
     isGattConnected: false,
   };

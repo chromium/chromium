@@ -93,11 +93,13 @@ suite('bluetooth_internals', function() {
     var addressColumn = deviceRow.children[1];
     var rssiColumn = deviceRow.children[2];
     var servicesColumn = deviceRow.children[3];
+    var manufacturerDataColumn = deviceRow.children[4];
 
     expectTrue(!!nameForDisplayColumn);
     expectTrue(!!addressColumn);
     expectTrue(!!rssiColumn);
     expectTrue(!!servicesColumn);
+    expectTrue(!!manufacturerDataColumn);
 
     adapterBroker.deviceChanged(deviceInfo);
 
@@ -114,6 +116,28 @@ suite('bluetooth_internals', function() {
     } else {
       expectEquals('Unknown', servicesColumn.textContent);
     }
+
+    if (deviceInfo.manufacturerDataMap) {
+      expectEquals(
+          formatManufacturerDataMap(deviceInfo.manufacturerDataMap),
+          manufacturerDataColumn.textContent);
+    }
+  }
+
+  /**
+   * Format in a user readable way device manufacturer data map. Keys are
+   * Bluetooth company identifiers (unsigned short), values are bytes.
+   * @param {Map<string, array<number>>} manufacturerDataMap
+   * @return {string}
+   */
+  function formatManufacturerDataMap(manufacturerDataMap) {
+    return Object.entries(manufacturerDataMap)
+        .map(([key, value]) => {
+          const companyIdentifier = parseInt(key).toString(16).padStart(4, '0');
+          const data = value.map(v => v.toString(16).padStart(2, '0')).join('');
+          return `0x${companyIdentifier} 0x${data}`;
+        })
+        .join(' | ');
   }
 
   /**
@@ -454,6 +478,7 @@ suite('bluetooth_internals', function() {
      'isGattConnected',
      'rssi.value',
      'services.length',
+     'manufacturerDataMap',
     ].forEach(function(propName) {
       var valueCell =
           detailsPage.querySelector('fieldset [data-field="' + propName + '"]');
@@ -468,6 +493,8 @@ suite('bluetooth_internals', function() {
 
       if (propName === 'isGattConnected') {
         value = value ? 'Connected' : 'Not Connected';
+      } else if (propName === 'manufacturerDataMap') {
+        value = formatManufacturerDataMap(value);
       }
 
       if (typeof (value) === 'boolean') {
