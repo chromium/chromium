@@ -441,5 +441,52 @@ TEST(DiscardableSharedMemoryHeapTest, DetailedDumpsDontContainRedundantData) {
   heap.MergeIntoFreeLists(std::move(span));
 }
 
+TEST(DiscardableSharedMemoryHeapTest, MarkSpans) {
+  DiscardableSharedMemoryHeap heap;
+
+  const size_t block_size = base::GetPageSize();
+
+  auto memory = std::make_unique<base::DiscardableSharedMemory>();
+  ASSERT_TRUE(memory->CreateAndMap(block_size));
+  auto span = heap.Grow(std::move(memory), block_size, 1, base::DoNothing());
+
+  auto* memory_segment = span->GetScopedMemorySegmentForTesting();
+
+  ASSERT_EQ(0u, memory_segment->CountMarkedPages());
+  ASSERT_EQ(0u, heap.dirty_freed_memory_page_count_);
+
+  heap.MergeIntoFreeLists(std::move(span));
+
+  ASSERT_EQ(1u, memory_segment->CountMarkedPages());
+  ASSERT_EQ(1u, heap.dirty_freed_memory_page_count_);
+
+  memory = std::make_unique<base::DiscardableSharedMemory>();
+  ASSERT_TRUE(memory->CreateAndMap(2 * block_size));
+  span = heap.Grow(std::move(memory), 2 * block_size, 1, base::DoNothing());
+
+  ASSERT_EQ(1u, heap.dirty_freed_memory_page_count_);
+
+  memory_segment = span->GetScopedMemorySegmentForTesting();
+
+  ASSERT_EQ(0u, memory_segment->CountMarkedPages());
+
+  ASSERT_EQ(1u, heap.dirty_freed_memory_page_count_);
+  ASSERT_EQ(1 * block_size, heap.GetFreelistSize());
+
+  heap.ReleaseFreeMemory();
+
+  ASSERT_EQ(0 * block_size, heap.GetFreelistSize());
+  ASSERT_EQ(0u, heap.dirty_freed_memory_page_count_);
+
+  heap.MergeIntoFreeLists(std::move(span));
+
+  ASSERT_EQ(2u, memory_segment->CountMarkedPages());
+  ASSERT_EQ(2u, heap.dirty_freed_memory_page_count_);
+
+  heap.ReleaseFreeMemory();
+
+  ASSERT_EQ(0u, heap.dirty_freed_memory_page_count_);
+}
+
 }  // namespace
 }  // namespace discardable_memory

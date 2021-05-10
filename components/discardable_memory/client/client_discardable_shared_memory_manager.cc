@@ -321,6 +321,9 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // at least one span from the free lists.
     MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
+    // Memory in this span is no longer held in the freelist, so we don't want
+    // to count it towards the total of dirty freelist memory.
+    heap_->dirty_freed_memory_page_count_ -= free_span->MarkAsClean();
     auto discardable_memory =
         std::make_unique<DiscardableMemoryImpl>(this, std::move(free_span));
     allocated_memory_.insert(discardable_memory.get());
@@ -373,7 +376,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
             reinterpret_cast<size_t>(leftover->shared_memory()->memory()),
         leftover->length() * base::GetPageSize());
     leftover->set_is_locked(false);
-    heap_->MergeIntoFreeLists(std::move(leftover));
+    heap_->MergeIntoFreeListsClean(std::move(leftover));
   }
 
   if (pages >= allocation_pages) {
@@ -405,6 +408,11 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
                                total_size - freelist_size);
   }
+
+  base::UmaHistogramCounts1M(
+      "Memory.Discardable.FreelistSize.Dirty",
+      heap_->dirty_freed_memory_page_count_ * base::GetPageSize() / 1024);
+
   return heap_->OnMemoryDump(args, pmd);
 }
 

@@ -448,6 +448,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.Discardable.FreelistSize.Dirty" units="KiB"
+    expires_after="2021-12-04">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Amount of resident memory that was in use but has now been moved to the
+    freelist. Recorded during |OnMemoryDump|.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
     expires_after="2021-10-04">
   <owner>thiabaud@google.com</owner>
