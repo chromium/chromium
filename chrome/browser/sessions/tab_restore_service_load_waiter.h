@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
@@ -27,9 +27,9 @@ class TabRestoreServiceLoadWaiter : public sessions::TabRestoreServiceObserver {
 
   sessions::TabRestoreService* const service_;
   base::RunLoop run_loop_;
-  ScopedObserver<sessions::TabRestoreService,
-                 sessions::TabRestoreServiceObserver>
-      observer_{this};
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_
