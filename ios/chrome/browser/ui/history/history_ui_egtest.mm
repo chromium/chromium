@@ -606,7 +606,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 #pragma mark Multiwindow
 
-- (void)testHistorySyncInMultiwindow {
+// TODO(crbug.com/1207648): Test hits an observer DCHECK.
+- (void)DISABLED_testHistorySyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
