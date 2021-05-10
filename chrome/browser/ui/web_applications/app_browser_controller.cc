@@ -201,11 +201,11 @@ AppBrowserController::AppBrowserController(
                                         ->system_web_app_manager()
                                         .GetSystemAppTypeForAppId(GetAppId())
                                   : base::nullopt),
-      // TODO(crbug.com/1061822): Generalise has_tab_strip_ as a SystemWebApp
-      // capability.
       has_tab_strip_(
-          system_app_type_ == SystemAppType::TERMINAL ||
-          system_app_type_ == SystemAppType::CROSH ||
+          (system_app_type_.has_value() &&
+           WebAppProvider::Get(browser->profile())
+               ->system_web_app_manager()
+               .ShouldHaveTabStrip(system_app_type_.value())) ||
           (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
            HasAppId() &&
            WebAppProvider::Get(browser->profile())

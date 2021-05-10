@@ -113,6 +113,9 @@ struct SystemAppInfo {
   // If set to false, the surface of app will can be non-maximizable.
   bool is_maximizable = true;
 
+  // If set to true, the App's window will have a tab-strip.
+  bool has_tab_strip = false;
+
   // If set to false, the app will not have the reload button in minimal ui
   // mode.
   bool should_have_reload_button_in_minimal_ui = true;
@@ -220,6 +223,9 @@ class SystemWebAppManager {
 
   // Returns whether the app is allowed to close the window through scripts.
   bool AllowScriptsToCloseWindows(SystemAppType type) const;
+
+  // Returns whether the app window should have the tab-strip.
+  bool ShouldHaveTabStrip(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(

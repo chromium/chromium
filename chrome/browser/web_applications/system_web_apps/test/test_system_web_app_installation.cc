@@ -150,6 +150,7 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
       "Terminal", GURL("chrome://test-system-app/pwa.html"),
       base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   terminal_system_app_info.single_window = false;
+  terminal_system_app_info.has_tab_strip = true;
 
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::TERMINAL, terminal_system_app_info));
@@ -328,6 +329,18 @@ TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
     app_info.allow_scripts_to_close_windows = true;
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::SAMPLE, std::move(app_info)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  app_info.has_tab_strip = has_tab_strip;
+
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SETTINGS, std::move(app_info)));
 }
 
 std::unique_ptr<KeyedService>

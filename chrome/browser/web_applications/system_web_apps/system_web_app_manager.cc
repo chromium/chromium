@@ -178,6 +178,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
   infos.at(SystemAppType::CROSH).single_window = false;
   infos.at(SystemAppType::CROSH).show_in_launcher = false;
   infos.at(SystemAppType::CROSH).show_in_search = false;
+  infos.at(SystemAppType::CROSH).has_tab_strip = true;
 
   infos.emplace(
       SystemAppType::TERMINAL,
@@ -185,6 +186,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
           "Terminal", GURL(chrome::kChromeUIUntrustedTerminalURL),
           base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
   infos.at(SystemAppType::TERMINAL).single_window = false;
+  infos.at(SystemAppType::TERMINAL).has_tab_strip = true;
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::HELP)) {
     infos.emplace(
@@ -754,6 +756,14 @@ bool SystemWebAppManager::AllowScriptsToCloseWindows(SystemAppType type) const {
     return false;
 
   return it->second.allow_scripts_to_close_windows;
+}
+
+bool SystemWebAppManager::ShouldHaveTabStrip(SystemAppType type) const {
+  auto it = system_app_infos_.find(type);
+  if (it == system_app_infos_.end())
+    return false;
+
+  return it->second.has_tab_strip;
 }
 
 base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(

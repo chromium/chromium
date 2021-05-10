@@ -68,6 +68,9 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetupAppWithAllowScriptsToCloseWindows(bool value);
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithTabStrip(
+      bool has_tab_strip);
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

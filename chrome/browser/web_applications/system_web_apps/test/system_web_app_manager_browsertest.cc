@@ -939,6 +939,42 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+class SystemWebAppManagerHasTabStripTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerHasTabStripTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
+  WaitForTestSystemAppInstall();
+
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(GetMockAppType(), &browser));
+  EXPECT_TRUE(browser->app_controller()->has_tab_strip());
+}
+
+class SystemWebAppManagerHasNoTabStripTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerHasNoTabStripTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripTest, HasNoTabStrip) {
+  WaitForTestSystemAppInstall();
+
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(GetMockAppType(), &browser));
+  EXPECT_FALSE(browser->app_controller()->has_tab_strip());
+}
+
 // Tests that SWA are correctly uninstalled across restarts.
 class SystemWebAppManagerUninstallBrowserTest
     : public SystemWebAppManagerBrowserTest {
@@ -1520,5 +1556,11 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBackgroundTaskTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHasTabStripTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHasNoTabStripTest);
 
 }  // namespace web_app
