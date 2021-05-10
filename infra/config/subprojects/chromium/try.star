@@ -1851,7 +1851,7 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_jobs = goma.jobs.J150,
+    goma_jobs = goma.jobs.J300,
     os = os.WINDOWS_10,
     cores = 16,
     ssd = True,
