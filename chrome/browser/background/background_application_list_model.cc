@@ -345,21 +345,24 @@ void BackgroundApplicationListModel::OnExtensionSystemReady() {
   // know that this object is constructed prior to the initialization process
   // for the extension system, which isn't a guarantee. Thus, register here and
   // associate all initial extensions.
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 
-  background_contents_service_observer_.Add(
+  background_contents_service_observation_.Observe(
       BackgroundContentsServiceFactory::GetForProfile(profile_));
 
-  if (base::FeatureList::IsEnabled(features::kOnConnectNative))
-    process_manager_observer_.Add(extensions::ProcessManager::Get(profile_));
+  if (base::FeatureList::IsEnabled(features::kOnConnectNative)) {
+    process_manager_observation_.Observe(
+        extensions::ProcessManager::Get(profile_));
+  }
 
   startup_done_ = true;
 }
 
 void BackgroundApplicationListModel::OnShutdown(ExtensionRegistry* registry) {
   DCHECK_EQ(ExtensionRegistry::Get(profile_), registry);
-  extension_registry_observer_.Remove(registry);
-  process_manager_observer_.RemoveAll();
+  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  extension_registry_observation_.Reset();
+  process_manager_observation_.Reset();
 }
 
 void BackgroundApplicationListModel::OnBackgroundContentsServiceChanged() {
@@ -367,7 +370,7 @@ void BackgroundApplicationListModel::OnBackgroundContentsServiceChanged() {
 }
 
 void BackgroundApplicationListModel::OnBackgroundContentsServiceDestroying() {
-  background_contents_service_observer_.RemoveAll();
+  background_contents_service_observation_.Reset();
 }
 
 void BackgroundApplicationListModel::OnExtensionPermissionsUpdated(

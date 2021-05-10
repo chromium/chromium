@@ -314,7 +314,7 @@ void BackgroundContentsService::StartObserving() {
                  content::Source<Profile>(profile_));
 
   // Listen for extension uninstall, load, unloaded notification.
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 }
 

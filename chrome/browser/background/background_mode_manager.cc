@@ -117,14 +117,14 @@ BackgroundModeManager::BackgroundModeData::BackgroundModeData(
       applications_(std::make_unique<BackgroundApplicationListModel>(profile)),
       profile_(profile),
       command_id_handler_vector_(command_id_handler_vector) {
-  profile_observer_.Add(profile_);
+  profile_observation_.Observe(profile_);
 }
 
 BackgroundModeManager::BackgroundModeData::~BackgroundModeData() = default;
 
 void BackgroundModeManager::BackgroundModeData::SetTracker(
     extensions::ForceInstalledTracker* tracker) {
-  force_installed_tracker_observer_.Add(tracker);
+  force_installed_tracker_observation_.Observe(tracker);
 }
 
 void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
@@ -151,8 +151,8 @@ void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
 void BackgroundModeManager::BackgroundModeData::OnProfileWillBeDestroyed(
     Profile* profile) {
   DCHECK_EQ(profile_, profile);
-  profile_observer_.RemoveAll();
-  force_installed_tracker_observer_.RemoveAll();
+  profile_observation_.Reset();
+  force_installed_tracker_observation_.Reset();
   DCHECK(!profile_keep_alive_);
   profile_ = nullptr;
 }

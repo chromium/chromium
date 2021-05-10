@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "content/public/browser/notification_observer.h"
@@ -186,15 +186,17 @@ class BackgroundApplicationListModel
   bool startup_done_ = false;
 
   // Listens to extension load, unload notifications.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
-  ScopedObserver<BackgroundContentsService, BackgroundContentsServiceObserver>
-      background_contents_service_observer_{this};
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      background_contents_service_observation_{this};
 
-  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
-      process_manager_observer_{this};
+  base::ScopedObservation<extensions::ProcessManager,
+                          extensions::ProcessManagerObserver>
+      process_manager_observation_{this};
 
   base::WeakPtrFactory<BackgroundApplicationListModel> weak_ptr_factory_{this};
 
