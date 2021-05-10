@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +30,7 @@
 #include "components/webapk/webapk.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -49,6 +51,9 @@ const char kMinimumIconSize = 64;
 
 // The seed to use when taking the murmur2 hash of the icon.
 const uint64_t kMurmur2HashSeed = 0;
+
+constexpr char kWebApkServerUrl[] =
+    "https://webapk.googleapis.com/v1/webApks?key=";
 
 constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("webapk_minter_install_request",
@@ -77,12 +82,14 @@ constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
       )");
 
 GURL GetServerUrl() {
-  // While the code is pre-Canary quality, a custom server URL must be supplied.
   std::string server_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kWebApkServerUrl);
-  CHECK(!server_url.empty())
-      << "A WebAPK server URL must be provided with --webapk-server-url";
+
+  if (server_url.empty()) {
+    server_url = base::StrCat({kWebApkServerUrl, google_apis::GetAPIKey()});
+  }
+
   return GURL(server_url);
 }
 
