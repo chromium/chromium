@@ -59,7 +59,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       /*poll_interval=*/base::TimeDelta::FromMinutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(21u, value->size());
+  EXPECT_EQ(21u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
