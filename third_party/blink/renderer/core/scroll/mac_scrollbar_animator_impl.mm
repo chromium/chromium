@@ -146,7 +146,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
   if (!IsMainThread())
     return;
 
-  if (!_scrollableArea)
+  if (!_scrollableArea || !_scrollableArea->GetMacScrollbarAnimator())
     return;
 
   [scrollerImpPair setScrollerStyle:newRecommendedScrollerStyle];
