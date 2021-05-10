@@ -224,129 +224,129 @@ std::unique_ptr<base::DictionaryValue> ChromotingEvent::CopyDictionaryValue()
 // everything in a DictionaryValue that needs to be converted.
 apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
   apis::v1::ChromotingEvent event_proto;
-  if (values_map_->HasKey(kAuthMethodKey)) {
+  if (values_map_->FindKey(kAuthMethodKey)) {
     event_proto.set_auth_method(
         static_cast<apis::v1::ChromotingEvent_AuthMethod>(
             values_map_->FindKey(kAuthMethodKey)->GetInt()));
   }
-  if (values_map_->HasKey(kCaptureLatencyKey)) {
+  if (values_map_->FindKey(kCaptureLatencyKey)) {
     event_proto.set_capture_latency(
         values_map_->FindKey(kCaptureLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kConnectionErrorKey)) {
+  if (values_map_->FindKey(kConnectionErrorKey)) {
     event_proto.set_connection_error(
         static_cast<apis::v1::ChromotingEvent_ConnectionError>(
             values_map_->FindKey(kConnectionErrorKey)->GetInt()));
   }
-  if (values_map_->HasKey(kConnectionTypeKey)) {
+  if (values_map_->FindKey(kConnectionTypeKey)) {
     event_proto.set_connection_type(
         static_cast<apis::v1::ChromotingEvent_ConnectionType>(
             values_map_->FindKey(kConnectionTypeKey)->GetInt()));
   }
-  if (values_map_->HasKey(kCpuKey)) {
+  if (values_map_->FindKey(kCpuKey)) {
     event_proto.set_cpu(values_map_->FindKey(kCpuKey)->GetString());
   }
-  if (values_map_->HasKey(kDecodeLatencyKey)) {
+  if (values_map_->FindKey(kDecodeLatencyKey)) {
     event_proto.set_decode_latency(
         values_map_->FindKey(kDecodeLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kEncodeLatencyKey)) {
+  if (values_map_->FindKey(kEncodeLatencyKey)) {
     event_proto.set_encode_latency(
         values_map_->FindKey(kEncodeLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kHostOsKey)) {
+  if (values_map_->FindKey(kHostOsKey)) {
     event_proto.set_host_os(static_cast<apis::v1::ChromotingEvent_Os>(
         values_map_->FindKey(kHostOsKey)->GetInt()));
   }
-  if (values_map_->HasKey(kHostOsVersionKey)) {
+  if (values_map_->FindKey(kHostOsVersionKey)) {
     event_proto.set_host_os_version(
         values_map_->FindKey(kHostOsVersionKey)->GetString());
   }
-  if (values_map_->HasKey(kHostVersionKey)) {
+  if (values_map_->FindKey(kHostVersionKey)) {
     event_proto.set_host_version(
         values_map_->FindKey(kHostVersionKey)->GetString());
   }
-  if (values_map_->HasKey(kMaxCaptureLatencyKey)) {
+  if (values_map_->FindKey(kMaxCaptureLatencyKey)) {
     event_proto.set_max_capture_latency(
         values_map_->FindKey(kMaxCaptureLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kMaxDecodeLatencyKey)) {
+  if (values_map_->FindKey(kMaxDecodeLatencyKey)) {
     event_proto.set_max_decode_latency(
         values_map_->FindKey(kMaxDecodeLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kMaxEncodeLatencyKey)) {
+  if (values_map_->FindKey(kMaxEncodeLatencyKey)) {
     event_proto.set_max_encode_latency(
         values_map_->FindKey(kMaxEncodeLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kMaxRenderLatencyKey)) {
+  if (values_map_->FindKey(kMaxRenderLatencyKey)) {
     event_proto.set_max_render_latency(
         values_map_->FindKey(kMaxRenderLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kMaxRoundtripLatencyKey)) {
+  if (values_map_->FindKey(kMaxRoundtripLatencyKey)) {
     event_proto.set_max_roundtrip_latency(
         values_map_->FindKey(kMaxRoundtripLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kModeKey)) {
+  if (values_map_->FindKey(kModeKey)) {
     event_proto.set_mode(static_cast<apis::v1::ChromotingEvent_Mode>(
         values_map_->FindKey(kModeKey)->GetInt()));
   }
-  if (values_map_->HasKey(kOsKey)) {
+  if (values_map_->FindKey(kOsKey)) {
     event_proto.set_os(static_cast<apis::v1::ChromotingEvent_Os>(
         values_map_->FindKey(kOsKey)->GetInt()));
   }
-  if (values_map_->HasKey(kOsVersionKey)) {
+  if (values_map_->FindKey(kOsVersionKey)) {
     event_proto.set_os_version(
         values_map_->FindKey(kOsVersionKey)->GetString());
   }
-  if (values_map_->HasKey(kPreviousSessionStateKey)) {
+  if (values_map_->FindKey(kPreviousSessionStateKey)) {
     event_proto.set_previous_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
             values_map_->FindKey(kPreviousSessionStateKey)->GetInt()));
   }
-  if (values_map_->HasKey(kRenderLatencyKey)) {
+  if (values_map_->FindKey(kRenderLatencyKey)) {
     event_proto.set_render_latency(
         values_map_->FindKey(kRenderLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kRoleKey)) {
+  if (values_map_->FindKey(kRoleKey)) {
     event_proto.set_role(static_cast<apis::v1::ChromotingEvent_Role>(
         values_map_->FindKey(kRoleKey)->GetInt()));
   }
-  if (values_map_->HasKey(kRoundtripLatencyKey)) {
+  if (values_map_->FindKey(kRoundtripLatencyKey)) {
     event_proto.set_roundtrip_latency(
         values_map_->FindKey(kRoundtripLatencyKey)->GetDouble());
   }
-  if (values_map_->HasKey(kSessionDurationKey)) {
+  if (values_map_->FindKey(kSessionDurationKey)) {
     event_proto.set_session_duration(
         values_map_->FindKey(kSessionDurationKey)->GetDouble());
   }
-  if (values_map_->HasKey(kSessionEntryPointKey)) {
+  if (values_map_->FindKey(kSessionEntryPointKey)) {
     event_proto.set_session_entry_point(
         static_cast<apis::v1::ChromotingEvent_SessionEntryPoint>(
             values_map_->FindKey(kSessionEntryPointKey)->GetInt()));
   }
-  if (values_map_->HasKey(kSessionIdKey)) {
+  if (values_map_->FindKey(kSessionIdKey)) {
     event_proto.set_session_id(
         values_map_->FindKey(kSessionIdKey)->GetString());
   }
-  if (values_map_->HasKey(kSessionStateKey)) {
+  if (values_map_->FindKey(kSessionStateKey)) {
     event_proto.set_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
             values_map_->FindKey(kSessionStateKey)->GetInt()));
   }
-  if (values_map_->HasKey(kSignalStrategyTypeKey)) {
+  if (values_map_->FindKey(kSignalStrategyTypeKey)) {
     event_proto.set_signal_strategy_type(
         static_cast<apis::v1::ChromotingEvent_SignalStrategyType>(
             values_map_->FindKey(kSignalStrategyTypeKey)->GetInt()));
   }
-  if (values_map_->HasKey(kTypeKey)) {
+  if (values_map_->FindKey(kTypeKey)) {
     event_proto.set_type(static_cast<apis::v1::ChromotingEvent_Type>(
         values_map_->FindKey(kTypeKey)->GetInt()));
   }
-  if (values_map_->HasKey(kVideoBandwidthKey)) {
+  if (values_map_->FindKey(kVideoBandwidthKey)) {
     event_proto.set_video_bandwidth(
         values_map_->FindKey(kVideoBandwidthKey)->GetDouble());
   }
-  if (values_map_->HasKey(kWebAppVersionKey)) {
+  if (values_map_->FindKey(kWebAppVersionKey)) {
     event_proto.set_webapp_version(
         values_map_->FindKey(kWebAppVersionKey)->GetString());
   }
