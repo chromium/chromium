@@ -69,4 +69,3 @@ crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_hw_decoder_avc1.4200
 crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_capture_vp8_require [ Failure ]
 crbug.com/1204831 [ chromeos-board-kevin ] WebCodecs_Encode_capture_avc1.42001E_require [ Failure ]
 
-crbug.com/1205419 [ win7 ] WebCodecs_* [ Failure ]
