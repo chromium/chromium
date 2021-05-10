@@ -69,7 +69,8 @@ SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
 
 class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
-  FakeContainerWrapper() = default;
+  explicit FakeContainerWrapper(PdfViewWebPlugin* web_plugin)
+      : web_plugin_(web_plugin) {}
   FakeContainerWrapper(const FakeContainerWrapper&) = delete;
   FakeContainerWrapper& operator=(const FakeContainerWrapper&) = delete;
   ~FakeContainerWrapper() override = default;
@@ -94,7 +95,9 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
               (const blink::WebAssociatedURLLoaderOptions&),
               (override));
 
-  MOCK_METHOD(void, UpdateTextInputState, (), (override));
+  void UpdateTextInputState() override {
+    widget_text_input_type_ = web_plugin_->GetPluginTextInputType();
+  }
 
   blink::WebLocalFrame* GetFrame() override { return nullptr; }
 
@@ -104,10 +107,20 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   // initializing `PostMessageSender`.
   blink::WebPluginContainer* Container() override { return nullptr; }
 
+  blink::WebTextInputType widget_text_input_type() const {
+    return widget_text_input_type_;
+  }
+
   void set_device_scale(float device_scale) { device_scale_ = device_scale; }
 
  private:
   float device_scale_ = 1.0f;
+
+  // Represents the frame widget's text input type.
+  blink::WebTextInputType widget_text_input_type_ =
+      blink::WebTextInputType::kWebTextInputTypeNone;
+
+  PdfViewWebPlugin* web_plugin_;
 };
 
 }  // namespace
@@ -129,7 +142,7 @@ class PdfViewWebPluginTest : public testing::Test {
     plugin_ = std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(
         new PdfViewWebPlugin(blink::WebPluginParams()));
 
-    auto wrapper = std::make_unique<FakeContainerWrapper>();
+    auto wrapper = std::make_unique<FakeContainerWrapper>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
     plugin_->InitializeForTesting(std::move(wrapper));
   }
@@ -265,6 +278,16 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
     TestPaintSnapshots(params.device_scale, params.window_rect,
                        params.paint_rect);
   }
+}
+
+TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
+  plugin_->FormTextFieldFocusChange(true);
+  EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
+            wrapper_ptr_->widget_text_input_type());
+
+  plugin_->FormTextFieldFocusChange(false);
+  EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
+            wrapper_ptr_->widget_text_input_type());
 }
 
 }  // namespace chrome_pdf
