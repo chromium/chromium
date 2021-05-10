@@ -59,7 +59,7 @@ class WaylandWindow : public PlatformWindow,
   // primary one if their widget is not yet created, children inherit scale from
   // their parent.  The method recalculates window bounds appropriately if asked
   // to do so (this is not needed upon window initialization).
-  void UpdateBufferScale(bool update_bounds);
+  virtual void UpdateBufferScale(bool update_bounds);
 
   WaylandSurface* root_surface() const { return root_surface_.get(); }
   WaylandSubsurface* primary_subsurface() const {

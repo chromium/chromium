@@ -246,6 +246,16 @@ base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
   return window_shape_in_dips_;
 }
 
+void WaylandToplevelWindow::UpdateBufferScale(bool update_bounds) {
+  auto old_scale = buffer_scale();
+  WaylandWindow::UpdateBufferScale(update_bounds);
+  if (old_scale == buffer_scale())
+    return;
+
+  // Update min/max size in DIP if buffer scale is updated.
+  SizeConstraintsChanged();
+}
+
 void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
                                                     int32_t height,
                                                     bool is_maximized,
