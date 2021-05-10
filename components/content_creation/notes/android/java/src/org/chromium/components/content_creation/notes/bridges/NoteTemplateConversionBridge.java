@@ -4,11 +4,15 @@
 
 package org.chromium.components.content_creation.notes.bridges;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.content_creation.notes.models.Background;
+import org.chromium.components.content_creation.notes.models.FooterStyle;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
+import org.chromium.components.content_creation.notes.models.TextStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +32,33 @@ public class NoteTemplateConversionBridge {
         return new ArrayList<>();
     }
 
+    @CalledByNative
+    private static Background createBackground(@ColorInt int color) {
+        return new Background(color);
+    }
+
+    @CalledByNative
+    private static TextStyle createTextStyle(
+            String fontName, @ColorInt int fontColor, boolean allCaps) {
+        return new TextStyle(fontName, fontColor, allCaps);
+    }
+
+    @CalledByNative
+    private static FooterStyle createFooterStyle(@ColorInt int color) {
+        return new FooterStyle(color);
+    }
+
     /**
      * Creates a {@link NoteTemplate} instance based on the given parameters,
      * and then attempts to add it to the given list.
      * @return the {@link NoteTemplate} instance.
      */
     @CalledByNative
-    private static NoteTemplate createTemplateAndMaybeAddToList(
-            @Nullable List<NoteTemplate> list, String localizedName) {
-        NoteTemplate template = new NoteTemplate(localizedName);
+    private static NoteTemplate createTemplateAndMaybeAddToList(@Nullable List<NoteTemplate> list,
+            int id, String localizedName, Background mainBackground, TextStyle textStyle,
+            FooterStyle footerStyle) {
+        NoteTemplate template =
+                new NoteTemplate(id, localizedName, mainBackground, textStyle, footerStyle);
 
         if (list != null) {
             list.add(template);

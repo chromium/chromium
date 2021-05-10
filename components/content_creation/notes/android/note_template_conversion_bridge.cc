@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "components/content_creation/notes/android/jni_headers/NoteTemplateConversionBridge_jni.h"
+#include "components/content_creation/notes/core/templates/template_types.h"
 
 namespace content_creation {
 
@@ -14,12 +15,38 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
+ScopedJavaLocalRef<jobject> CreateJavaBackground(JNIEnv* env,
+                                                 const Background& background) {
+  return Java_NoteTemplateConversionBridge_createBackground(env,
+                                                            background.color());
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaTextStyle(JNIEnv* env,
+                                                const TextStyle& text_style) {
+  return Java_NoteTemplateConversionBridge_createTextStyle(
+      env, ConvertUTF8ToJavaString(env, text_style.font_name()),
+      text_style.font_color(), text_style.all_caps());
+}
+
+ScopedJavaLocalRef<jobject> CreateJavaFooterStyle(
+    JNIEnv* env,
+    const FooterStyle& footer_style) {
+  return Java_NoteTemplateConversionBridge_createFooterStyle(
+      env, footer_style.color);
+}
+
 ScopedJavaLocalRef<jobject> CreateJavaTemplateAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
     const NoteTemplate& note_template) {
+  auto jbackground = CreateJavaBackground(env, note_template.main_background());
+  auto jtext_style = CreateJavaTextStyle(env, note_template.text_style());
+  auto jfooter_style = CreateJavaFooterStyle(env, note_template.footer_style());
+
   return Java_NoteTemplateConversionBridge_createTemplateAndMaybeAddToList(
-      env, jlist, ConvertUTF8ToJavaString(env, note_template.localized_name()));
+      env, jlist, static_cast<uint32_t>(note_template.id()),
+      ConvertUTF8ToJavaString(env, note_template.localized_name()), jbackground,
+      jtext_style, jfooter_style);
 }
 
 }  // namespace
