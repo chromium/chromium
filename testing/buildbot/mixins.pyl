@@ -1116,14 +1116,14 @@
         '--xcode-build-version',
         '11e608c'
       ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_11e608c',
-          'path': 'Xcode.app',
-        },
-      ],
+     'swarming': {
+        'named_caches': [
+          {
+            'name': 'xcode_ios_11e608c',
+            'path': 'Xcode.app',
+          },
+        ],
+      },
     },
   },
   # (default in Chromium iOS) xcode 12.4 gm seed
@@ -1133,14 +1133,15 @@
         '--xcode-build-version',
         '12d4e'
       ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_12d4e',
-          'path': 'Xcode.app',
-        },
-      ],
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'xcode_ios_12d4e',
+            'path': 'Xcode.app',
+          },
+        ],
+      },
+
     },
   },
   'xcode_parallelization': {
