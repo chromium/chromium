@@ -871,7 +871,7 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
         Sign In…
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE" desc="Title on the sync screen presented to the user on First Run [iOS only]">
-        Sync Between Your Devices
+        Keep Your Devices in Sync
       </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE" desc="Subtitle on the sync screen presented to the user on First Run [iOS only]">
         Sync your passwords, history, and more on all your devices
