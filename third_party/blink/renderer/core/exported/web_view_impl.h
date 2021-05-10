@@ -207,8 +207,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       int32_t history_offset,
       base::Optional<int32_t> history_length) override;
   void IncreaseHistoryListFromNavigation() override;
-  int32_t HistoryBackListCount() override;
-  int32_t HistoryForwardListCount() override;
+  int32_t HistoryBackListCount() const override;
+  int32_t HistoryForwardListCount() const override;
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
 
   // Functions to add and remove observers for this object.

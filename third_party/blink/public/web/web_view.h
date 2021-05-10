@@ -443,8 +443,8 @@ class WebView {
   // Session history -----------------------------------------------------
   // Returns the number of history items before/after the current
   // history item.
-  virtual int32_t HistoryBackListCount() = 0;
-  virtual int32_t HistoryForwardListCount() = 0;
+  virtual int32_t HistoryBackListCount() const = 0;
+  virtual int32_t HistoryForwardListCount() const = 0;
 
   // Portals --------------------------------------------------------------
 

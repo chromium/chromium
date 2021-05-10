@@ -3175,11 +3175,11 @@ void WebViewImpl::IncreaseHistoryListFromNavigation() {
   history_list_length_ = history_list_offset_ + 1;
 }
 
-int32_t WebViewImpl::HistoryBackListCount() {
+int32_t WebViewImpl::HistoryBackListCount() const {
   return std::max(history_list_offset_, 0);
 }
 
-int32_t WebViewImpl::HistoryForwardListCount() {
+int32_t WebViewImpl::HistoryForwardListCount() const {
   return history_list_length_ - HistoryBackListCount() - 1;
 }
 
