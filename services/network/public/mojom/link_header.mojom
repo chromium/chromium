@@ -10,6 +10,8 @@ import "url/mojom/url.mojom";
 enum LinkRelAttribute {
   // https://w3c.github.io/preload/
   kPreload,
+  // https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
+  kModulePreload,
 };
 
 // Represents subset of possible values for `as` attribute of the Link header.

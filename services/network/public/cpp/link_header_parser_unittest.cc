@@ -95,6 +95,16 @@ TEST(LinkHeaderParserTest, AttributesAppearTwice) {
   // reasonable.
 }
 
+TEST(LinkHeaderParserTest, RelAttributeModulePreload) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "</foo.mjs>; rel=modulepreload");
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kModulePreload);
+}
+
 TEST(LinkHeaderParserTest, LinkAsAttribute) {
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");

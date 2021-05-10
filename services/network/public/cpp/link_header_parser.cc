@@ -38,6 +38,8 @@ base::Optional<mojom::LinkRelAttribute> ParseRelAttribute(
   std::string value = base::ToLowerASCII(attr.value());
   if (value == "preload")
     return mojom::LinkRelAttribute::kPreload;
+  else if (value == "modulepreload")
+    return mojom::LinkRelAttribute::kModulePreload;
   return base::nullopt;
 }
 
