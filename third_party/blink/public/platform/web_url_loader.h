@@ -35,17 +35,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -65,6 +62,7 @@ namespace blink {
 
 class ResourceLoadInfoNotifierWrapper;
 class WebBackForwardCacheLoaderHelper;
+class WebBlobInfo;
 class WebData;
 class WebResourceRequestSender;
 class WebURLRequestExtraData;
@@ -86,6 +84,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+  WebURLLoader(const WebURLLoader&) = delete;
+  WebURLLoader& operator=(const WebURLLoader&) = delete;
   WebURLLoader();
 
   // The WebURLLoader may be deleted in a call to its client.
@@ -169,8 +169,6 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   void Cancel();
 
   scoped_refptr<Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoader);
 };
 
 }  // namespace blink

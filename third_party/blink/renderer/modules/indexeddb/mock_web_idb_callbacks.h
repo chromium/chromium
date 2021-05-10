@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
