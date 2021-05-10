@@ -86,9 +86,9 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
     // Note partial validation of these attributes occurs based on tts engine's
     // json schema (e.g. for data type matching). The missing checks follow
     // similar checks in manifest parsing.
-    if (voice_data->HasKey(constants::kVoiceNameKey))
+    if (voice_data->FindKey(constants::kVoiceNameKey))
       voice_data->GetString(constants::kVoiceNameKey, &voice.voice_name);
-    if (voice_data->HasKey(constants::kLangKey)) {
+    if (voice_data->FindKey(constants::kLangKey)) {
       voice_data->GetString(constants::kLangKey, &voice.lang);
       if (!l10n_util::IsValidLocaleSyntax(voice.lang)) {
         *error = constants::kErrorInvalidLang;
@@ -99,9 +99,9 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
         continue;
       }
     }
-    if (voice_data->HasKey(constants::kRemoteKey))
+    if (voice_data->FindKey(constants::kRemoteKey))
       voice_data->GetBoolean(constants::kRemoteKey, &voice.remote);
-    if (voice_data->HasKey(constants::kExtensionIdKey)) {
+    if (voice_data->FindKey(constants::kExtensionIdKey)) {
       // Allow this for clients who might have used |chrome.tts.getVoices| to
       // update existing voices. However, trying to update the voice of another
       // extension should trigger an error.
@@ -117,7 +117,7 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
       }
     }
     const base::ListValue* event_types = nullptr;
-    if (voice_data->HasKey(constants::kEventTypesKey))
+    if (voice_data->FindKey(constants::kEventTypesKey))
       voice_data->GetList(constants::kEventTypesKey, &event_types);
 
     if (event_types) {
@@ -320,31 +320,31 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   // that are handled internally.
   std::unique_ptr<base::DictionaryValue> options(
       static_cast<base::DictionaryValue*>(utterance->GetOptions()->DeepCopy()));
-  if (options->HasKey(constants::kRequiredEventTypesKey))
+  if (options->FindKey(constants::kRequiredEventTypesKey))
     options->Remove(constants::kRequiredEventTypesKey, NULL);
-  if (options->HasKey(constants::kDesiredEventTypesKey))
+  if (options->FindKey(constants::kDesiredEventTypesKey))
     options->Remove(constants::kDesiredEventTypesKey, NULL);
-  if (sends_end_event && options->HasKey(constants::kEnqueueKey))
+  if (sends_end_event && options->FindKey(constants::kEnqueueKey))
     options->Remove(constants::kEnqueueKey, NULL);
-  if (options->HasKey(constants::kSrcIdKey))
+  if (options->FindKey(constants::kSrcIdKey))
     options->Remove(constants::kSrcIdKey, NULL);
-  if (options->HasKey(constants::kIsFinalEventKey))
+  if (options->FindKey(constants::kIsFinalEventKey))
     options->Remove(constants::kIsFinalEventKey, NULL);
-  if (options->HasKey(constants::kOnEventKey))
+  if (options->FindKey(constants::kOnEventKey))
     options->Remove(constants::kOnEventKey, NULL);
 
   // Get the volume, pitch, and rate, but only if they weren't already in
   // the options. TODO(dmazzoni): these shouldn't be redundant.
   // http://crbug.com/463264
-  if (!options->HasKey(constants::kRateKey)) {
+  if (!options->FindKey(constants::kRateKey)) {
     options->SetDouble(constants::kRateKey,
                        utterance->GetContinuousParameters().rate);
   }
-  if (!options->HasKey(constants::kPitchKey)) {
+  if (!options->FindKey(constants::kPitchKey)) {
     options->SetDouble(constants::kPitchKey,
                        utterance->GetContinuousParameters().pitch);
   }
-  if (!options->HasKey(constants::kVolumeKey)) {
+  if (!options->FindKey(constants::kVolumeKey)) {
     options->SetDouble(constants::kVolumeKey,
                        utterance->GetContinuousParameters().volume);
   }
@@ -352,9 +352,9 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   // Add the voice name and language to the options if they're not
   // already there, since they might have been picked by the TTS controller
   // rather than directly by the client that requested the speech.
-  if (!options->HasKey(constants::kVoiceNameKey))
+  if (!options->FindKey(constants::kVoiceNameKey))
     options->SetString(constants::kVoiceNameKey, voice.name);
-  if (!options->HasKey(constants::kLangKey))
+  if (!options->FindKey(constants::kLangKey))
     options->SetString(constants::kLangKey, voice.lang);
 
   args->Append(std::move(options));
@@ -400,13 +400,13 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
       event->GetString(constants::kEventTypeKey, &event_type));
 
   int char_index = 0;
-  if (event->HasKey(constants::kCharIndexKey)) {
+  if (event->FindKey(constants::kCharIndexKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         event->GetInteger(constants::kCharIndexKey, &char_index));
   }
 
   int length = -1;
-  if (event->HasKey(constants::kLengthKey)) {
+  if (event->FindKey(constants::kLengthKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         event->GetInteger(constants::kLengthKey, &length));
   }
