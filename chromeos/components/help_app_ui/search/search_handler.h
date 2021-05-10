@@ -74,6 +74,10 @@ class SearchHandler : public mojom::SearchHandler,
   SearchTagRegistry* search_tag_registry_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
+  // Whether or not the first Update has finished yet, which means the Search
+  // Handler is ready to search.
+  bool is_ready_;
+
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.
   mojo::ReceiverSet<mojom::SearchHandler> receivers_;
   mojo::RemoteSet<mojom::SearchResultsObserver> observers_;

@@ -5,6 +5,7 @@
 #include "chromeos/components/help_app_ui/search/search_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/help_app_ui/search/search.mojom-test-utils.h"
 #include "chromeos/components/help_app_ui/search/search_tag_registry.h"
@@ -84,15 +85,11 @@ TEST_F(HelpAppSearchHandlerTest, UpdateAndSearch) {
   search_concepts.push_back(std::move(new_concept_1));
   search_concepts.push_back(std::move(new_concept_2));
 
-  bool callback_done = false;
-  search_tag_registry_.Update(
-      search_concepts,
-      base::BindOnce([](bool* callback_done) { *callback_done = true; },
-                     &callback_done));
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(callback_done);
   EXPECT_EQ(1u, observer_.num_calls());
 
   std::vector<mojom::SearchResultPtr> search_results;
@@ -128,7 +125,8 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultMetadata) {
       /*locale=*/"");
   search_concepts.push_back(std::move(new_concept_1));
 
-  search_tag_registry_.Update(search_concepts, base::BindOnce([]() {}));
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
 
@@ -165,7 +163,8 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
   search_concepts.push_back(std::move(new_concept_1));
   search_concepts.push_back(std::move(new_concept_2));
 
-  search_tag_registry_.Update(search_concepts, base::BindOnce([]() {}));
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
 
@@ -182,6 +181,113 @@ TEST_F(HelpAppSearchHandlerTest, SearchResultOrdering) {
   EXPECT_GT(search_results[0]->relevance_score,
             search_results[1]->relevance_score);
   EXPECT_GT(search_results[1]->relevance_score, 0.01);
+}
+
+TEST_F(HelpAppSearchHandlerTest, SearchStatusNotReadyAndEmptyIndex) {
+  base::HistogramTester histogram_tester;
+  std::vector<mojom::SearchResultPtr> search_results;
+
+  // Search without updating the index.
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"test query", /*max_num_results=*/3u, &search_results);
+
+  EXPECT_TRUE(search_results.empty());
+  // 0 is kNotReadyAndEmptyIndex.
+  histogram_tester.ExpectUniqueSample(
+      "Discover.SearchHandler.SearchResultStatus", 0, 1);
+}
+
+TEST_F(HelpAppSearchHandlerTest, SearchStatusNotReadyAndOtherStatus) {
+  base::HistogramTester histogram_tester;
+  std::vector<mojom::SearchResultPtr> search_results;
+
+  // The empty search query makes the LSS respond with kEmptyQuery rather than
+  // kEmptyIndex.
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"", /*max_num_results=*/3u, &search_results);
+
+  EXPECT_TRUE(search_results.empty());
+  // 1 is kNotReadyAndOtherStatus.
+  histogram_tester.ExpectUniqueSample(
+      "Discover.SearchHandler.SearchResultStatus", 1, 1);
+}
+
+TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndSuccess) {
+  // Add one item to the search index.
+  std::vector<mojom::SearchConceptPtr> search_concepts;
+  mojom::SearchConceptPtr new_concept_1 = mojom::SearchConcept::New(
+      /*id=*/"test-id-1",
+      /*title=*/u"Title 1",
+      /*main_category=*/u"Help",
+      /*tags=*/std::vector<std::u16string>{u"Test tag", u"Printing"},
+      /*url_path_with_parameters=*/"help",
+      /*locale=*/"");
+  search_concepts.push_back(std::move(new_concept_1));
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
+  handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  std::vector<mojom::SearchResultPtr> search_results;
+
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"Printing", /*max_num_results=*/3u, &search_results);
+
+  EXPECT_EQ(search_results.size(), 1u);
+  // 2 is kReadyAndSuccess.
+  histogram_tester.ExpectUniqueSample(
+      "Discover.SearchHandler.SearchResultStatus", 2, 1);
+}
+
+TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndEmptyIndex) {
+  // Update using an empty list. This can happen if there is no localized
+  // content for the current locale.
+  std::vector<mojom::SearchConceptPtr> search_concepts;
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
+  handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  std::vector<mojom::SearchResultPtr> search_results;
+
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"Printing", /*max_num_results=*/3u, &search_results);
+
+  EXPECT_TRUE(search_results.empty());
+  // 3 is kReadyAndEmptyIndex.
+  histogram_tester.ExpectUniqueSample(
+      "Discover.SearchHandler.SearchResultStatus", 3, 1);
+}
+
+TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndOtherStatus) {
+  // Add one item to the search index.
+  std::vector<mojom::SearchConceptPtr> search_concepts;
+  mojom::SearchConceptPtr new_concept_1 = mojom::SearchConcept::New(
+      /*id=*/"test-id-1",
+      /*title=*/u"Title 1",
+      /*main_category=*/u"Help",
+      /*tags=*/std::vector<std::u16string>{u"Test tag", u"Printing"},
+      /*url_path_with_parameters=*/"help",
+      /*locale=*/"");
+  search_concepts.push_back(std::move(new_concept_1));
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Update(std::move(search_concepts));
+  handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  std::vector<mojom::SearchResultPtr> search_results;
+
+  // Searching with an empty query results in a different status: kEmptyQuery.
+  mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"", /*max_num_results=*/3u, &search_results);
+
+  EXPECT_TRUE(search_results.empty());
+  // 4 is kReadyAndOtherStatus.
+  histogram_tester.ExpectUniqueSample(
+      "Discover.SearchHandler.SearchResultStatus", 4, 1);
 }
 
 }  // namespace help_app

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -14,6 +15,34 @@
 namespace chromeos {
 namespace help_app {
 namespace {
+
+// The end result of a search. Logged once per time a search finishes.
+// Not logged if the search is canceled by a new search starting. These values
+// persist to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class SearchResultStatus {
+  // The first Update hasn't finished yet, and the index is still empty, so the
+  // Search Handler is not ready to handle searches.
+  kNotReadyAndEmptyIndex = 0,
+  // Not ready and the status is something other than EmptyIndex. This should be
+  // far less common than kNotReadyAndEmptyIndex.
+  kNotReadyAndOtherStatus = 1,
+  // Ready and the LSS response status is Success.
+  kReadyAndSuccess = 2,
+  // Ready and the LSS response status is EmptyIndex. This can happen for
+  // languages with no localized content to add to the search index.
+  kReadyAndEmptyIndex = 3,
+  // Ready and the LSS response status is something other than Success or
+  // EmptyIndex.
+  kReadyAndOtherStatus = 4,
+  kMaxValue = kReadyAndOtherStatus,
+};
+
+// Use this in OnFindComplete.
+void LogSearchResultStatus(SearchResultStatus state) {
+  base::UmaHistogramEnumeration("Discover.SearchHandler.SearchResultStatus",
+                                state);
+}
 
 // Order search results by relevance score. Higher relevance first.
 bool CompareSearchResults(const mojom::SearchResultPtr& first,
@@ -26,7 +55,7 @@ bool CompareSearchResults(const mojom::SearchResultPtr& first,
 SearchHandler::SearchHandler(
     SearchTagRegistry* search_tag_registry,
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
-    : search_tag_registry_(search_tag_registry) {
+    : search_tag_registry_(search_tag_registry), is_ready_(false) {
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kHelpAppLauncher,
       local_search_service::Backend::kInvertedIndex,
@@ -63,6 +92,12 @@ void SearchHandler::Search(const std::u16string& query,
 
 void SearchHandler::Update(std::vector<mojom::SearchConceptPtr> concepts,
                            UpdateCallback callback) {
+  if (concepts.size() == 0) {
+    // Trying to update with an empty list causes an error in the LSS.
+    is_ready_ = true;
+    std::move(callback).Run();
+    return;
+  }
   search_tag_registry_->Update(concepts, std::move(callback));
 }
 
@@ -72,6 +107,7 @@ void SearchHandler::Observe(
 }
 
 void SearchHandler::OnRegistryUpdated() {
+  is_ready_ = true;
   for (auto& observer : observers_)
     observer->OnSearchResultAvailabilityChanged();
 }
@@ -101,9 +137,23 @@ void SearchHandler::OnFindComplete(
     const base::Optional<std::vector<local_search_service::Result>>&
         local_search_service_results) {
   if (response_status != local_search_service::ResponseStatus::kSuccess) {
+    if (response_status == local_search_service::ResponseStatus::kEmptyIndex) {
+      if (is_ready_) {
+        LogSearchResultStatus(SearchResultStatus::kReadyAndEmptyIndex);
+      } else {
+        LogSearchResultStatus(SearchResultStatus::kNotReadyAndEmptyIndex);
+      }
+    } else {
+      if (is_ready_) {
+        LogSearchResultStatus(SearchResultStatus::kReadyAndOtherStatus);
+      } else {
+        LogSearchResultStatus(SearchResultStatus::kNotReadyAndOtherStatus);
+      }
+    }
     std::move(callback).Run({});
     return;
   }
+  LogSearchResultStatus(SearchResultStatus::kReadyAndSuccess);
 
   std::move(callback).Run(GenerateSearchResultsArray(
       local_search_service_results.value(), max_num_results));

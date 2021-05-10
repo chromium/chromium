@@ -259,9 +259,7 @@ guestMessagePipe.registerHandler(
         // TODO(b/182763045): Consider recording a metric for invalid items.
         return valid;
       });
-      // Trying to update with an empty list causes an error.
-      if (dataFiltered.length === 0) return;
-      return await searchHandlerRemote.update(dataFiltered);
+      return searchHandlerRemote.update(dataFiltered);
     });
 
 /**

@@ -38366,6 +38366,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Search canceled because the search backend isn't available"/>
 </enum>
 
+<enum name="HelpAppSearchHandlerSearchResultStatus">
+  <int value="0" label="Not ready, empty index"/>
+  <int value="1" label="Not ready, other status (not empty index)"/>
+  <int value="2" label="Ready and success"/>
+  <int value="3" label="Ready, empty index (not success)"/>
+  <int value="4" label="Ready, other status (not success, not empty index)"/>
+</enum>
+
 <enum name="HermesResponseStatus">
   <summary>
     Statuses returned by Hermes, the Chrome OS daemon process which configures
