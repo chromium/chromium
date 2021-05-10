@@ -49,9 +49,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
@@ -212,7 +210,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private CallbackController mCallbackController = new CallbackController();
 
-    private SceneChangeObserver mSceneChangeObserver;
     private final ActionBarDelegate mActionBarDelegate;
     private ActionModeController mActionModeController;
     private final Callback<Boolean> mUrlFocusChangedCallback;
@@ -795,6 +792,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         ((LocationBarCoordinator) mLocationBar).startAutocompletePrefetch();
                     }
                 }
+                mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
             }
 
             @Override
@@ -804,6 +802,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     mLocationBarModel.setIsShowingTabSwitcher(false);
                     mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
                     updateButtonStatus();
+                    if (mToolbar.setForceTextureCapture(true)) {
+                        mControlContainer.invalidateBitmap();
+                    }
                 }
             }
 
@@ -818,23 +819,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onFinishedShowing(@LayoutType int layoutType) {
                 maybeFocusOmnibox(layoutType, mActivityTabProvider.get());
-            }
-        };
-
-        mSceneChangeObserver = new SceneChangeObserver() {
-            @Override
-            public void onTabSelectionHinted(int tabId) {
-                Tab tab = mTabModelSelector != null ? mTabModelSelector.getTabById(tabId) : null;
-                refreshSelectedTab(tab);
-
-                if (mToolbar.setForceTextureCapture(true)) {
-                    mControlContainer.invalidateBitmap();
-                }
-            }
-
-            @Override
-            public void onSceneChange(Layout layout) {
-                mToolbar.setContentAttached(layout.shouldDisplayContentOverlay());
             }
         };
 
@@ -1171,7 +1155,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         if (layoutManager != null) {
             mLayoutManager = layoutManager;
-            mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);
             mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
         }
 
@@ -1304,7 +1287,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         if (mLayoutManager != null) {
-            mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
             mLayoutManager.getOverlayPanelManager().removeObserver(mOverlayPanelManagerObserver);
             mLayoutManager = null;
         }
