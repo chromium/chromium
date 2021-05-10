@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
 <translation id="1119348796022671382">主題色彩模式會使用從桌布擷取的色彩，在介面上套用相對應的色調。</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
+<translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
 <translation id="1153356358378277386">配對裝置</translation>
 <translation id="1165712434476988950">必須重新啟動裝置才能套用更新。</translation>
 <translation id="1175572348579024023">捲動</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
 <translation id="4578906031062871102">已開啟設定選單</translation>
+<translation id="4581047786858252841">麥克風已開啟</translation>
 <translation id="4585337515783392668">停止透過不明接收器投放</translation>
+<translation id="4587299710837179226">麥克風已關閉</translation>
 <translation id="4596144739579517758">深色主題已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">停止共用螢幕？</translation>
 <translation id="5779721926447984944">固定的檔案</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="5805809050170488595">按一下即可啟動「<ph name="NETWORK_NAME" />」</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5825969630400862129">設定已連結的裝置</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>

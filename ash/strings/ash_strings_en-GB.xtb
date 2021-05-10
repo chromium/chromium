@@ -140,6 +140,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2079504693865562705">Hide apps in shelf</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
+<translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
 <translation id="2126242104232412123">New desk</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">Record full screen</translation>
@@ -367,6 +368,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4021716437419160885">Scroll down</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use the F-keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="4042660782729322247">You're sharing your screen</translation>
 <translation id="4057003836560082631">Browser tab <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off for an app}other{Off for # apps}}</translation>
@@ -392,6 +394,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="425364040945105958">No SIM</translation>
 <translation id="4261870227682513959">Show notification settings. Notifications are off</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
+<translation id="4274537685965975248">The Ctrl + Alt + down arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + right arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +403,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4303223480529385476">Expand status area</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">You pressed the keyboard shortcut for high contrast. Do you want to turn it on?</translation>
+<translation id="4322742403972824594">The Ctrl + Alt + up arrow keyboard shortcut has changed. To use the Home key, press the <ph name="LAUNCHER_KEY_NAME" /> key + left arrow.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros is not supported while multiple users are signed in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
@@ -417,6 +421,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
 <translation id="4450893287417543264">Don't show again</translation>
+<translation id="4451374464530248585">The Alt + down arrow keyboard shortcut has changed. To use the page down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + down arrow.</translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
 <translation id="4472575034687746823">Get started</translation>
@@ -708,6 +713,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
+<translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Get started</translation>
 <translation id="6981982820502123353">Accessibility</translation>

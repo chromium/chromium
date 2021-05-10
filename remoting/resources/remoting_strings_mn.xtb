@@ -82,7 +82,7 @@
 <translation id="4784508858340177375">X сервер гэмтсэн эсвэл эхэлж чадсангүй.</translation>
 <translation id="4798680868612952294">Хулганы сонголт</translation>
 <translation id="4804818685124855865">Таслах</translation>
-<translation id="4808503597364150972">Та <ph name="HOSTNAME" />-ныхаа PIN кодоо оруулна уу</translation>
+<translation id="4808503597364150972">Та <ph name="HOSTNAME" />-ныхаа ПИН кодоо оруулна уу</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Илгээх PrtScn</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" />-н холболт хаагдсан</translation>
@@ -99,7 +99,7 @@
 <translation id="5397086374758643919">Chrome Remote Desktop Host-ийг устгагч</translation>
 <translation id="5419418238395129586">Сүүлд онлайн байсан: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Хост унтарсан байна.</translation>
-<translation id="5601503069213153581">PIN</translation>
+<translation id="5601503069213153581">ПИН</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5708869785009007625">Одоогоор таны десктопыг <ph name="USER" />-тай хуваалцсан байна.</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />-р нэвтэрсэн байна.</translation>
@@ -144,7 +144,7 @@
 <translation id="7678209621226490279">Зүүн холбогч</translation>
 <translation id="7693372326588366043">Хостуудын жагсаалтыг дахин сэргээх</translation>
 <translation id="7714222945760997814">Үүнийг мэдэгдэх</translation>
-<translation id="7868137160098754906">Компьютерийн алсын удирдлагад нэвтрэх PIN кодоо оруулна уу.</translation>
+<translation id="7868137160098754906">Компьютерийн алсын удирдлагад нэвтрэх ПИН кодоо оруулна уу.</translation>
 <translation id="7895403300744144251">Алсын компьютерийн аюулгүй байдлын бодлогын дагуу таны бүртгэлээс холболт зөвшөөрдөггүй.</translation>
 <translation id="7936528439960309876">Баруун холбогч</translation>
 <translation id="7970576581263377361">Таниулах үйлдэл амжилтгүй боллоо. Chromium руу дахин нэвтэрч орно уу.</translation>

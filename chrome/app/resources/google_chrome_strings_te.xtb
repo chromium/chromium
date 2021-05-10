@@ -11,6 +11,7 @@
 <translation id="1125124144982679672">Chromeను ఎవరు ఉపయోగిస్తున్నారు?</translation>
 <translation id="1142745911746664600">Chromeను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="1154147086299354128">&amp;Chromeలో తెరువు</translation>
+<translation id="1278833599417554002">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> కోసం ఈ పరికరాన్ని ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google Chrome OS నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
 <translation id="1302523850133262269">దయచేసి Chrome తాజా సిస్టమ్ నవీకరణలను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="137466361146087520">Google Chrome బీటా</translation>
@@ -46,6 +47,7 @@
 <translation id="2063848847527508675">అప్‌డేట్‌ను వర్తింపజేయడానికి Chrome OSను పునఃప్రారంభించాలి.</translation>
 <translation id="2094919256425865063">ఏదేమైనా Chromeని మూసివేయాలా?</translation>
 <translation id="2120620239521071941">ఇది ఈ పరికరం నుండి <ph name="ITEMS_COUNT" /> అంశాలను తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
+<translation id="2121284319307530122">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="2123055963409958220">Chromeను మెరుగుపరచడంలో సహాయపడటానికి <ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయండి</translation>
 <translation id="2151406531797534936">దయచేసి Chromeను ఇప్పుడే మళ్ళీ ప్రారంభించండి</translation>
 <translation id="2246246234298806438">అంతర్గత PDF వ్యూవర్ లేనప్పుడు Google Chrome ముద్రణ ప్రివ్యూను చూపించదు.</translation>
@@ -235,6 +237,7 @@
 <translation id="7629695634924605473">మీ పాస్‌వర్డ్‌లు ఎప్పుడైనా హ్యాక్ అయితే, Chrome మీకు తెలియచేస్తుంది</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Google Chromeను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేసారు.</translation>
 <translation id="7651907282515937834">Chrome ఎంటర్‌ప్రైజ్ లోగో</translation>
+<translation id="7665553140559834626">&amp;Chrome OSను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="7747138024166251722">ఇన్‌స్టాలర్ ఒక తాత్కాలిక డైరక్టరీని సృష్టించలేకపోయింది. సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి దయచేసి ఖాళీ డిస్క్ స్థలం, అనుమతిని తనిఖీ చేయండి.</translation>
 <translation id="7761834446675418963">Chromeను తెరిచి, బ్రౌజింగ్‌ను ప్రారంభించడానికి మీ పేరును క్లిక్ చేయండి.</translation>
 <translation id="7777080907402804672">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chrome ప్రయత్నిస్తుంది. వివరణలను సృష్టించడానికి, చిత్రాలు Googleకు పంపబడతాయి. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
