@@ -753,6 +753,7 @@ def updater_builder(
         *,
         name,
         **kwargs):
+    kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci.builder(
         name = name,
         builder_group = "chromium.updater",
