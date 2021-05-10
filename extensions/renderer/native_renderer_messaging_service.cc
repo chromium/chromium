@@ -402,7 +402,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   const Extension* extension = script_context->extension();
   if (extension) {
-    if (!source->tab.empty() && !extension->is_platform_app()) {
+    if (!source->tab.DictEmpty() && !extension->is_platform_app()) {
       sender_builder.Set("tab", content::V8ValueConverter::Create()->ToV8Value(
                                     &source->tab, v8_context));
     }
