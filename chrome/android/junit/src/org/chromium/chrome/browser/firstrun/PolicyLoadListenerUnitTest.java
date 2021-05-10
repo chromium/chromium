@@ -19,6 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.Callback;
@@ -164,6 +165,24 @@ public class PolicyLoadListenerUnitTest {
         // and the state for PolicyLoadListener should stay at not finished.
         mTestPolicyServiceSupplier.set(mPolicyService);
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void testDestroyAfterStart_PolicyInitializedInterleaved() {
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
+
+        // OneshotSupplierImpl will post to a Handler when it runs callbacks. By pausing the main
+        // looper, we temporarily stop these from being run. Otherwise Robolectric will run them
+        // synchronously.
+        ShadowLooper.pauseMainLooper();
+        mAppRestrictionsCallback.onResult(false);
+        Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
+
+        // Because #destroy() is called before mListener has been notified, the notification should
+        // dropped.
+        mPolicyLoadListener.destroy();
+        ShadowLooper.unPauseMainLooper();
         Mockito.verify(mListener, never()).onResult(anyBoolean());
     }
 

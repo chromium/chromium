@@ -71,7 +71,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
 
     @Override
     public Boolean onAvailable(Callback<Boolean> callback) {
-        return mMightHavePoliciesSupplier.onAvailable(callback);
+        return mMightHavePoliciesSupplier.onAvailable(mCallbackController.makeCancelable(callback));
     }
 
     @Override
