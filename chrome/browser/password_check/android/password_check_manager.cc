@@ -62,9 +62,10 @@ CompromisedCredentialForUI::~CompromisedCredentialForUI() = default;
 
 PasswordCheckManager::PasswordCheckManager(Profile* profile, Observer* observer)
     : observer_(observer), profile_(profile) {
-  observed_saved_passwords_presenter_.Add(&saved_passwords_presenter_);
-  observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
-  observed_bulk_leak_check_service_.Add(
+  observed_saved_passwords_presenter_.Observe(&saved_passwords_presenter_);
+  observed_insecure_credentials_manager_.Observe(
+      &insecure_credentials_manager_);
+  observed_bulk_leak_check_service_.Observe(
       BulkLeakCheckServiceFactory::GetForProfile(profile));
 
   // Instructs the presenter and provider to initialize and build their caches.
@@ -303,8 +304,9 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
 }
 
 void PasswordCheckManager::OnBulkCheckServiceShutDown() {
-  observed_bulk_leak_check_service_.Remove(
-      BulkLeakCheckServiceFactory::GetForProfile(profile_));
+  DCHECK(observed_bulk_leak_check_service_.IsObservingSource(
+      BulkLeakCheckServiceFactory::GetForProfile(profile_)));
+  observed_bulk_leak_check_service_.Reset();
 }
 
 PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
