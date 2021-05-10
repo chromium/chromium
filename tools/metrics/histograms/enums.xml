@@ -46358,6 +46358,7 @@ from previous Chrome versions.
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
+  <int value="-413562235" label="MessagesForAndroidUpdatePassword:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-412645531" label="AutofillTokenPrefixMatching:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
@@ -46613,6 +46614,7 @@ from previous Chrome versions.
       label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
   <int value="-176524053"
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
+  <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
   <int value="-175666252" label="Portals:disabled"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>
   <int value="-174706795"

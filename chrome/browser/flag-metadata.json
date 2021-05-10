@@ -3635,6 +3635,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "messages-for-android-update-password",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "messages-save-card-infobar",
     "owners": [ "sczs", "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 83

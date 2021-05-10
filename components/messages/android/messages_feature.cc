@@ -21,6 +21,9 @@ extern const base::Feature kMessagesForAndroidSafetyTip{
 extern const base::Feature kMessagesForAndroidSaveCard{
     "MessagesForAndroidSaveCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMessagesForAndroidUpdatePassword{
+    "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsPasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidPasswords);
@@ -39,6 +42,11 @@ bool IsSafetyTipMessagesUiEnabled() {
 bool IsSaveCardMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
+}
+
+bool IsUpdatePasswordMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidUpdatePassword);
 }
 
 }  // namespace messages

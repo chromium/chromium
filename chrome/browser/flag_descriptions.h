@@ -1823,6 +1823,9 @@ extern const char kMessagesForAndroidSafetyTipDescription[];
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 
+extern const char kMessagesForAndroidUpdatePasswordName[];
+extern const char kMessagesForAndroidUpdatePasswordDescription[];
+
 extern const char kOfflineIndicatorChoiceName[];
 extern const char kOfflineIndicatorChoiceDescription[];
 

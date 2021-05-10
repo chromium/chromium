@@ -6727,6 +6727,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMessagesForAndroidSaveCardName,
      flag_descriptions::kMessagesForAndroidSaveCardDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidSaveCard)},
+    {"messages-for-android-update-password",
+     flag_descriptions::kMessagesForAndroidUpdatePasswordName,
+     flag_descriptions::kMessagesForAndroidUpdatePasswordDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidUpdatePassword)},
 #endif
 
 #if defined(OS_ANDROID)

@@ -14,8 +14,8 @@ namespace messages {
 // implementations also fallback to Infobar implementations.
 extern const base::Feature kMessagesForAndroidInfrastructure;
 
-// Feature that controls whether "save password" and "update password" prompts
-// use Messages or Infobars infrastructure.
+// Feature that controls whether "save password" and "saved password
+// confirmation" prompts use Messages or Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidPasswords;
 
 // Feature that controls whether "popup blocked" prompts use Messages or
@@ -30,6 +30,10 @@ extern const base::Feature kMessagesForAndroidSafetyTip;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidSaveCard;
 
+// Feature that controls whether "update password" prompt uses Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidUpdatePassword;
+
 bool IsPasswordMessagesUiEnabled();
 
 bool IsPopupBlockedMessagesUiEnabled();
@@ -37,6 +41,8 @@ bool IsPopupBlockedMessagesUiEnabled();
 bool IsSafetyTipMessagesUiEnabled();
 
 bool IsSaveCardMessagesUiEnabled();
+
+bool IsUpdatePasswordMessagesUiEnabled();
 
 }  // namespace messages
 

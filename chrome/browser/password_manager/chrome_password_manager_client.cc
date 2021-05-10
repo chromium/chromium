@@ -302,8 +302,13 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     return false;
 
   if (update_password) {
-    UpdatePasswordInfoBarDelegate::Create(web_contents(),
-                                          std::move(form_to_save));
+    if (messages::IsUpdatePasswordMessagesUiEnabled()) {
+      save_password_message_delegate_.DisplaySavePasswordPrompt(
+          web_contents(), std::move(form_to_save), /*update_password=*/true);
+    } else {
+      UpdatePasswordInfoBarDelegate::Create(web_contents(),
+                                            std::move(form_to_save));
+    }
   } else {
     if (messages::IsPasswordMessagesUiEnabled()) {
       save_password_message_delegate_.DisplaySavePasswordPrompt(
