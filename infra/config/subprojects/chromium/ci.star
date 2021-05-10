@@ -2116,14 +2116,6 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
-    name = "ToTAndroidCFI",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT Android",
-        short_name = "cfi",
-    ),
-)
-
-ci.clang_builder(
     name = "ToTAndroidOfficial",
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",

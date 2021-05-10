@@ -1031,7 +1031,6 @@
       'android-pie-x86-rel',
       'android-pie-arm64-rel', # https://crbug.com/1010211
       'ToTAndroid',
-      'ToTAndroidCFI',
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
@@ -2434,8 +2433,7 @@
       'Marshmallow 64 bit Tester',
       'Marshmallow Tablet Tester',
       'Nougat Phone Tester',
-      'ToTAndroid',
-      'ToTAndroidCFI'
+      'ToTAndroid'
     ]
   },
   'performance_test_suite': {

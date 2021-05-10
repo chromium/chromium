@@ -1896,20 +1896,6 @@
           'all',
         ],
       },
-      'ToTAndroidCFI': {
-        'mixins': [
-          'bullhead',
-          'marshmallow',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'chromium_android_gtests',
-          'isolated_scripts': 'chrome_sizes_android',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'ToTAndroidOfficial': {
         'additional_compile_targets': [
           'all',
