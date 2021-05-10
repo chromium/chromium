@@ -6823,6 +6823,7 @@ crbug.com/1146560 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createIma
 
 # Sheriff 2021-05-10
 crbug.com/1207319 external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html [ Pass Timeout ]
+crbug.com/1207337 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Pass Failure ]
 
 # Sheriff 2021-05-04
 crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.worker.html [ Pass Timeout ]
