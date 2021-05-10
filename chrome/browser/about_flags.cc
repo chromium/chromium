@@ -6954,9 +6954,8 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityLabels)},
 #endif  // defined(OS_ANDROID)
 
-    // TODO(crbug.com/1155358): Enable Chrome Labs for ChromeOS
     {"chrome-labs", flag_descriptions::kChromeLabsName,
-     flag_descriptions::kChromeLabsDescription, kOsLinux | kOsMac | kOsWin,
+     flag_descriptions::kChromeLabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeLabs)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
