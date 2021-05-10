@@ -299,9 +299,9 @@ void FontSettingsGetFontListFunction::FontListHasLoaded(
 ExtensionFunction::ResponseValue
 FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (auto it = fonts->begin(); it != fonts->end(); ++it) {
-    base::ListValue* font_list_value;
-    if (!it->GetAsList(&font_list_value)) {
+  for (const auto& entry : fonts->GetList()) {
+    const base::ListValue* font_list_value;
+    if (!entry.GetAsList(&font_list_value)) {
       NOTREACHED();
       return Error("");
     }
