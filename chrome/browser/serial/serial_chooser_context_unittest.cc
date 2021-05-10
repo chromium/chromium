@@ -6,7 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -77,8 +77,8 @@ class SerialChooserContextTest : public testing::Test {
 
     context_ = SerialChooserContextFactory::GetForProfile(&profile_);
     context_->SetPortManagerForTesting(std::move(port_manager));
-    scoped_permission_observer_.Add(context_);
-    scoped_port_observer_.Add(context_);
+    scoped_permission_observation_.Observe(context_);
+    scoped_port_observation_.Observe(context_);
 
     // Ensure |context_| is ready to receive SerialPortManagerClient messages.
     context_->FlushPortManagerConnectionForTesting();
@@ -123,15 +123,16 @@ class SerialChooserContextTest : public testing::Test {
   TestingProfile profile_;
   SerialChooserContext* context_;
   permissions::MockPermissionObserver permission_observer_;
-  ScopedObserver<permissions::ObjectPermissionContextBase,
-                 permissions::ObjectPermissionContextBase::PermissionObserver>
-      scoped_permission_observer_{&permission_observer_};
+  base::ScopedObservation<
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
+      scoped_permission_observation_{&permission_observer_};
   MockPortObserver port_observer_;
-  ScopedObserver<SerialChooserContext,
-                 SerialChooserContext::PortObserver,
-                 &SerialChooserContext::AddPortObserver,
-                 &SerialChooserContext::RemovePortObserver>
-      scoped_port_observer_{&port_observer_};
+  base::ScopedObservation<SerialChooserContext,
+                          SerialChooserContext::PortObserver,
+                          &SerialChooserContext::AddPortObserver,
+                          &SerialChooserContext::RemovePortObserver>
+      scoped_port_observation_{&port_observer_};
 };
 
 }  // namespace
