@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_SELLER_WORKLET_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_SELLER_WORKLET_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -74,17 +76,17 @@ class SellerWorklet {
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
                const blink::mojom::AuctionAdConfig& auction_config,
-               const std::string& browser_signal_top_window_hostname,
+               const url::Origin& browser_signal_top_window_origin,
                const url::Origin& browser_signal_interest_group_owner,
                const std::string& browser_signal_ad_render_fingerprint,
-               base::TimeDelta browser_signal_bidding_duration,
+               uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback callback);
 
   // Calls reportResult(), and invokes passed in callback asynchronously with
   // the reporting information. May only be called once the worklet has
   // successfully loaded.
   void ReportResult(const blink::mojom::AuctionAdConfig& auction_config,
-                    const std::string& browser_signal_top_window_hostname,
+                    const url::Origin& browser_signal_top_window_origin,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
                     const std::string& browser_signal_ad_render_fingerprint,

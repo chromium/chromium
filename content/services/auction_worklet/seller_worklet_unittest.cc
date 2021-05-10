@@ -76,11 +76,13 @@ class SellerWorkletTest : public testing::Test {
     ad_metadata_ = "[1]";
     bid_ = 1;
     auction_config_ = blink::mojom::AuctionAdConfig::New();
-    browser_signal_top_window_hostname_ = "top_window_hostname";
+
+    browser_signal_top_window_origin_ =
+        url::Origin::Create(GURL("https://window.test/"));
     browser_signal_interest_group_owner_ =
-        url::Origin::Create(GURL("https://foo.test/"));
+        url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_ad_render_fingerprint_ = "ad_render_fingerprint";
-    browser_signal_bidding_duration_ = base::TimeDelta();
+    browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_desireability_ = 1;
   }
@@ -119,10 +121,10 @@ class SellerWorkletTest : public testing::Test {
 
     base::RunLoop run_loop;
     seller_worket->ScoreAd(
-        ad_metadata_, bid_, *auction_config_,
-        browser_signal_top_window_hostname_,
+        ad_metadata_, bid_, *auction_config_, browser_signal_top_window_origin_,
         browser_signal_interest_group_owner_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bidding_duration_,
+        browser_signal_ad_render_fingerprint_,
+        browser_signal_bidding_duration_msecs_,
         base::BindLambdaForTesting(
             [&run_loop, &expected_score, expected_errors](
                 double score, const std::vector<std::string>& errors) {
@@ -174,7 +176,7 @@ class SellerWorkletTest : public testing::Test {
 
     base::RunLoop run_loop;
     seller_worket->ReportResult(
-        *auction_config_, browser_signal_top_window_hostname_,
+        *auction_config_, browser_signal_top_window_origin_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, bid_,
         browser_signal_desireability_,
@@ -231,10 +233,10 @@ class SellerWorkletTest : public testing::Test {
   // score_bid().
   double bid_;
   blink::mojom::AuctionAdConfigPtr auction_config_;
-  std::string browser_signal_top_window_hostname_;
+  url::Origin browser_signal_top_window_origin_;
   url::Origin browser_signal_interest_group_owner_;
   std::string browser_signal_ad_render_fingerprint_;
-  base::TimeDelta browser_signal_bidding_duration_;
+  uint32_t browser_signal_bidding_duration_msecs_;
   GURL browser_signal_render_url_;
   double browser_signal_desireability_;
 
@@ -325,11 +327,6 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
           &ad_metadata_,
       },
       {
-          "browserSignals.topWindowHostname",
-          false /* is_json */,
-          &browser_signal_top_window_hostname_,
-      },
-      {
           "browserSignals.adRenderFingerprint",
           false /* is_json */,
           &browser_signal_ad_render_fingerprint_,
@@ -357,6 +354,17 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
     SetDefaultParameters();
   }
 
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://foo.test/"));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.topWindowHostname == "foo.test" ? 2 : 0)", 2);
+
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://[::1]:40000/"));
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.topWindowHostname == "[::1]" ? 3 : 0)", 3);
+  SetDefaultParameters();
+
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunScoreAdWithReturnValueExpectingResult(
@@ -379,17 +387,12 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
   SetDefaultParameters();
 
   // Test browserSignals.bidding_duration_msec.
-  browser_signal_bidding_duration_ = base::TimeDelta();
+  browser_signal_bidding_duration_msecs_ = 0;
   RunScoreAdWithReturnValueExpectingResult(
       base::StringPrintf("browserSignals.biddingDurationMsec"), 0);
-  browser_signal_bidding_duration_ = base::TimeDelta::FromMilliseconds(100);
+  browser_signal_bidding_duration_msecs_ = 100;
   RunScoreAdWithReturnValueExpectingResult(
       base::StringPrintf("browserSignals.biddingDurationMsec"), 100);
-
-  // Make sure that submillisecond resolution is not available.
-  browser_signal_bidding_duration_ = base::TimeDelta::FromMicroseconds(2400);
-  RunScoreAdWithReturnValueExpectingResult(
-      base::StringPrintf("browserSignals.biddingDurationMsec"), 2);
 }
 
 // Test that auction config gets into scoreAd. More detailed handling of
@@ -506,56 +509,27 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
 }
 
 TEST_F(SellerWorkletTest, ReportResultParameters) {
-  // Parameters that are C++ strings, including JSON strings.
-  const struct StringTestCase {
-    // String used in JS to access the parameter.
-    const char* name;
-    bool is_json;
-    // Pointer to location at which the string can be modified.
-    std::string* value_ptr;
-  } kStringTestCases[] = {
-      {
-          "browserSignals.topWindowHostname",
-          false /* is_json */,
-          &browser_signal_top_window_hostname_,
-      },
-      {
-          "browserSignals.adRenderFingerprint",
-          false /* is_json */,
-          &browser_signal_ad_render_fingerprint_,
-      },
-      {
-          "browserSignals.topWindowHostname",
-          false /* is_json */,
-          &browser_signal_top_window_hostname_,
-      },
-  };
+  browser_signal_ad_render_fingerprint_ = "foo";
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.adRenderFingerprint == "foo" ? 2 : 1)",
+      std::string() /* extra_code */, "2",
+      base::nullopt /* expected_report_url */);
+  SetDefaultParameters();
 
-  for (const auto& test_case : kStringTestCases) {
-    SCOPED_TRACE(test_case.name);
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://foo.test/"));
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.topWindowHostname == "foo.test" ? 2 : 1)",
+      std::string() /* extra_code */, "2",
+      base::nullopt /* expected_report_url */);
 
-    *test_case.value_ptr = "foo";
-    RunReportResultCreatedScriptExpectingResult(
-        base::StringPrintf(R"(%s == "foo" ? 2 : 1)", test_case.name),
-        std::string() /* extra_code */,
-        test_case.is_json ? base::Optional<std::string>() : "2",
-        base::nullopt /* expected_report_url */);
-
-    *test_case.value_ptr = R"("foo")";
-    RunReportResultCreatedScriptExpectingResult(
-        base::StringPrintf(R"(%s == "foo" ? 1 : 2)", test_case.name),
-        std::string() /* extra_code */, test_case.is_json ? "1" : "2",
-        base::nullopt /* expected_report_url */);
-
-    *test_case.value_ptr = "[1]";
-    RunReportResultCreatedScriptExpectingResult(
-        base::StringPrintf(R"(%s[0] == 1 ? 4 : %s=="[1]" ? 3 : 0)",
-                           test_case.name, test_case.name),
-        std::string() /* extra_code */, test_case.is_json ? "4" : "3",
-        base::nullopt /* expected_report_url */);
-
-    SetDefaultParameters();
-  }
+  browser_signal_top_window_origin_ =
+      url::Origin::Create(GURL("https://[::1]:40000/"));
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.topWindowHostname == "[::1]" ? 3 : 1)",
+      std::string() /* extra_code */, "3",
+      base::nullopt /* expected_report_url */);
+  SetDefaultParameters();
 
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
@@ -570,6 +544,7 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
       R"(browserSignals.interestGroupOwner == "https://[::1]:40000" ? 3 : 1)",
       std::string() /* extra_code */, "3",
       base::nullopt /* expected_report_url */);
+  SetDefaultParameters();
 
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
@@ -680,10 +655,10 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       base::RunLoop run_loop;
       seller_worket->ScoreAd(
           ad_metadata_, bid_, *auction_config_,
-          browser_signal_top_window_hostname_,
+          browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_,
           browser_signal_ad_render_fingerprint_,
-          browser_signal_bidding_duration_,
+          browser_signal_bidding_duration_msecs_,
           base::BindLambdaForTesting(
               [&run_loop](double score,
                           const std::vector<std::string>& errors) {
@@ -697,7 +672,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worket->ReportResult(
-          *auction_config_, browser_signal_top_window_hostname_,
+          *auction_config_, browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_render_fingerprint_, bid_,
           browser_signal_desireability_,

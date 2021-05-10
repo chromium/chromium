@@ -86,7 +86,7 @@ BidderWorklet::BidderWorklet(
     const base::Optional<std::string>& auction_signals_json,
     const base::Optional<std::string>& per_buyer_signals_json,
     const url::Origin& browser_signal_top_window_origin,
-    const std::string& browser_signal_seller,
+    const url::Origin& browser_signal_seller_origin,
     base::Time auction_start_time,
     LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback)
     : v8_helper_(v8_helper),
@@ -99,7 +99,7 @@ BidderWorklet::BidderWorklet(
       per_buyer_signals_json_(per_buyer_signals_json),
       browser_signal_top_window_hostname_(
           browser_signal_top_window_origin.host()),
-      browser_signal_seller_(browser_signal_seller),
+      browser_signal_seller_(browser_signal_seller_origin.Serialize()),
       auction_start_time_(auction_start_time) {
   DCHECK(load_script_and_generate_bid_callback_);
 

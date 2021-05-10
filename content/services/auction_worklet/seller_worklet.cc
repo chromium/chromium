@@ -151,10 +151,10 @@ void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
     const blink::mojom::AuctionAdConfig& auction_config,
-    const std::string& browser_signal_top_window_hostname,
+    const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const std::string& browser_signal_ad_render_fingerprint,
-    base::TimeDelta browser_signal_bidding_duration,
+    uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
   callback = base::BindOnce(&InvokeScoreAdCallbackAsync, std::move(callback));
 
@@ -186,15 +186,14 @@ void SellerWorklet::ScoreAd(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
-                                browser_signal_top_window_hostname) ||
+                                browser_signal_top_window_origin.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
-      !browser_signals_dict.Set(
-          "biddingDurationMsec",
-          browser_signal_bidding_duration.InMilliseconds())) {
+      !browser_signals_dict.Set("biddingDurationMsec",
+                                browser_signal_bidding_duration_msecs)) {
     std::move(callback).Run(0 /* score */,
                             std::vector<std::string>() /* errors */);
     return;
@@ -235,7 +234,7 @@ void SellerWorklet::ScoreAd(
 
 void SellerWorklet::ReportResult(
     const blink::mojom::AuctionAdConfig& auction_config,
-    const std::string& browser_signal_top_window_hostname,
+    const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::string& browser_signal_ad_render_fingerprint,
@@ -268,7 +267,7 @@ void SellerWorklet::ReportResult(
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
-                                browser_signal_top_window_hostname) ||
+                                browser_signal_top_window_origin.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||

@@ -97,7 +97,8 @@ class BidderWorkletTest : public testing::Test {
     null_per_buyer_signals_ = false;
     browser_signal_top_window_origin_ =
         url::Origin::Create(GURL("https://top.window.test/"));
-    browser_signal_seller_ = "browser_signal_seller";
+    browser_signal_seller_origin_ =
+        url::Origin::Create(GURL("https://browser.signal.seller.test/"));
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_ad_render_fingerprint_ =
@@ -232,7 +233,7 @@ class BidderWorkletTest : public testing::Test {
         null_per_buyer_signals_
             ? base::nullopt
             : base::make_optional<std::string>(per_buyer_signals_),
-        browser_signal_top_window_origin_, browser_signal_seller_,
+        browser_signal_top_window_origin_, browser_signal_seller_origin_,
         auction_start_time_,
         base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
                        base::Unretained(this)));
@@ -291,7 +292,7 @@ class BidderWorkletTest : public testing::Test {
   bool null_per_buyer_signals_ = false;
 
   url::Origin browser_signal_top_window_origin_;
-  std::string browser_signal_seller_;
+  url::Origin browser_signal_seller_origin_;
   std::string seller_signals_;
   GURL browser_signal_render_url_;
   std::string browser_signal_ad_render_fingerprint_;
@@ -594,11 +595,6 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
           true /* is_json */,
           &per_buyer_signals_,
       },
-      {
-          "browserSignals.seller",
-          false /* is_json */,
-          &browser_signal_seller_,
-      },
   };
 
   for (const auto& test_case : kStringTestCases) {
@@ -648,6 +644,20 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   interest_group_owner_ = url::Origin::Create(GURL("https://[::1]:40000/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
+      BidderWorklet::Bid(R"("https://[::1]:40000")", 1,
+                         GURL("https://response.test/"), base::TimeDelta()));
+  SetDefaultParameters();
+
+  browser_signal_seller_origin_ =
+      url::Origin::Create(GURL("https://foo.test/"));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
+      BidderWorklet::Bid(R"("https://foo.test")", 1,
+                         GURL("https://response.test/"), base::TimeDelta()));
+  browser_signal_seller_origin_ =
+      url::Origin::Create(GURL("https://[::1]:40000/"));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
       BidderWorklet::Bid(R"("https://[::1]:40000")", 1,
                          GURL("https://response.test/"), base::TimeDelta()));
   SetDefaultParameters();

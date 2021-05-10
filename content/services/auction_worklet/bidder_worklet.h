@@ -104,7 +104,7 @@ class BidderWorklet {
       const base::Optional<std::string>& auction_signals_json,
       const base::Optional<std::string>& per_buyer_signals_json,
       const url::Origin& browser_signal_top_window_origin,
-      const std::string& browser_signal_seller,
+      const url::Origin& browser_signal_seller_origin,
       base::Time auction_start_time,
       LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback);
   explicit BidderWorklet(const BidderWorklet&) = delete;
@@ -149,6 +149,7 @@ class BidderWorklet {
   const base::Optional<std::string> auction_signals_json_;
   const base::Optional<std::string> per_buyer_signals_json_;
   const std::string browser_signal_top_window_hostname_;
+  // Serialized copy of seller's origin.
   const std::string browser_signal_seller_;
   const base::Time auction_start_time_;
 

@@ -61,8 +61,8 @@ void AuctionRunner::StartBidding() {
     bid_state->bidder_worklet = std::make_unique<BidderWorklet>(
         &auction_v8_helper_, url_loader_factory_.get(), bidder->Clone(),
         auction_config_->auction_signals, PerBuyerSignals(bid_state),
-        browser_signals_->top_frame_origin,
-        browser_signals_->seller.Serialize(), auction_start_time_,
+        browser_signals_->top_frame_origin, browser_signals_->seller,
+        auction_start_time_,
         base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                        base::Unretained(this), bid_state));
   }
@@ -132,8 +132,9 @@ void AuctionRunner::ScoreOne() {
 void AuctionRunner::ScoreBid(const BidState* state) {
   seller_worklet_->ScoreAd(
       state->bid_result->ad, state->bid_result->bid, *auction_config_,
-      browser_signals_->top_frame_origin.host(), state->bidder->group->owner,
-      AdRenderFingerprint(state), state->bid_result->bid_duration,
+      browser_signals_->top_frame_origin, state->bidder->group->owner,
+      AdRenderFingerprint(state),
+      state->bid_result->bid_duration.InMilliseconds(),
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this)));
 }
 
@@ -187,7 +188,7 @@ void AuctionRunner::ReportSellerResult(const BidState* best_bid) {
   DCHECK(best_bid->bid_result);
   DCHECK_GT(best_bid->seller_score, 0);
   seller_worklet_->ReportResult(
-      *auction_config_, browser_signals_->top_frame_origin.host(),
+      *auction_config_, browser_signals_->top_frame_origin,
       best_bid->bidder->group->owner, best_bid->bid_result->render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result->bid,
       best_bid->seller_score,
