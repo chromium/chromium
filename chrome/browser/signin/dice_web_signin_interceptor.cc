@@ -300,7 +300,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_account_info_update_timeout_.callback(),
         base::TimeDelta::FromSeconds(5));
-    account_info_update_observer_.Add(identity_manager_);
+    account_info_update_observation_.Observe(identity_manager_);
   }
 }
 
@@ -330,7 +330,7 @@ void DiceWebSigninInterceptor::Shutdown() {
 
 void DiceWebSigninInterceptor::Reset() {
   Observe(/*web_contents=*/nullptr);
-  account_info_update_observer_.RemoveAll();
+  account_info_update_observation_.Reset();
   on_account_info_update_timeout_.Cancel();
   is_interception_in_progress_ = false;
   account_id_ = CoreAccountId();
@@ -409,7 +409,7 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
   if (!info.IsValid())
     return;
 
-  account_info_update_observer_.RemoveAll();
+  account_info_update_observation_.Reset();
   on_account_info_update_timeout_.Cancel();
   base::UmaHistogramTimes(
       "Signin.Intercept.AccountInfoFetchDuration",

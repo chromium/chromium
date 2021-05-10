@@ -28,8 +28,8 @@ SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
   DCHECK(identity_manager_);
   DCHECK(signin_error_controller_);
   DCHECK(profile_attributes_storage_);
-  identity_manager_observer_.Add(identity_manager_);
-  signin_error_controller_observer_.Add(signin_error_controller);
+  identity_manager_observation_.Observe(identity_manager_);
+  signin_error_controller_observation_.Observe(signin_error_controller);
 
   UpdateProfileAttributes();
   // TODO(crbug.com/908457): Call OnErrorChanged() here, to catch any change
@@ -40,8 +40,8 @@ SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
 SigninProfileAttributesUpdater::~SigninProfileAttributesUpdater() = default;
 
 void SigninProfileAttributesUpdater::Shutdown() {
-  identity_manager_observer_.RemoveAll();
-  signin_error_controller_observer_.RemoveAll();
+  identity_manager_observation_.Reset();
+  signin_error_controller_observation_.Reset();
 }
 
 void SigninProfileAttributesUpdater::UpdateProfileAttributes() {

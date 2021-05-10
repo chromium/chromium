@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -315,8 +315,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Members below are related to the interception in progress.
   bool is_interception_in_progress_ = false;
   CoreAccountId account_id_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      account_info_update_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      account_info_update_observation_{this};
   // Timeout for the fetch of the extended account info. The signin interception
   // is cancelled if the account info cannot be fetched quickly.
   base::CancelableOnceCallback<void()> on_account_info_update_timeout_;

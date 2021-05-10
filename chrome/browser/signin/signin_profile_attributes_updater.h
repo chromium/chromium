@@ -7,7 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
@@ -50,10 +50,12 @@ class SigninProfileAttributesUpdater
   ProfileAttributesStorage* profile_attributes_storage_;
   const base::FilePath profile_path_;
   PrefService* prefs_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
-  ScopedObserver<SigninErrorController, SigninErrorController::Observer>
-      signin_error_controller_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ScopedObservation<SigninErrorController,
+                          SigninErrorController::Observer>
+      signin_error_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdater);
 };
