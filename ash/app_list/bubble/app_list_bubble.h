@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
@@ -19,10 +19,10 @@ class BubbleEventFilter;
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI. Only one bubble can be visible at a time, across
 // all displays.
-class ASH_EXPORT AppListBubble {
+class ASH_EXPORT AppListBubble : public views::WidgetObserver {
  public:
   AppListBubble();
-  ~AppListBubble();
+  ~AppListBubble() override;
 
   // Shows the bubble on the display with `display_id`.
   void Show(int64_t display_id);
@@ -36,10 +36,14 @@ class ASH_EXPORT AppListBubble {
   // Returns true if the bubble is showing on any display.
   bool IsShowing() const;
 
-  views::Widget* bubble_widget_for_test() { return bubble_widget_.get(); }
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  views::Widget* bubble_widget_for_test() { return bubble_widget_; }
 
  private:
-  views::UniqueWidgetPtr bubble_widget_;
+  // Owned by native widget.
+  views::Widget* bubble_widget_ = nullptr;
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<BubbleEventFilter> bubble_event_filter_;

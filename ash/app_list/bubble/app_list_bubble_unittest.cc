@@ -71,6 +71,14 @@ TEST_F(AppListBubbleTest, DismissClosesWidget) {
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
+TEST_F(AppListBubbleTest, DismissWhenNotShowingDoesNotCrash) {
+  AppListBubble* bubble = GetAppListBubble();
+  EXPECT_FALSE(bubble->IsShowing());
+
+  bubble->Dismiss();
+  // No crash.
+}
+
 TEST_F(AppListBubbleTest, ToggleOpensOneWidgetInAppListContainer) {
   AppListBubble* bubble = GetAppListBubble();
   bubble->Toggle(GetPrimaryDisplay().id());
@@ -119,7 +127,11 @@ TEST_F(AppListBubbleTest, DoesNotCrashWhenNativeWidgetDestroyed) {
   ASSERT_EQ(1u, container->children().size());
   aura::Window* native_window = container->children()[0];
   delete native_window;
+  // No crash.
 
+  // Trigger an event that would normally be handled by the event filter.
+  GetEventGenerator()->MoveMouseTo(0, 0);
+  GetEventGenerator()->ClickLeftButton();
   // No crash.
 }
 
