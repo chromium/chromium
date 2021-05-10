@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -110,6 +111,8 @@ class TestStoragePartition : public StoragePartition {
     dom_storage_context_ = context;
   }
   DOMStorageContext* GetDOMStorageContext() override;
+
+  storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
 
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
 
@@ -228,6 +231,7 @@ class TestStoragePartition : public StoragePartition {
   storage::FileSystemContext* file_system_context_ = nullptr;
   storage::DatabaseTracker* database_tracker_ = nullptr;
   DOMStorageContext* dom_storage_context_ = nullptr;
+  mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
   ServiceWorkerContext* service_worker_context_ = nullptr;
   DedicatedWorkerService* dedicated_worker_service_ = nullptr;

@@ -1458,6 +1458,12 @@ DOMStorageContextWrapper* StoragePartitionImpl::GetDOMStorageContext() {
   return dom_storage_context_.get();
 }
 
+storage::mojom::LocalStorageControl*
+StoragePartitionImpl::GetLocalStorageControl() {
+  DCHECK(initialized_);
+  return GetDOMStorageContext()->GetLocalStorageControl();
+}
+
 LockManager* StoragePartitionImpl::GetLockManager() {
   DCHECK(initialized_);
   return lock_manager_.get();
