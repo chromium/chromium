@@ -24,10 +24,10 @@ int CreditCardSaveStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<int64_t> CreditCardSaveStrikeDatabase::GetExpiryTimeMicros()
-    const {
+base::Optional<base::TimeDelta>
+CreditCardSaveStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 6 months.
-  return static_cast<int64_t>(1000000) * 60 * 60 * 24 * 180;
+  return base::TimeDelta::FromDays(183);
 }
 
 bool CreditCardSaveStrikeDatabase::UniqueIdsRequired() const {

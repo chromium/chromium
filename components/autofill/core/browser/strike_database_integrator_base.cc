@@ -134,15 +134,13 @@ bool StrikeDatabaseIntegratorBase::NumberOfEntriesExceedsLimits() const {
 }
 
 void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
-  if (!GetExpiryTimeMicros().has_value()) {
+  if (!GetExpiryTimeDelta().has_value()) {
     // Strikes don't expire.
     return;
   }
   std::vector<std::string> expired_keys;
   for (auto entry : strike_database_->strike_map_cache_) {
-    if (AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds() -
-            entry.second.last_update_timestamp() >
-        GetExpiryTimeMicros().value()) {
+    if (GetEntryAge(entry.second) > GetExpiryTimeDelta().value()) {
       if (strike_database_->GetStrikes(entry.first) > 0) {
         expired_keys.push_back(entry.first);
         base::UmaHistogramCounts1000(
@@ -175,6 +173,13 @@ std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
     return std::string();
   }
   return key.substr(prefix.length(), std::string::npos);
+}
+
+base::TimeDelta StrikeDatabaseIntegratorBase::GetEntryAge(
+    const StrikeData& strike_data) {
+  return AutofillClock::Now() - base::Time::FromDeltaSinceWindowsEpoch(
+                                    base::TimeDelta::FromMicroseconds(
+                                        strike_data.last_update_timestamp()));
 }
 
 std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {

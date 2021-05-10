@@ -20,7 +20,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
  public:
   StrikeDatabaseIntegratorTestStrikeDatabase(
       StrikeDatabase* strike_database,
-      base::Optional<int64_t> expiry_time_micros);
+      base::Optional<base::TimeDelta> expiry_time_delta);
   explicit StrikeDatabaseIntegratorTestStrikeDatabase(
       StrikeDatabase* strike_database);
   ~StrikeDatabaseIntegratorTestStrikeDatabase() override;
@@ -30,16 +30,15 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
 
   std::string GetProjectPrefix() const override;
   int GetMaxStrikesLimit() const override;
-  base::Optional<int64_t> GetExpiryTimeMicros() const override;
+  base::Optional<base::TimeDelta> GetExpiryTimeDelta() const override;
   bool UniqueIdsRequired() const override;
 
   void SetUniqueIdsRequired(bool unique_ids_required);
 
  private:
   bool unique_ids_required_ = false;
-  base::Optional<int64_t> expiry_time_micros_ =
-      static_cast<int64_t>(1000000) * 60 * 60 * 24 *
-      365;  // Default expiry time is 1 year.
+  base::Optional<base::TimeDelta> expiry_time_delta_ =
+      base::TimeDelta::FromDays(365);
 
   base::Optional<size_t> maximum_entries_ = 10;
   base::Optional<size_t> maximum_entries_after_cleanup_ = 5;

@@ -82,6 +82,9 @@ class StrikeDatabaseIntegratorBase {
   // Returns the id the key was built from with `GetKey(id)`.
   std::string GetIdFromKey(const std::string& key) const;
 
+  // Returns the age of a strike entry.
+  static base::TimeDelta GetEntryAge(const StrikeData& strike_data);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowsingDataRemoverDelegateTest,
                            StrikeDatabaseEmptyOnAutofillRemoveEverything);
@@ -134,9 +137,9 @@ class StrikeDatabaseIntegratorBase {
   // opportunity stops being offered.
   virtual int GetMaxStrikesLimit() const = 0;
 
-  // Returns the time after which the most recent strike should expire. If the
-  // Optional is empty, then strikes don't expire.
-  virtual base::Optional<int64_t> GetExpiryTimeMicros() const = 0;
+  // Returns the time delta after which the most recent strike should expire.
+  // If the Optional is empty, then strikes don't expire.
+  virtual base::Optional<base::TimeDelta> GetExpiryTimeDelta() const = 0;
 
   // Returns whether or not a unique string identifier is required for every
   // strike in this project.

@@ -30,10 +30,10 @@ int FidoAuthenticationStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-base::Optional<int64_t> FidoAuthenticationStrikeDatabase::GetExpiryTimeMicros()
-    const {
+base::Optional<base::TimeDelta>
+FidoAuthenticationStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is six months.
-  return static_cast<int64_t>(1000000) * 60 * 60 * 24 * 30 * 6;
+  return base::TimeDelta::FromDays(183);
 }
 
 bool FidoAuthenticationStrikeDatabase::UniqueIdsRequired() const {
