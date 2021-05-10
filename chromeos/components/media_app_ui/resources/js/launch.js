@@ -341,14 +341,15 @@ function pickWritableFile(suggestedName, mimeType) {
   // also rejects extensions longer than 16 characters (including the .).
   let extension = '.' + (suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '') || 'ext');
   extension = extension.substr(0, 16);
-  // TODO(b/161087799): Add a default filename when it's supported by the
-  // File System Access API.
+  // TODO(b/162541613): Add a `startIn` option when the file token is plumbed
+  // through from receiver.js.
   /** @type {!FilePickerOptions} */
   const options = {
     types: [
       {description: extension, accept: {[mimeType]: [extension]}},
     ],
     excludeAcceptAllOption: true,
+    suggestedName,
   };
   // This may throw an error, but we can handle and recover from it on the
   // unprivileged side.
