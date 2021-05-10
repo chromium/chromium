@@ -160,7 +160,9 @@ void ChromeKeyboardControllerClient::SetKeyboardConfig(
 }
 
 bool ChromeKeyboardControllerClient::GetKeyboardEnabled() {
-  return keyboard_controller_->IsKeyboardEnabled();
+  // |keyboard_controller_| may be null during shutdown.
+  return keyboard_controller_ ? keyboard_controller_->IsKeyboardEnabled()
+                              : false;
 }
 
 void ChromeKeyboardControllerClient::SetEnableFlag(
