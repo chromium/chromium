@@ -22,10 +22,9 @@
 @interface GridContextMenuHelper () <GridContextMenuProvider>
 
 @property(nonatomic, assign) Browser* browser;
-
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
 @property(nonatomic, weak) id<GridMenuActionsDataSource> actionsDataSource;
-
+@property(nonatomic, assign) BOOL incognito;
 @end
 
 @implementation GridContextMenuHelper
@@ -41,6 +40,7 @@
     _browser = browser;
     _contextMenuDelegate = tabContextMenuDelegate;
     _actionsDataSource = actionsDataSource;
+    _incognito = _browser->GetBrowserState()->IsOffTheRecord();
   }
   return self;
 }
@@ -100,13 +100,11 @@
         if ([weakSelf.contextMenuDelegate
                 respondsToSelector:@selector(closeTabWithIdentifier:
                                                           incognito:)]) {
-          [menuElements
-              addObject:[actionFactory actionToCloseTabWithBlock:^{
-                [weakSelf.contextMenuDelegate
-                    closeTabWithIdentifier:gridCell.itemIdentifier
-                                 incognito:weakSelf.browser->GetBrowserState()
-                                               ->IsOffTheRecord()];
-              }]];
+          [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
+                          [weakSelf.contextMenuDelegate
+                              closeTabWithIdentifier:gridCell.itemIdentifier
+                                           incognito:weakSelf.incognito];
+                        }]];
         }
         return [UIMenu menuWithTitle:@"" children:menuElements];
       };
