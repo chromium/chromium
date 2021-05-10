@@ -231,7 +231,8 @@ void RegistryDict::Merge(const RegistryDict& other) {
 
   for (auto entry(other.values_.begin()); entry != other.values_.end();
        ++entry) {
-    SetValue(entry->first, entry->second->CreateDeepCopy());
+    SetValue(entry->first,
+             base::Value::ToUniquePtrValue(entry->second->Clone()));
   }
 }
 

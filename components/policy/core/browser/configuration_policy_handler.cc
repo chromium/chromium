@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/value_iterators.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -280,7 +281,8 @@ std::unique_ptr<base::Value> StringMappingListPolicyHandler::Map(
 
   for (const auto& mapping_entry : map_) {
     if (mapping_entry->enum_value == entry_value) {
-      return mapping_entry->mapped_value->CreateDeepCopy();
+      return base::Value::ToUniquePtrValue(
+          mapping_entry->mapped_value->Clone());
     }
   }
   return nullptr;
