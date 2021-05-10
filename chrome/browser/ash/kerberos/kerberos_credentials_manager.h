@@ -17,6 +17,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chromeos/network/onc/variable_expander.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -29,12 +31,11 @@ class Profile;
 
 namespace policy {
 class PolicyMap;
-}
+}  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 class KerberosAddAccountRunner;
-class VariableExpander;
 
 class KerberosCredentialsManager : public KeyedService,
                                    public policy::PolicyService::Observer {
@@ -303,6 +304,11 @@ class KerberosCredentialsManager : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(KerberosCredentialsManager);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::KerberosCredentialsManager;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_

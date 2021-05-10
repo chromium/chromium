@@ -29,7 +29,7 @@ using message_center::NotifierType;
 using message_center::RichNotificationData;
 using message_center::SystemNotificationWarningLevel;
 
-namespace chromeos {
+namespace ash {
 namespace kerberos_ticket_expiry_notification {
 
 namespace {
@@ -108,4 +108,4 @@ void Close(Profile* profile) {
 }
 
 }  // namespace kerberos_ticket_expiry_notification
-}  // namespace chromeos
+}  // namespace ash

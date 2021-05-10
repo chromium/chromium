@@ -58,4 +58,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) VariableExpander {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when chromeos/network is moved to
+// ash.
+namespace ash {
+using ::chromeos::VariableExpander;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_ONC_VARIABLE_EXPANDER_H_

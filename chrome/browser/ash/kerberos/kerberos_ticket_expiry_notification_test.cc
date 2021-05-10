@@ -16,7 +16,7 @@
 
 using message_center::Notification;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -85,4 +85,4 @@ TEST_F(KerberosTicketExpiryNotificationTest, Click) {
   EXPECT_EQ(1, notification_click_count_[kUser]);
 }
 
-}  // namespace chromeos
+}  // namespace ash

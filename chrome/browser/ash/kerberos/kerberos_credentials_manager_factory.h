@@ -13,7 +13,7 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class KerberosCredentialsManager;
 
@@ -70,6 +70,11 @@ class KerberosCredentialsManagerFactory
   mutable bool service_instance_created_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::KerberosCredentialsManagerFactory;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_

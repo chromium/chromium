@@ -33,7 +33,7 @@
 #include "net/base/escape.h"
 #include "third_party/cros_system_api/dbus/kerberos/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -301,7 +301,7 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
       backoff_entry_for_managed_accounts_(&kBackoffPolicyForManagedAccounts) {
   DCHECK(primary_profile_);
   const user_manager::User* primary_user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(primary_profile);
+      ProfileHelper::Get()->GetUserByProfile(primary_profile);
   DCHECK(primary_user);
 
   // Set up expansions:
@@ -965,4 +965,4 @@ void KerberosCredentialsManager::SetAddManagedAccountCallbackForTesting(
   add_managed_account_callback_for_testing_ = std::move(callback);
 }
 
-}  // namespace chromeos
+}  // namespace ash

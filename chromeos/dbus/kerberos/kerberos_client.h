@@ -133,4 +133,9 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::KerberosClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_KERBEROS_KERBEROS_CLIENT_H_

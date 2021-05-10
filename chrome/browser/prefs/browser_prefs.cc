@@ -810,7 +810,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::EnableDebuggingScreenHandler::RegisterPrefs(registry);
   chromeos::FastTransitionObserver::RegisterPrefs(registry);
   chromeos::HIDDetectionScreenHandler::RegisterPrefs(registry);
-  chromeos::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
+  ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
   ash::KioskAppManager::RegisterPrefs(registry);
   ash::KioskCryptohomeRemover::RegisterPrefs(registry);
   chromeos::language_prefs::RegisterPrefs(registry);
@@ -1119,7 +1119,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::first_run::RegisterProfilePrefs(registry);
   chromeos::file_system_provider::RegisterProfilePrefs(registry);
   chromeos::full_restore::RegisterProfilePrefs(registry);
-  chromeos::KerberosCredentialsManager::RegisterProfilePrefs(registry);
+  ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
   chromeos::login::SecurityTokenSessionController::RegisterProfilePrefs(
       registry);
   chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(

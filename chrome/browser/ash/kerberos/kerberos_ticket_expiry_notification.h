@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace kerberos_ticket_expiry_notification {
 
 using ClickCallback =
@@ -28,6 +28,6 @@ void Show(Profile* profile,
 void Close(Profile* profile);
 
 }  // namespace kerberos_ticket_expiry_notification
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_TICKET_EXPIRY_NOTIFICATION_H_

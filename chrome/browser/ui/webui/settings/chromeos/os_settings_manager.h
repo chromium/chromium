@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcAppListPrefs;
@@ -34,7 +36,6 @@ class SyncService;
 namespace chromeos {
 
 class CupsPrintersManager;
-class KerberosCredentialsManager;
 
 namespace android_sms {
 class AndroidSmsService;

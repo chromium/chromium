@@ -14,7 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 class KerberosCredentialsManagerFactoryBrowserTest
     : public InProcessBrowserTest {
@@ -72,4 +72,4 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
   ASSERT_EQ(KerberosCredentialsManagerFactory::Get(other_profile), manager);
 }
 
-}  // namespace chromeos
+}  // namespace ash

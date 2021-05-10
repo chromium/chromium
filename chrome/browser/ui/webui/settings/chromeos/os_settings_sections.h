@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
@@ -30,7 +32,6 @@ class SyncService;
 namespace chromeos {
 
 class CupsPrintersManager;
-class KerberosCredentialsManager;
 
 namespace android_sms {
 class AndroidSmsService;

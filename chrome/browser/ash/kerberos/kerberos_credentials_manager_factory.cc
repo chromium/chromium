@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -31,7 +31,7 @@ Profile* GetPrimaryProfileFromContext(content::BrowserContext* context) {
       return nullptr;
     // Get primary profile from primary user. Note that it only gets primary
     // profile if it is fully created.
-    profile = chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+    profile = ProfileHelper::Get()->GetProfileByUser(primary_user);
   }
   return profile;
 }
@@ -103,4 +103,4 @@ KeyedService* KerberosCredentialsManagerFactory::BuildServiceInstanceFor(
   return new KerberosCredentialsManager(local_state, profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -32,7 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -154,7 +154,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
       : scoped_user_manager_(
             std::make_unique<testing::NiceMock<MockUserManager>>()),
         local_state_(TestingBrowserProcess::GetGlobal()) {
-    SessionManagerClient::InitializeFakeInMemory();
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
     KerberosClient::InitializeFake();
     client_test_interface()->SetTaskDelay(base::TimeDelta());
 
@@ -185,7 +185,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
     profile_.reset();
     UserSessionManager::GetInstance()->Shutdown();
     KerberosClient::Shutdown();
-    SessionManagerClient::Shutdown();
+    chromeos::SessionManagerClient::Shutdown();
   }
 
   void SetPref(const char* name, base::Value value) {
@@ -1347,4 +1347,4 @@ TEST_F(KerberosCredentialsManagerTest,
 //   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/master&revision=8e25360b5986bc807eb05927b59cb698b120140c&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
 // for code coverage (try to get as high as possible!).
 
-}  // namespace chromeos
+}  // namespace ash
