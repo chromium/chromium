@@ -317,16 +317,11 @@ static_library("renderer") {
       "extensions/tabs_hooks_delegate.h",
     ]
     deps += [
-      # TODO(hclam): See crbug.com/298380 for details.
-      # We should isolate the APIs needed by the renderer.
       "//chrome/common/extensions/api",
       "//components/guest_view/renderer",
       "//extensions:extensions_resources",
       "//extensions/common:mojom",
       "//extensions/renderer",
-      "//media/cast:net",
-      "//media/cast:receiver",
-      "//media/cast:sender",
       "//services/network/public/cpp",
     ]
     public_deps += [ "//ipc" ]

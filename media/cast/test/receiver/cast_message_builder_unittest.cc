@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/cast_message_builder.h"
+#include "media/cast/test/receiver/cast_message_builder.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
-#include "media/cast/net/rtp/framer.h"
 #include "media/cast/net/rtp/rtp_defines.h"
+#include "media/cast/test/receiver/framer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -85,11 +85,7 @@ class NackFeedbackVerification : public RtpPayloadFeedback {
 class CastMessageBuilderTest : public ::testing::Test {
  protected:
   CastMessageBuilderTest()
-      : framer_(&testing_clock_,
-                &feedback_,
-                kSsrc,
-                true,
-                10),
+      : framer_(&testing_clock_, &feedback_, kSsrc, true, 10),
         cast_msg_builder_(new CastMessageBuilder(&testing_clock_,
                                                  &feedback_,
                                                  &framer_,

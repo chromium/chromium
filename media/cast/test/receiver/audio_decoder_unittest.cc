@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/receiver/audio_decoder.h"
+#include "media/cast/test/receiver/audio_decoder.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +39,7 @@ struct TestScenario {
 class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
  public:
   AudioDecoderTest()
-      : cast_environment_(new StandaloneCastEnvironment()),
-        cond_(&lock_) {}
+      : cast_environment_(new StandaloneCastEnvironment()), cond_(&lock_) {}
 
   virtual ~AudioDecoderTest() {
     // Make sure all threads have stopped before the environment goes away.
@@ -49,17 +48,14 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
 
  protected:
   void SetUp() final {
-    audio_decoder_.reset(new AudioDecoder(cast_environment_,
-                                          GetParam().num_channels,
-                                          GetParam().sampling_rate,
-                                          GetParam().codec));
+    audio_decoder_.reset(
+        new AudioDecoder(cast_environment_, GetParam().num_channels,
+                         GetParam().sampling_rate, GetParam().codec));
     CHECK_EQ(STATUS_INITIALIZED, audio_decoder_->InitializationResult());
 
-    audio_bus_factory_.reset(
-        new TestAudioBusFactory(GetParam().num_channels,
-                                GetParam().sampling_rate,
-                                TestAudioBusFactory::kMiddleANoteFreq,
-                                0.5f));
+    audio_bus_factory_.reset(new TestAudioBusFactory(
+        GetParam().num_channels, GetParam().sampling_rate,
+        TestAudioBusFactory::kMiddleANoteFreq, 0.5f));
     last_frame_id_ = FrameId::first();
     decoded_frames_seen_ = 0;
 
@@ -68,10 +64,9 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
           new uint8_t[opus_encoder_get_size(GetParam().num_channels)]);
       OpusEncoder* const opus_encoder =
           reinterpret_cast<OpusEncoder*>(opus_encoder_memory_.get());
-      CHECK_EQ(OPUS_OK, opus_encoder_init(opus_encoder,
-                                          GetParam().sampling_rate,
-                                          GetParam().num_channels,
-                                          OPUS_APPLICATION_AUDIO));
+      CHECK_EQ(OPUS_OK, opus_encoder_init(
+                            opus_encoder, GetParam().sampling_rate,
+                            GetParam().num_channels, OPUS_APPLICATION_AUDIO));
       CHECK_EQ(OPUS_OK,
                opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(OPUS_AUTO)));
     }
@@ -82,8 +77,7 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
 
   // Called from the unit test thread to create another EncodedFrame and push it
   // into the decoding pipeline.
-  void FeedMoreAudio(const base::TimeDelta& duration,
-                     int num_dropped_frames) {
+  void FeedMoreAudio(base::TimeDelta duration, int num_dropped_frames) {
     // Prepare a simulated EncodedFrame to feed into the AudioDecoder.
     std::unique_ptr<EncodedFrame> encoded_frame(new EncodedFrame());
     encoded_frame->dependency = EncodedFrame::KEY;
@@ -110,12 +104,9 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
           reinterpret_cast<OpusEncoder*>(opus_encoder_memory_.get());
       const int kOpusEncodeBufferSize = 4000;
       encoded_frame->data.resize(kOpusEncodeBufferSize);
-      const int payload_size =
-          opus_encode(opus_encoder,
-                      &interleaved.front(),
-                      audio_bus->frames(),
-                      encoded_frame->mutable_bytes(),
-                      encoded_frame->data.size());
+      const int payload_size = opus_encode(
+          opus_encoder, &interleaved.front(), audio_bus->frames(),
+          encoded_frame->mutable_bytes(), encoded_frame->data.size());
       CHECK_GT(payload_size, 1);
       encoded_frame->data.resize(payload_size);
     } else {
@@ -165,7 +156,8 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
     // recovery) because it introduces a tiny, significant delay.
     bool examine_signal = true;
     if (GetParam().codec == CODEC_AUDIO_OPUS) {
-      decoded_frames_seen_ = should_be_continuous ? decoded_frames_seen_ + 1 : 1;
+      decoded_frames_seen_ =
+          should_be_continuous ? decoded_frames_seen_ + 1 : 1;
       examine_signal = (decoded_frames_seen_ > 2) && should_be_continuous;
     }
     if (examine_signal) {
@@ -173,15 +165,14 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
         EXPECT_NEAR(
             TestAudioBusFactory::kMiddleANoteFreq * 2 * audio_bus->frames() /
                 GetParam().sampling_rate,
-            CountZeroCrossings(audio_bus->channel(ch), audio_bus->frames()),
-            1);
+            CountZeroCrossings(audio_bus->channel(ch), audio_bus->frames()), 1);
       }
     }
 
     // Signal the main test thread that more audio was decoded.
     base::AutoLock auto_lock(lock_);
     total_audio_decoded_ += base::TimeDelta::FromSeconds(1) *
-        audio_bus->frames() / GetParam().sampling_rate;
+                            audio_bus->frames() / GetParam().sampling_rate;
     cond_.Signal();
   }
 
@@ -211,7 +202,7 @@ TEST_P(AudioDecoderTest, DecodesFramesWithSameDuration) {
 
 TEST_P(AudioDecoderTest, DecodesFramesWithVaryingDuration) {
   // These are the set of frame durations supported by the Opus encoder.
-  const int kFrameDurationMs[] = { 5, 10, 20, 40, 60 };
+  const int kFrameDurationMs[] = {5, 10, 20, 40, 60};
 
   const int kNumFrames = 10;
   for (size_t i = 0; i < base::size(kFrameDurationMs); ++i)

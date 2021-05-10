@@ -16,9 +16,9 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/receiver/video_decoder.h"
 #include "media/cast/sender/sender_encoded_frame.h"
 #include "media/cast/sender/vp8_encoder.h"
+#include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -70,9 +70,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
     total_video_frames_decoded_ = 0;
   }
 
-  void SetNextFrameSize(const gfx::Size& size) {
-    next_frame_size_ = size;
-  }
+  void SetNextFrameSize(const gfx::Size& size) { next_frame_size_ = size; }
 
   // Called from the unit test thread to create another EncodedFrame and push it
   // into the decoding pipeline.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/receiver_stats.h"
+#include "media/cast/test/receiver/receiver_stats.h"
 
 #include "media/cast/net/rtp/rtp_defines.h"
 

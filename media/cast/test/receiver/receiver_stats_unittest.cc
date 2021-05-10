@@ -10,8 +10,8 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "media/cast/constants.h"
-#include "media/cast/net/rtp/receiver_stats.h"
 #include "media/cast/net/rtp/rtp_defines.h"
+#include "media/cast/test/receiver/receiver_stats.h"
 
 namespace media {
 namespace cast {
@@ -21,8 +21,7 @@ static const uint32_t kStdTimeIncrementMs = 33;
 
 class ReceiverStatsTest : public ::testing::Test {
  protected:
-  ReceiverStatsTest()
-      : stats_(&testing_clock_) {
+  ReceiverStatsTest() : stats_(&testing_clock_) {
     testing_clock_.Advance(
         base::TimeDelta::FromMilliseconds(kStartMillisecond));
     start_time_ = testing_clock_.NowTicks();

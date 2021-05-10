@@ -182,25 +182,25 @@ source_set("sender") {
   }
 }
 
-source_set("receiver") {
+source_set("test_receiver") {
   sources = [
-    "cast_receiver.h",
-    "net/rtp/cast_message_builder.cc",
-    "net/rtp/cast_message_builder.h",
-    "net/rtp/frame_buffer.cc",
-    "net/rtp/frame_buffer.h",
-    "net/rtp/framer.cc",
-    "net/rtp/framer.h",
-    "net/rtp/receiver_stats.cc",
-    "net/rtp/receiver_stats.h",
-    "receiver/audio_decoder.cc",
-    "receiver/audio_decoder.h",
-    "receiver/cast_receiver_impl.cc",
-    "receiver/cast_receiver_impl.h",
-    "receiver/frame_receiver.cc",
-    "receiver/frame_receiver.h",
-    "receiver/video_decoder.cc",
-    "receiver/video_decoder.h",
+    "test/receiver/audio_decoder.cc",
+    "test/receiver/audio_decoder.h",
+    "test/receiver/cast_message_builder.cc",
+    "test/receiver/cast_message_builder.h",
+    "test/receiver/cast_receiver.h",
+    "test/receiver/cast_receiver_impl.cc",
+    "test/receiver/cast_receiver_impl.h",
+    "test/receiver/frame_buffer.cc",
+    "test/receiver/frame_buffer.h",
+    "test/receiver/frame_receiver.cc",
+    "test/receiver/frame_receiver.h",
+    "test/receiver/framer.cc",
+    "test/receiver/framer.h",
+    "test/receiver/receiver_stats.cc",
+    "test/receiver/receiver_stats.h",
+    "test/receiver/video_decoder.cc",
+    "test/receiver/video_decoder.h",
   ]
 
   deps = [
@@ -252,8 +252,8 @@ static_library("test_support") {
 
   deps = [
     ":net",
-    ":receiver",
     ":sender",
+    ":test_receiver",
     "//base/test:test_support",
     "//media",
     "//net",
@@ -301,22 +301,15 @@ test("cast_unittests") {
     # files.
     "net/rtcp/test_rtcp_packet_builder.cc",
     "net/rtcp/test_rtcp_packet_builder.h",
-    "net/rtp/cast_message_builder_unittest.cc",
-    "net/rtp/frame_buffer_unittest.cc",
-    "net/rtp/framer_unittest.cc",
     "net/rtp/mock_rtp_payload_feedback.cc",
     "net/rtp/mock_rtp_payload_feedback.h",
     "net/rtp/packet_storage_unittest.cc",
-    "net/rtp/receiver_stats_unittest.cc",
     "net/rtp/rtp_packet_builder.cc",
     "net/rtp/rtp_packet_builder.h",
     "net/rtp/rtp_packetizer_unittest.cc",
     "net/rtp/rtp_parser_unittest.cc",
     "net/udp_packet_pipe_unittest.cc",
     "net/udp_transport_unittest.cc",
-    "receiver/audio_decoder_unittest.cc",
-    "receiver/frame_receiver_unittest.cc",
-    "receiver/video_decoder_unittest.cc",
     "sender/audio_encoder_unittest.cc",
     "sender/audio_sender_unittest.cc",
     "sender/congestion_control_unittest.cc",
@@ -327,6 +320,13 @@ test("cast_unittests") {
     "sender/video_sender_unittest.cc",
     "sender/vp8_quantizer_parser_unittest.cc",
     "test/end2end_unittest.cc",
+    "test/receiver/audio_decoder_unittest.cc",
+    "test/receiver/cast_message_builder_unittest.cc",
+    "test/receiver/frame_buffer_unittest.cc",
+    "test/receiver/frame_receiver_unittest.cc",
+    "test/receiver/framer_unittest.cc",
+    "test/receiver/receiver_stats_unittest.cc",
+    "test/receiver/video_decoder_unittest.cc",
     "test/utility/audio_utility_unittest.cc",
     "test/utility/barcode_unittest.cc",
   ]
@@ -334,8 +334,8 @@ test("cast_unittests") {
   deps = [
     ":common",
     ":net",
-    ":receiver",
     ":sender",
+    ":test_receiver",
     ":test_support",
     "//base",
     "//base:cfi_buildflags",
@@ -386,8 +386,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     deps = [
       ":common",
       ":net",
-      ":receiver",
       ":sender",
+      ":test_receiver",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -424,8 +424,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       ":common",
       ":net",
       ":network_simulation_model_proto",
-      ":receiver",
       ":sender",
+      ":test_receiver",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -499,5 +499,5 @@ static_library("cast_sender") {
 static_library("cast_receiver") {
   complete_static_lib = true
   configs -= [ "//build/config/compiler:thin_archive" ]
-  deps = [ ":receiver" ]
+  deps = [ ":test_receiver" ]
 }

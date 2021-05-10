@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_RECEIVER_FRAME_RECEIVER_H_
-#define MEDIA_CAST_RECEIVER_FRAME_RECEIVER_H_
+#ifndef MEDIA_CAST_TEST_RECEIVER_FRAME_RECEIVER_H_
+#define MEDIA_CAST_TEST_RECEIVER_FRAME_RECEIVER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,17 +15,17 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "media/cast/cast_receiver.h"
 #include "media/cast/common/clock_drift_smoother.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/transport_encryption_handler.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
 #include "media/cast/net/rtcp/receiver_rtcp_session.h"
-#include "media/cast/net/rtp/framer.h"
-#include "media/cast/net/rtp/receiver_stats.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 #include "media/cast/net/rtp/rtp_parser.h"
+#include "media/cast/test/receiver/cast_receiver.h"
+#include "media/cast/test/receiver/framer.h"
+#include "media/cast/test/receiver/receiver_stats.h"
 
 namespace media {
 namespace cast {
@@ -218,4 +218,4 @@ class FrameReceiver final : public RtpPayloadFeedback {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_RECEIVER_FRAME_RECEIVER_H_
+#endif  // MEDIA_CAST_TEST_RECEIVER_FRAME_RECEIVER_H_

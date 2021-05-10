@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/frame_receiver.h"
+#include "media/cast/test/receiver/frame_receiver.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -45,7 +45,7 @@ class FakeFrameClient {
   virtual ~FakeFrameClient() = default;
 
   void AddExpectedResult(FrameId expected_frame_id,
-                         const base::TimeTicks& expected_playout_time) {
+                         base::TimeTicks expected_playout_time) {
     expected_results_.push_back(
         std::make_pair(expected_frame_id, expected_playout_time));
   }
@@ -117,8 +117,7 @@ class FrameReceiverTest : public ::testing::Test {
 
   void FeedOneFrameIntoReceiver() {
     // Note: For testing purposes, a frame consists of only a single packet.
-    receiver_->ProcessParsedPacket(
-        rtp_header_, &payload_[0], payload_.size());
+    receiver_->ProcessParsedPacket(rtp_header_, &payload_[0], payload_.size());
   }
 
   void FeedLipSyncInfoIntoReceiver() {
@@ -310,7 +309,7 @@ TEST_F(FrameReceiverTest, ReceivesFramesSkippingWhenAppropriate) {
                                   first_frame_capture_time +
                                       3 * time_advance_per_frame +
                                       target_playout_delay);
-  FeedOneFrameIntoReceiver();    // Frame 4
+  FeedOneFrameIntoReceiver();  // Frame 4
   task_runner_->RunTasks();
   EXPECT_EQ(3, frame_client_.number_times_called());
 
@@ -424,7 +423,7 @@ TEST_F(FrameReceiverTest, ReceivesFramesRefusingToSkipAny) {
                                   first_frame_capture_time +
                                       2 * time_advance_per_frame +
                                       target_playout_delay);
-  --rtp_header_.frame_id;  // "Frame 2"
+  --rtp_header_.frame_id;            // "Frame 2"
   --rtp_header_.reference_frame_id;  // "Frame 1"
   rtp_header_.rtp_timestamp -= rtp_advance_per_frame;
   FeedOneFrameIntoReceiver();  // Frame 2

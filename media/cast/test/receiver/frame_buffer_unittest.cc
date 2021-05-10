@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "media/cast/net/cast_transport_defines.h"
-#include "media/cast/net/rtp/frame_buffer.h"
+#include "media/cast/test/receiver/frame_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -92,5 +92,5 @@ TEST_F(FrameBufferTest, IncompleteFrame) {
   EXPECT_TRUE(buffer_.Complete());
 }
 
-}  // namespace media
 }  // namespace cast
+}  // namespace media

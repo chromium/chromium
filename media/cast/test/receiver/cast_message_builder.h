@@ -4,8 +4,8 @@
 
 // Handles NACK list and manages ACK.
 
-#ifndef MEDIA_CAST_NET_RTP_CAST_MESSAGE_BUILDER_H_
-#define MEDIA_CAST_NET_RTP_CAST_MESSAGE_BUILDER_H_
+#ifndef MEDIA_CAST_TEST_RECEIVER_CAST_MESSAGE_BUILDER_H_
+#define MEDIA_CAST_TEST_RECEIVER_CAST_MESSAGE_BUILDER_H_
 
 #include <stdint.h>
 
@@ -66,4 +66,4 @@ class CastMessageBuilder {
 }  // namespace cast
 }  // namespace media
 
-#endif  //  MEDIA_CAST_NET_RTP_CAST_MESSAGE_BUILDER_H_
+#endif  //  MEDIA_CAST_TEST_RECEIVER_CAST_MESSAGE_BUILDER_H_

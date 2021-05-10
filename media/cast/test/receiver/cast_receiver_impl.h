@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_RECEIVER_CAST_RECEIVER_IMPL_H_
-#define MEDIA_CAST_RECEIVER_CAST_RECEIVER_IMPL_H_
+#ifndef MEDIA_CAST_TEST_RECEIVER_CAST_RECEIVER_IMPL_H_
+#define MEDIA_CAST_TEST_RECEIVER_CAST_RECEIVER_IMPL_H_
 
 #include <stdint.h>
 
@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/cast_receiver.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/pacing/paced_sender.h"
-#include "media/cast/receiver/frame_receiver.h"
+#include "media/cast/test/receiver/cast_receiver.h"
+#include "media/cast/test/receiver/frame_receiver.h"
 
 namespace media {
 namespace cast {
@@ -63,7 +63,7 @@ class CastReceiverImpl final : public CastReceiver {
       const AudioFrameDecodedCallback& callback,
       FrameId frame_id,
       RtpTimeTicks rtp_timestamp,
-      const base::TimeTicks& playout_time,
+      base::TimeTicks playout_time,
       std::unique_ptr<AudioBus> audio_bus,
       bool is_continuous);
 
@@ -77,7 +77,7 @@ class CastReceiverImpl final : public CastReceiver {
       const VideoFrameDecodedCallback& callback,
       FrameId frame_id,
       RtpTimeTicks rtp_timestamp,
-      const base::TimeTicks& playout_time,
+      base::TimeTicks playout_time,
       scoped_refptr<VideoFrame> video_frame,
       bool is_continuous);
 
@@ -112,4 +112,4 @@ class CastReceiverImpl final : public CastReceiver {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_RECEIVER_CAST_RECEIVER_IMPL_H_
+#endif  // MEDIA_CAST_TEST_RECEIVER_CAST_RECEIVER_IMPL_H_

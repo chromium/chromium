@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/cast_message_builder.h"
+#include "media/cast/test/receiver/cast_message_builder.h"
 
 #include "base/logging.h"
 #include "media/cast/constants.h"
-#include "media/cast/net/rtp/framer.h"
+#include "media/cast/test/receiver/framer.h"
 
 namespace media {
 namespace cast {
@@ -183,8 +183,7 @@ void CastMessageBuilder::BuildPacketList() {
     PacketIdSet missing;
     if (framer_->FrameExists(next_expected_frame_id)) {
       bool last_frame = (newest_frame_id == next_expected_frame_id);
-      framer_->GetMissingPackets(
-          next_expected_frame_id, last_frame, &missing);
+      framer_->GetMissingPackets(next_expected_frame_id, last_frame, &missing);
       if (!missing.empty()) {
         time_last_nacked_map_[next_expected_frame_id] = now;
         cast_msg_.missing_frames_and_packets.insert(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/cast_receiver_impl.h"
+#include "media/cast/test/receiver/cast_receiver_impl.h"
 
 #include <stddef.h>
 
@@ -15,8 +15,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
-#include "media/cast/receiver/audio_decoder.h"
-#include "media/cast/receiver/video_decoder.h"
+#include "media/cast/test/receiver/audio_decoder.h"
+#include "media/cast/test/receiver/video_decoder.h"
 
 namespace media {
 namespace cast {
@@ -156,7 +156,7 @@ void CastReceiverImpl::EmitDecodedAudioFrame(
     const AudioFrameDecodedCallback& callback,
     FrameId frame_id,
     RtpTimeTicks rtp_timestamp,
-    const base::TimeTicks& playout_time,
+    base::TimeTicks playout_time,
     std::unique_ptr<AudioBus> audio_bus,
     bool is_continuous) {
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
@@ -183,7 +183,7 @@ void CastReceiverImpl::EmitDecodedVideoFrame(
     const VideoFrameDecodedCallback& callback,
     FrameId frame_id,
     RtpTimeTicks rtp_timestamp,
-    const base::TimeTicks& playout_time,
+    base::TimeTicks playout_time,
     scoped_refptr<VideoFrame> video_frame,
     bool is_continuous) {
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));

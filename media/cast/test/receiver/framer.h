@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_NET_RTP_FRAMER_H_
-#define MEDIA_CAST_NET_RTP_FRAMER_H_
+#ifndef MEDIA_CAST_TEST_RECEIVER_FRAMER_H_
+#define MEDIA_CAST_TEST_RECEIVER_FRAMER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,9 +14,9 @@
 #include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "media/cast/net/rtp/cast_message_builder.h"
-#include "media/cast/net/rtp/frame_buffer.h"
 #include "media/cast/net/rtp/rtp_defines.h"
+#include "media/cast/test/receiver/cast_message_builder.h"
+#include "media/cast/test/receiver/frame_buffer.h"
 
 namespace media {
 namespace cast {
@@ -95,4 +95,4 @@ class Framer {
 }  //  namespace cast
 }  //  namespace media
 
-#endif  // MEDIA_CAST_NET_RTP_FRAMER_H_
+#endif  // MEDIA_CAST_TEST_RECEIVER_FRAMER_H_

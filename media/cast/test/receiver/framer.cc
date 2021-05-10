@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/framer.h"
+#include "media/cast/test/receiver/framer.h"
 
 #include "base/logging.h"
 #include "media/cast/constants.h"
@@ -151,7 +151,9 @@ bool Framer::HaveMultipleDecodableFrames() const {
   return false;
 }
 
-bool Framer::Empty() const { return frames_.empty(); }
+bool Framer::Empty() const {
+  return frames_.empty();
+}
 
 int Framer::NumberOfCompleteFrames() const {
   int count = 0;

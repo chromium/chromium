@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_RECEIVER_VIDEO_DECODER_H_
-#define MEDIA_CAST_RECEIVER_VIDEO_DECODER_H_
-
-#include <memory>
+#ifndef MEDIA_CAST_TEST_RECEIVER_AUDIO_DECODER_H_
+#define MEDIA_CAST_TEST_RECEIVER_AUDIO_DECODER_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "media/base/video_frame.h"
+#include "media/base/audio_bus.h"
+#include "media/cast/cast_environment.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/cast_transport_config.h"
 
 namespace media {
 namespace cast {
 
-class CastEnvironment;
-
-class VideoDecoder {
+class AudioDecoder {
  public:
-  // Callback passed to DecodeFrame, to deliver a decoded video frame from the
-  // decoder.  |frame| can be NULL when errors occur.  |is_continuous| is
-  // normally true, but will be false if the decoder has detected a frame skip
-  // since the last decode operation; and the client might choose to take steps
-  // to smooth/interpolate video discontinuities in this case.
-  typedef base::RepeatingCallback<void(scoped_refptr<VideoFrame> frame,
-                                       bool is_continuous)>
-      DecodeFrameCallback;
+  // Callback passed to DecodeFrame, to deliver decoded audio data from the
+  // decoder.  The number of samples in |audio_bus| may vary, and |audio_bus|
+  // can be NULL when errors occur.  |is_continuous| is normally true, but will
+  // be false if the decoder has detected a frame skip since the last decode
+  // operation; and the client should take steps to smooth audio discontinuities
+  // in this case.
+  using DecodeFrameCallback =
+      base::OnceCallback<void(std::unique_ptr<AudioBus> audio_bus,
+                              bool is_continuous)>;
 
-  VideoDecoder(const scoped_refptr<CastEnvironment>& cast_environment,
+  AudioDecoder(const scoped_refptr<CastEnvironment>& cast_environment,
+               int channels,
+               int sampling_rate,
                Codec codec);
-  virtual ~VideoDecoder();
+  virtual ~AudioDecoder();
 
   // Returns STATUS_INITIALIZED if the decoder was successfully constructed.  If
   // this method returns any other value, calls to DecodeFrame() will not
@@ -47,20 +47,20 @@ class VideoDecoder {
   // When it is not, the decoder will assume one or more frames have been
   // dropped (e.g., due to packet loss), and will perform recovery actions.
   void DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
-                   const DecodeFrameCallback& callback);
+                   DecodeFrameCallback callback);
 
  private:
-  class FakeImpl;
   class ImplBase;
-  class Vp8Impl;
+  class OpusImpl;
+  class Pcm16Impl;
 
   const scoped_refptr<CastEnvironment> cast_environment_;
   scoped_refptr<ImplBase> impl_;
 
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoder);
+  DISALLOW_COPY_AND_ASSIGN(AudioDecoder);
 };
 
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_RECEIVER_VIDEO_DECODER_H_
+#endif  // MEDIA_CAST_TEST_RECEIVER_AUDIO_DECODER_H_

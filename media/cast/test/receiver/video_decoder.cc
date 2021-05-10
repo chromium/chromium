@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/video_decoder.h"
+#include "media/cast/test/receiver/video_decoder.h"
 
 #include <stdint.h>
 #include <utility>
@@ -36,9 +36,7 @@ class VideoDecoder::ImplBase
         codec_(codec),
         operational_status_(STATUS_UNINITIALIZED) {}
 
-  OperationalStatus InitializationResult() const {
-    return operational_status_;
-  }
+  OperationalStatus InitializationResult() const { return operational_status_; }
 
   void DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
                    const DecodeFrameCallback& callback) {
@@ -54,9 +52,9 @@ class VideoDecoder::ImplBase
     }
     last_frame_id_ = encoded_frame->frame_id;
 
-    const scoped_refptr<VideoFrame> decoded_frame = Decode(
-        encoded_frame->mutable_bytes(),
-        static_cast<int>(encoded_frame->data.size()));
+    const scoped_refptr<VideoFrame> decoded_frame =
+        Decode(encoded_frame->mutable_bytes(),
+               static_cast<int>(encoded_frame->data.size()));
     if (!decoded_frame) {
       VLOG(2) << "Decoding of frame " << encoded_frame->frame_id << " failed.";
       cast_environment_->PostTask(
@@ -117,9 +115,7 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
     cfg.threads = 1;
 
     DCHECK(vpx_codec_get_caps(vpx_codec_vp8_dx()) & VPX_CODEC_CAP_POSTPROC);
-    if (vpx_codec_dec_init(&context_,
-                           vpx_codec_vp8_dx(),
-                           &cfg,
+    if (vpx_codec_dec_init(&context_, vpx_codec_vp8_dx(), &cfg,
                            VPX_CODEC_USE_POSTPROC) != VPX_CODEC_OK) {
       ImplBase::operational_status_ = STATUS_INVALID_CONFIGURATION;
       return;
@@ -183,8 +179,7 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
 class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
   explicit FakeImpl(const scoped_refptr<CastEnvironment>& cast_environment)
-      : ImplBase(cast_environment, CODEC_VIDEO_FAKE),
-        last_decoded_id_(-1) {
+      : ImplBase(cast_environment, CODEC_VIDEO_FAKE), last_decoded_id_(-1) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
     ImplBase::operational_status_ = STATUS_INITIALIZED;

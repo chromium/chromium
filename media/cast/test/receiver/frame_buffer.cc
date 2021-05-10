@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/frame_buffer.h"
+#include "media/cast/test/receiver/frame_buffer.h"
 
 #include "base/check_op.h"
 
@@ -49,8 +49,8 @@ bool FrameBuffer::InsertPacket(const uint8_t* payload_data,
 
   // Insert the packet.
   retval.first->second.resize(payload_size);
-  std::copy(
-      payload_data, payload_data + payload_size, retval.first->second.begin());
+  std::copy(payload_data, payload_data + payload_size,
+            retval.first->second.begin());
 
   ++num_packets_received_;
   max_seen_packet_id_ = std::max(max_seen_packet_id_, rtp_header.packet_id);
@@ -107,7 +107,6 @@ void FrameBuffer::GetMissingPackets(bool newest_frame,
     packet++;
   }
 }
-
 
 }  // namespace cast
 }  // namespace media

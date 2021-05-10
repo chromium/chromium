@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/frame_receiver.h"
+#include "media/cast/test/receiver/frame_receiver.h"
 
 #include <algorithm>
 #include <string>
@@ -90,10 +90,8 @@ bool FrameReceiver::ProcessPacket(std::unique_ptr<Packet> packet) {
     RtpCastHeader rtp_header;
     const uint8_t* payload_data;
     size_t payload_size;
-    if (!packet_parser_.ParsePacket(&packet->front(),
-                                    packet->size(),
-                                    &rtp_header,
-                                    &payload_data,
+    if (!packet_parser_.ParsePacket(&packet->front(), packet->size(),
+                                    &rtp_header, &payload_data,
                                     &payload_size)) {
       return false;
     }
@@ -171,8 +169,8 @@ void FrameReceiver::ProcessParsedPacket(const RtpCastHeader& rtp_header,
           (fresh_sync_rtp - lip_sync_rtp_timestamp_).ToTimeDelta(rtp_timebase_);
     }
     lip_sync_rtp_timestamp_ = fresh_sync_rtp;
-    lip_sync_drift_.Update(
-        now, fresh_sync_reference - lip_sync_reference_time_);
+    lip_sync_drift_.Update(now,
+                           fresh_sync_reference - lip_sync_reference_time_);
   }
 
   // Another frame is complete from a non-duplicate packet.  Attempt to emit
@@ -262,8 +260,7 @@ void FrameReceiver::EmitAvailableEncodedFrames() {
     // Decrypt the payload data in the frame, if crypto is being used.
     if (decryptor_.is_activated()) {
       std::string decrypted_data;
-      if (!decryptor_.Decrypt(encoded_frame->frame_id,
-                              encoded_frame->data,
+      if (!decryptor_.Decrypt(encoded_frame->frame_id, encoded_frame->data,
                               &decrypted_data)) {
         // Decryption failed.  Give up on this frame.
         framer_.ReleaseFrame(encoded_frame->frame_id);
@@ -306,8 +303,8 @@ void FrameReceiver::EmitOneFrame(
 base::TimeTicks FrameReceiver::GetPlayoutTime(const EncodedFrame& frame) const {
   base::TimeDelta target_playout_delay = target_playout_delay_;
   if (frame.new_playout_delay_ms) {
-    target_playout_delay = base::TimeDelta::FromMilliseconds(
-        frame.new_playout_delay_ms);
+    target_playout_delay =
+        base::TimeDelta::FromMilliseconds(frame.new_playout_delay_ms);
   }
   return lip_sync_reference_time_ + lip_sync_drift_.Current() +
          (frame.rtp_timestamp - lip_sync_rtp_timestamp_)

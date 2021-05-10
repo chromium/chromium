@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/audio_decoder.h"
+#include "media/cast/test/receiver/audio_decoder.h"
 
 #include <stdint.h>
 
@@ -40,9 +40,7 @@ class AudioDecoder::ImplBase
     }
   }
 
-  OperationalStatus InitializationResult() const {
-    return operational_status_;
-  }
+  OperationalStatus InitializationResult() const { return operational_status_; }
 
   void DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
                    DecodeFrameCallback callback) {
@@ -123,7 +121,7 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
       return;
     }
     if (opus_decoder_init(opus_decoder_, sampling_rate, num_channels) !=
-            OPUS_OK) {
+        OPUS_OK) {
       ImplBase::operational_status_ = STATUS_INVALID_CONFIGURATION;
       return;
     }
