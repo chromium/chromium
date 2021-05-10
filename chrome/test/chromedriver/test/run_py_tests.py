@@ -2567,7 +2567,9 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testTakeElementScreenshot(self):
     self._driver.Load(self.GetHttpUrlForFile(
                       '/chromedriver/page_with_redbox.html'))
-    analysisResult = 'FAIL'
+    # Wait for page to stabilize in case of Chrome showing top bars.
+    # See https://crbug.com/chromedriver/2986
+    time.sleep(1)
     redElement = self._driver.FindElement('css selector', '#box')
     analysisResult = self.takeScreenshotAndVerifyCorrect(redElement)
     self.assertEquals('PASS', analysisResult)
@@ -2577,7 +2579,9 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                       '/chromedriver/page_with_iframe_redbox.html'))
     frame = self._driver.FindElement('css selector', '#frm')
     self._driver.SwitchToFrame(frame)
-    analysisResult = 'FAIL'
+    # Wait for page to stabilize in case of Chrome showing top bars.
+    # See https://crbug.com/chromedriver/2986
+    time.sleep(1)
     redElement = self._driver.FindElement('css selector', '#box')
     analysisResult = self.takeScreenshotAndVerifyCorrect(redElement)
     self.assertEquals('PASS', analysisResult)

@@ -601,15 +601,8 @@ PhysicalRect LayoutView::ViewRect() const {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout())
     return PhysicalRect(PhysicalOffset(), Size());
-  if (frame_view_) {
-    IntRect view_rect(IntPoint(), frame_view_->Size());
-    auto& frame = frame_view_->GetFrame();
-    if (frame.IsMainFrame()) {
-      frame.GetChromeClient().OverrideVisibleRectForMainFrame(frame,
-                                                              &view_rect);
-    }
-    return PhysicalRect(view_rect);
-  }
+  if (frame_view_)
+    return PhysicalRect(PhysicalOffset(), PhysicalSize(frame_view_->Size()));
   return PhysicalRect();
 }
 
