@@ -2592,9 +2592,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
-    expires_after="2021-05-14">
-  <owner>timvolodine@chromium.org</owner>
+    expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>Records the invocation count of WebView callbacks.</summary>
 </histogram>
 
@@ -3088,10 +3088,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.onReceivedError.ErrorCode"
-    enum="WebViewClientErrorCode" expires_after="2021-04-11">
-  <owner>timvolodine@chromium.org</owner>
-  <owner>tobiasjs@chromium.org</owner>
+    enum="WebViewClientErrorCode" expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     The WebViewClient error code as returned by the onReceivedError callback
     This is recorded regardless of whether the network service is enabled or
@@ -3100,10 +3099,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.onReceivedHttpError.StatusCode"
-    enum="HttpResponseCode" expires_after="2021-04-11">
-  <owner>timvolodine@chromium.org</owner>
-  <owner>tobiasjs@chromium.org</owner>
+    enum="HttpResponseCode" expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     The WebViewClient http resonse status code as returned by the
     onReceivedHttpError callback This is recorded regardless of whether the
@@ -3125,9 +3123,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.SecureCookieAction" enum="SecureCookieAction"
-    expires_after="2021-05-14">
+    expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
-  <owner>timvolodine@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the action WebView took (if any) to &quot;fix up&quot; secure
     cookies for backwards compatibility.
@@ -3160,9 +3158,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.ShouldInterceptRequest.InterceptionType"
-    enum="InterceptionType" expires_after="2021-02-11">
-  <owner>timvolodine@chromium.org</owner>
+    enum="InterceptionType" expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether the request was intercepted by the embedder of Android WebView, and
     if so which url scheme was used. Intercepted request are requests for which
