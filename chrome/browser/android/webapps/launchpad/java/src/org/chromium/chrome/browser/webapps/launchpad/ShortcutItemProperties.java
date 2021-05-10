@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class ShortcutItemProperties {
@@ -18,9 +19,10 @@ class ShortcutItemProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Bitmap> SHORTCUT_ICON =
             new WritableObjectPropertyKey<>();
-
+    public static final WritableBooleanPropertyKey HIDE_ICON = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {NAME, LAUNCH_URL, SHORTCUT_ICON, ON_CLICK};
+    public static final PropertyKey[] ALL_KEYS = {
+            NAME, LAUNCH_URL, SHORTCUT_ICON, HIDE_ICON, ON_CLICK};
 }

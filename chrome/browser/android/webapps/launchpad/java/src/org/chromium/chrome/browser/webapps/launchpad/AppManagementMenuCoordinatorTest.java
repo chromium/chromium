@@ -6,9 +6,19 @@ package org.chromium.chrome.browser.webapps.launchpad;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
@@ -21,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,6 +44,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -74,11 +86,15 @@ public class AppManagementMenuCoordinatorTest {
     public JniMocker mocker = new JniMocker();
 
     @Mock
-    private Activity mActivity;
+    private PackageManager mPackageManager;
 
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
+    @Mock
+    private SettingsLauncher mSettingsLauncher;
+
+    private Activity mActivity;
     private AppManagementMenuCoordinator mCoordinator;
     private ModalDialogManager mModalDialogManager;
 
@@ -87,15 +103,19 @@ public class AppManagementMenuCoordinatorTest {
         MockitoAnnotations.initMocks(this);
 
         mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        Profile.setLastUsedProfileForTesting(mock(Profile.class));
+        Profile.setLastUsedProfileForTesting(Mockito.mock(Profile.class));
 
-        mModalDialogManager = new ModalDialogManager(mock(ModalDialogManager.Presenter.class), 0);
+        mModalDialogManager =
+                new ModalDialogManager(Mockito.mock(ModalDialogManager.Presenter.class), 0);
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
         modalDialogManagerSupplier.set(mModalDialogManager);
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mCoordinator = new AppManagementMenuCoordinator(mActivity, modalDialogManagerSupplier);
+        mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        when(mActivity.getPackageManager()).thenReturn(mPackageManager);
+
+        mCoordinator = new AppManagementMenuCoordinator(
+                mActivity, modalDialogManagerSupplier, mSettingsLauncher);
     }
 
     @Test
@@ -126,19 +146,13 @@ public class AppManagementMenuCoordinatorTest {
         List<ShortcutItem> shortcuts = new ArrayList<>();
         shortcuts.add(SHORTCUT_ITEM_1);
         shortcuts.add(SHORTCUT_ITEM_2);
-
         LaunchpadItem item = new LaunchpadItem(
                 APP_PACKAGE_NAME, APP_SHORT_NAME, APP_NAME, APP_URL, APP_ICON, shortcuts);
-        mCoordinator.show(item);
 
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        assertNotNull(dialogModel);
-
-        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        ListView shortcutsView = dialogView.findViewById(R.id.shortcuts_list_view);
+        ListView shortcutsView = openDialogAndGetShortcutsListView(item);
         assertNotNull(shortcutsView);
 
-        assertEquals(2, shortcutsView.getAdapter().getCount());
+        assertEquals(4, shortcutsView.getAdapter().getCount());
 
         // Assert the shortcuts list model are set correctly.
         ListItem listItem = (ListItem) shortcutsView.getAdapter().getItem(0);
@@ -152,5 +166,71 @@ public class AppManagementMenuCoordinatorTest {
         assertEquals(SHORTCUT_URL_2, listItem2.model.get(ShortcutItemProperties.LAUNCH_URL));
         assertEquals(SHORTCUT_ICON, listItem2.model.get(ShortcutItemProperties.SHORTCUT_ICON));
         assertNotNull(listItem2.model.get(ShortcutItemProperties.ON_CLICK));
+    }
+
+    @Test
+    public void testUninstallMenuItem() {
+        ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
+
+        assertEquals(2, shortcutsView.getAdapter().getCount());
+        ListItem uninstallItem = (ListItem) shortcutsView.getAdapter().getItem(0);
+        assertEquals(AppManagementMenuCoordinator.ListItemType.MENU_ITEM, uninstallItem.type);
+        assertEquals(mActivity.getResources().getString(R.string.launchpad_menu_uninstall),
+                uninstallItem.model.get(ShortcutItemProperties.NAME));
+        assertNull(uninstallItem.model.get(ShortcutItemProperties.LAUNCH_URL));
+        assertNull(uninstallItem.model.get(ShortcutItemProperties.SHORTCUT_ICON));
+        assertTrue(uninstallItem.model.get(ShortcutItemProperties.HIDE_ICON));
+        assertNotNull(uninstallItem.model.get(ShortcutItemProperties.ON_CLICK));
+    }
+
+    @Test
+    public void testSiteSettingMenuItem() {
+        ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
+
+        assertEquals(2, shortcutsView.getAdapter().getCount());
+        ListItem settingItem = (ListItem) shortcutsView.getAdapter().getItem(1);
+        assertEquals(AppManagementMenuCoordinator.ListItemType.MENU_ITEM, settingItem.type);
+        assertEquals(mActivity.getResources().getString(R.string.launchpad_menu_site_settings),
+                settingItem.model.get(ShortcutItemProperties.NAME));
+        assertNull(settingItem.model.get(ShortcutItemProperties.LAUNCH_URL));
+        assertNull(settingItem.model.get(ShortcutItemProperties.SHORTCUT_ICON));
+        assertTrue(settingItem.model.get(ShortcutItemProperties.HIDE_ICON));
+        assertNotNull(settingItem.model.get(ShortcutItemProperties.ON_CLICK));
+    }
+
+    @Test
+    public void testClickUninstallMenuItem() throws NameNotFoundException {
+        ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
+        ListItem uninstallItem = (ListItem) shortcutsView.getAdapter().getItem(0);
+
+        PackageInfo packageInfo = Mockito.mock(PackageInfo.class);
+        when(mPackageManager.getPackageInfo(eq(APP_PACKAGE_NAME), anyInt()))
+                .thenReturn(packageInfo);
+
+        uninstallItem.model.get(ShortcutItemProperties.ON_CLICK)
+                .onClick(shortcutsView.getChildAt(0));
+
+        verify(mActivity).startActivity(notNull());
+    }
+
+    @Test
+    public void testClickUninstallMenuItem_appNotExist() throws NameNotFoundException {
+        ListView shortcutsView = openDialogAndGetShortcutsListView(MOCK_ITEM);
+        ListItem uninstallItem = (ListItem) shortcutsView.getAdapter().getItem(0);
+
+        when(mPackageManager.getPackageInfo(eq(APP_PACKAGE_NAME), anyInt()))
+                .thenThrow(new PackageManager.NameNotFoundException());
+
+        uninstallItem.model.get(ShortcutItemProperties.ON_CLICK)
+                .onClick(shortcutsView.getChildAt(0));
+
+        verify(mActivity, never()).startActivity(notNull());
+    }
+
+    public ListView openDialogAndGetShortcutsListView(LaunchpadItem item) {
+        mCoordinator.show(item);
+        View dialogView = mModalDialogManager.getCurrentDialogForTest().get(
+                ModalDialogProperties.CUSTOM_VIEW);
+        return dialogView.findViewById(R.id.shortcuts_list_view);
     }
 }

@@ -23,8 +23,11 @@ class ShortcutItemViewBinder {
             Bitmap bitmap = model.get(ShortcutItemProperties.SHORTCUT_ICON);
             ImageView imageView = view.findViewById(R.id.shortcut_icon);
             imageView.setImageBitmap(bitmap);
+            imageView.setVisibility(View.VISIBLE);
         } else if (propertyKey == ShortcutItemProperties.ON_CLICK) {
             view.setOnClickListener(model.get(ShortcutItemProperties.ON_CLICK));
+        } else if (propertyKey == ShortcutItemProperties.HIDE_ICON) {
+            view.findViewById(R.id.shortcut_icon).setVisibility(View.GONE);
         }
     }
 }

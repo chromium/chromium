@@ -77,6 +77,17 @@ public final class LaunchpadActivityTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testAppManagementMenuWithoutShortcut() throws IOException {
+        openLaunchpadActivity();
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
+                mLaunchpadActivity.getModalDialogManager(), 1 /* itemIndex */);
+
+        mRenderTestRule.render(dialogView, "launchpad_management_menu");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testAppManagementMenuWithPermissions() throws IOException {
         openLaunchpadActivity();
         LaunchpadTestUtils.setPermissionDefaults(LaunchpadTestUtils.APP_URL_2);

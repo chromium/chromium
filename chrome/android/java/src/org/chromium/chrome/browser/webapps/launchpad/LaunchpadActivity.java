@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -28,7 +29,8 @@ public class LaunchpadActivity extends SnackbarActivity implements ModalDialogMa
                 new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
 
         mLaunchpadCoordinator = new LaunchpadCoordinator(this, this::getModalDialogManager,
-                LaunchpadUtils.retrieveWebApks(this), true /* isSeparateActivity */);
+                new SettingsLauncherImpl(), LaunchpadUtils.retrieveWebApks(this),
+                true /* isSeparateActivity */);
         setContentView(mLaunchpadCoordinator.getView());
     }
 

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -138,7 +139,7 @@ public class NativePageFactory {
         protected NativePage buildLaunchpadPage(Tab tab) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LAUNCHPAD)) {
                 return new LaunchpadPage(mActivity, new TabShim(tab, mActivity),
-                        mActivity.getModalDialogManagerSupplier(),
+                        mActivity.getModalDialogManagerSupplier(), new SettingsLauncherImpl(),
                         LaunchpadUtils.retrieveWebApks(mActivity));
             } else {
                 return null;

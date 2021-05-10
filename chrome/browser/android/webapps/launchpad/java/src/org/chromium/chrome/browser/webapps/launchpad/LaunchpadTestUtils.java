@@ -35,6 +35,7 @@ public class LaunchpadTestUtils {
     public static final String APP_NAME_1 = "App Name 1";
     public static final String APP_SHORT_NAME_1 = "App 1";
     public static final String APP_URL_1 = "https://example1.com/";
+
     public static final String APP_PACKAGE_NAME_2 = "package.name.2";
     public static final String APP_NAME_2 = "App Name 2";
     public static final String APP_SHORT_NAME_2 = "App 2 with long short name";
@@ -51,13 +52,16 @@ public class LaunchpadTestUtils {
                                   "iconUrl", "iconHash", new WebappIcon(TEST_ICON)),
                     new ShortcutItem(SHORTCUT_NAME_2, SHORTCUT_NAME_2, SHORTCUT_URL_2, "iconUrl",
                             "iconHash", new WebappIcon(TEST_ICON))));
+    // LaunchpadItem 1 with shortcuts.
+    public static final LaunchpadItem LAUNCHPAD_ITEM_1 = new LaunchpadItem(
+            APP_PACKAGE_NAME_1, APP_SHORT_NAME_1, APP_NAME_1, APP_URL_1, TEST_ICON, MOCK_SHORTCUTS);
+    // LaunchpadItem 2 with no shortcuts.
+    public static final LaunchpadItem LAUNCHPAD_ITEM_2 = new LaunchpadItem(APP_PACKAGE_NAME_2,
+            APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2, TEST_ICON, new ArrayList<ShortcutItem>());
 
     // A mock app list, 1st item includes a list of ShortcutItems, 2nd item has no shortcuts.
     public static final List<LaunchpadItem> MOCK_APP_LIST =
-            new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1, APP_SHORT_NAME_1,
-                                                  APP_NAME_1, APP_URL_1, TEST_ICON, MOCK_SHORTCUTS),
-                    new LaunchpadItem(APP_PACKAGE_NAME_2, APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2,
-                            TEST_ICON, new ArrayList<ShortcutItem>())));
+            new ArrayList<>(Arrays.asList(LAUNCHPAD_ITEM_1, LAUNCHPAD_ITEM_2));
 
     private LaunchpadTestUtils() {}
 

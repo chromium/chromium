@@ -37,9 +37,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -170,15 +173,17 @@ public class LaunchpadPageTest {
 
         ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
 
-        // Assert icon and name in shortcut item view is set correctly.
-        Assert.assertEquals(2, listView.getChildCount());
+        // The test app has 2 shortcut and 2 other menu item: uninstall and site settings.
+        Assert.assertEquals(4, listView.getChildCount());
 
+        // Assert icon and name in shortcut item view is set correctly.
         View shortcut1 = listView.getChildAt(0);
         Assert.assertEquals(LaunchpadTestUtils.SHORTCUT_NAME_1,
                 ((TextView) shortcut1.findViewById(R.id.shortcut_name)).getText());
         ImageView icon = (ImageView) shortcut1.findViewById(R.id.shortcut_icon);
         Assert.assertEquals(
                 LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+        Assert.assertEquals(View.VISIBLE, icon.getVisibility());
 
         View shortcut2 = listView.getChildAt(1);
         Assert.assertEquals(LaunchpadTestUtils.SHORTCUT_NAME_2,
@@ -186,6 +191,7 @@ public class LaunchpadPageTest {
         icon = (ImageView) shortcut2.findViewById(R.id.shortcut_icon);
         Assert.assertEquals(
                 LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+        Assert.assertEquals(View.VISIBLE, icon.getVisibility());
     }
 
     @Test
@@ -211,5 +217,58 @@ public class LaunchpadPageTest {
 
         // Assert dialog is dismissed.
         Assert.assertNull(modalDialogManager.getCurrentDialogForTest());
+    }
+
+    @Test
+    @MediumTest
+    public void testManagementMenuOtherMenuItemProperties() {
+        openLaunchpadPage();
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
+                mActivityTestRule.getActivity().getModalDialogManager(), 1 /* itemIndex */);
+
+        ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
+
+        // The test app has no shortcut but 2 other menu items: uninstall and site settings.
+        Assert.assertEquals(2, listView.getChildCount());
+
+        // Assert the uninstall item has correct name, and icon visibility is GONE.
+        View item1 = listView.getChildAt(0);
+        Assert.assertEquals(mActivityTestRule.getActivity().getResources().getString(
+                                    R.string.launchpad_menu_uninstall),
+                ((TextView) item1.findViewById(R.id.shortcut_name)).getText());
+        Assert.assertEquals(View.GONE, item1.findViewById(R.id.shortcut_icon).getVisibility());
+
+        // Assert the site settings item has correct name, and icon visibility is GONE.
+        View item2 = listView.getChildAt(1);
+        Assert.assertEquals(mActivityTestRule.getActivity().getResources().getString(
+                                    R.string.launchpad_menu_site_settings),
+                ((TextView) item2.findViewById(R.id.shortcut_name)).getText());
+        Assert.assertEquals(View.GONE, item2.findViewById(R.id.shortcut_icon).getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunchAppSetting_whenSiteSettingsMenuItemClicked() {
+        openLaunchpadPage();
+        ModalDialogManager modalDialogManager =
+                mActivityTestRule.getActivity().getModalDialogManager();
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(
+                mLaunchpadCoordinator, modalDialogManager, 1 /* itemIndex */);
+        ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
+
+        // Click the menu item and assert site setting page is opened.
+        SettingsActivity activity =
+                ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                        SettingsActivity.class, new Runnable() {
+                            @Override
+                            public void run() {
+                                TouchCommon.singleClickView(listView.getChildAt(1));
+                            }
+                        });
+        Assert.assertNotNull(activity);
+        SingleWebsiteSettings fragment =
+                ActivityTestUtils.waitForFragmentToAttach(activity, SingleWebsiteSettings.class);
+        Assert.assertNotNull(fragment);
+        activity.finish();
     }
 }

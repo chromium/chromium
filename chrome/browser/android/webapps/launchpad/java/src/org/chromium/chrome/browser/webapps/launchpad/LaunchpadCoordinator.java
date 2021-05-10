@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -39,15 +40,16 @@ class LaunchpadCoordinator {
      *                           the main Chrome activity.
      */
     LaunchpadCoordinator(Activity activity, Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            List<LaunchpadItem> items, boolean isSeparateActivity) {
+            SettingsLauncher settingsLauncher, List<LaunchpadItem> items,
+            boolean isSeparateActivity) {
         mActivity = activity;
         mMainView = (ViewGroup) activity.getLayoutInflater().inflate(
                 R.layout.launchpad_page_layout, null);
 
         RecyclerView appListRecyclerView = getView().findViewById(R.id.launchpad_recycler);
 
-        mAppManagementMenuCoordinator =
-                new AppManagementMenuCoordinator(activity, modalDialogManagerSupplier);
+        mAppManagementMenuCoordinator = new AppManagementMenuCoordinator(
+                activity, modalDialogManagerSupplier, settingsLauncher);
         mAppListCoordinator =
                 new AppListCoordinator(appListRecyclerView, mAppManagementMenuCoordinator, items);
 

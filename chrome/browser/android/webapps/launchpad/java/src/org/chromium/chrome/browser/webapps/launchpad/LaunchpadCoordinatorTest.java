@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps.launchpad;
 
+import static org.mockito.Mockito.mock;
+
 import android.app.Activity;
 
 import androidx.appcompat.widget.Toolbar;
@@ -22,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -70,8 +73,8 @@ public class LaunchpadCoordinatorTest {
                 new ObservableSupplierImpl<>();
         modalDialogManagerSupplier.set(mModalDialogManager);
 
-        return new LaunchpadCoordinator(
-                mActivity, modalDialogManagerSupplier, MOCK_APP_LIST, isSeparateActivity);
+        return new LaunchpadCoordinator(mActivity, modalDialogManagerSupplier,
+                mock(SettingsLauncher.class), MOCK_APP_LIST, isSeparateActivity);
     }
 
     @Test

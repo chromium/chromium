@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -30,12 +31,13 @@ public class LaunchpadPage extends BasicNativePage {
      * @param items The list of LaunchpadItems to be displayed.
      */
     public LaunchpadPage(Activity activity, NativePageHost host,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, List<LaunchpadItem> items) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SettingsLauncher settingsLauncher, List<LaunchpadItem> items) {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.launchpad_title);
-        mLaunchpadCoordinator = new LaunchpadCoordinator(
-                activity, modalDialogManagerSupplier, items, false /* isSeparateActivity */);
+        mLaunchpadCoordinator = new LaunchpadCoordinator(activity, modalDialogManagerSupplier,
+                settingsLauncher, items, false /* isSeparateActivity */);
 
         initWithView(mLaunchpadCoordinator.getView());
     }
