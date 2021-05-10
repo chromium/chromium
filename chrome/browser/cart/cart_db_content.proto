@@ -8,10 +8,42 @@ option optimize_for = LITE_RUNTIME;
 
 package cart_db;
 
+// Represents an amount of money with its currency type.
+message MoneyProto {
+  // Three-letter currency code defined in ISO 4217.
+  string currency_code = 1;
+  // The whole units of amount.
+  // e.g. for "USD", 1 unit is one US dollar.
+  int64 units = 2;
+  // Number of nano (10^-9) units of amount.
+  // The value must be between -999,999,999 and +999,999,999 inclusive.
+  // If `units` is positive, `nanos` must be positive or zero.
+  // If `units` is zero, `nanos` can be positive, zero, or negative.
+  // If `units` is negative, `nanos` must be negative or zero.
+  // For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.
+  int32 nanos = 3;
+}
+
+// Used storing discount for a specific rule.
+message DiscountInfoProto {
+  int64 rule_id = 1;
+
+  oneof discount {
+    int32 percent_off = 2;
+    MoneyProto amount_off = 3;
+  }
+
+  string raw_merchant_offer_id = 4;
+}
+
 // Used for storing the discount information of this cart.
 message ChromeCartDiscountProto {
   // String indicating the content of the discount on this cart (e.g. 15% off).
   string discount_text = 1;
+  // Timestamp on the last time the discount is fetched.
+  double last_fetched_timestamp = 2;
+
+  repeated DiscountInfoProto discount_info = 3;
 }
 
 // Used for storing information of products within the cart.
@@ -46,6 +78,7 @@ message ChromeCartContentProto {
   // from the database.
   bool is_removed = 7;
 
+  // TODO(crbug.com/1207197): Rename this to cart_discount.
   // Information about current discount on the cart.
   ChromeCartDiscountProto discount_info = 8;
 

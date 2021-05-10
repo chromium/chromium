@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -32,6 +33,28 @@ cart_db::ChromeCartProductProto BuildProductProto(
   cart_db::ChromeCartProductProto proto;
   proto.set_product_id(product_id);
   return proto;
+}
+
+cart_db::ChromeCartContentProto AddDiscountToProto(
+    cart_db::ChromeCartContentProto proto,
+    const double timestamp,
+    const int rule_id,
+    const int percent_off,
+    const char* offer_id) {
+  proto.mutable_discount_info()->set_last_fetched_timestamp(timestamp);
+  cart_db::DiscountInfoProto* added_discount =
+      proto.mutable_discount_info()->add_discount_info();
+  added_discount->set_rule_id(rule_id);
+  added_discount->set_percent_off(percent_off);
+  added_discount->set_raw_merchant_offer_id(offer_id);
+  return proto;
+}
+
+MATCHER_P(EqualsProto, message, "") {
+  std::string expected_serialized, actual_serialized;
+  message.SerializeToString(&expected_serialized);
+  arg.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
 }
 
 constexpr char kFakeDataPrefix[] = "Fake:";
@@ -54,7 +77,25 @@ const ShoppingCarts kExpectedAB = {
     {kMockMerchantB, kMockProtoB},
     {kMockMerchantA, kMockProtoA},
 };
+
 const ShoppingCarts kEmptyExpected = {};
+
+// Value used for discount.
+const int kMockMerchantADiscountRuleId = 1;
+const int kMockMerchantADiscountsPercentOff = 10;
+const char kMockMerchantADiscountsRawMerchantOfferId[] = "merchantAOfferId";
+
+std::vector<cart_db::DiscountInfoProto> BuildMerchantADiscountInfoProtos() {
+  cart_db::DiscountInfoProto proto;
+  proto.set_rule_id(kMockMerchantADiscountRuleId);
+  proto.set_percent_off(kMockMerchantADiscountsPercentOff);
+  proto.set_raw_merchant_offer_id(kMockMerchantADiscountsRawMerchantOfferId);
+
+  return std::vector<cart_db::DiscountInfoProto>(1, proto);
+}
+const std::vector<cart_db::DiscountInfoProto> kMockMerchantADiscounts =
+    BuildMerchantADiscountInfoProtos();
+
 }  // namespace
 
 class CartServiceTest : public testing::Test {
@@ -162,6 +203,34 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  void GetEvaluationEmptyDiscount(base::OnceClosure closure,
+                                  bool result,
+                                  ShoppingCarts found) {
+    EXPECT_EQ(found.size(), 1U);
+    CartDB::KeyAndValue found_pair = found[0];
+    EXPECT_FALSE(found_pair.second.has_discount_info());
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationDiscount(base::OnceClosure closure,
+                             ShoppingCarts expected,
+                             bool result,
+                             ShoppingCarts found) {
+    EXPECT_EQ(found.size(), expected.size());
+    EXPECT_EQ(found.size(), 1U);
+
+    CartDB::KeyAndValue found_pair = found[0];
+    CartDB::KeyAndValue expected_pair = expected[0];
+
+    EXPECT_EQ(expected_pair.second.has_discount_info(),
+              found_pair.second.has_discount_info());
+
+    EXPECT_THAT(found_pair.second.discount_info(),
+                EqualsProto(expected_pair.second.discount_info()));
+
+    std::move(closure).Run();
+  }
+
   std::string getDomainName(base::StringPiece domain) {
     std::string* res = service_->domain_name_mapping_->FindStringKey(domain);
     if (!res)
@@ -217,6 +286,43 @@ TEST_F(CartServiceTest, TestAddCart) {
                                         base::Unretained(this),
                                         run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
+}
+
+// Test updating discount for one cart.
+TEST_F(CartServiceTest, TestUpdateDiscounts) {
+  CartDB* cart_db = service_->GetDB();
+  cart_db::ChromeCartContentProto proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+
+  base::RunLoop run_loop[3];
+  cart_db->AddCart(
+      kMockMerchantA, proto,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  cart_db->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationEmptyDiscount,
+                     base::Unretained(this), run_loop[1].QuitClosure()));
+  run_loop[1].Run();
+
+  const double timestamp = 1;
+
+  service_->UpdateDiscounts(kMockMerchantA, timestamp, kMockMerchantADiscounts);
+  task_environment_.RunUntilIdle();
+
+  const ShoppingCarts expected = {
+      {kMockMerchantA,
+       AddDiscountToProto(proto, timestamp, kMockMerchantADiscountRuleId,
+                          kMockMerchantADiscountsPercentOff,
+                          kMockMerchantADiscountsRawMerchantOfferId)}};
+
+  cart_db->LoadCart(kMockMerchantA,
+                    base::BindOnce(&CartServiceTest::GetEvaluationDiscount,
+                                   base::Unretained(this),
+                                   run_loop[2].QuitClosure(), expected));
+  run_loop[2].Run();
 }
 
 // Test adding a cart with the same key and no product image won't overwrite
