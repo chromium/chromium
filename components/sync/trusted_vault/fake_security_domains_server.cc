@@ -255,13 +255,13 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
 
   const sync_pb::SharedMemberKey& shared_key =
       deserialized_content.shared_member_key();
-  if (shared_key.has_epoch() && shared_key.epoch() != state_.current_epoch) {
+  if (shared_key.epoch() != 0 && shared_key.epoch() != state_.current_epoch) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_PRECONDITION_FAILED);
     return response;
   }
 
-  if (shared_key.has_epoch()) {
+  if (shared_key.epoch() != 0) {
     // Valid joining of existing security domain.
     state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

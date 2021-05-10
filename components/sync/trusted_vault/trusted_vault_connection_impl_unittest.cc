@@ -262,7 +262,7 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   const sync_pb::SharedMemberKey& shared_key =
       deserialized_body.shared_member_key();
-  EXPECT_FALSE(shared_key.has_epoch());
+  EXPECT_THAT(shared_key.epoch(), Eq(0));
 
   EXPECT_THAT(DecryptTrustedVaultWrappedKey(
                   key_pair->private_key(),
