@@ -32,7 +32,7 @@ size_t DictionaryValueUpdate::size() const {
 }
 
 bool DictionaryValueUpdate::empty() const {
-  return value_->empty();
+  return value_->DictEmpty();
 }
 
 void DictionaryValueUpdate::Clear() {
