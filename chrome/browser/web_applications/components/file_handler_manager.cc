@@ -103,7 +103,7 @@ void FileHandlerManager::EnableAndRegisterOsFileHandlers(const AppId& app_id) {
 void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
     const AppId& app_id,
     std::unique_ptr<ShortcutInfo> info,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void()> callback) {
   // Updating prefs must be done on the UI Thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateBoolWebAppPref(profile()->GetPrefs(), app_id, kFileHandlersEnabled,
@@ -116,9 +116,6 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
 
   if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||
       file_handlers->empty() || disable_os_integration_for_testing_) {
-    // This bool signals if there was not an error. Exiting early here is WAI,
-    // so this is a success.
-    std::move(callback).Run(true);
     return;
   }
 

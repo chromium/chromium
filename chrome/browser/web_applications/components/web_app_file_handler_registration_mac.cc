@@ -22,12 +22,12 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
                                   std::unique_ptr<ShortcutInfo> info,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  base::OnceCallback<void()> callback) {
   // On MacOS, file associations are managed through app shims in the
   // Applications directory. File handler unregistration is handled via
   // shortcuts deletion on MacOS.
   NOTREACHED();
-  std::move(callback).Run(true);
+  std::move(callback).Run();
 }
 
 }  // namespace web_app

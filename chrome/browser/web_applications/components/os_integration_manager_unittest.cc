@@ -108,7 +108,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UnregisterFileHandlers,
               (const AppId& app_id,
                std::unique_ptr<ShortcutInfo> info,
-               base::OnceCallback<void(bool)> callback),
+               base::OnceCallback<void()> callback),
               (override));
   MOCK_METHOD(void,
               UnregisterProtocolHandlers,

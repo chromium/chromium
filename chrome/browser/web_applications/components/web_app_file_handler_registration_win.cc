@@ -83,7 +83,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                      base::UTF8ToWide(app_name), profile->GetPath(),
                      file_extensions_wide, app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, base::DoNothing::Once<bool>()));
+                     app_id, base::DoNothing::Once()));
 }
 
 void UnregisterFileHandlersWithOsTask(const AppId& app_id,
@@ -105,7 +105,7 @@ void UnregisterFileHandlersWithOsTask(const AppId& app_id,
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
                                   std::unique_ptr<ShortcutInfo> info,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  base::OnceCallback<void()> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},

@@ -113,7 +113,7 @@ void VerifyExternalInstallations(const base::FilePath& cur_profile_path,
                                  const web_app::AppId& app_id,
                                  base::OnceCallback<void(bool)> callback) {
   web_app::CheckAndUpdateExternalInstallations(cur_profile_path, app_id,
-                                               base::DoNothing::Once<bool>());
+                                               base::DoNothing::Once());
   std::move(callback).Run(true);
 }
 
@@ -158,7 +158,7 @@ void UnregisterProtocolHandlersWithOs(
       base::BindOnce(&UnregisterProtocolHandlersWithOsInBackground, app_id,
                      profile->GetPath()),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, base::DoNothing::Once<bool>()));
+                     app_id, base::DoNothing::Once()));
 }
 
 }  // namespace web_app

@@ -55,21 +55,20 @@ void RecordRegistration(RegistrationResult result) {
   UMA_HISTOGRAM_ENUMERATION(kRegistrationResultMetric, result);
 }
 
-void OnCreateShortcut(base::OnceCallback<void(bool)> callback,
+void OnCreateShortcut(base::OnceCallback<void()> callback,
                       bool shortcut_created) {
   UMA_HISTOGRAM_ENUMERATION(
       kRecreateShortcutResultMetric,
       shortcut_created ? RecreateShortcutResult::kSuccess
                        : RecreateShortcutResult::kFailToCreateShortcut);
-  std::move(callback).Run(shortcut_created);
+  std::move(callback).Run();
 }
 
-void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
+void OnShortcutInfoReceived(base::OnceCallback<void()> callback,
                             std::unique_ptr<ShortcutInfo> info) {
   if (!info) {
     UMA_HISTOGRAM_ENUMERATION(kRecreateShortcutResultMetric,
                               RecreateShortcutResult::kFailToCreateShortcut);
-    std::move(callback).Run(false);
     return;
   }
 
@@ -84,11 +83,10 @@ void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
       base::BindOnce(OnCreateShortcut, std::move(callback)));
 }
 
-void UpdateFileHandlerRegistrationInOs(
-    const AppId& app_id,
-    Profile* profile,
-    std::unique_ptr<ShortcutInfo> info,
-    base::OnceCallback<void(bool)> callback) {
+void UpdateFileHandlerRegistrationInOs(const AppId& app_id,
+                                       Profile* profile,
+                                       std::unique_ptr<ShortcutInfo> info,
+                                       base::OnceCallback<void()> callback) {
   if (info) {
     // `info` may be prepopulated for unregistration, to avoid updating file
     // handler registrations based on deleted shortcuts.
@@ -168,15 +166,13 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
                                   std::unique_ptr<ShortcutInfo> info,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  base::OnceCallback<void()> callback) {
   // If this was triggered as part of the uninstallation process, nothing more
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
   auto* provider = WebAppProviderBase::GetProviderBase(profile);
-  if (!provider->registrar().IsInstalled(app_id)) {
-    std::move(callback).Run(false);
+  if (!provider->registrar().IsInstalled(app_id))
     return;
-  }
 
   // TODO(crbug.com/1076688): Fix file handlers unregistration. We can't update
   // registration here asynchronously because app_id is being uninstalled.
