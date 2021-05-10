@@ -21,9 +21,17 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+class WebAssociatedURLLoader;
 class WebLocalFrame;
 class WebPluginContainer;
+class WebURL;
+class WebURLRequest;
+struct WebAssociatedURLLoaderOptions;
 }  // namespace blink
+
+namespace gfx {
+class Range;
+}  // namespace gfx
 
 namespace chrome_pdf {
 
@@ -44,6 +52,26 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
     // Returns the device scale factor.
     virtual float DeviceScaleFactor() const = 0;
+
+    // Calls underlying WebLocalFrame::SetReferrerForRequest().
+    virtual void SetReferrerForRequest(blink::WebURLRequest& request,
+                                       const blink::WebURL& referrer_url) = 0;
+
+    // Calls underlying WebLocalFrame::TextSelectionChanged().
+    virtual void TextSelectionChanged(const blink::WebString& selection_text,
+                                      uint32_t offset,
+                                      const gfx::Range& range) = 0;
+
+    // Calls underlying WebLocalFrame::CreateAssociatedURLLoader().
+    virtual std::unique_ptr<blink::WebAssociatedURLLoader>
+    CreateAssociatedURLLoader(
+        const blink::WebAssociatedURLLoaderOptions& options) = 0;
+
+    // Notifies the frame widget about the text input type change.
+    virtual void UpdateTextInputState() = 0;
+
+    // Returns the local frame to which the web plugin container belongs.
+    virtual blink::WebLocalFrame* GetFrame() = 0;
 
     // Returns the blink web plugin container pointer that's wrapped inside this
     // object. Returns nullptr if this object is for test only.
@@ -163,10 +191,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   ~PdfViewWebPlugin() override;
 
   bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper);
-
-  // Returns the local frame to which the web plugin container belongs to. May
-  // only be called when the plugin has the container inside a valid frame.
-  blink::WebLocalFrame* GetValidContainerFrame() const;
 
   void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 

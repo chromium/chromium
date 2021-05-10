@@ -12,7 +12,10 @@
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_text_input_type.h"
+#include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -76,6 +79,29 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   float DeviceScaleFactor() const override { return device_scale_; }
 
+  MOCK_METHOD(void,
+              SetReferrerForRequest,
+              (blink::WebURLRequest&, const blink::WebURL&),
+              (override));
+
+  MOCK_METHOD(void,
+              TextSelectionChanged,
+              (const blink::WebString&, uint32_t, const gfx::Range&),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<blink::WebAssociatedURLLoader>,
+              CreateAssociatedURLLoader,
+              (const blink::WebAssociatedURLLoaderOptions&),
+              (override));
+
+  MOCK_METHOD(void, UpdateTextInputState, (), (override));
+
+  blink::WebLocalFrame* GetFrame() override { return nullptr; }
+
+  // TODO(https://crbug.com/1207575): Container() should not be used for testing
+  // since it doesn't have a valid blink::WebPluginContainer. Make this method
+  // fail once ContainerWrapper instead of blink::WebPluginContainer is used for
+  // initializing `PostMessageSender`.
   blink::WebPluginContainer* Container() override { return nullptr; }
 
   void set_device_scale(float device_scale) { device_scale_ = device_scale; }

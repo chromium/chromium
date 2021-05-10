@@ -130,6 +130,30 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     return container_->DeviceScaleFactor();
   }
 
+  void SetReferrerForRequest(blink::WebURLRequest& request,
+                             const blink::WebURL& referrer_url) override {
+    GetFrame()->SetReferrerForRequest(request, referrer_url);
+  }
+
+  void TextSelectionChanged(const blink::WebString& selection_text,
+                            uint32_t offset,
+                            const gfx::Range& range) override {
+    GetFrame()->TextSelectionChanged(selection_text, offset, range);
+  }
+
+  std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
+      const blink::WebAssociatedURLLoaderOptions& options) override {
+    return GetFrame()->CreateAssociatedURLLoader(options);
+  }
+
+  void UpdateTextInputState() override {
+    return GetFrame()->FrameWidget()->UpdateTextInputState();
+  }
+
+  blink::WebLocalFrame* GetFrame() override {
+    return container_->GetDocument().GetFrame();
+  }
+
   blink::WebPluginContainer* Container() override { return container_; }
 
  private:
@@ -377,7 +401,7 @@ void PdfViewWebPlugin::EnteredEditMode() {}
 
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
-  GetValidContainerFrame()->TextSelectionChanged(
+  container_wrapper_->TextSelectionChanged(
       selected_text_, /*offset=*/0, gfx::Range(0, selected_text_.length()));
 }
 
@@ -414,7 +438,7 @@ void PdfViewWebPlugin::ScheduleTaskOnMainThread(const base::Location& from_here,
 }
 
 bool PdfViewWebPlugin::IsValid() const {
-  return Container() && Container()->GetDocument().GetFrame();
+  return container_wrapper_ && container_wrapper_->GetFrame();
 }
 
 blink::WebURL PdfViewWebPlugin::CompleteURL(
@@ -431,13 +455,13 @@ net::SiteForCookies PdfViewWebPlugin::SiteForCookies() const {
 void PdfViewWebPlugin::SetReferrerForRequest(
     blink::WebURLRequest& request,
     const blink::WebURL& referrer_url) {
-  GetValidContainerFrame()->SetReferrerForRequest(request, referrer_url);
+  container_wrapper_->SetReferrerForRequest(request, referrer_url);
 }
 
 std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPlugin::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
-  return GetValidContainerFrame()->CreateAssociatedURLLoader(options);
+  return container_wrapper_->CreateAssociatedURLLoader(options);
 }
 
 void PdfViewWebPlugin::OnMessage(const base::Value& message) {
@@ -491,8 +515,7 @@ void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
 void PdfViewWebPlugin::SetFormFieldInFocus(bool in_focus) {
   text_input_type_ = in_focus ? blink::WebTextInputType::kWebTextInputTypeText
                               : blink::WebTextInputType::kWebTextInputTypeNone;
-  // Notify the frame widget.
-  GetValidContainerFrame()->FrameWidget()->UpdateTextInputState();
+  container_wrapper_->UpdateTextInputState();
 }
 
 // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set
@@ -537,11 +560,6 @@ void PdfViewWebPlugin::OnPrintPreviewLoaded() {
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
-}
-
-blink::WebLocalFrame* PdfViewWebPlugin::GetValidContainerFrame() const {
-  DCHECK(IsValid());
-  return Container()->GetDocument().GetFrame();
 }
 
 void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
