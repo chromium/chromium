@@ -289,7 +289,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
 
   const base::DictionaryValue* url_dict =
       pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);
-  if (url_dict->empty())
+  if (url_dict->DictEmpty())
     return;
 
   if (default_search_controlled_by_policy_) {
