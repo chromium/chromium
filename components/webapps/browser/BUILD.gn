@@ -95,6 +95,7 @@ source_set("browser") {
       "//services/device/public/mojom",
       "//ui/base",
       "//ui/gfx",
+      "//url:gurl_android",
     ]
   }
 }

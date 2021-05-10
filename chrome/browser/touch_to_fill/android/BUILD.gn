@@ -20,6 +20,7 @@ source_set("android") {
     "//ui/android",
     "//ui/gfx",
     "//url",
+    "//url:gurl_android",
   ]
 }
 
@@ -36,6 +37,7 @@ android_library("public_java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   sources = [
@@ -69,6 +71,8 @@ junit_binary("touch_to_fill_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 
@@ -101,5 +105,6 @@ android_library("test_java") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
 }

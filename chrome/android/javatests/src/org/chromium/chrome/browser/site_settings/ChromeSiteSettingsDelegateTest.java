@@ -26,6 +26,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -61,10 +62,11 @@ public class ChromeSiteSettingsDelegateTest {
         Bitmap[] holder = new Bitmap[1];
         CallbackHelper helper = new CallbackHelper();
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mSiteSettingsDelegate.getFaviconImageForURL("url.with.no.favicon", favicon -> {
-                holder[0] = favicon;
-                helper.notifyCalled();
-            });
+            mSiteSettingsDelegate.getFaviconImageForURL(
+                    new GURL("http://url.with.no.favicon"), favicon -> {
+                        holder[0] = favicon;
+                        helper.notifyCalled();
+                    });
         });
         helper.waitForCallback(helper.getCallCount());
 

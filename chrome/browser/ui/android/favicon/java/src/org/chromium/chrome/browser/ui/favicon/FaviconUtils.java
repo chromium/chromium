@@ -121,8 +121,7 @@ public class FaviconUtils {
             return defaultFaviconHelper.getDefaultFaviconDrawable(resources, url, true);
         }
         if (icon == null) {
-            // TODO(crbug/783819): Migrate RoundedIconGenerator to GURL.
-            icon = iconGenerator.generateIconForUrl(url.getSpec());
+            icon = iconGenerator.generateIconForUrl(url);
             return new BitmapDrawable(
                     resources, Bitmap.createScaledBitmap(icon, iconSize, iconSize, true));
         }

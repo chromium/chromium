@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -92,7 +93,8 @@ void TouchToFillViewImpl::Show(
   }
 
   Java_TouchToFillBridge_showCredentials(
-      env, java_object_internal_, ConvertUTF8ToJavaString(env, url.spec()),
+      env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
+
       is_origin_secure.value(), credential_array);
 }
 

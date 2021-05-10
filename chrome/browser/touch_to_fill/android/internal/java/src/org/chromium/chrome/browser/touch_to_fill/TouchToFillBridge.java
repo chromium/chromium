@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -60,7 +61,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private void showCredentials(String url, boolean isOriginSecure, Credential[] credentials) {
+    private void showCredentials(GURL url, boolean isOriginSecure, Credential[] credentials) {
         mTouchToFillComponent.showCredentials(url, isOriginSecure, Arrays.asList(credentials));
     }
 

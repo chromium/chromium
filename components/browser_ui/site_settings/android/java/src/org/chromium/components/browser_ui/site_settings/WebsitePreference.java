@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +17,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 /**
  * A preference that displays a website's favicon and URL and, optionally, the amount of local
@@ -73,14 +74,10 @@ class WebsitePreference extends ChromeImageViewPreference {
     /**
      * Returns the url of the site to fetch a favicon for.
      */
-    private String faviconUrl() {
+    private GURL faviconUrl() {
         String origin = mSite.getAddress().getOrigin();
-        Uri uri = Uri.parse(origin);
-        if (uri.getPort() != -1) {
-            // Remove the port.
-            uri = uri.buildUpon().authority(uri.getHost()).build();
-        }
-        return uri.toString();
+        GURL uri = new GURL(origin);
+        return UrlUtilities.clearPort(uri);
     }
 
     private void refresh() {

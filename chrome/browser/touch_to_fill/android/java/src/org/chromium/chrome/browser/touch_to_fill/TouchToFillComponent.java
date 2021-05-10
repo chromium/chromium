@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,5 +75,5 @@ public interface TouchToFillComponent {
      * @param isOriginSecure A {@link boolean} that indicates whether the current origin is secure.
      * @param credentials A list of {@link Credential}s that will be displayed.
      */
-    void showCredentials(String url, boolean isOriginSecure, List<Credential> credentials);
+    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials);
 }

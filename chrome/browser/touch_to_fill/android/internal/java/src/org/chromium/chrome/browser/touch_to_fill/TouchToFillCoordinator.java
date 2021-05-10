@@ -14,6 +14,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     }
 
     @Override
-    public void showCredentials(String url, boolean isOriginSecure, List<Credential> credentials) {
+    public void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials) {
         mMediator.showCredentials(url, isOriginSecure, credentials);
     }
 

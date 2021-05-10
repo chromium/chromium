@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.util.Locale;
@@ -122,6 +123,18 @@ public class RoundedIconGenerator {
         return icon;
     }
 
+    /** {@link #generateIconForUrl(GURL, boolean)} */
+    @Nullable
+    @Deprecated // TODO(https://crbug.com/783819): Use GURL-variant or #generateIconForText
+    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
+        if (TextUtils.isEmpty(url)) return null;
+
+        String text = getIconTextForUrl(url, includePrivateRegistries);
+        if (TextUtils.isEmpty(text)) return null;
+
+        return generateIconForText(text);
+    }
+
     /**
      * Returns a Bitmap representing the icon to be used for |url|.
      *
@@ -130,13 +143,16 @@ public class RoundedIconGenerator {
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
     @Nullable
-    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
-        if (TextUtils.isEmpty(url)) return null;
+    public Bitmap generateIconForUrl(GURL url, boolean includePrivateRegistries) {
+        if (url == null) return null;
+        return generateIconForUrl(url.getSpec(), includePrivateRegistries);
+    }
 
-        String text = getIconTextForUrl(url, includePrivateRegistries);
-        if (TextUtils.isEmpty(text)) return null;
-
-        return generateIconForText(text);
+    /** {@link #generateIconForUrl(GURL)} */
+    @Nullable
+    @Deprecated // TODO(https://crbug.com/783819): Use GURL-variant or #generateIconForText
+    public Bitmap generateIconForUrl(String url) {
+        return generateIconForUrl(url, false);
     }
 
     /**
@@ -151,8 +167,8 @@ public class RoundedIconGenerator {
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
     @Nullable
-    public Bitmap generateIconForUrl(String url) {
-        return generateIconForUrl(url, false);
+    public Bitmap generateIconForUrl(GURL url) {
+        return generateIconForUrl(url.getSpec(), false);
     }
 
     /**

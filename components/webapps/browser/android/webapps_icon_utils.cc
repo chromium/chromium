@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/color_analysis.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -120,8 +121,8 @@ SkBitmap WebappsIconUtils::FinalizeLauncherIconInBackground(
   }
 
   if (result.is_null()) {
-    ScopedJavaLocalRef<jstring> java_url =
-        base::android::ConvertUTF8ToJavaString(env, url.spec());
+    ScopedJavaLocalRef<jobject> java_url =
+        url::GURLAndroid::FromNativeGURL(env, url);
     SkColor mean_color = SkColorSetRGB(0x91, 0x91, 0x91);
 
     if (!bitmap.isNull())

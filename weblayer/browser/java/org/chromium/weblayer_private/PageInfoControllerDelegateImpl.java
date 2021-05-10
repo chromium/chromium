@@ -127,9 +127,9 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     }
 
     @Override
-    public void getFavicon(String url, Callback<Drawable> callback) {
+    public void getFavicon(GURL url, Callback<Drawable> callback) {
         mProfile.getCachedFaviconForPageUri(
-                url, ObjectWrapper.wrap((ValueCallback<Bitmap>) (bitmap) -> {
+                url.getSpec(), ObjectWrapper.wrap((ValueCallback<Bitmap>) (bitmap) -> {
                     if (bitmap != null) {
                         callback.onResult(new BitmapDrawable(mContext.getResources(), bitmap));
                     } else {

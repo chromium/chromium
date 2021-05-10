@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -340,7 +341,7 @@ public class CustomNotificationBuilderTest {
         Notification notification = buildNotification(notificationBuilder);
 
         Bitmap expectedIcon = NotificationBuilderBase.createIconGenerator(context.getResources())
-                                      .generateIconForUrl("https://www.google.com");
+                                      .generateIconForUrl(new GURL("https://www.google.com"));
 
         assertLargeNotificationIconAsExpected(context, notification, expectedIcon);
     }
@@ -360,7 +361,7 @@ public class CustomNotificationBuilderTest {
         Notification notification = buildNotification(notificationBuilder);
 
         Bitmap expectedIcon = NotificationBuilderBase.createIconGenerator(context.getResources())
-                                      .generateIconForUrl("https://www.chromium.org");
+                                      .generateIconForUrl(new GURL("https://www.chromium.org"));
 
         assertLargeNotificationIconAsExpected(context, notification, expectedIcon);
     }

@@ -218,7 +218,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         if (icon == null) {
             // TODO(crbug/1152592): Update monogram according to specs.
             RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
-            icon = iconGenerator.generateIconForUrl(mUrl.getSpec());
+            icon = iconGenerator.generateIconForUrl(mUrl);
             mIcon.setImageBitmap(icon);
             // generateIconForUrl() might return null if the URL is empty or the domain cannot be
             // resolved. See https://crbug.com/987101

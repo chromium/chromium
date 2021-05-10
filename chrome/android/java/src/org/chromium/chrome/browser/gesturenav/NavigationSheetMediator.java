@@ -29,6 +29,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -105,7 +106,7 @@ class NavigationSheetMediator {
      */
     void populateEntries(NavigationHistory history) {
         mHistory = history;
-        Set<String> requestedUrls = new HashSet<String>();
+        Set<GURL> requestedUrls = new HashSet<>();
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             PropertyModel model = new PropertyModel(Arrays.asList(ItemProperties.ALL_KEYS));
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
@@ -115,11 +116,11 @@ class NavigationSheetMediator {
                     (view) -> { mClickListener.click(position, entry.getIndex()); });
             mModelList.add(new ListItem(NAVIGATION_LIST_ITEM_TYPE_ID, model));
             if (entry.getFavicon() != null) continue;
-            final String pageUrl = entry.getUrl().getSpec();
+            final GURL pageUrl = entry.getUrl();
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
-                if (!pageUrl.equals(UrlConstants.HISTORY_URL)) {
+                if (!pageUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile, pageUrl, mFaviconSize, imageCallback);
                     requestedUrls.add(pageUrl);
@@ -142,12 +143,12 @@ class NavigationSheetMediator {
      * @param pageUrl the page for which the favicon was retrieved.
      * @param favicon the favicon data.
      */
-    private void onFaviconAvailable(String pageUrl, Bitmap favicon) {
+    private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         // This callback can come after the sheet is hidden (which clears modelList).
         // Do nothing if that happens.
         if (mModelList.size() == 0) return;
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
-            if (TextUtils.equals(pageUrl, mHistory.getEntryAtIndex(i).getUrl().getSpec())) {
+            if (pageUrl.equals(mHistory.getEntryAtIndex(i).getUrl())) {
                 Drawable drawable;
                 if (favicon == null) {
                     drawable = UrlUtilities.isNTPUrl(pageUrl)

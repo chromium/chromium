@@ -233,7 +233,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         viewParams.httpsImageCompressionMessageShown = mDelegate.isHttpsImageCompressionApplied();
         mView = new PageInfoView(mContext, viewParams);
         if (isSheet(mContext)) mView.setBackgroundColor(Color.WHITE);
-        mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
+        mDelegate.getFavicon(mFullUrl, favicon -> {
             // Return early if PageInfo has been dismissed.
             if (mContext == null) return;
 

@@ -175,6 +175,17 @@ public class UrlUtilities {
     }
 
     /**
+     * Returns a new URL without the port in the hostname if it was present.
+     * @param url The url to process.
+     * @return
+     */
+    // TODO(crbug/783819): Expose GURL::Replacements to Java.
+    public static GURL clearPort(GURL url) {
+        if (url == null || TextUtils.isEmpty(url.getPort())) return url;
+        return UrlUtilitiesJni.get().clearPort(url);
+    }
+
+    /**
      * This function works by calling net::registry_controlled_domains::GetDomainAndRegistry
      *
      * @param uri A URI
@@ -342,5 +353,7 @@ public class UrlUtilities {
 
         String escapeQueryParamValue(String url, boolean usePlus);
         String getValueForKeyInQuery(GURL url, String key);
+
+        GURL clearPort(GURL url);
     }
 }

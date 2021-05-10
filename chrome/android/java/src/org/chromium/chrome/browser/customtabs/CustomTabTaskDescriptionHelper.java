@@ -252,7 +252,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
         Bitmap bitmap = null;
         if (!currentTab.isIncognito()) {
-            bitmap = mIconGenerator.getBitmap(currentTab.getUrlString(), mLargestFavicon);
+            bitmap = mIconGenerator.getBitmap(currentTab.getUrl(), mLargestFavicon);
         }
         return bitmap;
     }

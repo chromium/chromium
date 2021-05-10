@@ -240,7 +240,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                         boolean isFallbackColorDefault, @IconType int iconType) {
                     if (icon == null) {
                         mIconGenerator.setBackgroundColor(fallbackColor);
-                        icon = mIconGenerator.generateIconForUrl(bookmark.url.getSpec());
+                        icon = mIconGenerator.generateIconForUrl(bookmark.url);
                     } else {
                         icon = Bitmap.createScaledBitmap(
                                 icon, mDisplayedIconSize, mDisplayedIconSize, true);

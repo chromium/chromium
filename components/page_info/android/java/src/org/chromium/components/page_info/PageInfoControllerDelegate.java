@@ -20,6 +20,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -199,7 +200,7 @@ public abstract class PageInfoControllerDelegate {
      * Fetches a favicon for the current page and passes it to callback.
      * The UI will use a fallback icon if null is supplied.
      */
-    public abstract void getFavicon(String url, Callback<Drawable> callback);
+    public abstract void getFavicon(GURL url, Callback<Drawable> callback);
 
     /**
      * Checks to see that touch exploration or an accessibility service that can perform gestures

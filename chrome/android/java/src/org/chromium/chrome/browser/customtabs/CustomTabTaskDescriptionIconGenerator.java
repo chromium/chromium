@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.url.GURL;
 
 /**
  * Generates icons suitable for Custom Tabs in the recent tasks list.
@@ -26,7 +26,7 @@ public class CustomTabTaskDescriptionIconGenerator {
     /**
      * The page URL for which {@link #mGeneratedIcon} was generated.
      */
-    private String mGeneratedPageUrl;
+    private GURL mGeneratedPageUrl;
 
     /**
      * The most recently generated icon.
@@ -53,13 +53,13 @@ public class CustomTabTaskDescriptionIconGenerator {
      * @param largestFavicon The largest favicon available at the page URL.
      * @return The icon to use in the recent tasks list.
      */
-    public Bitmap getBitmap(String pageUrl, Bitmap largestFavicon) {
+    public Bitmap getBitmap(GURL pageUrl, Bitmap largestFavicon) {
         if (largestFavicon != null && largestFavicon.getWidth() >= mMinSizePx
                 && largestFavicon.getHeight() >= mMinSizePx) {
             return largestFavicon;
         }
 
-        if (TextUtils.equals(pageUrl, mGeneratedPageUrl)) {
+        if (pageUrl.equals(mGeneratedPageUrl)) {
             return mGeneratedIcon;
         }
 

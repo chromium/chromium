@@ -126,7 +126,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             // used very infrequently - only to offer zero-prefix URL suggestions on URL visit).
             // This must be addressed before MV Carousel can be offered in more contexts.
             // Consider unifying cache with LargeIconBridge if possible.
-            Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url.getSpec());
+            Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url);
             tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallbackIcon));
 
             if (iconBridge != null) {

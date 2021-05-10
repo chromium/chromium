@@ -24,6 +24,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 /**
  * This class contains functions related to adding shortcuts to the Android Home
@@ -226,7 +227,7 @@ public class WebappsIconUtils {
      * @return Bitmap Either the touch-icon or the newly created favicon.
      */
     @CalledByNative
-    public static Bitmap generateHomeScreenIcon(String url, int red, int green, int blue) {
+    public static Bitmap generateHomeScreenIcon(GURL url, int red, int green, int blue) {
         Context context = ContextUtils.getApplicationContext();
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final int outerSize = am.getLauncherLargeIconSize();

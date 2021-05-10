@@ -32,6 +32,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -61,7 +62,7 @@ class TouchToFillMediator {
         mDesiredIconSize = desiredIconSize;
     }
 
-    void showCredentials(String url, boolean isOriginSecure, List<Credential> credentials) {
+    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials) {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
 
@@ -90,7 +91,7 @@ class TouchToFillMediator {
         mModel.set(VISIBLE, true);
     }
 
-    private void requestIconOrFallbackImage(PropertyModel credentialModel, String url) {
+    private void requestIconOrFallbackImage(PropertyModel credentialModel, GURL url) {
         Credential credential = credentialModel.get(CREDENTIAL);
         final String iconOrigin = getIconOrigin(credential.getOriginUrl(), url);
 
@@ -101,7 +102,7 @@ class TouchToFillMediator {
         };
         final LargeIconCallback setIconOrRetry = (icon, fallbackColor, hasDefaultColor, type) -> {
             if (icon == null && iconOrigin.equals(credential.getOriginUrl())) {
-                mLargeIconBridge.getLargeIconForStringUrl(url, mDesiredIconSize, setIcon);
+                mLargeIconBridge.getLargeIconForUrl(url, mDesiredIconSize, setIcon);
                 return; // Unlikely but retry for exact path if there is no icon for the origin.
             }
             setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
@@ -109,10 +110,10 @@ class TouchToFillMediator {
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
-    private String getIconOrigin(String credentialOrigin, String siteUrl) {
+    private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
         final Origin o = Origin.create(credentialOrigin);
         // TODO(crbug.com/1030230): assert o != null as soon as credential Origin must be valid.
-        return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl;
+        return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
     private void onSelectedCredential(Credential credential) {

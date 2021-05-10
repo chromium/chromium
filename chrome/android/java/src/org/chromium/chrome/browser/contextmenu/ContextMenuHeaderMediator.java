@@ -85,8 +85,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         // If we didn't get a favicon, generate a monogram instead
         if (icon == null) {
             final RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
-            // TODO(https://crbug.com/783819): Migrate IconGenerator to GURL.
-            icon = iconGenerator.generateIconForUrl(mPlainUrl.getSpec());
+            icon = iconGenerator.generateIconForUrl(mPlainUrl);
             // generateIconForUrl might return null if the URL is empty or the domain cannot be
             // resolved. See https://crbug.com/987101
             // TODO(sinansahin): Handle the case where generating an icon fails.

@@ -53,6 +53,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -643,7 +644,8 @@ public class NotificationPlatformBridgeTest {
         RoundedIconGenerator generator =
                 NotificationBuilderBase.createIconGenerator(context.getResources());
 
-        Bitmap generatedIcon = generator.generateIconForUrl(mPermissionTestRule.getOrigin());
+        Bitmap generatedIcon =
+                generator.generateIconForUrl(new GURL(mPermissionTestRule.getOrigin()));
         Assert.assertNotNull(generatedIcon);
         // Starts from Android O MR1, large icon can be downscaled by Android platform code.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

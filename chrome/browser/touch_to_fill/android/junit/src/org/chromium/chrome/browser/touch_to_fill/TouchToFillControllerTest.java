@@ -61,6 +61,8 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,14 +74,14 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class TouchToFillControllerTest {
-    private static final String TEST_URL = "https://www.example.xyz";
+    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
             new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false, 0);
     private static final Credential BOB =
             new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", TEST_URL, false, false, 0);
+            new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
@@ -112,8 +114,11 @@ public class TouchToFillControllerTest {
         mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitScheme(anyString()))
                 .then(inv -> format(inv.getArgument(0)));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
         when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
         mMediator.initialize(mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE);
@@ -181,15 +186,15 @@ public class TouchToFillControllerTest {
 
         // ANA and CARL both have TEST_URL as their origin URL
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(
-                        eq(TEST_URL), eq(DESIRED_FAVICON_SIZE), mCallbackArgumentCaptor.capture());
+                .getLargeIconForStringUrl(eq(TEST_URL.getSpec()), eq(DESIRED_FAVICON_SIZE),
+                        mCallbackArgumentCaptor.capture());
         LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
         Bitmap bitmap = Bitmap.createBitmap(
                 DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
         callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
         FaviconOrFallback iconData = itemList.get(1).model.get(FAVICON_OR_FALLBACK);
         assertThat(iconData.mIcon, is(bitmap));
-        assertThat(iconData.mUrl, is(TEST_URL));
+        assertThat(iconData.mUrl, is(TEST_URL.getSpec()));
         assertThat(iconData.mIconSize, is(DESIRED_FAVICON_SIZE));
         assertThat(iconData.mFallbackColor, is(333));
         assertThat(iconData.mIsFallbackColorDefault, is(true));
@@ -313,7 +318,7 @@ public class TouchToFillControllerTest {
      * @param originUrl A URL {@link String} to "format".
      * @return A "formatted" URL {@link String}.
      */
-    private static String formatForSecurityDisplay(String originUrl) {
-        return "formatted_for_security_" + originUrl + "_formatted_for_security";
+    private static String formatForSecurityDisplay(GURL originUrl) {
+        return "formatted_for_security_" + originUrl.getSpec() + "_formatted_for_security";
     }
 }
