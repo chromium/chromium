@@ -1090,12 +1090,12 @@ Status ExecuteElementScreenshot(Session* session,
   clip_dict->SetDouble("y", location.y + scroll_top);
   clip_dict->SetDouble("scale", 1 / device_pixel_ratio);
   // Crop screenshot by viewport if element is larger than viewport
-  clip_dict->SetDouble(
-      "height",
-      std::min(viewport_height, clip_dict->FindKey("height")->GetDouble()));
-  clip_dict->SetDouble(
-      "width",
-      std::min(viewport_width, clip_dict->FindKey("width")->GetDouble()));
+  clip_dict->SetDouble("height",
+                       std::min(viewport_height - location.y,
+                                clip_dict->FindKey("height")->GetDouble()));
+  clip_dict->SetDouble("width",
+                       std::min(viewport_width - location.x,
+                                clip_dict->FindKey("width")->GetDouble()));
   base::DictionaryValue screenshot_params;
   screenshot_params.SetDictionary("clip", std::move(clip_dict));
 

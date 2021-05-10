@@ -203,6 +203,7 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'LaunchDesktopTest.*',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2737
         'ChromeDriverTest.testTakeElementScreenshot',
+        'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
         'ChromeDriverTest.testTakeElementScreenshotInIframe',
         # setWindowBounds not supported on Android
         'ChromeDriverTest.testTakeLargeElementScreenshot',
@@ -2572,6 +2573,16 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                       '/chromedriver/page_with_redbox.html'))
     # Wait for page to stabilize in case of Chrome showing top bars.
     # See https://crbug.com/chromedriver/2986
+    time.sleep(1)
+    redElement = self._driver.FindElement('css selector', '#box')
+    analysisResult = self.takeScreenshotAndVerifyCorrect(redElement)
+    self.assertEquals('PASS', analysisResult)
+
+  def testTakeElementScreenshotPartlyVisible(self):
+    self._driver.Load(self.GetHttpUrlForFile(
+                      '/chromedriver/page_with_redbox_partly_visible.html'))
+    self._driver.SetWindowRect(500, 500, 0, 0)
+    # Wait for page to stabilize. See https://crbug.com/chromedriver/2986
     time.sleep(1)
     redElement = self._driver.FindElement('css selector', '#box')
     analysisResult = self.takeScreenshotAndVerifyCorrect(redElement)
