@@ -91,7 +91,7 @@ void SetDeviceProperties(base::Value* dictionary) {
     return;
 
   base::Value device_dictionary(device_state->properties().Clone());
-  if (!device_state->ip_configs().empty()) {
+  if (!device_state->ip_configs().DictEmpty()) {
     // Convert IPConfig dictionary to a ListValue.
     base::Value ip_configs(base::Value::Type::LIST);
     for (auto iter : device_state->ip_configs().DictItems()) {
