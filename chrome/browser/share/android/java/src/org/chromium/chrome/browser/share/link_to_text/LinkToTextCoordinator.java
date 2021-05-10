@@ -150,7 +150,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void requestSelector() {
-        if (mChromeShareExtras.isReshareHighlightedText()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                && mChromeShareExtras.isReshareHighlightedText()) {
             reshareHighlightedText();
             return;
         }
