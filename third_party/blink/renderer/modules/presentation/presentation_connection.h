@@ -88,8 +88,6 @@ class MODULES_EXPORT PresentationConnection
   mojom::blink::PresentationConnectionState GetState() const;
 
  protected:
-  static void DispatchEventAsync(EventTarget*, Event*);
-
   PresentationConnection(LocalDOMWindow&, const String& id, const KURL&);
 
   // EventTarget implementation.
@@ -150,9 +148,6 @@ class MODULES_EXPORT PresentationConnection
   // Closes the PresentationConnection with the given reason and notifies the
   // target connection.
   void DoClose(mojom::blink::PresentationConnectionCloseReason);
-
-  // Internal helper function to dispatch state change events asynchronously.
-  void DispatchStateChangeEvent(Event*);
 
   // Cancel loads and pending messages when the connection is closed.
   void TearDown();

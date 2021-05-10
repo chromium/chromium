@@ -198,12 +198,14 @@ void PresentationConnection::DidChangeState(
     case mojom::blink::PresentationConnectionState::CONNECTING:
       return;
     case mojom::blink::PresentationConnectionState::CONNECTED:
-      DispatchStateChangeEvent(Event::Create(event_type_names::kConnect));
+      EnqueueEvent(*Event::Create(event_type_names::kConnect),
+                   TaskType::kPresentation);
       return;
     case mojom::blink::PresentationConnectionState::CLOSED:
       return;
     case mojom::blink::PresentationConnectionState::TERMINATED:
-      DispatchStateChangeEvent(Event::Create(event_type_names::kTerminate));
+      EnqueueEvent(*Event::Create(event_type_names::kTerminate),
+                   TaskType::kPresentation);
       return;
   }
   NOTREACHED();
@@ -244,14 +246,9 @@ ControllerPresentationConnection* ControllerPresentationConnection::Take(
   controller->RegisterConnection(connection);
 
   // Fire onconnectionavailable event asynchronously.
-  auto* event = PresentationConnectionAvailableEvent::Create(
-      event_type_names::kConnectionavailable, connection);
-  request->GetExecutionContext()
-      ->GetTaskRunner(TaskType::kPresentation)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&PresentationConnection::DispatchEventAsync,
-                           WrapPersistent(request), WrapPersistent(event)));
-
+  request->EnqueueEvent(*PresentationConnectionAvailableEvent::Create(
+                            event_type_names::kConnectionavailable, connection),
+                        TaskType::kPresentation);
   return connection;
 }
 
@@ -636,9 +633,10 @@ void PresentationConnection::DidClose(
   }
 
   state_ = mojom::blink::PresentationConnectionState::CLOSED;
-  DispatchStateChangeEvent(PresentationConnectionCloseEvent::Create(
-      event_type_names::kClose, ConnectionCloseReasonToString(reason),
-      message));
+  EnqueueEvent(*PresentationConnectionCloseEvent::Create(
+                   event_type_names::kClose,
+                   ConnectionCloseReasonToString(reason), message),
+               TaskType::kPresentation);
 }
 
 void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
@@ -670,22 +668,6 @@ void PresentationConnection::DidFailLoadingBlob(FileErrorCode error_code) {
   messages_.pop_front();
   blob_loader_.Clear();
   HandleMessageQueue();
-}
-
-void PresentationConnection::DispatchStateChangeEvent(Event* event) {
-  GetExecutionContext()
-      ->GetTaskRunner(TaskType::kPresentation)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&PresentationConnection::DispatchEventAsync,
-                           WrapPersistent(this), WrapPersistent(event)));
-}
-
-// static
-void PresentationConnection::DispatchEventAsync(EventTarget* target,
-                                                Event* event) {
-  DCHECK(target);
-  DCHECK(event);
-  target->DispatchEvent(*event);
 }
 
 void PresentationConnection::TearDown() {
