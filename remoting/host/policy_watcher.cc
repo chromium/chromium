@@ -360,7 +360,7 @@ void PolicyWatcher::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   // Limit reporting to only the policies that were changed.
   std::unique_ptr<base::DictionaryValue> changed_policies =
       StoreNewAndReturnChangedPolicies(std::move(filled_policies));
-  if (changed_policies->empty()) {
+  if (changed_policies->DictEmpty()) {
     return;
   }
 
