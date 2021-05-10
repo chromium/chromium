@@ -641,7 +641,7 @@ void DownloadPrefs::UpdateAutoOpenByPolicy() {
 
   PrefService* prefs = profile_->GetPrefs();
   for (const auto& extension :
-       *prefs->GetList(prefs::kDownloadExtensionsToOpenByPolicy)) {
+       prefs->GetList(prefs::kDownloadExtensionsToOpenByPolicy)->GetList()) {
     base::FilePath::StringType extension_string =
         StringToFilePathString(extension.GetString());
     auto_open_by_policy_.insert(extension_string);
