@@ -12,6 +12,7 @@
     <style include="iron-positioning">
       :host {
         --cr-dialog-width: 324px;
+        --cr-dialog-title-slot-padding-bottom: 10px;
       }
 
       #body {
@@ -20,7 +21,7 @@
       }
 
       #warningMessage {
-        --iron-icon-fill-color: #5F6368;
+        --iron-icon-fill-color: var(--google-grey-600);
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         font-size: smaller;
@@ -33,18 +34,18 @@
 
       #inputInfo {
         background-color: white;
+        color: var(--google-grey-700);
         font-size: var(--cr-form-field-label-font-size);
-        font-weight: 500;
+        font-weight: 400;
         height: 30px;
         line-height: var(--cr-form-field-label-line-height);
         position: absolute;
-        top: 40px;
+        top: 58px;
         width: 100%;
       }
 
       #inputInfo.error {
         color: var(--google-red-600);
-        font-weight: 400;
       }
 
       #inputSubtitle {
@@ -79,6 +80,7 @@
                 spellcheck="false"
                 disabled="[[isRenameInProgress_]]"
                 invalid="[[isInputInvalid_]]"
+                label="$i18n{eSimRenameProfileInputTitle}"
                 aria-label="[[i18n('eSimRenameProfileDialogLabel')]]"
                 aria-description="[[i18n('eSimRenameProfileInputA11yLabel',
                     MAX_INPUT_LENGTH)]]"
