@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -17,7 +18,54 @@ namespace {
 
 content::DownloadManager* download_manager_for_testing = nullptr;
 
+// Helpers ---------------------------------------------------------------------
+
+// Returns whether the specified `download_item` is in progress.
+bool IsInProgress(download::DownloadItem* download_item) {
+  return download_item->GetState() ==
+         download::DownloadItem::DownloadState::IN_PROGRESS;
+}
+
 }  // namespace
+
+// HoldingSpaceDownloadsDelegate::InProgressDownload ---------------------------
+
+// A class which observes an in-progress `download::DownloadItem`.
+// NOTE: Instances of this class are immediately destroyed when the underlying
+// `download::DownloadItem` is no longer in-progress.
+class HoldingSpaceDownloadsDelegate::InProgressDownload
+    : public download::DownloadItem::Observer {
+ public:
+  InProgressDownload(HoldingSpaceDownloadsDelegate* delegate,
+                     download::DownloadItem* download_item)
+      : delegate_(delegate) {
+    DCHECK(IsInProgress(download_item));
+    download_item_observation_.Observe(download_item);
+  }
+
+  InProgressDownload(const InProgressDownload&) = delete;
+  InProgressDownload& operator=(const InProgressDownload&) = delete;
+  ~InProgressDownload() override = default;
+
+ private:
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download_item) override {
+    // NOTE: This method invocation may result in destruction.
+    delegate_->OnDownloadUpdated(download_item);
+  }
+
+  void OnDownloadDestroyed(download::DownloadItem* download_item) override {
+    // NOTE: This method invocation will result in destruction.
+    delegate_->OnDownloadDestroyed(download_item);
+  }
+
+  // NOTE: The `delegate_` owns `this`.
+  HoldingSpaceDownloadsDelegate* const delegate_;
+
+  base::ScopedObservation<download::DownloadItem,
+                          download::DownloadItem::Observer>
+      download_item_observation_{this};
+};
 
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
 
@@ -103,16 +151,12 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   download::SimpleDownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
 
-  for (auto* download : downloads) {
-    switch (download->GetState()) {
-      case download::DownloadItem::IN_PROGRESS:
-        download_item_observations_.AddObservation(download);
-        break;
-      case download::DownloadItem::COMPLETE:
-      case download::DownloadItem::CANCELLED:
-      case download::DownloadItem::INTERRUPTED:
-      case download::DownloadItem::MAX_DOWNLOAD_STATE:
-        break;
+  for (download::DownloadItem* download_item : downloads) {
+    if (IsInProgress(download_item)) {
+      in_progress_downloads_by_id_.emplace(
+          std::piecewise_construct,
+          /*id=*/std::forward_as_tuple(download_item->GetId()),
+          /*in_progress_download=*/std::forward_as_tuple(this, download_item));
     }
   }
 }
@@ -120,36 +164,50 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
     content::DownloadManager* manager) {
   download_manager_observation_.Reset();
-  download_item_observations_.RemoveAllObservations();
+  in_progress_downloads_by_id_.clear();
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
     content::DownloadManager* manager,
-    download::DownloadItem* item) {
+    download::DownloadItem* download_item) {
   // Ignore `OnDownloadCreated()` events prior to `manager` initialization. For
-  // those events we bind any observers necessary in `OnManagerInitialized()`.
-  if (!is_restoring_persistence() && manager->IsManagerInitialized())
-    download_item_observations_.AddObservation(item);
+  // those events we create any objects necessary in `OnManagerInitialized()`.
+  if (is_restoring_persistence() || !manager->IsManagerInitialized())
+    return;
+
+  if (IsInProgress(download_item)) {
+    in_progress_downloads_by_id_.emplace(
+        std::piecewise_construct,
+        /*id=*/std::forward_as_tuple(download_item->GetId()),
+        /*in_progress_download=*/std::forward_as_tuple(this, download_item));
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
-    download::DownloadItem* item) {
-  switch (item->GetState()) {
-    case download::DownloadItem::COMPLETE:
-      OnDownloadCompleted(HoldingSpaceItem::Type::kDownload,
-                          item->GetFullPath());
-      FALLTHROUGH;
-    case download::DownloadItem::CANCELLED:
-    case download::DownloadItem::INTERRUPTED:
-      download_item_observations_.RemoveObservation(item);
+    const download::DownloadItem* download_item) {
+  switch (download_item->GetState()) {
+    case download::DownloadItem::DownloadState::IN_PROGRESS:
+      // TODO(crbug.com/1184438): Support in-progress downloads.
       break;
-    case download::DownloadItem::IN_PROGRESS:
-    case download::DownloadItem::MAX_DOWNLOAD_STATE:
+    case download::DownloadItem::DownloadState::COMPLETE:
+      OnDownloadCompleted(HoldingSpaceItem::Type::kDownload,
+                          download_item->GetFullPath());
+      FALLTHROUGH;
+    case download::DownloadItem::DownloadState::CANCELLED:
+    case download::DownloadItem::DownloadState::INTERRUPTED:
+      in_progress_downloads_by_id_.erase(download_item->GetId());
+      break;
+    case download::DownloadItem::DownloadState::MAX_DOWNLOAD_STATE:
+      NOTREACHED();
       break;
   }
 }
 
-// TODO(crbug.com/1184438): Support in-progress downloads.
+void HoldingSpaceDownloadsDelegate::OnDownloadDestroyed(
+    const download::DownloadItem* download_item) {
+  in_progress_downloads_by_id_.erase(download_item->GetId());
+}
+
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
