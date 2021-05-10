@@ -229,6 +229,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
+    @FlakyTest(message = "https://crbug.com/1207306")
     public void testShow_SingleAsHomepage() {
         Assume.assumeFalse("https://crbug.com/1196473",
                 mUseInstantStart && mImmediateReturn
