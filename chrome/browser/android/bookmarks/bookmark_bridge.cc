@@ -111,7 +111,7 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
       partner_bookmarks_shim_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   profile_ = ProfileAndroid::FromProfileAndroid(j_profile);
-  profile_observer_.Add(profile_);
+  profile_observation_.Observe(profile_);
   bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile_);
   managed_bookmark_service_ =
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
@@ -144,8 +144,10 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
 }
 
 BookmarkBridge::~BookmarkBridge() {
-  if (profile_)
-    profile_observer_.Remove(profile_);
+  if (profile_) {
+    DCHECK(profile_observation_.IsObservingSource(profile_));
+    profile_observation_.Reset();
+  }
   bookmark_model_->RemoveObserver(this);
   if (partner_bookmarks_shim_)
     partner_bookmarks_shim_->RemoveObserver(this);

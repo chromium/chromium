@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/profiles/profile.h"
@@ -330,7 +330,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   ReadingListManager* reading_list_manager_;
 
   // Observes the profile destruction and creation.
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBridge);
 };
