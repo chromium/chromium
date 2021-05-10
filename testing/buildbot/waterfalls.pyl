@@ -3226,7 +3226,7 @@
       },
       'linux-blink-v8-oilpan': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_gtests',
@@ -6363,7 +6363,7 @@
       },
       'V8 Blink Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6383,7 +6383,7 @@
       },
       'V8 Blink Linux Future': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6395,7 +6395,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'os': 'Ubuntu-16.04',
+              'os': 'Ubuntu-18.04',
             },
           ],
           'hard_timeout': 900,
