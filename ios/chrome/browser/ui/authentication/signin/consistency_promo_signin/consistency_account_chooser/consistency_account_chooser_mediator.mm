@@ -28,13 +28,17 @@
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
 @property(nonatomic, assign, readonly)
     ios::ChromeIdentityService* chromeIdentityService;
+// Pref service to retrieve preference values.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
 @implementation ConsistencyAccountChooserMediator
 
-- (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity
+                             prefService:(PrefService*)prefService {
   if (self = [super init]) {
+    _prefService = prefService;
     _identityServiceObserver =
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
@@ -44,6 +48,16 @@
     [self loadIdentityItemConfigurators];
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService);
+}
+
+#pragma mark - Public
+
+- (void)disconnect {
+  self.prefService = nullptr;
 }
 
 #pragma mark - Properties
@@ -67,9 +81,14 @@
 
 // Updates |self.sortedIdentityItemConfigurators| based on ChromeIdentity list.
 - (void)loadIdentityItemConfigurators {
+  if (!self.prefService) {
+    return;
+  }
+
   NSMutableArray* configurators = [NSMutableArray array];
   NSArray* identities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay();
+      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
+          self.prefService);
   BOOL hasSelectedIdentity = NO;
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =

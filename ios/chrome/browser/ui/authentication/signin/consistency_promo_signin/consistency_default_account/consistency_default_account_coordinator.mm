@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -28,7 +30,8 @@
 @implementation ConsistencyDefaultAccountCoordinator
 
 - (void)start {
-  self.mediator = [[ConsistencyDefaultAccountMediator alloc] init];
+  self.mediator = [[ConsistencyDefaultAccountMediator alloc]
+      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
   self.mediator.delegate = self;
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
@@ -43,6 +46,11 @@
 
 - (void)stopSigninSpinner {
   [self.defaultAccountViewController stopSpinner];
+}
+
+- (void)stop {
+  [self.mediator disconnect];
+  self.mediator = nil;
 }
 
 #pragma mark - Properties

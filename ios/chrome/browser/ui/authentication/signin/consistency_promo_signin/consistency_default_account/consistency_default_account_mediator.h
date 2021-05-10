@@ -10,6 +10,7 @@
 @class ChromeIdentity;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
+class PrefService;
 
 // Delegate for ConsistencyDefaultAccountMediator.
 @protocol ConsistencyDefaultAccountMediatorDelegate <NSObject>
@@ -23,11 +24,20 @@
 // Mediator for ConsistencyDefaultAccountCoordinator.
 @interface ConsistencyDefaultAccountMediator : NSObject
 
+// The designated initializer.
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 @property(nonatomic, weak) id<ConsistencyDefaultAccountMediatorDelegate>
     delegate;
 @property(nonatomic, strong) id<ConsistencyDefaultAccountConsumer> consumer;
 // Identity presented to the user.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 @end
 

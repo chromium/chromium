@@ -12,6 +12,7 @@
 @class ChromeIdentity;
 @protocol ConsistencyAccountChooserConsumer;
 @class ConsistencyAccountChooserMediator;
+class PrefService;
 
 // Mediator for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserMediator
@@ -24,7 +25,11 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity
+                             prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
+
+// Disconnect the mediator.
+- (void)disconnect;
 
 @end
 

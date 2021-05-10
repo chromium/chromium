@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_mediator.h"
 
+#include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
@@ -24,13 +25,15 @@
 
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, strong) ResizedAvatarCache* avatarCache;
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
 @implementation ConsistencyDefaultAccountMediator
 
-- (instancetype)init {
+- (instancetype)initWithPrefService:(PrefService*)prefService {
   if (self = [super init]) {
+    _prefService = prefService;
     _identityServiceObserver =
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
@@ -38,6 +41,14 @@
     _avatarCache = [[ResizedAvatarCache alloc] init];
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService);
+}
+
+- (void)disconnect {
+  self.prefService = nullptr;
 }
 
 #pragma mark - Properties
@@ -60,9 +71,15 @@
 
 // Updates the default identity.
 - (void)selectSelectedIdentity {
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentitiesSortedForDisplay();
+  if (!self.prefService) {
+    return;
+  }
+
+  NSArray* identities =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->GetAllIdentitiesSortedForDisplay(self.prefService);
+
   if (identities.count == 0) {
     [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];
     return;

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
@@ -33,13 +35,20 @@
 - (void)startWithSelectedIdentity:(ChromeIdentity*)selectedIdentity {
   [super start];
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
-      initWithSelectedIdentity:selectedIdentity];
+      initWithSelectedIdentity:selectedIdentity
+                   prefService:self.browser->GetBrowserState()->GetPrefs()];
+
   self.accountChooserViewController =
       [[ConsistencyAccountChooserViewController alloc] init];
   self.accountChooserViewController.modelDelegate = self.mediator;
   self.mediator.consumer = self.accountChooserViewController.consumer;
   self.accountChooserViewController.actionDelegate = self;
   [self.accountChooserViewController view];
+}
+
+- (void)stop {
+  [super stop];
+  [self.mediator disconnect];
 }
 
 #pragma mark - Properties

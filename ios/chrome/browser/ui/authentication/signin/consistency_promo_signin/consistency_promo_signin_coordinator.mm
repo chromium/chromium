@@ -114,6 +114,12 @@
                                       completion:nil];
 }
 
+- (void)stop {
+  [super stop];
+  [self.defaultAccountCoordinator stop];
+  self.defaultAccountCoordinator = nil;
+}
+
 #pragma mark - Properties
 
 - (ChromeIdentity*)selectedIdentity {
@@ -267,6 +273,7 @@
     (ConsistencyAccountChooserCoordinator*)coordinator {
   self.defaultAccountCoordinator.selectedIdentity =
       self.accountChooserCoordinator.selectedIdentity;
+  [self.accountChooserCoordinator stop];
   self.accountChooserCoordinator = nil;
   [self.navigationController popViewControllerAnimated:YES];
 }
