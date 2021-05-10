@@ -175,12 +175,6 @@ class ChromeIdentityService {
 
   // Returns all ChromeIdentity objects sorted by the ordering used in the
   // account manager, which is typically based on the keychain ordering of
-  // accounts.
-  // Deprecated. See GetAllIdentitiesSortedForDisplay(prefService).
-  virtual NSArray* GetAllIdentitiesSortedForDisplay();
-
-  // Returns all ChromeIdentity objects sorted by the ordering used in the
-  // account manager, which is typically based on the keychain ordering of
   // accounts.It uses PrefService to filter ChromeIdentities according to
   // enterprise policies.
   virtual NSArray* GetAllIdentitiesSortedForDisplay(PrefService* pref_service);
