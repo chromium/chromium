@@ -81,8 +81,7 @@ void SafariImporter::ImportBookmarks() {
 
 bool SafariImporter::OpenDatabase(sql::Database* db) {
   // Construct ~/Library/Safari/WebpageIcons.db path.
-  NSString* library_dir = [NSString
-      stringWithUTF8String:library_dir_.value().c_str()];
+  NSString* library_dir = base::SysUTF8ToNSString(library_dir_.value());
   NSString* safari_dir = [library_dir
       stringByAppendingPathComponent:@"Safari"];
   NSString* favicons_db_path = [safari_dir
@@ -147,13 +146,13 @@ void SafariImporter::RecursiveReadBookmarksFolder(
     std::vector<ImportedBookmarkEntry>* out_bookmarks) {
   DCHECK(bookmark_folder);
 
-  NSString* type = [bookmark_folder objectForKey:@"WebBookmarkType"];
-  NSString* title = [bookmark_folder objectForKey:@"Title"];
+  NSString* type = bookmark_folder[@"WebBookmarkType"];
+  NSString* title = bookmark_folder[@"Title"];
 
   // Are we the dictionary that contains all other bookmarks?
   // We need to know this so we don't add it to the path.
-  bool is_top_level_bookmarks_container = [bookmark_folder
-      objectForKey:@"WebBookmarkFileVersion"] != nil;
+  bool is_top_level_bookmarks_container =
+      bookmark_folder[@"WebBookmarkFileVersion"] != nil;
 
   // We're expecting a list of bookmarks here, if that isn't what we got, fail.
   if (!is_top_level_bookmarks_container) {
@@ -168,7 +167,7 @@ void SafariImporter::RecursiveReadBookmarksFolder(
     }
   }
 
-  NSArray* elements = [bookmark_folder objectForKey:@"Children"];
+  NSArray* elements = bookmark_folder[@"Children"];
   if (!elements &&
       (!parent_path_elements.empty() || !is_in_toolbar) &&
       ![title isEqualToString:@"BookmarksMenu"]) {
@@ -202,7 +201,7 @@ void SafariImporter::RecursiveReadBookmarksFolder(
 
   // Iterate over individual bookmarks.
   for (NSDictionary* bookmark in elements) {
-    NSString* type = [bookmark objectForKey:@"WebBookmarkType"];
+    NSString* type = bookmark[@"WebBookmarkType"];
     if (!type)
       continue;
 
@@ -220,9 +219,8 @@ void SafariImporter::RecursiveReadBookmarksFolder(
     if (![type isEqualToString:@"WebBookmarkTypeLeaf"])
       continue;
 
-    NSString* url = [bookmark objectForKey:@"URLString"];
-    NSString* title = [[bookmark objectForKey:@"URIDictionary"]
-        objectForKey:@"title"];
+    NSString* url = bookmark[@"URLString"];
+    NSString* title = bookmark[@"URIDictionary"][@"title"];
 
     if (!url || !title)
       continue;
@@ -246,8 +244,7 @@ void SafariImporter::ParseBookmarks(
   DCHECK(bookmarks);
 
   // Construct ~/Library/Safari/Bookmarks.plist path
-  NSString* library_dir = [NSString
-      stringWithUTF8String:library_dir_.value().c_str()];
+  NSString* library_dir = base::SysUTF8ToNSString(library_dir_.value());
   NSString* safari_dir = [library_dir
       stringByAppendingPathComponent:@"Safari"];
   NSString* bookmarks_plist = [safari_dir
