@@ -61,7 +61,7 @@ class AuctionRunner {
 
     std::unique_ptr<BidderWorklet> bidder_worklet;
     base::Optional<BidderWorklet::Bid> bid_result;
-    SellerWorklet::ScoreResult score_result;
+    double seller_score = 0;
   };
 
   AuctionRunner(
@@ -91,7 +91,7 @@ class AuctionRunner {
   void ScoreOne();
   void ScoreBid(const BidState* state);
   // Callback from ScoreBid().
-  void OnBidScored(SellerWorklet::ScoreResult score_result);
+  void OnBidScored(double score, const std::vector<std::string>& errors);
 
   std::string AdRenderFingerprint(const BidState* state);
   base::Optional<std::string> PerBuyerSignals(const BidState* state);

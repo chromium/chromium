@@ -90,10 +90,10 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreAdWithReturnValueExpectingResult(
       const std::string& raw_return_value,
       double expected_score,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const std::vector<std::string>& expected_errors =
+          std::vector<std::string>()) {
     RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(raw_return_value), expected_score,
-        std::move(expected_error_msg));
+        CreateScoreAdScript(raw_return_value), expected_score, expected_errors);
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
@@ -102,38 +102,35 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreAdWithJavascriptExpectingResult(
       const std::string& javascript,
       double expected_score,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const std::vector<std::string>& expected_errors =
+          std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, url_, javascript);
-    RunScoreAdExpectingResult(expected_score, std::move(expected_error_msg));
+    RunScoreAdExpectingResult(expected_score, expected_errors);
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
   void RunScoreAdExpectingResult(
       double expected_score,
-      base::Optional<std::string> expected_error_msg = base::nullopt) {
+      const std::vector<std::string>& expected_errors =
+          std::vector<std::string>()) {
     auto seller_worket = CreateWorklet();
     ASSERT_TRUE(seller_worket);
 
     base::RunLoop run_loop;
-    SellerWorklet::ScoreResult actual_result;
     seller_worket->ScoreAd(
         ad_metadata_, bid_, *auction_config_,
         browser_signal_top_window_hostname_,
         browser_signal_interest_group_owner_,
         browser_signal_ad_render_fingerprint_, browser_signal_bidding_duration_,
         base::BindLambdaForTesting(
-            [&run_loop, &actual_result](SellerWorklet::ScoreResult result) {
-              actual_result = result;
+            [&run_loop, &expected_score, expected_errors](
+                double score, const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_score, score);
+              EXPECT_EQ(expected_errors, errors);
               run_loop.Quit();
             }));
     run_loop.Run();
-    EXPECT_EQ(expected_score > 0, actual_result.success);
-    EXPECT_EQ(expected_score, actual_result.score);
-    EXPECT_EQ(expected_error_msg.has_value(),
-              actual_result.error_msg.has_value());
-    EXPECT_EQ(expected_error_msg.value_or("Not an error"),
-              actual_result.error_msg.value_or("Not an error"));
   }
 
   // Configures `url_loader_factory_` to return a report_result() script created
@@ -274,30 +271,33 @@ TEST_F(SellerWorkletTest, ScoreAd) {
 
   // No return value.
   RunScoreAdWithReturnValueExpectingResult(
-      "", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "", 0, {"https://url.test/ scoreAd() did not return a valid number."});
 
   // Wrong return type / invalid values.
   RunScoreAdWithReturnValueExpectingResult(
-      "[15]", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "[15]", 0,
+      {"https://url.test/ scoreAd() did not return a valid number."});
   RunScoreAdWithReturnValueExpectingResult(
-      "1/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "1/0", 0, {"https://url.test/ scoreAd() did not return a valid number."});
   RunScoreAdWithReturnValueExpectingResult(
-      "0/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "0/0", 0, {"https://url.test/ scoreAd() did not return a valid number."});
   RunScoreAdWithReturnValueExpectingResult(
-      "-1/0", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "-1/0", 0,
+      {"https://url.test/ scoreAd() did not return a valid number."});
   RunScoreAdWithReturnValueExpectingResult(
-      "true", 0, "https://url.test/ scoreAd() did not return a valid number.");
+      "true", 0,
+      {"https://url.test/ scoreAd() did not return a valid number."});
 
   // Throw exception.
   RunScoreAdWithReturnValueExpectingResult(
       "shrimp", 0,
-      "https://url.test/:4 Uncaught ReferenceError: shrimp is not defined.");
+      {"https://url.test/:4 Uncaught ReferenceError: shrimp is not defined."});
 }
 
 TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
   RunScoreAdWithReturnValueExpectingResult(
       "Date.parse(Date().toString())", 0,
-      "https://url.test/:4 Uncaught ReferenceError: Date is not defined.");
+      {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
 }
 
 // Checks that input parameters are correctly passed in.
@@ -650,7 +650,6 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     // function is run sequentially, and when one function is run after the
     // other.
     for (int j = 0; j < 2; ++j) {
-      SellerWorklet::ScoreResult score_result;
       base::RunLoop run_loop;
       seller_worket->ScoreAd(
           ad_metadata_, bid_, *auction_config_,
@@ -659,13 +658,13 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signal_ad_render_fingerprint_,
           browser_signal_bidding_duration_,
           base::BindLambdaForTesting(
-              [&run_loop, &score_result](SellerWorklet::ScoreResult result) {
-                score_result = result;
+              [&run_loop](double score,
+                          const std::vector<std::string>& errors) {
+                EXPECT_EQ(2, score);
+                EXPECT_TRUE(errors.empty());
                 run_loop.Quit();
               }));
       run_loop.Run();
-      EXPECT_TRUE(score_result.success);
-      EXPECT_EQ(2, score_result.score);
     }
 
     for (int j = 0; j < 2; ++j) {

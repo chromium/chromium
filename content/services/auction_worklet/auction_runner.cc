@@ -139,10 +139,10 @@ void AuctionRunner::ScoreBid(const BidState* state) {
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this)));
 }
 
-void AuctionRunner::OnBidScored(SellerWorklet::ScoreResult score_result) {
-  bid_states_[seller_considering_].score_result = score_result;
-  if (score_result.error_msg.has_value())
-    errors_.push_back(std::move(score_result.error_msg).value());
+void AuctionRunner::OnBidScored(double score,
+                                const std::vector<std::string>& errors) {
+  bid_states_[seller_considering_].seller_score = score;
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
   ++seller_considering_;
   ScoreOne();
 }
@@ -171,8 +171,8 @@ void AuctionRunner::CompleteAuction() {
   const BidState* best_bid = nullptr;
   // TODO(morlovich): What if there is a tie?
   for (const BidState& bid_state : bid_states_) {
-    if (bid_state.score_result.score > best_bid_score) {
-      best_bid_score = bid_state.score_result.score;
+    if (bid_state.seller_score > best_bid_score) {
+      best_bid_score = bid_state.seller_score;
       best_bid = &bid_state;
     }
   }
@@ -187,11 +187,12 @@ void AuctionRunner::CompleteAuction() {
 
 void AuctionRunner::ReportSellerResult(const BidState* best_bid) {
   DCHECK(best_bid->bid_result);
+  DCHECK_GT(best_bid->seller_score, 0);
   seller_worklet_->ReportResult(
       *auction_config_, browser_signals_->top_frame_origin.host(),
       best_bid->bidder->group->owner, best_bid->bid_result->render_url,
       AdRenderFingerprint(best_bid), best_bid->bid_result->bid,
-      best_bid->score_result.score,
+      best_bid->seller_score,
       base::BindOnce(&AuctionRunner::OnReportSellerResultComplete,
                      base::Unretained(this), best_bid));
 }

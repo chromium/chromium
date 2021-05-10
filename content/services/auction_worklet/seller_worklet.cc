@@ -111,11 +111,11 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
 //
 // TODO(mmenke): Remove once this class switches over to using Mojo.
 
-void InvokeScoreAdCallbackAsync(
-    base::OnceCallback<void(SellerWorklet::ScoreResult)> callback,
-    SellerWorklet::ScoreResult score_result) {
+void InvokeScoreAdCallbackAsync(SellerWorklet::ScoreAdCallback callback,
+                                double score,
+                                const std::vector<std::string>& errors) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(score_result)));
+      FROM_HERE, base::BindOnce(std::move(callback), score, errors));
 }
 
 void InvokeReportResultCallbackAsync(
@@ -126,24 +126,6 @@ void InvokeReportResultCallbackAsync(
 }
 
 }  // namespace
-
-SellerWorklet::ScoreResult::ScoreResult() = default;
-
-SellerWorklet::ScoreResult::ScoreResult(double score)
-    : success(true), score(score) {
-  DCHECK_GT(score, 0);
-}
-
-SellerWorklet::ScoreResult::ScoreResult(base::Optional<std::string> error_msg)
-    : error_msg(std::move(error_msg)) {}
-
-SellerWorklet::ScoreResult::ScoreResult(const ScoreResult& other) = default;
-SellerWorklet::ScoreResult::ScoreResult(ScoreResult&& other) = default;
-SellerWorklet::ScoreResult::~ScoreResult() = default;
-SellerWorklet::ScoreResult& SellerWorklet::ScoreResult::operator=(
-    const ScoreResult&) = default;
-SellerWorklet::ScoreResult& SellerWorklet::ScoreResult::operator=(
-    ScoreResult&&) = default;
 
 SellerWorklet::Report::Report() = default;
 
@@ -185,7 +167,7 @@ void SellerWorklet::ScoreAd(
     const url::Origin& browser_signal_interest_group_owner,
     const std::string& browser_signal_ad_render_fingerprint,
     base::TimeDelta browser_signal_bidding_duration,
-    base::OnceCallback<void(ScoreResult)> callback) {
+    ScoreAdCallback callback) {
   callback = base::BindOnce(&InvokeScoreAdCallbackAsync, std::move(callback));
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
@@ -197,14 +179,16 @@ void SellerWorklet::ScoreAd(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
-    std::move(callback).Run(ScoreResult());
+    std::move(callback).Run(0 /* score */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
   if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args)) {
-    std::move(callback).Run(ScoreResult());
+    std::move(callback).Run(0 /* score */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
 
@@ -223,7 +207,8 @@ void SellerWorklet::ScoreAd(
       !browser_signals_dict.Set(
           "biddingDurationMsec",
           browser_signal_bidding_duration.InMilliseconds())) {
-    std::move(callback).Run(ScoreResult());
+    std::move(callback).Run(0 /* score */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
@@ -235,24 +220,29 @@ void SellerWorklet::ScoreAd(
            ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args,
                        error_msg_out)
            .ToLocal(&score_ad_result)) {
-    std::move(callback).Run(ScoreResult(std::move(error_msg_out)));
+    std::vector<std::string> errors;
+    if (error_msg_out)
+      errors.emplace_back(std::move(error_msg_out).value());
+    std::move(callback).Run(0 /* score */, errors);
     return;
   }
 
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score) ||
       std::isnan(score) || !std::isfinite(score)) {
-    std::move(callback).Run(ScoreResult(
-        base::StrCat({script_source_url_.spec(),
-                      " scoreAd() did not return a valid number."})));
+    std::move(callback).Run(
+        0 /* score */, std::vector<std::string>{base::StrCat(
+                           {script_source_url_.spec(),
+                            " scoreAd() did not return a valid number."})});
     return;
   }
 
   if (score <= 0) {
-    std::move(callback).Run(ScoreResult());
+    std::move(callback).Run(0 /* score */,
+                            std::vector<std::string>() /* errors */);
     return;
   }
 
-  std::move(callback).Run(ScoreResult(score));
+  std::move(callback).Run(score, std::vector<std::string>() /* errors */);
 }
 
 void SellerWorklet::ReportResult(

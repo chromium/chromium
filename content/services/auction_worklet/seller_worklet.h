@@ -28,38 +28,6 @@ class WorkletLoader;
 // seller worklet's Javascript.
 class SellerWorklet {
  public:
-  // The result of invoking scoreAd().
-  struct ScoreResult {
-    // Creates a ScoreResult for a failure or rejected bid.
-    ScoreResult();
-
-    // Creates a ScoreResult for a successfully scored ad. `score` will be > 0.
-    explicit ScoreResult(double score);
-
-    // Creates a ScoreResult representing a fatal error, potentially with a
-    // helpful diagnostic message in `error_msg`.
-    explicit ScoreResult(base::Optional<std::string> error_msg);
-
-    ScoreResult(const ScoreResult& other);
-    ScoreResult(ScoreResult&& other);
-
-    ~ScoreResult();
-
-    ScoreResult& operator=(const ScoreResult&);
-    ScoreResult& operator=(ScoreResult&&);
-
-    // `success` will be false on any type of failure, and score will be 0.
-    bool success = false;
-
-    // Score. 0 if no bid is offered (even if underlying script returned a
-    // negative value).
-    double score = 0;
-
-    // Error message for debugging. This is not guaranteed to be present on
-    // failure.
-    base::Optional<std::string> error_msg;
-  };
-
   // The result of invoking reportResult().
   struct Report {
     // Creates a Report for a failure.
@@ -101,6 +69,13 @@ class SellerWorklet {
       base::OnceCallback<void(bool success,
                               base::Optional<std::string> error_msg)>;
 
+  // Callback for ScoreAd(). On success, `score` is the positive score returned
+  // by the script. On failure, it's 0. `errors` is a vector of any errors that
+  // occurred while running the script.
+  using ScoreAdCallback =
+      base::OnceCallback<void(double score,
+                              const std::vector<std::string>& errors)>;
+
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
   // Must be destroyed before `v8_helper`.
@@ -123,7 +98,7 @@ class SellerWorklet {
                const url::Origin& browser_signal_interest_group_owner,
                const std::string& browser_signal_ad_render_fingerprint,
                base::TimeDelta browser_signal_bidding_duration,
-               base::OnceCallback<void(ScoreResult)> callback);
+               ScoreAdCallback callback);
 
   // Calls reportResult(), and invokes passed in callback asynchronously with
   // the reporting information. May only be called once the worklet has
