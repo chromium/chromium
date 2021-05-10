@@ -84,7 +84,7 @@ void DeviceLocalAccountExternalPolicyLoader::OnStoreError(
 
 void DeviceLocalAccountExternalPolicyLoader::OnExtensionListsUpdated(
     const base::DictionaryValue* prefs) {
-  DCHECK(external_cache_ || prefs->empty());
+  DCHECK(external_cache_ || prefs->DictEmpty());
   prefs_ = prefs->CreateDeepCopy();
   // Only call LoadFinished() when there is an owner to consume |prefs_|.
   if (has_owner())
