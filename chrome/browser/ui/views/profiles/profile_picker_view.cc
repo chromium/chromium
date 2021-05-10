@@ -154,8 +154,9 @@ class SimpleBackButton : public ToolbarButton {
 void ProfilePicker::Show(EntryPoint entry_point,
                          const GURL& on_select_profile_target_url) {
   if (!g_profile_picker_view)
-    g_profile_picker_view = new ProfilePickerView(on_select_profile_target_url);
-
+    g_profile_picker_view = new ProfilePickerView();
+  g_profile_picker_view->set_on_select_profile_target_url(
+      on_select_profile_target_url);
   g_profile_picker_view->Display(entry_point);
 }
 
@@ -449,11 +450,10 @@ void ProfilePickerView::AddObserver(
 void ProfilePickerView::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
-ProfilePickerView::ProfilePickerView(const GURL& on_select_profile_target_url)
+ProfilePickerView::ProfilePickerView()
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED),
-      extended_account_info_timeout_(kExtendedAccountInfoTimeout),
-      on_select_profile_target_url_(on_select_profile_target_url) {
+      extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PRODUCT_NAME);

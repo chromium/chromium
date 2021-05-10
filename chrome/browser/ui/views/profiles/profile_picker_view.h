@@ -55,6 +55,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // nothing.
   void DisplayErrorMessage();
 
+  // Sets the URL to be opened after the user selects a profile.
+  void set_on_select_profile_target_url(const GURL& url) {
+    on_select_profile_target_url_ = url;
+  }
+
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
@@ -90,7 +95,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   friend class ProfilePicker;
 
   // To display the Profile picker, use ProfilePicker::Show().
-  explicit ProfilePickerView(const GURL& on_select_profile_target_url);
+  ProfilePickerView();
   ~ProfilePickerView() override;
 
   enum State { kNotStarted = 0, kInitializing = 1, kReady = 2 };
