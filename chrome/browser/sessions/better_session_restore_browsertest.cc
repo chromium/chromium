@@ -403,14 +403,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
-// Crashes on Mac and Windows. http://crbug.com/656211
-#if defined(OS_MAC) || defined(OS_WIN)
-#define MAYBE_LocalStorageClearedOnExit DISABLED_LocalStorageClearedOnExit
-#else
-#define MAYBE_LocalStorageClearedOnExit LocalStorageClearedOnExit
-#endif
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
-                       MAYBE_LocalStorageClearedOnExit) {
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, LocalStorageClearedOnExit) {
   CheckReloadedPageNotRestored();
 }
 
@@ -427,13 +420,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_CookiesClearedOnExit) {
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
-// Flaky on Mac. http://crbug.com/656211.
-#if defined(OS_MAC)
-#define MAYBE_CookiesClearedOnExit DISABLED_CookiesClearedOnExit
-#else
-#define MAYBE_CookiesClearedOnExit CookiesClearedOnExit
-#endif
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, MAYBE_CookiesClearedOnExit) {
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, CookiesClearedOnExit) {
   CheckReloadedPageNotRestored();
 }
 
@@ -704,14 +691,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnExit) {
       ->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
 }
 
-// Crashes on Windows. http://crbug.com/732013
-#if defined(OS_WIN)
-#define MAYBE_NSRT_LocalStorageClearedOnExit DISABLED_LocalStorageClearedOnExit
-#else
-#define MAYBE_NSRT_LocalStorageClearedOnExit LocalStorageClearedOnExit
-#endif
-IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest,
-                       MAYBE_NSRT_LocalStorageClearedOnExit) {
+IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnExit) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(std::string(url::kAboutBlankURL), web_contents->GetURL().spec());
