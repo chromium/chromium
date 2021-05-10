@@ -294,8 +294,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kCheckInkLoaded));
 }
 
-// Tests that clicking on the 'Info' button in the app bar opens the information
-// panel.
+// Tests that clicking on the 'Info' button in the app bar toggles the
+// information panel.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   WaitForTestSystemAppInstall();
   auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
@@ -321,8 +321,29 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   // icon-button ids are calculated from a hash of the button labels. Id is used
   // because the UI toolkit has loose guarantees about where the actual label
   // appears in the shadow DOM.
-  clickAppBarButton(app, "#icon-button-2283726");
+  const std::string kInfoButtonSelector = "#icon-button-2283726";
+  clickAppBarButton(app, kInfoButtonSelector);
   EXPECT_EQ(true,
+            MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
+
+  // Expect info panel to be closed after clicking info button again.
+  // After closing we must wait for the DOM update because the panel doesn't
+  // disappear from the DOM until the close animation is complete.
+  clickAppBarButton(app, kInfoButtonSelector);
+  constexpr char kWaitForImageHandlerUpdate[] = R"(
+    (async () => {
+      const imageHandler = await getNode('backlight-image-handler');
+      await new Promise(resolve => {
+        const observer = new MutationObserver(() => {
+          resolve();
+          observer.disconnect();
+        });
+        observer.observe(imageHandler.shadowRoot, {childList: true});
+      });
+    })();
+  )";
+  MediaAppUiBrowserTest::EvalJsInAppFrame(app, kWaitForImageHandlerUpdate);
+  EXPECT_EQ(false,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kHasInfoPanelOpen));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
