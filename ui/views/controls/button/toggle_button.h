@@ -41,6 +41,8 @@ class VIEWS_EXPORT ToggleButton : public Button {
   bool GetAcceptsEvents() const;
 
   // views::View:
+  void AddLayerBeneathView(ui::Layer* layer) override;
+  void RemoveLayerBeneathView(ui::Layer* layer) override;
   gfx::Size CalculatePreferredSize() const override;
 
  private:

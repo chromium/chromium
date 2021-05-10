@@ -149,13 +149,6 @@ ToggleButton::ToggleButton(PressedCallback callback)
         return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
       },
       this));
-
-  ink_drop()->SetAddLayerCallback(
-      base::BindRepeating(&InkDropHost::AddInkDropLayer,
-                          base::Unretained(thumb_view_->ink_drop())));
-  ink_drop()->SetRemoveLayerCallback(
-      base::BindRepeating(&InkDropHost::RemoveInkDropLayer,
-                          base::Unretained(thumb_view_->ink_drop())));
 }
 
 ToggleButton::~ToggleButton() {
@@ -230,6 +223,15 @@ void ToggleButton::SetAcceptsEvents(bool accepts_events) {
 
 bool ToggleButton::GetAcceptsEvents() const {
   return accepts_events_;
+}
+
+void ToggleButton::AddLayerBeneathView(ui::Layer* layer) {
+  // Ink-drop layers should go underneath the ThumbView.
+  thumb_view_->AddLayerBeneathView(layer);
+}
+
+void ToggleButton::RemoveLayerBeneathView(ui::Layer* layer) {
+  thumb_view_->RemoveLayerBeneathView(layer);
 }
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {

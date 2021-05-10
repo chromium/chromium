@@ -61,34 +61,6 @@ class VIEWS_EXPORT InkDropHost {
   InkDropHost& operator=(const InkDropHost&) = delete;
   virtual ~InkDropHost();
 
-  // TODO(pbos): Re-think this API, we may want to expose adding a Layer beneath
-  // a child view to add the effect in the middle of the layer stack. See
-  // ToggleButton.
-  //
-  // Adds a callback for attaching |ink_drop_layer| in to a visible layer tree.
-  //
-  // Do not call from new code. Most uses for this API should be overriding
-  // View::AddLayerBeneathView instead. New ones should re-think the API.
-  void SetAddLayerCallback(base::RepeatingCallback<void(ui::Layer*)> callback);
-
-  // TODO(pbos): Remove, only used in toggle_button_unittest.cc.
-  const base::RepeatingCallback<void(ui::Layer*)>&
-  GetAddLayerCallbackForTesting() const;
-
-  // TODO(pbos): Re-think this API, we may want to expose adding a Layer beneath
-  // a child view to add the effect in the middle of the layer stack. See
-  // ToggleButton.
-  //
-  // Adds a callback for removing |ink_drop_layer| from the layer tree.
-  //
-  // Do not call from new code. Most uses for this API should be overriding
-  // View::AddLayerBeneathView instead. New ones should re-think the API.
-  void SetRemoveLayerCallback(
-      base::RepeatingCallback<void(ui::Layer*)> callback);
-  // TODO(pbos): Remove, only used in toggle_button_unittest.cc.
-  const base::RepeatingCallback<void(ui::Layer*)>&
-  GetRemoveLayerCallbackForTesting() const;
-
   // Returns a configured InkDrop. To override default behavior call
   // SetCreateInkDropCallback().
   std::unique_ptr<InkDrop> CreateInkDrop();
@@ -293,8 +265,6 @@ class VIEWS_EXPORT InkDropHost {
 
   std::unique_ptr<views::InkDropMask> ink_drop_mask_;
 
-  base::RepeatingCallback<void(ui::Layer*)> add_ink_drop_layer_callback_;
-  base::RepeatingCallback<void(ui::Layer*)> remove_ink_drop_layer_callback_;
   base::RepeatingCallback<std::unique_ptr<InkDrop>()> create_ink_drop_callback_;
   base::RepeatingCallback<std::unique_ptr<InkDropRipple>()>
       create_ink_drop_ripple_callback_;

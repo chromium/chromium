@@ -734,11 +734,11 @@ class VisibilityTestButton : public TestButton {
   ~VisibilityTestButton() override {
     if (layer())
       ADD_FAILURE();
-    auto ink_drop_layer_add_failure_callback =
-        base::BindRepeating([](ui::Layer*) { ADD_FAILURE(); });
-    ink_drop()->SetAddLayerCallback(ink_drop_layer_add_failure_callback);
-    ink_drop()->SetRemoveLayerCallback(ink_drop_layer_add_failure_callback);
   }
+
+  void AddLayerBeneathView(ui::Layer* layer) override { ADD_FAILURE(); }
+
+  void RemoveLayerBeneathView(ui::Layer* layer) override { ADD_FAILURE(); }
 };
 
 // Test that hiding or closing a Widget doesn't attempt to add a layer due to

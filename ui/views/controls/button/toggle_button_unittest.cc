@@ -20,41 +20,29 @@ namespace views {
 
 class TestToggleButton : public ToggleButton {
  public:
-  explicit TestToggleButton(int* counter) {
-    // TODO(pbos): Find a better testing strategy for this or throw out tests
-    // that rely on monitoring AddLayerCallbacks (which should hopefully
-    // go away). This is massively gross, but mimics virtual override of
-    // ToggleButton's inkdrop behavior in order to monitor it.
-    base::RepeatingCallback<void(ui::Layer*)> base_add_callback =
-        ink_drop()->GetAddLayerCallbackForTesting();
-    base::RepeatingCallback<void(ui::Layer*)> base_remove_callback =
-        ink_drop()->GetRemoveLayerCallbackForTesting();
-    ink_drop()->SetAddLayerCallback(base::BindRepeating(
-        [](int* counter,
-           base::RepeatingCallback<void(ui::Layer*)> base_callback,
-           ui::Layer* layer) {
-          ++(*counter);
-          base_callback.Run(layer);
-        },
-        counter, base_add_callback));
-    ink_drop()->SetRemoveLayerCallback(base::BindRepeating(
-        [](int* counter,
-           base::RepeatingCallback<void(ui::Layer*)> base_callback,
-           ui::Layer* layer) {
-          --(*counter);
-          base_callback.Run(layer);
-        },
-        counter, base_remove_callback));
-  }
+  explicit TestToggleButton(int* counter) : counter_(counter) {}
 
   ~TestToggleButton() override {
     // Calling ink_drop()->SetMode() in this subclass allows this class's
-    // implementation of RemoveInkDropLayer() to be called. The same
+    // implementation of RemoveLayerBeneathView() to be called. The same
     // call is made in ~ToggleButton() so this is testing the general technique.
     ink_drop()->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
 
+  void AddLayerBeneathView(ui::Layer* layer) override {
+    ++(*counter_);
+    ToggleButton::AddLayerBeneathView(layer);
+  }
+
+  void RemoveLayerBeneathView(ui::Layer* layer) override {
+    --(*counter_);
+    ToggleButton::RemoveLayerBeneathView(layer);
+  }
+
   using View::Focus;
+
+ private:
+  int* const counter_;
 
   DISALLOW_COPY_AND_ASSIGN(TestToggleButton);
 };

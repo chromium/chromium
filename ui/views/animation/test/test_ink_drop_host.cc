@@ -80,16 +80,6 @@ class TestInkDropHighlight : public InkDropHighlight {
 TestInkDropHost::TestInkDropHost() {
   InkDrop::UseInkDropWithoutAutoHighlight(ink_drop());
 
-  ink_drop()->SetAddLayerCallback(base::BindRepeating(
-      [](TestInkDropHost* host, ui::Layer*) {
-        ++host->num_ink_drop_layers_added_;
-      },
-      this));
-  ink_drop()->SetRemoveLayerCallback(base::BindRepeating(
-      [](TestInkDropHost* host, ui::Layer*) {
-        ++host->num_ink_drop_layers_removed_;
-      },
-      this));
   ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropHighlight> {
         auto highlight = std::make_unique<TestInkDropHighlight>(
@@ -113,6 +103,14 @@ TestInkDropHost::TestInkDropHost() {
         return ripple;
       },
       this));
+}
+
+void TestInkDropHost::AddLayerBeneathView(ui::Layer* layer) {
+  ++num_ink_drop_layers_added_;
+}
+
+void TestInkDropHost::RemoveLayerBeneathView(ui::Layer* layer) {
+  ++num_ink_drop_layers_removed_;
 }
 
 TestInkDropHost::~TestInkDropHost() = default;

@@ -77,26 +77,6 @@ InkDropHost::~InkDropHost() {
   destroying_ = true;
 }
 
-void InkDropHost::SetAddLayerCallback(
-    base::RepeatingCallback<void(ui::Layer*)> callback) {
-  add_ink_drop_layer_callback_ = std::move(callback);
-}
-
-const base::RepeatingCallback<void(ui::Layer*)>&
-InkDropHost::GetAddLayerCallbackForTesting() const {
-  return add_ink_drop_layer_callback_;
-}
-
-void InkDropHost::SetRemoveLayerCallback(
-    base::RepeatingCallback<void(ui::Layer*)> callback) {
-  remove_ink_drop_layer_callback_ = std::move(callback);
-}
-
-const base::RepeatingCallback<void(ui::Layer*)>&
-InkDropHost::GetRemoveLayerCallbackForTesting() const {
-  return remove_ink_drop_layer_callback_;
-}
-
 std::unique_ptr<InkDrop> InkDropHost::CreateInkDrop() {
   if (create_ink_drop_callback_)
     return create_ink_drop_callback_.Run();
@@ -253,11 +233,6 @@ void InkDropHost::OnInkDropHighlightedChanged() {
 }
 
 void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
-  if (add_ink_drop_layer_callback_) {
-    add_ink_drop_layer_callback_.Run(ink_drop_layer);
-    return;
-  }
-
   // If a clip is provided, use that as it is more performant than a mask.
   if (!AddInkDropClip(ink_drop_layer))
     InstallInkDropMask(ink_drop_layer);
@@ -265,16 +240,13 @@ void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
 }
 
 void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
-  // No need to do anything when called during shutdown, and if a derived
-  // class has set `remove_ink_drop_layer_callback_` then running that callback
-  // is very likely to be a use-after-free.
+  // No need to do anything when called during shutdown.
+  // TODO(pbos): Reinvestigate this now that this is not part of virtual
+  // overrides. This looks like it may accidentally leave a layer attached to
+  // the View? Likely not an issue until InkDropHost start getting removed
+  // without destroying the associated View.
   if (destroying_)
     return;
-
-  if (remove_ink_drop_layer_callback_) {
-    remove_ink_drop_layer_callback_.Run(ink_drop_layer);
-    return;
-  }
 
   host_view_->RemoveLayerBeneathView(ink_drop_layer);
 
