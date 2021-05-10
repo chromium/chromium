@@ -130,7 +130,7 @@ void MoveAndClearDictionaryPrefs(PrefService* pref_service,
   base::DictionaryValue* pref_dict_src = pref_update_src.Get();
   pref_dict_dst->Clear();
   pref_dict_dst->Swap(pref_dict_src);
-  DCHECK(pref_dict_src->empty());
+  DCHECK(pref_dict_src->DictEmpty());
 }
 
 void MaybeInitWeeklyAggregateDataUsePrefs(const base::Time& now,
