@@ -20,15 +20,23 @@ const concurrencyLimiter = (max_concurrency) => {
   };
 }
 
-// Wait for a random amount of time in the range [50ms,150ms].
+// Wait for a random amount of time in the range [10ms,100ms].
 const randomDelay = () => {
-  return new Promise(resolve => setTimeout(resolve, 50 + 100*Math.random()));
+  return new Promise(resolve => setTimeout(resolve, 10 + 90*Math.random()));
 }
 
-// The official web-platform-test runner sometimes drops requests when too many
-// are requested in parallel. Limiting this document to send/receive only one at
-// a time fixes the issue.
-const limiter = concurrencyLimiter(1);
+// Sending too many requests in parallel causes congestion. Limiting it improves
+// throughput.
+//
+// Note: The following table has been determined on the test:
+// ../cache-storage.tentative.https.html
+// using Chrome with a 64 core CPU / 64GB ram, in release mode:
+// ┌───────────┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬────┐
+// │concurrency│ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 10│ 15│ 20│ 30│ 50│ 100│
+// ├───────────┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼───┼────┤
+// │time (s)   │ 54│ 38│ 31│ 29│ 26│ 24│ 22│ 22│ 22│ 22│ 34│ 36 │
+// └───────────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴────┘
+const limiter = concurrencyLimiter(6);
 
 const send = async function(uuid, message) {
   await limiter(async () => {
