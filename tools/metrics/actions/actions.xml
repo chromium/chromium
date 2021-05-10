@@ -7814,12 +7814,40 @@ should be able to be added at any place in this file.
   <description>The user opened incognito menu.</description>
 </action>
 
+<action name="IncognitoMode_Ended">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <description>
+    An Incognito session has ended. Recorded when an Incognito profile is
+    destroyed.
+  </description>
+</action>
+
 <action name="IncognitoMode_Started">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <description>
     An Incognito session is started. Recorded when an Incognito profile is
     created.
+  </description>
+</action>
+
+<action name="IncognitoWebSQL_Created">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <description>
+    Database tracker created a WebSQL file in Incognito mode. Recorded when a
+    WebSQL file is created in Incognito mode on any platform.
+  </description>
+</action>
+
+<action name="IncognitoWebSQL_Released">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <description>
+    Database tracker closed a WebSQL file in Incognito mode. Recorded when a
+    WebSQL file that was created in Incognito mode is not needed anymore and OS
+    can erase it. This is recorded for all platforms.
   </description>
 </action>
 

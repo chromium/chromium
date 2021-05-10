@@ -262,6 +262,8 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
     base::UmaHistogramCounts1000(
         "Profile.Incognito.MainFrameNavigationsPerSession",
         main_frame_navigations_);
+
+    base::RecordAction(base::UserMetricsAction("IncognitoMode_Ended"));
   }
 }
 

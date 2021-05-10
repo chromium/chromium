@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -810,6 +811,7 @@ const base::File* DatabaseTracker::SaveIncognitoFile(
   auto rv =
       incognito_file_handles_.insert(std::make_pair(vfs_file_name, to_insert));
   DCHECK(rv.second);
+  base::RecordAction(base::UserMetricsAction("IncognitoWebSQL_Created"));
   return rv.first->second;
 }
 
@@ -825,6 +827,7 @@ void DatabaseTracker::CloseIncognitoFileHandle(
     delete it->second;
     incognito_file_handles_.erase(it);
   }
+  base::RecordAction(base::UserMetricsAction("IncognitoWebSQL_Released"));
 }
 
 bool DatabaseTracker::HasSavedIncognitoFileHandle(
