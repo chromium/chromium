@@ -3827,7 +3827,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6195802366906945965">Bepaalt of de ingebouwde certificaatverificatie wordt gebruikt om servercertificaten te verifiëren</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
-<translation id="6212868225782276239">Alle printers worden getoond, behalve printers op de zwarte lijst.</translation>
+<translation id="6212868225782276239">Alle printers worden getoond, behalve printers op de blokkeerlijst.</translation>
 <translation id="6220835555850906733">Als je het beleid toepast of niet instelt, is alle ondersteunde audio-uitvoer op de apparaten van gebruikers toegestaan.
 
       Als je het beleid niet toepast, is er geen audio-uitvoer toegestaan terwijl gebruikers zijn ingelogd.
