@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
+#include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -31,13 +32,6 @@ namespace internal {
   V(ScanStack)                           \
   V(Scan)                                \
   V(Overall)
-
-enum class Context {
-  // For tasks executed from mutator threads (safepoints).
-  kMutator,
-  // For concurrent scanner tasks.
-  kScanner
-};
 
 class StatsCollector final {
  public:

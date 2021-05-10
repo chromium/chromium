@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 
@@ -26,13 +27,6 @@ class PCScanInternal final {
  public:
   using Root = PCScan::Root;
   using TaskHandle = scoped_refptr<PCScanTask>;
-
-  enum class SimdSupport : uint8_t {
-    kUnvectorized,
-    kSSE41,
-    kAVX2,
-    // TODO(bikineev): Add support for Neon.
-  };
 
   static constexpr size_t kMaxNumberOfRoots = 8u;
   class Roots final : private std::array<Root*, kMaxNumberOfRoots> {

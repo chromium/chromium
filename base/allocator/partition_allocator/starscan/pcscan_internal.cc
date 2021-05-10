@@ -28,6 +28,7 @@
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"
+#include "base/allocator/partition_allocator/starscan/scan_loop.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
@@ -195,13 +196,13 @@ bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
 }
 #endif
 
-PCScanInternal::SimdSupport DetectSimdSupport() {
+SimdSupport DetectSimdSupport() {
   base::CPU cpu;
   if (cpu.has_avx2())
-    return PCScanInternal::SimdSupport::kAVX2;
+    return SimdSupport::kAVX2;
   if (cpu.has_sse41())
-    return PCScanInternal::SimdSupport::kSSE41;
-  return PCScanInternal::SimdSupport::kUnvectorized;
+    return SimdSupport::kSSE41;
+  return SimdSupport::kUnvectorized;
 }
 
 void CommitCardTable() {
@@ -381,12 +382,13 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   PCScanScheduler& scheduler() const { return pcscan_.scheduler(); }
 
  private:
-  class ScanLoop;
   class StackVisitor;
+  friend class PCScanScanLoop;
 
   using Root = PCScan::Root;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
+  // TODO(bikineev): Move these checks to StarScanScanLoop.
   struct GigaCageLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -616,198 +618,48 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   });
 }
 
-// Class used to perform actual scanning. Dispatches at runtime based on
-// supported SIMD extensions.
-class PCScanTask::ScanLoop final {
+class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
+  friend class ScanLoop<PCScanScanLoop>;
+
  public:
-  explicit ScanLoop(const PCScanTask& pcscan_task)
-      : scan_function_(GetScanFunction()),
-        pcscan_task_(pcscan_task)
+  explicit PCScanScanLoop(const PCScanTask& task)
+      : ScanLoop(PCScanInternal::Instance().simd_support()),
 #if defined(PA_HAS_64_BITS_POINTERS)
-        ,
-        brp_pool_base_(PartitionAddressSpace::BRPPoolBase())
+        giga_cage_base_(PartitionAddressSpace::BRPPoolBase()),
 #endif
-  {
+        task_(task) {
   }
 
-  ScanLoop(const ScanLoop&) = delete;
-  ScanLoop& operator=(const ScanLoop&) = delete;
-
-  // Scans a range of addresses and marks reachable quarantined objects. Returns
-  // the size of marked objects. The function race-fully reads the heap and
-  // therefore TSAN is disabled for the dispatch functions.
-  size_t Run(uintptr_t* begin, uintptr_t* end) const {
-    static_assert(alignof(uintptr_t) % alignof(void*) == 0,
-                  "Alignment of uintptr_t must be at least as strict as "
-                  "alignment of a pointer type.");
-    return (this->*scan_function_)(begin, end);
-  }
+  size_t quarantine_size() const { return quarantine_size_; }
 
  private:
-  // This is to support polymorphic behavior and to avoid virtual calls.
-  using ScanFunction = size_t (ScanLoop::*)(uintptr_t*, uintptr_t*) const;
-
-  static ScanFunction GetScanFunction() {
-    if (UNLIKELY(!features::IsPartitionAllocGigaCageEnabled())) {
-      return &ScanLoop::RunUnvectorizedNoGigaCage;
-    }
-// We allow vectorization only for 64bit since they require support of the
-// 64bit GigaCage, and only for x86 because a special instruction set is
-// required.
-#if defined(ARCH_CPU_X86_64)
-    const PCScanInternal::SimdSupport simd =
-        PCScanInternal::Instance().simd_support();
-    if (simd == PCScanInternal::SimdSupport::kAVX2)
-      return &ScanLoop::RunAVX2;
-    if (simd == PCScanInternal::SimdSupport::kSSE41)
-      return &ScanLoop::RunSSE4;
-#endif
-    return &ScanLoop::RunUnvectorized;
+  ALWAYS_INLINE bool WithCage() const {
+    return features::IsPartitionAllocGigaCageEnabled();
   }
-
+  ALWAYS_INLINE uintptr_t CageBase() const { return giga_cage_base_; }
+  ALWAYS_INLINE static constexpr uintptr_t CageMask() {
 #if defined(PA_HAS_64_BITS_POINTERS)
-  ALWAYS_INLINE bool IsInBRPPool(uintptr_t maybe_ptr) const {
-    return (maybe_ptr & PartitionAddressSpace::BRPPoolBaseMask()) ==
-           brp_pool_base_;
-  }
+    return PartitionAddressSpace::BRPPoolBaseMask();
+#else
+    return 0;
 #endif
-
-#if defined(ARCH_CPU_X86_64)
-  __attribute__((target("sse4.1"))) NO_SANITIZE("thread") size_t
-      RunSSE4(uintptr_t* begin, uintptr_t* end) const {
-    static constexpr size_t kAlignmentRequirement = 16;
-    static constexpr size_t kWordsInVector = 2;
-    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
-    PA_DCHECK(
-        !((reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin)) %
-          kAlignmentRequirement));
-    const __m128i vbase = _mm_set1_epi64x(brp_pool_base_);
-    const __m128i cage_mask =
-        _mm_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask());
-
-    size_t quarantine_size = 0;
-    for (uintptr_t* payload = begin; payload < end; payload += kWordsInVector) {
-      const __m128i maybe_ptrs =
-          _mm_loadu_si128(reinterpret_cast<__m128i*>(payload));
-      const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
-      const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
-      const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
-      if (LIKELY(!mask))
-        continue;
-      // It's important to extract pointers from the already loaded vector to
-      // avoid racing with the mutator.
-      // Once BRP check passes, we know we're dealing with normal buckets.
-      if (mask & 0b01) {
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm_cvtsi128_si64(maybe_ptrs));
-      }
-      if (mask & 0b10) {
-        // Extraction intrinsics for qwords are only supported in SSE4.1, so
-        // instead we reshuffle dwords with pshufd. The mask is used to move the
-        // 4th and 3rd dwords into the second and first position.
-        static constexpr int kSecondWordMask = (3 << 2) | (2 << 0);
-        const __m128i shuffled = _mm_shuffle_epi32(maybe_ptrs, kSecondWordMask);
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm_cvtsi128_si64(shuffled));
-      }
-    }
-    return quarantine_size;
   }
 
-  __attribute__((target("avx2"))) NO_SANITIZE("thread") size_t
-      RunAVX2(uintptr_t* begin, uintptr_t* end) const {
-    static constexpr size_t kAlignmentRequirement = 32;
-    static constexpr size_t kWordsInVector = 4;
-    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
-    // For AVX2, stick to integer instructions. This brings slightly better
-    // throughput. For example, according to the Intel docs, on Broadwell and
-    // Haswell the CPI of vmovdqa (_mm256_load_si256) is twice smaller (0.25)
-    // than that of vmovapd (_mm256_load_pd).
-    const __m256i vbase = _mm256_set1_epi64x(brp_pool_base_);
-    const __m256i cage_mask =
-        _mm256_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask());
-
-    size_t quarantine_size = 0;
-    uintptr_t* payload = begin;
-    for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
-      const __m256i maybe_ptrs =
-          _mm256_load_si256(reinterpret_cast<__m256i*>(payload));
-      const __m256i vand = _mm256_and_si256(maybe_ptrs, cage_mask);
-      const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
-      const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
-      if (LIKELY(!mask))
-        continue;
-      // It's important to extract pointers from the already loaded vector to
-      // avoid racing with the mutator.
-      // Once BRP check passes, we know we're dealing with normal buckets.
-      if (mask & 0b0001)
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm256_extract_epi64(maybe_ptrs, 0));
-      if (mask & 0b0010)
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm256_extract_epi64(maybe_ptrs, 1));
-      if (mask & 0b0100)
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm256_extract_epi64(maybe_ptrs, 2));
-      if (mask & 0b1000)
-        quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-                _mm256_extract_epi64(maybe_ptrs, 3));
-    }
-
-    quarantine_size += RunUnvectorized(payload, end);
-    return quarantine_size;
-  }
-#endif  // defined(ARCH_CPU_X86_64)
-
-  ALWAYS_INLINE NO_SANITIZE("thread") size_t
-      RunUnvectorized(uintptr_t* begin, uintptr_t* end) const {
-    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
-    size_t quarantine_size = 0;
-    for (; begin < end; ++begin) {
-      uintptr_t maybe_ptr = *begin;
-#if defined(PA_HAS_64_BITS_POINTERS)
-      // On 64bit architectures, call IsInBRPPool instead of
-      // IsManagedByPartitionAllocBRPPool to avoid redundant loads of
-      // PartitionAddressSpace::brp_pool_base_address_.
-      if (LIKELY(!IsInBRPPool(maybe_ptr)))
-        continue;
-        // Once BRP check passes, we know we're dealing with normal buckets.
-#endif
-      quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBuckets<GigaCageLookupPolicy>(
-              maybe_ptr);
-    }
-    return quarantine_size;
+  ALWAYS_INLINE void CheckPointer(uintptr_t maybe_ptr) {
+    quarantine_size_ +=
+        task_.TryMarkObjectInNormalBuckets<PCScanTask::GigaCageLookupPolicy>(
+            maybe_ptr);
   }
 
-  ALWAYS_INLINE NO_SANITIZE("thread") size_t
-      RunUnvectorizedNoGigaCage(uintptr_t* begin, uintptr_t* end) const {
-    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
-    size_t quarantine_size = 0;
-    for (; begin < end; ++begin) {
-      uintptr_t maybe_ptr = *begin;
-      if (!maybe_ptr)
-        continue;
-      quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBuckets<NoGigaCageLookupPolicy>(
-              maybe_ptr);
-    }
-    return quarantine_size;
+  ALWAYS_INLINE void CheckPointerNoGigaCage(uintptr_t maybe_ptr) {
+    quarantine_size_ +=
+        task_.TryMarkObjectInNormalBuckets<PCScanTask::NoGigaCageLookupPolicy>(
+            maybe_ptr);
   }
 
-  const ScanFunction scan_function_;
-  const PCScanTask& pcscan_task_;
-#if defined(PA_HAS_64_BITS_POINTERS)
-  // Keep this a constant so that the compiler can remove redundant loads for
-  // the base of the BRP pool and hoist them out of the loops.
-  const uintptr_t brp_pool_base_;
-#endif
+  const uintptr_t giga_cage_base_ = 0;
+  const PCScanTask& task_;
+  size_t quarantine_size_ = 0;
 };
 
 class PCScanTask::StackVisitor final : public internal::StackVisitor {
@@ -822,8 +674,9 @@ class PCScanTask::StackVisitor final : public internal::StackVisitor {
         (reinterpret_cast<uintptr_t>(stack_top) + kMinimalAlignment - 1) &
         ~(kMinimalAlignment - 1));
     PA_CHECK(stack_ptr < stack_top);
-    ScanLoop loop(task_);
-    quarantine_size_ += loop.Run(stack_ptr, stack_top);
+    PCScanScanLoop loop(task_);
+    loop.Run(stack_ptr, stack_top);
+    quarantine_size_ += loop.quarantine_size();
   }
 
   // Returns size of quarantined objects that are reachable from the current
@@ -857,15 +710,12 @@ void PCScanTask::ScanStack() {
 }
 
 void PCScanTask::ScanPartitions() {
-  const ScanLoop scan_loop(*this);
+  PCScanScanLoop scan_loop(*this);
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
-  size_t quarantine_size = 0;
-
-  // Scan areas with large slots.
   PCScanSnapshot::LargeScanAreasWorklist::RandomizedView large_scan_areas(
       snapshot_.large_scan_areas_worklist());
-  large_scan_areas.Visit([this, &scan_loop, &quarantine_size](auto scan_area) {
+  large_scan_areas.Visit([this, &scan_loop](auto scan_area) {
     // The bitmap is (a) always guaranteed to exist and (b) the same for all
     // objects in a given slot span.
     // TODO(chromium:1129751): Check mutator bitmap as well if performance
@@ -884,18 +734,18 @@ void PCScanTask::ScanPartitions() {
       uintptr_t* current_slot_end =
           current_slot + (scan_area.slot_size / sizeof(uintptr_t));
       PA_DCHECK(current_slot_end <= scan_area.end);
-      quarantine_size += scan_loop.Run(current_slot, current_slot_end);
+      scan_loop.Run(current_slot, current_slot_end);
     }
   });
 
   // Scan areas with regular size slots.
   PCScanSnapshot::ScanAreasWorklist::RandomizedView scan_areas(
       snapshot_.scan_areas_worklist());
-  scan_areas.Visit([&scan_loop, &quarantine_size](auto scan_area) {
-    quarantine_size += scan_loop.Run(scan_area.begin, scan_area.end);
+  scan_areas.Visit([&scan_loop](auto scan_area) {
+    scan_loop.Run(scan_area.begin, scan_area.end);
   });
 
-  stats_.IncreaseSurvivedQuarantineSize(quarantine_size);
+  stats_.IncreaseSurvivedQuarantineSize(scan_loop.quarantine_size());
 }
 
 void PCScanTask::SweepQuarantine() {
