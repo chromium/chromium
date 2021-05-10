@@ -293,31 +293,21 @@ void SandboxBPF::DisableIBSpec() {
   // misfeature will fail.
   const int rv =
       prctl(PR_GET_SPECULATION_CTRL, PR_SPEC_INDIRECT_BRANCH, 0, 0, 0);
-  // Kernel control of the speculation misfeature is not supported.
-  if (rv < 0) {
+  // Kernel control of the speculation misfeature is not supported or the
+  // misfeature is already force disabled.
+  if (rv < 0 || (rv & PR_SPEC_FORCE_DISABLE)) {
     return;
   }
 
   if (!(rv & PR_SPEC_PRCTL)) {
-// TODO(crbug.com/1171027): Revert https://crrev.com/c/2677242 to re-enable this
-// DCHECK on CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for
-// more details.
-#if !(defined(OS_CHROMEOS) && DCHECK_IS_ON())
-    DLOG(INFO) << "Indirect branch speculation can not be controled by prctl."
-               << rv;
-#endif
-    return;
-  }
-
-  if (rv & PR_SPEC_FORCE_DISABLE) {
-    DLOG(INFO) << "Indirect branch speculation is already force disabled."
-               << rv;
+    DVLOG(1) << "Indirect branch speculation can not be controled by prctl. "
+             << rv;
     return;
   }
 
   if (prctl(PR_SET_SPECULATION_CTRL, PR_SPEC_INDIRECT_BRANCH,
             PR_SPEC_FORCE_DISABLE, 0, 0)) {
-    DPLOG(INFO) << "Kernel failed to force disable indirect branch speculation";
+    PLOG(ERROR) << "Kernel failed to force disable indirect branch speculation";
   }
 }
 
