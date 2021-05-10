@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"

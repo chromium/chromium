@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"

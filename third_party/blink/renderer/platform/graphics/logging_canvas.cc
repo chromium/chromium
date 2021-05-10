@@ -32,6 +32,7 @@
 
 #include <unicode/unistr.h>
 
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"

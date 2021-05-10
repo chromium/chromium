@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"

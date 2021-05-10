@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/extensions/api/accessibility_private/accessibility_extension_api.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/common/extensions_api/accessibility_private.h"

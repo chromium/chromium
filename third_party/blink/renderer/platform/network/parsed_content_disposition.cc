@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/network/parsed_content_disposition.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 
 namespace blink {

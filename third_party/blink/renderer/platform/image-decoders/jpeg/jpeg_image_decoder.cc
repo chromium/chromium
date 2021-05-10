@@ -40,6 +40,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"

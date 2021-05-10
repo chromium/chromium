@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"

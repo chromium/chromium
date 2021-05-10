@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/linux/font_unique_name_lookup_linux.h"
 
+#include "base/logging.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"

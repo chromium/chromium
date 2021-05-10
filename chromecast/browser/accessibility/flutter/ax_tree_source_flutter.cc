@@ -7,6 +7,7 @@
 #include <stack>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"

@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/exo/wayland_server_controller.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/exo/cast_wm_helper.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "components/exo/display.h"

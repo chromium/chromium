@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"

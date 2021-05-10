@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 #include <memory>
+
 #include "base/auto_reset.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"

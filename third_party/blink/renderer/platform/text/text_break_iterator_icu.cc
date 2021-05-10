@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"

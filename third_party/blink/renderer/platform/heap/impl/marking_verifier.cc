@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/heap/impl/marking_verifier.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/impl/heap_page.h"
 

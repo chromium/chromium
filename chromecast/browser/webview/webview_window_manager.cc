@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/webview/webview_window_manager.h"
 
+#include "base/logging.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"

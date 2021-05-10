@@ -31,6 +31,7 @@
 #include <cstdlib>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"

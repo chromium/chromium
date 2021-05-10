@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"

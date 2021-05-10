@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chromecast/browser/application_media_info_manager.h"
+
+#include <utility>
+
+#include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_renderer_block_data.h"
 #include "content/public/browser/web_contents.h"
-
-#include <utility>
 
 namespace chromecast {
 namespace media {

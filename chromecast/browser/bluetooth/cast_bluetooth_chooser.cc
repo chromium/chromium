@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromecast/browser/bluetooth/cast_bluetooth_chooser.h"
+
 #include "base/bind.h"
+#include "base/logging.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {

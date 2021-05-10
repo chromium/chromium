@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
 #include <algorithm>
+
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 

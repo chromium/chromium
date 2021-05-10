@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"

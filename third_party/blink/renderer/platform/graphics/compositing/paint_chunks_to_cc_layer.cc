@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
 #include "base/containers/adapters.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/base/features.h"
 #include "cc/input/layer_selection_bound.h"

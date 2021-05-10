@@ -5,6 +5,7 @@
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chromecast/browser/accessibility/flutter/ax_tree_source_flutter.h"
 #include "chromecast/browser/cast_web_contents.h"

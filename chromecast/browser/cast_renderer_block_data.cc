@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/cast_renderer_block_data.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/application_media_info_manager.h"
 #include "chromecast/browser/cast_session_id_map.h"
 #include "content/public/browser/web_contents.h"

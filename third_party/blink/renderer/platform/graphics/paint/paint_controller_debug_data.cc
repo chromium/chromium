@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
 #if DCHECK_IS_ON()
@@ -20,6 +21,7 @@ class PaintController::PaintArtifactAsJSON {
 
   String ToString() {
     return ChunksAsJSONArrayRecursive(0, artifact_.PaintChunks().size())
+
         ->ToPrettyJSONString();
   }
 

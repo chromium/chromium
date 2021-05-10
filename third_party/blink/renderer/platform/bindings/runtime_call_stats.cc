@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 
 #include <inttypes.h>
+
 #include <algorithm>
+
+#include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"

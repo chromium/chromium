@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/accessibility/proto/gallium_server_accessibility.grpc.pb.h"
 #include "chromecast/browser/cast_browser_process.h"

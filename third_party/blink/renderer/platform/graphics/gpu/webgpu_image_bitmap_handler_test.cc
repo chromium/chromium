@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
 
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"

@@ -22,6 +22,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <memory>
+
+#include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"

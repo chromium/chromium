@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/observer_list.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

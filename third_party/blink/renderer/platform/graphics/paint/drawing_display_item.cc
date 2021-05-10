@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
+#include "base/logging.h"
 #include "cc/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/skia/include/core/SkBitmap.h"

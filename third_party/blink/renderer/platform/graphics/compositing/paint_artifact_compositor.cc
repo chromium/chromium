@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/paint/display_item_list.h"

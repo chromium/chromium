@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/base/version.h"
 #include "chromecast/browser/cast_web_contents.h"

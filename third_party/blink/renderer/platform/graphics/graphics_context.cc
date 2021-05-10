@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"

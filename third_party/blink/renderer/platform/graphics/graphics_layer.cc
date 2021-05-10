@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/layers/layer.h"

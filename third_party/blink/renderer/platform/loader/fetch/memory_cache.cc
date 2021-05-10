@@ -26,6 +26,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"

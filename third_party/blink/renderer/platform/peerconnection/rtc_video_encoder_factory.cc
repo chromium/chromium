@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"

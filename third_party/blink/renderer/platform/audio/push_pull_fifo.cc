@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"

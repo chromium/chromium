@@ -38,6 +38,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"

@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/webview/webview_input_method_observer.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"

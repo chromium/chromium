@@ -24,8 +24,11 @@
 
 #include <locale.h>
 #include <stdarg.h>
+
 #include <algorithm>
+
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"

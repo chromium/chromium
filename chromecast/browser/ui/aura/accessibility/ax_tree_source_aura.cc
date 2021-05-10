@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/ui/aura/accessibility/ax_tree_source_aura.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/ui/aura/accessibility/automation_manager_aura.h"

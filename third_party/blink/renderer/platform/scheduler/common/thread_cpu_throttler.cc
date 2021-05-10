@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/atomicops.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/atomic_flag.h"

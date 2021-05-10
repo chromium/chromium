@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"

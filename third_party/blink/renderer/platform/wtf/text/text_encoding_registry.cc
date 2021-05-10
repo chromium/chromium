@@ -29,6 +29,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"

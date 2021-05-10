@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
 #include <memory>
+
+#include "base/logging.h"
 #include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"

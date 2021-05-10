@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 

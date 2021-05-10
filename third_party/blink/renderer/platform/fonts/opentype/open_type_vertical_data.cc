@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"

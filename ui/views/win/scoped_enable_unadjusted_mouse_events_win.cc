@@ -4,6 +4,7 @@
 
 #include "ui/views/win/scoped_enable_unadjusted_mouse_events_win.h"
 
+#include "base/logging.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
 namespace views {

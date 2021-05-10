@@ -37,6 +37,7 @@
 
 #include "base/atomicops.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task_runner.h"

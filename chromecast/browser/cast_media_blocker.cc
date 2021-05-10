@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "chromecast/browser/cast_renderer_block_data.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
 #include "content/public/browser/media_session.h"
