@@ -621,10 +621,6 @@ void OmniboxViewViewsTest::SetUp() {
   widget_ = CreateTestWidget();
   widget_->Show();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::InitializeForTesting(
-      new chromeos::input_method::MockInputMethodManagerImpl);
-#endif
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
       profile_.get(),
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
@@ -647,9 +643,6 @@ void OmniboxViewViewsTest::TearDown() {
   util_.reset();
   profile_.reset();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::Shutdown();
-#endif
   ChromeViewsTestBase::TearDown();
 }
 

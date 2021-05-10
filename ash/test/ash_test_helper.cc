@@ -42,6 +42,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/chromeos/mock_input_method_manager.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -178,6 +179,15 @@ void AshTestHelper::TearDown() {
   command_line_.reset();
 
   AuraTestHelper::TearDown();
+
+  // Cleanup the global state for InputMethodManager, but only if
+  // it was setup by this test helper. This allows tests to implement
+  // their own override, and in that case we shouldn't call Shutdown
+  // otherwise the global state will be deleted twice.
+  if (input_method_manager_) {
+    chromeos::input_method::InputMethodManager::Shutdown();
+    input_method_manager_ = nullptr;
+  }
 }
 
 aura::Window* AshTestHelper::GetContext() {
@@ -213,6 +223,14 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 void AshTestHelper::SetUp(InitParams init_params) {
   // This block of objects are conditionally initialized here rather than in the
   // constructor to make it easier for test classes to override them.
+  if (!input_method::InputMethodManager::Get()) {
+    // |input_method_manager_| is not owned and is cleaned up in TearDown()
+    // by calling InputMethodManager::Shutdown().
+    input_method_manager_ =
+        new chromeos::input_method::MockInputMethodManager();
+    input_method::InputMethodManager::Initialize(input_method_manager_);
+  }
+
   if (!bluez::BluezDBusManager::IsInitialized()) {
     bluez_dbus_manager_initializer_ =
         std::make_unique<BluezDBusManagerInitializer>();
