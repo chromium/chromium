@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 
 // A test-only class to wait for infobar events.
@@ -41,8 +41,9 @@ class InfoBarObserver : public infobars::InfoBarManager::Observer {
 
   base::RunLoop run_loop_;
   const Type type_;
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InfoBarObserver);
 };
