@@ -9,6 +9,7 @@
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -16,6 +17,11 @@ namespace {
 // 30 minutes.
 const int64_t kDelayFetchMs = 1800000;
 const int kImmediateFetchMs = 0;
+
+std::string eTLDPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 
 }  // namespace
 
@@ -33,7 +39,13 @@ CartDiscountUpdater::CartDiscountUpdater(Profile* profile)
 
 CartDiscountUpdater::~CartDiscountUpdater() = default;
 
-void CartDiscountUpdater::update() {}
+void CartDiscountUpdater::update(
+    const std::string& cart_url,
+    const cart_db::ChromeCartContentProto new_proto) {
+  const GURL url(cart_url);
+  std::string domain = eTLDPlusOne(url);
+  cart_service_->AddCart(domain, url, std::move(new_proto));
+}
 
 CartLoaderAndUpdaterFactory::CartLoaderAndUpdaterFactory(Profile* profile)
     : profile_(profile) {}
@@ -149,9 +161,41 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  if (!success || !proto_pairs.size()) {
+    return;
+  }
 
-  // TODO(meiliang): Iterate over |proto_pairs| and update it based on
-  // |discounts|.
+  auto updater = cart_loader_and_updater_factory_->createCartDiscountUpdater();
+
+  double current_timestamp = base::Time::Now().ToDoubleT();
+
+  for (CartDB::KeyAndValue& key_and_value : proto_pairs) {
+    cart_db::ChromeCartContentProto cart_proto = key_and_value.second;
+    std::string cart_url = cart_proto.merchant_cart_url();
+
+    cart_db::ChromeCartDiscountProto* cart_discount_proto =
+        cart_proto.mutable_discount_info();
+
+    cart_discount_proto->set_last_fetched_timestamp(current_timestamp);
+
+    if (!discounts.count(cart_url)) {
+      cart_discount_proto->clear_discount_text();
+      cart_discount_proto->clear_discount_info();
+      updater->update(cart_url, std::move(cart_proto));
+      continue;
+    }
+
+    std::string merchant_id = discounts.at(cart_url).merchant_id;
+    cart_discount_proto->set_merchant_id(merchant_id);
+
+    std::vector<cart_db::DiscountInfoProto> discount_infos =
+        discounts.at(cart_url).discount_list;
+    cart_discount_proto->set_discount_text("discount");
+    *cart_discount_proto->mutable_discount_info() = {discount_infos.begin(),
+                                                     discount_infos.end()};
+
+    updater->update(cart_url, std::move(cart_proto));
+  }
 
   // Continue to work
   PrepareToFetch(kDelayFetchMs);

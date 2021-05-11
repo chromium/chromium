@@ -30,7 +30,8 @@ class CartDiscountUpdater {
  public:
   explicit CartDiscountUpdater(Profile* profile);
   virtual ~CartDiscountUpdater();
-  virtual void update();
+  virtual void update(const std::string& cart_url,
+                      const cart_db::ChromeCartContentProto new_proto);
 
  private:
   CartService* cart_service_;
