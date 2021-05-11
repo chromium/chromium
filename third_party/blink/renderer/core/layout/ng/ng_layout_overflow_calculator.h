@@ -41,7 +41,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
                 PhysicalOffset offset) {
     PhysicalRect child_overflow = LayoutOverflowForPropagation(child_fragment);
     child_overflow.offset += offset;
-    AddOverflow(child_overflow);
+    AddOverflow(child_overflow, child_fragment.IsFragmentainerBox());
   }
 
   // Adds layout-overflow from fragment-items.
@@ -61,11 +61,14 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   PhysicalRect LayoutOverflowForPropagation(
       const NGPhysicalBoxFragment& child_fragment);
 
-  void AddOverflow(PhysicalRect child_overflow) {
+  void AddOverflow(PhysicalRect child_overflow,
+                   bool child_is_fragmentainer = false) {
     if (is_scroll_container_)
       child_overflow = AdjustOverflowForScrollOrigin(child_overflow);
 
-    if (!child_overflow.IsEmpty())
+    // A fragmentainer may result in an overflow, even if it is empty. For
+    // example, an overflow as a result of a non-zero column gap.
+    if (!child_overflow.IsEmpty() || child_is_fragmentainer)
       layout_overflow_.UniteEvenIfEmpty(child_overflow);
   }
 

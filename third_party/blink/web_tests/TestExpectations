@@ -1087,7 +1087,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-very-tall-ins
 crbug.com/1131125 virtual/layout_ng_block_frag/fast/multicol/nested-with-forced-breaks-in-eariler-rows.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/nested-with-padding.html [ Failure ]
 crbug.com/1131125 virtual/layout_ng_block_frag/fast/multicol/newmulticol/breaks-3-columns-3.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/overflowing-columns-large-gaps.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-break-after-inner-spanner-2.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/static-child-becomes-fixedpos.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/tall-line-in-short-block.html [ Failure ]

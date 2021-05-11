@@ -52,7 +52,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
       PhysicalRect child_overflow =
           RecalculateLayoutOverflowForFragment(*box_fragment);
       child_overflow.offset += child.offset;
-      calculator.AddOverflow(child_overflow);
+      calculator.AddOverflow(child_overflow, /* child_is_fragmentainer */ true);
     } else {
       calculator.AddChild(*box_fragment, child.offset);
     }
