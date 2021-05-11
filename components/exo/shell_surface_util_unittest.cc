@@ -68,7 +68,7 @@ TEST_F(ShellSurfaceUtilTest, TargetForKeyboardFocus) {
   auto* child_surface = test::ShellSurfaceBuilder::AddChildSurface(
       root_surface, {10, 10, 10, 10});
 
-  EXPECT_EQ(child_surface,
+  EXPECT_EQ(root_surface,
             GetTargetSurfaceForKeyboardFocus(child_surface->window()));
   EXPECT_EQ(root_surface,
             GetTargetSurfaceForKeyboardFocus(root_surface->window()));

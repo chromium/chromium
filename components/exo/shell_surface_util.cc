@@ -260,9 +260,7 @@ Surface* GetTargetSurfaceForLocatedEvent(
 Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* window) {
   if (!window)
     return nullptr;
-  Surface* const surface = Surface::AsSurface(window);
-  if (surface)
-    return surface;
+  // The keyboard focus should be set to the root surface.
   ShellSurfaceBase* shell_surface_base = nullptr;
   for (auto* current = window; current && !shell_surface_base;
        current = current->parent()) {
@@ -275,7 +273,10 @@ Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* window) {
        shell_surface_base->host_window()->Contains(window))) {
     return shell_surface_base->root_surface();
   }
-  return nullptr;
+
+  // Fallback to the window's surface if any. This is used for
+  // notifications.
+  return Surface::AsSurface(window);
 }
 
 void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout) {
