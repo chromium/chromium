@@ -709,7 +709,7 @@ TEST_F(SetFormFieldValueActionTest, EmptyProfileValueFails) {
 TEST_F(SetFormFieldValueActionTest, RequestDataFromUnknownProfile) {
   auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
   value->mutable_profile()->set_identifier("none");
-  value->set_value_expression("value");
+  value->mutable_value_expression()->add_chunk()->set_text("value");
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
@@ -729,11 +729,8 @@ TEST_F(SetFormFieldValueActionTest, RequestUnknownDataFromProfile) {
 
   auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
   value->mutable_profile()->set_identifier("contact");
-  value->set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_MIDDLE)),
-                    "}"}));
+  value->mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
@@ -752,11 +749,8 @@ TEST_F(SetFormFieldValueActionTest, SetFieldFromProfileValue) {
 
   auto* value = set_form_field_proto_->add_value()->mutable_autofill_value();
   value->mutable_profile()->set_identifier("contact");
-  value->set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}));
+  value->mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =

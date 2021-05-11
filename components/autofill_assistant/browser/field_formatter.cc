@@ -84,6 +84,38 @@ base::Optional<std::string> FormatString(
   return out;
 }
 
+ClientStatus FormatExpression(
+    const ValueExpression& value_expression,
+    const std::map<std::string, std::string>& mappings,
+    bool quote_meta,
+    std::string* out_value) {
+  out_value->clear();
+  for (const auto& chunk : value_expression.chunk()) {
+    switch (chunk.chunk_case()) {
+      case ValueExpression::Chunk::kText:
+        out_value->append(chunk.text());
+        break;
+      case ValueExpression::Chunk::kKey: {
+        auto rewrite_value =
+            GetFieldValue(mappings, base::NumberToString(chunk.key()));
+        if (!rewrite_value.has_value()) {
+          return ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE);
+        }
+        if (quote_meta) {
+          out_value->append(re2::RE2::QuoteMeta(*rewrite_value));
+        } else {
+          out_value->append(*rewrite_value);
+        }
+        break;
+      }
+      case ValueExpression::Chunk::CHUNK_NOT_SET:
+        return ClientStatus(INVALID_ACTION);
+    }
+  }
+
+  return OkClientStatus();
+}
+
 template <>
 std::map<std::string, std::string>
 CreateAutofillMappings<autofill::AutofillProfile>(

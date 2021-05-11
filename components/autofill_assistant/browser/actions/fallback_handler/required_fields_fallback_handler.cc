@@ -24,6 +24,27 @@ namespace {
 
 const char kSelectElementTag[] = "SELECT";
 
+// Returns a human-readable string representation of |value_expression| for
+// use in logging and error reporting.
+std::string GetHumanReadableValueExpression(
+    const ValueExpression& value_expression) {
+  std::string out;
+  for (const auto& chunk : value_expression.chunk()) {
+    switch (chunk.chunk_case()) {
+      case ValueExpression::Chunk::kText:
+        out += chunk.text();
+        break;
+      case ValueExpression::Chunk::kKey:
+        out += "${" + base::NumberToString(chunk.key()) + "}";
+        break;
+      case ValueExpression::Chunk::CHUNK_NOT_SET:
+        out += "<CHUNK_NOT_SET>";
+        break;
+    }
+  }
+  return out;
+}
+
 AutofillErrorInfoProto::AutofillFieldError* AddAutofillError(
     const RequiredField& required_field,
     ClientStatus* client_status) {
@@ -31,7 +52,8 @@ AutofillErrorInfoProto::AutofillFieldError* AddAutofillError(
                           ->mutable_autofill_error_info()
                           ->add_autofill_field_error();
   *field_error->mutable_field() = required_field.selector.proto;
-  field_error->set_value_expression(required_field.value_expression);
+  field_error->set_value_expression(
+      GetHumanReadableValueExpression(required_field.value_expression));
   return field_error;
 }
 
@@ -156,7 +178,7 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
     if (required_field.ShouldFallback(apply_fallback)) {
       should_fallback = true;
       if (!apply_fallback) {
-        if (required_field.value_expression.empty()) {
+        if (required_field.value_expression.chunk().empty()) {
           VLOG(1) << "Field was filled after attempting to clear it: "
                   << required_field.selector;
           FillStatusDetailsWithNotClearedField(required_field, &client_status_);
@@ -182,16 +204,20 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
   }
 
   for (const RequiredField& required_field : required_fields_) {
-    if (required_field.value_expression.empty() ||
+    if (required_field.value_expression.chunk().empty() ||
         !required_field.ShouldFallback(/* apply_fallback= */ true)) {
       continue;
     }
 
-    if (!field_formatter::FormatString(required_field.value_expression,
-                                       fallback_values_)
-             .has_value()) {
+    std::string tmp;
+    if (!field_formatter::FormatExpression(required_field.value_expression,
+                                           fallback_values_,
+                                           /* quote_meta= */ false, &tmp)
+             .ok()) {
       DVLOG(3) << "Field has no fallback data: " << required_field.selector
-               << " " << required_field.value_expression;
+               << " "
+               << GetHumanReadableValueExpression(
+                      required_field.value_expression);
       FillStatusDetailsWithMissingFallbackData(required_field, &client_status_);
     }
   }
@@ -224,9 +250,11 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
       &RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially,
       weak_ptr_factory_.GetWeakPtr(), required_fields_index + 1);
 
-  auto fallback_value = field_formatter::FormatString(
-      required_field.value_expression, fallback_values_);
-  if (!fallback_value.has_value()) {
+  std::string fallback_value;
+  ClientStatus format_status = field_formatter::FormatExpression(
+      required_field.value_expression, fallback_values_,
+      /* quote_meta= */ false, &fallback_value);
+  if (!format_status.ok()) {
     // Skip optional field, fail otherwise.
     if (required_field.optional) {
       std::move(set_next_field).Run();
@@ -238,10 +266,10 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
   }
 
   if (required_field.fallback_click_element.has_value()) {
-    FillJsDrivenDropdown(*fallback_value, required_field,
+    FillJsDrivenDropdown(fallback_value, required_field,
                          std::move(set_next_field));
   } else {
-    FillFormField(*fallback_value, required_field, std::move(set_next_field));
+    FillFormField(fallback_value, required_field, std::move(set_next_field));
   }
 }
 

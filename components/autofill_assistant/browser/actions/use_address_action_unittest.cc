@@ -90,10 +90,11 @@ class UseAddressActionTest : public testing::Test {
   }
 
   RequiredFieldProto* AddRequiredField(ActionProto* action,
-                                       std::string value_expression,
-                                       std::string selector) {
+                                       autofill::ServerFieldType field,
+                                       const std::string& selector) {
     auto* required_field = action->mutable_use_address()->add_required_fields();
-    required_field->set_value_expression(value_expression);
+    required_field->mutable_value_expression()->add_chunk()->set_key(
+        static_cast<int>(field));
     *required_field->mutable_element() = ToSelectorProto(selector);
     return required_field;
   }
@@ -263,23 +264,11 @@ TEST_F(UseAddressActionTest, ValidationSucceeds) {
   InSequence seq;
 
   ActionProto action_proto = CreateUseAddressAction();
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_FIRST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_FIRST,
                    "#first_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_LAST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_LAST,
                    "#last_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::EMAIL_ADDRESS)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::EMAIL_ADDRESS,
                    "#email");
 
   // Autofill succeeds.
@@ -300,23 +289,11 @@ TEST_F(UseAddressActionTest, FallbackFails) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_FIRST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_FIRST,
                    "#first_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_LAST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_LAST,
                    "#last_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::EMAIL_ADDRESS)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::EMAIL_ADDRESS,
                    "#email");
 
   Selector email_selector({"#email"});
@@ -380,23 +357,11 @@ TEST_F(UseAddressActionTest, FillAddressWithFallback) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_FIRST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_FIRST,
                    "#first_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_LAST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_LAST,
                    "#last_name");
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::EMAIL_ADDRESS)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::EMAIL_ADDRESS,
                    "#email");
 
   Selector first_name_selector({"#first_name"});
@@ -469,11 +434,7 @@ TEST_F(UseAddressActionTest,
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_FIRST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_FIRST,
                    "#first_name");
 
   Selector first_name_selector({"#first_name"});
@@ -523,7 +484,18 @@ TEST_F(UseAddressActionTest, FallbackForPhoneSucceeds) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
-  AddRequiredField(&action_proto, "(+${12}) (${11}) ${10}", "#phone_number");
+  auto* required_field =
+      action_proto.mutable_use_address()->add_required_fields();
+  *required_field->mutable_value_expression() =
+      test_util::ValueExpressionBuilder()
+          .addChunk("(+")
+          .addChunk(autofill::ServerFieldType::PHONE_HOME_COUNTRY_CODE)
+          .addChunk(") (")
+          .addChunk(autofill::ServerFieldType::PHONE_HOME_CITY_CODE)
+          .addChunk(") ")
+          .addChunk(autofill::ServerFieldType::PHONE_HOME_NUMBER)
+          .toProto();
+  *required_field->mutable_element() = ToSelectorProto("#phone_number");
 
   Selector phone_number_selector({"#phone_number"});
 
@@ -567,12 +539,7 @@ TEST_F(UseAddressActionTest, ForcedFallbackWithKeystrokes) {
 
   ActionProto action_proto = CreateUseAddressAction();
   auto* name_required = AddRequiredField(
-      &action_proto,
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}),
-      "#first_name");
+      &action_proto, autofill::ServerFieldType::NAME_FIRST, "#first_name");
   name_required->set_forced(true);
   name_required->set_fill_strategy(SIMULATE_KEY_PRESSES);
   name_required->set_delay_in_millisecond(1000);
@@ -632,11 +599,7 @@ TEST_F(UseAddressActionTest, SkippingAutofill) {
 
   ActionProto action_proto;
   action_proto.mutable_use_address()->set_name(kAddressName);
-  AddRequiredField(&action_proto,
-                   base::StrCat({"${",
-                                 base::NumberToString(static_cast<int>(
-                                     autofill::ServerFieldType::NAME_FIRST)),
-                                 "}"}),
+  AddRequiredField(&action_proto, autofill::ServerFieldType::NAME_FIRST,
                    "#first_name");
   action_proto.mutable_use_address()->set_skip_autofill(true);
 

@@ -31,7 +31,7 @@ struct RequiredField {
 
   // The value expression to be filled into the field. This gets evaluated with
   // the provided data.
-  std::string value_expression;
+  ValueExpression value_expression;
 
   // Defines whether the field is currently considered to be filled or not.
   FieldValueStatus status = UNKNOWN;

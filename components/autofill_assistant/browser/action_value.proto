@@ -10,37 +10,57 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-message AutofillValue {
-  message Profile { optional string identifier = 1; }
+// An Autofill profile stored on the client. This requires to be selected by
+// the user in a CollectUserData step first.
+message AutofillProfile {
+  optional string identifier = 1;
+}
 
+// A value expression.
+message ValueExpression {
+  message Chunk {
+    oneof chunk {
+      // An integer representation to resolve a piece of Autofill information.
+      // The key is an integer corresponding to entries from field_types.h or
+      // |AutofillFormatProto::AutofillAssistantCustomField|.
+      // Note that the set of actually available fields are outside of our
+      // control and are retrieved automatically from the provided profile.
+      int32 key = 1;
+      // A plain text.
+      string text = 2;
+    }
+  }
+  repeated Chunk chunk = 1;
+}
+
+// A value expression to be used as a regular expression.
+message ValueExpressionRegexp {
+  optional ValueExpression value_expression = 1;
+
+  // If true, the |value_expression| will be checked case sensitively.
+  // Default is case insensitive.
+  optional bool case_sensitive = 4;
+}
+
+message AutofillValue {
   // The profile to be used. This has to be requested with a
   // |CollectUserDataAction| first.
-  optional Profile profile = 1;
+  optional AutofillProfile profile = 1;
 
-  // A string containing any number of "${key}" placeholders, where the key is
-  // an integer corresponding to entries from field_types.h or
-  // |AutofillFormatProto::AutofillAssistantCustomField|.
-  // Note that the set of actually available fields are outside of our
-  // control and are retrieved automatically from the provided profile.
-  optional string value_expression = 2;
+  // The value expression.
+  optional ValueExpression value_expression = 5;
+
+  reserved 2 to 4;
 }
 
 message AutofillValueRegexp {
-  message Profile { optional string identifier = 1; }
-
   // The profile to be used. This has to be requested with a
   // |CollectUserDataAction| first.
-  optional Profile profile = 1;
+  optional AutofillProfile profile = 1;
 
-  // A string containing any number of "${key}" placeholders, where the key is
-  // an integer corresponding to entries from field_types.h or
-  // |AutofillFormatProto::AutofillAssistantCustomField|.
-  // Note that the set of actually available fields are outside of our
-  // control and are retrieved automatically from the provided profile.
-  // The |value_expression| needs to escape all text outside of placeholders,
-  // e.g. a pattern like "+${12}" needs to escape the "+". The pattern keys
-  // ("${12}") should not be escaped, this will be handled during replacement.
-  optional TextFilter value_expression = 2;
+  optional ValueExpressionRegexp value_expression_re2 = 3;
+
+  reserved 2;
 }
 
 // A wrapper for regular expressions, e.g. used for filtering elements by their

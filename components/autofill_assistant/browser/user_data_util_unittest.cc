@@ -731,7 +731,8 @@ TEST_F(UserDataUtilTextValueTest, RequestEmptyAutofillValue) {
 TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownProfile) {
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("none");
-  autofill_value.set_value_expression("value");
+  autofill_value.mutable_value_expression()->add_chunk()->set_text("text");
+
   std::string result;
 
   EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
@@ -752,11 +753,8 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownProfile) {
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
-  autofill_value.set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_MIDDLE)),
-                    "}"}));
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
 
   std::string result;
 
@@ -777,11 +775,8 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownDataFromKnownProfile) {
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
-  autofill_value.set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}));
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
 
   std::string result;
 
@@ -801,11 +796,12 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
 
   AutofillValueRegexp autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
-  autofill_value.mutable_value_expression()->set_re2(
-      base::StrCat({"^${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}$"}));
+  *autofill_value.mutable_value_expression_re2()->mutable_value_expression() =
+      test_util::ValueExpressionBuilder()
+          .addChunk("^")
+          .addChunk(autofill::ServerFieldType::NAME_FIRST)
+          .addChunk("$")
+          .toProto();
 
   std::string result;
 
@@ -959,13 +955,12 @@ TEST_F(UserDataUtilTextValueTest, TextValueAutofillValue) {
       &user_data_);
 
   TextValue text_value;
-  AutofillValue* autofill_value = text_value.mutable_autofill_value();
-  autofill_value->mutable_profile()->set_identifier("contact");
-  autofill_value->set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}));
+  text_value.mutable_autofill_value()->mutable_profile()->set_identifier(
+      "contact");
+  text_value.mutable_autofill_value()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
 
   EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "John"));
 

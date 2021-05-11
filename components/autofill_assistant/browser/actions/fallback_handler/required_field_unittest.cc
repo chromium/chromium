@@ -18,7 +18,7 @@ class RequiredFieldTest : public testing::Test {
 TEST_F(RequiredFieldTest, ShouldFallbackForNotEmpty) {
   RequiredField required_field;
   required_field.status = RequiredField::NOT_EMPTY;
-  required_field.value_expression = "value";
+  required_field.value_expression.add_chunk()->set_text("value");
 
   EXPECT_FALSE(required_field.ShouldFallback(true));
   EXPECT_FALSE(required_field.ShouldFallback(false));
@@ -27,7 +27,6 @@ TEST_F(RequiredFieldTest, ShouldFallbackForNotEmpty) {
 TEST_F(RequiredFieldTest, ShouldFallbackForNotEmptyToBeCleared) {
   RequiredField required_field;
   required_field.status = RequiredField::NOT_EMPTY;
-  required_field.value_expression = std::string();
 
   EXPECT_TRUE(required_field.ShouldFallback(true));
   EXPECT_TRUE(required_field.ShouldFallback(false));
@@ -36,7 +35,7 @@ TEST_F(RequiredFieldTest, ShouldFallbackForNotEmptyToBeCleared) {
 TEST_F(RequiredFieldTest, ShouldFallbackForEmpty) {
   RequiredField required_field;
   required_field.status = RequiredField::EMPTY;
-  required_field.value_expression = "value";
+  required_field.value_expression.add_chunk()->set_text("value");
 
   EXPECT_TRUE(required_field.ShouldFallback(true));
   EXPECT_TRUE(required_field.ShouldFallback(false));
@@ -46,7 +45,7 @@ TEST_F(RequiredFieldTest, ShouldFallbackForNotEmptyForced) {
   RequiredField required_field;
   required_field.forced = true;
   required_field.status = RequiredField::NOT_EMPTY;
-  required_field.value_expression = "value";
+  required_field.value_expression.add_chunk()->set_text("value");
 
   EXPECT_TRUE(required_field.ShouldFallback(true));
   EXPECT_FALSE(required_field.ShouldFallback(false));
@@ -65,7 +64,7 @@ TEST_F(RequiredFieldTest, ShouldFallbackForEmptyOptional) {
   RequiredField required_field;
   required_field.optional = true;
   required_field.status = RequiredField::EMPTY;
-  required_field.value_expression = "value";
+  required_field.value_expression.add_chunk()->set_text("value");
 
   EXPECT_TRUE(required_field.ShouldFallback(true));
   EXPECT_FALSE(required_field.ShouldFallback(false));

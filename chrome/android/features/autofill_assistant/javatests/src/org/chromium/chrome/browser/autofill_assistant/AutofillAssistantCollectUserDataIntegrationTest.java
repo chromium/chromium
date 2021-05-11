@@ -92,6 +92,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.Input
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseCreditCardProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -161,7 +163,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         RequiredFieldProto fallbackTextField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
-                        .setValueExpression("${57}")
+                        .setValueExpression(ValueExpression.newBuilder().addChunk(
+                                Chunk.newBuilder().setKey(57)))
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                         "#fallback_entry")))
@@ -170,7 +173,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         RequiredFieldProto fallbackDropdownField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
-                        .setValueExpression("${-2}")
+                        .setValueExpression(ValueExpression.newBuilder().addChunk(
+                                Chunk.newBuilder().setKey(-2)))
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                         "#fallback_dropdown")))
@@ -178,7 +182,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                         .build();
         RequiredFieldProto fallbackJsDropdownField =
                 RequiredFieldProto.newBuilder()
-                        .setValueExpression("${55}")
+                        .setValueExpression(ValueExpression.newBuilder().addChunk(
+                                Chunk.newBuilder().setKey(55)))
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                         "#js_dropdown_value")))
@@ -264,7 +269,9 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         RequiredFieldProto fallbackTextField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we fail here while trying to fill the field.
-                        .setValueExpression("${-99}") // Use non-existent key to force an error.
+                        .setValueExpression(
+                                ValueExpression.newBuilder().addChunk(Chunk.newBuilder().setKey(
+                                        -99))) // Use non-existent key to force an error.
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
                                         "#fallback_entry")))

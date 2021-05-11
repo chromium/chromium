@@ -323,13 +323,12 @@ TEST_F(ActionDelegateUtilTest, PerformWithAutofillValue) {
                                          &user_data_);
 
   TextValue text_value;
-  auto* autofill_value = text_value.mutable_autofill_value();
-  autofill_value->mutable_profile()->set_identifier("contact");
-  autofill_value->set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}));
+  text_value.mutable_autofill_value()->mutable_profile()->set_identifier(
+      "contact");
+  text_value.mutable_autofill_value()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
 
   PerformWithTextValue(&mock_action_delegate_, text_value,
                        base::BindOnce(&ActionDelegateUtilTest::MockValueAction,

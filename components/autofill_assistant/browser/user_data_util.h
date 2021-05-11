@@ -90,7 +90,7 @@ ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
                                        const UserData* user_data,
                                        std::string* out_value);
 ClientStatus GetFormattedAutofillValue(
-    const AutofillValueRegexp& autofill_value,
+    const AutofillValueRegexp& autofill_value_regexp,
     const UserData* user_data,
     std::string* out_value);
 

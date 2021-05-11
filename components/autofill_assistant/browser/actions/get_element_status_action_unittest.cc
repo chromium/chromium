@@ -605,14 +605,11 @@ TEST_F(GetElementStatusActionTest, SucceedsWithAutofillValue) {
 
   AutofillValue autofill_value;
   autofill_value.mutable_profile()->set_identifier("contact");
-  autofill_value.set_value_expression(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "} ${",
-                    base::NumberToString(
-                        static_cast<int>(autofill::ServerFieldType::NAME_LAST)),
-                    "}"}));
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
+  autofill_value.mutable_value_expression()->add_chunk()->set_text(" ");
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::NAME_LAST));
 
   Selector selector({"#element"});
   *proto_.mutable_element() = selector.proto;

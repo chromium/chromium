@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -145,20 +147,30 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                         "#profile_name")))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
-                                                        .setValueExpression("7")
+                                                        .setValueExpression(
+                                                                ValueExpression.newBuilder()
+                                                                        .addChunk(
+                                                                                Chunk.newBuilder()
+                                                                                        .setKey(7)))
                                                         .setElement(SelectorProto.newBuilder().addFilters(
                                                                 SelectorProto.Filter.newBuilder()
                                                                         .setCssSelector(
-                                                                                "#profile_name"))))
+                                                                                "#profile_name")))
+                                                        .setForced(true))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
-                                                        .setValueExpression("9")
+                                                        .setValueExpression(
+                                                                ValueExpression.newBuilder()
+                                                                        .addChunk(
+                                                                                Chunk.newBuilder()
+                                                                                        .setKey(9)))
                                                         .setElement(
                                                                 SelectorProto.newBuilder().addFilters(
                                                                         SelectorProto.Filter
                                                                                 .newBuilder()
                                                                                 .setCssSelector(
-                                                                                        "#email")))))
+                                                                                        "#email")))
+                                                        .setForced(true)))
                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(

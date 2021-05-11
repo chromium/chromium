@@ -10,6 +10,8 @@
 #include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
 namespace field_formatter {
@@ -23,6 +25,15 @@ base::Optional<std::string> FormatString(
     const std::string& input,
     const std::map<std::string, std::string>& mappings,
     bool strict = true);
+
+// Turns a |value_expression| into a string, replacing |key| chunks with
+// corresponding values in |mappings|. This will fail if any of the keys are
+// not in |mappings|. If |quote_meta| the replacement pieces will be quoted.
+ClientStatus FormatExpression(
+    const ValueExpression& value_expression,
+    const std::map<std::string, std::string>& mappings,
+    bool quote_meta,
+    std::string* out_value);
 
 // Creates a lookup map for all non-empty autofill and custom
 // AutofillFormatProto::AutofillAssistantCustomField field types in

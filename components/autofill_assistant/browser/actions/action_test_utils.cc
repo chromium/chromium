@@ -69,5 +69,28 @@ ElementFinder::Result MockFindElement(MockWebController& web_controller,
   return expected_result;
 }
 
+ValueExpressionBuilder::ValueExpressionBuilder() = default;
+
+ValueExpressionBuilder& ValueExpressionBuilder::addChunk(
+    const std::string& text) {
+  value_expression.add_chunk()->set_text(text);
+  return *this;
+}
+
+ValueExpressionBuilder& ValueExpressionBuilder::addChunk(int key) {
+  value_expression.add_chunk()->set_key(key);
+  return *this;
+}
+
+ValueExpressionBuilder& ValueExpressionBuilder::addChunk(
+    autofill::ServerFieldType field) {
+  value_expression.add_chunk()->set_key(static_cast<int>(field));
+  return *this;
+}
+
+ValueExpression ValueExpressionBuilder::toProto() {
+  return value_expression;
+}
+
 }  // namespace test_util
 }  // namespace autofill_assistant

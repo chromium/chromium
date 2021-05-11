@@ -1379,7 +1379,7 @@ message SelectOptionProto {
     TextFilter text_filter_value = 7;
     // A value from an Autofill source. Note that this must be preceded by a
     // |CollectUserDataAction|.
-    AutofillValueRegexp autofill_value = 8;
+    AutofillValueRegexp autofill_regexp_value = 8;
   }
 
   // Defines which attribute to use for comparing the option to the expected
@@ -1490,19 +1490,16 @@ message ElementAreaProto {
 // Message used to indicate what form fields should be filled with what
 // information coming from either the address or the credit card.
 message RequiredFieldProto {
-  // A string containing any number of "${key}" placeholders, where the key
-  // is an integer corresponding to entries from field_types.h or
+  // A value expression containing any number of |key| placeholders, where the
+  // |key| is an integer corresponding to entries from field_types.h or
   // |AutofillFormatProto::AutofillAssistantCustomField|.
   // Example:
-  // * "${3}" -> First name.
-  // * "(+${12}) (${11}) ${10}" -> phone country code, city code, number,
-  //   e.g., (+41) (79) (1234567)
-  // * "${51}" -> Full card name.
-  // * "${53}/${55}" -> expiration month / expiration year, e.g., 04/2021
+  // * 3 -> First name.
+  // * 51 -> Full card name.
   // Note that the set of actually available fields are outside of our
   // control and are retrieved automatically.
-  // A value expression set to an empty string will clear the field.
-  optional string value_expression = 6;
+  // An empty value expression will clear the field.
+  optional ValueExpression value_expression = 12;
 
   // The element to fill.
   optional SelectorProto element = 2;
@@ -1534,7 +1531,7 @@ message RequiredFieldProto {
   optional SelectorProto option_element_to_click = 9;
   optional ClickType click_type = 10;
 
-  reserved 1, 3;
+  reserved 1, 3, 6;
 }
 
 // Fill a form with an address if there is, otherwise fail this action.

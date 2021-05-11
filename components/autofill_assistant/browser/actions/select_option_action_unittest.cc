@@ -82,7 +82,7 @@ TEST_F(SelectOptionActionTest, EmptyTextFilterValueFails) {
 TEST_F(SelectOptionActionTest, EmptyAutofillValueFails) {
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
-  proto_.mutable_autofill_value();
+  proto_.mutable_autofill_regexp_value();
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
@@ -136,9 +136,12 @@ TEST_F(SelectOptionActionTest, CheckExpectedCallChain) {
 TEST_F(SelectOptionActionTest, RequestDataFromUnknownProfile) {
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
-  auto* value = proto_.mutable_autofill_value();
+  auto* value = proto_.mutable_autofill_regexp_value();
   value->mutable_profile()->set_identifier("none");
-  value->mutable_value_expression()->set_re2("value");
+  value->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_text("value");
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               PRECONDITION_FAILED))));
   Run();
@@ -157,13 +160,12 @@ TEST_F(SelectOptionActionTest, RequestUnknownDataFromProfile) {
 
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
-  auto* value = proto_.mutable_autofill_value();
+  auto* value = proto_.mutable_autofill_regexp_value();
   value->mutable_profile()->set_identifier("contact");
-  value->mutable_value_expression()->set_re2(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_MIDDLE)),
-                    "}"}));
+  value->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
 
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               AUTOFILL_INFO_NOT_AVAILABLE))));
@@ -183,13 +185,12 @@ TEST_F(SelectOptionActionTest, SelectOptionFromProfileValue) {
 
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
-  auto* value = proto_.mutable_autofill_value();
+  auto* value = proto_.mutable_autofill_regexp_value();
   value->mutable_profile()->set_identifier("contact");
-  value->mutable_value_expression()->set_re2(
-      base::StrCat({"${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::NAME_FIRST)),
-                    "}"}));
+  value->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
 
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
@@ -248,14 +249,15 @@ TEST_F(SelectOptionActionTest, EscapeRegularExpressionAutofillValue) {
 
   Selector selector({"#select"});
   *proto_.mutable_element() = selector.proto;
-  auto* value = proto_.mutable_autofill_value();
+  auto* value = proto_.mutable_autofill_regexp_value();
   value->mutable_profile()->set_identifier("contact");
-  value->mutable_value_expression()->set_re2(
-      base::StrCat({"^${",
-                    base::NumberToString(static_cast<int>(
-                        autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER)),
-                    "}$"}));
-  value->mutable_value_expression()->set_case_sensitive(true);
+  *value->mutable_value_expression_re2()->mutable_value_expression() =
+      test_util::ValueExpressionBuilder()
+          .addChunk("^")
+          .addChunk(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER)
+          .addChunk("$")
+          .toProto();
+  value->mutable_value_expression_re2()->set_case_sensitive(true);
 
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,

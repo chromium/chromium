@@ -41,6 +41,47 @@ TEST(FieldFormatterTest, FormatString) {
             "${keyD}valueA");
 }
 
+TEST(FieldFormatterTest, FormatExpression) {
+  std::map<std::string, std::string> mappings = {{"1", "valueA"},
+                                                 {"2", "val.ueB"}};
+  std::string result;
+
+  ValueExpression value_expression_1;
+  value_expression_1.add_chunk()->set_text("text");
+  value_expression_1.add_chunk()->set_text(" ");
+  value_expression_1.add_chunk()->set_key(1);
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_1, mappings,
+                                             /* quote_meta=*/false, &result)
+                                .proto_status());
+  EXPECT_EQ("text valueA", result);
+
+  ValueExpression value_expression_2;
+  value_expression_2.add_chunk()->set_text("^");
+  value_expression_2.add_chunk()->set_key(2);
+  value_expression_2.add_chunk()->set_text("$");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_2, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("^val.ueB$", result);
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_2, mappings,
+                                             /* quote_meta= */ true, &result)
+                                .proto_status());
+  EXPECT_EQ("^val\\.ueB$", result);
+
+  ValueExpression value_expression_3;
+  value_expression_3.add_chunk()->set_key(3);
+  EXPECT_EQ(AUTOFILL_INFO_NOT_AVAILABLE,
+            FormatExpression(value_expression_3, mappings,
+                             /* quote_meta= */ false, &result)
+                .proto_status());
+
+  ValueExpression value_expression_4;
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_4, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ(std::string(), result);
+}
+
 TEST(FieldFormatterTest, AutofillProfile) {
   autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(

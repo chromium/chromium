@@ -31,7 +31,16 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Return;
 
-RequiredField CreateRequiredField(const std::string& value_expression,
+RequiredField CreateRequiredField(int key,
+                                  const std::vector<std::string>& selector) {
+  RequiredField required_field;
+  required_field.value_expression.add_chunk()->set_key(key);
+  required_field.selector = Selector(selector);
+  required_field.status = RequiredField::EMPTY;
+  return required_field;
+}
+
+RequiredField CreateRequiredField(const ValueExpression& value_expression,
                                   const std::vector<std::string>& selector) {
   RequiredField required_field;
   required_field.value_expression = value_expression;
@@ -90,7 +99,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, AutofillFailureGetsForwarded) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "value"));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
 
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
                                                  &mock_action_delegate_);
@@ -111,7 +120,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
 
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
                                                  &mock_action_delegate_);
@@ -149,9 +158,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"}),
-      CreateRequiredField("${-3}", {"#card_network"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"}),
+      CreateRequiredField(-3, {"#card_network"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -201,8 +210,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest, AddsFirstFieldFillingError) {
       .WillByDefault(RunOnceCallback<2>(ClientStatus(OTHER_ACTION_STATUS)));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -243,8 +252,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -284,7 +293,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, DoesNotFallbackIfFieldsAreFilled) {
   EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
 
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
                                                  &mock_action_delegate_);
@@ -311,7 +320,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsEmptyRequiredField) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "John Doe"));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -338,7 +347,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FallsBackForForcedFilledField) {
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
   required_fields[0].forced = true;
 
   std::map<std::string, std::string> fallback_values = {
@@ -360,7 +369,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FailsIfForcedFieldDidNotGetFilled) {
   EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"})};
+      CreateRequiredField(51, {"#card_name"})};
   required_fields[0].forced = true;
 
   RequiredFieldsFallbackHandler fallback_handler(required_fields, {},
@@ -403,8 +412,12 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsFieldWithPattern) {
       .After(set_value)
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "not empty"));
 
+  ValueExpression value_expression;
+  value_expression.add_chunk()->set_key(53);
+  value_expression.add_chunk()->set_text("/");
+  value_expression.add_chunk()->set_key(55);
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${53}/${55}", {"#card_expiry"})};
+      CreateRequiredField(value_expression, {"#card_expiry"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -430,8 +443,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
   EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${53}", {"#card_expiry"}),
-      CreateRequiredField("${-3}", {"#card_network"})};
+      CreateRequiredField(53, {"#card_expiry"}),
+      CreateRequiredField(-3, {"#card_network"})};
 
   std::map<std::string, std::string> fallback_values;
   fallback_values.emplace(base::NumberToString(static_cast<int>(
@@ -502,7 +515,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "2050"));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${55}", {"#year"})};
+      CreateRequiredField(55, {"#year"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(static_cast<int>(
@@ -543,7 +556,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${53}", {"#card_expiry"})};
+      CreateRequiredField(53, {"#card_expiry"})};
   required_fields[0].fallback_click_element = Selector({".option"});
 
   std::map<std::string, std::string> fallback_values = {
@@ -585,7 +598,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
       .After(main_click);
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${53}", {"#card_expiry"})};
+      CreateRequiredField(53, {"#card_expiry"})};
   required_fields[0].fallback_click_element = Selector({".option"});
 
   std::map<std::string, std::string> fallback_values = {
@@ -629,7 +642,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClearsFilledField) {
       .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField(std::string(), {"#field"})};
+      CreateRequiredField(ValueExpression(), {"#field"})};
   std::map<std::string, std::string> fallback_values;
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -664,7 +677,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest, SkipsForcedFieldCheckOnFirstRun) {
                             _))
       .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(), "value"));
 
-  auto forced_field = CreateRequiredField("value", {"#forced_field"});
+  ValueExpression value_expression;
+  value_expression.add_chunk()->set_text("value");
+  auto forced_field = CreateRequiredField(value_expression, {"#forced_field"});
   forced_field.forced = true;
   std::vector<RequiredField> required_fields = {forced_field};
 
@@ -702,8 +717,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"})};
 
   std::map<std::string, std::string> fallback_values = {
       {base::NumberToString(
@@ -751,8 +766,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"})};
   required_fields[0].optional = true;
 
   std::map<std::string, std::string> fallback_values = {
@@ -810,8 +825,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   std::vector<RequiredField> required_fields = {
-      CreateRequiredField("${51}", {"#card_name"}),
-      CreateRequiredField("${52}", {"#card_number"})};
+      CreateRequiredField(51, {"#card_name"}),
+      CreateRequiredField(52, {"#card_number"})};
   required_fields[0].optional = true;
 
   std::map<std::string, std::string> fallback_values = {

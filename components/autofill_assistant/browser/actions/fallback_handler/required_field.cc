@@ -29,10 +29,10 @@ void RequiredField::FromProto(const RequiredFieldProto& required_field_proto) {
 }
 
 bool RequiredField::ShouldFallback(bool apply_fallback) const {
-  return (status == EMPTY && !value_expression.empty() &&
+  return (status == EMPTY && !value_expression.chunk().empty() &&
           !fallback_click_element.has_value() &&
           !(optional && !apply_fallback)) ||
-         (status != EMPTY && value_expression.empty() &&
+         (status != EMPTY && value_expression.chunk().empty() &&
           !fallback_click_element.has_value()) ||
          (forced && apply_fallback) ||
          (fallback_click_element.has_value() && apply_fallback);
