@@ -226,7 +226,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             base::FilePath::FromUTF8Unsafe(entry_path);
         restored_watcher.recursive = recursive;
         restored_watcher.last_tag = last_tag;
-        for (const auto& persistent_origin : *persistent_origins) {
+        for (const auto& persistent_origin : persistent_origins->GetList()) {
           std::string origin;
           if (persistent_origin.GetAsString(&origin)) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
