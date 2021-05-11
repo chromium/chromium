@@ -17,6 +17,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"

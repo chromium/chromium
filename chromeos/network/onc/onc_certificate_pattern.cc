@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"

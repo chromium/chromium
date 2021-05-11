@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 
 namespace ash {
 

@@ -4,6 +4,7 @@
 
 #include "chromeos/network/stub_cellular_networks_provider.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"

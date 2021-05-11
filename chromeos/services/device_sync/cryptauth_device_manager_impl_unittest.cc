@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"

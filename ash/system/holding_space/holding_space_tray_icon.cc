@@ -17,6 +17,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"

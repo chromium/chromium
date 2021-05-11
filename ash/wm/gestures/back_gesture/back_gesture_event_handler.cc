@@ -24,6 +24,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"

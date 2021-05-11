@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"

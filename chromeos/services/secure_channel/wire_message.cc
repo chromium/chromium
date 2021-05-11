@@ -11,6 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"

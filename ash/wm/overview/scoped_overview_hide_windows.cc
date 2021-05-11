@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 

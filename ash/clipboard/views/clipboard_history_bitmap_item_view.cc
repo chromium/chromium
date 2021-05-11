@@ -11,6 +11,7 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"

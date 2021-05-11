@@ -27,6 +27,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/pickle.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"

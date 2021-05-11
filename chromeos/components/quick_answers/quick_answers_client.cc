@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"

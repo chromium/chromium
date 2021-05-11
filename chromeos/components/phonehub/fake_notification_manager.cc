@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 
 namespace chromeos {
 namespace phonehub {

@@ -27,6 +27,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/containers/contains.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "ui/aura/client/aura_constants.h"

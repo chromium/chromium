@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/optional.h"

@@ -9,6 +9,7 @@
 
 #include "base/bind_post_task.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

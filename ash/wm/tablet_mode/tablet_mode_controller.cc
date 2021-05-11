@@ -30,6 +30,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"

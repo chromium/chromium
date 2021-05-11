@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/fake_host_scan_cache.h"

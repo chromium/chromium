@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
