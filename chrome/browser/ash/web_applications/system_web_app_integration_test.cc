@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -67,4 +68,12 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
   // A completed navigation could change the window title. Check again.
   EXPECT_EQ(base::ASCIIToUTF16(title),
             app_browser->window()->GetNativeWindow()->GetTitle());
+}
+
+content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
+    web_app::SystemAppType type,
+    const base::FilePath file_path) {
+  apps::AppLaunchParams params = LaunchParamsForApp(type);
+  params.launch_files.push_back(file_path);
+  return LaunchApp(std::move(params));
 }

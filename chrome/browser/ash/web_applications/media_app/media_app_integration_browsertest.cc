@@ -155,15 +155,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 // params. This exercises only web_applications logic.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   WaitForTestSystemAppInstall();
-  content::WebContents* app;
-  {
-    auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-
-    // Add the 800x600 PNG image to launch params.
-    params.launch_files.push_back(TestFile(kFilePng800x600));
-
-    app = LaunchApp(std::move(params));
-  }
+  content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
+                                                TestFile(kFilePng800x600));
   PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
@@ -260,9 +253,8 @@ void clickAppBarButton(content::WebContents* app, const std::string& selector) {
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   WaitForTestSystemAppInstall();
-  auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-  params.launch_files = {TestFile(kFileJpeg640x480)};
-  content::WebContents* app = LaunchApp(std::move(params));
+  content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
+                                                TestFile(kFileJpeg640x480));
   PrepareAppForTest(app);
 
   // Ensure test image loaded.
@@ -298,9 +290,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
 // information panel.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   WaitForTestSystemAppInstall();
-  auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-  params.launch_files = {TestFile(kFileJpeg640x480)};
-  content::WebContents* app = LaunchApp(std::move(params));
+  content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
+                                                TestFile(kFileJpeg640x480));
   PrepareAppForTest(app);
 
   // Ensure test image loaded.
@@ -351,16 +342,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
 // Test that the MediaApp can load RAW files passed on launch params.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   WaitForTestSystemAppInstall();
-
-  content::WebContents* web_ui;
-  {
-    auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-
-    // Add the handcrafted RAW file to launch params and launch.
-    params.launch_files.push_back(TestFile(kRaw378x272));
-    web_ui = LaunchApp(std::move(params));
-    PrepareAppForTest(web_ui);
-  }
+  content::WebContents* web_ui =
+      LaunchAppWithFile(web_app::SystemAppType::MEDIA, TestFile(kRaw378x272));
+  PrepareAppForTest(web_ui);
 
   EXPECT_EQ("378x272", WaitForImageAlt(web_ui, kRaw378x272));
 
