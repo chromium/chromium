@@ -1135,7 +1135,7 @@ class LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest
   CircleContentLayerClient mask_client_;
 };
 
-INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
+INSTANTIATE_TEST_SUITE_P(DISABLED_PixelResourceTest,
                          LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest,
                          ::testing::ValuesIn(kTestCases),
                          ::testing::PrintToStringParamName());

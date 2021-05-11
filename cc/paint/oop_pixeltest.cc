@@ -2347,9 +2347,18 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
+    // Allow 4 pixels in 100x100 image to be different due to non-AA pixel
+    // rounding (hence 255 for error limit).
+    FuzzyPixelComparator comparator(
+        /*discard_alpha=*/false,
+        /*error_pixels_percentage_limit=*/0.04f,
+        /*small_error_pixels_percentage_limit=*/0.0f,
+        /*avg_abs_error_limit=*/255,
+        /*max_abs_error_limit=*/255,
+        /*small_error_threshold=*/0);
     auto expected = RasterExpectedBitmap(display_item_list, options);
     auto actual = Raster(display_item_list, options);
-    ExpectEquals(actual, expected);
+    ExpectEquals(actual, expected, comparator);
   }
 };
 
