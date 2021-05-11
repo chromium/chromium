@@ -425,12 +425,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Cors.AccessCheckResult" enum="CorsAccessCheckResult"
-    expires_after="M90">
+    expires_after="M98">
   <owner>toyoshim@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <summary>
     The distribution of CORS access check results. This reports whenever CORS
     AccessCheck runs.
+  </summary>
+</histogram>
+
+<histogram name="Net.Cors.AccessCheckResult.NotSecureRequestor"
+    enum="CorsAccessCheckResult" expires_after="M98">
+  <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The distribution of CORS access check results for not potentially
+    trustworthy requestors. This reports whenever CORS AccessCheck runs and the
+    requesting site origin is not potentially trustworthy.
   </summary>
 </histogram>
 
