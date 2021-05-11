@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "input_data_provider.mojom",
     "system_data_provider.mojom",
     "system_routine_controller.mojom",
   ]

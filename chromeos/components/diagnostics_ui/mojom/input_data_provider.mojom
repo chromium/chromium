@@ -1,0 +1,44 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.diagnostics.mojom;
+
+enum ConnectionType {
+  kInternal,  // Includes internal USB devices.
+  kUsb,
+  kBluetooth,
+  kUnknown,
+};
+
+// Describes a connected keyboard.
+struct KeyboardInfo {
+  // The number of the keyboard's /dev/input/event* node.
+  uint32 id;
+  ConnectionType connection_type;
+  string name;
+};
+
+enum TouchDeviceType {
+  kDirect,   // e.g. touchscreens, drawing tablets with screens.
+  kPointer,  // e.g. touchpads, drawing tablets without displays.
+};
+
+// Describes a touch surface (pad or screen).
+struct TouchDeviceInfo {
+  // The number of the touch device's /dev/input/event* node.
+  uint32 id;
+  ConnectionType connection_type;
+  TouchDeviceType type;
+  string name;
+};
+
+// Provides information about input devices connected to the system. Implemented
+// in the browser process and called by the Diagnostics SWA (a renderer
+// process).
+interface InputDataProvider {
+  // Returns a snapshot of the devices connected to the system.
+  GetConnectedDevices() =>
+    (array<KeyboardInfo> keyboards,
+     array<TouchDeviceInfo> touch_devices);
+};
