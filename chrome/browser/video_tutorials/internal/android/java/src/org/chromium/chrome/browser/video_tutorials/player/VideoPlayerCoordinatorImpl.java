@@ -63,8 +63,7 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
                 new LanguagePickerCoordinator(mView.getView().findViewById(R.id.language_picker),
                         mVideoTutorialService, languageInfoProvider);
         mMediator = new VideoPlayerMediator(mContext, mModel, videoTutorialService, mLanguagePicker,
-                languageInfoProvider, mWebContents, mMediaSessionObserver, tryNowCallback,
-                closeCallback);
+                mWebContents, mMediaSessionObserver, tryNowCallback, closeCallback);
         PropertyModelChangeProcessor.create(mModel, mView, new VideoPlayerViewBinder());
     }
 

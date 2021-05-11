@@ -903,9 +903,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     }
 
     private void maybeShowVideoTutorialTryNowIPH() {
+        if (getToolbarTransitionPercentage() > 0f) return;
         VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
-        // TODO(shaktisahu): Pass correct y-inset.
         // TODO(shaktisahu): Determine if there is conflict with another IPH.
         if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
             IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
@@ -917,7 +917,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
 
         if (tryNowTracker.didClickTryNowButton(FeatureType.VOICE_SEARCH)) {
-            // TODO(shaktisahu): Pass voice search button.
             IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
                     R.string.video_tutorials_iph_tap_voice_icon_to_start,
                     R.string.video_tutorials_iph_tap_voice_icon_to_start,

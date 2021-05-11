@@ -20,8 +20,6 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
     public void bind(PropertyModel model, VideoPlayerView view, PropertyKey propertyKey) {
         if (propertyKey == VideoPlayerProperties.SHOW_LOADING_SCREEN) {
             view.showLoadingAnimation(model.get(VideoPlayerProperties.SHOW_LOADING_SCREEN));
-        } else if (propertyKey == VideoPlayerProperties.SHOW_MEDIA_CONTROLS) {
-            view.showMediaControls(model.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS));
         } else if (propertyKey == VideoPlayerProperties.SHOW_LANGUAGE_PICKER) {
             view.showLanguagePicker(model.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER));
         } else if (propertyKey == VideoPlayerProperties.SHOW_TRY_NOW) {
@@ -34,6 +32,11 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
                     .findViewById(R.id.share_button)
                     .setVisibility(
                             model.get(VideoPlayerProperties.SHOW_SHARE) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == VideoPlayerProperties.SHOW_CLOSE) {
+            view.getView()
+                    .findViewById(R.id.close_button)
+                    .setVisibility(
+                            model.get(VideoPlayerProperties.SHOW_CLOSE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == VideoPlayerProperties.SHOW_WATCH_NEXT) {
             view.getView()
                     .findViewById(R.id.watch_next)
