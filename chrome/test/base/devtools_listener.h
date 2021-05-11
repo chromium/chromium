@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_FILE_MANAGER_DEVTOOLS_LISTENER_H_
-#define CHROME_BROWSER_CHROMEOS_FILE_MANAGER_DEVTOOLS_LISTENER_H_
+#ifndef CHROME_TEST_BASE_DEVTOOLS_LISTENER_H_
+#define CHROME_TEST_BASE_DEVTOOLS_LISTENER_H_
 
 #include <map>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 
-namespace file_manager {
+namespace coverage {
 
 // Collects code coverage from a WebContents, during a browser test
 // for example, using Chrome Devtools Protocol (CDP).
@@ -93,6 +93,6 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   bool attached_ = true;
 };
 
-}  // namespace file_manager
+}  // namespace coverage
 
-#endif  // CHROME_BROWSER_CHROMEOS_FILE_MANAGER_DEVTOOLS_LISTENER_H_
+#endif  // CHROME_TEST_BASE_DEVTOOLS_LISTENER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/file_manager/devtools_listener.h"
+#include "chrome/test/base/devtools_listener.h"
 
 #include <stddef.h>
 
@@ -24,7 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "url/url_util.h"
 
-namespace file_manager {
+namespace coverage {
 
 namespace {
 
@@ -166,16 +166,16 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
     entries->Append(entry->CreateDeepCopy());
   }
 
-  const std::string url = host->GetURL().spec();
+  std::string url = host->GetURL().spec();
   CHECK(result->SetString("encodedHostURL", EncodeURIComponent(url)));
   CHECK(result->SetString("hostTitle", host->GetTitle()));
   CHECK(result->SetString("hostType", host->GetType()));
   CHECK(result->SetString("hostTest", test));
   CHECK(result->SetString("hostURL", url));
 
-  const std::string md5 = base::MD5String(HostString(host, test));
+  std::string md5 = base::MD5String(HostString(host, test));
   std::string coverage = base::StrCat({test, ".", md5, uuid_, ".cov.json"});
-  base::FilePath path = store.AppendASCII("tests").Append(coverage);
+  base::FilePath path = store.AppendASCII("tests").AppendASCII(coverage);
 
   CHECK(result->SetList("result", std::move(entries)));
   CHECK(base::JSONWriter::Write(*result, &coverage));
@@ -235,7 +235,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     CHECK(script->SetString("url", url));
 
     base::FilePath path =
-        store.AppendASCII("scripts").Append(hash.append(".js.json"));
+        store.AppendASCII("scripts").AppendASCII(hash.append(".js.json"));
     CHECK(base::JSONWriter::Write(*script, &text));
     if (!base::PathExists(path))  // script de-duplication
       base::WriteFile(path, text.data(), text.size());
@@ -297,4 +297,4 @@ void DevToolsListener::AgentHostClosed(content::DevToolsAgentHost* host) {
   attached_ = false;
 }
 
-}  // namespace file_manager
+}  // namespace coverage

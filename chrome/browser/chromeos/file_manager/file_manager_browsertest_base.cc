@@ -1578,7 +1578,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
 
   if (ShouldInspect(host)) {
     devtools_agent_[host] =
-        std::make_unique<DevToolsListener>(host, process_id_);
+        std::make_unique<coverage::DevToolsListener>(host, process_id_);
   }
 }
 
@@ -1600,7 +1600,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostNavigated(
     return;
 
   if (ShouldInspect(host)) {
-    LOG(INFO) << DevToolsListener::HostString(host, __FUNCTION__);
+    LOG(INFO) << coverage::DevToolsListener::HostString(host, __FUNCTION__);
     devtools_agent_.find(host)->second->Navigated(host);
   } else {
     devtools_agent_.find(host)->second->Detach(host);
@@ -1942,7 +1942,7 @@ void FileManagerBrowserTestBase::StartTest() {
 
   base::FilePath store =
       devtools_code_coverage_dir_.AppendASCII("devtools_code_coverage");
-  DevToolsListener::SetupCoverageStore(store);
+  coverage::DevToolsListener::SetupCoverageStore(store);
 
   for (auto& agent : devtools_agent_) {
     auto* host = agent.first;

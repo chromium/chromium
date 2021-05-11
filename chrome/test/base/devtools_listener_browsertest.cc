@@ -10,10 +10,10 @@
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -23,7 +23,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace file_manager {
+namespace coverage {
 
 class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
                                     public InProcessBrowserTest {
@@ -118,4 +118,4 @@ IN_PROC_BROWSER_TEST_F(DevToolsListenerBrowserTest, CanCollectCodeCoverage) {
   content::RunAllTasksUntilIdle();
 }
 
-}  // namespace file_manager
+}  // namespace coverage

@@ -15,10 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
-#include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/test/base/devtools_listener.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 
 class NotificationDisplayServiceTester;
@@ -221,9 +221,11 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   base::HistogramTester histograms_;
   base::UserActionTester user_actions_;
 
+  using DevToolsAgentMap =
+      std::map<content::DevToolsAgentHost*,
+               std::unique_ptr<coverage::DevToolsListener>>;
   base::FilePath devtools_code_coverage_dir_;
-  std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
-      devtools_agent_;
+  DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(FileManagerBrowserTestBase);
