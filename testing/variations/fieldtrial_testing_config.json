@@ -3181,56 +3181,6 @@
             ]
         }
     ],
-    "DownloadsAsMixedContent": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BlockExtensionList": "",
-                        "SilentBlockExtensionList": "",
-                        "TreatBlockListAsAllowlist": "false",
-                        "TreatSilentBlockListAsAllowlist": "true",
-                        "TreatWarnListAsAllowlist": "false",
-                        "WarnExtensionList": ""
-                    },
-                    "enable_features": [
-                        "TreatUnsafeDownloadsAsActive"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DownloadsAsMixedContentAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BlockExtensionList": "",
-                        "SilentBlockExtensionList": "",
-                        "TreatBlockListAsAllowlist": "false",
-                        "TreatSilentBlockListAsAllowlist": "true",
-                        "TreatWarnListAsAllowlist": "false",
-                        "WarnExtensionList": ""
-                    },
-                    "enable_features": [
-                        "TreatUnsafeDownloadsAsActive"
-                    ]
-                }
-            ]
-        }
-    ],
     "DriveFsBidirectionalNativeMessaging": [
         {
             "platforms": [
