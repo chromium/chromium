@@ -145,7 +145,7 @@ void TopSitesImpl::SyncWithHistory() {
 bool TopSitesImpl::HasBlockedUrls() const {
   const base::DictionaryValue* blocked_urls =
       pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && !blocked_urls->empty();
+  return blocked_urls && !blocked_urls->DictEmpty();
 }
 
 void TopSitesImpl::AddBlockedUrl(const GURL& url) {
