@@ -4,7 +4,7 @@
 
 import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
 
-import {assertTrue} from '../../chai_assert.js';
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRmaElement} */

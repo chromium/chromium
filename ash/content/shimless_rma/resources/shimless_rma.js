@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './onboarding_landing_page.js';
 import './shimless_rma_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,7 +25,7 @@ let PageInfo;
  */
 const StateComponentMapping = {
   // TODO(joonbug): Update with enum and actual componentId.
-  0: {componentIs: 'component1'},
+  0: {componentIs: 'onboarding-landing-page'},
 };
 
 /**
@@ -70,7 +71,49 @@ export class ShimlessRmaElement extends PolymerElement {
   loadState_(state) {
     const pageInfo = StateComponentMapping[state];
     this.currentPage_ = pageInfo;
-    // TODO(joonbug): Load component
+    this.showComponent_(pageInfo.componentIs);
+  }
+
+  /**
+   * @param {string} componentIs
+   * @private
+   */
+  showComponent_(componentIs) {
+    let component = this.shadowRoot.querySelector(`#${componentIs}`);
+    if (component === null) {
+      component = this.loadComponent_(componentIs);
+    }
+
+    this.hideAllComponents_();
+    component.hidden = false;
+  }
+
+  /**
+   * Utility method to bulk hide all contents.
+   */
+  hideAllComponents_() {
+    const components = this.shadowRoot.querySelectorAll('.shimless-content');
+    Array.from(components).map((c) => c.hidden = true);
+  }
+
+  /**
+   * @param {string} componentIs
+   * @private
+   */
+  loadComponent_(componentIs) {
+    const shimlessBody = this.shadowRoot.querySelector('#contentContainer');
+
+    let component = document.createElement(componentIs);
+    component.setAttribute('id', componentIs);
+    component.setAttribute('class', 'shimless-content');
+    component.hidden = true;
+
+    if (!component) {
+      console.error('Failed to create ' + componentIs);
+    }
+
+    shimlessBody.appendChild(component);
+    return component;
   }
 
   /** @protected */
