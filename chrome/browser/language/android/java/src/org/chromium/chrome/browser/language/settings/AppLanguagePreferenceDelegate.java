@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.language.settings;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.text.TextUtils;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
@@ -82,10 +81,8 @@ public class AppLanguagePreferenceDelegate {
         // Set language text and initial downloading summary.
         mPreference.setLanguageItem(code);
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
-        CharSequence downloadingMessage =
-                mActivity.getResources().getString(R.string.languages_split_downloading);
-        // TODO (https://crbug.com/1197364) Add placeholder to string.
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadingMessage);
+        CharSequence summary = mActivity.getResources().getString(
+                R.string.languages_split_downloading, nativeName);
         mPreference.setSummary(summary);
 
         // Disable preference so a second downloaded cannot be started while one is in progress.
@@ -106,10 +103,8 @@ public class AppLanguagePreferenceDelegate {
     private void languageSplitDownloadComplete() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
         CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
-        CharSequence downloadReadyMessage =
-                mActivity.getResources().getString(R.string.languages_split_ready, appName);
-        // TODO (https://crbug.com/1197364) Add placeholder to string.
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadReadyMessage);
+        CharSequence summary = mActivity.getResources().getString(
+                R.string.languages_split_ready, nativeName, appName);
         mPreference.setSummary(summary);
         mPreference.setEnabled(true);
 
@@ -122,9 +117,8 @@ public class AppLanguagePreferenceDelegate {
      */
     private void languageSplitDownloadFailed() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
-        CharSequence downloadFailedMessage = mActivity.getResources().getString(
-                R.string.download_failed_reason_unknown_error, "");
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadFailedMessage);
+        CharSequence summary =
+                mActivity.getResources().getString(R.string.languages_split_failed, nativeName);
         mPreference.setSummary(summary);
         mPreference.setEnabled(true);
 

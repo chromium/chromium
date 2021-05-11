@@ -32,7 +32,7 @@
     <PreferenceCategory
         android:key="translation_settings_section"
         android:order="3"
-        android:title="@string/languages_settings_title"
+        android:title="@string/languages_settings_translation_title"
         app:allowDividerAbove="true"
         app:allowDividerBelow="false">
 
