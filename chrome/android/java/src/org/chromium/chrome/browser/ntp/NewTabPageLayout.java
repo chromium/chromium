@@ -933,6 +933,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         IPHCommandBuilder iphCommandBuilder =
                 new IPHCommandBuilder(resources, null, stringId, accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
+        int yInsetPx = resources.getDimensionPixelOffset(
+                R.dimen.video_tutorial_try_now_iph_ntp_searchbox_y_inset);
+        iphCommandBuilder.setInsetRect(new Rect(0, 0, 0, -yInsetPx));
         if (showHighlight) {
             iphCommandBuilder.setOnShowCallback(
                     ()

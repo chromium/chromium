@@ -473,4 +473,7 @@
     <dimen name="long_screenshots_button_size">24dp</dimen>
     <dimen name="long_screenshots_button_padding">17dp</dimen>
 
+    <!-- Video tutorials dimensions -->
+    <dimen name="video_tutorial_try_now_iph_ntp_searchbox_y_inset">6dp</dimen>
+
 </resources>
