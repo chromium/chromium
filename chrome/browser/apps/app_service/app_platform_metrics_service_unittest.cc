@@ -181,8 +181,8 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   void ModifyInstance(const std::string& app_id,
                       aura::Window* window,
                       apps::InstanceState state) {
-    std::unique_ptr<apps::Instance> instance =
-        std::make_unique<apps::Instance>(app_id, window);
+    std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
+        app_id, std::make_unique<apps::Instance::InstanceKey>(window));
     instance->UpdateState(state, base::Time::Now());
 
     std::vector<std::unique_ptr<apps::Instance>> deltas;

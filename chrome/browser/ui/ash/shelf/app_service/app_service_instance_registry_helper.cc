@@ -194,8 +194,8 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
     state = apps::InstanceState::kDestroyed;
   }
 
-  std::unique_ptr<apps::Instance> instance =
-      std::make_unique<apps::Instance>(app_id, window);
+  std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
+      app_id, std::make_unique<apps::Instance::InstanceKey>(window));
   instance->SetLaunchId(launch_id);
   instance->UpdateState(state, base::Time::Now());
 
