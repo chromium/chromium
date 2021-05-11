@@ -837,7 +837,7 @@ if (!is_component_build) {
       "//base:i18n",
       "//base/test:test_support",
       "//components/cronet:cronet_version_header",
-      "//components/cronet/test:test_support",
+      "//components/cronet/testing:test_support",
       "//components/prefs",
       "//net",
       "//net:simple_quic_tools",
@@ -1014,7 +1014,7 @@ if (!is_component_build) {
       "//third_party/hamcrest:hamcrest_core_java",
     ]
     deps += cronet_javatests_deps_to_package
-    data = [ "//components/cronet/test/data/" ]
+    data = [ "//components/cronet/testing/test_server/data/" ]
   }
 
   instrumentation_test_apk("cronet_test_instrumentation_apk") {
@@ -1212,7 +1212,7 @@ if (!is_component_build) {
 
     sources = [ "../run_all_unittests.cc" ]
 
-    data = [ "//components/cronet/test/data/" ]
+    data = [ "//components/cronet/testing/test_server/data/" ]
 
     if (is_android) {
       shard_timeout = 180
@@ -1238,7 +1238,7 @@ if (!is_component_build) {
 
     defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
 
-    data = [ "//components/cronet/test/data/" ]
+    data = [ "//components/cronet/testing/test_server/data/" ]
 
     if (is_android) {
       shard_timeout = 180
@@ -1424,7 +1424,7 @@ if (!is_component_build) {
 
   copy("cronet_package_copy_test_assets") {
     testonly = true
-    sources = [ "//components/cronet/test/data" ]
+    sources = [ "//components/cronet/testing/test_server/data" ]
     outputs = [ "$_test_package_dir/assets/test" ]
   }
 

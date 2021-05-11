@@ -17,7 +17,7 @@
 #include "components/cronet/native/test/test_upload_data_provider.h"
 #include "components/cronet/native/test/test_url_request_callback.h"
 #include "components/cronet/native/test/test_util.h"
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 #include "cronet_c.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 
 #include <memory>
 #include <utility>
@@ -25,7 +25,7 @@ namespace {
 
 // Cronet test data directory, relative to source root.
 const base::FilePath::CharType kTestDataRelativePath[] =
-    FILE_PATH_LITERAL("components/cronet/test/data");
+    FILE_PATH_LITERAL("components/cronet/testing/test_server/data");
 
 const char kSimplePath[] = "/simple";
 const char kEchoHeaderPath[] = "/echo_header?";
