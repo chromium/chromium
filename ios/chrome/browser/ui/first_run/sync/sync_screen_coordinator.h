@@ -12,8 +12,10 @@
 // Coordinator to present sync screen.
 @interface SyncScreenCoordinator : ChromeCoordinator
 
-// Initiates a SyncScreenCoordinator with |navigationController| and
-// |browser|.
+// Initiates a SyncScreenCoordinator with
+// |navigationController| to present the view;
+// |browser| to provide the browser;
+// |delegate| to handle user action.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

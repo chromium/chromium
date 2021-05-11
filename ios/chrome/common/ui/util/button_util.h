@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 extern const CGFloat kButtonVerticalInsets;
+extern const CGFloat kPrimaryButtonCornerRadius;
 
 // Returns primary action button with rounded corners.
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled);

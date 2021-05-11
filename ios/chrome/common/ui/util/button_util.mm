@@ -12,7 +12,7 @@
 #endif
 
 const CGFloat kButtonVerticalInsets = 17;
-constexpr CGFloat kPrimaryButtonCornerRadius = 13;
+const CGFloat kPrimaryButtonCornerRadius = 13;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
