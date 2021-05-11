@@ -8148,10 +8148,12 @@ interface ScreenOrientation : EventTarget
 interface Screens : EventTarget
     attribute @@toStringTag
     getter currentScreen
-    getter onchange
+    getter oncurrentscreenchange
+    getter onscreenschange
     getter screens
     method constructor
-    setter onchange
+    setter oncurrentscreenchange
+    setter onscreenschange
 interface ScriptProcessorNode : AudioNode
     attribute @@toStringTag
     getter bufferSize

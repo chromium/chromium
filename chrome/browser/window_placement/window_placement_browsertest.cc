@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
         });
       }
       var makeScreensChangePromise = () => {
-        return promiseForEvent(screensInterface, 'change');
+        return promiseForEvent(screensInterface, 'screenschange');
       };
       var getScreenWidths = () => {
         return screensInterface.screens.map((d) => d.width).sort();
@@ -175,4 +175,248 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
       })();
     )"));
   }
+}
+
+// TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
+// SetScreenInstance and observers not being notified.
+// TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_OnCurrentScreenChangeEvent DISABLED_OnCurrentScreenChangeEvent
+#else
+#define MAYBE_OnCurrentScreenChangeEvent OnCurrentScreenChangeEvent
+#endif
+// Test that the oncurrentscreenchange handler fires correctly for screen
+// changes and property updates.
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x802,901+100-802x802");
+#else
+  display::ScreenBase screen;
+  screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                   display::DisplayList::Type::PRIMARY);
+  screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
+                                   display::DisplayList::Type::NOT_PRIMARY);
+  display::test::ScopedScreenOverride screen_override(&screen);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/simple.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // TODO(crbug.com/1119974): this test could be in content_browsertests
+  // and not browser_tests if permission controls were supported.
+
+  // Auto-accept the Window Placement permission request.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(tab);
+  permission_request_manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_EQ(801, EvalJs(tab, R"(
+      var screensInterface;
+      var promiseForEvent = (target, evt) => {
+        return new Promise((resolve) => {
+          const handler = (e) => {
+            target.removeEventListener(evt, handler);
+            resolve(e);
+          };
+          target.addEventListener(evt, handler);
+        });
+      }
+      var makeCurrentScreenChangePromise = () => {
+        return promiseForEvent(screensInterface, 'currentscreenchange');
+      };
+      (async () => {
+          screensInterface = await self.getScreens();
+          return screensInterface.currentScreen.width;
+      })();
+  )"));
+
+  // Switch to a second display.  This should fire an event.
+  EXPECT_TRUE(ExecJs(tab, R"(var change = makeCurrentScreenChangePromise();)"));
+
+  const gfx::Rect new_bounds(1000, 150, 600, 500);
+  browser()->window()->SetBounds(new_bounds);
+
+  EXPECT_EQ(802, EvalJs(tab, R"(
+      (async () => {
+          await change;
+          return screensInterface.currentScreen.width;
+      })();
+    )"));
+
+  // Update the second display to have a height of 300.  Validate that a change
+  // event is fired when attributes of the current screen change.
+  EXPECT_TRUE(ExecJs(tab, R"(var change = makeCurrentScreenChangePromise();)"));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x802,901+100-802x300");
+#else
+  screen.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 300)},
+                                      display::DisplayList::Type::NOT_PRIMARY);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_EQ(300, EvalJs(tab, R"(
+      (async () => {
+          await change;
+          return screensInterface.currentScreen.height;
+      })();
+    )"));
+}
+
+// TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
+// SetScreenInstance and observers not being notified.
+// TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ScreenAdvancedOnChange DISABLED_ScreenAdvancedOnChange
+#else
+#define MAYBE_ScreenAdvancedOnChange ScreenAdvancedOnChange
+#endif
+// Test that onchange events for individual screens in the screen list are
+// supported.
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x802,901+100-802x802");
+#else
+  display::ScreenBase screen;
+  screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                   display::DisplayList::Type::PRIMARY);
+  screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
+                                   display::DisplayList::Type::NOT_PRIMARY);
+  display::test::ScopedScreenOverride screen_override(&screen);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/simple.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // TODO(crbug.com/1119974): this test could be in content_browsertests
+  // and not browser_tests if permission controls were supported.
+
+  // Auto-accept the Window Placement permission request.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(tab);
+  permission_request_manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_EQ(true, EvalJs(tab, R"(
+      var screensInterface;
+      var promiseForEvent = (target, evt) => {
+        return new Promise((resolve) => {
+          const handler = (e) => {
+            target.removeEventListener(evt, handler);
+            resolve(e);
+          };
+          target.addEventListener(evt, handler);
+        });
+      }
+      var screenChanges0 = 0;
+      var screenChanges1 = 0;
+      (async () => {
+        screensInterface = await self.getScreens();
+        if (screensInterface.screens.length !== 2)
+          return false;
+        // Add some event listeners for individual screens.
+        screensInterface.screens[0].addEventListener('change', () => {
+          screenChanges0++;
+        });
+        screensInterface.screens[1].addEventListener('change', () => {
+          screenChanges1++;
+        });
+        return true;
+      })();
+  )"));
+
+  // Update only the first display to have a different height.
+  EXPECT_TRUE(ExecJs(tab,
+                     R"(
+    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
+    )"));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x301,901+100-802x802");
+#else
+  screen.display_list().UpdateDisplay({1, gfx::Rect(100, 100, 801, 301)},
+                                      display::DisplayList::Type::PRIMARY);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_EQ(301, EvalJs(tab, R"(
+      (async () => {
+          await change0;
+          // Only screen[0] should have changed.
+          if (screenChanges0 !== 1)
+            return -1;
+          if (screenChanges1 !== 0)
+            return -2;
+          return screensInterface.screens[0].height;
+      })();
+    )"));
+
+  // Update only the second display to have a different height.
+  EXPECT_TRUE(ExecJs(tab,
+                     R"(
+    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
+    )"));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x301,901+100-802x302");
+#else
+  screen.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 302)},
+                                      display::DisplayList::Type::NOT_PRIMARY);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_EQ(302, EvalJs(tab, R"(
+      (async () => {
+          await change1;
+          // Both screens have one change.
+          if (screenChanges0 !== 1)
+            return -1;
+          if (screenChanges1 !== 1)
+            return -2;
+          return screensInterface.screens[1].height;
+      })();
+    )"));
+
+  // Change the width of both displays at the same time.
+  EXPECT_TRUE(ExecJs(tab,
+                     R"(
+    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
+    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
+    )"));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-401x301,901+100-402x302");
+#else
+  screen.display_list().UpdateDisplay({1, gfx::Rect(100, 100, 401, 301)},
+                                      display::DisplayList::Type::PRIMARY);
+  screen.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 402, 302)},
+                                      display::DisplayList::Type::NOT_PRIMARY);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_EQ(true, EvalJs(tab, R"(
+      (async () => {
+          await change0;
+          await change1;
+          // Both screens have two changes
+          if (screenChanges0 !== 2)
+            return false;
+          if (screenChanges1 !== 2)
+            return false;
+          if (screensInterface.screens[0].width !== 401)
+            return false;
+          if (screensInterface.screens[1].width !== 402)
+            return false;
+          return true;
+      })();
+    )"));
 }

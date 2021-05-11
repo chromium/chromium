@@ -128,7 +128,7 @@ class CORE_EXPORT CoreInitializer {
   virtual void NotifyOrientationChanged(LocalFrame&) = 0;
   // Called with an updated set of ScreenInfos for a local root frame
   // during a visual property update.
-  virtual void NotifyScreensChanged(LocalFrame& frame, const ScreenInfos&) = 0;
+  virtual void DidUpdateScreens(LocalFrame& frame, const ScreenInfos&) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

@@ -15,7 +15,11 @@
   // Current screen reference; corresponds with window.screen.
   readonly attribute ScreenAdvanced currentScreen;
 
-  // Change event fired when the set of screens changes,
+  // Change event fired when the set of screens changes.
   // NOTE: Does not fire on changes to attributes of individual Screens.
-  [HighEntropy, Measure] attribute EventHandler onchange;
+  [HighEntropy, Measure] attribute EventHandler onscreenschange;
+
+  // Change event fired when any attribute on the currentScreen changes,
+  // including when the window is moved to another screen.
+  [HighEntropy, Measure] attribute EventHandler oncurrentscreenchange;
 };

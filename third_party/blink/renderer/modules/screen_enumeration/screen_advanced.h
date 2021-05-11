@@ -44,9 +44,10 @@ class MODULES_EXPORT ScreenAdvanced final : public Screen {
 
   // Not web-exposed; for internal usage only (see Screen).
   int64_t DisplayId() const override;
+  void UpdateDisplayId(int64_t display_id) { display_id_ = display_id; }
 
  private:
-  const int64_t display_id_;
+  int64_t display_id_;
 };
 
 }  // namespace blink

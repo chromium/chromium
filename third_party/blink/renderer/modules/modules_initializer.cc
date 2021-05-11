@@ -372,14 +372,14 @@ void ModulesInitializer::NotifyOrientationChanged(LocalFrame& frame) {
       ->NotifyOrientationChanged();
 }
 
-void ModulesInitializer::NotifyScreensChanged(LocalFrame& frame,
-                                              const ScreenInfos& screen_infos) {
+void ModulesInitializer::DidUpdateScreens(LocalFrame& frame,
+                                          const ScreenInfos& screen_infos) {
   auto* window = frame.DomWindow();
   if (auto* supplement =
           Supplement<LocalDOMWindow>::From<WindowScreens>(window)) {
     // screens() may be null if permission has not been granted.
     if (auto* screens = supplement->screens()) {
-      screens->ScreenInfosChanged(window, screen_infos);
+      screens->UpdateScreenInfos(window, screen_infos);
     }
   }
 }

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
 
+#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -15,7 +16,6 @@ namespace blink {
 
 class LocalDOMWindow;
 class ScreenAdvanced;
-struct ScreenInfos;
 
 // Interface exposing multi-screen information.
 // https://github.com/webscreens/window-placement
@@ -29,7 +29,8 @@ class MODULES_EXPORT Screens final : public EventTargetWithInlineData,
   // Web-exposed interface:
   const HeapVector<Member<ScreenAdvanced>>& screens() const;
   ScreenAdvanced* currentScreen() const;
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(screenschange, kScreenschange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(currentscreenchange, kCurrentscreenchange)
 
   // EventTargetWithInlineData:
   const AtomicString& InterfaceName() const override;
@@ -40,10 +41,14 @@ class MODULES_EXPORT Screens final : public EventTargetWithInlineData,
 
   void Trace(Visitor*) const override;
 
-  // Called when the underlying multi-screen information changes.
-  void ScreenInfosChanged(LocalDOMWindow* window, const ScreenInfos& infos);
+  // Called when there is a visual property update with potentially new
+  // multi-screen information.
+  void UpdateScreenInfos(LocalDOMWindow* window, const ScreenInfos& new_infos);
 
  private:
+  // The ScreenInfos sent by the previous UpdateScreenInfos call.
+  ScreenInfos prev_screen_infos_;
+  int64_t current_display_id_ = ScreenInfo::kInvalidDisplayId;
   HeapVector<Member<ScreenAdvanced>> screens_;
 };
 
