@@ -2270,18 +2270,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         getTabModelSelector().selectModel(incognito);
-        if (TabUiFeatureUtilities.supportInstantStart(isTablet())
+        if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
+            Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
+                showOverview(StartSurfaceState.SHOWING_PREVIOUS);
+            } : null;
+            ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
+                    PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
+                    emptyTabCloseCallback);
+        } else if (TabUiFeatureUtilities.supportInstantStart(isTablet())
                 || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
-            if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
-                Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
-                    showOverview(StartSurfaceState.SHOWING_PREVIOUS);
-                } : null;
-                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
-                        PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
-                        emptyTabCloseCallback);
-            } else {
-                showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
-            }
+            showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
         }
         return true;
     }

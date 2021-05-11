@@ -1362,6 +1362,24 @@ public class InstantStartTest {
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
         "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
     public void testNewTabFromLauncher() throws IOException {
+        testNewTabFromLauncherImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
+    public void testNewTabFromLauncherWithInstantStartDisabled() throws IOException {
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewTabFromLauncherImpl();
+    }
+
+    private void testNewTabFromLauncherImpl() throws IOException {
         // clang-format on
         createTabStateFile(new int[] {0});
         createThumbnailBitmapAndWriteToFile(0);
