@@ -314,7 +314,7 @@ SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
           MakeSplitSettingKey(it.key(), jt.key()), jt.value()));
     }
   }
-  DCHECK_EQ(0u, GetQueuedItems()->size());
+  DCHECK_EQ(0u, GetQueuedItems()->DictSize());
   return data;
 }
 
