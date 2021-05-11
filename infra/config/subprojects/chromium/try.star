@@ -854,6 +854,7 @@ try_.chromium_chromiumos_builder(
     tryjob = try_.job(),
     use_clang_coverage = True,
     os = os.LINUX_BIONIC_REMOVE,
+    coverage_test_types = ["unit", "overall"],
 )
 
 try_.chromium_chromiumos_builder(
