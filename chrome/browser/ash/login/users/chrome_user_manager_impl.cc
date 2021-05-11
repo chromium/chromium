@@ -123,7 +123,6 @@ namespace {
 // TODO(https://crbug.com/1164001): remove after the classes are migrated
 using ::chromeos::AuthErrorObserver;
 using ::chromeos::AuthErrorObserverFactory;
-using ::chromeos::EasyUnlockService;
 using ::chromeos::ProxyConfigServiceImpl;
 using ::content::BrowserThread;
 

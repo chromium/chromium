@@ -65,4 +65,14 @@ std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::BeaconSeed;
+using ::chromeos::multidevice::FromCryptAuthSeedList;
+using ::chromeos::multidevice::ToCryptAuthSeed;
+}  // namespace multidevice
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_

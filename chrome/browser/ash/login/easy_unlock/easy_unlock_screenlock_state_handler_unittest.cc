@@ -24,10 +24,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using proximity_auth::ScreenlockState;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::proximity_auth::ScreenlockState;
 
 // Icons used by EasyUnlockScreenlockStateHandler. The icon id values are the
 // same as the ones set by proximity_auth::ScreenlockBridge.
@@ -717,4 +717,4 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

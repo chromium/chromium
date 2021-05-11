@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kEasyUnlockKeyMetaNameBluetoothAddress[] = "eu.btaddr";
 const char kEasyUnlockKeyMetaNamePsk[] = "eu.psk";
@@ -21,4 +21,4 @@ EasyUnlockDeviceKeyData::EasyUnlockDeviceKeyData(
 
 EasyUnlockDeviceKeyData::~EasyUnlockDeviceKeyData() = default;
 
-}  // namespace chromeos
+}  // namespace ash

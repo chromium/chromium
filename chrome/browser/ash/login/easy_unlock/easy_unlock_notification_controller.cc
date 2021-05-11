@@ -18,8 +18,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kEasyUnlockChromebookAddedNotifierId[] =
@@ -172,4 +171,4 @@ void EasyUnlockNotificationController::NotificationDelegate::Click(
   notification_controller_->LaunchEasyUnlockSettings();
 }
 
-}  // namespace chromeos
+}  // namespace ash

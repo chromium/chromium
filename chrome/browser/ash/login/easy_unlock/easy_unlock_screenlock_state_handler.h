@@ -16,7 +16,7 @@ namespace proximity_auth {
 class ProximityAuthPrefManager;
 }  // namespace proximity_auth
 
-namespace chromeos {
+namespace ash {
 
 // Profile specific class responsible for updating screenlock UI for the user
 // associated with the profile when their Easy Unlock state changes.
@@ -111,12 +111,12 @@ class EasyUnlockScreenlockStateHandler
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockScreenlockStateHandler);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::EasyUnlockScreenlockStateHandler;
+namespace chromeos {
+using ::ash::EasyUnlockScreenlockStateHandler;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SCREENLOCK_STATE_HANDLER_H_

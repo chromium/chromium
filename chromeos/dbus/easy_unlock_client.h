@@ -155,4 +155,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) EasyUnlockClient : public DBusClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EasyUnlockClient;
+}
+
 #endif  // CHROMEOS_DBUS_EASY_UNLOCK_CLIENT_H_

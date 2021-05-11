@@ -30,7 +30,7 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The modulus length for RSA keys used by easy sign-in.
@@ -402,4 +402,4 @@ void EasyUnlockTpmKeyManager::OnDataSigned(
   std::move(callback).Run(signature);
 }
 
-}  // namespace chromeos
+}  // namespace ash

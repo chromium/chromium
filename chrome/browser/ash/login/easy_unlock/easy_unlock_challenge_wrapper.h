@@ -12,8 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
-
+namespace ash {
 class EasyUnlockTpmKeyManager;
 
 // Wraps a user challenge in a SecureMessage that can be verified by the remote
@@ -73,6 +72,6 @@ class EasyUnlockChallengeWrapper {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockChallengeWrapper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_CHALLENGE_WRAPPER_H_

@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kSalt[] =
@@ -60,8 +60,6 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
   DISALLOW_COPY_AND_ASSIGN(TestableEasyUnlockChallengeWrapper);
 };
 
-}  // namespace
-
 TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   TestableEasyUnlockChallengeWrapper wrapper;
   std::string wrapped_challenge;
@@ -77,4 +75,5 @@ TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   EXPECT_EQ(kSignature, signature_secure_message.signature());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

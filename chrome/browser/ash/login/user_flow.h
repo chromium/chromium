@@ -55,6 +55,7 @@ class ExtendedUserFlow : public UserFlow {
 // TODO(https://crbug.com/1164001): remove once the migration is finished.
 namespace ash {
 using ::chromeos::DefaultUserFlow;
+using ::chromeos::ExtendedUserFlow;
 using ::chromeos::UserFlow;
 }  // namespace ash
 

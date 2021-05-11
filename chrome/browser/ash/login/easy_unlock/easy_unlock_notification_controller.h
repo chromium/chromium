@@ -16,7 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class EasyUnlockNotificationController {
  public:
@@ -73,6 +73,6 @@ class EasyUnlockNotificationController {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockNotificationController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_NOTIFICATION_CONTROLLER_H_

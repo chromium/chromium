@@ -21,9 +21,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
-using proximity_auth::ScreenlockState;
+namespace ash {
 
-namespace chromeos {
+using ::proximity_auth::ScreenlockState;
 
 ChromeProximityAuthClient::ChromeProximityAuthClient(Profile* profile)
     : profile_(profile) {}
@@ -74,4 +74,4 @@ ChromeProximityAuthClient::GetPrefManager() {
   return nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

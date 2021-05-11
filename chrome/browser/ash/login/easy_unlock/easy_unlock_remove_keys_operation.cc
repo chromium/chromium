@@ -13,7 +13,7 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockRemoveKeysOperation::EasyUnlockRemoveKeysOperation(
     const UserContext& user_context,
@@ -87,4 +87,4 @@ void EasyUnlockRemoveKeysOperation::OnKeyRemoved(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

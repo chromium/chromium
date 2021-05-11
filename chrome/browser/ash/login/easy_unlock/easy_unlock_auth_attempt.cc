@@ -13,8 +13,7 @@
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Decrypts the secret that should be used to login from `wrapped_secret` using
@@ -162,4 +161,4 @@ void EasyUnlockAuthAttempt::Cancel(const AccountId& account_id) {
                          std::string());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -17,11 +17,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-using proximity_auth::ScreenlockState;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::proximity_auth::ScreenlockState;
 
 proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
     ScreenlockState state) {
@@ -394,4 +393,4 @@ void EasyUnlockScreenlockStateHandler::UpdateScreenlockAuthType() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

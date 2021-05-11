@@ -15,7 +15,7 @@
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Fake user ids used in tests.
@@ -465,4 +465,4 @@ TEST_F(EasyUnlockAuthAttemptSigninTest, FinalizeSigninCalledForWrongUser) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

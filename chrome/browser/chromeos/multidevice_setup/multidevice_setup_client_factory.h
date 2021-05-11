@@ -50,4 +50,12 @@ class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::MultiDeviceSetupClientFactory;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_CLIENT_FACTORY_H_

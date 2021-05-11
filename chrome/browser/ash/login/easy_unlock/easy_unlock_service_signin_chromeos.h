@@ -15,22 +15,17 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager;
 }  // namespace proximity_auth
 
-namespace chromeos {
-
-namespace multidevice {
-class RemoteDeviceCache;
-}  // namespace multidevice
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
-
+namespace ash {
 class EasyUnlockChallengeWrapper;
 
 // EasyUnlockService instance that should be used for signin profile.
@@ -161,6 +156,6 @@ class EasyUnlockServiceSignin
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceSignin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_SIGNIN_CHROMEOS_H_

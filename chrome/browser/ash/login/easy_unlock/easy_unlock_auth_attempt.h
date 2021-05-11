@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class responsible for handling easy unlock auth attempts (both for unlocking
 // the screen and logging in). The auth protocol is started by calling `Start`,
@@ -60,6 +60,6 @@ class EasyUnlockAuthAttempt {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttempt);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_AUTH_ATTEMPT_H_

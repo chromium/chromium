@@ -39,4 +39,12 @@ class SecureChannelClientProvider {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::SecureChannelClientProvider;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_

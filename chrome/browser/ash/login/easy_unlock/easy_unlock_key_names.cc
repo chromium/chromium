@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace key_names {
 
 const char kKeyBluetoothAddress[] = "bluetoothAddress";
@@ -23,5 +22,4 @@ const char kPermitPermitIdFormat[] = "permit://google.com/easyunlock/v1/%s";
 const char kPermitTypeLicence[] = "licence";
 
 }  // namespace key_names
-
-}  // namespace chromeos
+}  // namespace ash

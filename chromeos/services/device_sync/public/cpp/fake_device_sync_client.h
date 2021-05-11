@@ -200,4 +200,12 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::FakeDeviceSyncClient;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_

@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockUserLoginFlow::EasyUnlockUserLoginFlow(const AccountId& account_id)
     : ExtendedUserFlow(account_id) {}
@@ -43,4 +43,4 @@ void EasyUnlockUserLoginFlow::HandleLoginSuccess(const UserContext& context) {
   SmartLockMetricsRecorder::RecordAuthResultSignInSuccess();
 }
 
-}  // namespace chromeos
+}  // namespace ash

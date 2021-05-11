@@ -21,6 +21,8 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/proximity_auth/screenlock_state.h"
 #include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;
@@ -45,11 +47,7 @@ class ProximityAuthSystem;
 class Profile;
 class PrefRegistrySimple;
 
-namespace chromeos {
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
+namespace ash {
 
 class EasyUnlockService : public KeyedService {
  public:
@@ -294,12 +292,12 @@ class EasyUnlockService : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockService);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::EasyUnlockService;
+namespace chromeos {
+using ::ash::EasyUnlockService;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_H_

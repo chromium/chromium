@@ -20,7 +20,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Manages per user RSA keys stored in system TPM slot used in easy signin
 // protocol. The keys are used to sign a nonce exchanged during signin.
@@ -151,6 +151,6 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_TPM_KEY_MANAGER_H_

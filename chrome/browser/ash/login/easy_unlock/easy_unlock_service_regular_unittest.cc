@@ -52,14 +52,11 @@
 #include "ui/display/test/test_screen.h"
 #include "ui/views/test/test_views_delegate.h"
 
-using device::MockBluetoothAdapter;
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::device::MockBluetoothAdapter;
+using ::testing::Return;
 
 class MockEasyUnlockNotificationController
     : public EasyUnlockNotificationController {
@@ -483,4 +480,4 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

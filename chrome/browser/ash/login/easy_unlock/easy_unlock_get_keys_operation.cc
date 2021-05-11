@@ -18,7 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockGetKeysOperation::EasyUnlockGetKeysOperation(
     const UserContext& user_context,
@@ -153,4 +153,4 @@ void EasyUnlockGetKeysOperation::OnGetKeyData(
   GetKeyData();
 }
 
-}  // namespace chromeos
+}  // namespace ash

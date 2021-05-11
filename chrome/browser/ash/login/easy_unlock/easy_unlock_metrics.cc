@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 
-namespace chromeos {
+namespace ash {
 
 void RecordEasyUnlockDidUserManuallyUnlockPhone(bool did_unlock) {
   UMA_HISTOGRAM_BOOLEAN("EasyUnlock.AuthEvent.DidUserManuallyUnlockPhone",
@@ -34,4 +34,4 @@ void RecordEasyUnlockScreenUnlockEvent(EasyUnlockAuthEvent event) {
                             EASY_UNLOCK_AUTH_EVENT_COUNT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

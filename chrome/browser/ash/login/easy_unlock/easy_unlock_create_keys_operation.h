@@ -18,9 +18,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
-class UserContext;
+namespace ash {
 
 // A class to create Easy unlock cryptohome keys for the given user and devices.
 class EasyUnlockCreateKeysOperation {
@@ -63,6 +61,6 @@ class EasyUnlockCreateKeysOperation {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockCreateKeysOperation);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_CREATE_KEYS_OPERATION_H_

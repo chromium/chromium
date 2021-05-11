@@ -11,7 +11,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kPhoneName[] = "Nexus 6";
@@ -138,4 +138,4 @@ TEST_F(EasyUnlockNotificationControllerTest,
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

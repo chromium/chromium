@@ -9,8 +9,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Salt added to a SecureMessage.
@@ -80,4 +79,4 @@ void EasyUnlockChallengeWrapper::OnChannelBindingDataSigned(
   std::move(callback_).Run(wrapped_challenge.SerializeAsString());
 }
 
-}  // namespace chromeos
+}  // namespace ash

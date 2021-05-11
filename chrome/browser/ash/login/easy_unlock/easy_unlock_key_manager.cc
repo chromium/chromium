@@ -17,7 +17,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockKeyManager::EasyUnlockKeyManager() {}
 
@@ -229,4 +229,4 @@ void EasyUnlockKeyManager::OnKeysFetched(
   RunNextOperation();
 }
 
-}  // namespace chromeos
+}  // namespace ash

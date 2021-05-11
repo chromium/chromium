@@ -42,4 +42,12 @@ class DeviceSyncClientFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::DeviceSyncClientFactory;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_DEVICE_SYNC_DEVICE_SYNC_CLIENT_FACTORY_H_

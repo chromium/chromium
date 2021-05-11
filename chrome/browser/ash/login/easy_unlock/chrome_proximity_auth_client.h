@@ -10,7 +10,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // A Chrome-specific implementation of the ProximityAuthClient interface.
 // There is one `ChromeProximityAuthClient` per `Profile`.
@@ -36,6 +36,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   DISALLOW_COPY_AND_ASSIGN(ChromeProximityAuthClient);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_

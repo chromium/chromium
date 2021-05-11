@@ -30,8 +30,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const int kUserKeyByteSize = 16;
@@ -387,4 +386,4 @@ void EasyUnlockCreateKeysOperation::OnKeyCreated(
   CreateKeyForDeviceAtIndex(key_creation_index_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -18,6 +18,8 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_get_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_refresh_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/login/auth/user_context.h"
 
 class AccountId;
 
@@ -26,9 +28,7 @@ class DictionaryValue;
 class ListValue;
 }  // namespace base
 
-namespace chromeos {
-
-class UserContext;
+namespace ash {
 
 // A class to manage Easy unlock cryptohome keys.
 class EasyUnlockKeyManager {
@@ -113,12 +113,6 @@ class EasyUnlockKeyManager {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockKeyManager);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::EasyUnlockKeyManager;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_KEY_MANAGER_H_

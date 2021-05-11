@@ -13,11 +13,9 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/login/auth/user_context.h"
 
-namespace chromeos {
-
+namespace ash {
 class EasyUnlockCreateKeysOperation;
 class EasyUnlockRemoveKeysOperation;
-class UserContext;
 
 // The refresh keys operation replaces the existing keys in cryptohome with a
 // new list of keys. This operation is a simple sequence of the create and
@@ -51,6 +49,6 @@ class EasyUnlockRefreshKeysOperation {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockRefreshKeysOperation);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_REFRESH_KEYS_OPERATION_H_

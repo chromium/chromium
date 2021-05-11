@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_create_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_remove_keys_operation.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockRefreshKeysOperation::EasyUnlockRefreshKeysOperation(
     const UserContext& user_context,
@@ -68,4 +68,4 @@ void EasyUnlockRefreshKeysOperation::OnKeysRemoved(bool success) {
   std::move(callback_).Run(success);
 }
 
-}  // namespace chromeos
+}  // namespace ash

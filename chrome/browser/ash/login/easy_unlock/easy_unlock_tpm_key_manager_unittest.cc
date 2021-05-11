@@ -33,7 +33,7 @@
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // User that is associated with test user profile.
@@ -599,4 +599,4 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignDataNoPrivateKeyPresent) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

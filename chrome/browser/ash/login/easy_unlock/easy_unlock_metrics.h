@@ -9,7 +9,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Tracking login events for Easy unlock metrics.
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -84,6 +84,6 @@ void RecordEasyUnlockSigninEvent(EasyUnlockAuthEvent event);
 void RecordEasyUnlockScreenUnlockDuration(const base::TimeDelta& duration);
 void RecordEasyUnlockScreenUnlockEvent(EasyUnlockAuthEvent event);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_METRICS_H_

@@ -70,4 +70,12 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::SoftwareFeature;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_SOFTWARE_FEATURE_H_

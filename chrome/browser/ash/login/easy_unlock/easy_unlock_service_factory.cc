@@ -26,13 +26,12 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
   return multidevice_setup::IsFeatureAllowed(
-      multidevice_setup::mojom::Feature::kSmartLock,
+      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
       Profile::FromBrowserContext(context)->GetPrefs());
 }
 
@@ -128,4 +127,4 @@ bool EasyUnlockServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

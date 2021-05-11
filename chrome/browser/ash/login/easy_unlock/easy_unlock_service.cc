@@ -49,11 +49,10 @@
 #include "components/user_manager/user.h"
 #include "components/version_info/version_info.h"
 
-using proximity_auth::ScreenlockState;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::proximity_auth::ScreenlockState;
 
 PrefService* GetLocalState() {
   return g_browser_process ? g_browser_process->local_state() : NULL;
@@ -701,4 +700,4 @@ void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {
   tpm_key_checked_ = true;
 }
 
-}  // namespace chromeos
+}  // namespace ash
