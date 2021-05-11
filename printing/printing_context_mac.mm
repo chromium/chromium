@@ -42,7 +42,7 @@ PMPaper MatchPaper(CFArrayRef paper_list,
   PMPaper best_matching_paper = nullptr;
   int num_papers = CFArrayGetCount(paper_list);
   for (int i = 0; i < num_papers; ++i) {
-    PMPaper paper = (PMPaper)[(NSArray*)paper_list objectAtIndex:i];
+    PMPaper paper = (PMPaper)((NSArray*)paper_list)[i];
     double paper_width = 0.0;
     double paper_height = 0.0;
     PMPaperGetWidth(paper, &paper_width);
@@ -431,10 +431,10 @@ bool PrintingContextMac::SetResolution(const gfx::Size& dpi_size) {
 PageRanges PrintingContextMac::GetPageRangesFromPrintInfo() {
   PageRanges page_ranges;
   NSDictionary* print_info_dict = [print_info_.get() dictionary];
-  if (![[print_info_dict objectForKey:NSPrintAllPages] boolValue]) {
+  if (![print_info_dict[NSPrintAllPages] boolValue]) {
     PageRange range;
-    range.from = [[print_info_dict objectForKey:NSPrintFirstPage] intValue] - 1;
-    range.to = [[print_info_dict objectForKey:NSPrintLastPage] intValue] - 1;
+    range.from = [print_info_dict[NSPrintFirstPage] intValue] - 1;
+    range.to = [print_info_dict[NSPrintLastPage] intValue] - 1;
     page_ranges.push_back(range);
   }
   return page_ranges;
