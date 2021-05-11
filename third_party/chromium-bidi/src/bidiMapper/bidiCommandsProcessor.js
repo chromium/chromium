@@ -24,7 +24,7 @@ export function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTarget
 
     const progress_unknown_command = async function (messageId) {
         bidiClient.sendBidiMessage({
-            id,
+            id: messageId,
             "error": "invalid argument",
             "message": "not supported operation"
         });
@@ -49,21 +49,6 @@ export function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTarget
         }
     }
 
-
     cdpClient.setCdpMessageHandler(onCdpMessage);
     bidiClient.setBidiMessageHandler(onBidiMessage);
-
-    // return {
-    //     processCommand: async function (message) {
-    //         const messageId = message.id;
-    //         switch (message.method) {
-    //             case 'session.status':
-    //                 return progress_session_status(messageId);
-    //             case 'browsingContext.getTree':
-    //                 return process_browsingContext_getTree(messageId);
-    //             default:
-    //                 return progress_unknown_command(messageId);
-    //         }
-    //     }
-    // };
 };

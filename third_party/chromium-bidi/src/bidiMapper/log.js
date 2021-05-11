@@ -6,7 +6,7 @@ export function bidi_log(message) {
 }
 export function log(message, type) {
     console.log(type, message);
-    getLogElement(type).innerHTML += message + "\n";
+    getLogElement(type).innerText += message + "\n";
 }
 
 function getLogElement(type) {
