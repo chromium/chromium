@@ -257,7 +257,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
                         helper_.NowTicks()),
       any_thread_lock_("MainThreadSchedulerImpl.any_thread_lock_"),
       any_thread_(this),
-      policy_may_need_update_(&any_thread_lock_),
+      policy_may_need_update_(&any_thread_lock_, "MainThreadSchedulerImpl.policy_may_need_update_"),
       notify_agent_strategy_task_posted_(&any_thread_lock_) {
   recordreplay::RegisterPointer(this);
   helper_.AttachToCurrentThread();

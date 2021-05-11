@@ -20,7 +20,7 @@ class PollableThreadSafeFlag {
   DISALLOW_NEW();
 
  public:
-  explicit PollableThreadSafeFlag(base::Lock* write_lock);
+  explicit PollableThreadSafeFlag(base::Lock* write_lock, const char* ordered_name = nullptr);
 
   // Set the flag. May only be called if |write_lock| is held.
   void SetWhileLocked(bool value);
@@ -29,6 +29,7 @@ class PollableThreadSafeFlag {
   bool IsSet() const;
 
  private:
+  int ordered_lock_id_;
   base::subtle::Atomic32 flag_;
   base::Lock* write_lock_;  // Not owned.
 
