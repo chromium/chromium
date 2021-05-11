@@ -45,7 +45,8 @@ bool ShouldRouteToFstMojoEngine(const std::string& engine_id) {
   // and the physical keyboard, only run the native code path if the virtual
   // keyboard is disabled. Otherwise, just let the extension handle any physical
   // key events.
-  return base::FeatureList::IsEnabled(
+  return base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder) &&
+         base::FeatureList::IsEnabled(
              chromeos::features::kSystemLatinPhysicalTyping) &&
          base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) &&
          !ChromeKeyboardControllerClient::Get()->GetKeyboardEnabled();

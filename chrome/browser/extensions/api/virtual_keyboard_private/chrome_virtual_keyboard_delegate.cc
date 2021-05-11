@@ -534,15 +534,15 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
           chromeos::features::kVirtualKeyboardFloatingDefault)));
 
   // Flag used to enable system built-in IME decoder instead of NaCl.
-  bool mojoDecoder =
+  bool mojo_decoder =
       base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder);
-  features->AppendString(GenerateFeatureFlag("usemojodecoder", mojoDecoder));
+  features->AppendString(GenerateFeatureFlag("usemojodecoder", mojo_decoder));
   // Enabling MojoDecoder implies the 2 previous flags are auto-enabled.
   //   * fstinputlogic
   //   * hmminputlogic
   // TODO(b/171846787): Remove the 3 flags after they are removed from clients.
-  features->AppendString(GenerateFeatureFlag("fstinputlogic", mojoDecoder));
-  features->AppendString(GenerateFeatureFlag("hmminputlogic", mojoDecoder));
+  features->AppendString(GenerateFeatureFlag("fstinputlogic", mojo_decoder));
+  features->AppendString(GenerateFeatureFlag("hmminputlogic", mojo_decoder));
   features->AppendString(GenerateFeatureFlag(
       "imemozcproto",
       base::FeatureList::IsEnabled(chromeos::features::kImeMozcProto)));
@@ -553,10 +553,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features->AppendString(GenerateFeatureFlag(
       "assistiveAutoCorrect",
       base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
-  features->AppendString(
-      GenerateFeatureFlag("systemlatinphysicaltyping",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kSystemLatinPhysicalTyping)));
+  features->AppendString(GenerateFeatureFlag(
+      "systemlatinphysicaltyping",
+      mojo_decoder && base::FeatureList::IsEnabled(
+                          chromeos::features::kSystemLatinPhysicalTyping)));
   features->AppendString(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
