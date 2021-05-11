@@ -4572,7 +4572,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_arm64_apple_dtk_experimental',
+          'mac_arm64_apple_dtk_gpu_experimental',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
