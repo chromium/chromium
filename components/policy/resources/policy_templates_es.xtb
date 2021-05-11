@@ -2522,7 +2522,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4331357743227845302">Esta política permite a los administradores configurar los servicios Bluetooth a los que puede conectarse <ph name="PRODUCT_OS_NAME" />.
 
 Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a los servicios Bluetooth especificados. Si la lista está vacía, los usuarios podrán usar cualquier servicio. Los UUIDs reservados por Bluetooth SIG se pueden representar como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o como <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUIDs personalizados se pueden representar como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUIDs no distinguen entre mayúsculas y minúsculas. Si no se asigna ningún valor a esta política, los usuarios podrán conectarse a cualquier servicio Bluetooth.</translation>
-<translation id="4332177773549877617">Registrar eventos de descargas de aplicaciones para Android</translation>
+<translation id="4332177773549877617">Registrar eventos de descargas de aplicación para Android</translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará la codificación UTF‑8.</translation>

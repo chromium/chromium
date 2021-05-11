@@ -13,7 +13,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Páxina que non responde}other{Páxinas que non responden}}</translation>
 <translation id="1011355516189274711">Volume da síntese de voz</translation>
 <translation id="1012794136286421601">Estanse sincronizando os teus ficheiros de Documentos, Follas de Cálculo, Presentacións e Debuxos. Abre a aplicación Google Drive para acceder a eles con conexión ou sen ela.</translation>
-<translation id="1012876632442809908">Dispositivo USB-C (porto frontal)</translation>
+<translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editar o nome do cartafol</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último día para actualizar o <ph name="DEVICE_TYPE" />}other{Actualiza o <ph name="DEVICE_TYPE" /> no prazo de {NUM_DAYS} días}}</translation>
@@ -270,7 +270,7 @@
 <translation id="1291119821938122630">Condicións de servizo de <ph name="MANAGER" /></translation>
 <translation id="1291603679744561561">SIM bloqueada</translation>
 <translation id="1292849930724124745">Para manter a sesión iniciada, insire a tarxeta intelixente</translation>
-<translation id="1293264513303784526">Dispositivo USB-C (porto esquerdo)</translation>
+<translation id="1293264513303784526">Dispositivo USB‑C (porto esquerdo)</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1294807885394205587">Este proceso pode tardar uns minutiños. Estase iniciando o xestor de contedores.</translation>
 <translation id="1296911687402551044">Fixar pestana seleccionada</translation>
@@ -816,7 +816,7 @@
 <translation id="1863316578636157783">Desactivouse a extensión <ph name="EXTENSION_NAME" /> porque contén software malicioso</translation>
 <translation id="1864111464094315414">Inicio de sesión</translation>
 <translation id="1864400682872660285">Cores máis frías</translation>
-<translation id="1864454756846565995">Dispositivo USB-C (porto posterior)</translation>
+<translation id="1864454756846565995">Dispositivo USB‑C (porto posterior)</translation>
 <translation id="1865769994591826607">Só conexións ao mesmo sitio</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" pode ler e escribir en ficheiros de son, vídeo e imaxes nas localizacións seleccionadas.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> está preparado para completar a instalación</translation>
@@ -1085,7 +1085,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
 <translation id="2157875535253991059">Esta páxina está agora en pantalla completa.</translation>
 <translation id="2158475082070321257">Copiar ligazón ao texto destacado</translation>
-<translation id="2159488579268505102">USB-C</translation>
+<translation id="2159488579268505102">USB‑C</translation>
 <translation id="216169395504480358">Engadir wifi...</translation>
 <translation id="2162155940152307086">A sincronización comezará cando saias da configuración desta función</translation>
 <translation id="2163004395084716754">Non se recoñeceu a tecla. Preme unha tecla calquera para saír.</translation>
@@ -1708,7 +1708,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
 <translation id="2841013758207633010">Hora</translation>
 <translation id="2841837950101800123">Provedor</translation>
-<translation id="2844169650293029770">Dispositivo USB-C (porto esquerdo frontal)</translation>
+<translation id="2844169650293029770">Dispositivo USB‑C (porto esquerdo frontal)</translation>
 <translation id="2844809857160214557">Accede aos traballos de impresión e xestiónaos</translation>
 <translation id="2845382757467349449">Mostrar sempre a barra de marcadores</translation>
 <translation id="284805635805850872">Queres eliminar software daniño?</translation>
@@ -2157,7 +2157,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3369067987974711168">Ver máis accións para este porto</translation>
 <translation id="3369624026883419694">Resolvendo servidor...</translation>
 <translation id="3370260763947406229">Corrección automática</translation>
-<translation id="3371140690572404006">Dispositivo USB-C (porto dereito frontal)</translation>
+<translation id="3371140690572404006">Dispositivo USB‑C (porto dereito frontal)</translation>
 <translation id="337286756654493126">Ler cartafoles que abres na aplicación</translation>
 <translation id="3378572629723696641">É posible que esta extensión se danase.</translation>
 <translation id="337920581046691015">Instalarase <ph name="PRODUCT_NAME" />.</translation>
@@ -2230,7 +2230,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3441663102605358937">Inicia sesión en <ph name="ACCOUNT" /> de novo para verificar esta conta</translation>
 <translation id="3445047461171030979">Respostas rápidas do Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
-<translation id="3445925074670675829">Dispositivo USB-C</translation>
+<translation id="3445925074670675829">Dispositivo USB‑C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Lectura dos teus datos nun determinado número de sitios web</translation>
 <translation id="3446650212859500694">Este ficheiro inclúe contido confidencial</translation>
@@ -2770,7 +2770,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="399179161741278232">Importados</translation>
 <translation id="3994374631886003300">Desbloquea o teléfono e achégao ao <ph name="DEVICE_TYPE" /> para desbloquealo.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
-<translation id="3995138139523574647">Dispositivo USB-C (porto dereito posterior)</translation>
+<translation id="3995138139523574647">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Xestionar as excepcións para sitios web específicos</translation>
 <translation id="4002440992267487163">Configuración do PIN</translation>
@@ -3893,7 +3893,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5329858601952122676">&amp;Eliminar</translation>
 <translation id="5331069282670671859">Non tes certificados nesta categoría</translation>
 <translation id="5331425616433531170">"<ph name="CHROME_EXTENSION_NAME" />" quere sincronizarse</translation>
-<translation id="5331975486040154427">Dispositivo USB-C (porto esquerdo posterior)</translation>
+<translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="5334142896108694079">Caché do script</translation>
 <translation id="5336126339807372270">Non permitir que ningún sitio acceda aos dispositivos USB</translation>
 <translation id="5336688142483283574">Esta páxina tamén se quitará do teu historial e da actividade de <ph name="SEARCH_ENGINE" />.</translation>
@@ -4909,7 +4909,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6483805311199035658">Abrindo <ph name="FILE" />...</translation>
 <translation id="6488384360522318064">Selecciona un idioma</translation>
 <translation id="648927581764831596">Nada dispoñible</translation>
-<translation id="6490471652906364588">Dispositivo USB-C (porto dereito)</translation>
+<translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
 <translation id="6491376743066338510">Produciuse un erro na autorización</translation>
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
 <translation id="6494445798847293442">Non é unha autoridade de certificación</translation>
@@ -5461,7 +5461,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7088674813905715446">O administrador cambiou o estado do dispositivo para que non se poida utilizar. Para que se poida rexistrar, o administrador debe colocar o dispositivo en estado pendente.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Intercambiar datos cos dispositivos denominados: <ph name="HOSTNAMES" /></translation>
-<translation id="7098389117866926363">Dispositivo USB-C (porto esquerdo posterior)</translation>
+<translation id="7098389117866926363">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="7098447629416471489">Outros motores de busca gardados aparecerán aquí</translation>
 <translation id="7099337801055912064">Non se poden cargar PPD grandes. O tamaño máximo é de 250 kB.</translation>
 <translation id="7102687220333134671">As actualizacións automáticas están activadas</translation>
@@ -7113,7 +7113,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8933960630081805351">&amp;Mostrar no localizador</translation>
 <translation id="8934732568177537184">Continuar</translation>
 <translation id="8938306522009698937">controladores</translation>
-<translation id="8938800817013097409">Dispositivo USB-C (porto dereito posterior)</translation>
+<translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="8940081510938872932">O teu ordenador está levando a cabo demasiadas accións neste momento. Téntao de novo máis tarde.</translation>
 <translation id="8941173171815156065">Revogar o permiso "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Certificado Step-Up de Netscape International</translation>
