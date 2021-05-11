@@ -3389,8 +3389,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "args": [],

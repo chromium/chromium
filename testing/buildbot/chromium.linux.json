@@ -4771,7 +4771,7 @@
           "--use-weston",
           "--ozone-platform=wayland",
           "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
         ],
         "merge": {
           "args": [],
@@ -5063,8 +5063,7 @@
       {
         "args": [
           "--ozone-platform=x11",
-          "--enable-features=UseOzonePlatform",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--enable-features=UseOzonePlatform"
         ],
         "merge": {
           "args": [],
@@ -9962,9 +9961,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
-        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -12059,9 +12055,6 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

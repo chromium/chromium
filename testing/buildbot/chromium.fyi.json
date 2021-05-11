@@ -50073,7 +50073,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
