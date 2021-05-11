@@ -202,6 +202,7 @@ source_set("chromeos") {
     "//chromeos/dbus/media_analytics",
     "//chromeos/dbus/media_analytics:media_perception_proto",
     "//chromeos/dbus/missive",
+    "//chromeos/dbus/os_install",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
