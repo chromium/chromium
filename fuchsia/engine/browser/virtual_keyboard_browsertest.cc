@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/strings/stringprintf.h"
@@ -40,15 +41,6 @@ constexpr char kInputFieldUrl[] = "input-url";
 constexpr char kInputFieldEmail[] = "input-email";
 constexpr char kInputFieldDecimal[] = "input-decimal";
 constexpr char kInputFieldSearch[] = "input-search";
-
-zx_handle_t GetKoidFromEventPair(const zx::eventpair& object) {
-  zx_info_handle_basic_t handle_info{};
-  zx_status_t status =
-      object.get_info(ZX_INFO_HANDLE_BASIC, &handle_info,
-                      sizeof(zx_info_handle_basic_t), nullptr, nullptr);
-  ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
-  return handle_info.koid;
-}
 
 class MockVirtualKeyboardController : public virtualkeyboard::Controller {
  public:
@@ -205,8 +197,8 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
 
     controller_->AwaitWatchAndRespondWith(false);
 
-    ASSERT_EQ(GetKoidFromEventPair(controller_->view_ref().reference),
-              GetKoidFromEventPair(view_ref_.reference));
+    ASSERT_EQ(base::GetKoid(controller_->view_ref().reference).value(),
+              base::GetKoid(view_ref_.reference).value());
   }
 
   void TearDownOnMainThread() override {

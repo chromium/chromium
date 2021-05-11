@@ -5,11 +5,14 @@
 #include "fuchsia/engine/browser/context_impl.h"
 
 #include <lib/zx/channel.h>
+#include <lib/zx/handle.h>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -24,9 +27,11 @@
 
 ContextImpl::ContextImpl(
     std::unique_ptr<content::BrowserContext> browser_context,
+    inspect::Node inspect_node,
     WebEngineDevToolsController* devtools_controller)
     : browser_context_(std::move(browser_context)),
       devtools_controller_(devtools_controller),
+      inspect_node_(std::move(inspect_node)),
       cookie_manager_(base::BindRepeating(&ContextImpl::GetNetworkContext,
                                           base::Unretained(this))) {
   DCHECK(browser_context_);
@@ -151,9 +156,11 @@ void ContextImpl::CreateFrameForWebContents(
   }
 
   // Wrap the WebContents into a FrameImpl owned by |this|.
-  auto frame_impl =
-      std::make_unique<FrameImpl>(std::move(web_contents), this,
-                                  std::move(params), std::move(frame_request));
+  auto inspect_node_name =
+      base::StringPrintf("frame-%lu", *base::GetKoid(frame_request.channel()));
+  auto frame_impl = std::make_unique<FrameImpl>(
+      std::move(web_contents), this, std::move(params),
+      inspect_node_.CreateChild(inspect_node_name), std::move(frame_request));
 
   if (explicit_sites_filter_error_page) {
     frame_impl->EnableExplicitSitesFilter(
@@ -191,21 +198,14 @@ FrameImpl* ContextImpl::GetFrameImplForTest(
   DCHECK(frame_ptr);
 
   // Find the FrameImpl whose channel is connected to |frame_ptr| by inspecting
-  // the related_koids of active FrameImpls.
-  zx_info_handle_basic_t handle_info{};
-  zx_status_t status = frame_ptr->channel().get_info(
-      ZX_INFO_HANDLE_BASIC, &handle_info, sizeof(zx_info_handle_basic_t),
-      nullptr, nullptr);
-  ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
-  zx_handle_t client_handle_koid = handle_info.koid;
-
+  // the "related" KOIDs of active FrameImpls.
+  zx_koid_t channel_koid = base::GetKoid(frame_ptr->channel()).value();
   for (const std::unique_ptr<FrameImpl>& frame : frames_) {
-    status = frame->GetBindingChannelForTest()->get_info(
-        ZX_INFO_HANDLE_BASIC, &handle_info, sizeof(zx_info_handle_basic_t),
-        nullptr, nullptr);
-    ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
+    zx_koid_t peer_koid =
+        base::GetRelatedKoid(*frame->GetBindingChannelForTest())  // IN-TEST
+            .value();
 
-    if (client_handle_koid == handle_info.related_koid)
+    if (peer_koid == channel_koid)
       return frame.get();
   }
 

@@ -112,6 +112,7 @@ executable("cast_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 
   data_deps = [ ":cast_runner_core" ]
@@ -241,6 +242,7 @@ executable("web_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
   visibility = [ ":*" ]
 }

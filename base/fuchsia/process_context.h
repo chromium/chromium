@@ -11,13 +11,9 @@
 
 namespace sys {
 class ComponentContext;
-class ComponentInspector;
 }  // namespace sys
 
 namespace base {
-
-// Returns sys::ComponentInspector for the current process.
-BASE_EXPORT sys::ComponentInspector* ComponentInspectorForProcess();
 
 // Returns default sys::ComponentContext for the current process.
 BASE_EXPORT sys::ComponentContext* ComponentContextForProcess();

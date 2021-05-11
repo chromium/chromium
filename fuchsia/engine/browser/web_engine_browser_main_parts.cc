@@ -7,6 +7,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/outgoing_directory.h>
+#include <lib/sys/inspect/cpp/component.h>
 #include <utility>
 #include <vector>
 
@@ -16,9 +17,11 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/intl_profile_watcher.h"
+#include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/content_browser_client.h"
@@ -28,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
+#include "fuchsia/base/inspect.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/media_resource_provider_service.h"
@@ -69,8 +73,10 @@ void FetchHistogramsFromChildProcesses(
 // incognito browser context.
 class FrameHostImpl : public fuchsia::web::FrameHost {
  public:
-  explicit FrameHostImpl(WebEngineDevToolsController* devtools_controller)
+  explicit FrameHostImpl(inspect::Node inspect_node,
+                         WebEngineDevToolsController* devtools_controller)
       : context_(WebEngineBrowserContext::CreateIncognito(),
+                 std::move(inspect_node),
                  devtools_controller) {}
   ~FrameHostImpl() final = default;
 
@@ -115,6 +121,11 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK(!screen_);
   DCHECK_EQ(context_bindings_.size(), 0u);
+
+  // Initialize the |component_inspector_| to allow diagnostics to be published.
+  component_inspector_ = std::make_unique<sys::ComponentInspector>(
+      base::ComponentContextForProcess());
+  cr_fuchsia::PublishVersionInfoToInspect(component_inspector_.get());
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -261,8 +272,13 @@ void WebEngineBrowserMainParts::HandleContextRequest(
     browser_context = WebEngineBrowserContext::CreatePersistent(
         base::FilePath(base::kPersistedDataDirectoryPath));
   }
-  auto context_impl = std::make_unique<ContextImpl>(std::move(browser_context),
-                                                    devtools_controller_.get());
+
+  auto inspect_node_name =
+      base::StringPrintf("context-%lu", *base::GetKoid(request.channel()));
+  auto context_impl = std::make_unique<ContextImpl>(
+      std::move(browser_context),
+      component_inspector_->root().CreateChild(inspect_node_name),
+      devtools_controller_.get());
 
   // If this web instance should allow CastStreaming then enable it in this
   // ContextImpl. CastStreaming will not be available in FrameHost contexts.
@@ -284,8 +300,12 @@ void WebEngineBrowserMainParts::HandleContextRequest(
 
 void WebEngineBrowserMainParts::HandleFrameHostRequest(
     fidl::InterfaceRequest<fuchsia::web::FrameHost> request) {
+  auto inspect_node_name =
+      base::StringPrintf("framehost-%lu", *base::GetKoid(request.channel()));
   frame_host_bindings_.AddBinding(
-      std::make_unique<FrameHostImpl>(devtools_controller_.get()),
+      std::make_unique<FrameHostImpl>(
+          component_inspector_->root().CreateChild(inspect_node_name),
+          devtools_controller_.get()),
       std::move(request));
 }
 

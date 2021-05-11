@@ -8,6 +8,7 @@
 #include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
+#include <lib/inspect/cpp/vmo/types.h>
 #include <lib/syslog/logger.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <lib/zx/channel.h>
@@ -64,11 +65,13 @@ class FrameImpl : public fuchsia::web::Frame,
 
   // |context| must out-live |this|.
   // |params| apply both to this Frame, and also to any popup Frames it creates.
+  // |inspect_node| will be populated with diagnostic data for this Frame.
   // DestroyFrame() is automatically called on |context| if the |frame_request|
   // channel disconnects.
   FrameImpl(std::unique_ptr<content::WebContents> web_contents,
             ContextImpl* context,
             fuchsia::web::CreateFrameParams params,
+            inspect::Node inspect_node,
             fidl::InterfaceRequest<fuchsia::web::Frame> frame_request);
   ~FrameImpl() override;
 
@@ -326,6 +329,10 @@ class FrameImpl : public fuchsia::web::Frame,
   // filtered. Explicit sites are filtered if it has a value. If set to the
   // empty string, the default error page will be displayed.
   base::Optional<std::string> explicit_sites_filter_error_page_;
+
+  // Used to publish Frame details to Inspect.
+  inspect::Node inspect_node_;
+  const inspect::StringProperty inspect_name_property_;
 
   base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };

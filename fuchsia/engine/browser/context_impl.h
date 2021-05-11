@@ -7,6 +7,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
+#include <lib/inspect/cpp/vmo/types.h>
 #include <memory>
 #include <set>
 
@@ -35,7 +36,9 @@ class WebEngineDevToolsController;
 class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
  public:
   // |devtools_controller| must outlive ContextImpl.
+  // Diagnostics about the context will be placed in |inspect_node|.
   ContextImpl(std::unique_ptr<content::BrowserContext> browser_context,
+              inspect::Node inspect_node,
               WebEngineDevToolsController* devtools_controller);
 
   // Tears down the Context, destroying any active Frames in the process.
@@ -94,6 +97,9 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
 
   // Reference to the class managing the DevTools remote debugging service.
   WebEngineDevToolsController* const devtools_controller_;
+
+  // Inspect node & properties for this browsing context.
+  inspect::Node inspect_node_;
 
   // CookieManager API implementation for this Context.
   CookieManagerImpl cookie_manager_;

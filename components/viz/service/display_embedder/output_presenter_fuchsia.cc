@@ -6,7 +6,6 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/sys/inspect/cpp/component.h>
 
 #include <algorithm>
 #include <memory>
@@ -162,16 +161,10 @@ std::unique_ptr<OutputPresenterFuchsia> OutputPresenterFuchsia::Create(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageFactory* shared_image_factory,
     gpu::SharedImageRepresentationFactory* representation_factory) {
-  auto* inspector = base::ComponentInspectorForProcess();
-
   if (!base::FeatureList::IsEnabled(
           features::kUseSkiaOutputDeviceBufferQueue)) {
-    inspector->root().CreateString("output_presenter", "swapchain", inspector);
     return {};
   }
-
-  inspector->root().CreateString("output_presenter",
-                                 "SkiaOutputDeviceBufferQueue", inspector);
 
   // SetTextureToNewImagePipe() will call ScenicSession::Present() to send
   // CreateImagePipe2Cmd creation command, but it will be processed only after

@@ -264,6 +264,7 @@ FrameImpl* FrameImpl::FromRenderFrameHost(
 FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                      ContextImpl* context,
                      fuchsia::web::CreateFrameParams params,
+                     inspect::Node inspect_node,
                      fidl::InterfaceRequest<fuchsia::web::Frame> frame_request)
     : web_contents_(std::move(web_contents)),
       context_(context),
@@ -275,7 +276,13 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
       permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
-      theme_manager_(web_contents_.get()) {
+      theme_manager_(web_contents_.get()),
+      inspect_node_(std::move(inspect_node)),
+      inspect_name_property_(
+          params_for_popups_.has_debug_name()
+              ? inspect_node_.CreateString("name",
+                                           params_for_popups_.debug_name())
+              : inspect::StringProperty()) {
   DCHECK(!WebContentsToFrameImplMap()[web_contents_.get()]);
   WebContentsToFrameImplMap()[web_contents_.get()] = this;
 

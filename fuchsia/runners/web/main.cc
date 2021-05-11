@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/inspect/cpp/component.h>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -74,10 +75,11 @@ int main(int argc, char** argv) {
   base::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       base::ComponentContextForProcess()->outgoing().get(), &runner);
 
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
-
   // Publish version information for this component to Inspect.
-  cr_fuchsia::PublishVersionInfoToInspect(base::ComponentInspectorForProcess());
+  sys::ComponentInspector inspect(base::ComponentContextForProcess());
+  cr_fuchsia::PublishVersionInfoToInspect(&inspect);
+
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   // Run until there are no Components, or the last service client channel is
   // closed.

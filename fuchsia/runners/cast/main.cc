@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/inspect/cpp/component.h>
 
 #include "base/command_line.h"
 #include "base/fuchsia/process_context.h"
@@ -81,10 +82,11 @@ int main(int argc, char** argv) {
     runner.set_enable_frame_host_component();
   }
 
-  outgoing_directory->ServeFromStartupInfo();
-
   // Publish version information for this component to Inspect.
-  cr_fuchsia::PublishVersionInfoToInspect(base::ComponentInspectorForProcess());
+  sys::ComponentInspector inspect(base::ComponentContextForProcess());
+  cr_fuchsia::PublishVersionInfoToInspect(&inspect);
+
+  outgoing_directory->ServeFromStartupInfo();
 
   // TODO(https://crbug.com/952560): Implement Components v2 graceful exit.
   base::RunLoop run_loop;

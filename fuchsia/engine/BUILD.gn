@@ -148,6 +148,7 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
     "//third_party/widevine/cdm:headers",
     "//ui/accessibility",
     "//ui/aura",
@@ -174,6 +175,10 @@ component("web_engine_core") {
   public_deps = [
     "//content/public/browser",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+
+    # Public because tests include Context, Frame, etc headers, which include
+    # Inspect properties.
+    "//third_party/fuchsia-sdk/sdk/pkg/inspect",
   ]
 
   configs += [ ":web_engine_implementation" ]

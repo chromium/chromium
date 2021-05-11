@@ -34,6 +34,10 @@ namespace cr_fuchsia {
 class LegacyMetricsClient;
 }
 
+namespace sys {
+class ComponentInspector;
+}
+
 class MediaResourceProviderService;
 
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
@@ -81,11 +85,17 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   const content::MainFunctionParams& parameters_;
 
   std::unique_ptr<display::Screen> screen_;
+
+  // Used to publish diagnostics including the active Contexts and FrameHosts.
+  std::unique_ptr<sys::ComponentInspector> component_inspector_;
+
+  // Browsing contexts for the connected clients.
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
       context_bindings_;
   fidl::BindingSet<fuchsia::web::FrameHost,
                    std::unique_ptr<fuchsia::web::FrameHost>>
       frame_host_bindings_;
+
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
   std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
   std::unique_ptr<MediaResourceProviderService>

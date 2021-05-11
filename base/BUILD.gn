@@ -1668,6 +1668,8 @@ component("base") {
       "fuchsia/fuchsia_logging.h",
       "fuchsia/intl_profile_watcher.cc",
       "fuchsia/intl_profile_watcher.h",
+      "fuchsia/koid.cc",
+      "fuchsia/koid.h",
       "fuchsia/process_context.cc",
       "fuchsia/process_context.h",
       "fuchsia/scoped_fx_logger.cc",
