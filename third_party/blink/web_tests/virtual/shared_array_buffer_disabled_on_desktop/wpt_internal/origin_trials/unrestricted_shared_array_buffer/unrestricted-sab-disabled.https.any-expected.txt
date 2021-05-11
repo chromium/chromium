@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS unrestricted-sab-disabled
-Harness: the test ran to completion.
-
