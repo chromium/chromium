@@ -400,21 +400,18 @@ class PrintPreviewHandlerTest : public testing::Test {
   void AssertWebUIEventFired(const content::TestWebUI::CallData& data,
                              const std::string& event_id) {
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event_fired;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_fired));
-    EXPECT_EQ(event_id, event_fired);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_id, data.arg1()->GetString());
   }
 
   void CheckWebUIResponse(const content::TestWebUI::CallData& data,
                           const std::string& callback_id_in,
                           bool expect_success) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(callback_id_in, callback_id);
-    bool success = false;
-    ASSERT_TRUE(data.arg2()->GetAsBoolean(&success));
-    EXPECT_EQ(expect_success, success);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(callback_id_in, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_EQ(expect_success, data.arg2()->GetBool());
   }
 
   void ValidateInitialSettings(const content::TestWebUI::CallData& data,
@@ -995,11 +992,10 @@ TEST_F(PrintPreviewHandlerTest, Print) {
 
     // For cloud print, should also get the encoded data back as a string.
     if (type == PrinterType::kCloud) {
-      std::string print_data;
-      ASSERT_TRUE(data.arg3()->GetAsString(&print_data));
+      ASSERT_TRUE(data.arg3()->is_string());
       std::string expected_data;
       base::Base64Encode(kTestData, &expected_data);
-      EXPECT_EQ(print_data, expected_data);
+      EXPECT_EQ(data.arg3()->GetString(), expected_data);
     }
   }
 }
