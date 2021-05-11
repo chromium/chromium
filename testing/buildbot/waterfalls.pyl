@@ -2555,7 +2555,7 @@
     'machines': {
       'DevTools Linux (chromium)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6206,7 +6206,7 @@
     'machines': {
       'DevTools Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6633,7 +6633,7 @@
     'machines': {
       'devtools_frontend_linux_blink_light_rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'devtools_browser_tests',
@@ -6642,7 +6642,7 @@
       },
       'devtools_frontend_linux_blink_rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
