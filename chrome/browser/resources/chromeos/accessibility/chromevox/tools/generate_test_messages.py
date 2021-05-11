@@ -12,7 +12,7 @@ import sys
 
 def Die(message):
   '''Prints an error message and exit the program.'''
-  print(message, file=sys.stderr)
+  print >> sys.stderr, message
   sys.exit(1)
 
 
@@ -45,8 +45,6 @@ def main():
     return open(filename)
   with _OpenFile(in_file_name) as in_file:
     json = in_file.read().strip()
-  # Decode bytes as UTF-8
-  json = json.decode()
   with open(options.output_file, 'w') as out_file:
     out_file.write(_JS_TEMPLATE % {'in_file': in_file_name, 'json': json})
 

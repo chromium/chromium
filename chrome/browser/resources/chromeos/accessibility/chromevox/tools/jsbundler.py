@@ -28,7 +28,6 @@ ways:
   directory.  In this case, no output is generated.
 '''
 
-from builtins import object
 import errno
 import optparse
 import os
@@ -55,7 +54,7 @@ import treescan
 
 def Die(message):
   '''Prints an error message and exit the program.'''
-  print(message, file=sys.stderr)
+  print >> sys.stderr, message
   sys.exit(1)
 
 
@@ -76,7 +75,7 @@ class SourceWithPaths(source.Source):
   def __str__(self):
     return self.GetOutPath()
 
-class Bundle(object):
+class Bundle():
   '''An ordered list of sources without duplicates.'''
 
   def __init__(self):
@@ -114,7 +113,7 @@ class Bundle(object):
     return rjsmin.jsmin(self.GetUncompressedSource())
 
 
-class PathRewriter(object):
+class PathRewriter():
   '''A list of simple path rewrite rules to map relative input paths to
   relative output paths.
   '''
@@ -190,7 +189,7 @@ def _GetBase(sources):
   Returns:
     SourceWithPath: The source file providing the goog namespace.
   '''
-  for source in sources.values():
+  for source in sources.itervalues():
     if (os.path.basename(source.GetInPath()) == 'base.js' and
         'goog' in source.provides):
       return source
@@ -206,7 +205,7 @@ def CalcDeps(bundle, sources, top_level):
     top_level, list: List of top-level input paths to calculate dependencies
       for.
   '''
-  providers = [s for s in sources.values() if len(s.provides) > 0]
+  providers = [s for s in sources.itervalues() if len(s.provides) > 0]
   deps = depstree.DepsTree(providers)
   namespaces = []
   for path in top_level:
