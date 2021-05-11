@@ -1452,6 +1452,7 @@ ci.chromium_builder(
     ),
     cores = 8,
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromium_builder(
@@ -1462,6 +1463,7 @@ ci.chromium_builder(
     ),
     cores = 32,
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromium_builder(
@@ -1507,6 +1509,7 @@ ci.chromium_builder(
     # Bump to 32 if needed.
     cores = 8,
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromium_builder(
@@ -1518,6 +1521,7 @@ ci.chromium_builder(
     cores = 32,
     main_console_view = "main",
     notifies = ["linux-archive-rel"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.chromium_builder(
