@@ -17,6 +17,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/thumbnail/generator/image_thumbnail_request.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -449,6 +450,10 @@ void DownloadOfflineContentProvider::OnManagerGoingDown(
 }
 
 void DownloadOfflineContentProvider::OnDownloadStarted(DownloadItem* item) {
+  if (!base::FeatureList::IsEnabled(
+          download::features::kUseDownloadOfflineContentProvider)) {
+    return;
+  }
   item->RemoveObserver(this);
   item->AddObserver(this);
 
@@ -458,8 +463,9 @@ void DownloadOfflineContentProvider::OnDownloadStarted(DownloadItem* item) {
 void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
   // Wait until the target path is determined or the download is canceled.
   if (item->GetTargetFilePath().empty() &&
-      item->GetState() != DownloadItem::CANCELLED)
+      item->GetState() != DownloadItem::CANCELLED) {
     return;
+  }
 
   if (!ShouldShowDownloadItem(item))
     return;
