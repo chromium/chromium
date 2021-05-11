@@ -478,10 +478,6 @@ WebInputEventResult GestureManager::SendContextMenuEventForGesture(
                                                ->GetInputDeviceCapabilities()
                                                ->FiresTouchEvents(true));
   }
-  // TODO(crbug.com/1206108): Find a better approach to associate
-  // pointerdown pointerId with gesture tap
-  mouse_event.id = last_pointerdown_event_pointer_id_;
-  mouse_event.pointer_type = gesture_event.primary_pointer_type;
   return frame_->GetEventHandler().SendContextMenuEvent(mouse_event);
 }
 
