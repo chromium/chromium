@@ -105,10 +105,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual void OnLogMostVisitedNavigation(
         const ntp_tiles::NTPTileImpression& impression) = 0;
 
-    // Called when the page wants to paste the |text| (or the clipboard contents
-    // if the |text| is empty) into the omnibox.
-    virtual void PasteIntoOmnibox(const std::u16string& text) = 0;
-
     // Called when a custom background is configured on the NTP.
     // background_url: Url of the background image.
     // attribution_line_1: First attribution line for the image.
@@ -157,13 +153,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     // Called when user confirms applied theme changes.
     virtual void OnConfirmThemeChanges() = 0;
 
-    virtual void QueryAutocomplete(const std::u16string& input,
-                                   bool prevent_inline_autocomplete) = 0;
-
-    virtual void StopAutocomplete(bool clear_result) = 0;
-
-    virtual void LogCharTypedToRepaintLatency(uint32_t latency_ms) = 0;
-
     virtual void BlocklistPromo(const std::string& promo_id) = 0;
 
     virtual void OpenExtensionsPage(double button,
@@ -171,21 +160,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
                                     bool ctrl_key,
                                     bool meta_key,
                                     bool shift_key) = 0;
-
-    virtual void OpenAutocompleteMatch(uint8_t line,
-                                       const GURL& url,
-                                       bool are_matches_showing,
-                                       double time_elapsed_since_last_focus,
-                                       double button,
-                                       bool alt_key,
-                                       bool ctrl_key,
-                                       bool meta_key,
-                                       bool shift_key) = 0;
-
-    virtual void DeleteAutocompleteMatch(uint8_t line) = 0;
-
-    virtual void ToggleSuggestionGroupIdVisibility(
-        int32_t suggestion_group_id) = 0;
   };
 
   // An interface to be implemented by consumers of SearchIPCRouter objects to
@@ -211,7 +185,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual bool ShouldProcessToggleShortcutsVisibility() = 0;
     virtual bool ShouldProcessLogEvent() = 0;
     virtual bool ShouldProcessLogSuggestionEventWithValue() = 0;
-    virtual bool ShouldProcessPasteIntoOmnibox(bool is_active_tab) = 0;
     virtual bool ShouldSendSetInputInProgress(bool is_active_tab) = 0;
     virtual bool ShouldSendOmniboxFocusChanged() = 0;
     virtual bool ShouldSendMostVisitedInfo() = 0;
@@ -224,17 +197,8 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual bool ShouldProcessSearchSuggestionSelected() = 0;
     virtual bool ShouldProcessOptOutOfSearchSuggestions() = 0;
     virtual bool ShouldProcessThemeChangeMessages() = 0;
-    virtual bool ShouldProcessAutocompleteResultChanged(bool is_active_tab) = 0;
-    virtual bool ShouldProcessAutocompleteMatchImageAvailable(
-        bool is_active_tab) = 0;
-    virtual bool ShouldProcessQueryAutocomplete(bool is_active_tab) = 0;
-    virtual bool ShouldProcessStopAutocomplete() = 0;
-    virtual bool ShouldProcessLogCharTypedToRepaintLatency() = 0;
     virtual bool ShouldProcessBlocklistPromo() = 0;
     virtual bool ShouldProcessOpenExtensionsPage() = 0;
-    virtual bool ShouldProcessOpenAutocompleteMatch(bool is_active_tab) = 0;
-    virtual bool ShouldProcessDeleteAutocompleteMatch() = 0;
-    virtual bool ShouldProcessToggleSuggestionGroupIdVisibility() = 0;
   };
 
   // Creates search::mojom::EmbeddedSearchClient connections on request.
@@ -254,14 +218,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
                   Delegate* delegate,
                   std::unique_ptr<Policy> policy);
   ~SearchIPCRouter() override;
-
-  // Updates the renderer with the autocomplete results.
-  void AutocompleteResultChanged(search::mojom::AutocompleteResultPtr result);
-
-  // Updates the renderer with the given autocomplete match's image data.
-  void AutocompleteMatchImageAvailable(uint32_t match_index,
-                                       const std::string& image_url,
-                                       const std::string& data_url);
 
   // Tells the SearchIPCRouter that a new page in an Instant process committed.
   void OnNavigationEntryCommitted();
@@ -326,8 +282,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   void LogMostVisitedNavigation(
       int page_seq_no,
       const ntp_tiles::NTPTileImpression& impression) override;
-  void PasteAndOpenDropdown(int page_seq_no,
-                            const std::u16string& text) override;
   void SetCustomBackgroundInfo(const GURL& background_url,
                                const std::string& attribution_line_1,
                                const std::string& attribution_line_2,
@@ -348,27 +302,12 @@ class SearchIPCRouter : public content::WebContentsObserver,
   void ApplyAutogeneratedTheme(SkColor color) override;
   void RevertThemeChanges() override;
   void ConfirmThemeChanges() override;
-  void QueryAutocomplete(const std::u16string& input,
-                         bool prevent_inline_autocomplete) override;
-  void StopAutocomplete(bool clear_result) override;
-  void LogCharTypedToRepaintLatency(uint32_t latency_ms) override;
   void BlocklistPromo(const std::string& promo_id) override;
   void OpenExtensionsPage(double button,
                           bool alt_key,
                           bool ctrl_key,
                           bool meta_key,
                           bool shift_key) override;
-  void OpenAutocompleteMatch(uint8_t line,
-                             const GURL& url,
-                             bool are_matches_showing,
-                             double time_elapsed_since_last_focus,
-                             double button,
-                             bool alt_key,
-                             bool ctrl_key,
-                             bool meta_key,
-                             bool shift_key) override;
-  void DeleteAutocompleteMatch(uint8_t line) override;
-  void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
   void set_embedded_search_client_factory_for_testing(
       std::unique_ptr<EmbeddedSearchClientFactory> factory) {
     embedded_search_client_factory_ = std::move(factory);

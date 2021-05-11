@@ -6,7 +6,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
-#include "chrome/common/search/omnibox.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,10 +44,6 @@ class MockPage : public new_tab_page::mojom::Page {
                void(new_tab_page::mojom::MostVisitedInfoPtr));
   MOCK_METHOD1(SetTheme, void(new_tab_page::mojom::ThemePtr));
   MOCK_METHOD2(SetDisabledModules, void(bool, const std::vector<std::string>&));
-  MOCK_METHOD1(AutocompleteResultChanged,
-               void(search::mojom::AutocompleteResultPtr));
-  MOCK_METHOD3(AutocompleteMatchImageAvailable,
-               void(uint32_t, const GURL&, const std::string&));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };

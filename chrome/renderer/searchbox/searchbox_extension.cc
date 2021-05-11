@@ -427,62 +427,6 @@ SearchBox* GetSearchBoxForCurrentContext() {
   return SearchBox::Get(main_frame);
 }
 
-base::Value CreateAutocompleteMatches(
-    const std::vector<search::mojom::AutocompleteMatchPtr>& matches) {
-  base::Value list(base::Value::Type::LIST);
-  for (const search::mojom::AutocompleteMatchPtr& match : matches) {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetBoolKey("allowedToBeDefaultMatch",
-                    match->allowed_to_be_default_match);
-    dict.SetStringKey("contents", match->contents);
-    base::Value contents_class(base::Value::Type::LIST);
-    for (const auto& classification : match->contents_class) {
-      base::Value entry(base::Value::Type::DICTIONARY);
-      entry.SetIntKey("offset", classification->offset);
-      entry.SetIntKey("style", classification->style);
-      contents_class.Append(std::move(entry));
-    }
-    dict.SetKey("contentsClass", std::move(contents_class));
-    dict.SetStringKey("description", match->description);
-    base::Value description_class(base::Value::Type::LIST);
-    for (const auto& classification : match->description_class) {
-      base::Value entry(base::Value::Type::DICTIONARY);
-      entry.SetIntKey("offset", classification->offset);
-      entry.SetIntKey("style", classification->style);
-      description_class.Append(std::move(entry));
-    }
-    dict.SetKey("descriptionClass", std::move(description_class));
-    dict.SetStringKey("destinationUrl", match->destination_url.spec());
-    dict.SetIntKey("suggestionGroupId", match->suggestion_group_id);
-    dict.SetStringKey("inlineAutocompletion", match->inline_autocompletion);
-    dict.SetBoolKey("isSearchType", match->is_search_type);
-    dict.SetStringKey("fillIntoEdit", match->fill_into_edit);
-    dict.SetStringKey("iconUrl", match->icon_url);
-    dict.SetStringKey("imageDominantColor", match->image_dominant_color);
-    dict.SetStringKey("imageUrl", match->image_url);
-    dict.SetBoolKey("swapContentsAndDescription",
-                    match->swap_contents_and_description);
-    dict.SetStringKey("type", match->type);
-    dict.SetBoolKey("supportsDeletion", match->supports_deletion);
-    list.Append(std::move(dict));
-  }
-  return list;
-}
-
-base::Value CreateSuggestionGroupsMap(
-    const base::flat_map<int32_t, search::mojom::SuggestionGroupPtr>&
-        suggestion_groups_map) {
-  base::Value result_map(base::Value::Type::DICTIONARY);
-  for (const auto& pair : suggestion_groups_map) {
-    base::Value suggestion_group(base::Value::Type::DICTIONARY);
-    suggestion_group.SetStringKey("header", pair.second->header);
-    suggestion_group.SetBoolKey("hidden", pair.second->hidden);
-    result_map.SetPath(base::NumberToString(pair.first),
-                       std::move(suggestion_group));
-  }
-  return result_map;
-}
-
 static const char kDispatchFocusChangedScript[] =
     "if (window.chrome &&"
     "    window.chrome.embeddedSearch &&"
@@ -513,30 +457,6 @@ static const char kDispatchUpdateCustomLinkResult[] =
     "    typeof window.chrome.embeddedSearch.newTabPage"
     "        .onupdatecustomlinkdone === 'function') {"
     "  window.chrome.embeddedSearch.newTabPage.onupdatecustomlinkdone(%s);"
-    "  true;"
-    "}";
-
-static const char kDispatchAutocompleteResultChanged[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.searchBox &&"
-    "    window.chrome.embeddedSearch.searchBox.autocompleteresultchanged &&"
-    "    typeof window.chrome.embeddedSearch.searchBox"
-    "        .autocompleteresultchanged === 'function') {"
-    "  window.chrome.embeddedSearch.searchBox.autocompleteresultchanged(%s);"
-    "  true;"
-    "}";
-
-static const char kDispatchAutocompleteMatchImageAvailable[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.searchBox &&"
-    "    "
-    "window.chrome.embeddedSearch.searchBox.autocompletematchimageavailable &&"
-    "    typeof window.chrome.embeddedSearch.searchBox"
-    "        .autocompletematchimageavailable === 'function') {"
-    "  window.chrome.embeddedSearch.searchBox"
-    "      .autocompletematchimageavailable(%d, '%s', '%s');"
     "  true;"
     "}";
 
@@ -639,24 +559,8 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   static bool IsKeyCaptureEnabled();
 
   // Handlers for JS functions.
-  static void DeleteAutocompleteMatch(int line);
-  static void Paste(const std::string& text);
-  static void QueryAutocomplete(const std::u16string& input,
-                                bool prevent_inline_autocomplete);
-  static void StopAutocomplete(bool clear_result);
-  static void LogCharTypedToRepaintLatency(uint32_t latency_ms);
   static void StartCapturingKeyStrokes();
   static void StopCapturingKeyStrokes();
-  static void OpenAutocompleteMatch(int line,
-                                    const std::string& url,
-                                    bool are_matches_showing,
-                                    double time_elapsed_since_last_focus,
-                                    double button,
-                                    bool alt_key,
-                                    bool ctrl_key,
-                                    bool meta_key,
-                                    bool shift_key);
-  static void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id);
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxBindings);
 };
@@ -674,21 +578,10 @@ gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
       .SetProperty("isFocused", &SearchBoxBindings::IsFocused)
       .SetProperty("isKeyCaptureEnabled",
                    &SearchBoxBindings::IsKeyCaptureEnabled)
-      .SetMethod("deleteAutocompleteMatch",
-                 &SearchBoxBindings::DeleteAutocompleteMatch)
-      .SetMethod("logCharTypedToRepaintLatency",
-                 &SearchBoxBindings::LogCharTypedToRepaintLatency)
-      .SetMethod("openAutocompleteMatch",
-                 &SearchBoxBindings::OpenAutocompleteMatch)
-      .SetMethod("paste", &SearchBoxBindings::Paste)
-      .SetMethod("queryAutocomplete", &SearchBoxBindings::QueryAutocomplete)
-      .SetMethod("stopAutocomplete", &SearchBoxBindings::StopAutocomplete)
       .SetMethod("startCapturingKeyStrokes",
                  &SearchBoxBindings::StartCapturingKeyStrokes)
       .SetMethod("stopCapturingKeyStrokes",
-                 &SearchBoxBindings::StopCapturingKeyStrokes)
-      .SetMethod("toggleSuggestionGroupIdVisibility",
-                 &SearchBoxBindings::ToggleSuggestionGroupIdVisibility);
+                 &SearchBoxBindings::StopCapturingKeyStrokes);
 }
 
 // static
@@ -705,80 +598,6 @@ bool SearchBoxBindings::IsKeyCaptureEnabled() {
   if (!search_box)
     return false;
   return search_box->is_key_capture_enabled();
-}
-
-// static
-void SearchBoxBindings::DeleteAutocompleteMatch(int line) {
-  DCHECK_GE(line, 0);
-  DCHECK_LE(line, 255);
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->DeleteAutocompleteMatch(line);
-}
-
-// static
-void SearchBoxBindings::ToggleSuggestionGroupIdVisibility(
-    int32_t suggestion_group_id) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ToggleSuggestionGroupIdVisibility(suggestion_group_id);
-}
-
-// static
-void SearchBoxBindings::OpenAutocompleteMatch(
-    int line,
-    const std::string& url,
-    bool are_matches_showing,
-    double time_elapsed_since_last_focus,
-    double button,
-    bool alt_key,
-    bool ctrl_key,
-    bool meta_key,
-    bool shift_key) {
-  DCHECK_GE(line, 0);
-  DCHECK_LE(line, 255);
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-
-  search_box->OpenAutocompleteMatch(line, GURL(url), are_matches_showing,
-                                    time_elapsed_since_last_focus, button,
-                                    alt_key, ctrl_key, meta_key, shift_key);
-}
-
-// static
-void SearchBoxBindings::Paste(const std::string& text) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->Paste(base::UTF8ToUTF16(text));
-}
-
-// static
-void SearchBoxBindings::QueryAutocomplete(const std::u16string& input,
-                                          bool prevent_inline_autocomplete) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->QueryAutocomplete(input, prevent_inline_autocomplete);
-}
-
-// static
-void SearchBoxBindings::StopAutocomplete(bool clear_result) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->StopAutocomplete(clear_result);
-}
-
-// static
-void SearchBoxBindings::LogCharTypedToRepaintLatency(uint32_t latency_ms) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->LogCharTypedToRepaintLatency(latency_ms);
 }
 
 // static
@@ -1525,34 +1344,6 @@ void SearchBoxExtension::DispatchDeleteCustomLinkResult(
     bool success) {
   blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
       kDispatchDeleteCustomLinkResult, success ? "true" : "false")));
-  Dispatch(frame, script);
-}
-
-// static
-void SearchBoxExtension::DispatchAutocompleteResultChanged(
-    blink::WebLocalFrame* frame,
-    search::mojom::AutocompleteResultPtr result) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("input", result->input);
-  dict.SetKey("matches", CreateAutocompleteMatches(result->matches));
-  dict.SetKey("suggestionGroupsMap",
-              CreateSuggestionGroupsMap(result->suggestion_groups_map));
-
-  std::string json;
-  base::JSONWriter::Write(dict, &json);
-  Dispatch(frame, blink::WebString::FromUTF8(base::StringPrintf(
-                      kDispatchAutocompleteResultChanged, json.c_str())));
-}
-
-// static
-void SearchBoxExtension::DispatchAutocompleteMatchImageAvailable(
-    blink::WebLocalFrame* frame,
-    uint32_t match_index,
-    const std::string& image_url,
-    const std::string& data_url) {
-  blink::WebString script(blink::WebString::FromUTF8(
-      base::StringPrintf(kDispatchAutocompleteMatchImageAvailable, match_index,
-                         image_url.c_str(), data_url.c_str())));
   Dispatch(frame, script);
 }
 

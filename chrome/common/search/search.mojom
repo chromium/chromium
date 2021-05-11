@@ -4,7 +4,6 @@
 
 module search.mojom;
 
-import "chrome/common/search/omnibox.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
@@ -102,12 +101,6 @@ interface EmbeddedSearch {
   // New Tab Page.
   LogMostVisitedNavigation(int32 page_seq_no, NTPTileImpression impression);
 
-  // Tells InstantExtended to paste text into the omnibox.  If text is empty,
-  // the clipboard contents will be pasted. This causes the omnibox dropdown to
-  // open.
-  PasteAndOpenDropdown(int32 page_seq_no,
-                       mojo_base.mojom.String16 text_to_be_pasted);
-
   // Updates the NTP custom background preferences.
   SetCustomBackgroundInfo(url.mojom.Url background_url,
                                          string attribution_line_1,
@@ -145,22 +138,6 @@ interface EmbeddedSearch {
   // Confirms applied theme changes.
   ConfirmThemeChanges();
 
-  // Queries autocomplete matches from the browser.
-  QueryAutocomplete(mojo_base.mojom.String16 input,
-                    bool prevent_inline_autocomplete);
-
-  // Deletes the AutocompleteMatch in the current results by |line| number if
-  // it is deletable.
-  DeleteAutocompleteMatch(uint8 line);
-
-  // Cancels the current autocomplete query. Clears the result set if
-  // |clear_result| is true.
-  StopAutocomplete(bool clear_result);
-
-  // Logs the time it took in milliseconds since the first character (in a
-  // series of characters) was typed until Autocomplete results were painted.
-  LogCharTypedToRepaintLatency(uint32 latency_ms);
-
   // Called when a user dismisses a promo.
   BlocklistPromo(string promo_id);
 
@@ -171,25 +148,6 @@ interface EmbeddedSearch {
                      bool ctrl_key,
                      bool meta_key,
                      bool shift_key);
-
-  // Handles navigation to an autocomplete match (i.e. an item in the realbox's
-  // list of matches). Note: |url| is passed solely to verify that the browser
-  // and renderer are in sync; don't trust this content or use it for anything
-  // other than verification purposes (i.e. is the URL still the same?).
-  OpenAutocompleteMatch(uint8 line,
-                        url.mojom.Url url,
-                        bool are_matches_showing,
-                        double time_elapsed_since_last_focus,
-                        double button,
-                        bool alt_key,
-                        bool ctrl_key,
-                        bool meta_key,
-                        bool shift_key);
-
-  // Tells the browser to allow suggestions with the given suggestion group ID
-  // to appear in the results if they currently are not allowed to or to prevent
-  // them from appearing in the results if they are currently permitted to.
-  ToggleSuggestionGroupIdVisibility(int32 suggestion_group_id);
 };
 
 [Native]
@@ -207,16 +165,6 @@ struct SearchBoxTheme;
 // Renderer interface used by the browser to push updates to the client. For
 // example, the browser will tell the frame if the omnibox got focus.
 interface EmbeddedSearchClient {
-  // Updates the NTP realbox with the autocomplete results.
-  AutocompleteResultChanged(search.mojom.AutocompleteResult result);
-
-  // Updates the NTP realbox popup with the image or favicon data URL for the
-  // given |match_index| and |url| where |url| is an AutocompleteMatch image_url
-  // or destination_url for an entity or a navigation suggestion respectively.
-  AutocompleteMatchImageAvailable(uint32 match_index,
-                                  string url,
-                                  string data_url);
-
   // Update the page sequence number for the page.
   SetPageSequenceNumber(int32 page_seq_no);
 

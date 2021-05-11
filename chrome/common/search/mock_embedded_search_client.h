@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/common/search/instant_types.h"
-#include "chrome/common/search/omnibox.mojom.h"
 #include "chrome/common/search/search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,10 +16,6 @@ class MockEmbeddedSearchClient : public search::mojom::EmbeddedSearchClient {
   MockEmbeddedSearchClient();
   ~MockEmbeddedSearchClient() override;
 
-  MOCK_METHOD1(AutocompleteResultChanged,
-               void(search::mojom::AutocompleteResultPtr result));
-  MOCK_METHOD3(AutocompleteMatchImageAvailable,
-               void(uint32_t, const std::string&, const std::string&));
   MOCK_METHOD1(SetPageSequenceNumber, void(int));
   MOCK_METHOD2(FocusChanged, void(OmniboxFocusState, OmniboxFocusChangeReason));
   MOCK_METHOD1(MostVisitedInfoChanged, void(const InstantMostVisitedInfo&));

@@ -91,9 +91,6 @@ class SearchBox : public content::RenderFrameObserver,
   bool GetMostVisitedItemWithID(InstantRestrictedID most_visited_item_id,
                                 InstantMostVisitedItem* item) const;
 
-  // Sends PasteAndOpenDropdown to the browser.
-  void Paste(const std::u16string& text);
-
   // Will return null if the theme info hasn't been set yet.
   const NtpTheme* GetNtpTheme() const;
 
@@ -189,24 +186,6 @@ class SearchBox : public content::RenderFrameObserver,
   // Confirms applied theme changes.
   void ConfirmThemeChanges();
 
-  // Queries the autocomplete backend for realbox results for |input| as a
-  // search term. |prevent_inline_autocomplete| is true if the result set should
-  // not require inline autocomplete for the default match. Handled by
-  // |QueryAutocompleteResult|.
-  void QueryAutocomplete(const std::u16string& input,
-                         bool prevent_inline_autocomplete);
-
-  // Deletes |AutocompleteMatch| by index of the result.
-  void DeleteAutocompleteMatch(uint8_t line);
-
-  // Cancels the current autocomplete query. Clears the result set if
-  // |clear_result| is true.
-  void StopAutocomplete(bool clear_result);
-
-  // Logs the time it took in milliseconds since the first character (in a
-  // series of characters) was typed until Autocomplete results were painted.
-  void LogCharTypedToRepaintLatency(uint32_t latency_ms);
-
   // Called when a user dismisses a promo.
   void BlocklistPromo(const std::string& promo_id);
 
@@ -218,23 +197,6 @@ class SearchBox : public content::RenderFrameObserver,
                           bool meta_key,
                           bool shift_key);
 
-  // Handles navigation to privileged (i.e. chrome://) URLs by calling the
-  // browser to do the navigation.
-  void OpenAutocompleteMatch(uint8_t line,
-                             const GURL& url,
-                             bool are_matches_showing,
-                             double time_elapsed_since_last_focus,
-                             double button,
-                             bool alt_key,
-                             bool ctrl_key,
-                             bool meta_key,
-                             bool shift_key);
-
-  // Tells the browser to allow suggestions with the given suggestion group ID
-  // to appear in the results if they currently are not allowed to or to prevent
-  // them from appearing in the results if they are currently permitted to.
-  void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id);
-
   bool is_focused() const { return is_focused_; }
   bool is_input_in_progress() const { return is_input_in_progress_; }
   bool is_key_capture_enabled() const { return is_key_capture_enabled_; }
@@ -245,11 +207,6 @@ class SearchBox : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   // Overridden from search::mojom::EmbeddedSearchClient:
-  void AutocompleteResultChanged(
-      search::mojom::AutocompleteResultPtr result) override;
-  void AutocompleteMatchImageAvailable(uint32_t match_index,
-                                       const std::string& image_url,
-                                       const std::string& data_url) override;
   void SetPageSequenceNumber(int page_seq_no) override;
   void FocusChanged(OmniboxFocusState new_focus_state,
                     OmniboxFocusChangeReason reason) override;
