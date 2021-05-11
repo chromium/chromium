@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
@@ -35,6 +36,9 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
       new_render_process_host_(
           std::make_unique<MockRenderProcessHost>(browser_context_.get())),
+      quota_manager_proxy_(base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+          nullptr,
+          base::SequencedTaskRunnerHandle::Get())),
       wrapper_(base::MakeRefCounted<ServiceWorkerContextWrapper>(
           browser_context_.get())),
       fake_loader_factory_("HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",
@@ -50,10 +54,10 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           base::MakeRefCounted<URLLoaderFactoryGetter>()) {
   wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
       &EmbeddedWorkerTestHelper::BindStorageControl, base::Unretained(this)));
-  wrapper_->InitInternal(
-      /*quota_manager_proxy=*/nullptr, special_storage_policy,
-      /*blob_context=*/nullptr, url_loader_factory_getter_.get(),
-      browser_context_.get());
+  wrapper_->InitInternal(quota_manager_proxy_.get(), special_storage_policy,
+                         /*blob_context=*/nullptr,
+                         url_loader_factory_getter_.get(),
+                         browser_context_.get());
   wrapper_->process_manager()->SetProcessIdForTest(mock_render_process_id());
   wrapper_->process_manager()->SetNewProcessIdForTest(new_render_process_id());
   fake_loader_factory_wrapper_ =
@@ -151,6 +155,7 @@ EmbeddedWorkerTestHelper::~EmbeddedWorkerTestHelper() {
   fake_loader_factory_wrapper_->Detach();
   if (wrapper_.get())
     wrapper_->Shutdown();
+  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
 }
 
 ServiceWorkerContextCore* EmbeddedWorkerTestHelper::context() {

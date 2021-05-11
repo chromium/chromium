@@ -648,6 +648,11 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
             FindRegistrationForId(kRegistrationId, kKey, found_registration));
   EXPECT_FALSE(found_registration.get());
 
+  // Because nothing was found we shouldn't have notified the quota manager
+  // about any accesses.
+  EXPECT_EQ(0,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
+
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
   resources.push_back(CreateResourceRecord(1, kResource1, kResource1Size));
   resources.push_back(CreateResourceRecord(2, kResource2, kResource2Size));
@@ -678,10 +683,19 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StoreRegistration(live_registration, live_version));
 
+  // Should have notified for the store.
+  EXPECT_EQ(1,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
+  // Still shouldn't have notified any accesses.
+  EXPECT_EQ(0,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
+
   // Now we should find it and get the live ptr back immediately.
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       FindRegistrationForClientUrl(kDocumentUrl, kKey, found_registration));
+  EXPECT_EQ(1,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   EXPECT_EQ(live_registration, found_registration);
   EXPECT_EQ(kResource1Size + kResource2Size,
             live_registration->resources_total_size_bytes());
@@ -697,12 +711,16 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   // But FindRegistrationForScope is always async.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             FindRegistrationForScope(kScope, kKey, found_registration));
+  EXPECT_EQ(2,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
 
   // Can be found by id too.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             FindRegistrationForId(kRegistrationId, kKey, found_registration));
+  EXPECT_EQ(3,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
   EXPECT_EQ(live_registration, found_registration);
@@ -711,6 +729,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   // Can be found by just the id too.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             FindRegistrationForIdOnly(kRegistrationId, found_registration));
+  EXPECT_EQ(4,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
   EXPECT_EQ(live_registration, found_registration);
@@ -723,6 +743,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       FindRegistrationForClientUrl(kDocumentUrl, kKey, found_registration));
+  EXPECT_EQ(5,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
   EXPECT_TRUE(found_registration->HasOneRef());
@@ -763,6 +785,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   // And FindRegistrationForScope is always async.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             FindRegistrationForScope(kScope, kKey, found_registration));
+  EXPECT_EQ(6,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
   EXPECT_TRUE(found_registration->HasOneRef());
@@ -798,6 +822,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       FindRegistrationForClientUrl(kDocumentUrl, kKey, found_registration));
+  EXPECT_EQ(7,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
   EXPECT_TRUE(found_registration->HasOneRef());
@@ -806,6 +832,10 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED,
             found_registration->active_version()->status());
   EXPECT_EQ(kToday, found_registration->last_update_check());
+
+  // Confirm that we only notified a modification once.
+  EXPECT_EQ(1,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
 }
 
 TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
@@ -948,6 +978,10 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
           storage::StorageKey(url::Origin::Create(GURL("http://example.com/"))),
           registrations_for_storage_key));
   EXPECT_TRUE(registrations_for_storage_key.empty());
+
+  // Installing registrations should not trigger accessed count
+  EXPECT_EQ(0,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
 }
 
 TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
@@ -981,6 +1015,11 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   registry()->NotifyInstallingRegistration(live_registration2.get());
   registry()->NotifyInstallingRegistration(live_registration3.get());
 
+  // Registrations in the installing state shouldn't trigger a modified
+  // notification.
+  EXPECT_EQ(0,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
+
   // Find a registration among installing ones.
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
@@ -992,12 +1031,18 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StoreRegistration(live_registration1,
                               live_registration1->waiting_version()));
+  EXPECT_EQ(1,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StoreRegistration(live_registration2,
                               live_registration2->waiting_version()));
+  EXPECT_EQ(2,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StoreRegistration(live_registration3,
                               live_registration3->waiting_version()));
+  EXPECT_EQ(3,
+            helper()->quota_manager_proxy()->notify_storage_modified_count());
 
   // Notify storage of installations no longer happening.
   registry()->NotifyDoneInstallingRegistration(
@@ -1007,10 +1052,15 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   registry()->NotifyDoneInstallingRegistration(
       live_registration3.get(), nullptr, blink::ServiceWorkerStatusCode::kOk);
 
+  EXPECT_EQ(0,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
+
   // Find a registration among installed ones.
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       FindRegistrationForClientUrl(kDocumentUrl, kKey, found_registration));
+  EXPECT_EQ(1,
+            helper()->quota_manager_proxy()->notify_storage_accessed_count());
   EXPECT_EQ(live_registration2, found_registration);
 }
 

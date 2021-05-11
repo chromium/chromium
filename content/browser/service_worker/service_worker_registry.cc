@@ -741,6 +741,18 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     blink::ServiceWorkerStatusCode status =
         registration.value() ? blink::ServiceWorkerStatusCode::kOk
                              : blink::ServiceWorkerStatusCode::kErrorNotFound;
+
+    // Only notify access for already stored registrations.
+    if (status == blink::ServiceWorkerStatusCode::kOk &&
+        (*registration)->IsStored()) {
+      if (quota_manager_proxy_) {
+        // Can be nullptr in tests.
+        quota_manager_proxy_->NotifyStorageAccessed(
+            (*registration)->origin(), blink::mojom::StorageType::kTemporary,
+            base::Time::Now());
+      }
+    }
+
     CompleteFindNow(std::move(registration.value()), status,
                     std::move(callback));
     return;
@@ -934,6 +946,13 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
+
+    if (quota_manager_proxy_) {
+      // Can be nullptr in tests.
+      quota_manager_proxy_->NotifyStorageAccessed(
+          registration->origin(), blink::mojom::StorageType::kTemporary,
+          base::Time::Now());
+    }
   }
 
   TRACE_EVENT_ASYNC_END1(
@@ -964,6 +983,13 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
+
+    if (quota_manager_proxy_) {
+      // Can be nullptr in tests.
+      quota_manager_proxy_->NotifyStorageAccessed(
+          registration->origin(), blink::mojom::StorageType::kTemporary,
+          base::Time::Now());
+    }
   }
 
   CompleteFindNow(std::move(registration), status, std::move(callback));
@@ -1003,6 +1029,12 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
+    if (quota_manager_proxy_) {
+      // Can be nullptr in tests.
+      quota_manager_proxy_->NotifyStorageAccessed(
+          registration->origin(), blink::mojom::StorageType::kTemporary,
+          base::Time::Now());
+    }
   }
 
   CompleteFindNow(std::move(registration), status, std::move(callback));

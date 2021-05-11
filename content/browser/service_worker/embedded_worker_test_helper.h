@@ -19,6 +19,7 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
@@ -104,6 +105,10 @@ class EmbeddedWorkerTestHelper {
   // Only used for tests that force creating a new render process.
   int new_render_process_id() const { return new_mock_render_process_id_; }
 
+  storage::MockQuotaManagerProxy* quota_manager_proxy() {
+    return quota_manager_proxy_.get();
+  }
+
   TestBrowserContext* browser_context() { return browser_context_.get(); }
 
   static std::unique_ptr<ServiceWorkerVersion::MainScriptResponse>
@@ -182,6 +187,7 @@ class EmbeddedWorkerTestHelper {
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   std::unique_ptr<MockRenderProcessHost> new_render_process_host_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
 
