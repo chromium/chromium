@@ -123,8 +123,7 @@ void FormEventLoggerBase::OnWillSubmitForm(AutofillSyncSigninState sync_state,
   base::RecordAction(base::UserMetricsAction("Autofill_OnWillSubmitForm"));
 }
 
-void FormEventLoggerBase::OnFormSubmitted(bool force_logging,
-                                          AutofillSyncSigninState sync_state,
+void FormEventLoggerBase::OnFormSubmitted(AutofillSyncSigninState sync_state,
                                           const FormStructure& form) {
   sync_state_ = sync_state;
   // Not logging this kind of form if we haven't logged a user interaction.
@@ -138,7 +137,7 @@ void FormEventLoggerBase::OnFormSubmitted(bool force_logging,
 
   LogFormSubmitted(form);
 
-  if (has_logged_suggestions_shown_ || force_logging) {
+  if (has_logged_suggestions_shown_) {
     Log(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, form);
     OnSuggestionsShownSubmittedOnce(form);
   }

@@ -2265,26 +2265,6 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
 }
 
-TEST_F(BrowserAutofillManagerTest,
-       ShouldLogFormSubmitEventIfCreditCardAutofillDisabled) {
-  DisableCreditCardAutofill();
-
-  // Set up our form data.
-  FormData form;
-  CreateTestCreditCardFormData(&form, true, false);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-
-  FormFieldData field = form.fields[0];
-  GetAutofillSuggestions(form, field);
-
-  base::HistogramTester histogram_tester;
-  FormSubmitted(form);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                     FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
-                                     1);
-}
-
 // Test that we properly match typed values to stored state data.
 TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   base::test::ScopedFeatureList feature;

@@ -736,12 +736,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   submitted_form->set_submission_source(source);
 
   if (IsAutofillProfileEnabled()) {
-    address_form_event_logger_->OnFormSubmitted(/*force_logging=*/false,
-                                                sync_state_, *submitted_form);
+    address_form_event_logger_->OnFormSubmitted(sync_state_, *submitted_form);
   }
   if (IsAutofillCreditCardEnabled()) {
-    credit_card_form_event_logger_->OnFormSubmitted(
-        enable_ablation_logging_, sync_state_, *submitted_form);
+    credit_card_form_event_logger_->OnFormSubmitted(sync_state_,
+                                                    *submitted_form);
   }
 
   if (!submitted_form->IsAutofillable() &&
@@ -958,7 +957,6 @@ void BrowserAutofillManager::OnQueryFormFieldAutofillImpl(
         break;
 
       case SuppressReason::kCreditCardsAblation:
-        enable_ablation_logging_ = true;
         autocomplete_history_manager_->CancelPendingQueries(this);
         external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                                   autoselect_first_suggestion);
@@ -1573,7 +1571,6 @@ void BrowserAutofillManager::Reset() {
   user_did_type_ = false;
   user_did_autofill_ = false;
   user_did_edit_autofilled_field_ = false;
-  enable_ablation_logging_ = false;
   credit_card_ = CreditCard();
   credit_card_query_id_ = -1;
   credit_card_form_ = FormData();

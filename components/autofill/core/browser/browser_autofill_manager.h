@@ -694,10 +694,6 @@ class BrowserAutofillManager
   CreditCard credit_card_;
   std::u16string last_unlocked_credit_card_cvc_;
 
-  // Ablation experiment turns off autofill, but logging still has to be kept
-  // for metrics analysis.
-  bool enable_ablation_logging_ = false;
-
   // Suggestion backend ID to ID mapping. We keep two maps to convert back and
   // forth. These should be used only by BackendIDToInt and IntToBackendID.
   // Note that the integers are not frontend IDs.

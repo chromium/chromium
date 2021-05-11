@@ -58,8 +58,7 @@ class FormEventLoggerBase {
   void OnWillSubmitForm(AutofillSyncSigninState sync_state,
                         const FormStructure& form);
 
-  void OnFormSubmitted(bool force_logging,
-                       AutofillSyncSigninState sync_state,
+  void OnFormSubmitted(AutofillSyncSigninState sync_state,
                        const FormStructure& form);
 
   void OnTypedIntoNonFilledField();
