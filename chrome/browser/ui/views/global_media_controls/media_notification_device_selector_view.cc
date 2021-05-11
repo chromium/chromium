@@ -392,16 +392,31 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
     cast_controller_->ClearIssue(sink.issue->id());
     return;
   }
-  // If users try to cast to a connected sink, a new cast session will get
-  // started and override the existing cast session.
-  if (sink.state == media_router::UIMediaSinkState::AVAILABLE ||
-      sink.state == media_router::UIMediaSinkState::CONNECTED) {
-    DCHECK(base::Contains(sink.cast_modes,
-                          media_router::MediaCastMode::PRESENTATION));
-    cast_controller_->StartCasting(sink.id,
-                                   media_router::MediaCastMode::PRESENTATION);
-    RecordStartCastingMetrics();
+  // When users click on a CONNECTED sink,
+  // if it is a CAST sink, a new cast session will replace the existing cast
+  // session.
+  // if it is a DIAL sink, the existing session will be terminated and users
+  // need to click on the sink again to start a new session.
+  // TODO(crbug.com/1206830): implement "terminate existing route and start a
+  // new session" in DIAL MRP.
+  if (sink.state == media_router::UIMediaSinkState::AVAILABLE) {
+    DoStartCastSession(sink);
+  } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
+    if (sink.provider == media_router::MediaRouteProviderId::DIAL) {
+      DCHECK(sink.route);
+      cast_controller_->StopCasting(sink.route->media_route_id());
+    } else {
+      DoStartCastSession(sink);
+    }
   }
+}
+void MediaNotificationDeviceSelectorView::DoStartCastSession(
+    const media_router::UIMediaSink& sink) {
+  DCHECK(base::Contains(sink.cast_modes,
+                        media_router::MediaCastMode::PRESENTATION));
+  cast_controller_->StartCasting(sink.id,
+                                 media_router::MediaCastMode::PRESENTATION);
+  RecordStartCastingMetrics();
 }
 
 void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics() {

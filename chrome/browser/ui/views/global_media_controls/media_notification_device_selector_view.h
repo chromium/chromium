@@ -96,6 +96,7 @@ class MediaNotificationDeviceSelectorView
   void HideDevices();
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void StartCastSession(CastDeviceEntryView* entry);
+  void DoStartCastSession(const media_router::UIMediaSink& sink);
   void RecordStartCastingMetrics();
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
   void RegisterAudioDeviceCallbacks();
