@@ -19,4 +19,10 @@
 
     <!-- Intro accelerator dimens. -->
     <dimen name="web_feed_intro_y_inset">17dp</dimen>
+
+    <!-- Follow Management activity dimensions. -->
+    <dimen name="web_feed_management_icon_size">36dp</dimen>
+    <dimen name="feed_management_header_height">56dp</dimen>
+    <dimen name="follow_arrow_size">24dp</dimen>
+    <dimen name="follow_margin">16dp</dimen>
 </resources>

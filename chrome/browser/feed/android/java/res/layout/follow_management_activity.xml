@@ -14,13 +14,27 @@
     android:layoutDirection="locale">
 
   <!-- Header: we want back_arrow.icon, then "Following". -->
-  <TextView
-      android:id="@+id/follow_management_page_title"
+  <LinearLayout
+      android:id="@+id/follow_management_header"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:drawableStartCompat="@drawable/ic_arrow_back_24dp"
-      android:text="@string/follow_manage_following" />
+      android:layout_height="@dimen/feed_management_header_height"
+      tools:ignore="UseCompoundDrawables" >
+      <ImageView
+          android:layout_width="@dimen/follow_arrow_size"
+          android:layout_height="@dimen/follow_arrow_size"
+          android:layout_margin="@dimen/follow_margin"
+          android:src="@drawable/ic_arrow_back_24dp"
+          tools:ignore="ContentDescription" />
+      <TextView
+          android:id="@+id/follow_management_page_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          style="@style/TextAppearance.Headline.Primary"
+          android:text="@string/follow_manage_following" />
+  </LinearLayout>
 
+  <!-- This recycler view gets the individual followed sites. -->
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/follow_management_list"
       android:layout_width="match_parent"

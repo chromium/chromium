@@ -18,7 +18,8 @@ found in the LICENSE file.
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:layout_margin="@dimen/follow_margin" >
 
         <TextView
             android:id="@+id/feed_management_menu_item_text"
@@ -34,14 +35,5 @@ found in the LICENSE file.
             android:layout_below="@id/feed_management_menu_item_text" />
 
     </RelativeLayout>
-
-    <!-- TODO(petewil): We want ic_chevron_right, but it is not in chrome yet, using arrow. -->
-    <ImageView
-        android:id="@+id/ic_chevron_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_forward_blue_24dp"
-        android:autoMirrored="true"
-        tools:ignore="ContentDescription" />
 
 </org.chromium.chrome.browser.feed.feedmanagement.FeedManagementItemView>

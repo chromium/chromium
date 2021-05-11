@@ -102,7 +102,8 @@ class FollowManagementMediator {
         void startFaviconFetch() {
             // Start the async call for the favicon, passing onFaviconAvailable as the callback.
             mLargeIconBridge.getLargeIconForUrl(mUrl,
-                    mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size),
+                    mContext.getResources().getDimensionPixelSize(
+                            R.dimen.web_feed_management_icon_size),
                     this::onFaviconAvailable);
         }
 
