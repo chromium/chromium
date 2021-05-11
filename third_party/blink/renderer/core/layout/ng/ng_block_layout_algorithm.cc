@@ -2143,13 +2143,14 @@ LayoutUnit NGBlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
 
 void NGBlockLayoutAlgorithm::FinalizeForTableCell(
     LayoutUnit unconstrained_intrinsic_block_size) {
+  const bool has_inflow_children = !container_builder_.Children().IsEmpty();
+
   // Hide table-cells if:
   //  - They are within a collapsed column(s).
   //  - They have "empty-cells: hide", non-collapsed borders, and no children.
   container_builder_.SetIsHiddenForPaint(
       ConstraintSpace().IsTableCellHiddenForPaint() ||
-      (ConstraintSpace().HideTableCellIfEmpty() &&
-       container_builder_.Children().IsEmpty()));
+      (ConstraintSpace().HideTableCellIfEmpty() && !has_inflow_children));
 
   container_builder_.SetHasCollapsedBorders(
       ConstraintSpace().IsTableCellWithCollapsedBorders());
@@ -2185,10 +2186,14 @@ void NGBlockLayoutAlgorithm::FinalizeForTableCell(
                                        BorderScrollbarPadding().block_end);
       }
 
-      if (auto alignment_baseline =
-              ConstraintSpace().TableCellAlignmentBaseline()) {
-        container_builder_.MoveChildrenInBlockDirection(
-            *alignment_baseline - *container_builder_.Baseline());
+      // Only adjust if we have *inflow* children. If we only have
+      // OOF-positioned children don't align them to the alignment baseline.
+      if (has_inflow_children) {
+        if (auto alignment_baseline =
+                ConstraintSpace().TableCellAlignmentBaseline()) {
+          container_builder_.MoveChildrenInBlockDirection(
+              *alignment_baseline - *container_builder_.Baseline());
+        }
       }
       break;
     case EVerticalAlign::kMiddle:
