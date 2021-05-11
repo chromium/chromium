@@ -97,17 +97,12 @@ import {MinimumRoutes, Route, Router} from '../router.js';
         [
           RouteState.DIALOG, new Set([
             RouteState.SECTION,
-            RouteState.TOP_LEVEL,
-          ])
-        ],
-        [RouteState.SECTION, allStates],
-        [
-          RouteState.SUBPAGE, new Set([
-            RouteState.SECTION,
             RouteState.SUBPAGE,
             RouteState.TOP_LEVEL,
           ])
         ],
+        [RouteState.SECTION, allStates],
+        [RouteState.SUBPAGE, allStates],
         [RouteState.TOP_LEVEL, allStates],
       ]);
     })(),
@@ -390,6 +385,10 @@ import {MinimumRoutes, Route, Router} from '../router.js';
           // sub-subpage entry point.
         } else if (newState === RouteState.TOP_LEVEL) {
           this.enterMainPage_(/** @type {!Route} */ (oldRoute));
+        } else if (newState === RouteState.DIALOG) {
+          // The only known case currently for such a transition is from
+          // /syncSetup to /signOut.
+          this.enterMainPage_(/** @type {!Route} */ (oldRoute));
         }
         return;
       }
@@ -402,6 +401,15 @@ import {MinimumRoutes, Route, Router} from '../router.js';
         }
         // Nothing to do here for the case of RouteState.DIALOG and TOP_LEVEL.
         return;
+      }
+
+      if (oldState === RouteState.DIALOG) {
+        if (newState === RouteState.SUBPAGE) {
+          // The only known case currently for such a transition is from
+          // /signOut to /syncSetup.
+          this.enterSubpage_(newRoute);
+        }
+        // Nothing to do for all other cases.
       }
 
       // Nothing to do for when oldState === RouteState.DIALOG.
