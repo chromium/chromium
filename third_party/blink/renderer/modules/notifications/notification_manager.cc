@@ -105,12 +105,8 @@ void NotificationManager::OnPermissionRequestComplete(
     mojom::blink::PermissionStatus status) {
   String status_string = Notification::PermissionString(status);
   if (deprecated_callback) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
     deprecated_callback->InvokeAndReportException(
         nullptr, V8NotificationPermission::Create(status_string).value());
-#else
-    deprecated_callback->InvokeAndReportException(nullptr, status_string);
-#endif
   }
 
   resolver->Resolve(status_string);

@@ -73,12 +73,8 @@ Vector<String> CallbackFunctionTest::testSequenceCallback(
 void CallbackFunctionTest::testEnumCallback(V8TestEnumCallback* callback,
                                             const String& enum_value,
                                             ExceptionState& exception_state) {
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
   callback->InvokeAndReportException(
       nullptr, V8InternalEnum::Create(enum_value).value());
-#else
-  callback->InvokeAndReportException(nullptr, enum_value);
-#endif
 }
 
 }  // namespace blink

@@ -333,12 +333,8 @@ void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
     const String& mode) {
   if (!form_state_restore_callback_)
     return;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
   form_state_restore_callback_->InvokeAndReportException(
       &element, value, V8FormStateRestoreMode::Create(mode).value());
-#else
-  form_state_restore_callback_->InvokeAndReportException(&element, value, mode);
-#endif
 }
 
 }  // namespace blink
