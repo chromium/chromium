@@ -55,6 +55,20 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
                               const NGBlockBreakToken* break_token,
                               NGMarginStrut*);
 
+  // Attempt to position the list-item marker (if any) beside the child
+  // fragment. This requires the fragment to have a baseline. If it doesn't,
+  // we'll keep the unpositioned marker around, so that we can retry with a
+  // later fragment (if any). If we reach the end of layout and still have an
+  // unpositioned marker, it can be placed by calling
+  // PositionAnyUnclaimedListMarker().
+  void AttemptToPositionListMarker(const NGPhysicalBoxFragment& child_fragment,
+                                   LayoutUnit block_offset);
+
+  // At the end of layout, if no column or spanner were able to position the
+  // list-item marker, position the marker at the beginning of the multicol
+  // container.
+  void PositionAnyUnclaimedListMarker();
+
   // Propagate the baseline from the given |child| if needed.
   void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
                                   LayoutUnit block_offset);

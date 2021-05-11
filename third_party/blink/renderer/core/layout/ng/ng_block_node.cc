@@ -1288,10 +1288,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     if (child_box && child_box != box_) {
       CopyChildFragmentPosition(child_fragment, child.offset,
                                 physical_fragment);
-      if (!child_box->IsColumnSpanAll()) {
-        DCHECK(child_box->IsOutOfFlowPositioned());
+      if (!child_box->IsColumnSpanAll())
         continue;
-      }
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
       if (!child_fragment.BreakToken()) {
         // Last fragment for this spanner. Update its placeholder.

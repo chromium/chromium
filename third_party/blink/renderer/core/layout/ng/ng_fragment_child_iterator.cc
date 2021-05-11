@@ -104,27 +104,27 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
       current_.break_token_for_fragmentainer_only_ = false;
     }
   } else if (is_fragmentation_context_root_ && previous_fragment) {
+    // The outgoing break token from one fragmentainer is the incoming break
+    // token to the next one. This is also true when there are column spanners
+    // (and other types of non-fragmentainers) between two columns
+    // (fragmentainers); the outgoing break token from the former column will be
+    // ignored by any intervening spanners (and other non-fragmentainers), and
+    // then fed into the first column that comes after them, as an incoming
+    // break token.
+    //
+    // A multicol container may contain other kinds of children than
+    // fragmentainers, such as a column spanner, a list item marker (if the
+    // multicol container is a list item), a rendered legend (if the parent
+    // fieldset also establishes a multicol container), or an out-of-flow
+    // positioned fragment whose containing block is the multicol container
+    // itself (in which case the OOF doesn't participate in the fragmentation
+    // context established by the multicol container). We'll leave
+    // |current_.block_break_token_| alone then, as it will be used as an
+    // incoming break token when we get to the next column.
     if (previous_fragment->IsFragmentainerBox()) {
-      // The outgoing break token from one fragmentainer is the incoming break
-      // token to the next one. This is also true when there are column spanners
-      // between two columns (fragmentainers); the outgoing break token from the
-      // former column will be ignored by any intervening spanners, and then fed
-      // into the first column that comes after them, as an incoming break
-      // token.
       current_.block_break_token_ =
           To<NGBlockBreakToken>(previous_fragment->BreakToken());
       current_.break_token_for_fragmentainer_only_ = true;
-    } else {
-      // This is not a fragmentainer. It has to be either a column spanner, a
-      // rendered legend (if the parent fieldset also establishes a multicol
-      // container), or an out-of-flow positioned fragment whose containing
-      // block is the multicol container itself (in which case the OOF doesn't
-      // participate in the fragmentation context established by the multicol
-      // container). We'll leave |current_.block_break_token_| alone here, as it
-      // will be used as an incoming break token when we get to the next column.
-      DCHECK(previous_fragment->IsColumnSpanAll() ||
-             previous_fragment->IsRenderedLegend() ||
-             previous_fragment->IsOutOfFlowPositioned());
     }
   } else if (current_.link_.fragment->IsOutOfFlowPositioned() &&
              !To<NGPhysicalBoxFragment>(current_.link_.fragment.Get())

@@ -24,8 +24,6 @@ class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalFragment;
 
-struct LogicalOffset;
-
 // Represents an unpositioned list marker.
 //
 // A list item can have either block children or inline children. Because
@@ -74,17 +72,17 @@ class CORE_EXPORT NGUnpositionedListMarker final {
                 const NGBoxStrut&,
                 const NGLayoutResult& marker_layout_result,
                 LayoutUnit content_baseline,
-                LogicalOffset* content_offset,
+                LayoutUnit* block_offset,
                 NGBoxFragmentBuilder*) const;
 
   // Add a fragment for an outside list marker when the list item has no line
-  // boxes.
-  // Returns the block size of the list marker.
-  LayoutUnit AddToBoxWithoutLineBoxes(
-      const NGConstraintSpace&,
-      FontBaseline,
-      const NGLayoutResult& marker_layout_result,
-      NGBoxFragmentBuilder*) const;
+  // boxes. Also adjust |intrinsic_block_size| if it was smaller than the list
+  // marker.
+  void AddToBoxWithoutLineBoxes(const NGConstraintSpace&,
+                                FontBaseline,
+                                const NGLayoutResult& marker_layout_result,
+                                NGBoxFragmentBuilder*,
+                                LayoutUnit* intrinsic_block_size) const;
   LayoutUnit InlineOffset(const LayoutUnit marker_inline_size) const;
 
   bool operator==(const NGUnpositionedListMarker& other) const {

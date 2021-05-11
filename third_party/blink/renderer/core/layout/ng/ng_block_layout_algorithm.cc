@@ -897,7 +897,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // List markers should have been positioned if we had line boxes, or boxes
   // that have line boxes. If there were no line boxes, position without line
   // boxes.
-  if (container_builder_.UnpositionedListMarker() && node_.IsListItem()) {
+  if (container_builder_.UnpositionedListMarker() &&
+      ShouldPlaceUnpositionedListMarker()) {
     if (!PositionListMarkerWithoutLineBoxes(previous_inflow_position))
       return container_builder_.Abort(NGLayoutResult::kBfcBlockOffsetResolved);
   }
@@ -2814,7 +2815,7 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
     NGPreviousInflowPosition* previous_inflow_position) {
   // If this is not a list-item, propagate unpositioned list markers to
   // ancestors.
-  if (!node_.IsListItem()) {
+  if (!ShouldPlaceUnpositionedListMarker()) {
     if (layout_result.UnpositionedListMarker()) {
       DCHECK(!container_builder_.UnpositionedListMarker());
       container_builder_.SetUnpositionedListMarker(
@@ -2858,7 +2859,7 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
 
     list_marker.AddToBox(space, baseline_type, content,
                          BorderScrollbarPadding(), *marker_layout_result,
-                         *content_baseline, content_offset,
+                         *content_baseline, &content_offset->block_offset,
                          &container_builder_);
     return true;
   }
@@ -2872,7 +2873,7 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
 
 bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
     NGPreviousInflowPosition* previous_inflow_position) {
-  DCHECK(node_.IsListItem());
+  DCHECK(ShouldPlaceUnpositionedListMarker());
   DCHECK(container_builder_.UnpositionedListMarker());
 
   NGUnpositionedListMarker list_marker =
@@ -2895,22 +2896,11 @@ bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
       return false;
   }
   // Position the list marker without aligning to line boxes.
-  LayoutUnit marker_block_size = list_marker.AddToBoxWithoutLineBoxes(
-      space, baseline_type, *marker_layout_result, &container_builder_);
+  list_marker.AddToBoxWithoutLineBoxes(
+      space, baseline_type, *marker_layout_result, &container_builder_,
+      &intrinsic_block_size_);
   container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker());
 
-  // Whether the list marker should affect the block size or not is not
-  // well-defined, but 3 out of 4 impls do.
-  // https://github.com/w3c/csswg-drafts/issues/2418
-  //
-  // The BFC block-offset has been resolved after layout marker. We'll always
-  // include the marker into the block-size.
-  if (container_builder_.BfcBlockOffset()) {
-    intrinsic_block_size_ = std::max(marker_block_size, intrinsic_block_size_);
-    container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
-    container_builder_.SetFragmentsTotalBlockSize(
-        std::max(marker_block_size, container_builder_.Size().block_size));
-  }
   return true;
 }
 

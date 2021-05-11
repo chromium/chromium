@@ -333,6 +333,19 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   base::Optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
       const NGMarginStrut& end_margin_strut);
 
+  // Return true if this is a list-item that may have to place a marker.
+  bool ShouldPlaceUnpositionedListMarker() const {
+    if (!node_.IsListItem())
+      return false;
+    // Also need to check if the constraint space is anonymous, which is the
+    // case for columns (the list item marker should be placed by the multicol
+    // container then, not the individual columns).
+    if (!ConstraintSpace().IsAnonymous())
+      return true;
+    DCHECK_EQ(container_builder_.BoxType(), NGPhysicalFragment::kColumnBox);
+    return false;
+  }
+
   // Returns true if |this| is a ruby segment (LayoutNGRubyRun) and the
   // specified |child| is a ruby annotation box (LayoutNGRubyText).
   bool IsRubyText(const NGLayoutInputNode& child) const;
