@@ -148,6 +148,22 @@ public class VideoPlayerViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
+    public void testPlayButton() {
+        View playButton = mControls.findViewById(R.id.play_button);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, false);
+        assertEquals(View.GONE, playButton.getVisibility());
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, true);
+        assertEquals(View.VISIBLE, playButton.getVisibility());
+
+        AtomicBoolean buttonClicked = new AtomicBoolean();
+        mModel.set(VideoPlayerProperties.CALLBACK_PLAY_BUTTON, () -> buttonClicked.set(true));
+        playButton.performClick();
+        assertTrue(buttonClicked.get());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
     public void testChangeLanguageButton() {
         TextView changeLanguage = mControls.findViewById(R.id.change_language);
         String languageName = "XYZ";

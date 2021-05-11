@@ -34,6 +34,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.36" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.64"
+            android:orientation="vertical" >
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/play_button"
+                android:elevation="2dp"
+                android:clickable="false"
+                android:layout_gravity="center_horizontal"
+                style="@style/LargeMediaPlayButton" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
         <Space
             android:id="@+id/top_half"
             android:layout_width="match_parent"
