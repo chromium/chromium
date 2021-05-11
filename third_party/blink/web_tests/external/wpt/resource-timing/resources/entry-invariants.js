@@ -168,7 +168,10 @@ const invariants = {
   }
 };
 
-const attribute_test_internal = (loader, path, validator, run_test, test_label) => {
+// Given a resource-loader, a path (a relative path or absolute URL), and a
+// PerformanceResourceTiming validator, applies the loader to the resource path
+// and applies the validator to the resulting PerformanceResourceTiming entry.
+const attribute_test = (loader, path, validate, test_label) => {
   promise_test(
     async () => {
       let loaded_entry = new Promise((resolve, reject) => {
@@ -187,21 +190,8 @@ const attribute_test_internal = (loader, path, validator, run_test, test_label) 
         }).observe({"type": "resource"});
       });
 
-      await loader(path, validator);
+      await loader(path);
       const entry = await(loaded_entry);
-      run_test(entry);
+      validate(entry);
   }, test_label);
-};
-
-// Given a resource-loader, a path (a relative path or absolute URL), and a
-// PerformanceResourceTiming test, applies the loader to the resource path
-// and tests the resulting PerformanceResourceTiming entry.
-const attribute_test = (loader, path, run_test, test_label) => {
-  attribute_test_internal(loader, path, () => {}, run_test, test_label);
-};
-
-// Similar to attribute test, but on top of that, validates the added element,
-// to ensure the test does what it intends to do.
-const attribute_test_with_validator = (loader, path, validator, run_test, test_label) => {
-  attribute_test_internal(loader, path, validator, run_test, test_label);
-};
+}
