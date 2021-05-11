@@ -3098,7 +3098,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.firstRunCoordinator stop];
 }
 
-- (void)didFinishPresentingScreens {
+- (void)didFinishPresentingScreensWithSubsequentActionsTriggered:
+    (BOOL)actionsTriggered {
   // Triggers all the events after the first run is dismissed. Note that the
   // below logic should be removed after the new first run UI supports location
   // permission page.
@@ -3117,7 +3118,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         systemPromptSkippedForNewUser];
   }
 
-  if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
+  // Only show the location permission if no additional actions were taken.
+  if (!actionsTriggered &&
+      location_permissions_field_trial::IsInFirstRunModalGroup()) {
     id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
         self.mainInterface.browser->GetCommandDispatcher());
     [handler showLocationPermissionsFromViewController:self.mainInterface.bvc];

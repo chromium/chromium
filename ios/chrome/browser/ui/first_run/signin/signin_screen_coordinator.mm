@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
@@ -217,8 +219,14 @@
   }
   if (signinCompletionInfo.signinCompletionAction ==
       SigninCompletionActionOpenCompletionURL) {
+    // The user asked to create a new account.
+    DCHECK(signinCompletionInfo.completionURL.is_valid());
+    UrlLoadParams params =
+        UrlLoadParams::InCurrentTab(signinCompletionInfo.completionURL);
+    params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+
     [self finishPresentingAndSkipRemainingScreens:YES];
-    // TODO(crbug.com/1189836): handle URL opening.
   }
 }
 
