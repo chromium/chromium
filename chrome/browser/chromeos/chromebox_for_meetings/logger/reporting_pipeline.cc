@@ -29,10 +29,7 @@ namespace {
 }
 
 mojom::LoggerStatusPtr LoggerUninitializedStatus() {
-  // From google/rpc/code.proto
-  constexpr int kUnavailable = 14;
-
-  return mojom::LoggerStatus::New(kUnavailable,
+  return mojom::LoggerStatus::New(mojom::LoggerErrorCode::kUnavailable,
                                   "Meet logger service not yet initialised.");
 }
 
@@ -87,9 +84,14 @@ void ReportingPipeline::Enqueue(const std::string& record,
           [](CfmLoggerService::EnqueueCallback callback,
              reporting::Status status) {
             auto message = status.error_message();
+            auto code =
+                static_cast<mojom::LoggerErrorCode>(status.error_code());
+
+            if (!mojom::IsKnownEnumValue(code))
+              code = mojom::LoggerErrorCode::kUnknown;
+
             std::move(callback).Run(mojom::LoggerStatus::New(
-                status.error_code(),
-                std::string(message.begin(), message.end())));
+                std::move(code), std::string(message.begin(), message.end())));
           },
           std::move(callback)));
 }

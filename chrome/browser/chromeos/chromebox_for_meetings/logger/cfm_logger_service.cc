@@ -42,12 +42,9 @@ class CfmERPLoggerService : public CfmLoggerService {
 static CfmLoggerService* g_logger_service = nullptr;
 
 mojom::LoggerStatusPtr LoggerDisabledStatus() {
-  // From google/rpc/code.proto:
   // The operation is not implemented or is not supported/enabled in this
   // service.
-  constexpr int kUnimplemented = 12;
-
-  return mojom::LoggerStatus::New(kUnimplemented,
+  return mojom::LoggerStatus::New(mojom::LoggerErrorCode::kUnimplemented,
                                   "Meet logger service is disabled");
 }
 

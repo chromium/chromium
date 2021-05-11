@@ -19,10 +19,31 @@ enum EnqueuePriority {
   kLow = 2,
 };
 
+// A error code that matches values defined in google/rpc/code.proto
+[Extensible]
+enum LoggerErrorCode {
+  kOk = 0,
+  kCancelled = 1,
+  kUnknown = 2,
+  kInvalidArgument = 3,
+  kDeadlineExceeded = 4,
+  kNotFound = 5,
+  kAlreadyExists = 6,
+  kPermissionDenied = 7,
+  kUnauthenticated = 16,
+  kResourceExhausted = 8,
+  kFailedPrecondition = 9,
+  kAborted = 10,
+  kOutOfRange = 11,
+  kUnimplemented = 12,
+  kInternal = 13,
+  kUnavailable = 14,
+  kDataloss = 15,
+};
+
 // Provides information regarding the logger error status.
 struct LoggerStatus {
-  // A error code that matches values defined in google/rpc/code.proto
-  int32 code@0;
+  LoggerErrorCode code@0;
 
   // A debug message with more information about the error. This string is not
   // intended to be shown to the user.
@@ -56,4 +77,3 @@ interface MeetDevicesLogger {
   // Adds a |LoggerStateObserver| to monitor |MeetDevicesLogger|'s state.
   AddStateObserver@1(pending_remote<LoggerStateObserver> pending_observer);
 };
-
