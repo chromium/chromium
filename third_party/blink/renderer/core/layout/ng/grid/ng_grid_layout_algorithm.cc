@@ -3093,17 +3093,18 @@ namespace {
 // the extra offset relative to the start of its containing range.
 LayoutUnit ComputeTrackOffsetInRange(
     const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
-    wtf_size_t range_starting_set_index,
-    wtf_size_t range_set_count,
-    wtf_size_t offset_in_range) {
-  if (!range_set_count)
+    const wtf_size_t range_starting_set_index,
+    const wtf_size_t range_set_count,
+    const wtf_size_t offset_in_range) {
+  if (!range_set_count || !offset_in_range)
     return LayoutUnit();
 
   // To compute the index offset, we have to determine the size of the
-  // tracks in the item's range.
+  // tracks within the grid item's span.
   Vector<std::div_t> track_sizes =
       NGGridLayoutAlgorithm::ComputeTrackSizesInRange(
           set_geometry, range_starting_set_index, range_set_count);
+
   // Calculate how many sets there are from the start of the range to the
   // |offset_in_range|. This division can produce a remainder, which would
   // mean that not all of the sets are repeated the same amount of times from
@@ -3111,8 +3112,7 @@ LayoutUnit ComputeTrackOffsetInRange(
   const wtf_size_t floor_set_track_count = offset_in_range / range_set_count;
   const wtf_size_t remaining_track_count = offset_in_range % range_set_count;
 
-  // Iterate over the sets and add the sizes of the tracks to the
-  // |index_offset|.
+  // Iterate over the sets and add the sizes of the tracks to |index_offset|.
   LayoutUnit index_offset = set_geometry.gutter_size * offset_in_range;
   for (wtf_size_t track_index = 0; track_index < track_sizes.size();
        ++track_index) {
@@ -3127,39 +3127,82 @@ LayoutUnit ComputeTrackOffsetInRange(
   return index_offset;
 }
 
+template <bool snap_to_end_of_track>
 LayoutUnit TrackOffset(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
     const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
-    wtf_size_t range_index,
-    wtf_size_t offset_in_range,
-    bool snap_to_end_of_track) {
-  wtf_size_t range_starting_set_index =
-      track_collection.RangeStartingSetIndex(range_index);
-  wtf_size_t range_track_count = track_collection.RangeTrackCount(range_index);
-  wtf_size_t range_set_count = track_collection.RangeSetCount(range_index);
+    const wtf_size_t range_index,
+    const wtf_size_t offset_in_range) {
+  LayoutUnit track_offset;
 
-  LayoutUnit track_offset = set_geometry.sets[range_starting_set_index].offset;
+  const wtf_size_t range_starting_set_index =
+      track_collection.RangeStartingSetIndex(range_index);
+  const wtf_size_t range_track_count =
+      track_collection.RangeTrackCount(range_index);
+  const wtf_size_t range_set_count =
+      track_collection.RangeSetCount(range_index);
+
   if (offset_in_range == range_track_count) {
+    DCHECK(snap_to_end_of_track);
     track_offset =
         set_geometry.sets[range_starting_set_index + range_set_count].offset;
-    snap_to_end_of_track = true;
   } else {
     DCHECK_LT(offset_in_range, range_track_count);
-    // If an out of flow item starts or ends in the middle of a range, compute
-    // and add the extra offset.
-    track_offset +=
+    DCHECK(offset_in_range || !snap_to_end_of_track);
+    // If an out of flow item starts/ends in the middle of a range, compute and
+    // add the extra offset to the start offset of the range.
+    track_offset =
+        set_geometry.sets[range_starting_set_index].offset +
         ComputeTrackOffsetInRange(set_geometry, range_starting_set_index,
                                   range_set_count, offset_in_range);
   }
+
   // |track_offset| includes the gutter size at the end of the last track,
   // when we snap to the end of last track such gutter size should be removed.
-  // However, we don't want to snap to the end of the previous range or
-  // incorrectly remove gutter size from collapsed ranges.
-  if (snap_to_end_of_track && offset_in_range &&
-      (range_set_count || range_starting_set_index)) {
+  // However, only snap if this range is not collapsed or if it can snap to the
+  // end of the last track in the previous range of the collection.
+  if (snap_to_end_of_track && (range_set_count || range_index))
     track_offset -= set_geometry.gutter_size;
-  }
   return track_offset;
+}
+
+LayoutUnit TrackStartOffset(
+    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
+    const wtf_size_t range_index,
+    const wtf_size_t offset_in_range) {
+  const wtf_size_t range_track_count =
+      track_collection.RangeTrackCount(range_index);
+
+  if (offset_in_range == range_track_count &&
+      range_index == track_collection.RangeCount() - 1) {
+    // The only case where we allow the offset to be equal to the number of
+    // tracks in the range is for the last range in the collection, which should
+    // match the end line of the implicit grid; snap to the track end instead.
+    return TrackOffset</* snap_to_end_of_track */ true>(
+        track_collection, set_geometry, range_index, offset_in_range);
+  }
+
+  DCHECK_LT(offset_in_range, range_track_count);
+  return TrackOffset</* snap_to_end_of_track */ false>(
+      track_collection, set_geometry, range_index, offset_in_range);
+}
+
+LayoutUnit TrackEndOffset(
+    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
+    const wtf_size_t range_index,
+    const wtf_size_t offset_in_range) {
+  if (!offset_in_range && !range_index) {
+    // Only allow the offset to be 0 for the first range in the collection,
+    // which is the start line of the implicit grid; don't snap to the end.
+    return TrackOffset</* snap_to_end_of_track */ false>(
+        track_collection, set_geometry, range_index, offset_in_range);
+  }
+
+  DCHECK_GT(offset_in_range, 0u);
+  return TrackOffset</* snap_to_end_of_track */ true>(
+      track_collection, set_geometry, range_index, offset_in_range);
 }
 
 }  // namespace
@@ -3233,26 +3276,25 @@ void NGGridLayoutAlgorithm::ComputeOutOfFlowOffsetAndSize(
 
   // If the start line is defined, the size will be calculated by subtracting
   // the offset at |start_index|; otherwise, use the computed border start.
-  if (item_placement.start_range_index != kNotFound &&
-      item_placement.start_offset_in_range != kNotFound) {
-    *start_offset = TrackOffset(
-        track_collection, set_geometry, item_placement.start_range_index,
-        item_placement.start_offset_in_range, /* snap_to_end_of_track */
-        false);
+  if (item_placement.start_range_index != kNotFound) {
+    DCHECK_NE(item_placement.start_offset_in_range, kNotFound);
+    *start_offset = TrackStartOffset(track_collection, set_geometry,
+                                     item_placement.start_range_index,
+                                     item_placement.start_offset_in_range);
   }
 
   // If the end line is defined, the offset (which can be the offset at the
   // start index or the start border) and the added grid gap after the spanned
   // tracks are subtracted from the offset at the end index.
-  if (item_placement.end_range_index != kNotFound &&
-      item_placement.end_offset_in_range != kNotFound) {
-    end_offset = TrackOffset(
-        track_collection, set_geometry, item_placement.end_range_index,
-        item_placement.end_offset_in_range, /* snap_to_end_of_track */ true);
+  if (item_placement.end_range_index != kNotFound) {
+    DCHECK_NE(item_placement.end_offset_in_range, kNotFound);
+
+    end_offset = TrackEndOffset(track_collection, set_geometry,
+                                item_placement.end_range_index,
+                                item_placement.end_offset_in_range);
     *size = end_offset - *start_offset;
   } else {
-    // By the time we call this method, we should not have indefinite track
-    // sizes.
+    // By the time we call this method, we shouldn't have indefinite tracks.
     DCHECK_EQ(set_geometry.sets.back().last_indefinite_index, kNotFound);
 
     // |start_offset| can be greater than |end_offset| if the track sizes from
