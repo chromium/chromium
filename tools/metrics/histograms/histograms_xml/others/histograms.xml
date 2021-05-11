@@ -3417,7 +3417,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.TimeToSelectShare" units="ms"
-    expires_after="2021-07-11">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14048,7 +14048,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
-    expires_after="2021-07-11">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14059,7 +14059,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
-    expires_after="2021-07-11">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14070,7 +14070,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
-    enum="LinkGenerationError" expires_after="2021-09-12">
+    enum="LinkGenerationError" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14081,7 +14081,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
-    units="iterations" expires_after="2021-09-12">
+    units="iterations" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14091,7 +14091,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2021-07-11">
+    enum="LinkGenerationError" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14101,7 +14101,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
-    units="ms" expires_after="2021-09-12">
+    units="ms" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14111,7 +14111,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
-    expires_after="2021-09-12">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14121,7 +14121,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
-    expires_after="2021-09-12">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14133,7 +14133,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.SelectionLength"
-    units="characters" expires_after="2021-09-12">
+    units="characters" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14143,7 +14143,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
-    enum="TextFragmentAnchorParameters" expires_after="2021-09-12">
+    enum="TextFragmentAnchorParameters" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14153,7 +14153,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -14163,7 +14163,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated{Requested}"
-    units="BooleanSuccess" expires_after="2021-07-11">
+    units="BooleanSuccess" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -15991,7 +15991,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2021-09-12">
+    enum="TextFragmentLinkOpenSource" expires_after="2021-12-31">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
