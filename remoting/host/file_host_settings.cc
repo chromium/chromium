@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/host_settings_mac.h"
+#include "remoting/host/file_host_settings.h"
 
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -10,39 +10,37 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/mac/constants_mac.h"
 
 namespace remoting {
 
-HostSettingsMac::HostSettingsMac() = default;
+FileHostSettings::FileHostSettings(const base::FilePath& settings_file)
+    : settings_file_(settings_file) {}
 
-HostSettingsMac::~HostSettingsMac() = default;
+FileHostSettings::~FileHostSettings() = default;
 
-void HostSettingsMac::InitializeInstance() {
-  // TODO(yuweih): Make HostSettingsMac detect changes of the settings file.
+void FileHostSettings::InitializeInstance() {
+  // TODO(yuweih): Make FileHostSettings detect changes of the settings file.
   if (settings_) {
     return;
   }
 
-  base::FilePath settings_file(kHostSettingsFilePath);
-  if (!base::PathIsReadable(settings_file)) {
-    HOST_LOG << "Host settings file " << kHostSettingsFilePath
-             << " does not exist.";
+  if (!base::PathIsReadable(settings_file_)) {
+    HOST_LOG << "Host settings file " << settings_file_ << " does not exist.";
     return;
   }
-  JSONFileValueDeserializer deserializer(settings_file);
+  JSONFileValueDeserializer deserializer(settings_file_);
   int error_code;
   std::string error_message;
   settings_ = deserializer.Deserialize(&error_code, &error_message);
   if (!settings_) {
-    LOG(WARNING) << "Failed to load " << kHostSettingsFilePath
+    LOG(WARNING) << "Failed to load " << settings_file_
                  << ". Code: " << error_code << ", message: " << error_message;
     return;
   }
   HOST_LOG << "Host settings loaded.";
 }
 
-std::string HostSettingsMac::GetString(const HostSettingKey key) const {
+std::string FileHostSettings::GetString(const HostSettingKey key) const {
   if (!settings_) {
     VLOG(1) << "Either Initialize() has not been called, or the settings file "
                "doesn't exist.";
@@ -53,11 +51,6 @@ std::string HostSettingsMac::GetString(const HostSettingKey key) const {
     return std::string();
   }
   return *string_value;
-}
-
-HostSettings* HostSettings::GetInstance() {
-  static base::NoDestructor<HostSettingsMac> instance;
-  return instance.get();
 }
 
 }  // namespace remoting

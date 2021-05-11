@@ -18,6 +18,9 @@ class RemoteOpenUrlClient final {
   RemoteOpenUrlClient();
   ~RemoteOpenUrlClient();
 
+  // Simply opens the fallback browser with no arguments.
+  void OpenFallbackBrowser();
+
   // Opens the URL and calls |done| when done.
   void OpenUrl(const GURL& url, base::OnceClosure done);
 

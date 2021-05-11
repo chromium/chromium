@@ -99,38 +99,51 @@ if (use_x11) {
   }
 }
 
-executable("remoting_native_messaging_host") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
+source_set("file_path_util") {
   sources = [
-    "//remoting/host/setup/me2me_native_messaging_host_entry_point.cc",
-    "//remoting/host/setup/me2me_native_messaging_host_main.cc",
-    "//remoting/host/setup/me2me_native_messaging_host_main.h",
+    "file_path_util.cc",
+    "file_path_util.h",
   ]
-
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//mojo/core/embedder",
     "//net",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:breakpad",
-    "//remoting/host",
-    "//remoting/host:base",
-    "//remoting/host/native_messaging",
-    "//remoting/host/setup",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
   ]
+}
 
-  # The |major|, |build| and |patch| versions are inherited from Chrome.
-  # Since Chrome's |minor| version is always '0', we replace it with a
-  # Chromoting-specific patch version.
-  defines =
-      [ "VERSION=" + "$chrome_version_major" + "." + "$remoting_version_patch" +
-        "." + "$chrome_version_build" + "." + "$chrome_version_patch" ]
+if (!is_chromeos_ash && !is_chromeos_lacros) {
+  executable("remoting_native_messaging_host") {
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    sources = [
+      "//remoting/host/setup/me2me_native_messaging_host_entry_point.cc",
+      "//remoting/host/setup/me2me_native_messaging_host_main.cc",
+      "//remoting/host/setup/me2me_native_messaging_host_main.h",
+    ]
+
+    deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//mojo/core/embedder",
+      "//net",
+      "//remoting/base",
+      "//remoting/base:authorization",
+      "//remoting/base:breakpad",
+      "//remoting/host",
+      "//remoting/host:base",
+      "//remoting/host/native_messaging",
+      "//remoting/host/setup",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+    ]
+
+    # The |major|, |build| and |patch| versions are inherited from Chrome.
+    # Since Chrome's |minor| version is always '0', we replace it with a
+    # Chromoting-specific patch version.
+    defines = [ "VERSION=" + "$chrome_version_major" + "." +
+                "$remoting_version_patch" + "." + "$chrome_version_build" +
+                "." + "$chrome_version_patch" ]
+  }
 }
 
 source_set("unit_tests") {

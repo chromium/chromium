@@ -5,19 +5,47 @@
 #include "remoting/host/remote_open_url_client.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
+#include "base/process/launch.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/host_setting_keys.h"
+#include "remoting/host/host_settings.h"
 #include "remoting/host/remote_open_url_constants.h"
 
 namespace remoting {
+
+namespace {
+
+void OpenOnFallbackBrowserInternal(const GURL& url = GURL()) {
+  std::string previous_default_browser =
+      HostSettings::GetInstance()->GetString(kLinuxPreviousDefaultWebBrowser);
+  if (previous_default_browser.empty()) {
+    LOG(ERROR) << "The previous default web browser is unknown.";
+    return;
+  }
+  // gtk-launch DESKTOP_ENTRY [URL...]
+  base::CommandLine gtk_launch_command(
+      {"gtk-launch", previous_default_browser});
+  if (!url.is_empty()) {
+    gtk_launch_command.AppendArg(url.spec());
+  }
+  base::LaunchProcess(gtk_launch_command, base::LaunchOptions());
+}
+
+}  // namespace
 
 RemoteOpenUrlClient::RemoteOpenUrlClient() = default;
 
 RemoteOpenUrlClient::~RemoteOpenUrlClient() {
   DCHECK(!done_);
+}
+
+void RemoteOpenUrlClient::OpenFallbackBrowser() {
+  OpenOnFallbackBrowserInternal();
 }
 
 void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
@@ -67,7 +95,7 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
       LOG(ERROR) << "Failed to open the URL remotely.";
       break;
     case mojom::OpenUrlResult::LOCAL_FALLBACK:
-      NOTIMPLEMENTED();
+      OpenOnFallbackBrowserInternal(url_);
       break;
     default:
       NOTREACHED();

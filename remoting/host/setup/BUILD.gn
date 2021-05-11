@@ -44,6 +44,7 @@ source_set("common") {
       "daemon_controller_delegate_linux.cc",
       "daemon_controller_delegate_linux.h",
     ]
+    deps += [ "//remoting/host/linux:file_path_util" ]
   }
 
   if (is_mac) {

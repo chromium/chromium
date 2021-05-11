@@ -6,6 +6,16 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "remoting/host/file_host_settings.h"
+
+#if defined(OS_APPLE)
+#include "base/files/file_path.h"
+#include "remoting/host/mac/constants_mac.h"
+#endif  // defined(OS_APPLE)
+
+#if defined(OS_LINUX)
+#include "remoting/host/linux/file_path_util.h"
+#endif  // defined(OS_LINUX)
 
 namespace remoting {
 
@@ -31,15 +41,19 @@ HostSettings::HostSettings() = default;
 
 HostSettings::~HostSettings() = default;
 
-// HostSettings is currently neither implemented nor used on non-Mac platforms.
-#if !defined(OS_APPLE)
-
 // static
 HostSettings* HostSettings::GetInstance() {
+#if defined(OS_APPLE)
+  static const base::FilePath settings_file(kHostSettingsFilePath);
+  static base::NoDestructor<FileHostSettings> instance(settings_file);
+#elif defined(OS_LINUX)
+  static base::NoDestructor<FileHostSettings> instance(base::FilePath(
+      GetConfigDirectoryPath().Append(GetHostHash() + ".settings.json")));
+#else
+  // HostSettings is currently neither implemented nor used on other platforms.
   static base::NoDestructor<EmptyHostSettings> instance;
+#endif
   return instance.get();
 }
-
-#endif
 
 }  // namespace remoting
