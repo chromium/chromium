@@ -23,7 +23,7 @@ const base::Feature kIPHGlobalMediaControlsFeature{
 const base::Feature kIPHLiveCaptionFeature{"IPH_LiveCaption",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHPasswordsAccountStorageFeature{
-    "IPH_PasswordsAccountStorage", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_PasswordsAccountStorage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHReadingListDiscoveryFeature{
     "IPH_ReadingListDiscovery", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReadingListEntryPointFeature{

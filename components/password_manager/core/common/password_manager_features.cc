@@ -60,7 +60,13 @@ const base::Feature kEnableOverwritingPlaceholderUsernames{
 // Enables a second, Gaia-account-scoped password store for users who are signed
 // in but not syncing.
 const base::Feature kEnablePasswordsAccountStorage = {
-    "EnablePasswordsAccountStorage", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnablePasswordsAccountStorage",
+#if defined(OS_ANDROID) || defined(OS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 const base::Feature KEnablePasswordGenerationForClearTextFields = {
     "EnablePasswordGenerationForClearTextFields",
