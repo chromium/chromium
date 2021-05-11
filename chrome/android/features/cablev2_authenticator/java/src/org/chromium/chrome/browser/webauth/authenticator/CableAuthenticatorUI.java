@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
@@ -365,7 +366,11 @@ public class CableAuthenticatorUI
                 // These values must match up with the Status enum in v2_authenticator.h
                 int id = -1;
                 if (code == 1) {
-                    id = R.string.cablev2_serverlink_status_connecting;
+                    if (mMode == Mode.SERVER_LINK) {
+                        id = R.string.cablev2_serverlink_status_connecting;
+                    } else {
+                        id = R.string.cablev2_fcm_status_connecting;
+                    }
                 } else if (code == 2) {
                     id = R.string.cablev2_serverlink_status_connected;
                 } else if (code == 3) {
@@ -525,6 +530,7 @@ public class CableAuthenticatorUI
         // Show a notification to the user. If tapped then an instance of this
         // class will be created in FCM mode.
         Context context = ContextUtils.getApplicationContext();
+        Resources resources = context.getResources();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Register a channel for this notification. Registering the same
@@ -559,16 +565,15 @@ public class CableAuthenticatorUI
 
         String title = null;
         String body = null;
-        // TODO: finalise string and translate.
         switch (requestType) {
             case MAKE_CREDENTIAL:
-                title = "Register this device";
-                body = "A paired device is trying to register this device as a security key";
+                title = resources.getString(R.string.cablev2_make_credential_notification_title);
+                body = resources.getString(R.string.cablev2_make_credential_notification_body);
                 break;
 
             case GET_ASSERTION:
-                title = "Sign-in using this device";
-                body = "A paired device is trying to sign-in using this device";
+                title = resources.getString(R.string.cablev2_get_assertion_notification_title);
+                body = resources.getString(R.string.cablev2_get_assertion_notification_body);
                 break;
         }
 

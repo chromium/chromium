@@ -164,6 +164,14 @@ class AuthenticatorRequestDialogModel {
     std::array<uint8_t, device::kP256X962Length> public_key_x962;
   };
 
+  // CableUIType enumerates the different types of caBLE UI that we've ended
+  // up with.
+  enum class CableUIType {
+    CABLE_V1,
+    CABLE_V2_SERVER_LINK,
+    CABLE_V2_2ND_FACTOR,
+  };
+
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
   ~AuthenticatorRequestDialogModel();
 
@@ -415,6 +423,8 @@ class AuthenticatorRequestDialogModel {
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
+  CableUIType cable_ui_type() const { return *cable_ui_type_; }
+
   // cable_should_suggest_usb returns true if the caBLE "v1" UI was triggered by
   // a caBLEv2 server-linked request and attaching a USB cable is an option.
   bool cable_should_suggest_usb() const;
@@ -448,7 +458,7 @@ class AuthenticatorRequestDialogModel {
   }
 
   void set_cable_transport_info(
-      bool cable_extension_provided,
+      base::Optional<bool> extension_is_v2,
       std::vector<PairedPhone> paired_phones,
       base::RepeatingCallback<void(size_t)> contact_phone_callback,
       const base::Optional<std::string>& cable_qr_string);
@@ -460,8 +470,6 @@ class AuthenticatorRequestDialogModel {
   // paired_phone_names returns a sorted, unique list of the names of paired
   // phones.
   std::vector<std::string> paired_phone_names() const;
-
-  bool cable_extension_provided() const { return cable_extension_provided_; }
 
   const std::string& relying_party_id() const { return relying_party_id_; }
 
@@ -561,6 +569,9 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
+
+  // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
+  base::Optional<CableUIType> cable_ui_type_;
 
   // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
   // QR-based pairing. The entries are sorted by name.

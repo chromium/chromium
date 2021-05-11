@@ -47,7 +47,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorTransport::kAndroidAccessory);
     }
     model->set_cable_transport_info(
-        /*cable_extension_provided=*/true,
+        /*extension_is_v2=*/false,
         /*paired_phones=*/{},
         /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
     model->StartFlow(std::move(transport_availability),
@@ -85,8 +85,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_activate") {
+      model->set_cable_transport_info(
+          /*extension_is_v2=*/base::nullopt,
+          /*paired_phones=*/{},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model->SetCurrentStep(
-          AuthenticatorRequestDialogModel::Step::kCableV2Activate);
+          AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_pair") {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);

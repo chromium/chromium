@@ -30,18 +30,30 @@ AuthenticatorTransportSelectorSheetView::BuildStepSpecificContent() {
           transports,
           device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
     phone_names = dialog_model->paired_phone_names();
-  }
 
-  if (!dialog_model->cable_extension_provided()) {
     // The generic phone option is not shown unless a caBLE extension was
     // provided because it's the extension which denotes what a "default" phone
     // is.
-    transports.erase(
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+    bool show_generic_phone;
+    switch (dialog_model->cable_ui_type()) {
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+        show_generic_phone = true;
+        break;
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
+        show_generic_phone = false;
+        break;
+    }
+
+    if (!show_generic_phone) {
+      transports.erase(
+          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+    }
   }
 
-  return std::make_pair(std::make_unique<HoverListView>(
-      std::make_unique<TransportHoverListModel>(
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<TransportHoverListModel>(
           transports, dialog_model->win_native_api_enabled(),
-          std::move(phone_names), model())), AutoFocus::kYes);
+          std::move(phone_names), model())),
+      AutoFocus::kYes);
 }

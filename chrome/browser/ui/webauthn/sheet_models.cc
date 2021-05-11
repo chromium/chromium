@@ -579,13 +579,33 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
 }
 
 std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
-  if (dialog_model()->cable_should_suggest_usb()) {
-    return l10n_util::GetStringFUTF16(
-        IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
-        GetRelyingPartyIdString(dialog_model()));
-  }
+  switch (dialog_model()->cable_ui_type()) {
+    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
 
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
+    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
+          GetRelyingPartyIdString(dialog_model()));
+
+    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR: {
+      std::u16string notification_title;
+      switch (dialog_model()->transport_availability()->request_type) {
+        case device::FidoRequestType::kMakeCredential:
+          notification_title = l10n_util::GetStringUTF16(
+              IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_TITLE);
+          break;
+        case device::FidoRequestType::kGetAssertion:
+          notification_title = l10n_util::GetStringUTF16(
+              IDS_CABLEV2_GET_ASSERTION_NOTIFICATION_TITLE);
+          break;
+      }
+
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_CABLEV2_2ND_FACTOR_DESCRIPTION,
+          GetRelyingPartyIdString(dialog_model()), notification_title);
+    }
+  }
 }
 
 ui::MenuModel* AuthenticatorPaaskSheetModel::GetOtherTransportsMenuModel() {

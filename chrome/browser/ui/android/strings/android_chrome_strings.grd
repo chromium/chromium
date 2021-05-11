@@ -4312,6 +4312,10 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         This may take a minute
       </message>
 
+      <message name="IDS_CABLEV2_FCM_STATUS_CONNECTING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. In this state the phone needs to send a radio message to the computer and this works best if the phone is physically close to the computer. This message suggests to the user to move their phone closer to the computer to aid this.">
+        Place your phone close to the computer
+      </message>
+
       <message name="IDS_CABLEV2_SERVERLINK_STATUS_CONNECTED" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. (In the attached image, this text will appear in place of the text 'This may take a minute'.) This text is shown once the connection to the desktop/laptop has completed and the phone is awaiting instructions.">
         Connected to device
       </message>
@@ -4338,6 +4342,14 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 
       <message name="IDS_CABLEV2_ERROR_CLOSE" desc="A button at the bottom on an error screen to dismiss it">
         Close
+      </message>
+
+      <message name="IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_BODY" desc="The body of a notification shown on Android that informs the user that a website wishes to register their phone for signing into that website.">
+        Your computer wants to register this device for signing in to a site
+      </message>
+
+      <message name="IDS_CABLEV2_GET_ASSERTION_NOTIFICATION_BODY" desc="The title of a notification shown on Android that informs the user that a website wishes to use their phone to sign them in on another computer.">
+        Your computer wants to use this device to sign in to a site
       </message>
 
       <!-- QR Code -->

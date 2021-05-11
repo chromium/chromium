@@ -701,13 +701,23 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 }
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
-    bool cable_extension_provided,
+    base::Optional<bool> extension_is_v2,
     std::vector<PairedPhone> paired_phones,
     base::RepeatingCallback<void(size_t)> contact_phone_callback,
     const base::Optional<std::string>& cable_qr_string) {
   DCHECK(paired_phones.empty() || contact_phone_callback);
 
-  cable_extension_provided_ = cable_extension_provided;
+  if (extension_is_v2.has_value()) {
+    cable_extension_provided_ = true;
+    if (*extension_is_v2) {
+      cable_ui_type_ = CableUIType::CABLE_V2_SERVER_LINK;
+    } else {
+      cable_ui_type_ = CableUIType::CABLE_V1;
+    }
+  } else {
+    cable_ui_type_ = CableUIType::CABLE_V2_2ND_FACTOR;
+  }
+
   paired_phones_ = std::move(paired_phones);
   contact_phone_callback_ = std::move(contact_phone_callback);
   cable_qr_string_ = cable_qr_string;

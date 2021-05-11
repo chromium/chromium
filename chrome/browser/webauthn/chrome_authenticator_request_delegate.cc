@@ -544,8 +544,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   }
 
   if (cable_extension_provided || non_extension_cablev2_enabled) {
+    base::Optional<bool> extension_is_v2;
+    if (cable_extension_provided) {
+      extension_is_v2 = cablev2_extension_provided;
+    }
     weak_dialog_model_->set_cable_transport_info(
-        cable_extension_provided, std::move(paired_phone_entries),
+        extension_is_v2, std::move(paired_phone_entries),
         std::move(contact_phone_callback), qr_string);
     discovery_factory->set_cable_data(request_type, std::move(pairings),
                                       qr_generator_key,
