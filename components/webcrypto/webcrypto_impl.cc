@@ -419,6 +419,7 @@ void DoDecrypt(std::unique_ptr<DecryptState> passed_state) {
   state->status =
       webcrypto::Decrypt(state->algorithm, state->key,
                          webcrypto::CryptoData(state->data), &state->buffer);
+  recordreplay::Assert("DoDecrypt %d %lu", state->status.IsError(), state->buffer.size());
   state->origin_thread->PostTask(
       FROM_HERE, base::BindOnce(DoDecryptReply, std::move(passed_state)));
 }
