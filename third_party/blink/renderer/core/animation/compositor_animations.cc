@@ -187,6 +187,22 @@ bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
   return is_no_op_variable_anim || is_no_op_bgcolor_anim;
 }
 
+bool CompositedAnimationRequiresProperties(CSSPropertyID property) {
+  switch (property) {
+    case CSSPropertyID::kOpacity:
+    case CSSPropertyID::kBackdropFilter:
+    case CSSPropertyID::kRotate:
+    case CSSPropertyID::kScale:
+    case CSSPropertyID::kTranslate:
+    case CSSPropertyID::kTransform:
+    case CSSPropertyID::kFilter:
+      return true;
+    default:
+      return false;
+  }
+  return false;
+}
+
 }  // namespace
 
 CompositorElementIdNamespace
@@ -391,24 +407,26 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         reasons |= kInvalidAnimationOrEffect;
       }
 
-      if (paint_artifact_compositor) {
-        // If we don't have paint properties, we won't have a UniqueId to use
-        // for checking here.
-        if (!target_element.GetLayoutObject() ||
-            !target_element.GetLayoutObject()
-                 ->FirstFragment()
-                 .PaintProperties()) {
+      if (CompositedAnimationRequiresProperties(
+              property.GetCSSProperty().PropertyID())) {
+        if (!paint_artifact_compositor) {
+          // TODO(pdr): We should return |kTargetHasInvalidCompositingState|.
           continue;
-        }
-
-        CompositorElementId target_element_id =
-            CompositorElementIdFromUniqueObjectId(
-                layout_object->UniqueId(),
-                CompositorElementNamespaceForProperty(
-                    property.GetCSSProperty().PropertyID()));
-        DCHECK(target_element_id);
-        if (!paint_artifact_compositor->HasComposited(target_element_id))
+        } else if (!target_element.GetLayoutObject() ||
+                   !target_element.GetLayoutObject()
+                        ->FirstFragment()
+                        .PaintProperties()) {
           reasons |= kTargetHasInvalidCompositingState;
+        } else {
+          CompositorElementId target_element_id =
+              CompositorElementIdFromUniqueObjectId(
+                  layout_object->UniqueId(),
+                  CompositorElementNamespaceForProperty(
+                      property.GetCSSProperty().PropertyID()));
+          DCHECK(target_element_id);
+          if (!paint_artifact_compositor->HasComposited(target_element_id))
+            reasons |= kTargetHasInvalidCompositingState;
+        }
       }
     }
   }
