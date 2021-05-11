@@ -5847,7 +5847,7 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/whee
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-horizontal-scrollbar-in-rtl.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-vertical-scrollbar-in-rtl.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-horizontal-scrollbar-in-rtl.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-in-vertical-scrollbar-in-rtl.html [ Failure ]
 # Timeout only for compositor-threaded
@@ -5864,7 +5864,7 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/s
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/hover-during-scroll.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-height-chaining.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/no-hover-during-smooth-keyboard-scroll.html [ Failure ]
@@ -5877,7 +5877,7 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/e
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure ]
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/scrollend-event-fired-to-scrolled-element.html [ Failure ]
 
