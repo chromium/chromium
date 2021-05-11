@@ -16,8 +16,6 @@
 -All/MultiActionAPITest.PopupCreation/1
 -All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/1
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay*
--All/SystemWebAppLinkCaptureBrowserTest.IncognitoBrowserOmniboxLinkCapture*
--All/SystemWebAppLinkCaptureBrowserTest.WindowOpenFromOtherSWA*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio*
 -AppViewTest.KillGuestCommunicatingWithWrongAppView
