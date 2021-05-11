@@ -217,6 +217,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_RASTER_PIPELINE_LEGACY_RCP_RSQRT
 
+// TODO(johnstiles): temporary guard for landing http://review.skia.org/407098
+#define SK_DISABLE_NONSQUARE_MATRIX_TRANSFORM
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
