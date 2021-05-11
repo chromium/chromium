@@ -42,8 +42,15 @@ constexpr char kWindowsPlatformName[] = "windows";
 void OnGetAppUrlHandlers(
     std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
     blink::mojom::InstalledAppProvider::FilterInstalledAppsCallback callback,
-    base::win::internal::AsyncResultsT<IVectorView<AppInfo*>*> found_app_list) {
+    ComPtr<IVectorView<AppInfo*>> found_app_list) {
   std::vector<blink::mojom::RelatedApplicationPtr> found_installed_apps;
+
+  if (!found_app_list) {
+    // |found_app_list| can be null when returned from the OS.
+    std::move(callback).Run(std::move(found_installed_apps));
+    return;
+  }
+
   UINT found_app_url_size = 0;
   HRESULT hr = found_app_list->get_Size(&found_app_url_size);
   if (FAILED(hr) || found_app_url_size == 0) {
