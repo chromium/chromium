@@ -575,6 +575,22 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
+    public void testCustomReferer() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Refere";
+        String refererValue = "Referer-Value";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValue, callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
     public void testCustomUserAgent() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String userAgentName = "User-Agent";
