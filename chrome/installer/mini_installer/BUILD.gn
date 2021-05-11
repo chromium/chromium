@@ -113,8 +113,7 @@ group("setup_runtime_deps") {
 
 packed_files_rc_file = "$target_gen_dir/mini_installer/packed_files.rc"
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("mini_installer_archive") {
+action("mini_installer_archive") {
   script = "//chrome/tools/build/win/create_installer_archive.py"
 
   release_file = "chrome.release"
