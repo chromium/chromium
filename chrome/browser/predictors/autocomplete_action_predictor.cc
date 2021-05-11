@@ -423,7 +423,7 @@ void AutocompleteActionPredictor::CreateCaches(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     TryDeleteOldEntries(history_service);
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
   }
 }
 
@@ -587,7 +587,7 @@ double AutocompleteActionPredictor::CalculateConfidenceForDbEntry(
 }
 
 void AutocompleteActionPredictor::Shutdown() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void AutocompleteActionPredictor::OnURLsDeleted(

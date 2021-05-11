@@ -288,7 +288,7 @@ void ResourcePrefetchPredictor::SetObserverForTesting(TestObserver* observer) {
 }
 
 void ResourcePrefetchPredictor::Shutdown() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ResourcePrefetchPredictor::RecordPageRequestSummary(
@@ -623,8 +623,8 @@ void ResourcePrefetchPredictor::ConnectToHistoryService() {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (!history_service)
     return;
-  DCHECK(!history_service_observer_.IsObserving(history_service));
-  history_service_observer_.Add(history_service);
+  DCHECK(!history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.Observe(history_service);
   if (history_service->BackendLoaded()) {
     // HistoryService is already loaded. Continue with Initialization.
     OnHistoryAndCacheLoaded();
