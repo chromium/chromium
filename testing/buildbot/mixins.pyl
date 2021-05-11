@@ -219,7 +219,7 @@
         {
           'cpu': 'x86',
           'kvm': '1',
-          'os': 'Ubuntu-16.04',
+          'os': 'Ubuntu-18.04',
           'pool': 'chromium.tests',
         }
       ],
@@ -432,6 +432,13 @@
     'args': [
       'linux-release-64/sizes',
     ],
+  },
+  'linux-bionic': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-18.04',
+      },
+    },
   },
   'linux-trusty': {
     'swarming': {

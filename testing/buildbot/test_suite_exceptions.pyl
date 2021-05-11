@@ -605,6 +605,9 @@
         },
       },
       'linux-chromeos-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
         'swarming': {
           'shards': 30,
         },
@@ -620,6 +623,9 @@
         ],
       },
       'linux-chromeos-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
         'swarming': {
           'shards': 20,
           'dimension_sets': [
@@ -644,12 +650,12 @@
       },
       'linux-lacros-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
         ],
       },
       'linux-lacros-tester-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.browser_tests.filter;../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
         ],
       },
       'linux-trusty-rel': {
