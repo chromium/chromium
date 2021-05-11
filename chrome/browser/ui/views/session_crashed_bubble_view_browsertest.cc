@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -31,7 +32,7 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   }
 
  protected:
-  views::BubbleDialogDelegateView* crash_bubble_;
+  CheckedPtr<views::BubbleDialogDelegateView> crash_bubble_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionCrashedBubbleViewTest);

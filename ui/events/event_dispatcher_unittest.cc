@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -52,7 +53,7 @@ class TestTarget : public EventTarget,
 
   EventTargeter* GetEventTargeter() override { return nullptr; }
 
-  TestTarget* parent_;
+  CheckedPtr<TestTarget> parent_;
   std::vector<int> handler_list_;
   bool valid_;
 
@@ -109,7 +110,7 @@ class TestEventHandler : public EventHandler {
   bool expect_pre_target_ = false;
   bool expect_post_target_ = false;
   bool received_pre_target_ = false;
-  EventTarget* pre_target_ = nullptr;
+  CheckedPtr<EventTarget> pre_target_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
@@ -133,7 +134,7 @@ class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
     delete dispatcher_delegate_;
   }
 
-  EventDispatcherDelegate* dispatcher_delegate_;
+  CheckedPtr<EventDispatcherDelegate> dispatcher_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(EventHandlerDestroyDispatcherDelegate);
 };
@@ -181,8 +182,8 @@ class EventHandlerDestroyer : public TestEventHandler {
     }
   }
 
-  EventHandler* to_destroy_;
-  EventDispatcherDelegate* dispatcher_delegate_;
+  CheckedPtr<EventHandler> to_destroy_;
+  CheckedPtr<EventDispatcherDelegate> dispatcher_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(EventHandlerDestroyer);
 };

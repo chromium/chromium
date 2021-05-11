@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -25,7 +26,7 @@ class DumpDatabaseHandler : public content::WebUIMessageHandler {
   void HandleGetDatabaseDump(const base::ListValue* args);
   void DidGetDatabaseDump(std::string callback_id, const base::ListValue& list);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(DumpDatabaseHandler);
 };

@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -331,7 +332,7 @@ class OAuth2AccessTokenManager {
   // List of observers to notify when access token status changes.
   base::ObserverList<DiagnosticsObserver, true>::Unchecked
       diagnostics_observer_list_;
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
   // A map from fetch parameters to a fetcher that is fetching an OAuth2 access
   // token using these parameters.
   std::map<RequestParameters, std::unique_ptr<Fetcher>> pending_fetchers_;

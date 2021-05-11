@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_TEST_BLUETOOTH_TEST_WIN_H_
 #define DEVICE_BLUETOOTH_TEST_BLUETOOTH_TEST_WIN_H_
 
+#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 #include <string>
@@ -90,7 +91,7 @@ class BluetoothTestWin : public BluetoothTestBase,
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> bluetooth_task_runner_;
 
-  win::BluetoothLowEnergyWrapperFake* fake_bt_le_wrapper_;
+  CheckedPtr<win::BluetoothLowEnergyWrapperFake> fake_bt_le_wrapper_;
 
   // This is used for retaining access to a single deleted device.
   std::string remembered_device_address_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -29,7 +30,7 @@ class FullscreenControlView : public views::View {
   }
 
  private:
-  views::Button* exit_fullscreen_button_;
+  CheckedPtr<views::Button> exit_fullscreen_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_

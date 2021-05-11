@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/cronet_url_request_context.h"
@@ -392,7 +393,7 @@ class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
 
  private:
   // The engine which owns context that owns |this| callback.
-  Cronet_EngineImpl* const engine_;
+  const CheckedPtr<Cronet_EngineImpl> engine_;
 
   // All methods are invoked on the network thread.
   THREAD_CHECKER(network_thread_checker_);

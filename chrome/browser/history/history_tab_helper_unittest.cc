@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history/history_tab_helper.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,7 +71,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::CancelableTaskTracker tracker_;
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryTabHelperTest);
 };

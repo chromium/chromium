@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   // was invoked).
   static bool IsScheduledForDeletion(const URLDataSourceImpl* data_source);
 
-  BrowserContext* browser_context_;
+  CheckedPtr<BrowserContext> browser_context_;
 
   // |data_sources_| that are no longer referenced and scheduled for deletion.
   // Protected by g_delete_lock in the .cc file.

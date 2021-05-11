@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/win/registry.h"
 #include "components/autofill/core/browser/crypto/rc4_decryptor.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -227,7 +228,7 @@ class AutofillImporter : public PersonalDataManagerObserver {
  private:
   ~AutofillImporter() override { personal_data_manager_->RemoveObserver(this); }
 
-  PersonalDataManager* personal_data_manager_;
+  CheckedPtr<PersonalDataManager> personal_data_manager_;
   std::vector<AutofillProfile> profiles_;
   std::vector<CreditCard> credit_cards_;
 };

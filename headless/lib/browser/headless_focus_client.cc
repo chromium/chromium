@@ -29,11 +29,11 @@ void HeadlessFocusClient::FocusWindow(aura::Window* window) {
     return;
 
   if (focused_window_)
-    observer_manager_.Remove(focused_window_);
+    observer_manager_.Remove(focused_window_.get());
   aura::Window* old_focused_window = focused_window_;
   focused_window_ = window;
   if (focused_window_)
-    observer_manager_.Add(focused_window_);
+    observer_manager_.Add(focused_window_.get());
 
   for (aura::client::FocusChangeObserver& observer : focus_observers_)
     observer.OnWindowFocused(focused_window_, old_focused_window);

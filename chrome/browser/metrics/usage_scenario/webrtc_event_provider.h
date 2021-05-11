@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_WEBRTC_EVENT_PROVIDER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -57,7 +58,7 @@ class WebRtcEventProvider : public content::PeerConnectionTrackerHostObserver,
                                                int lid);
 
   // The data store for the video capture events. Must outlive |this|.
-  UsageScenarioDataStoreImpl* const data_store_;
+  const CheckedPtr<UsageScenarioDataStoreImpl> data_store_;
 
   // For each existing peer connection, tracks whether it is actually connected
   // to another peer.

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -178,7 +179,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                           chromeos::UpdateEngineClient::EolInfo eol_info);
 #endif
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Specialized instance of the VersionUpdater used to update the browser.
   std::unique_ptr<VersionUpdater> version_updater_;
@@ -190,7 +191,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   bool apply_changes_from_upgrade_observer_;
 
   // Override to test the EOL string displayed in the About details page.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // Used for callbacks.
   base::WeakPtrFactory<AboutHandler> weak_factory_{this};

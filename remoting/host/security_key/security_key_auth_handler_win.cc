@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -92,7 +93,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   SendMessageCallback send_message_callback_;
 
   // Interface which provides details about the client session.
-  ClientSessionDetails* client_session_details_ = nullptr;
+  CheckedPtr<ClientSessionDetails> client_session_details_ = nullptr;
 
   // Tracks the IPC channel created for each security key forwarding session.
   ActiveChannels active_channels_;

@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -274,9 +275,9 @@ class UserPolicySigninServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  MockUserCloudPolicyStore* mock_store_ = nullptr;  // Not owned.
+  CheckedPtr<MockUserCloudPolicyStore> mock_store_ = nullptr;  // Not owned.
   SchemaRegistry schema_registry_;
-  UserCloudPolicyManager* manager_ = nullptr;  // Not owned.
+  CheckedPtr<UserCloudPolicyManager> manager_ = nullptr;  // Not owned.
 
   // BrowserPolicyConnector and UrlFetcherFactory want to initialize and free
   // various components asynchronously via tasks, so create fake threads here.

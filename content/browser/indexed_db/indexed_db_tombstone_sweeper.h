@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -177,15 +178,15 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   int total_indices_ = 0;
 
   // Used to measure total time of the task.
-  const base::TickClock* clock_for_testing_ = nullptr;
+  CheckedPtr<const base::TickClock> clock_for_testing_ = nullptr;
   base::Optional<base::TimeTicks> start_time_;
 
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;
   base::TimeDelta total_deletion_time_;
 
-  std::vector<blink::IndexedDBDatabaseMetadata> const* database_metadata_ =
-      nullptr;
+  CheckedPtr<const std::vector<blink::IndexedDBDatabaseMetadata>>
+      database_metadata_ = nullptr;
   std::unique_ptr<leveldb::Iterator> iterator_;
 
   SweepState sweep_state_;

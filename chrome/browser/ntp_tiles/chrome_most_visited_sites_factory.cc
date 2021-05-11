@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
@@ -58,8 +59,8 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
   void OnURLFilterChanged() override;
 
  private:
-  Profile* const profile_;
-  Observer* supervisor_observer_;
+  const CheckedPtr<Profile> profile_;
+  CheckedPtr<Observer> supervisor_observer_;
   ScopedObserver<SupervisedUserService, SupervisedUserServiceObserver>
       register_observer_;
 };

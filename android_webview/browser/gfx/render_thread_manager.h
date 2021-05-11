@@ -13,6 +13,7 @@
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -77,7 +78,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
     ~InsideHardwareReleaseReset();
 
    private:
-    RenderThreadManager* render_thread_manager_;
+    CheckedPtr<RenderThreadManager> render_thread_manager_;
   };
 
  private:

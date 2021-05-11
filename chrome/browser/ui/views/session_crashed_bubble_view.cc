@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
 #include "build/branding_buildflags.h"
@@ -162,7 +163,7 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
   Browser* browser() const { return browser_; }
 
  private:
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserRemovalObserver);
 };

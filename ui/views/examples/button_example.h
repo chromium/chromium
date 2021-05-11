@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_BUTTON_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace gfx {
@@ -44,7 +45,7 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
   MdTextButton* md_default_button_ = nullptr;
   ImageButton* image_button_ = nullptr;
 
-  const gfx::ImageSkia* icon_ = nullptr;
+  CheckedPtr<const gfx::ImageSkia> icon_ = nullptr;
 
   // The number of times the buttons are pressed.
   int count_ = 0;

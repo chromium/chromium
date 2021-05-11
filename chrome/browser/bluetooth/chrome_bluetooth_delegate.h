@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/permissions/chooser_context_base.h"
@@ -104,7 +105,7 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
     void RemoveFramePermissionObserver(FramePermissionObserver* observer);
 
    private:
-    ChromeBluetoothDelegate* owning_delegate_;
+    CheckedPtr<ChromeBluetoothDelegate> owning_delegate_;
     base::ObserverList<FramePermissionObserver> observer_list_;
     std::list<FramePermissionObserver*> observers_pending_removal_;
     bool is_traversing_observers_ = false;

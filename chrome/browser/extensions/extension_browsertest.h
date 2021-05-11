@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -453,7 +454,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 #endif
 
   // The default profile to be used.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Cache cache implementation.
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,7 +80,7 @@ class ManagedBookmarksTrackerTest : public testing::Test {
   }
 
   bool IsManaged(const BookmarkNode* node) {
-    return node && node->HasAncestor(managed_node_);
+    return node && node->HasAncestor(managed_node_.get());
   }
 
   static std::unique_ptr<base::DictionaryValue> CreateBookmark(
@@ -157,7 +158,7 @@ class ManagedBookmarksTrackerTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<BookmarkModel> model_;
   MockBookmarkModelObserver observer_;
-  BookmarkPermanentNode* managed_node_;
+  CheckedPtr<BookmarkPermanentNode> managed_node_;
   std::unique_ptr<ManagedBookmarksTracker> managed_bookmarks_tracker_;
 };
 

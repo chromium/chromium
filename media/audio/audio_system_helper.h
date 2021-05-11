@@ -5,6 +5,7 @@
 #ifndef MEDIA_AUDIO_AUDIO_SYSTEM_HELPER_H_
 #define MEDIA_AUDIO_AUDIO_SYSTEM_HELPER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_export.h"
 
@@ -49,7 +50,7 @@ class MEDIA_EXPORT AudioSystemHelper {
   base::Optional<AudioParameters> ComputeOutputParameters(
       const std::string& device_id);
 
-  AudioManager* const audio_manager_;
+  const CheckedPtr<AudioManager> audio_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioSystemHelper);
 };

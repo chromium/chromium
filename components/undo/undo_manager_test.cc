@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/undo/undo_manager_observer.h"
 #include "components/undo/undo_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,7 +99,7 @@ class TestUndoOperation : public UndoOperation {
   int GetRedoLabelId() const override;
 
  private:
-  TestUndoService* undo_service_;
+  CheckedPtr<TestUndoService> undo_service_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUndoOperation);
 };

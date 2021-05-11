@@ -12,6 +12,7 @@
 
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -84,14 +85,15 @@ class ProfileSyncService : public SyncService,
     std::unique_ptr<SyncClient> sync_client;
     // TODO(treib): Remove this and instead retrieve it via
     // SyncClient::GetIdentityManager (but mind LocalSync).
-    signin::IdentityManager* identity_manager = nullptr;
+    CheckedPtr<signin::IdentityManager> identity_manager = nullptr;
     StartBehavior start_behavior = MANUAL_START;
     NetworkTimeUpdateCallback network_time_update_callback;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    network::NetworkConnectionTracker* network_connection_tracker = nullptr;
+    CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker =
+        nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
-    policy::PolicyService* policy_service = nullptr;
+    CheckedPtr<policy::PolicyService> policy_service = nullptr;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(InitParams);

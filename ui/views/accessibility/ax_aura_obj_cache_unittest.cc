@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
+#include "base/memory/checked_ptr.h"
 
 #include <string>
 #include <utility>
@@ -219,7 +220,7 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
   // WidgetDelegate:
   void DeleteDelegate() override { delete this; }
 
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::RunLoop> run_loop_;
 };
 
 class TestingAXEventObserver : public AXEventObserver {
@@ -239,7 +240,7 @@ class TestingAXEventObserver : public AXEventObserver {
     }
   }
 
-  AXAuraObjCache* cache_;
+  CheckedPtr<AXAuraObjCache> cache_;
   base::ScopedObservation<AXEventManager, AXEventObserver> observation_{this};
 };
 

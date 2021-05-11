@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -249,7 +250,7 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     std::vector<std::vector<uint8_t>> keys;
   };
 
-  const TestTrustedVaultServer* const server_;
+  const CheckedPtr<const TestTrustedVaultServer> server_;
 
   std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
   base::ObserverList<Observer> observer_list_;

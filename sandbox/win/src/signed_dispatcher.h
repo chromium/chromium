@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -28,7 +29,7 @@ class SignedDispatcher : public Dispatcher {
   // Processes IPC requests coming from calls to CreateSection in the target.
   bool CreateSection(IPCInfo* ipc, HANDLE file_handle);
 
-  PolicyBase* policy_base_;
+  CheckedPtr<PolicyBase> policy_base_;
   DISALLOW_COPY_AND_ASSIGN(SignedDispatcher);
 };
 

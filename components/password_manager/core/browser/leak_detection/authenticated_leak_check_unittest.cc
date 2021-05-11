@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -93,7 +94,7 @@ class AuthenticatedLeakCheckTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   StrictMock<MockLeakDetectionDelegateInterface> delegate_;
-  MockLeakDetectionRequestFactory* request_factory_;
+  CheckedPtr<MockLeakDetectionRequestFactory> request_factory_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   AuthenticatedLeakCheck leak_check_;

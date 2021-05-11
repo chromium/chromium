@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_NIGORI_NIGORI_STORAGE_IMPL_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/nigori/nigori_storage.h"
 
@@ -27,7 +28,7 @@ class NigoriStorageImpl : public NigoriStorage {
 
  private:
   base::FilePath path_;
-  const Encryptor* const encryptor_;
+  const CheckedPtr<const Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(NigoriStorageImpl);

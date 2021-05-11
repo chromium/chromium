@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -58,7 +59,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
   OverlayStrategy GetUMAEnum() const override;
 
  private:
-  OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
+  CheckedPtr<OverlayProcessorUsingStrategy> capability_checker_;  // Weak.
 
   DISALLOW_COPY_AND_ASSIGN(OverlayStrategyFullscreen);
 };

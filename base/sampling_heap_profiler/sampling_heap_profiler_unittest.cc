@@ -9,6 +9,7 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/debug/alias.h"
+#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
@@ -68,7 +69,7 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
 
  private:
   size_t watch_size_;
-  void* sample_address_ = nullptr;
+  CheckedPtr<void> sample_address_ = nullptr;
 };
 
 TEST_F(SamplingHeapProfilerTest, SampleObserver) {
@@ -273,7 +274,7 @@ class StartStopThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* event_;
+  CheckedPtr<WaitableEvent> event_;
 };
 
 // Flaky on Mac. crbug.com/1116543

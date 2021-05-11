@@ -10,6 +10,7 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -518,7 +519,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
   scoped_refptr<TestHistoryBackend> fake_history_backend_;
-  TypedURLSyncBridge* typed_url_sync_bridge_ = nullptr;
+  CheckedPtr<TypedURLSyncBridge> typed_url_sync_bridge_ = nullptr;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 };
 

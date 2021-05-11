@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -61,7 +62,7 @@ class HeaderImageView : public NonAccessibleImageView {
   }
 
  private:
-  const views::BubbleFrameView* frame_view_;
+  CheckedPtr<const views::BubbleFrameView> frame_view_;
   const SharingDialogData::HeaderIcons icons_;
 };
 

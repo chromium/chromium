@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/accessibility/soda_installer.h"
@@ -123,11 +124,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void OnSodaError() override;
   void OnSodaProgress(int progress) override;
 
-  MediaNotificationService* const service_;
+  const CheckedPtr<MediaNotificationService> service_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
-  MediaNotificationListView* const active_sessions_view_;
+  const CheckedPtr<MediaNotificationListView> active_sessions_view_;
 
   base::ObserverList<MediaDialogViewObserver> observers_;
 
@@ -135,16 +136,17 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   std::map<const std::string, MediaNotificationContainerImplView*>
       observed_containers_;
 
-  views::View* live_caption_container_ = nullptr;
+  CheckedPtr<views::View> live_caption_container_ = nullptr;
   // TODO(crbug.com/1055150): Remove live_caption_title_new_badge_ by M93.
-  NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
-  views::Label* live_caption_title_ = nullptr;
-  views::ToggleButton* live_caption_button_ = nullptr;
+  CheckedPtr<NewBadgeLabel> live_caption_title_new_badge_ = nullptr;
+  CheckedPtr<views::Label> live_caption_title_ = nullptr;
+  CheckedPtr<views::ToggleButton> live_caption_button_ = nullptr;
 
   // It stores the WebContents* from which a MediaRouterDialogControllerViews
   // opened the dialog for a presentation request. It is nullptr if the dialog
   // is opened from the toolbar.
-  content::WebContents* const web_contents_for_presentation_request_ = nullptr;
+  const CheckedPtr<content::WebContents>
+      web_contents_for_presentation_request_ = nullptr;
   const GlobalMediaControlsEntryPoint entry_point_;
 };
 

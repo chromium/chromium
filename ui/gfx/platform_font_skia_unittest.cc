@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -78,7 +79,7 @@ class PlatformFontSkiaTest : public testing::Test {
   void TearDown() override {
     DCHECK_EQ(&test_font_delegate_, SkiaFontDelegate::instance());
     SkiaFontDelegate::SetInstance(
-        const_cast<SkiaFontDelegate*>(original_font_delegate_));
+        const_cast<SkiaFontDelegate*>(original_font_delegate_.get()));
     PlatformFontSkia::ReloadDefaultFont();
   }
 
@@ -87,7 +88,7 @@ class PlatformFontSkiaTest : public testing::Test {
 
  private:
   // Originally-registered delegate.
-  const SkiaFontDelegate* original_font_delegate_;
+  CheckedPtr<const SkiaFontDelegate> original_font_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformFontSkiaTest);
 };

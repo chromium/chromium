@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/views/border.h"
@@ -35,7 +36,7 @@ class IconWrapper : public views::View {
   }
 
  private:
-  views::View* icon_;
+  CheckedPtr<views::View> icon_;
 };
 
 BEGIN_METADATA(IconWrapper, views::View)

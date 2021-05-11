@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/events/event.h"
@@ -71,7 +72,7 @@ class TextareaTest : public test::TextfieldTest {
     SendKeyEvent(ui::VKEY_END, shift, TestingNativeMac());
   }
 
-  Textarea* textarea_ = nullptr;
+  CheckedPtr<Textarea> textarea_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TextareaTest);

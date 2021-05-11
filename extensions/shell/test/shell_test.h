@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
@@ -32,8 +33,8 @@ class AppShellTest : public content::BrowserTestBase {
   content::BrowserContext* browser_context() { return browser_context_; }
 
  protected:
-  content::BrowserContext* browser_context_ = nullptr;
-  ShellExtensionSystem* extension_system_ = nullptr;
+  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  CheckedPtr<ShellExtensionSystem> extension_system_ = nullptr;
 };
 
 }  // namespace extensions

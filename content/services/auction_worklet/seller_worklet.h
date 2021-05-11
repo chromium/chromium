@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -111,7 +112,7 @@ class SellerWorklet {
       LoadWorkletCallback load_worklet_callback,
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script);
 
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
   std::unique_ptr<WorkletLoader> worklet_loader_;
 
   // Compiled script, not bound to any context. Can be repeatedly bound to

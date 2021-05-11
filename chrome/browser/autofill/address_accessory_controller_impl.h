@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -72,13 +73,13 @@ class AddressAccessoryControllerImpl
   base::WeakPtr<ManualFillingController> GetManualFillingController();
 
   // The tab for which this class is scoped.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The data manager used to retrieve the profiles.
-  PersonalDataManager* personal_data_manager_;
+  CheckedPtr<PersonalDataManager> personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

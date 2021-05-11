@@ -5,6 +5,7 @@
 #include "chrome/test/media_router/media_router_ui_for_test.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/media_router/media_router_file_dialog.h"
@@ -70,7 +71,7 @@ class TestMediaRouterFileDialog : public MediaRouterFileDialog {
   }
 
  private:
-  MediaRouterFileDialogDelegate* delegate_;
+  CheckedPtr<MediaRouterFileDialogDelegate> delegate_;
   GURL file_url_;
 };
 
@@ -87,7 +88,7 @@ class TestFailMediaRouterFileDialog : public MediaRouterFileDialog {
   }
 
  private:
-  MediaRouterFileDialogDelegate* delegate_;
+  CheckedPtr<MediaRouterFileDialogDelegate> delegate_;
   const IssueInfo issue_;
 };
 

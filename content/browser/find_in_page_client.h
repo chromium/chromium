@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FIND_IN_PAGE_CLIENT_H_
 #define CONTENT_BROWSER_FIND_IN_PAGE_CLIENT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
@@ -41,8 +42,8 @@ class FindInPageClient final : public blink::mojom::FindInPageClient {
  private:
   void HandleUpdateType(int request_id,
                         blink::mojom::FindMatchUpdateType update_type);
-  RenderFrameHostImpl* const frame_;
-  FindRequestManager* const find_request_manager_;
+  const CheckedPtr<RenderFrameHostImpl> frame_;
+  const CheckedPtr<FindRequestManager> find_request_manager_;
   mojo::Receiver<blink::mojom::FindInPageClient> receiver_{this};
   int number_of_matches_ = 0;
 

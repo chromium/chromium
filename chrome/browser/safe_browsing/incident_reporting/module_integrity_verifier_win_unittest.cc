@@ -15,6 +15,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/checked_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
 #include "base/stl_util.h"
@@ -49,8 +50,8 @@ class ScopedModuleModifier {
 
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
-    std::transform(address_, address_ + ModificationLength, &modification[0],
-                   [](uint8_t byte) { return byte - 1U; });
+    std::transform(address_.get(), address_ + ModificationLength,
+                   &modification[0], [](uint8_t byte) { return byte - 1U; });
     SIZE_T bytes_written = 0;
     EXPECT_NE(0, WriteProcessMemory(GetCurrentProcess(),
                                     address_,
@@ -61,7 +62,7 @@ class ScopedModuleModifier {
   }
 
  private:
-  uint8_t* address_;
+  CheckedPtr<uint8_t> address_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedModuleModifier);
 };

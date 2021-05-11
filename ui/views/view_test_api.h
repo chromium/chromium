@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_VIEW_TEST_API_H_
 #define UI_VIEWS_VIEW_TEST_API_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,7 +18,7 @@ class VIEWS_EXPORT ViewTestApi {
   bool needs_layout() { return view_->needs_layout(); }
 
  private:
-  View* view_;
+  CheckedPtr<View> view_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewTestApi);
 };

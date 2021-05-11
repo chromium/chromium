@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -121,7 +122,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Weak pointer to the object that consumes the external extensions.
   // This is zeroed out by: ServiceShutdown()
-  VisitorInterface* service_;  // weak
+  CheckedPtr<VisitorInterface> service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
   std::unique_ptr<base::DictionaryValue> prefs_;
@@ -135,7 +136,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   scoped_refptr<ExternalLoader> loader_;
 
   // The profile that will be used to install external extensions.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // Creation flags to use for the extension.  These flags will be used
   // when calling Extension::Create() by the crx installer.

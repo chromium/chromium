@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -99,7 +100,7 @@ class SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
  private:
-  FrameDeletionObserver* parent_observer_;
+  CheckedPtr<FrameDeletionObserver> parent_observer_;
 
   // A multimap from the frame to the session_ids started by that frame.
   // Although a rare case, theoretically a frame can start multiple sessions.

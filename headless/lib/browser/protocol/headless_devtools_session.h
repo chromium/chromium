@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "base/values.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "headless/lib/browser/protocol/forward.h"
 #include "headless/lib/browser/protocol/protocol.h"
@@ -49,7 +50,7 @@ class HeadlessDevToolsSession : public FrontendChannel {
   std::vector<std::unique_ptr<DomainHandler>> handlers_;
   base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
       pending_commands_;
-  content::DevToolsAgentHostClientChannel* client_channel_;
+  CheckedPtr<content::DevToolsAgentHostClientChannel> client_channel_;
   DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsSession);
 };
 

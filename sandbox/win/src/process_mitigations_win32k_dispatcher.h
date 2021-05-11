@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -28,7 +29,7 @@ class ProcessMitigationsWin32KDispatcher : public Dispatcher {
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
-  PolicyBase* policy_base_;
+  CheckedPtr<PolicyBase> policy_base_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMitigationsWin32KDispatcher);
 };

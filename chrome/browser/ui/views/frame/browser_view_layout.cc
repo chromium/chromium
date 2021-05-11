@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -120,7 +121,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
     observer_list_.RemoveObserver(observer);
   }
 
-  BrowserViewLayout* const browser_view_layout_;
+  const CheckedPtr<BrowserViewLayout> browser_view_layout_;
 
   base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
 

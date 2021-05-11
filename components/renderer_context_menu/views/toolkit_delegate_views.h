@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "ui/base/ui_base_types.h"
 
@@ -49,7 +50,7 @@ class ToolkitDelegateViews : public RenderViewContextMenuBase::ToolkitDelegate {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // Weak. Owned by menu_runner_;
-  views::MenuItemView* menu_view_;
+  CheckedPtr<views::MenuItemView> menu_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ToolkitDelegateViews);
 };

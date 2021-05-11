@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -553,7 +554,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
-    NativeTheme* const theme_to_update_;
+    const CheckedPtr<NativeTheme> theme_to_update_;
 
     DISALLOW_COPY_AND_ASSIGN(ColorSchemeNativeThemeObserver);
   };

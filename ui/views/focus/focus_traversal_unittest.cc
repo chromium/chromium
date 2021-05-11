@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -125,7 +126,7 @@ class PaneView : public View, public FocusTraversable {
   View* GetFocusTraversableParentView() override { return nullptr; }
 
  private:
-  FocusSearch* focus_search_ = nullptr;
+  CheckedPtr<FocusSearch> focus_search_ = nullptr;
 };
 
 // BorderView is a view containing a native window with its own view hierarchy.
@@ -224,11 +225,11 @@ class FocusTraversalTest : public FocusManagerTest {
     }
   }
 
-  TabbedPane* style_tab_ = nullptr;
-  BorderView* search_border_view_ = nullptr;
+  CheckedPtr<TabbedPane> style_tab_ = nullptr;
+  CheckedPtr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  PaneView* left_container_;
-  PaneView* right_container_;
+  CheckedPtr<PaneView> left_container_;
+  CheckedPtr<PaneView> right_container_;
 };
 
 FocusTraversalTest::FocusTraversalTest() = default;

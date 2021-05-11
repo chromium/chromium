@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -125,13 +126,13 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   std::unique_ptr<BookmarkMenuDelegate> menu_delegate_;
 
   // The node we're showing the contents of.
-  const bookmarks::BookmarkNode* node_;
+  CheckedPtr<const bookmarks::BookmarkNode> node_;
 
   // Data for the drop.
   bookmarks::BookmarkNodeData drop_data_;
 
   // The observer, may be null.
-  BookmarkMenuControllerObserver* observer_;
+  CheckedPtr<BookmarkMenuControllerObserver> observer_;
 
   // Is the menu being shown for a drop?
   bool for_drop_;
@@ -139,7 +140,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   // The bookmark bar. This is only non-null if we're showing a menu item for a
   // folder on the bookmark bar and not for drop, or if the BookmarkBarView has
   // been destroyed before the menu.
-  BookmarkBarView* bookmark_bar_;
+  CheckedPtr<BookmarkBarView> bookmark_bar_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkMenuController);
 };

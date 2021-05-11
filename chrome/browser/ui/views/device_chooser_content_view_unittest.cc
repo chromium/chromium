@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/chooser_controller/fake_bluetooth_chooser_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -141,8 +142,8 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<MockTableViewObserver> table_observer_;
-  FakeBluetoothChooserController* controller_ = nullptr;
-  DeviceChooserContentView* content_view_ = nullptr;
+  CheckedPtr<FakeBluetoothChooserController> controller_ = nullptr;
+  CheckedPtr<DeviceChooserContentView> content_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceChooserContentViewTest);

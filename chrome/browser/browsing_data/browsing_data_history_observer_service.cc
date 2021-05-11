@@ -172,7 +172,7 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
 
   content::StoragePartition* storage_partition =
       storage_partition_for_testing_
-          ? storage_partition_for_testing_
+          ? storage_partition_for_testing_.get()
           : content::BrowserContext::GetDefaultStoragePartition(profile_);
 
   if (deletion_info.time_range().IsValid()) {

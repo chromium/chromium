@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
@@ -43,7 +44,7 @@ class CONTENT_EXPORT NativeIOQuotaClient : public storage::mojom::QuotaClient {
                              PerformStorageCleanupCallback callback) override;
 
  private:
-  NativeIOManager* manager_;
+  CheckedPtr<NativeIOManager> manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
