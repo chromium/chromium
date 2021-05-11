@@ -232,7 +232,7 @@ void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
 size_t PushMessagingAppIdentifier::GetCount(Profile* profile) {
   return profile->GetPrefs()
       ->GetDictionary(prefs::kPushMessagingAppIdentifierMap)
-      ->size();
+      ->DictSize();
 }
 
 PushMessagingAppIdentifier::PushMessagingAppIdentifier(
