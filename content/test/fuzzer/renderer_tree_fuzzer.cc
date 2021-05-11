@@ -154,7 +154,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
       return;
     }
 
-    for (const auto& listItem : *list) {
+    for (const auto& listItem : list->GetList()) {
       std::unique_ptr<Node> node(Node::ParseJson(listItem));
       if (node) {
         push_back(std::move(node));
