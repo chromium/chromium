@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
+#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 
 namespace blink {
 
@@ -133,7 +134,7 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
     return FindSymbolMarkerLayoutText(To<LayoutNGListItem>(object)->Marker());
 
   if (object->IsAnonymousBlock())
-    return FindSymbolMarkerLayoutText(object->Parent());
+    return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
 
   return nullptr;
 }

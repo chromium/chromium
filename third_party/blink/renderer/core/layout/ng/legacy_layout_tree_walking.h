@@ -38,13 +38,18 @@ inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
 // Return the layout object that should be the parent NGLayoutInputNode of
 // |object|. Normally this will just be the parent layout object, but there
 // are certain layout objects that should be skipped for NG.
-inline LayoutObject* GetLayoutObjectForParentNode(LayoutObject* object) {
+//
+// |Type| should be either "LayoutObject*" or "const LayoutObject*", and may be
+// deduced automatically at the call site, based on the type of |object| (unless
+// it's a subclass of LayoutObject rather than LayoutObject itself).
+template <typename Type>
+inline Type GetLayoutObjectForParentNode(Type object) {
   // First check that we're not walking where we shouldn't be walking.
   DCHECK(!object->IsLayoutFlowThread());
   DCHECK(!object->IsLayoutMultiColumnSet());
   DCHECK(!object->IsLayoutMultiColumnSpannerPlaceholder());
 
-  LayoutObject* parent = object->Parent();
+  Type parent = object->Parent();
   if (UNLIKELY(!parent))
     return nullptr;
 
