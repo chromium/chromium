@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/ethernet_info.js';
+import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -30,6 +31,7 @@ export function ethernetInfoTestSuite() {
         /** @type {!EthernetInfoElement} */ (
             document.createElement('ethernet-info'));
     assertTrue(!!ethernetInfoElement);
+    ethernetInfoElement.network = fakeEthernetNetwork;
     document.body.appendChild(ethernetInfoElement);
 
     return flushTasks();
@@ -37,8 +39,16 @@ export function ethernetInfoTestSuite() {
 
   test('EthernetInfoPopulated', () => {
     return initializeEthernetInfo().then(() => {
-      dx_utils.assertElementContainsText(
-          ethernetInfoElement.$$('#ethernetInfoContainer'), 'Ethernet');
+      const dataPoints = dx_utils.getDataPointElements(
+          ethernetInfoElement, '#ethernetInfoContainer');
+      dx_utils.assertTextContains(
+          `${dataPoints[0].value}`, `${fakeEthernetNetwork.state}`);
+      dx_utils.assertTextContains(
+          dataPoints[1].value, fakeEthernetNetwork.name);
+      dx_utils.assertTextContains(
+          dataPoints[2].value, fakeEthernetNetwork.guid);
+      dx_utils.assertTextContains(
+          dataPoints[3].value, fakeEthernetNetwork.macAddress);
     });
   });
 }

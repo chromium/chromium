@@ -5,7 +5,7 @@
   <wifi-info id="wifiInfo"
     hidden$="[[!isWifiNetwork_(network_.type)]]">
   </wifi-info>
-  <ethernet-info id="ethernetInfo"
+  <ethernet-info id="ethernetInfo" network="[[network_]]"
     hidden$="[[!isEthernetNetwork_(network_.type)]]">
   </ethernet-info>
   <cellular-info id="cellularInfo" network="[[network_]]"
