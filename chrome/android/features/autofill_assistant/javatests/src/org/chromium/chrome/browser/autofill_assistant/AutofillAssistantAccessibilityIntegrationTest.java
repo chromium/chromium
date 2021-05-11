@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -117,6 +118,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "see crbug.com/1207665")
     public void testBottomSheetHasRestrictedFixedHeight() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
