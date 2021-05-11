@@ -386,6 +386,8 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break) const {
+  recordreplay::Assert("NGBlockNode::Layout Start");
+
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
@@ -488,7 +490,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     // may have gained or removed scrollbars, changing its size). In these
     // cases "simplified" layout will return a null layout-result, indicating
     // we need to perform a full layout.
+    recordreplay::Assert("NGBlockNode::Layout #10");
     layout_result = RunSimplifiedLayout(params, *layout_result);
+    recordreplay::Assert("NGBlockNode::Layout #11");
 
 #if DCHECK_IS_ON()
     if (layout_result) {
