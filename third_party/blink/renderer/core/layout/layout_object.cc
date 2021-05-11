@@ -146,19 +146,22 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
     if (skip_info)
       skip_info->Update(*object);
 
-    // According to the HTML standard, a rendered legend is a child of a
-    // fieldset. However a rendered legend is a child of an anonymous fieldset
-    // content box in a LayoutObject tree.  NG fragment trees follow the
-    // structure of the standard.
-    //
-    // The following code resolves this inconsistency, and we skip anonymous
-    // fieldset content boxes if |descendant| is in a rendered legend.
     if (UNLIKELY(object->IsRenderedLegend())) {
+      // According to the HTML standard, a rendered legend is a child of a
+      // fieldset. However a rendered legend is a child of an anonymous fieldset
+      // content box in a LayoutObject tree. NG fragment trees follow the
+      // structure of the standard.
+      //
+      // The following code resolves this inconsistency, and we skip anonymous
+      // fieldset content boxes if |descendant| is in a rendered legend. We also
+      // need to skip flow threads, in case the containing fieldset also
+      // establishes a multicol container.
       LayoutObject* legend_parent = object->Parent();
-      if (legend_parent->IsAnonymous()) {
+      while (legend_parent->IsAnonymous()) {
         if (skip_info)
           skip_info->Update(*legend_parent);
         object = legend_parent;
+        legend_parent = legend_parent->Parent();
       }
     } else if (UNLIKELY(object->IsColumnSpanAll())) {
       // The containing block chain goes directly from the column spanner to the
