@@ -96,9 +96,7 @@ export class EmojiVariants extends PolymerElement {
   }
 
   connectedCallback() {
-    beforeNextRender(
-        this,
-        () => this.shadowRoot.querySelector('emoji-button').focusButton());
+    beforeNextRender(this, () => this.$['fake-focus-target'].focus());
   }
 
   computeVariantRowLengths(variants) {
