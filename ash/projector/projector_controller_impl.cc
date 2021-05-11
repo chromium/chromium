@@ -134,6 +134,10 @@ void ProjectorControllerImpl::OnSelfieCamPressed(bool enabled) {
   ui_controller_->OnSelfieCamPressed(enabled);
 }
 
+void ProjectorControllerImpl::OnMagnifierButtonPressed(bool enabled) {
+  ui_controller_->OnMagnifierButtonPressed(enabled);
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);

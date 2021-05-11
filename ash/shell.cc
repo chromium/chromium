@@ -775,7 +775,6 @@ Shell::~Shell() {
   modality_filter_.reset();
 
   touch_transformer_controller_.reset();
-  partial_magnification_controller_.reset();
   highlighter_controller_.reset();
   key_accessibility_enabler_.reset();
 
@@ -843,8 +842,11 @@ Shell::~Shell() {
   display_color_manager_.reset();
   projecting_observer_.reset();
 
-  // Depends on MarkerController and LaserPointerController.
+  // Depends on MarkerController, LaserPointerController and
+  // PartialMagnificationController.
   projector_controller_.reset();
+
+  partial_magnification_controller_.reset();
 
   marker_controller_.reset();
   laser_pointer_controller_.reset();

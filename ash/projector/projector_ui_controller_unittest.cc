@@ -74,6 +74,16 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
   controller_->OnLaserPointerPressed();
   EXPECT_FALSE(marker_controller_->is_enabled());
   EXPECT_TRUE(laser_pointer_controller_->is_enabled());
+
+  // Verify that toggling laser pointer disables magnifier when it was enabled.
+  auto* magnification_controller =
+      Shell::Get()->partial_magnification_controller();
+  controller_->OnMagnifierButtonPressed(true);
+  EXPECT_TRUE(magnification_controller->is_enabled());
+  EXPECT_FALSE(laser_pointer_controller_->is_enabled());
+  controller_->OnLaserPointerPressed();
+  EXPECT_TRUE(laser_pointer_controller_->is_enabled());
+  EXPECT_FALSE(magnification_controller->is_enabled());
 }
 
 // Verifies that toggling on the marker on Projector tools propagates to
@@ -116,6 +126,15 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   laser_pointer_controller_->SetEnabled(false);
   EXPECT_FALSE(marker_controller_->is_enabled());
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
+
+  // Verify that toggling marker disables magnifier when it was enabled.
+  auto* magnification_controller =
+      Shell::Get()->partial_magnification_controller();
+  controller_->OnMagnifierButtonPressed(true);
+  EXPECT_TRUE(magnification_controller->is_enabled());
+  controller_->OnMarkerPressed();
+  EXPECT_TRUE(marker_controller_->is_enabled());
+  EXPECT_FALSE(magnification_controller->is_enabled());
 }
 
 // Verifies that clicking the Clear All Markers button and disabling marker mode
@@ -182,6 +201,23 @@ TEST_F(ProjectorUiControllerTest, CaptionBubbleVisible) {
 
   controller_->SetCaptionBubbleState(false);
   EXPECT_FALSE(controller_->IsCaptionBubbleModelOpen());
+}
+
+TEST_F(ProjectorUiControllerTest, EnablingDisablingMagnifierGlass) {
+  // Ensure that enabling magnifier disables marker if it was enabled.
+  controller_->ShowToolbar();
+  auto* marker_controller_ = MarkerController::Get();
+  marker_controller_->SetEnabled(true);
+  EXPECT_TRUE(marker_controller_->is_enabled());
+  controller_->OnMagnifierButtonPressed(true);
+  EXPECT_FALSE(marker_controller_->is_enabled());
+
+  // Ensures that enabling magnifier disables laser pointer if it was enabled.
+  auto* laser_pointer_controller_ = Shell::Get()->laser_pointer_controller();
+  laser_pointer_controller_->SetEnabled(true);
+  EXPECT_TRUE(laser_pointer_controller_->is_enabled());
+  controller_->OnMagnifierButtonPressed(true);
+  EXPECT_FALSE(laser_pointer_controller_->is_enabled());
 }
 
 }  // namespace ash

@@ -44,6 +44,8 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void OnLaserPointerStateChanged(bool enabled);
   // Invoke when marker activation state changed.
   void OnMarkerStateChanged(bool enabled);
+  // Invoked when the magnifier state changed.
+  void OnMagnifierStateChanged(bool enabled);
 
   // views::View:
   void OnThemeChanged() override;

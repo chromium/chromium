@@ -4,6 +4,7 @@
 
 #include "ash/projector/projector_ui_controller.h"
 
+#include "ash/accessibility/magnifier/partial_magnification_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/ui/projector_bar_view.h"
 #include "ash/public/cpp/toast_data.h"
@@ -54,6 +55,13 @@ void EnableMarker(bool enabled) {
   auto* marker_controller = MarkerController::Get();
   DCHECK(marker_controller);
   MarkerController::Get()->SetEnabled(enabled);
+}
+
+void EnableMagnifier(bool enabled) {
+  auto* magnifier_controller = Shell::Get()->partial_magnification_controller();
+  DCHECK(magnifier_controller);
+  magnifier_controller->SetEnabled(enabled);
+  magnifier_controller->set_allow_mouse_following(enabled);
 }
 
 }  // namespace
@@ -136,6 +144,11 @@ ProjectorUiController::ProjectorUiController(
   auto* marker_controller = MarkerController::Get();
   DCHECK(marker_controller);
   marker_controller_observation_.Observe(marker_controller);
+
+  auto* partial_magnification_controller =
+      Shell::Get()->partial_magnification_controller();
+  DCHECK(partial_magnification_controller);
+  partial_magnification_observation_.Observe(partial_magnification_controller);
 
   caption_bubble_ =
       std::make_unique<ProjectorUiController::CaptionBubbleController>(this);
@@ -229,6 +242,10 @@ void ProjectorUiController::OnRecordingStateChanged(bool started) {
     caption_bubble_->Close();
 }
 
+void ProjectorUiController::OnMagnifierButtonPressed(bool enabled) {
+  EnableMagnifier(enabled);
+}
+
 bool ProjectorUiController::IsToolbarVisible() const {
   return model_.bar_enabled();
 }
@@ -243,21 +260,27 @@ void ProjectorUiController::ResetTools() {
   EnableLaserPointer(false);
   // Reset marker.
   EnableMarker(false);
+  // Reset magnifier.
+  EnableMagnifier(false);
 }
 
 void ProjectorUiController::OnLaserPointerStateChanged(bool enabled) {
-  // Disable marker if laser pointer is enabled;
-  if (enabled)
-    MarkerController::Get()->SetEnabled(false);
+  // If laser pointer is enabled, disable marker and magnifier.
+  if (enabled) {
+    EnableMarker(false);
+    EnableMagnifier(false);
+  }
 
   if (projector_bar_view_)
     projector_bar_view_->OnLaserPointerStateChanged(enabled);
 }
 
 void ProjectorUiController::OnMarkerStateChanged(bool enabled) {
-  // Disable laser pointer since marker if enabled;
-  if (enabled)
-    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
+  // If marker is enabled, disable laser pointer and magnifier.
+  if (enabled) {
+    EnableLaserPointer(false);
+    EnableMagnifier(false);
+  }
 
   if (projector_bar_view_)
     projector_bar_view_->OnMarkerStateChanged(enabled);
@@ -266,6 +289,17 @@ void ProjectorUiController::OnMarkerStateChanged(bool enabled) {
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
     MarkerController::Get()->Clear();
+}
+
+void ProjectorUiController::OnPartialMagnificationStateChanged(bool enabled) {
+  // If magnifier is enabled, disable laser pointer and marker.
+  if (enabled) {
+    EnableMarker(false);
+    EnableLaserPointer(false);
+  }
+
+  if (projector_bar_view_)
+    projector_bar_view_->OnMagnifierStateChanged(enabled);
 }
 
 }  // namespace ash

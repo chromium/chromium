@@ -73,6 +73,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnClearAllMarkersPressed();
   // Invoked when selfie cam button is pressed.
   void OnSelfieCamPressed(bool enabled);
+  // Invoked when magnifier button is pressed.
+  void OnMagnifierButtonPressed(bool enabled);
 
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);
