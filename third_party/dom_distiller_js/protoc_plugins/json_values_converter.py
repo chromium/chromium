@@ -1,10 +1,7 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# TODO(crbug.com/1202134): Switch run line back to just "python"
-# once things are py3-compatible.
 
 """protoc plugin to create C++ reader/writer for JSON-encoded protobufs
 
@@ -238,7 +235,8 @@ def SetBinaryStdio():
 
 
 def ReadRequestFromStdin():
-  data = sys.stdin.read()
+  stream = sys.stdin if sys.version_info[0] < 3 else sys.stdin.buffer
+  data = stream.read()
   return plugin_protos.PluginRequestFromString(data)
 
 

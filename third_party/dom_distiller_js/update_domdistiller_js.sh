@@ -76,10 +76,6 @@
 
   cp -r $tmpdir/dom-distiller/out/package/* .
 
-  # Stop rolling python/plugin_pb2.py for protobuf backward compatibility.
-  # See https://crbug.com/874509
-  git checkout -- python/plugin_pb2.py
-
   git add .
   if [[ $(git status --short | wc -l) -ne 0 ]]; then
     if [[ -n "$gerrit_url" ]]; then
