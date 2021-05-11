@@ -132,6 +132,33 @@ TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests that back-to-back queries for the same unsafe URL correctly sets an
+// UnsafeResource on both queries.
+TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
+  GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _))
+      .Times(2)
+      .WillRepeatedly(VerifyQueryFinished(url, http_method_,
+                                          navigation_item_id_,
+                                          /*is_url_safe=*/false));
+
+  // Start a URL check query for the unsafe URL and run the runloop until the
+  // result is received.  An UnsafeResource is stored before the query finishes
+  // to simulate the production behavior that adds a resource that will be used
+  // to populate the error page.
+  manager()->StartQuery(
+      SafeBrowsingQueryManager::Query(url, http_method_, navigation_item_id_));
+  manager()->StartQuery(
+      SafeBrowsingQueryManager::Query(url, http_method_, navigation_item_id_));
+  UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.request_destination = GetParam();
+  manager()->StoreUnsafeResource(resource);
+  manager()->StoreUnsafeResource(resource);
+  base::RunLoop().RunUntilIdle();
+}
+
 // Tests observer callbacks for manager destruction.
 TEST_P(SafeBrowsingQueryManagerTest, ManagerDestruction) {
   web_state_ = nullptr;
