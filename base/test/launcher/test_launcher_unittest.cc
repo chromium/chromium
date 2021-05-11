@@ -264,6 +264,29 @@ TEST_F(TestLauncherTest, FilterIncludePreTest) {
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
+// Test TestLauncher gtest filter works when both include and exclude filter
+// are defined.
+TEST_F(TestLauncherTest, FilterIncludeExclude) {
+  AddMockedTests("Test", {"firstTest", "PRE_firstTest", "secondTest",
+                          "PRE_secondTest", "thirdTest", "DISABLED_Disable1"});
+  SetUpExpectCalls();
+  command_line->AppendSwitchASCII("gtest_filter",
+                                  "Test.*Test:-Test.secondTest");
+  std::vector<std::string> tests_names = {
+      "Test.PRE_firstTest",
+      "Test.firstTest",
+      "Test.thirdTest",
+  };
+  using ::testing::_;
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .Times(1);
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
 // Test TestLauncher "gtest_repeat" switch.
 TEST_F(TestLauncherTest, RepeatTest) {
   AddMockedTests("Test", {"firstTest"});
