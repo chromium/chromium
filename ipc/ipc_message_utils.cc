@@ -128,7 +128,7 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       const base::DictionaryValue* dict =
           static_cast<const base::DictionaryValue*>(value);
 
-      WriteParam(m, base::checked_cast<int>(dict->size()));
+      WriteParam(m, base::checked_cast<int>(dict->DictSize()));
 
       for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
            it.Advance()) {
