@@ -1,9 +1,9 @@
 `use strict`;
-const fs = require('fs');
 
 const browserLauncher = require('./browserLauncher.js');
 const createBidiMapperSession = require('./bidiMapperSession.js');
 const createBidiServer = require('./bidiServer.js');
+const mapperReader = require('./mapperReader.js');
 
 
 (async () => {
@@ -12,7 +12,7 @@ const createBidiServer = require('./bidiServer.js');
         let bidiServer;
 
         const cdpUrl = await browserLauncher.launch();
-        const bidiMapperScript = fs.readFileSync('bidiServer/bidiProxy/bidiMapper/.build/mapper.js', 'utf8');
+        const bidiMapperScript = await mapperReader.readMapper();
 
         bidiMapperSession = await createBidiMapperSession.create(bidiMapperScript, cdpUrl, (mapperMessage) => {
             console.log("Mapper message received:\n", mapperMessage);

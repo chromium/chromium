@@ -1,4 +1,4 @@
-function createBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTargetId) {
+export function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTargetId) {
     const process_browsingContext_getTree = async function (messageId) {
         const cdpTargets = await cdpClient.sendCdpCommand({ method: "Target.getTargets" });
         const contexts = cdpTargets.targetInfos
@@ -30,17 +30,40 @@ function createBidiCommandsProcessor(cdpClient, bidiClient, getCurrentTargetId) 
         });
     };
 
-    return {
-        processCommand: async function (message) {
-            const messageId = message.id;
-            switch (message.method) {
-                case 'session.status':
-                    return progress_session_status(messageId);
-                case 'browsingContext.getTree':
-                    return process_browsingContext_getTree(messageId);
-                default:
-                    return progress_unknown_command(messageId);
-            }
-        }
+    const onCdpMessage = function (message) {
+        console.error("onCdpMessage is not implemented", message);
     };
+
+    const onBidiMessage = function (message) {
+        const messageId = message.id;
+        switch (message.method) {
+            case 'session.status':
+                progress_session_status(messageId);
+                return;
+            case 'browsingContext.getTree':
+                process_browsingContext_getTree(messageId);
+                return;
+            default:
+                progress_unknown_command(messageId);
+                return;
+        }
+    }
+
+
+    cdpClient.setCdpMessageHandler(onCdpMessage);
+    bidiClient.setBidiMessageHandler(onBidiMessage);
+
+    // return {
+    //     processCommand: async function (message) {
+    //         const messageId = message.id;
+    //         switch (message.method) {
+    //             case 'session.status':
+    //                 return progress_session_status(messageId);
+    //             case 'browsingContext.getTree':
+    //                 return process_browsingContext_getTree(messageId);
+    //             default:
+    //                 return progress_unknown_command(messageId);
+    //         }
+    //     }
+    // };
 };

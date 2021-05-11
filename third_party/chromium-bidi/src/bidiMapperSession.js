@@ -125,7 +125,7 @@ const bidiMapperSession = async (mapperContent, cdpUrl, onBidiMessage) => {
         method: "Runtime.evaluate",
         sessionId,
         params: {
-            expression: "setCurrentTargetId(" + JSON.stringify(targetId) + ")"
+            expression: "window.setCurrentTargetId(" + JSON.stringify(targetId) + ")"
         }
     });
 
