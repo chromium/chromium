@@ -1173,13 +1173,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   BOOL disableWebUsageDuringRemoval =
       !browserState->IsOffTheRecord() &&
       IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_SITE_DATA);
-  BOOL showActivityIndicator = NO;
+  BOOL willShowActivityIndicator = NO;
+  BOOL didShowActivityIndicator = NO;
 
   if (@available(iOS 13, *)) {
     // TODO(crbug.com/632772): Visited links clearing doesn't require disabling
     // web usage with iOS 13. Stop disabling web usage once iOS 12 is not
     // supported.
-    showActivityIndicator = disableWebUsageDuringRemoval;
+    willShowActivityIndicator = disableWebUsageDuringRemoval;
     disableWebUsageDuringRemoval = NO;
   }
 
@@ -1192,14 +1193,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       DCHECK([NSThread isMainThread]);
       sceneInterface.mainInterface.userInteractionEnabled = NO;
       sceneInterface.incognitoInterface.userInteractionEnabled = NO;
-    } else if (showActivityIndicator) {
+    } else if (willShowActivityIndicator) {
       // Show activity overlay so users know that clear browsing data is in
       // progress.
       // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
       // clean up.
-      id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-          sceneInterface.mainInterface.browser->GetCommandDispatcher());
-      [handler showActivityOverlay:YES];
+      if (sceneInterface.mainInterface.browser) {
+        didShowActivityIndicator = YES;
+        id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
+            sceneInterface.mainInterface.browser->GetCommandDispatcher());
+        [handler showActivityOverlay:YES];
+      }
     }
   }
 
@@ -1212,7 +1216,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       id<BrowserInterfaceProvider> sceneInterface =
           sceneState.interfaceProvider;
 
-      if (showActivityIndicator) {
+      if (willShowActivityIndicator) {
         // User interaction still needs to be disabled as a way to
         // force reload all the web states and to reset NTPs.
         sceneInterface.mainInterface.userInteractionEnabled = NO;
@@ -1220,9 +1224,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
         // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
         // protocol clean up.
-        id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-            sceneInterface.mainInterface.browser->GetCommandDispatcher());
-        [handler showActivityOverlay:NO];
+        if (didShowActivityIndicator && sceneInterface.mainInterface.browser) {
+          id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
+              sceneInterface.mainInterface.browser->GetCommandDispatcher());
+          [handler showActivityOverlay:NO];
+        }
       }
       sceneInterface.mainInterface.userInteractionEnabled = YES;
       sceneInterface.incognitoInterface.userInteractionEnabled = YES;
