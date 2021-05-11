@@ -3195,9 +3195,6 @@ void RenderViewContextMenu::ExecPrint() {
 }
 
 void RenderViewContextMenu::ExecRouteMedia() {
-  if (!media_router::MediaRouterEnabled(browser_context_))
-    return;
-
   media_router::MediaRouterDialogController* dialog_controller =
       media_router::MediaRouterDialogController::GetOrCreateForWebContents(
           embedder_web_contents_);
