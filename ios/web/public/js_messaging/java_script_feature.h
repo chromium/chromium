@@ -178,7 +178,8 @@ class JavaScriptFeature {
       base::TimeDelta timeout);
 
   // Callback for script messages registered through |GetScriptMessageHandler|.
-  // Called when a WebState sent |message|.
+  // |ScriptMessageReceived| is called when |web_state| receives a |message|.
+  // |web_state| will always be non-null.
   virtual void ScriptMessageReceived(WebState* web_state,
                                      const ScriptMessage& message);
 
