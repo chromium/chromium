@@ -156,8 +156,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   {
     Permissions permissions_object;
     value->Clear();
-    value->Set("origins", origins->CreateDeepCopy());
-    value->Set("random", std::make_unique<base::Value>(3));
+    value->SetKey("origins", origins->Clone());
+    value->SetKey("random", base::Value(3));
     EXPECT_TRUE(Permissions::Populate(*value, &permissions_object));
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
@@ -174,9 +174,9 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   {
     Permissions permissions_object;
     value->Clear();
-    std::unique_ptr<base::ListValue> invalid_apis = apis->CreateDeepCopy();
-    invalid_apis->AppendString("unknown_permission");
-    value->Set("permissions", std::move(invalid_apis));
+    base::Value invalid_apis = apis->Clone();
+    invalid_apis.Append("unknown_permission");
+    value->SetKey("permissions", std::move(invalid_apis));
     EXPECT_TRUE(Permissions::Populate(*value, &permissions_object));
 
     EXPECT_FALSE(UnpackPermissionSet(permissions_object, PermissionSet(),

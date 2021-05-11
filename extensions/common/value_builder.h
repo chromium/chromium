@@ -72,7 +72,6 @@ class DictionaryBuilder {
 class ListBuilder {
  public:
   ListBuilder();
-  explicit ListBuilder(const base::ListValue& init);
   ~ListBuilder();
 
   // Can only be called once, after which it's invalid to use the builder.

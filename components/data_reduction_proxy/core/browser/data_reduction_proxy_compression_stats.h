@@ -208,8 +208,7 @@ class DataReductionProxyCompressionStats {
 
   // Copies the values at each index of |from_list| to the same index in
   // |to_list|.
-  void TransferList(const base::ListValue& from_list,
-                    base::ListValue* to_list);
+  void TransferList(const base::Value& from_list, base::Value* to_list);
 
   // Records content length updates to prefs.
   void RecordRequestSizePrefs(int64_t compressed_size,

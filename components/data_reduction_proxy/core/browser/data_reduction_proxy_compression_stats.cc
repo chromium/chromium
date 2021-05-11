@@ -626,10 +626,9 @@ void DataReductionProxyCompressionStats::DelayedWritePrefs() {
 }
 
 void DataReductionProxyCompressionStats::TransferList(
-    const base::ListValue& from_list,
-    base::ListValue* to_list) {
-  to_list->Clear();
-  from_list.CreateDeepCopy()->Swap(to_list);
+    const base::Value& from_list,
+    base::Value* to_list) {
+  *to_list = from_list.Clone();
 }
 
 void DataReductionProxyCompressionStats::RecordRequestSizePrefs(
