@@ -376,12 +376,12 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     return;
   }
 
-  const base::ListValue* rules_list =
+  const base::Value* rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
   DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
-                      rules_list && !rules_list->empty());
-  if (!rules_list || rules_list->empty()) {
+                      rules_list && !rules_list->GetList().empty());
+  if (!rules_list || rules_list->GetList().empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
