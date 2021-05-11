@@ -66,4 +66,5 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
+  EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);
 }
