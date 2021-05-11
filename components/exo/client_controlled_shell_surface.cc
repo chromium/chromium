@@ -1036,7 +1036,8 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
 gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
   gfx::Rect shadow_bounds = ShellSurfaceBase::GetShadowBounds();
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
-  if (frame_view->GetFrameEnabled()) {
+  if (frame_view->GetFrameEnabled() && !shadow_bounds_->IsEmpty() &&
+      !geometry_.IsEmpty()) {
     // The client controlled geometry is only for the client
     // area. When the chrome side frame is enabled, the shadow height
     // has to include the height of the frame, and the total height is

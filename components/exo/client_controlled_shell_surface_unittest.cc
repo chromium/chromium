@@ -2704,4 +2704,36 @@ TEST_F(ClientControlledShellSurfaceTest,
   }
 }
 
+TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
+  gfx::Size buffer_size(1, 1);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_bounds(150, 10, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), initial_bounds);
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+
+  EXPECT_FALSE(shell_surface->HasOverlay());
+
+  ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+  params.overlaps_frame = false;
+  shell_surface->AddOverlay(std::move(params));
+  EXPECT_TRUE(shell_surface->HasOverlay());
+
+  {
+    gfx::Size overlay_size =
+        shell_surface->GetWidget()->GetWindowBoundsInScreen().size();
+    gfx::Size shadow_size = shell_surface->GetShadowBounds().size();
+    EXPECT_EQ(shadow_size, overlay_size);
+  }
+}
+
 }  // namespace exo

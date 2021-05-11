@@ -252,6 +252,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   float GetScale() const override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ClientControlledShellSurfaceTest,
+                           OverlayShadowBounds);
   class ScopedSetBoundsLocally;
   class ScopedLockedToRoot;
 
