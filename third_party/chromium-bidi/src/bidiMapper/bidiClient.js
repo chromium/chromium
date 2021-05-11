@@ -19,7 +19,7 @@ export function createBidiClient(sendBidiResponse) {
             } catch {
                 _sendBidiMessage({
                     "error": "invalid argument",
-                    "message": "not supported type"
+                    "message": "Cannot parse data as JSON"
                 });
                 return;
             }

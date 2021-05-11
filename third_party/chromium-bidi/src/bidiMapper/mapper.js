@@ -23,11 +23,8 @@ window.onBidiMessage = function (messageStr) {
 
 const cdpClient = createCdpClient(cdpBinding);
 const bidiClient = createBidiClient(sendBidiResponse);
-runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
 
-
-const runBidiMapper = function () {
-
+const runBidiMapper = async function () {
     window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>
     <h3>BiDi:</h3>
     <pre id='bidi_log'></pre>
@@ -37,6 +34,8 @@ const runBidiMapper = function () {
     <pre id='system_log'></pre>`;
 
     window.document.title = "BiDi Mapper";
+
+    await runBidiCommandsProcessor(cdpClient, bidiClient, () => currentTargetId);
 
     console.log("launched");
     log("launched");
