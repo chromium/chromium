@@ -23,7 +23,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"

@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

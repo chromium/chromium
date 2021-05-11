@@ -1092,7 +1092,7 @@ static_library("extensions") {
       "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",
-      "//chrome/browser/chromeos/crostini:crostini_installer_types_mojom",
+      "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",

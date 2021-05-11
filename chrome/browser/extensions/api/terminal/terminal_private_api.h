@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"

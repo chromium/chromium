@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using crostini::mojom::InstallerState;

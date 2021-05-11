@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/crostini/crostini_upgrader.h"
+#include "chrome/browser/ash/crostini/crostini_upgrader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"

@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

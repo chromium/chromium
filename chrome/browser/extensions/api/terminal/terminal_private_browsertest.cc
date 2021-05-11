@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/test/base/in_process_browser_test.h"

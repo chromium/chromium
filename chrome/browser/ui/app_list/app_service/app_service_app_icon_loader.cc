@@ -6,7 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
