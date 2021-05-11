@@ -4562,12 +4562,12 @@
       "bdea",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 91
+    "expiry_milestone": 93
   },
   {
     "name": "safe-browsing-enhanced-protection-promo-android",
     "owners": [ "bdea", "chrome-safebrowsing-core@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "safety-check-chrome-cleaner-child",
