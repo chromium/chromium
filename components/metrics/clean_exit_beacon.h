@@ -19,10 +19,15 @@ namespace metrics {
 // process exited cleanly.
 class CleanExitBeacon {
  public:
-  // Instantiates a CleanExitBeacon whose value is stored in |local_state|.
-  // |local_state| must be fully initialized.
-  // On Windows, |backup_registry_key| is used to store a backup of the beacon.
-  // It is ignored on other platforms.
+  // Instantiates a CleanExitBeacon whose value is stored in |local_state|'s
+  // kStabilityExitedCleanly pref. |local_state| must be fully initialized.
+  //
+  // On Windows, |backup_registry_key| stores a backup of the beacon to verify
+  // that the pref's value corresponds to the registry's. |backup_registry_key|
+  // is ignored on other platforms, but iOS has a similar verification
+  // mechanism using LastSessionExitedCleanly in
+  // ios/chrome/browser/pref_names.cc.
+  // TODO(crbug.com/1208077): Use the CleanExitBeacon for verification on iOS.
   CleanExitBeacon(const std::wstring& backup_registry_key,
                   PrefService* local_state);
 

@@ -545,6 +545,7 @@ void ApplicationContextImpl::CreateLocalState() {
   // does not use this beacon directly.  This code should be merged with clean
   // exit beacon (as long as the user default workaround can also go into the
   // clean exit beacon).
+  // TODO(crbug.com/1208077): Use the CleanExitBeacon.
 
   // An enumeration of all possible permutations of the the beacon state in the
   // registry and in Local State.
