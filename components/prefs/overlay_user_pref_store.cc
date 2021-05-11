@@ -116,7 +116,7 @@ bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
     return false;
 
   ephemeral_user_pref_store_->SetValue(
-      key, persistent_value->CreateDeepCopy(),
+      key, base::Value::ToUniquePtrValue(persistent_value->Clone()),
       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ephemeral_user_pref_store_->GetMutableValue(key, result);
   return true;

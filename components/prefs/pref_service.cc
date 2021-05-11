@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -563,8 +564,9 @@ base::Value* PrefService::GetMutableUserPref(const std::string& path,
   const base::Value* default_value = nullptr;
   pref_registry_->defaults()->GetValue(path, &default_value);
   DCHECK_EQ(default_value->type(), type);
-  user_pref_store_->SetValueSilently(path, default_value->CreateDeepCopy(),
-                                     GetWriteFlags(pref));
+  user_pref_store_->SetValueSilently(
+      path, base::Value::ToUniquePtrValue(default_value->Clone()),
+      GetWriteFlags(pref));
   user_pref_store_->GetMutableValue(path, &value);
   return value;
 }

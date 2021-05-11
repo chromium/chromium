@@ -172,7 +172,8 @@ void PrefValueMap::GetDifferingKeys(
 std::unique_ptr<base::DictionaryValue> PrefValueMap::AsDictionaryValue() const {
   auto dictionary = std::make_unique<base::DictionaryValue>();
   for (const auto& value : prefs_)
-    dictionary->Set(value.first, value.second.CreateDeepCopy());
+    dictionary->Set(value.first,
+                    base::Value::ToUniquePtrValue(value.second.Clone()));
 
   return dictionary;
 }
