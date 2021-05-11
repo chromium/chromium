@@ -135,6 +135,12 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
 
 void PhoneHubTray::OnSessionStateChanged(session_manager::SessionState state) {
   icon_->SetImage(CreateVectorIcon(kPhoneHubPhoneIcon, TrayIconColor(state)));
+
+  TemporarilyDisableAnimation();
+}
+
+void PhoneHubTray::OnActiveUserSessionChanged(const AccountId& account_id) {
+  TemporarilyDisableAnimation();
 }
 
 void PhoneHubTray::AnchorUpdated() {
@@ -244,6 +250,12 @@ void PhoneHubTray::UpdateVisibility() {
   DCHECK(ui_controller_.get());
   auto ui_state = ui_controller_->ui_state();
   SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden);
+}
+
+void PhoneHubTray::TemporarilyDisableAnimation() {
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, DisableShowAnimation().Release(),
+      base::TimeDelta::FromSeconds(5));
 }
 
 }  // namespace ash

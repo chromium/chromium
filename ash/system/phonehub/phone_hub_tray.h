@@ -84,10 +84,18 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // Updates the visibility of the tray in the shelf based on the feature is
   // enabled.
   void UpdateVisibility();
+
+  // Disables the animation and enables it back after a 5s delay. This tray's
+  // visibility can be updated when the connection is complete. After a session
+  // has started (login/unlock/user-switch), a duration is added here to delay
+  // the animation being enabled, since it would take a few seconds to get
+  // connected.
+  void TemporarilyDisableAnimation();
 
   // Icon of the tray. Unowned.
   views::ImageView* icon_;

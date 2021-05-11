@@ -145,9 +145,17 @@ void StatusAreaWidget::Initialize() {
   overview_button_tray_ = std::make_unique<OverviewButtonTray>(shelf_);
   AddTrayButton(overview_button_tray_.get());
 
+  // Each tray_button's animation will be disabled for the life time of this
+  // local `animation_disablers`, which means the closures to enable the
+  // animation will be executed when it's out of this method (Initialize())
+  // scope.
+  std::list<base::ScopedClosureRunner> animation_disablers;
+
   // Initialize after all trays have been created.
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->Initialize();
+    animation_disablers.push_back(tray_button->DisableShowAnimation());
+  }
 
   EnsureTrayOrder();
 

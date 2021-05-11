@@ -147,7 +147,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Disables bounce in and fade in animation. The animation will remain
   // disabled until the returned scoped closure runner is run.
-  base::ScopedClosureRunner DisableShowAnimation();
+  base::ScopedClosureRunner DisableShowAnimation() WARN_UNUSED_RESULT;
 
  protected:
   // ActionableView:

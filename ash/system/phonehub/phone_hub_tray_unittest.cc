@@ -21,6 +21,7 @@
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 
@@ -485,6 +486,58 @@ TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
   EXPECT_FALSE(content_view());
+}
+
+TEST_F(PhoneHubTrayTest, OnSessionChanged) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Disable the tray first.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  EXPECT_FALSE(phone_hub_tray_->GetVisible());
+
+  // Enable it to let it visible.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+
+  // Animation is disabled for 5 seconds after the session state get changed.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  // Gives it a small duration to let the session get changed. This duration is
+  // way smaller than the animation duration, so that the animation will not
+  // finish when this duration ends. The same for the other places below.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  for (int i = 0; i < 3; i++) {
+    SCOPED_TRACE(::testing::Message() << "iteration=" << i);
+    EXPECT_FALSE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
+    EXPECT_TRUE(phone_hub_tray_->GetVisible());
+    GetFeatureStatusProvider()->SetStatus(
+        chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
+    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+    EXPECT_FALSE(phone_hub_tray_->GetVisible());
+    GetFeatureStatusProvider()->SetStatus(
+        chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  }
+  EXPECT_FALSE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+
+  // Animation is enabled after 5 seconds. We already fast forwarded 3 second in
+  // the above loop. So here we are forwarding 2 more seconds.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kNotEligibleForFeature);
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  EXPECT_TRUE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
 }
 
 }  // namespace ash

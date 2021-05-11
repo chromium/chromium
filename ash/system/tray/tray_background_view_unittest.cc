@@ -4,8 +4,11 @@
 
 #include "ash/system/tray/tray_background_view.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -59,6 +62,12 @@ class TrayBackgroundViewTest : public AshTestBase {
         ->SetLayoutManager(nullptr);
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()->AddTrayButton(
         test_view.get());
+
+    // Set Dictation button to be visible.
+    AccessibilityControllerImpl* controller =
+        Shell::Get()->accessibility_controller();
+    controller->dictation().SetDialogAccepted();
+    controller->dictation().SetEnabled(true);
   }
 
   void TearDown() override {
@@ -67,6 +76,17 @@ class TrayBackgroundViewTest : public AshTestBase {
   }
 
  protected:
+  // Here we use dictation tray for testing secondary screen.
+  DictationButtonTray* GetPrimaryDictationTray() {
+    return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+        ->dictation_button_tray();
+  }
+
+  DictationButtonTray* GetSecondaryDictationTray() {
+    return StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+        ->dictation_button_tray();
+  }
+
   std::unique_ptr<TrayBackgroundViewTestView> test_view;
 };
 
@@ -158,6 +178,47 @@ TEST_F(TrayBackgroundViewTest, HandleSessionChange) {
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
   EXPECT_FALSE(test_view->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(test_view->GetVisible());
+}
+
+TEST_F(TrayBackgroundViewTest, SecondaryDisplay) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Add secondary screen.
+  UpdateDisplay("800x600,800x600");
+
+  // Switch the primary and secondary screen.
+  SwapPrimaryDisplay();
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_FALSE(
+      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
+  EXPECT_FALSE(
+      GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
+
+  // Enable the animation after showing up on the secondary screen.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  GetPrimaryDictationTray()->SetVisiblePreferred(false);
+  GetPrimaryDictationTray()->SetVisiblePreferred(true);
+  GetSecondaryDictationTray()->SetVisiblePreferred(false);
+  GetSecondaryDictationTray()->SetVisiblePreferred(true);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_TRUE(
+      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
+  EXPECT_TRUE(
+      GetSecondaryDictationTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(GetSecondaryDictationTray()->GetVisible());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+
+  // Remove the secondary screen.
+  UpdateDisplay("800x600");
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(20));
+  EXPECT_FALSE(
+      GetPrimaryDictationTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(GetPrimaryDictationTray()->GetVisible());
 }
 
 }  // namespace ash
