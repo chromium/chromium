@@ -747,11 +747,13 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorAvatarIconIncognito:
       return GetFgColor("GtkLabel#label");
     case ui::kColorBubbleFooterBackground:
+    case ui::kColorSyncInfoBackground:
+      return GetBgColor("#statusbar");
     case ui::kColorNotificationActionsBackground:
     case ui::kColorNotificationBackgroundActive:
     case ui::kColorNotificationImageBackground:
-    case ui::kColorSyncInfoBackground:
-      return GetBgColor("#statusbar");
+      return color_utils::BlendTowardMaxContrast(GetBgColor(""),
+                                                 gfx::kGoogleGreyAlpha100);
 
     // FocusableBorder
     case ui::kColorFocusableBorderFocused:
