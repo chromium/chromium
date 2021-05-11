@@ -1073,6 +1073,7 @@ source_set("chrome_test_util_jni") {
   sources = [ "javatests/src/custom_tabs_test_utils.cc" ]
   deps = [
     ":chrome_test_util_jni_headers",
+    "//base",
     "//components/variations",
   ]
 }
