@@ -1283,6 +1283,7 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
 )
 
 # Experimental builder to check dual coverage on linux platform.
