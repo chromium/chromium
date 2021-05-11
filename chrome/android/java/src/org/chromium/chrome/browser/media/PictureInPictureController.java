@@ -16,6 +16,7 @@ import android.util.Rational;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.VerifiesOnO;
@@ -193,7 +194,7 @@ public class PictureInPictureController {
         });
 
         TabObserver tabObserver = new DismissActivityOnTabEventObserver(mActivity);
-        ActivityTabProvider.ActivityTabObserver activityTabObserver =
+        Callback<Tab> activityTabObserver =
                 new DismissActivityOnTabChangeObserver(mActivity, activityTab);
         WebContentsObserver webContentsObserver =
                 new DismissActivityOnWebContentsObserver(mActivity);
@@ -207,7 +208,7 @@ public class PictureInPictureController {
         activityTab.addObserver(tabObserver);
         webContents.addObserver(webContentsObserver);
         mFullscreenManager.addObserver(fullscreenListener);
-        mActivityTabProvider.addObserverAndTrigger(activityTabObserver);
+        mActivityTabProvider.addObserver(activityTabObserver);
 
         mOnLeavePipCallbacks.add(() -> {
             activityTab.removeObserver(tabObserver);
@@ -324,8 +325,7 @@ public class PictureInPictureController {
     }
 
     /** A class to dismiss the Activity when the tab changes. */
-    private class DismissActivityOnTabChangeObserver
-            extends ActivityTabProvider.HintlessActivityTabObserver {
+    private class DismissActivityOnTabChangeObserver implements Callback<Tab> {
         private final Activity mActivity;
         private final Tab mCurrentTab;
 
@@ -335,7 +335,7 @@ public class PictureInPictureController {
         }
 
         @Override
-        public void onActivityTabChanged(Tab tab) {
+        public void onResult(Tab tab) {
             if (mCurrentTab == tab) return;
             dismissActivity(mActivity, METRICS_END_REASON_NEW_TAB);
         }

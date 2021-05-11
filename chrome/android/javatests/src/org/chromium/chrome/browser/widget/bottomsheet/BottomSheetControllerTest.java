@@ -125,6 +125,12 @@ public class BottomSheetControllerTest {
         });
     }
 
+    /** @return The height of the container view. */
+    private int getContainerHeight() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivity.getActivityTabProvider().get().getView().getHeight());
+    }
+
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})

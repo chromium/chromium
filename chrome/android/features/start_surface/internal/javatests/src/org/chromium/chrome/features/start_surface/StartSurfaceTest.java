@@ -141,7 +141,7 @@ public class StartSurfaceTest {
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:start_surface_variation";
 
-    private static final long MAX_TIMEOUT_MS = 30000L;
+    private static final long MAX_TIMEOUT_MS = 40000L;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
