@@ -1496,6 +1496,13 @@ const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
      "t3329139" /* variation_id */},
 };
 
+const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
+    {ntp_features::kNtpDriveModuleDataParam, "fake"}};
+const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
+    {"- Fake Data", kNtpDriveModuleFakeData,
+     base::size(kNtpDriveModuleFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpRepeatableQueriesInsertPositionStart[] = {
     {ntp_features::kNtpRepeatableQueriesInsertPositionParam, "start"}};
 const FeatureEntry::FeatureParam kNtpRepeatableQueriesInsertPositionEnd[] = {
@@ -4650,7 +4657,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpDriveModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,
+                                    kNtpDriveModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,

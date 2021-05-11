@@ -68,6 +68,8 @@ extern const char kNtpStatefulTasksModuleDataParam[];
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
 extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
+// Parameter determining the type of Drive data to render.
+extern const char kNtpDriveModuleDataParam[];
 
 // Returns the age threshold for local history repeatable queries.
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold();

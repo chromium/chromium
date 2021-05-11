@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -83,6 +85,44 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
+constexpr char kFakeData[] = R"({
+  "item": [
+    {
+      "itemId": "foo",
+      "url": "https://docs.google.com",
+      "driveItem": {
+        "title": "foo doc",
+        "mimeType": "application/vnd.google-apps.document"
+      },
+      "justification": {
+        "displayText": { "textSegment": [{"text": "You opened yesterday"}]}
+      }
+    },
+    {
+      "itemId": "bar",
+      "url": "https://sheets.google.com",
+      "driveItem": {
+        "title": "bar sheet",
+        "mimeType": "application/vnd.google-apps.spreadsheet"
+      },
+      "justification": {
+        "displayText": { "textSegment": [{"text": "You opened today"}]}
+      }
+    },
+    {
+      "itemId": "baz",
+      "url": "https://slides.google.com",
+      "driveItem": {
+        "title": "baz slides",
+        "mimeType": "application/vnd.google-apps.presentation"
+      },
+      "justification": {
+        "displayText": { "textSegment": [{"text": "You opened on Monday"}]}
+      }
+    }
+  ]
+}
+)";
 }  // namespace
 
 // static
@@ -125,6 +165,16 @@ void DriveService::GetDriveFiles(GetFilesCallback callback) {
       std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     }
     callbacks_.clear();
+    return;
+  }
+
+  // Skip fetch and jump straight to data parsing when serving fake data.
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpDriveModule,
+          ntp_features::kNtpDriveModuleDataParam) == "fake") {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        kFakeData, base::BindOnce(&DriveService::OnJsonParsed,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 

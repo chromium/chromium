@@ -5,8 +5,10 @@
 #include "chrome/browser/search/drive/drive_service.h"
 #include "base/json/json_reader.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -363,4 +365,33 @@ TEST_F(DriveServiceTest, RestoreModule) {
   service_->RestoreModule();
   EXPECT_EQ(base::Time(),
             prefs_.GetTime(DriveService::kLastDismissedTimePrefName));
+}
+
+class DriveServiceFakeDataTest : public DriveServiceTest {
+ public:
+  DriveServiceFakeDataTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpDriveModule, {{"NtpDriveModuleDataParam", "fake"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
+  std::vector<drive::mojom::FilePtr> fake_documents;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            fake_documents = std::move(documents);
+          }));
+
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(DriveService::kDismissDuration);
+  service_->GetDriveFiles(callback.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(fake_documents.empty());
 }

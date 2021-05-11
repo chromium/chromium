@@ -109,9 +109,9 @@ const char kNtpModulesLoadTimeoutMillisecondsParam[] =
 const char kNtpStatefulTasksModuleDataParam[] =
     "NtpStatefulTasksModuleDataParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
-
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";
+const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
 
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
   const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =
