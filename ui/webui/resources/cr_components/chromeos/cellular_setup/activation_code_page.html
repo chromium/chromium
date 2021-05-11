@@ -116,6 +116,16 @@
         visibility: hidden;
       }
 
+      .visually-hidden {
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+      }
+
       #scanSucessHeader {
         --iron-icon-fill-color: #1E8E3E;
         margin-bottom: 8px;
@@ -200,6 +210,11 @@
             <video id="video" autoplay muted
                 hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
             </video>
+            <template is="dom-if" if="[[qrCodeCameraA11yString_]]" restamp>
+              <div class="visually-hidden" aria-live="polite">
+                [[qrCodeCameraA11yString_]]
+              </div>
+            </template>
             <div class="center blue-icon" id="startScanningContainer"
                 hidden$="[[isUiElementHidden_(UiElement.START_SCANNING, state_)]]">
               <cr-button class="label"
