@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, RemoveEntry) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, ValidatePhoneNumbers) {
-  EXPECT_TRUE(RunAutofillSubtest("ValidatePhoneNumbers")) << message_;
+  EXPECT_TRUE(RunAutofillSubtest("validatePhoneNumbers")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {

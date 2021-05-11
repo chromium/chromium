@@ -338,40 +338,48 @@ var availableTests = [
 
   function validatePhoneNumbers() {
     var COUNTRY_CODE = 'US';
-    var ORIGINAL_NUMBERS = ['1-800-123-4567'];
+    var FAKE_NUMBER = '1-800-123-4567';
+    var ORIGINAL_NUMBERS = [FAKE_NUMBER];
     var FIRST_NUMBER_TO_ADD = '1-800-234-5768';
     // Same as original number, but without formatting.
     var SECOND_NUMBER_TO_ADD = '18001234567';
 
-    var handler1 = function(validateNumbers) {
+    var handler1 =
+        function(validateNumbers) {
       chrome.test.assertEq(validateNumbers.length, 1);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
 
-      chrome.autofillPrivate.validatePhoneNumbers({
-        phoneNumbers: validatedNumbers.concat(FIRST_NUMBER_TO_ADD),
-        indexOfNewNumber: 0,
-        countryCode: COUNTRY_CODE
-      }, handler2);
+      chrome.autofillPrivate.validatePhoneNumbers(
+          {
+            phoneNumbers: validateNumbers.concat(FIRST_NUMBER_TO_ADD),
+            indexOfNewNumber: 1,  // A new number (FIRST_NUMBER_TO_ADD) is added
+                                  // at the end of the list.
+            countryCode: COUNTRY_CODE
+          },
+          handler2);
     }
 
-    var handler2 = function(validatedNumbers) {
+    var handler2 = function(validateNumbers) {
       chrome.test.assertEq(validateNumbers.length, 2);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
-      chrome.test.assertEq('1-800-234-5678', validateNumbers[1]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
+      chrome.test.assertEq(FIRST_NUMBER_TO_ADD, validateNumbers[1]);
 
-      chrome.autofillPrivate.validatePhoneNumbers({
-        phoneNumbers: validatedNumbers.concat(SECOND_NUMBER_TO_ADD),
-        indexOfNewNumber: 0,
-        countryCode: COUNTRY_CODE
-      }, handler3);
+      chrome.autofillPrivate.validatePhoneNumbers(
+          {
+            phoneNumbers: validateNumbers.concat(SECOND_NUMBER_TO_ADD),
+            indexOfNewNumber: 2,  // A new number (SECOND_NUMBER_TO_ADD) is
+                                  // added at the end of the list.
+            countryCode: COUNTRY_CODE
+          },
+          handler3);
     };
 
     var handler3 = function(validateNumbers) {
       // Newly-added number should not appear since it was the same as an
       // existing number.
       chrome.test.assertEq(validateNumbers.length, 2);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
-      chrome.test.assertEq('1-800-234-5678', validateNumbers[1]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
+      chrome.test.assertEq(FIRST_NUMBER_TO_ADD, validateNumbers[1]);
       chrome.test.succeed();
     }
 

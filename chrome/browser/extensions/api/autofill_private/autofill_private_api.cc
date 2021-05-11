@@ -113,30 +113,29 @@ base::flat_map<std::string, base::Value> AddressUiComponentAsValueMap(
 // number values.
 void RemoveDuplicatePhoneNumberAtIndex(size_t index,
                                        const std::string& country_code,
-                                       base::ListValue* list) {
-  std::u16string new_value;
-  if (!list->GetString(index, &new_value)) {
+                                       base::Value* list_value) {
+  DCHECK(list_value->is_list());
+  base::Value::ListView list = list_value->GetList();
+  if (list.size() <= index) {
     NOTREACHED() << "List should have a value at index " << index;
     return;
   }
+  const std::string& new_value = list[index].GetString();
 
   bool is_duplicate = false;
   std::string app_locale = g_browser_process->GetApplicationLocale();
-  for (size_t i = 0; i < list->GetSize() && !is_duplicate; ++i) {
+  for (size_t i = 0; i < list.size() && !is_duplicate; ++i) {
     if (i == index)
       continue;
 
-    std::u16string existing_value;
-    if (!list->GetString(i, &existing_value)) {
-      NOTREACHED() << "List should have a value at index " << i;
-      continue;
-    }
-    is_duplicate = autofill::i18n::PhoneNumbersMatch(new_value, existing_value,
-                                                     country_code, app_locale);
+    const std::string& existing_value = list[i].GetString();
+    is_duplicate = autofill::i18n::PhoneNumbersMatch(
+        base::UTF8ToUTF16(new_value), base::UTF8ToUTF16(existing_value),
+        country_code, app_locale);
   }
 
   if (is_duplicate)
-    list->Remove(index, nullptr);
+    list_value->EraseListIter(list.begin() + index);
 }
 
 autofill::BrowserAutofillManager* GetBrowserAutofillManager(
@@ -470,14 +469,15 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
   api::autofill_private::ValidatePhoneParams* params = &parameters->params;
 
   // Extract the phone numbers into a ListValue.
-  std::unique_ptr<base::ListValue> phone_numbers(new base::ListValue);
-  phone_numbers->AppendStrings(params->phone_numbers);
+  base::Value phone_numbers(base::Value::Type::LIST);
+  for (auto phone_number : params->phone_numbers) {
+    phone_numbers.Append(phone_number);
+  }
 
   RemoveDuplicatePhoneNumberAtIndex(params->index_of_new_number,
-                                    params->country_code, phone_numbers.get());
+                                    params->country_code, &phone_numbers);
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(phone_numbers))));
+  return RespondNow(OneArgument(std::move(phone_numbers)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
