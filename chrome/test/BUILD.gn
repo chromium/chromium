@@ -6394,6 +6394,7 @@ test("unit_tests") {
       "../browser/ui/views/toolbar/toolbar_actions_bar_bubble_views_unittest.cc",
       "../browser/ui/views/toolbar/toolbar_button_unittest.cc",
       "../browser/ui/views/translate/translate_bubble_view_unittest.cc",
+      "../browser/ui/views/user_education/feature_promo_bubble_owner_impl_unittest.cc",
       "../browser/ui/views/user_education/feature_promo_bubble_view_unittest.cc",
       "../browser/ui/views/user_education/feature_promo_controller_views_unittest.cc",
       "../browser/ui/views/user_education/new_badge_label_unittest.cc",

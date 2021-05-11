@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
@@ -28,8 +29,10 @@
 #include "ui/views/view.h"
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
-    BrowserView* browser_view)
+    BrowserView* browser_view,
+    FeaturePromoBubbleOwner* bubble_owner)
     : browser_view_(browser_view),
+      bubble_owner_(bubble_owner),
       snooze_service_(std::make_unique<FeaturePromoSnoozeService>(
           browser_view->browser()->profile())),
       tracker_(feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -38,14 +41,13 @@ FeaturePromoControllerViews::FeaturePromoControllerViews(
 }
 
 FeaturePromoControllerViews::~FeaturePromoControllerViews() {
-  if (!promo_bubble_) {
+  if (!bubble_id_) {
     DCHECK_EQ(current_iph_feature_, nullptr);
     return;
   }
 
   DCHECK(current_iph_feature_);
-
-  promo_bubble_->GetWidget()->Close();
+  bubble_owner_->CloseBubble(*bubble_id_);
 }
 
 // static
@@ -82,13 +84,13 @@ base::Optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
   // If a normal bubble is showing, close it. If the promo is has
   // continued after a CloseBubbleAndContinuePromo() call, we can't stop
   // it. However we will show the critical promo anyway.
-  if (current_iph_feature_ && promo_bubble_)
+  if (current_iph_feature_ && bubble_id_)
     CloseBubble(*current_iph_feature_);
 
   // Snooze is not supported for critical promos.
   DCHECK(!params.allow_snooze);
 
-  DCHECK(!promo_bubble_);
+  DCHECK(!bubble_id_);
 
   current_critical_promo_ = base::Token::CreateRandom();
   ShowPromoBubbleImpl(params);
@@ -101,8 +103,8 @@ void FeaturePromoControllerViews::CloseBubbleForCriticalPromo(
   if (current_critical_promo_ != critical_promo_id)
     return;
 
-  DCHECK(promo_bubble_);
-  promo_bubble_->GetWidget()->Close();
+  DCHECK(bubble_id_);
+  bubble_owner_->CloseBubble(*bubble_id_);
 }
 
 bool FeaturePromoControllerViews::MaybeShowPromo(
@@ -142,33 +144,28 @@ void FeaturePromoControllerViews::OnUserDismiss(
 
 bool FeaturePromoControllerViews::BubbleIsShowing(
     const base::Feature& iph_feature) const {
-  return promo_bubble_ && current_iph_feature_ == &iph_feature;
+  return bubble_id_ && current_iph_feature_ == &iph_feature;
 }
 
 bool FeaturePromoControllerViews::CloseBubble(
     const base::Feature& iph_feature) {
   if (!BubbleIsShowing(iph_feature))
     return false;
-  promo_bubble_->GetWidget()->Close();
+  bubble_owner_->CloseBubble(*bubble_id_);
   return true;
 }
 
 void FeaturePromoControllerViews::UpdateBubbleForAnchorBoundsChange() {
-  if (!promo_bubble_)
-    return;
-  promo_bubble_->OnAnchorBoundsChanged();
+  bubble_owner_->NotifyAnchorBoundsChanged();
 }
 
 FeaturePromoController::PromoHandle
 FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
   DCHECK_EQ(&iph_feature, current_iph_feature_);
-  DCHECK(promo_bubble_);
+  DCHECK(bubble_id_);
 
-  DCHECK(widget_observation_.IsObservingSource(promo_bubble_->GetWidget()));
-  widget_observation_.Reset();
-  promo_bubble_->GetWidget()->Close();
-  promo_bubble_ = nullptr;
+  bubble_owner_->CloseBubble(*std::exchange(bubble_id_, base::nullopt));
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
@@ -191,20 +188,8 @@ void FeaturePromoControllerViews::BlockPromosForTesting() {
   promos_blocked_for_testing_ = true;
 
   // If we own a bubble, stop the current promo.
-  if (promo_bubble_)
+  if (bubble_id_)
     CloseBubble(*current_iph_feature_);
-}
-
-void FeaturePromoControllerViews::OnWidgetClosing(views::Widget* widget) {
-  DCHECK(promo_bubble_);
-  DCHECK_EQ(widget, promo_bubble_->GetWidget());
-  HandleBubbleClosed();
-}
-
-void FeaturePromoControllerViews::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(promo_bubble_);
-  DCHECK_EQ(widget, promo_bubble_->GetWidget());
-  HandleBubbleClosed();
 }
 
 bool FeaturePromoControllerViews::MaybeShowPromoImpl(
@@ -228,6 +213,11 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   if (snooze_service_->IsBlocked(iph_feature))
     return false;
 
+  // If another bubble is showing through `bubble_owner_` it will not show ours.
+  // In this case, don't query `tracker_`.
+  if (bubble_owner_->AnyBubbleIsShowing())
+    return false;
+
   if (!tracker_->ShouldTriggerHelpUI(iph_feature))
     return false;
 
@@ -235,6 +225,15 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   // currently showing, there is a bug somewhere in here.
   DCHECK(!current_iph_feature_);
   current_iph_feature_ = &iph_feature;
+
+  if (!ShowPromoBubbleImpl(params)) {
+    // `current_iph_feature_` is needed in the call. If it fails, we must reset
+    // it and also notify the backend.
+    current_iph_feature_ = nullptr;
+    tracker_->Dismissed(iph_feature);
+    return false;
+  }
+  close_callback_ = std::move(close_callback);
 
   // Record count of previous snoozes when an IPH triggers.
   int snooze_count = snooze_service_->GetSnoozeCount(iph_feature);
@@ -244,25 +243,18 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
                                 snooze_service_->kUmaMaxSnoozeCount);
 
   snooze_service_->OnPromoShown(iph_feature);
-
-  ShowPromoBubbleImpl(params);
-  close_callback_ = std::move(close_callback);
-
   return true;
 }
 
 void FeaturePromoControllerViews::FinishContinuedPromo() {
   DCHECK(current_iph_feature_);
-  DCHECK(!promo_bubble_);
+  DCHECK(!bubble_id_);
   tracker_->Dismissed(*current_iph_feature_);
   current_iph_feature_ = nullptr;
 }
 
-void FeaturePromoControllerViews::ShowPromoBubbleImpl(
+bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
     const FeaturePromoBubbleParams& params) {
-  params.anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
-  anchor_view_tracker_.SetView(params.anchor_view);
-
   // Map |params| to the bubble's create params, fetching needed strings.
   FeaturePromoBubbleView::CreateParams create_params;
   create_params.anchor_view = params.anchor_view;
@@ -313,23 +305,31 @@ void FeaturePromoControllerViews::ShowPromoBubbleImpl(
       std::swap(create_params.buttons[0], create_params.buttons[1]);
   }
 
-  promo_bubble_ = FeaturePromoBubbleView::Create(std::move(create_params));
+  bubble_id_ = bubble_owner_->ShowBubble(
+      std::move(create_params),
+      base::BindOnce(&FeaturePromoControllerViews::HandleBubbleClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (!bubble_id_)
+    return false;
 
-  widget_observation_.Observe(promo_bubble_->GetWidget());
+  params.anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
+  anchor_view_tracker_.SetView(params.anchor_view);
+  return true;
 }
 
 void FeaturePromoControllerViews::HandleBubbleClosed() {
-  // A bubble should be showing.
-  DCHECK(promo_bubble_);
+  // We receive a callback whenever we close the bubble. However, if we closed
+  // it in CloseBubbleAndContinuePromo, we don't want to run this cleanup yet.
+  // There we clear the ID first.
+  if (!bubble_id_)
+    return;
 
   // Exactly one of current_iph_feature_ or current_critical_promo_ should have
   // a value.
   DCHECK_NE(current_iph_feature_ != nullptr,
             current_critical_promo_.has_value());
 
-  DCHECK(widget_observation_.IsObservingSource(promo_bubble_->GetWidget()));
-  widget_observation_.Reset();
-  promo_bubble_ = nullptr;
+  bubble_id_ = base::nullopt;
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);

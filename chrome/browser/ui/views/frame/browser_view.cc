@@ -133,6 +133,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
@@ -623,8 +624,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   tab_strip_region_view_ = top_container_->AddChildView(
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
 
-  feature_promo_controller_ =
-      std::make_unique<FeaturePromoControllerViews>(this);
+  feature_promo_controller_ = std::make_unique<FeaturePromoControllerViews>(
+      this, FeaturePromoBubbleOwnerImpl::GetInstance());
 
   // Create WebViews early so |webui_tab_strip_| can observe their size.
   auto devtools_web_view =
