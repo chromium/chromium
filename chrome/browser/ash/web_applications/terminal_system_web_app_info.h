@@ -7,9 +7,15 @@
 
 #include <memory>
 
+#include "ui/gfx/geometry/rect.h"
+
+class Browser;
 struct WebApplicationInfo;
 
 // Returns a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp();
+
+// Returns the default bounds.
+gfx::Rect GetDefaultBoundsForTerminal(Browser* browser);
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_TERMINAL_SYSTEM_WEB_APP_INFO_H_

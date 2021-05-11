@@ -27,6 +27,7 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -975,6 +976,31 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripTest, HasNoTabStrip) {
   EXPECT_FALSE(browser->app_controller()->has_tab_strip());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// We only support custom bounds on Chrome OS.
+class SystemWebAppManagerDefaultBoundsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerDefaultBoundsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(kDefaultBounds);
+  }
+
+ protected:
+  const gfx::Rect kDefaultBounds = {0, 0, 333, 444};
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerDefaultBoundsTest, HasDefaultBounds) {
+  WaitForTestSystemAppInstall();
+
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(GetMockAppType(), &browser));
+  EXPECT_EQ(kDefaultBounds, browser->app_controller()->GetDefaultBounds());
+  EXPECT_EQ(kDefaultBounds, browser->window()->GetBounds());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Tests that SWA are correctly uninstalled across restarts.
 class SystemWebAppManagerUninstallBrowserTest
     : public SystemWebAppManagerBrowserTest {
@@ -1562,5 +1588,10 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerHasNoTabStripTest);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerDefaultBoundsTest);
+#endif
 
 }  // namespace web_app

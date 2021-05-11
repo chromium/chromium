@@ -13,6 +13,11 @@
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+
+namespace {
+constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
+}
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
@@ -34,4 +39,12 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
   return info;
+}
+
+gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
+  // Help app is centered.
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
+  return bounds;
 }

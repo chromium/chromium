@@ -36,8 +36,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/browser/extension_registry.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -299,19 +297,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        NoExtensionsContainerExists) {
   InstallAndLaunchMockPopup();
   EXPECT_EQ(app_browser_->window()->GetExtensionsContainer(), nullptr);
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, InitialBounds) {
-  InstallAndLaunchMockApp();
-  EXPECT_EQ(app_browser_->window()->GetBounds(), gfx::Rect(64, 64, 652, 484));
-  InstallAndLaunchMockPopup();
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  int x = (work_area.width() - 768) / 2;
-  int y = (work_area.height() - 512) / 2;
-  EXPECT_EQ(app_browser_->window()->GetBounds(), gfx::Rect(x, y, 768, 512));
 }
 #endif
 

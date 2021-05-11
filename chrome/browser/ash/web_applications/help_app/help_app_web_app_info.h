@@ -7,9 +7,15 @@
 
 #include <memory>
 
+#include "ui/gfx/geometry/rect.h"
+
+class Browser;
 struct WebApplicationInfo;
 
 // Return a WebApplicationInfo used to install the app.
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp();
+
+// Returns the default bounds.
+gfx::Rect GetDefaultBoundsForHelpApp(Browser*);
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_WEB_APP_INFO_H_

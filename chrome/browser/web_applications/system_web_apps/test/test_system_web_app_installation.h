@@ -71,6 +71,9 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithTabStrip(
       bool has_tab_strip);
 
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppWithDefaultBounds(const gfx::Rect& default_bounds);
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

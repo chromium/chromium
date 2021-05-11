@@ -13,6 +13,7 @@
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_eche_bundle_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/display/screen.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   std::unique_ptr<WebApplicationInfo> info =
@@ -31,4 +32,22 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   info->open_as_window = true;
 
   return info;
+}
+
+gfx::Rect GetDefaultBoundsForEche(Browser*) {
+  // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
+  // than half of the windows.
+  const float aspect_ratio = 16.0f / 9.0f;
+  const gfx::Size min_size(240, 240);
+
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  const float bounds_aspect_ratio = bounds.width() / bounds.height();
+  const bool is_landscape = (bounds_aspect_ratio >= 1);
+  auto new_width = is_landscape ? (bounds.height() / 2) : bounds.width() / 2;
+  if (min_size.width() > new_width) {
+    new_width = min_size.width();
+  }
+  bounds.ClampToCenteredSize(gfx::Size(new_width, new_width * aspect_ratio));
+  return bounds;
 }

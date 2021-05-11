@@ -343,6 +343,20 @@ TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
       SystemAppType::SETTINGS, std::move(app_info)));
 }
 
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
+    const gfx::Rect& default_bounds) {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  app_info.get_default_bounds =
+      base::BindLambdaForTesting([&](Browser*) { return default_bounds; });
+
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SETTINGS, std::move(app_info)));
+}
+
 std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProvider(SystemAppInfo info,
                                                    Profile* profile) {

@@ -22,9 +22,12 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+class Browser;
 
 namespace base {
 class Version;
@@ -123,6 +126,11 @@ struct SystemAppInfo {
   // If set, allows the app to close the window through scripts, for example
   // using `window.close()`.
   bool allow_scripts_to_close_windows = false;
+
+  // If set, this function will be called to determine the default bounds
+  // (window location and size) when the app's window is created.
+  base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds =
+      base::NullCallback();
 
   WebApplicationInfoFactory app_info_factory;
 
@@ -230,6 +238,9 @@ class SystemWebAppManager {
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
+
+  // Return the default bound of App's window.
+  gfx::Rect GetDefaultBounds(SystemAppType type, Browser* browser) const;
 
   // Returns the minimum window size for |app_id| or an empty size if the app
   // doesn't specify a minimum.

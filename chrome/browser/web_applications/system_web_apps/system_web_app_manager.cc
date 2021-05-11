@@ -149,6 +149,9 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     // Minimum height +32 for top bar height.
     infos.at(SystemAppType::CAMERA).minimum_window_size = {
         kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
+
+    infos.at(SystemAppType::CAMERA).get_default_bounds =
+        base::BindRepeating(&GetDefaultBoundsForCameraApp);
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {
@@ -187,6 +190,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
           base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
   infos.at(SystemAppType::TERMINAL).single_window = false;
   infos.at(SystemAppType::TERMINAL).has_tab_strip = true;
+  infos.at(SystemAppType::TERMINAL).get_default_bounds =
+      base::BindRepeating(&GetDefaultBoundsForTerminal);
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::HELP)) {
     infos.emplace(
@@ -197,6 +202,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
     infos.at(SystemAppType::HELP).minimum_window_size = {600, 320};
     infos.at(SystemAppType::HELP).capture_navigations = true;
+    infos.at(SystemAppType::HELP).get_default_bounds =
+        base::BindRepeating(&GetDefaultBoundsForHelpApp);
     if (base::FeatureList::IsEnabled(
             chromeos::features::kHelpAppLauncherSearch)) {
       infos.at(SystemAppType::HELP).timer_info = SystemAppBackgroundTaskInfo(
@@ -282,6 +289,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::ECHE).should_have_reload_button_in_minimal_ui =
         false;
     infos.at(SystemAppType::ECHE).allow_scripts_to_close_windows = true;
+    infos.at(SystemAppType::ECHE).get_default_bounds =
+        base::BindRepeating(&GetDefaultBoundsForEche);
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::PERSONALIZATION)) {
@@ -793,6 +802,17 @@ base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
+}
+
+gfx::Rect SystemWebAppManager::GetDefaultBounds(SystemAppType type,
+                                                Browser* browser) const {
+  auto it = system_app_infos_.find(type);
+  if (it == system_app_infos_.end() ||
+      it->second.get_default_bounds.is_null()) {
+    return gfx::Rect();
+  }
+
+  return it->second.get_default_bounds.Run(browser);
 }
 
 gfx::Size SystemWebAppManager::GetMinimumWindowSize(const AppId& app_id) const {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/camera_system_web_app_info.h"
 
+#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -11,6 +12,13 @@
 #include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_camera_app_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+
+namespace {
+constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
+                                               kChromeCameraAppDefaultHeight +
+                                                   32);
+}
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {
   auto info = std::make_unique<WebApplicationInfo>();
@@ -33,4 +41,11 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
   return info;
+}
+
+gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
+  return bounds;
 }

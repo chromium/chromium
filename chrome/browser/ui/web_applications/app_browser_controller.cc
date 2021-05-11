@@ -10,8 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-// TODO(b/174811949): Hide behind ChromeOS build flag.
-#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -97,38 +95,9 @@ SkColor GetAltColor(SkColor color) {
       .color;
 }
 
-gfx::Rect GetDefaultBoundsForEche() {
-  // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
-  // than half of the windows.
-  const float aspect_ratio = 16.0f / 9.0f;
-  const gfx::Size min_size(240, 240);
-
-  gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  const float bounds_aspect_ratio = bounds.width() / bounds.height();
-  const bool is_landscape = (bounds_aspect_ratio >= 1);
-  auto new_width = is_landscape ? (bounds.height() / 2) : bounds.width() / 2;
-  if (min_size.width() > new_width) {
-    new_width = min_size.width();
-  }
-  bounds.ClampToCenteredSize(gfx::Size(new_width, new_width * aspect_ratio));
-  return bounds;
-}
-
 }  // namespace
 
 namespace web_app {
-
-namespace {
-constexpr gfx::Rect TERMINAL_DEFAULT_BOUNDS(gfx::Point(64, 64),
-                                            gfx::Size(652, 484));
-constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
-constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
-// The height of camera app window includes the top bar height which is 32.
-constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
-                                               kChromeCameraAppDefaultHeight +
-                                                   32);
-}  // namespace
 
 // static
 std::unique_ptr<AppBrowserController>
@@ -397,31 +366,12 @@ void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {
 }
 
 gfx::Rect AppBrowserController::GetDefaultBounds() const {
-  // TODO(crbug.com/1061822): Generalise default bounds as a SystemWebApp
-  // capability.
-  if (system_app_type_ == SystemAppType::TERMINAL) {
-    // Terminal settings is centered.
-    if (browser()->is_type_app_popup()) {
-      gfx::Rect bounds =
-          display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-      bounds.ClampToCenteredSize(TERMINAL_SETTINGS_DEFAULT_SIZE);
-      return bounds;
-    }
-    return TERMINAL_DEFAULT_BOUNDS;
-  } else if (system_app_type_ == SystemAppType::HELP) {
-    // Help app is centered.
-    gfx::Rect bounds =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-    bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
-    return bounds;
-  } else if (system_app_type_ == SystemAppType::CAMERA) {
-    gfx::Rect bounds =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-    bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
-    return bounds;
-  } else if (system_app_type_ == SystemAppType::ECHE) {
-    return GetDefaultBoundsForEche();
+  if (system_app_type_.has_value()) {
+    return WebAppProvider::Get(browser()->profile())
+        ->system_web_app_manager()
+        .GetDefaultBounds(system_app_type_.value(), browser());
   }
+
   return gfx::Rect();
 }
 
