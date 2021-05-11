@@ -23,6 +23,8 @@ const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
 const char kPrivacySandboxFlocDataAccessibleSince[] =
     "privacy_sandbox.floc_data_accessible_since";
 
+extern const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
@@ -39,6 +41,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
   registry->RegisterTimePref(prefs::kPrivacySandboxFlocDataAccessibleSince,
                              base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxFlocEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace privacy_sandbox

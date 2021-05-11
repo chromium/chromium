@@ -9,10 +9,9 @@ class PrefRegistrySimple;
 
 namespace prefs {
 
-// Synced boolean that is true when Privacy Sandbox APIs are enabled. If the
-// PrivacySandboxSettings feature is enabled, this Boolean is controlled by the
-// associated UI; if it is disabled, it is controlled by third party cookie
-// blocking settings.
+// Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
+// enabled, but each API will respect its own enabling logic if this pref is
+// true. When this pref is false ALL Privacy Sandbox APIs are disabled.
 extern const char kPrivacySandboxApisEnabled[];
 
 // Synced boolean that indicates if a user has manually toggled the settings
@@ -31,6 +30,10 @@ extern const char kPrivacySandboxPageViewed[];
 // The point in time from which history is eligible to be used when calculating
 // a user's FLoC ID.
 extern const char kPrivacySandboxFlocDataAccessibleSince[];
+
+// Synced boolean that controls whether FLoC is enabled. Requires that the
+// kPrivacySandboxApisEnabled preference be enabled to take effect.
+extern const char kPrivacySandboxFlocEnabled[];
 
 }  // namespace prefs
 
