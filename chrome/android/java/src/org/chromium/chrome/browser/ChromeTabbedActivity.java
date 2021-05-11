@@ -1650,13 +1650,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         assert getActivityTabStartupMetricsTracker() != null;
         if (StartupPaintPreviewHelper.isEnabled()) {
-            mStartupPaintPreviewHelperSupplier.set(new StartupPaintPreviewHelper(getWindowAndroid(),
-                    getOnCreateTimestampMs(), getBrowserControlsManager(), getTabModelSelector(),
-                    shouldShowTabSwitcherOnStart(), () -> {
+            StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
+                    getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
+                    getTabModelSelector(), shouldShowTabSwitcherOnStart(), () -> {
                         return getToolbarManager() == null
                                 ? null
                                 : getToolbarManager().getProgressBarCoordinator();
-                    }, getActivityTabStartupMetricsTracker()::pagePreviewRendered));
+                    });
+            mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
+            getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
         }
     }
 

@@ -8,7 +8,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -38,6 +38,17 @@ public class StartupPaintPreviewMetrics {
         int COUNT = 10;
     }
 
+    /**
+     * An interface to get notified of various paint preview metric events
+     */
+    public interface PaintPreviewMetricsObserver {
+        /**
+         * Called on the first paint of a paint preview
+         * @param durationMs duration from activity creation to first paint. Reported in millis.
+         */
+        void onFirstPaint(long durationMs);
+    }
+
     private static final Map<Integer, String> UPTIME_HISTOGRAM_MAP = new HashMap<>();
     static {
         UPTIME_HISTOGRAM_MAP.put(ExitCause.PULL_TO_REFRESH,
@@ -64,20 +75,20 @@ public class StartupPaintPreviewMetrics {
 
     private long mShownTime;
     private boolean mFirstPaintHappened;
+    private final ObserverList<PaintPreviewMetricsObserver> mObservers = new ObserverList<>();
 
     void onShown() {
         mShownTime = System.currentTimeMillis();
     }
 
-    void onFirstPaint(long activityOnCreateTimestamp, Supplier<Boolean> shouldRecordFirstPaint,
-            Callback<Long> visibleContentCallback) {
+    void onFirstPaint(long activityOnCreateTimestamp, Supplier<Boolean> shouldRecordFirstPaint) {
         mFirstPaintHappened = true;
         if (shouldRecordFirstPaint != null && shouldRecordFirstPaint.get()) {
             long durationMs = SystemClock.elapsedRealtime() - activityOnCreateTimestamp;
             RecordHistogram.recordLongTimesHistogram(
                     "Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap", durationMs);
-            if (visibleContentCallback != null) {
-                visibleContentCallback.onResult(durationMs);
+            for (PaintPreviewMetricsObserver observer : mObservers) {
+                observer.onFirstPaint(durationMs);
             }
         }
     }
@@ -112,5 +123,9 @@ public class StartupPaintPreviewMetrics {
 
         long upTime = System.currentTimeMillis() - mShownTime;
         RecordHistogram.recordLongTimesHistogram(UPTIME_HISTOGRAM_MAP.get(exitCause), upTime);
+    }
+
+    void addMetricsObserver(PaintPreviewMetricsObserver observer) {
+        mObservers.addObserver(observer);
     }
 }

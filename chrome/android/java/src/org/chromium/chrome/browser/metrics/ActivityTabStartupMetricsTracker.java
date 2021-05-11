@@ -8,6 +8,8 @@ import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -91,6 +93,20 @@ public class ActivityTabStartupMetricsTracker {
             }
         };
         PageLoadMetrics.addObserver(mPageLoadMetricsObserver);
+    }
+
+    /**
+     * Register an observer to be notified on the first paint of a paint preview if present.
+     * @param startupPaintPreviewHelper the helper to register the observer to.
+     */
+    public void registerPaintPreviewObserver(StartupPaintPreviewHelper startupPaintPreviewHelper) {
+        startupPaintPreviewHelper.addMetricsObserver(new PaintPreviewMetricsObserver() {
+            @Override
+            public void onFirstPaint(long durationMs) {
+                recordFirstVisibleContent(durationMs);
+                recordVisibleContent(durationMs);
+            }
+        });
     }
 
     /**
@@ -201,16 +217,5 @@ public class ActivityTabStartupMetricsTracker {
         mVisibleContentRecorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToVisibleContent", durationMs);
-    }
-
-    /**
-     * An API for the caller to notify the metrics tracker that a page preview or an external UI was
-     * drawn.
-     *
-     * @param durationMs the external UI render duration
-     */
-    public void pagePreviewRendered(long durationMs) {
-        recordFirstVisibleContent(durationMs);
-        recordVisibleContent(durationMs);
     }
 }

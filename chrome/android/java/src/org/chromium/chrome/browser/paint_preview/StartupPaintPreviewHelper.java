@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -47,7 +49,8 @@ public class StartupPaintPreviewHelper {
     private final long mActivityCreationTime;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
-    private final Callback<Long> mVisibleContentCallback;
+    private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
+            new ObserverList<>();
 
     /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
@@ -64,12 +67,10 @@ public class StartupPaintPreviewHelper {
     public StartupPaintPreviewHelper(WindowAndroid windowAndroid, long activityCreationTime,
             BrowserControlsManager browserControlsManager, TabModelSelector tabModelSelector,
             boolean willShowStartSurface,
-            Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier,
-            Callback<Long> visibleContentCallback) {
+            Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
         mActivityCreationTime = activityCreationTime;
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
-        mVisibleContentCallback = visibleContentCallback;
 
         if (MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
                     windowAndroid.getContext().get())
@@ -159,13 +160,15 @@ public class StartupPaintPreviewHelper {
 
         StartupPaintPreview startupPaintPreview = new StartupPaintPreview(tab,
                 paintPreviewHelper.mBrowserControlsManager.getBrowserVisibilityDelegate(),
-                progressSimulatorCallback, progressPreventionCallback,
-                paintPreviewHelper.mVisibleContentCallback);
+                progressSimulatorCallback, progressPreventionCallback);
         startupPaintPreview.setActivityCreationTimestampMs(
                 paintPreviewHelper.mActivityCreationTime);
         startupPaintPreview.setShouldRecordFirstPaint(
                 () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
         startupPaintPreview.setIsOfflinePage(() -> OfflinePageUtils.isOfflinePage(tab));
+        for (PaintPreviewMetricsObserver observer : paintPreviewHelper.mMetricsObservers) {
+            startupPaintPreview.addMetricsObserver(observer);
+        }
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
@@ -175,5 +178,13 @@ public class StartupPaintPreviewHelper {
         };
         PageLoadMetrics.addObserver(observer);
         startupPaintPreview.show(() -> PageLoadMetrics.removeObserver(observer));
+    }
+
+    /**
+     * Add an observer to StartupPaintPreview when it is initialized.
+     * @param observer the observer to add.
+     */
+    public void addMetricsObserver(PaintPreviewMetricsObserver observer) {
+        mMetricsObservers.addObserver(observer);
     }
 }
