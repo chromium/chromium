@@ -748,6 +748,8 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 }
 
 DispatchEventResult EventTarget::DispatchEvent(Event& event) {
+  if (!GetExecutionContext())
+    return DispatchEventResult::kCanceledBeforeDispatch;
   event.SetTrusted(true);
   return DispatchEventInternal(event);
 }
