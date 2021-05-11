@@ -3931,7 +3931,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5375318608039113175">Para utilizar con estes contactos a función Compartir por Nearby, engádelles o enderezo de correo electrónico vinculado á súa Conta de Google.</translation>
 <translation id="5376169624176189338">Fai clic para volver ou mantén premido para ver o historial</translation>
 <translation id="5376931455988532197">O ficheiro é demasiado grande</translation>
-<translation id="5377721922656071359">{COUNT,plural, =1{Enviáronse correctamente <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}other{Enviáronse correctamente <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
+<translation id="5377721922656071359">{COUNT,plural, =1{Enviouse correctamente <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}other{Enviáronse correctamente <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5379140238605961210">Continuar bloqueando o acceso ao micrófono</translation>
 <translation id="5382591305415226340">Xestionar ligazóns compatibles</translation>
 <translation id="5383377866517186886">A cámara está desactivada nas preferencias do sistema de Mac</translation>

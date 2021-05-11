@@ -5636,7 +5636,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Quando a política é definida como "False", o recurso de segurança é desativado,
       e os scripts de PAC podem ver todos os componentes de um URL https://.
-      Essa configuração se aplica a todos os scripts de PAC, independentemente de origem
+      Essa configuração é válida para todos os scripts de PAC, independentemente de origem
       (incluindo aqueles adquiridos por um transporte não seguro ou descobertos de forma 
       não segura por meio de WPAD).
 

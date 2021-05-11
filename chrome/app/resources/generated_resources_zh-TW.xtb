@@ -216,7 +216,7 @@
 <translation id="1225177025209879837">正在處理要求...</translation>
 <translation id="1227507814927581609">驗證在連線至「<ph name="DEVICE_NAME" />」時失敗。</translation>
 <translation id="1230417814058465809">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
-<translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
+<translation id="1231733316453485619">要開啟同步功能嗎？</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1233497634904001272">請再次輕觸安全金鑰，即可完成要求。</translation>
 <translation id="1233721473400465416">語言代碼</translation>
@@ -4702,7 +4702,7 @@
 <translation id="6251870443722440887">GDI 控制代碼</translation>
 <translation id="625369703868467034">網路健康狀態</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
-<translation id="6257602895346497974">開啟同步處理功能...</translation>
+<translation id="6257602895346497974">開啟同步功能...</translation>
 <translation id="625895209797312329">禁止網站使用裝置上安裝的字型</translation>
 <translation id="6259104249628300056">探索您區域網路中的裝置</translation>
 <translation id="6262371516389954471">備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
@@ -5273,7 +5273,7 @@
 <translation id="6902336033320348843">不支援的區段：<ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">將裝置加入網域</translation>
 <translation id="6903590427234129279">開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
-<translation id="6903907808598579934">開啟同步處理功能</translation>
+<translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6904344821472985372">撤銷檔案存取權</translation>
 <translation id="6904655473976120856">按下 [應用程式] 按鈕即可結束</translation>
 <translation id="6909422577741440844">要接收這部裝置所傳送的內容嗎？</translation>

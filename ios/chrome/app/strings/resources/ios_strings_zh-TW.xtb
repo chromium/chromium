@@ -31,7 +31,7 @@
 <translation id="1219674500290482172">無法連線至網際網路。</translation>
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
-<translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
+<translation id="1231733316453485619">要開啟同步功能嗎？</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -579,7 +579,7 @@
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
-<translation id="6903907808598579934">開啟同步處理功能</translation>
+<translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6914583639806229067">搜尋你複製的圖片</translation>
 <translation id="6914783257214138813">凡是可查看匯出的檔案的使用者都能看到你的密碼。</translation>
 <translation id="6930799952781667037">輕觸即可變更為這個語言。</translation>
