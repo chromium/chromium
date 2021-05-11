@@ -76,7 +76,7 @@ suite('settings-on-startup-page', function() {
     onstartupPage.setPrefValue('settings.restore_apps_and_pages', 2);
 
     const params = new URLSearchParams;
-    params.append('settingId', '1900');
+    params.append('settingId', '703');
     settings.Router.getInstance().navigateTo(
         settings.routes.ON_STARTUP, params);
 
@@ -85,6 +85,6 @@ suite('settings-on-startup-page', function() {
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
-        'Restore apps and pages radio group should be focused for settingId=1900.');
+        'Restore apps and pages radio group should be focused for settingId=703.');
   });
 });

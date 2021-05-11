@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/languages_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/main_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_section.h"
-#include "chrome/browser/ui/webui/settings/chromeos/on_startup_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/people_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/printing_section.h"
@@ -96,11 +95,6 @@ OsSettingsSections::OsSettingsSections(
       profile, search_tag_registry, profile->GetPrefs());
   sections_map_[mojom::Section::kCrostini] = crostini_section.get();
   sections_.push_back(std::move(crostini_section));
-
-  auto on_startup_section = std::make_unique<OnStartupSection>(
-      profile, search_tag_registry, profile->GetPrefs());
-  sections_map_[mojom::Section::kOnStartup] = on_startup_section.get();
-  sections_.push_back(std::move(on_startup_section));
 
   auto date_time_section =
       std::make_unique<DateTimeSection>(profile, search_tag_registry);

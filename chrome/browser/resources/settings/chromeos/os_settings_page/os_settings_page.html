@@ -27,7 +27,6 @@
 <link rel="import" href="../internet_page/internet_page.html">
 <link rel="import" href="../kerberos_page/kerberos_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
-<link rel="import" href="../on_startup_page/on_startup_page.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="os-settings-page">
@@ -203,16 +202,10 @@
               android-apps-info="[[androidAppsInfo]]"
               have-play-store-app="[[havePlayStoreApp]]"
               show-android-apps="[[showAndroidApps]]"
-              show-plugin-vm="[[showPluginVm]]">
+              show-plugin-vm="[[showPluginVm]]"
+              show-startup="[[showStartup]]">
           </os-settings-apps-page>
         </settings-section>
-        <template is="dom-if" if="[[showStartup]]">
-          <settings-section page-title="$i18n{onStartupPageTitle}"
-              section="onstartup">
-            <settings-on-startup-page prefs="{{prefs}}">
-            </settings-on-startup-page>
-          </settings-section>
-        </template>
       </div>
     </template>
 

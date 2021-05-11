@@ -58755,6 +58755,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="700" label="Manage Android Preferences"/>
   <int value="701" label="Remove Play Store"/>
   <int value="702" label="Turn On Play Store"/>
+  <int value="703" label="Restore Apps And Pages On Startup"/>
   <int value="800" label="Set Up Crostini"/>
   <int value="801" label="Uninstall Crostini"/>
   <int value="802" label="Backup Linux Apps And Files"/>
@@ -58835,7 +58836,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="1800" label="View Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>
-  <int value="1900" label="Restore Apps And Pages On Startup"/>
 </enum>
 
 <enum name="OsSettingSearchBoxUserAction">
@@ -58894,7 +58894,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="16" label="Reset"/>
   <int value="17" label="About Chrome OS"/>
   <int value="18" label="Kerberos"/>
-  <int value="19" label="On Startup"/>
 </enum>
 
 <enum name="OsSettingsSubpage">
@@ -58940,6 +58939,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="702" label="Google Play Store"/>
   <int value="703" label="Plugin Vm Shared Paths"/>
   <int value="704" label="Plugin Vm USB Preferences"/>
+  <int value="705" label="On Startup"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
   <int value="802" label="Crostini Usb Preferences"/>

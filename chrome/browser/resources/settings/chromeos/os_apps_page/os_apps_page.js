@@ -54,6 +54,12 @@ Polymer({
      */
     showPluginVm: Boolean,
 
+    /**
+     * Show On startup settings and sub-page.
+     * @type {boolean}
+     */
+    showStartup: Boolean,
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -66,6 +72,9 @@ Polymer({
           map.set(
               settings.routes.ANDROID_APPS_DETAILS.path,
               '#android-apps .subpage-arrow');
+        }
+        if (settings.routes.ON_STARTUP) {
+          map.set(settings.routes.ON_STARTUP.path, '#onStartup');
         }
         return map;
       },
@@ -163,4 +172,10 @@ Polymer({
     settings.AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
   },
+
+  /** @private */
+  onStartupClick_() {
+    settings.Router.getInstance().navigateTo(settings.routes.ON_STARTUP);
+  },
+
 });

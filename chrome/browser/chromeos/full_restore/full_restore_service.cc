@@ -179,7 +179,7 @@ void FullRestoreService::HandleRestoreNotificationClicked(
   if (notification_->id() == kSetRestorePrefNotificationId) {
     // Show the 'On Startup' OS setting page.
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile_, chromeos::settings::mojom::kOnStartupSectionPath);
+        profile_, chromeos::settings::mojom::kOnStartupSubpagePath);
     return;
   }
 

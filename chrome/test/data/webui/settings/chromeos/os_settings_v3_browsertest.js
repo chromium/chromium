@@ -89,10 +89,7 @@ var OSSettingsOnStartupPageV3Test = class extends OSSettingsV3BrowserTest {
 
   /** @override */
   get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['ash::features::kFullRestore']
-    };
+    return {enabled: ['ash::features::kFullRestore']};
   }
 };
 

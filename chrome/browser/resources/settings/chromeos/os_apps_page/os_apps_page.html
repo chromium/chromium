@@ -85,6 +85,15 @@
           </cr-link-row>
         </template>
       </template>
+      <template is="dom-if" if="[[showStartup]]">
+        <cr-link-row id="onStartup"
+            label="$i18n{onStartupPageTitle}"
+            sub-label="[[getAssistantEnabledDisabledLabel_(
+                    prefs.settings.voice_interaction.enabled.value)]]"
+            on-click="onStartupClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
     </div>
 
     <!-- APP MANAGEMENT -->
@@ -136,6 +145,16 @@
         <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
           <settings-guest-os-shared-usb-devices guest-os-type="pluginVm">
           </settings-guest-os-shared-usb-devices>
+        </settings-subpage>
+      </template>
+    </template>
+
+    <!-- On Startup -->
+    <template is="dom-if" if="[[showStartup]]" restamp>
+      <template is="dom-if" route-path="/onstartup">
+        <settings-subpage page-title="$i18n{onStartupPageTitle}">
+          <settings-on-startup-page prefs="{{prefs}}">
+          </settings-on-startup-page>
         </settings-subpage>
       </template>
     </template>

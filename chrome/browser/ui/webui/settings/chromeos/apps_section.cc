@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/apps_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,6 +112,24 @@ const std::vector<SearchConcept>& GetAndroidPlayStoreDisabledSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetOnStartupSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_ON_STARTUP,
+       mojom::kOnStartupSubpagePath,
+       mojom::SearchResultIcon::kStartup,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kOnStartup}},
+      {IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES,
+       mojom::kOnStartupSubpagePath,
+       mojom::SearchResultIcon::kStartup,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kRestoreAppsAndPages}},
+  });
+  return *tags;
+}
+
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appManagementAppInstalledByPolicyLabel",
@@ -171,6 +190,25 @@ bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
          pref_service.GetBoolean(plugin_vm::prefs::kPluginVmImageExists);
 }
 
+bool ShouldShowStartup() {
+  return ash::features::IsFullRestoreEnabled();
+}
+
+void AddOnStartupTimeData(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"onStartupPageTitle", IDS_OS_SETTINGS_ON_STARTUP},
+      {"onStartupRadioGroundTitle",
+       IDS_OS_SETTINGS_ON_STARTUP_RADIO_GROUP_TITLE},
+      {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
+      {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
+      {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("showStartup", ShouldShowStartup());
+}
+
 }  // namespace
 
 AppsSection::AppsSection(Profile* profile,
@@ -197,6 +235,9 @@ AppsSection::AppsSection(Profile* profile,
 
     UpdateAndroidSearchTags();
   }
+
+  if (ShouldShowStartup())
+    updater.AddSearchTags(GetOnStartupSearchConcepts());
 }
 
 AppsSection::~AppsSection() {
@@ -228,6 +269,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddGuestOsStrings(html_source);
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
+  AddOnStartupTimeData(html_source);
 }
 
 void AppsSection::AddHandlers(content::WebUI* web_ui) {
@@ -303,6 +345,17 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             kGooglePlayStoreSettings, generator);
   generator->RegisterTopLevelAltSetting(
       mojom::Setting::kManageAndroidPreferences);
+
+  // On startup
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_TAG_ON_STARTUP, mojom::Subpage::kOnStartup,
+      mojom::SearchResultIcon::kStartup,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kOnStartupSubpagePath);
+  static constexpr mojom::Setting kOnStartupSettings[] = {
+      mojom::Setting::kRestoreAppsAndPages,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kOnStartup, kOnStartupSettings,
+                            generator);
 }
 
 void AppsSection::OnAppRegistered(const std::string& app_id,

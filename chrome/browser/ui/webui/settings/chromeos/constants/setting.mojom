@@ -155,6 +155,7 @@ enum Setting {
   kManageAndroidPreferences = 700,
   kRemovePlayStore = 701,
   kTurnOnPlayStore = 702,
+  kRestoreAppsAndPages = 703,
 
   // Crostini section.
   kSetUpCrostini= 800,
@@ -258,7 +259,4 @@ enum Setting {
   kAddKerberosTicketV2 = 1800,
   kRemoveKerberosTicketV2 = 1801,
   kSetActiveKerberosTicketV2 = 1802,
-
-  // On Startup section.
-  kRestoreAppsAndPages = 1900,
 };

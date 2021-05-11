@@ -145,13 +145,6 @@ suite('OsSettingsPageTests', function() {
     assert(!!osSettingsAppsPage);
   });
 
-  test('Check settings-on-startup-page exists', async () => {
-    settingsPage.showStartup = true;
-    Polymer.dom.flush();
-    const settingsOnStartupPage = settingsPage.$$('settings-on-startup-page');
-    assert(!!settingsOnStartupPage);
-  });
-
   test('Check settings-crostini-page exists', async () => {
     settingsPage.showCrostini = true;
     const idleRender = settingsPage.$$('settings-idle-load');

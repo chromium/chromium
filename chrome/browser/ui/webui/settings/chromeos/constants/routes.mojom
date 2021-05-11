@@ -28,7 +28,6 @@ enum Section {
   kReset = 16,
   kAboutChromeOs = 17,
   kKerberos = 18,
-  kOnStartup = 19,
 };
 
 // Chrome OS Settings subpages (i.e., nested pages within a section). Each
@@ -93,6 +92,7 @@ enum Subpage {
   kGooglePlayStore = 702,
   kPluginVmSharedPaths = 703,
   kPluginVmUsbPreferences = 704,
+  kOnStartup = 705,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -209,6 +209,7 @@ const string kPluginVmSharedPathsSubpagePath =
     "app-management/pluginVm/sharedPaths";
 const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
+const string kOnStartupSubpagePath = "onstartup";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";
@@ -218,9 +219,6 @@ const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
 const string kCrostiniBackupAndRestoreSubpagePath = "crostini/exportImport";
 const string kCrostiniDevelopAndroidAppsSubpagePath = "crostini/androidAdb";
 const string kCrostiniPortForwardingSubpagePath = "crostini/portForwarding";
-
-// On Startup section.
-const string kOnStartupSectionPath = "onstartup";
 
 // Date and Time section.
 const string kDateAndTimeSectionPath = "dateTime";
