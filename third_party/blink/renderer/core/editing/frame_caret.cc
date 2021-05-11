@@ -78,12 +78,6 @@ bool FrameCaret::IsActive() const {
 void FrameCaret::UpdateAppearance() {
   DCHECK_GE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
-  // Paint a block cursor instead of a caret in overtype mode unless the caret
-  // is at the end of a line (in this case the FrameSelection will paint a
-  // blinking caret as usual).
-  const bool paint_block_cursor =
-      should_show_block_cursor_ && IsActive() &&
-      !IsLogicalEndOfLine(CreateVisiblePosition(CaretPosition()));
 
   bool new_should_show_caret = ShouldShowCaret();
   if (new_should_show_caret != should_show_caret_) {
@@ -91,8 +85,7 @@ void FrameCaret::UpdateAppearance() {
     ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
 
-  bool should_blink = !paint_block_cursor && should_show_caret_;
-  if (!should_blink) {
+  if (!should_show_caret_) {
     StopCaretBlinkTimer();
     return;
   }
@@ -159,11 +152,6 @@ IntRect FrameCaret::AbsoluteCaretBounds() const {
       frame_->GetDocument()->Lifecycle());
 
   return AbsoluteCaretBoundsOf(CaretPosition());
-}
-
-void FrameCaret::SetShouldShowBlockCursor(bool should_show_block_cursor) {
-  should_show_block_cursor_ = should_show_block_cursor;
-  ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 }
 
 bool FrameCaret::ShouldPaintCaret(const LayoutBlock& block) const {

@@ -136,31 +136,6 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   return true;
 }
 
-bool InsertTextCommand::PerformOverwrite(const String& text) {
-  Position start = EndingVisibleSelection().Start();
-  auto* text_node = DynamicTo<Text>(start.ComputeContainerNode());
-  if (start.IsNull() || !start.IsOffsetInAnchor() || !text_node)
-    return false;
-
-  unsigned count = std::min(
-      text.length(), text_node->length() - start.OffsetInContainerNode());
-  if (!count)
-    return false;
-
-  ReplaceTextInNode(text_node, start.OffsetInContainerNode(), count, text);
-
-  Position end_position =
-      Position(text_node, start.OffsetInContainerNode() + text.length());
-  SetEndingSelectionWithoutValidation(start, end_position);
-  if (EndingSelection().IsNone())
-    return true;
-  SetEndingSelection(SelectionForUndoStep::From(
-      SelectionInDOMTree::Builder()
-          .Collapse(EndingVisibleSelection().End())
-          .Build()));
-  return true;
-}
-
 void InsertTextCommand::DoApply(EditingState* editing_state) {
   DCHECK_EQ(text_.find('\n'), kNotFound);
 
@@ -197,9 +172,6 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
             GetDocument().GetExecutionContext());
       }
     }
-  } else if (GetDocument().GetFrame()->GetEditor().IsOverwriteModeEnabled()) {
-    if (PerformOverwrite(text_))
-      return;
   }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);

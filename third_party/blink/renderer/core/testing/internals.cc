@@ -667,8 +667,6 @@ void Internals::ResetToConsistentState(Page* page) {
   frame->View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(), mojom::blink::ScrollType::kProgrammatic);
   OverrideUserPreferredLanguagesForTesting(Vector<AtomicString>());
-  if (page->DeprecatedLocalMainFrame()->GetEditor().IsOverwriteModeEnabled())
-    page->DeprecatedLocalMainFrame()->GetEditor().ToggleOverwriteModeEnabled();
 
   if (ScrollingCoordinator* scrolling_coordinator =
           page->GetScrollingCoordinator()) {
@@ -2362,22 +2360,6 @@ bool Internals::canHyphenate(const AtomicString& locale) {
 void Internals::setMockHyphenation(const AtomicString& locale) {
   LayoutLocale::SetHyphenationForTesting(locale,
                                          base::AdoptRef(new MockHyphenation));
-}
-
-bool Internals::isOverwriteModeEnabled(Document* document) {
-  DCHECK(document);
-  if (!document->GetFrame())
-    return false;
-
-  return document->GetFrame()->GetEditor().IsOverwriteModeEnabled();
-}
-
-void Internals::toggleOverwriteModeEnabled(Document* document) {
-  DCHECK(document);
-  if (!document->GetFrame())
-    return;
-
-  document->GetFrame()->GetEditor().ToggleOverwriteModeEnabled();
 }
 
 unsigned Internals::numberOfLiveNodes() const {

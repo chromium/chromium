@@ -325,9 +325,6 @@ class Internals final : public ScriptWrappable {
   bool canHyphenate(const AtomicString& locale);
   void setMockHyphenation(const AtomicString& locale);
 
-  bool isOverwriteModeEnabled(Document*);
-  void toggleOverwriteModeEnabled(Document*);
-
   unsigned numberOfScrollableAreas(Document*);
 
   bool isPageBoxVisible(Document*, int page_number);

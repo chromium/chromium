@@ -123,9 +123,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
 
-  bool IsOverwriteModeEnabled() const { return overwrite_mode_enabled_; }
-  void ToggleOverwriteModeEnabled();
-
   bool CanUndo();
   void Undo();
   bool CanRedo();
@@ -240,7 +237,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   VisibleSelection mark_;
   bool are_marked_text_matches_highlighted_;
   EditorParagraphSeparator default_paragraph_separator_;
-  bool overwrite_mode_enabled_;
   Member<EditingStyle> typing_style_;
   bool mark_is_directional_ = false;
 

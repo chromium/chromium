@@ -274,8 +274,6 @@ class CORE_EXPORT FrameSelection final
   void SetSelectionFromNone();
 
   void UpdateAppearance();
-  bool ShouldShowBlockCursor() const;
-  void SetShouldShowBlockCursor(bool);
 
   void CacheRangeOfDocument(Range*);
   Range* DocumentCachedRange() const;

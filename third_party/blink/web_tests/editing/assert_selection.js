@@ -889,8 +889,6 @@ class Sample {
    * @public
    */
   reset() {
-    if (window.internals && internals.isOverwriteModeEnabled(this.document_))
-      internals.toggleOverwriteModeEnabled(this.document_);
     this.document_.documentElement.innerHTML = '<head></head><body></body>';
     this.selection.removeAllRanges();
     this.iframe_.style.display = 'none';

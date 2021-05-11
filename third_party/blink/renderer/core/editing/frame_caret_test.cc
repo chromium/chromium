@@ -47,7 +47,6 @@ TEST_F(FrameCaretTest, BlinkAfterTyping) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(caret.IsActive());
-  EXPECT_FALSE(caret.ShouldShowBlockCursor());
   EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
       << "Initially a caret should be in visible cycle.";
 

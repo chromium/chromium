@@ -178,9 +178,6 @@
     boolean canHyphenate(DOMString locale);
     void setMockHyphenation(DOMString locale);
 
-    boolean isOverwriteModeEnabled(Document document);
-    void toggleOverwriteModeEnabled(Document document);
-
     unsigned long numberOfScrollableAreas(Document document);
 
     boolean isPageBoxVisible(Document document, long pageNumber);

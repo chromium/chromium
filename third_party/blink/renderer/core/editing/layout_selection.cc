@@ -117,7 +117,6 @@ LayoutSelection::LayoutSelection(FrameSelection& frame_selection)
 enum class SelectionMode {
   kNone,
   kRange,
-  kBlockCursor,
 };
 
 void LayoutSelection::AssertIsValid() const {
@@ -134,11 +133,7 @@ static SelectionMode ComputeSelectionMode(
   if (selection_in_dom.IsRange())
     return SelectionMode::kRange;
   DCHECK(selection_in_dom.IsCaret());
-  if (!frame_selection.ShouldShowBlockCursor())
-    return SelectionMode::kNone;
-  if (IsLogicalEndOfLine(CreateVisiblePosition(selection_in_dom.Base())))
-    return SelectionMode::kNone;
-  return SelectionMode::kBlockCursor;
+  return SelectionMode::kNone;
 }
 
 static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
@@ -159,20 +154,6 @@ static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
         return {};
       return base <= extent ? EphemeralRangeInFlatTree(base, extent)
                             : EphemeralRangeInFlatTree(extent, base);
-    }
-    case SelectionMode::kBlockCursor: {
-      const PositionInFlatTree& base =
-          CreateVisiblePosition(ToPositionInFlatTree(selection_in_dom.Base()))
-              .DeepEquivalent();
-      if (base.IsNull())
-        return {};
-      const PositionInFlatTree end_position =
-          NextPositionOf(base, PositionMoveType::kGraphemeCluster);
-      if (end_position.IsNull())
-        return {};
-      return base <= end_position
-                 ? EphemeralRangeInFlatTree(base, end_position)
-                 : EphemeralRangeInFlatTree(end_position, base);
     }
   }
   NOTREACHED();

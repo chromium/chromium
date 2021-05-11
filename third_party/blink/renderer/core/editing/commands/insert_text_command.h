@@ -50,7 +50,6 @@ class CORE_EXPORT InsertTextCommand : public CompositeEditCommand {
   Position InsertTab(const Position&, EditingState*);
 
   bool PerformTrivialReplace(const String&);
-  bool PerformOverwrite(const String&);
   void SetEndingSelectionWithoutValidation(const Position& start_position,
                                            const Position& end_position);
 
