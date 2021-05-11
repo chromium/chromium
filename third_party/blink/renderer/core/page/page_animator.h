@@ -58,6 +58,8 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
     return has_inline_style_mutation_;
   }
   void SetHasSmilAnimation();
+  void SetCurrentFrameHadRaf();
+  void SetNextFrameHasPendingRaf();
   void ReportFrameAnimations(cc::AnimationHost* animation_host);
 
  private:
@@ -73,6 +75,10 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   bool has_canvas_invalidation_ = false;
   // True if the current main frame has svg smil animation.
   bool has_smil_animation_ = false;
+  // True if there is a raf scheduled in this frame.
+  bool current_frame_had_raf_ = false;
+  // True if there is a raf scheduled for the next frame.
+  bool next_frame_has_pending_raf_ = false;
 };
 
 }  // namespace blink

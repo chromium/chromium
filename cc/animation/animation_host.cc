@@ -160,6 +160,22 @@ void AnimationHost::SetHasSmilAnimation(bool has_smil_animation) {
   has_smil_animation_ = has_smil_animation;
 }
 
+void AnimationHost::SetCurrentFrameHadRaf(bool current_frame_had_raf) {
+  current_frame_had_raf_ = current_frame_had_raf;
+}
+
+bool AnimationHost::CurrentFrameHadRAF() const {
+  return current_frame_had_raf_;
+}
+
+void AnimationHost::SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf) {
+  next_frame_has_pending_raf_ = next_frame_has_pending_raf;
+}
+
+bool AnimationHost::NextFrameHasPendingRAF() const {
+  return next_frame_has_pending_raf_;
+}
+
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
     // kReservedElementId is reserved for a paint worklet element that animates
@@ -785,9 +801,7 @@ void AnimationHost::SetMutationUpdate(
   }
 }
 
-void AnimationHost::SetAnimationCounts(size_t total_animations_count,
-                                       bool current_frame_had_raf,
-                                       bool next_frame_has_pending_raf) {
+void AnimationHost::SetAnimationCounts(size_t total_animations_count) {
   // Though these changes are pushed as part of AnimationHost::PushPropertiesTo
   // we don't SetNeedsPushProperties as pushing the values requires a commit.
   // Instead we allow them to be pushed whenever the next required commit
@@ -801,8 +815,6 @@ void AnimationHost::SetAnimationCounts(size_t total_animations_count,
   main_thread_animations_count_ =
       total_animations_count - ticking_animations_count;
   DCHECK_GE(main_thread_animations_count_, 0u);
-  current_frame_had_raf_ = current_frame_had_raf;
-  next_frame_has_pending_raf_ = next_frame_has_pending_raf;
 }
 
 size_t AnimationHost::MainThreadAnimationsCount() const {
@@ -814,14 +826,6 @@ bool AnimationHost::HasCustomPropertyAnimations() const {
     if (it->AffectsCustomProperty())
       return true;
   return false;
-}
-
-bool AnimationHost::CurrentFrameHadRAF() const {
-  return current_frame_had_raf_;
-}
-
-bool AnimationHost::NextFrameHasPendingRAF() const {
-  return next_frame_has_pending_raf_;
 }
 
 AnimationHost::PendingThroughputTrackerInfos

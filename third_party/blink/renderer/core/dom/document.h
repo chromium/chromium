@@ -1497,9 +1497,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType);
 
-  bool CurrentFrameHadRAF() const;
-  bool NextFrameHasPendingRAF() const;
-
   StylePropertyMapReadOnly* ComputedStyleMap(Element*);
   void AddComputedStyleMapItem(Element*, StylePropertyMapReadOnly*);
   StylePropertyMapReadOnly* RemoveComputedStyleMapItem(Element*);

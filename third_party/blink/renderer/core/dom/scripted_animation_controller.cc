@@ -185,6 +185,12 @@ bool ScriptedAnimationController::HasScheduledFrameTasks() const {
          !vfc_execution_queue_.IsEmpty();
 }
 
+PageAnimator* ScriptedAnimationController::GetPageAnimator() {
+  if (GetWindow()->document() && GetWindow()->document()->GetPage())
+    return &(GetWindow()->document()->GetPage()->Animator());
+  return nullptr;
+}
+
 void ScriptedAnimationController::ServiceScriptedAnimations(
     base::TimeTicks monotonic_time_now) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextPaused())
@@ -201,7 +207,9 @@ void ScriptedAnimationController::ServiceScriptedAnimations(
       loader->GetTiming()
           .MonotonicTimeToPseudoWallTime(monotonic_time_now)
           .InMillisecondsF();
-  current_frame_had_raf_ = HasFrameCallback();
+  auto* animator = GetPageAnimator();
+  if (animator && HasFrameCallback())
+    animator->SetCurrentFrameHadRaf();
 
   if (!HasScheduledFrameTasks())
     return;
@@ -241,7 +249,8 @@ void ScriptedAnimationController::ServiceScriptedAnimations(
   // 10.11. For each fully active Document in docs, run the animation
   // frame callbacks for that Document, passing in now as the timestamp.
   ExecuteFrameCallbacks();
-  next_frame_has_pending_raf_ = HasFrameCallback();
+  if (animator && HasFrameCallback())
+    animator->SetNextFrameHasPendingRaf();
 
   // See LocalFrameView::RunPostLifecycleSteps() for 10.12.
 

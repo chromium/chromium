@@ -215,13 +215,12 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
   void StopThroughputTracking(TrackedAnimationSequenceId sequnece_id);
 
-  void SetAnimationCounts(size_t total_animations_count,
-                          bool current_frame_had_raf,
-                          bool next_frame_has_pending_raf);
-
+  void SetAnimationCounts(size_t total_animations_count);
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
   void SetHasInlineStyleMutation(bool has_inline_style_mutation);
   void SetHasSmilAnimation(bool has_svg_smil_animation);
+  void SetCurrentFrameHadRaf(bool current_frame_had_raf);
+  void SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf);
 
  private:
   explicit AnimationHost(ThreadInstance thread_instance);

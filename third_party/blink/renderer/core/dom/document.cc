@@ -7834,14 +7834,6 @@ void Document::Trace(Visitor* visitor) const {
   ContainerNode::Trace(visitor);
 }
 
-bool Document::CurrentFrameHadRAF() const {
-  return scripted_animation_controller_->CurrentFrameHadRAF();
-}
-
-bool Document::NextFrameHasPendingRAF() const {
-  return scripted_animation_controller_->NextFrameHasPendingRAF();
-}
-
 SlotAssignmentEngine& Document::GetSlotAssignmentEngine() {
   if (!slot_assignment_engine_)
     slot_assignment_engine_ = MakeGarbageCollected<SlotAssignmentEngine>();

@@ -148,7 +148,9 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     auto const bounds = scroll_layer_->bounds();
     scroll_layer_->SetBounds({bounds.width(), bounds.height() + 1});
     if (config_.should_register_main_thread_animation) {
-      animation_host()->SetAnimationCounts(1, true, true);
+      animation_host()->SetAnimationCounts(1);
+      animation_host()->SetCurrentFrameHadRaf(true);
+      animation_host()->SetNextFrameHasPendingRaf(true);
     }
   }
 

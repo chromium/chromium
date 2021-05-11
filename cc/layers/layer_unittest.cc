@@ -1563,8 +1563,9 @@ TEST_F(LayerTest, SetLayerTreeHostNotUsingLayerListsManagesElementId) {
 // commit to be pushed. See https://crbug.com/1083244.
 TEST_F(LayerTest, PushAnimationCountsLazily) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(0);
-  animation_host_->SetAnimationCounts(0, /* current_frame_had_raf = */ true,
-                                      /* next_frame_has_pending_raf = */ true);
+  animation_host_->SetAnimationCounts(0);
+  animation_host_->SetCurrentFrameHadRaf(true);
+  animation_host_->SetNextFrameHasPendingRaf(true);
   animation_host_->SetHasSmilAnimation(true);
   EXPECT_FALSE(host_impl_.animation_host()->CurrentFrameHadRAF());
   EXPECT_FALSE(host_impl_.animation_host()->HasSmilAnimation());

@@ -2738,11 +2738,8 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
       !paint_artifact_compositor_ || paint_artifact_compositor_->NeedsUpdate();
   PushPaintArtifactToCompositor(repainted);
   size_t total_animations_count = 0;
-  bool current_frame_had_raf = false;
-  bool next_frame_has_pending_raf = false;
   ForAllNonThrottledLocalFrameViews(
-      [this, &total_animations_count, &current_frame_had_raf,
-       &next_frame_has_pending_raf](LocalFrameView& frame_view) {
+      [this, &total_animations_count](LocalFrameView& frame_view) {
         if (auto* scrollable_area = frame_view.GetScrollableArea())
           scrollable_area->UpdateCompositorScrollAnimations();
         if (const auto* animating_scrollable_areas =
@@ -2764,14 +2761,10 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
         Document& document = frame_view.GetLayoutView()->GetDocument();
         total_animations_count +=
             document.GetDocumentAnimations().GetAnimationsCount();
-        current_frame_had_raf |= document.CurrentFrameHadRAF();
-        next_frame_has_pending_raf |= document.NextFrameHasPendingRAF();
       });
 
   if (auto* animation_host = GetCompositorAnimationHost()) {
-    animation_host->SetAnimationCounts(total_animations_count,
-                                       current_frame_had_raf,
-                                       next_frame_has_pending_raf);
+    animation_host->SetAnimationCounts(total_animations_count);
   }
 
   // Initialize animation properties in the newly created paint property
