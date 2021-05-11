@@ -276,7 +276,7 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
         cellular_network->path(), base::DoNothing(),
         base::BindOnce(&OtaActivatorImpl::OnNetworkConnectionError,
                        weak_ptr_factory_.GetWeakPtr()),
-        false /* check_error_state */, ConnectCallbackMode::ON_STARTED);
+        false /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
     return;
   }
 

@@ -12,6 +12,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/network/fake_network_activation_handler.h"
 #include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/cellular_setup/public/cpp/fake_activation_delegate.h"
@@ -202,6 +203,8 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
 
     // A connection should have been requested by |ota_activator_|.
     EXPECT_EQ(kTestCellularServicePath, connect_calls.back().service_path());
+    EXPECT_EQ(ConnectCallbackMode::ON_COMPLETED,
+              connect_calls.back().connect_callback_mode());
     connect_calls.back().InvokeErrorCallback("fake_error", nullptr);
     base::RunLoop().RunUntilIdle();
   }
