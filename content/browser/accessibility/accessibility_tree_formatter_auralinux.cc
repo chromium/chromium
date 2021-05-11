@@ -176,7 +176,20 @@ AtspiAccessible* AccessibilityTreeFormatterAuraLinux::FindActiveDocument(
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
     AtkObject* atk_node,
     base::DictionaryValue* dict) const {
+  ui::AXPlatformNodeAuraLinux* platform_node =
+      ui::AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
+  DCHECK(platform_node);
+
+  BrowserAccessibility* node = BrowserAccessibility::FromAXPlatformNodeDelegate(
+      platform_node->GetDelegate());
+  DCHECK(node);
+
+  if (!ShouldDumpNode(*node))
+    return;
+
   AddProperties(atk_node, dict);
+  if (!ShouldDumpChildren(*node))
+    return;
 
   auto child_count = atk_object_get_n_accessible_children(atk_node);
   if (child_count <= 0)

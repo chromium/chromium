@@ -170,7 +170,16 @@ void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const NSRect& root_rect,
     const LineIndexer* line_indexer,
     base::Value* dict) const {
+  BrowserAccessibility* platform_node =
+      [static_cast<BrowserAccessibilityCocoa*>(node) owner];
+  DCHECK(platform_node);
+
+  if (!ShouldDumpNode(*platform_node))
+    return;
+
   AddProperties(node, root_rect, line_indexer, dict);
+  if (!ShouldDumpChildren(*platform_node))
+    return;
 
   NSArray* children = ChildrenOf(node);
   base::Value child_dict_list(base::Value::Type::LIST);

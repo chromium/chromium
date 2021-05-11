@@ -240,12 +240,17 @@ Invokes default action on an accessible object defined by the directive.
 
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
-To skip dumping a particular element, make its accessible name equal to
-`@NO_DUMP`, for example `<div aria-label="@NO_DUMP"></div>`.
+To skip dumping a particular element, add `@NO_DUMP` to a property that will
+be exposed as an ax::mojom::StringAttribute, for example
+`<div class="@NO_DUMP"></div>`.
 
-To skip dumping all children of a particular element, make its accessible
-name equal to `@NO_CHILDREN_DUMP`, for example
-`<div aria-label="@NO_CHILDREN_DUMP"></div>`.
+To skip dumping all children of a particular element, add `@NO_CHILDREN_DUMP`
+to a property that will be exposed as an ax::mojom::StringAttribute, for example
+`<div class="@NO_CHILDREN_DUMP"></div>`.
+
+Note that setting the `aria-label` value to `@NO_DUMP` or `@NO_CHILDREN_DUMP`
+is not guaranteed to work due to certain roles no longer supporting author-
+provided naming in ARIA 1.2.
 
 To load an iframe from a different site, forcing it into a different process,
 use `/cross-site/HOSTNAME/` in the url, for example:

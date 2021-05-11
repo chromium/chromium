@@ -141,7 +141,12 @@ void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
 void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
     const BrowserAccessibility& node,
     base::DictionaryValue* dict) const {
+  if (!ShouldDumpNode(node))
+    return;
+
   AddProperties(node, dict);
+  if (!ShouldDumpChildren(node))
+    return;
 
   auto children = std::make_unique<base::ListValue>();
 

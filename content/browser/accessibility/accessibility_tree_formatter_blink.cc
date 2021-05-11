@@ -287,7 +287,12 @@ std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     const BrowserAccessibility& node,
     base::Value* dict) const {
+  if (!ShouldDumpNode(node))
+    return;
+
   AddProperties(node, static_cast<base::DictionaryValue*>(dict));
+  if (!ShouldDumpChildren(node))
+    return;
 
   base::Value children(base::Value::Type::LIST);
   for (size_t i = 0; i < ChildCount(node); ++i) {

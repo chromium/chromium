@@ -23,6 +23,9 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   AXTreeFormatterBase();
   ~AXTreeFormatterBase() override;
 
+  bool ShouldDumpNode(const AXPlatformNodeDelegate& node) const;
+  bool ShouldDumpChildren(const AXPlatformNodeDelegate& node) const;
+
   // Dumps formatted the given accessibility tree into a string.
   std::string Format(AXPlatformNodeDelegate* root) const override;
 

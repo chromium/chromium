@@ -274,7 +274,19 @@ void AccessibilityTreeFormatterWin::RecursiveBuildTree(
     base::Value* dict,
     LONG root_x,
     LONG root_y) const {
+  ui::AXPlatformNode* platform_node =
+      ui::AXPlatformNode::FromNativeViewAccessible(node.Get());
+  DCHECK(platform_node);
+
+  ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
+  DCHECK(delegate);
+
+  if (!ShouldDumpNode(*delegate))
+    return;
+
   AddProperties(node, dict, root_x, root_y);
+  if (!ShouldDumpChildren(*delegate))
+    return;
 
   base::Value child_list(base::Value::Type::LIST);
   for (const ui::MSAAChild& msaa_child : ui::MSAAChildren(node)) {

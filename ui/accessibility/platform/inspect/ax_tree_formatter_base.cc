@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 namespace ui {
@@ -28,6 +29,26 @@ AXTreeFormatterBase::~AXTreeFormatterBase() = default;
 // static
 const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
 const char AXTreeFormatterBase::kScriptsDictAttr[] = "scripts";
+
+bool AXTreeFormatterBase::ShouldDumpNode(
+    const AXPlatformNodeDelegate& node) const {
+  for (const std::pair<ax::mojom::StringAttribute, std::string>&
+           string_attribute : node.GetData().string_attributes) {
+    if (string_attribute.second.find(kSkipString) != std::string::npos)
+      return false;
+  }
+  return true;
+}
+
+bool AXTreeFormatterBase::ShouldDumpChildren(
+    const AXPlatformNodeDelegate& node) const {
+  for (const std::pair<ax::mojom::StringAttribute, std::string>&
+           string_attribute : node.GetData().string_attributes) {
+    if (string_attribute.second.find(kSkipChildren) != std::string::npos)
+      return false;
+  }
+  return true;
+}
 
 std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   DCHECK(root);
@@ -76,9 +97,15 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   if (MatchesNodeFilters(dict))
     return;
 
+  if (dict.DictEmpty())
+    return;
+
   std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
   std::string line =
       indent + ProcessTreeForOutput(base::Value::AsDictionaryValue(dict));
+
+  // TODO(accessibility): This can be removed once the UIA tree formatter
+  // can call ShouldDumpNode().
   if (line.find(kSkipString) != std::string::npos)
     return;
 
@@ -89,6 +116,9 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   base::ReplaceChars(line, "\n", "<newline>", &line);
 
   *contents += line + "\n";
+
+  // TODO(accessibility): This can be removed once the UIA tree formatter
+  // can call ShouldDumpChildren().
   if (line.find(kSkipChildren) != std::string::npos)
     return;
 
