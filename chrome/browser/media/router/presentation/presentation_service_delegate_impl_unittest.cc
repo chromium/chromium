@@ -60,6 +60,17 @@ MATCHER_P(InfoEquals, expected, "") {
   return expected.url == arg.url && expected.id == arg.id;
 }
 
+#if !defined(OS_ANDROID)
+// Set the user preference for |origin| to prefer tab mirroring.
+void EnableTabMirroringForOrigin(PrefService* prefs,
+                                 const std::string& origin) {
+  ListPrefUpdate update(prefs,
+                        media_router::prefs::kMediaRouterTabMirroringSources);
+  if (!base::Contains(update->GetList(), base::Value(origin)))
+    update->Append(origin);
+}
+#endif
+
 }  // namespace
 
 namespace media_router {
@@ -763,12 +774,7 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   const std::string kPresentationId("auto-join");
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
 
-  // Set the user preference for |origin| to prefer tab mirroring.
-  {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kMediaRouterTabMirroringSources);
-    update->AppendIfNotPresent(std::make_unique<base::Value>(origin));
-  }
+  EnableTabMirroringForOrigin(profile()->GetPrefs(), origin);
 
   auto& mock_local_manager = GetMockLocalPresentationManager();
   EXPECT_CALL(mock_local_manager, IsLocalPresentation(kPresentationId))
@@ -816,13 +822,9 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
   const std::string kPresentationId("auto-join");
   ASSERT_TRUE(IsAutoJoinPresentationId(kPresentationId));
 
-  // Set the user preference for |origin| to prefer tab mirroring.
-  {
-    ListPrefUpdate update(
-        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
-        prefs::kMediaRouterTabMirroringSources);
-    update->AppendIfNotPresent(std::make_unique<base::Value>(origin));
-  }
+  EnableTabMirroringForOrigin(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
+      origin);
 
   auto& mock_local_manager = GetMockLocalPresentationManager();
   EXPECT_CALL(mock_local_manager, IsLocalPresentation(kPresentationId))

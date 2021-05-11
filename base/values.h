@@ -946,11 +946,6 @@ class BASE_EXPORT ListValue : public Value {
   // DEPRECATED, use `Value::Append()` in a loop instead.
   void AppendStrings(const std::vector<std::string>& in_values);
 
-  // Appends a Value if it's not already present. Returns true if successful,
-  // or false if the value was already
-  // DEPRECATED, use `std::find()` with `Value::Append()` instead.
-  bool AppendIfNotPresent(std::unique_ptr<Value> in_value);
-
   using Value::Insert;
   // Insert a Value at index.
   // Returns true if successful, or false if the index was out of range.

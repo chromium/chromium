@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -608,10 +609,12 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
 void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
                                           bool disabled) {
   ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value module_id_value(module_id);
   if (disabled) {
-    update->AppendIfNotPresent(std::make_unique<base::Value>(module_id));
+    if (!base::Contains(update->GetList(), module_id_value))
+      update->Append(std::move(module_id_value));
   } else {
-    update->EraseListValue(base::Value(module_id));
+    update->EraseListValue(module_id_value);
   }
   UpdateDisabledModules();
 }

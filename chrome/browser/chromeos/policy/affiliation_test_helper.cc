@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -168,8 +169,10 @@ void AffiliationTestHelper::SetUserAffiliationIDs(
 // static
 void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
   ListPrefUpdate users_pref(g_browser_process->local_state(), "LoggedInUsers");
-  users_pref->AppendIfNotPresent(
-      std::make_unique<base::Value>(account_id.GetUserEmail()));
+  base::Value email_value(account_id.GetUserEmail());
+  if (!base::Contains(users_pref->GetList(), email_value))
+    users_pref->Append(std::move(email_value));
+
   if (user_manager::UserManager::IsInitialized())
     user_manager::known_user::SaveKnownUser(account_id);
 

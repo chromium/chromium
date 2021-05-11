@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -103,8 +104,9 @@ void LoginManagerMixin::SetUpLocalState() {
   for (const auto& user : initial_users_) {
     ListPrefUpdate users_pref(g_browser_process->local_state(),
                               "LoggedInUsers");
-    users_pref->AppendIfNotPresent(
-        std::make_unique<base::Value>(user.account_id.GetUserEmail()));
+    base::Value email_value(user.account_id.GetUserEmail());
+    if (!base::Contains(users_pref->GetList(), email_value))
+      users_pref->Append(std::move(email_value));
 
     DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
                                           "UserType");

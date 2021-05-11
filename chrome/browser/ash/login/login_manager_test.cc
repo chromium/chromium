@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -61,8 +62,9 @@ void LoginManagerTest::SetUpOnMainThread() {
 
 void LoginManagerTest::RegisterUser(const AccountId& account_id) {
   ListPrefUpdate users_pref(g_browser_process->local_state(), "LoggedInUsers");
-  users_pref->AppendIfNotPresent(
-      std::make_unique<base::Value>(account_id.GetUserEmail()));
+  base::Value email_value(account_id.GetUserEmail());
+  if (!base::Contains(users_pref->GetList(), email_value))
+    users_pref->Append(std::move(email_value));
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::known_user::SaveKnownUser(account_id);
     user_manager::UserManager::Get()->SaveUserOAuthStatus(

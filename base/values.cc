@@ -1693,15 +1693,6 @@ void ListValue::AppendStrings(const std::vector<std::string>& in_values) {
     list().emplace_back(in_value);
 }
 
-bool ListValue::AppendIfNotPresent(std::unique_ptr<Value> in_value) {
-  DCHECK(in_value);
-  if (Contains(list(), *in_value))
-    return false;
-
-  list().push_back(std::move(*in_value));
-  return true;
-}
-
 bool ListValue::Insert(size_t index, std::unique_ptr<Value> in_value) {
   DCHECK(in_value);
   if (index > list().size())

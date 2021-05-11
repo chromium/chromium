@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -1310,8 +1311,9 @@ bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
 
 void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
   ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  users_update->AppendIfNotPresent(
-      std::make_unique<base::Value>(account_id.GetUserEmail()));
+  base::Value email_value(account_id.GetUserEmail());
+  if (!base::Contains(users_update->GetList(), email_value))
+    users_update->Append(std::move(email_value));
 }
 
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {

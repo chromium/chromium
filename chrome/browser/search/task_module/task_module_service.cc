@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/task_module/task_module_service.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
@@ -196,7 +197,9 @@ void TaskModuleService::DismissTask(
     const std::string& task_name) {
   ListPrefUpdate update(profile_->GetPrefs(),
                         GetDismissedTasksPrefName(task_module_type));
-  update->AppendIfNotPresent(std::make_unique<base::Value>(task_name));
+  base::Value task_name_value(task_name);
+  if (!base::Contains(update->GetList(), task_name_value))
+    update->Append(std::move(task_name_value));
 }
 
 void TaskModuleService::RestoreTask(

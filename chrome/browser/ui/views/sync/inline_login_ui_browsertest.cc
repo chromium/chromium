@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -272,7 +273,8 @@ void InlineLoginUIBrowserTest::AddEmailToOneClickRejectedList(
   PrefService* pref_service = browser()->profile()->GetPrefs();
   ListPrefUpdate updater(pref_service,
                          prefs::kReverseAutologinRejectedEmailList);
-  updater->AppendIfNotPresent(std::make_unique<base::Value>(email));
+  if (!base::Contains(updater->GetList(), base::Value(email)))
+    updater->Append(email);
 }
 
 void InlineLoginUIBrowserTest::AllowSigninCookies(bool enable) {
