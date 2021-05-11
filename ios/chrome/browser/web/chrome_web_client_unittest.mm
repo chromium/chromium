@@ -460,6 +460,37 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLegacyTLSError) {
       << base::SysNSStringToUTF8(page);
 }
 
+// Tests PrepareErrorPage for a legacy TLS error in a WebState that doesn't
+// have an IOSBlockingPageTabHelper, ensuring that there is no crash.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageForLegacyTLSErrorNotInWebStateList) {
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(browser_state());
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web_state.SetNavigationManager(std::move(navigation_manager));
+
+  NSError* error = [NSError errorWithDomain:net::kNSErrorDomain
+                                       code:net::ERR_SSL_OBSOLETE_VERSION
+                                   userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(page.length, 0u);
+}
+
 // Tests the default user agent for different views.
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
   if (@available(iOS 13, *)) {

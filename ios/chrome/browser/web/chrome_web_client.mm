@@ -148,16 +148,27 @@ NSString* GetLookalikeUrlErrorPageHtml(web::WebState* web_state,
 // Returns the legacy TLS error page HTML.
 NSString* GetLegacyTLSErrorPageHTML(web::WebState* web_state,
                                     int64_t navigation_id) {
-  // Construct the blocking page and associate it with the WebState.
-  std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
-      std::make_unique<LegacyTLSBlockingPage>(
-          web_state, web_state->GetVisibleURL() /*request_url*/,
-          std::make_unique<LegacyTLSControllerClient>(
-              web_state, web_state->GetVisibleURL(),
-              GetApplicationContext()->GetApplicationLocale()));
-  std::string error_page_content = page->GetHtmlContents();
-  security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
-      ->AssociateBlockingPage(navigation_id, std::move(page));
+  std::string error_page_content;
+  security_interstitials::IOSBlockingPageTabHelper* blocking_page_tab_helper =
+      security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state);
+
+  // WebStates that are not in the WebStateList (e.g., WebStates used for
+  // reading list sync) do not have an IOSBlockingPageTabHelper. Since such
+  // WebStates are not used for displaying web contents to a user, it is not
+  // necessary to produce an actual error page, and instead an empty string is
+  // used.
+  if (blocking_page_tab_helper) {
+    // Construct the blocking page and associate it with the WebState.
+    std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
+        std::make_unique<LegacyTLSBlockingPage>(
+            web_state, web_state->GetVisibleURL() /*request_url*/,
+            std::make_unique<LegacyTLSControllerClient>(
+                web_state, web_state->GetVisibleURL(),
+                GetApplicationContext()->GetApplicationLocale()));
+    error_page_content = page->GetHtmlContents();
+    blocking_page_tab_helper->AssociateBlockingPage(navigation_id,
+                                                    std::move(page));
+  }
 
   return base::SysUTF8ToNSString(error_page_content);
 }
