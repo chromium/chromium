@@ -105,6 +105,7 @@ android_library("javatests") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
