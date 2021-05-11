@@ -226,7 +226,9 @@ static_library("test_support") {
     "//chrome:strings",
 
     #"//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_process",
     "//chrome/browser:test_support",
+    "//chrome/browser/safe_browsing",
     "//chrome/child",
     "//chrome/common:non_code_constants",
     "//chrome/common:test_support",
@@ -236,6 +238,11 @@ static_library("test_support") {
     "//components/bookmarks/test",
     "//components/captive_portal/core:test_support",
     "//components/consent_auditor:test_support",
+    "//components/content_settings/core/browser",
+    "//components/crash/core/app",
+    "//components/domain_reliability",
+    "//components/federated_learning",
+    "//components/find_in_page",
     "//components/gcm_driver:test_support",
     "//components/gcm_driver/crypto:test_support",
     "//components/gcm_driver/instance_id:test_support",
@@ -243,26 +250,38 @@ static_library("test_support") {
     "//components/infobars/core",
     "//components/metrics:test_support",
     "//components/network_session_configurator/common",
+    "//components/network_time",
     "//components/network_time:network_time_test_support",
     "//components/omnibox/browser:test_support",
+    "//components/os_crypt",
     "//components/password_manager/core/browser:test_support",
     "//components/payments/core:test_support",
     "//components/performance_manager/test_support",
+    "//components/permissions",
     "//components/permissions:test_support",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/profile_metrics",
+    "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:v4_test_util",
     "//components/search_engines:test_support",
     "//components/sessions:test_support",
     "//components/signin/public/base:test_support",
+    "//components/startup_metric_utils/browser",
+    "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/common",
     "//components/sync:test_support",
+    "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/sync_sessions:test_support",
     "//components/sync_user_events:test_support",
     "//components/update_client:test_support",
+    "//components/user_prefs",
     "//components/variations:test_support",
     "//components/web_resource:test_support",
+    "//components/webdata_services",
     "//content/public/app",
     "//content/public/child",
     "//content/public/common",
@@ -280,6 +299,9 @@ static_library("test_support") {
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/cert_verifier:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/geolocation",
     "//skia",
     "//sql",
     "//sql:test_support",
@@ -287,12 +309,17 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/leveldatabase",
     "//ui/base",
+    "//ui/base:test_support",
     "//ui/events:events_base",
     "//ui/gfx:test_support",
     "//ui/gl",
   ]
 
   if (is_android) {
+    public_deps += [
+      ":test_support_ui_android",
+      "//chrome:chrome_android_core",
+    ]
     if (enable_vr) {
       public_deps += [ "//chrome/browser/android/vr:test_support" ]
 
@@ -303,10 +330,23 @@ static_library("test_support") {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
       # target.
+      ":test_support_ui",
       "//chrome/app:test_support",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/components",
+      "//components/crx_file",
+      "//components/keep_alive_registry",
+      "//components/pref_registry",
+      "//components/storage_monitor",
+      "//components/storage_monitor:test_support",
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
+      "//components/web_modal",
+      "//components/zoom",
       "//components/zoom:test_support",
+      "//extensions/browser:test_support",
+      "//extensions/common:test_support",
+      "//ui/snapshot",
     ]
     sources += [
       "../browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.cc",
@@ -329,7 +369,11 @@ static_library("test_support") {
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client_mac.mm",
     ]
-    deps += [ "//build:branding_buildflags" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//chrome/app_shim",
+      "//components/upload_list",
+    ]
     public_deps += [
       "//components/crash/core/app",
       "//third_party/breakpad",
@@ -360,6 +404,7 @@ static_library("test_support") {
       "//chrome/app/chrome_crash_reporter_client_win.cc",
     ]
     public_deps += [
+      "//chrome/chrome_elf:crash",
       "//chrome/install_static/test:test_support",
       "//components/crash/core/app",
       "//third_party/wtl",
@@ -403,11 +448,23 @@ static_library("test_support") {
     public_deps += [
       "//ash",
       "//ash:test_support",
+      "//ash/components/account_manager",
+      "//ash/constants",
+      "//chrome/browser/chromeos",
+      "//chromeos/dbus/session_manager",
+      "//chromeos/dbus/tpm_manager",
+      "//chromeos/dbus/userdataauth",
+      "//chromeos/login/login_state",
+      "//chromeos/settings",
+      "//chromeos/tpm",
+      "//chromeos/tpm:test_support",
+      "//components/exo",
       "//components/ownership",
       "//components/user_manager:test_support",
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/ime/init",
+      "//ui/chromeos/resources:resources_grit",
     ]
     deps += [
       "//chromeos/cryptohome",
@@ -417,7 +474,11 @@ static_library("test_support") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/services/machine_learning/public/cpp:stub" ]
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
+      "//chromeos/services/machine_learning/public/cpp:stub",
+    ]
   }
 
   if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
@@ -432,6 +493,11 @@ static_library("test_support") {
     sources += [
       "base/test_browser_window_aura.cc",
       "base/test_browser_window_aura.h",
+    ]
+    deps += [
+      "//ui/aura:test_support",
+      "//ui/wm",
+      "//ui/wm/public",
     ]
   }
 
@@ -7094,11 +7160,7 @@ if (!is_android) {
 }
 
 test("chrome_app_unittests") {
-  sources = [
-    "../app/chrome_main_delegate.cc",
-    "../app/chrome_main_delegate.h",
-    "../app/resources/resources_unittest.cc",
-  ]
+  sources = [ "../app/resources/resources_unittest.cc" ]
   deps = [
     ":test_support",
     "//base/test:run_all_unittests",
@@ -7122,11 +7184,7 @@ test("chrome_app_unittests") {
     deps += [ "//components/gwp_asan/client" ]
   }
   if (is_android) {
-    sources += [
-      "../app/android/chrome_main_delegate_android.cc",
-      "../app/android/chrome_main_delegate_android.h",
-      "../app/android/chrome_main_delegate_android_unittest.cc",
-    ]
+    sources += [ "../app/android/chrome_main_delegate_android_unittest.cc" ]
   }
 }
 
