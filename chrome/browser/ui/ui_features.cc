@@ -181,11 +181,6 @@ const base::Feature kToolbarUseHardwareBitmapDraw{
 const base::Feature kUseRelaunchToUpdateString{
     "UseRelaunchToUpdateString", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a web-based separator that's only used for performance testing. See
-// https://crbug.com/993502.
-const base::Feature kWebFooterExperiment{"WebFooterExperiment",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
 const base::Feature kWebUIBubblePerProfilePersistence{

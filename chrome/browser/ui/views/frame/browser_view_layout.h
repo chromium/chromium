@@ -63,7 +63,6 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* right_aligned_side_panel,
                     views::View* right_aligned_side_panel_separator,
                     ImmersiveModeController* immersive_mode_controller,
-                    views::View* web_footer_experiment,
                     views::View* contents_separator);
   ~BrowserViewLayout() override;
 
@@ -139,10 +138,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Returns the y coordinate of the client area.
   int GetClientAreaTop();
 
-  // Layout the web-footer experiment if enabled, returns the top of the
-  // control. See https://crbug.com/993502.
-  int LayoutWebFooterExperiment(int bottom);
-
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
 
@@ -165,7 +160,6 @@ class BrowserViewLayout : public views::LayoutManager {
   views::View* const right_aligned_side_panel_;
   views::View* const right_aligned_side_panel_separator_;
   ImmersiveModeController* const immersive_mode_controller_;
-  views::View* const web_footer_experiment_;
   views::View* const contents_separator_;
 
   views::View* webui_tab_strip_ = nullptr;

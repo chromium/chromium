@@ -130,8 +130,6 @@ extern const base::Feature kToolbarUseHardwareBitmapDraw;
 // than "Update Google Chrome".
 extern const base::Feature kUseRelaunchToUpdateString;
 
-extern const base::Feature kWebFooterExperiment;
-
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
 extern const base::Feature kWebUIDownloadShelf;

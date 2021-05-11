@@ -146,7 +146,6 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* right_aligned_side_panel,
     views::View* right_aligned_side_panel_separator,
     ImmersiveModeController* immersive_mode_controller,
-    views::View* web_footer_experiment,
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
       host_view_(host_view),
@@ -161,7 +160,6 @@ BrowserViewLayout::BrowserViewLayout(
       right_aligned_side_panel_(right_aligned_side_panel),
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
       immersive_mode_controller_(immersive_mode_controller),
-      web_footer_experiment_(web_footer_experiment),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
       dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
@@ -328,8 +326,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   UpdateTopContainerBounds();
 
   // Layout items at the bottom of the view.
-  int bottom = LayoutWebFooterExperiment(browser_view->height());
-  bottom = LayoutDownloadShelf(bottom);
+  const int bottom = LayoutDownloadShelf(browser_view->height());
 
   // Layout the contents container in the remaining space.
   LayoutContentsContainerView(top, bottom);
@@ -653,15 +650,6 @@ int BrowserViewLayout::GetClientAreaTop() {
   return webui_tab_strip_ && webui_tab_strip_->GetVisible()
              ? webui_tab_strip_->y()
              : toolbar_->y();
-}
-
-int BrowserViewLayout::LayoutWebFooterExperiment(int bottom) {
-  if (!web_footer_experiment_)
-    return bottom;
-  bottom -= 1;
-  web_footer_experiment_->SetBounds(vertical_layout_rect_.x(), bottom,
-                                    vertical_layout_rect_.width(), 1);
-  return bottom;
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
