@@ -18,10 +18,13 @@ import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,11 +33,13 @@ import java.util.ArrayList;
  * The factory class that contains all dependencies for the download location dialog.
  * Also provides the public functionalties to interact with dialog.
  */
-// TODO(xingliu): Refactor download location dialog to fully use clank MVC.
 public class DownloadLocationDialogCoordinator implements ModalDialogProperties.Controller {
     @NonNull
     private DownloadLocationDialogController mController;
     private PropertyModel mDialogModel;
+    private PropertyModel mDownloadLocationDialogModel;
+    private PropertyModelChangeProcessor<PropertyModel, DownloadLocationCustomView, PropertyKey>
+            mPropertyModelChangeProcessor;
     private DownloadLocationCustomView mCustomView;
     private ModalDialogManager mModalDialogManager;
     private long mTotalBytes;
@@ -83,6 +88,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
         }
+        if (mPropertyModelChangeProcessor != null) mPropertyModelChangeProcessor.destroy();
     }
 
     @Override
@@ -137,10 +143,13 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         if (mDialogModel != null) return;
 
         // Actually show the dialog.
+        mDownloadLocationDialogModel = getLocationDialogModel();
         mCustomView = (DownloadLocationCustomView) LayoutInflater.from(mContext).inflate(
                 R.layout.download_location_dialog, null);
-        mCustomView.initialize(
-                mDialogType, new File(mSuggestedPath), mTotalBytes, getTitle(mDialogType));
+        mCustomView.initialize(mDialogType, mTotalBytes);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mDownloadLocationDialogModel, mCustomView,
+                        DownloadLocationDialogViewBinder::bind, true /*performInitialBind*/);
 
         Resources resources = mContext.getResources();
         mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -156,26 +165,65 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
-    private String getTitle(@DownloadLocationDialogType int dialogType) {
-        switch (dialogType) {
+    private PropertyModel getLocationDialogModel() {
+        boolean isInitial = DownloadDialogBridge.getPromptForDownloadAndroid()
+                == DownloadPromptStatus.SHOW_INITIAL;
+
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(DownloadLocationDialogProperties.ALL_KEYS);
+        builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_CHECKED, isInitial);
+        builder.with(
+                DownloadLocationDialogProperties.FILE_NAME, new File(mSuggestedPath).getName());
+        builder.with(DownloadLocationDialogProperties.SHOW_SUBTITLE, true);
+        builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, true);
+
+        switch (mDialogType) {
             case DownloadLocationDialogType.LOCATION_FULL:
-                return mContext.getString(R.string.download_location_not_enough_space);
-
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_not_enough_space));
+                builder.with(DownloadLocationDialogProperties.SUBTITLE,
+                        mContext.getString(R.string.download_location_download_to_default_folder));
+                break;
             case DownloadLocationDialogType.LOCATION_NOT_FOUND:
-                return mContext.getString(R.string.download_location_no_sd_card);
-
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_no_sd_card));
+                builder.with(DownloadLocationDialogProperties.SUBTITLE,
+                        mContext.getString(R.string.download_location_download_to_default_folder));
+                break;
             case DownloadLocationDialogType.NAME_CONFLICT:
-                return mContext.getString(R.string.download_location_download_again);
-
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_download_again));
+                builder.with(DownloadLocationDialogProperties.SUBTITLE,
+                        mContext.getString(R.string.download_location_name_exists));
+                break;
             case DownloadLocationDialogType.NAME_TOO_LONG:
-                return mContext.getString(R.string.download_location_rename_file);
-
-            case DownloadLocationDialogType.LOCATION_SUGGESTION: // Intentional fall through.
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_rename_file));
+                builder.with(DownloadLocationDialogProperties.SUBTITLE,
+                        mContext.getString(R.string.download_location_name_too_long));
+                break;
+            case DownloadLocationDialogType.LOCATION_SUGGESTION:
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_dialog_title));
+                builder.with(DownloadLocationDialogProperties.SHOW_LOCATION_AVAILABLE_SPACE, true);
+                assert mTotalBytes > 0;
+                builder.with(DownloadLocationDialogProperties.FILE_SIZE,
+                        DownloadUtils.getStringForBytes(mContext, mTotalBytes));
+                builder.with(DownloadLocationDialogProperties.SHOW_SUBTITLE, false);
+                break;
             case DownloadLocationDialogType.DEFAULT:
-                return mContext.getString(R.string.download_location_dialog_title);
+                builder.with(DownloadLocationDialogProperties.TITLE,
+                        mContext.getString(R.string.download_location_dialog_title));
+                if (mTotalBytes > 0) {
+                    builder.with(DownloadLocationDialogProperties.SUBTITLE,
+                            DownloadUtils.getStringForBytes(mContext, mTotalBytes));
+                } else {
+                    builder.with(DownloadLocationDialogProperties.SHOW_SUBTITLE, false);
+                }
+                break;
         }
-        assert false;
-        return null;
+
+        return builder.build();
     }
 
     /**

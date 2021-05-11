@@ -43,11 +43,11 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.ArrayList;
 
 /**
- * Test to verify download location change feature behaviors.
+ * Test to verify download end to end flow with download location dialog.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLocationChangeTest implements CustomMainActivityStart {
+public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStart {
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 

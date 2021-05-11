@@ -31,10 +31,7 @@ import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
-
-import java.io.File;
 
 /**
  * Dialog that is displayed to ask user where they want to download the file.
@@ -71,56 +68,41 @@ public class DownloadLocationCustomView
         mDontShowAgain = findViewById(R.id.show_again_checkbox);
     }
 
-    void initialize(@DownloadLocationDialogType int dialogType, File suggestedPath, long totalBytes,
-            CharSequence title) {
+    void initialize(@DownloadLocationDialogType int dialogType, long totalBytes) {
+        // TODO(xingliu): Remove this function, currently used by smart suggestion.
         mDialogType = dialogType;
-
-        // Automatically check "don't show again" the first time the user is seeing the dialog.
-        boolean isInitial = DownloadDialogBridge.getPromptForDownloadAndroid()
-                == DownloadPromptStatus.SHOW_INITIAL;
-        mDontShowAgain.setChecked(isInitial);
-        mDontShowAgain.setOnCheckedChangeListener(this);
-
-        mFileName.setText(suggestedPath.getName());
-        mTitle.setText(title);
         mTotalBytes = totalBytes;
-
-        switch (dialogType) {
-            case DownloadLocationDialogType.DEFAULT:
-                // Show a file size subtitle if file size is available.
-                if (totalBytes > 0) {
-                    mSubtitleView.setText(
-                            DownloadUtils.getStringForBytes(getContext(), totalBytes));
-                } else {
-                    hideSubtitle();
-                }
-                break;
-
-            case DownloadLocationDialogType.LOCATION_FULL:
-                mSubtitleView.setText(R.string.download_location_download_to_default_folder);
-                break;
-
-            case DownloadLocationDialogType.LOCATION_NOT_FOUND:
-                mSubtitleView.setText(R.string.download_location_download_to_default_folder);
-                break;
-
-            case DownloadLocationDialogType.NAME_CONFLICT:
-                mSubtitleView.setText(R.string.download_location_name_exists);
-                break;
-
-            case DownloadLocationDialogType.NAME_TOO_LONG:
-                mSubtitleView.setText(R.string.download_location_name_too_long);
-                break;
-
-            case DownloadLocationDialogType.LOCATION_SUGGESTION:
-                // Show the location available space underneath the spinner.
-                mLocationAvailableSpace.setVisibility(View.VISIBLE);
-                setFileSize(totalBytes);
-                hideSubtitle();
-                break;
-        }
-
         mDirectoryAdapter.update();
+    }
+
+    void setTitle(CharSequence title) {
+        mTitle.setText(title);
+    }
+
+    void setSubtitle(CharSequence subtitle) {
+        mSubtitleView.setText(subtitle);
+    }
+
+    void setFileName(CharSequence fileName) {
+        mFileName.setText(fileName);
+    }
+
+    void setFileSize(CharSequence fileSize) {
+        mFileSize.setVisibility(View.VISIBLE);
+        mFileSize.setText(fileSize);
+    }
+
+    void setDontShowAgainCheckbox(boolean checked) {
+        mDontShowAgain.setChecked(checked);
+        mDontShowAgain.setOnCheckedChangeListener(this);
+    }
+
+    void showDontShowAgainCheckbox(boolean show) {
+        mDontShowAgain.setVisibility(show ? VISIBLE : GONE);
+    }
+
+    void showLocationAvailableSpace(boolean show) {
+        mLocationAvailableSpace.setVisibility(show ? VISIBLE : GONE);
     }
 
     // CompoundButton.OnCheckedChangeListener implementation.
@@ -160,21 +142,14 @@ public class DownloadLocationCustomView
     /**
      * Hide the subtitle and adjust the bottom margin.
      */
-    private void hideSubtitle() {
-        mSubtitleView.setVisibility(View.GONE);
-        MarginLayoutParams titleMargin = (MarginLayoutParams) mTitle.getLayoutParams();
-        titleMargin.bottomMargin = getResources().getDimensionPixelSize(
-                R.dimen.download_dialog_subtitle_margin_bottom);
-        mTitle.setLayoutParams(titleMargin);
-    }
+    void showSubtitle(boolean show) {
+        mSubtitleView.setVisibility(show ? View.VISIBLE : View.GONE);
 
-    /**
-     * Show the file size below the file name.
-     * @param  totalBytes The total bytes of the download.
-     */
-    private void setFileSize(long totalBytes) {
-        mFileSize.setVisibility(View.VISIBLE);
-        mFileSize.setText(DownloadUtils.getStringForBytes(getContext(), totalBytes));
+        MarginLayoutParams titleMargin = (MarginLayoutParams) mTitle.getLayoutParams();
+        titleMargin.bottomMargin = getResources().getDimensionPixelSize(show
+                        ? R.dimen.download_dialog_title_margin_bottom
+                        : R.dimen.download_dialog_subtitle_margin_bottom);
+        mTitle.setLayoutParams(titleMargin);
     }
 
     /**
@@ -208,6 +183,7 @@ public class DownloadLocationCustomView
     // DownloadDirectoryAdapter.Delegate implementation.
     @Override
     public void onDirectoryOptionsUpdated() {
+        // TODO(xingliu): Move this to other places. UI shouldn't interact with the adapter.
         int selectedItemId = mDirectoryAdapter.getSelectedItemId();
         if (selectedItemId == NO_SELECTED_ITEM_ID
                 || mDialogType == DownloadLocationDialogType.LOCATION_FULL

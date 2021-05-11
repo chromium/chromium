@@ -50,6 +50,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationCustomView.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogController.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadTimePickerDialog.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfig.java",
