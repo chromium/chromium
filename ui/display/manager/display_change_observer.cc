@@ -424,11 +424,14 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
   constexpr gfx::Size k225DisplaySizeHackNocturne(3000, 2000);
   // Keep the Chell's scale factor 2.252 until we make decision.
   constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
+  constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
   } else if (size_in_pixels == k2DisplaySizeHackChell) {
     return 2.f;
+  } else if (size_in_pixels == k18DisplaySizeHackCoachZ) {
+    return kDsf_1_8;
   } else {
     for (size_t i = 0; i < base::size(kThresholdTableForInternal); ++i) {
       if (dpi >= kThresholdTableForInternal[i].dpi)
