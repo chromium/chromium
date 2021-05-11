@@ -2124,15 +2124,12 @@ void Document::UpdateStyle() {
 
   GetStyleEngine().UpdateStyleAndLayoutTree();
 
-  ClearChildNeedsStyleRecalc();
-
   GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
   GetLayoutView()->RecalcLayoutOverflow();
 
-  DCHECK(!NeedsStyleRecalc());
-  DCHECK(!ChildNeedsStyleRecalc());
-  DCHECK(!NeedsReattachLayoutTree());
-  DCHECK(!ChildNeedsReattachLayoutTree());
+#if DCHECK_IS_ON()
+  AssertNodeClean(*this);
+#endif
   DCHECK(InStyleRecalc());
   lifecycle_.AdvanceTo(DocumentLifecycle::kStyleClean);
   if (should_record_stats) {
