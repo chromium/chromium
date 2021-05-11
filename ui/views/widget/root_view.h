@@ -127,6 +127,10 @@ class VIEWS_EXPORT RootView : public View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateParentLayer() override;
 
+  const views::View* gesture_handler_for_testing() const {
+    return gesture_handler_;
+  }
+
  protected:
   // View:
   void ViewHierarchyChanged(
@@ -167,9 +171,6 @@ class VIEWS_EXPORT RootView : public View,
       ui::EventType type,
       View* view,
       View* sibling) WARN_UNUSED_RESULT;
-
-  // Updates the mouse handler and other related data members.
-  void SetMouseHandler(View* new_mouse_handler);
 
   // ui::EventDispatcherDelegate:
   bool CanDispatchToTarget(ui::EventTarget* target) override;
