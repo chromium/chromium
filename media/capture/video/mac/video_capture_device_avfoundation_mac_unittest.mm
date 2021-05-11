@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -261,8 +262,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
       return;
     }
     const auto& device_info = device_infos.front();
-    NSString* deviceId = [NSString
-        stringWithUTF8String:device_info.descriptor.device_id.c_str()];
+    NSString* deviceId =
+        base::SysUTF8ToNSString(device_info.descriptor.device_id);
     VideoCaptureFormat camera_format = device_info.supported_formats.front();
 
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>

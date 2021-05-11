@@ -15,15 +15,15 @@
   Float64 _minFrameRate;
   Float64 _maxFrameRate;
 }
-- (id)initWithMinFrameRate:(Float64)minFrameRate
-              maxFrameRate:(Float64)maxFrameRate;
+- (instancetype)initWithMinFrameRate:(Float64)minFrameRate
+                        maxFrameRate:(Float64)maxFrameRate;
 @end
 
 @implementation FakeAVFrameRateRange
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
-- (id)initWithMinFrameRate:(Float64)minFrameRate
-              maxFrameRate:(Float64)maxFrameRate {
+- (instancetype)initWithMinFrameRate:(Float64)minFrameRate
+                        maxFrameRate:(Float64)maxFrameRate {
   _minFrameRate = minFrameRate;
   _maxFrameRate = maxFrameRate;
   return self;
@@ -46,20 +46,20 @@
   base::scoped_nsobject<FakeAVFrameRateRange> _frameRateRange1;
   base::scoped_nsobject<FakeAVFrameRateRange> _frameRateRange2;
 };
-- (id)initWithWidth:(int)width
-             height:(int)height
-             fourCC:(FourCharCode)fourCC
-          frameRate:(Float64)frameRate;
+- (instancetype)initWithWidth:(int)width
+                       height:(int)height
+                       fourCC:(FourCharCode)fourCC
+                    frameRate:(Float64)frameRate;
 - (void)setSecondFrameRate:(Float64)frameRate;
 @end
 
 @implementation FakeAVCaptureDeviceFormat
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
-- (id)initWithWidth:(int)width
-             height:(int)height
-             fourCC:(FourCharCode)fourCC
-          frameRate:(Float64)frameRate {
+- (instancetype)initWithWidth:(int)width
+                       height:(int)height
+                       fourCC:(FourCharCode)fourCC
+                    frameRate:(Float64)frameRate {
   CMVideoFormatDescriptionCreate(nullptr, fourCC, width, height, nullptr,
                                  _formatDescription.InitializeInto());
   _frameRateRange1.reset([[FakeAVFrameRateRange alloc]

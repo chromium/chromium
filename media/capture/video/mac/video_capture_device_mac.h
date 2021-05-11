@@ -41,7 +41,8 @@ CAPTURE_EXPORT
   int32_t _transportType;
 }
 
-- (id)initWithName:(NSString*)name transportType:(int32_t)transportType;
+- (instancetype)initWithName:(NSString*)name
+               transportType:(int32_t)transportType;
 
 - (NSString*)deviceName;
 - (int32_t)transportType;

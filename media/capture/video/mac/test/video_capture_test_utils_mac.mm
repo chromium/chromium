@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -50,8 +51,7 @@ NSString* GetFirstDeviceId() {
       GetDevicesInfo(&video_capture_device_factory);
   if (devices_info.empty())
     return nil;
-  return [NSString
-      stringWithUTF8String:devices_info.front().descriptor.device_id.c_str()];
+  return base::SysUTF8ToNSString(devices_info.front().descriptor.device_id);
 }
 
 }  // namespace media

@@ -134,7 +134,8 @@ class SuspendObserverDelegate;
   base::ThreadChecker _mainThreadChecker;
 }
 
-- (id)initWithOnChangedCallback:(const base::RepeatingClosure&)callback;
+- (instancetype)initWithOnChangedCallback:
+    (const base::RepeatingClosure&)callback;
 - (void)startObserving:(base::scoped_nsobject<AVCaptureDevice>)device;
 - (void)stopObserving:(AVCaptureDevice*)device;
 - (void)clearOnDeviceChangedCallback;
@@ -348,7 +349,8 @@ void AVFoundationMonitorImpl::OnDeviceChanged() {
 
 @implementation CrAVFoundationDeviceObserver
 
-- (id)initWithOnChangedCallback:(const base::RepeatingClosure&)callback {
+- (instancetype)initWithOnChangedCallback:
+    (const base::RepeatingClosure&)callback {
   DCHECK(_mainThreadChecker.CalledOnValidThread());
   if ((self = [super init])) {
     DCHECK(!callback.is_null());

@@ -142,7 +142,7 @@ CAPTURE_EXPORT
 // initialise an object of this class and register a |frameReceiver_|. This
 // initializes the instance and the underlying capture session and registers the
 // frame receiver.
-- (id)initWithFrameReceiver:
+- (instancetype)initWithFrameReceiver:
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
 
 // Frame receiver registration or removal can also happen via explicit call

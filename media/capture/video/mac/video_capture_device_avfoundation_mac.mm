@@ -162,7 +162,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 #pragma mark Public methods
 
-- (id)initWithFrameReceiver:
+- (instancetype)initWithFrameReceiver:
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver {
   if ((self = [super init])) {
     _mainThreadTaskRunner = base::ThreadTaskRunnerHandle::Get();
@@ -224,8 +224,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   _captureDevice.reset([AVCaptureDevice deviceWithUniqueID:deviceId],
                        base::scoped_policy::RETAIN);
   if (!_captureDevice) {
-    *outMessage =
-        [NSString stringWithUTF8String:"Could not open video capture device."];
+    *outMessage = @"Could not open video capture device.";
     return NO;
   }
 
@@ -249,8 +248,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   _captureVideoDataOutput.reset([[AVCaptureVideoDataOutput alloc] init]);
   if (!_captureVideoDataOutput) {
     [_captureSession removeInput:_captureDeviceInput];
-    *outMessage =
-        [NSString stringWithUTF8String:"Could not create video data output."];
+    *outMessage = @"Could not create video data output.";
     return NO;
   }
   [_captureVideoDataOutput setAlwaysDiscardsLateVideoFrames:true];
@@ -1007,7 +1005,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 - (void)onVideoError:(NSNotification*)errorNotification {
   NSError* error = base::mac::ObjCCast<NSError>(
-      [[errorNotification userInfo] objectForKey:AVCaptureSessionErrorKey]);
+      [errorNotification userInfo][AVCaptureSessionErrorKey]);
   [self sendErrorString:[NSString
                             stringWithFormat:@"%@: %@",
                                              [error localizedDescription],

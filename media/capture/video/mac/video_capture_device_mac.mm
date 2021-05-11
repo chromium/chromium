@@ -37,7 +37,8 @@ using ScopedIOUSBInterfaceInterface =
 
 @implementation DeviceNameAndTransportType
 
-- (id)initWithName:(NSString*)deviceName transportType:(int32_t)transportType {
+- (instancetype)initWithName:(NSString*)deviceName
+               transportType:(int32_t)transportType {
   if (self = [super init]) {
     _deviceName.reset([deviceName copy]);
     _transportType = transportType;
@@ -620,8 +621,7 @@ void VideoCaptureDeviceMac::AllocateAndStart(
     LogMessage("Using AVFoundation for device: " +
                device_descriptor_.display_name());
 
-  NSString* deviceId =
-      [NSString stringWithUTF8String:device_descriptor_.device_id.c_str()];
+  NSString* deviceId = base::SysUTF8ToNSString(device_descriptor_.device_id);
 
   [capture_device_ setFrameReceiver:this];
 
