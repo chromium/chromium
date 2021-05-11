@@ -42,9 +42,15 @@ extern NSString* const
 
 // Inits view controller with |offset| to maintain scroll position if needed.
 // Offset is only required if Discover feed is visible.
+// |feedVisible| is YES if feed is enabled and visible.
+// |refactoredFeedVisible| is YES if the feed is visible using the refactored
+// NTP.
+// TODO(crbug.com/1200303): Remove |refactoredFeedVisible| after launch.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible NS_DESIGNATED_INITIALIZER;
+                  feedVisible:(BOOL)visible
+        refactoredFeedVisible:(BOOL)refactoredFeedVisible
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
                          style:(CollectionViewControllerStyle)style
@@ -92,6 +98,9 @@ extern NSString* const
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
+
+// |YES| the NTP feed is collapsed and enabled.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;

@@ -14,6 +14,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/default_search_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -25,8 +27,10 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -215,6 +219,20 @@
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
 
+  DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+  if (IsDiscoverFeedEnabled()) {
+    // Creating the DiscoverFeedService will start the DiscoverFeed.
+    DiscoverFeedService* discoverFeedService =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    discoverFeedMetricsRecorder =
+        discoverFeedService->GetDiscoverFeedMetricsRecorder();
+    self.contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
+        discoverFeedMetricsRecorder;
+    self.contentSuggestionsCoordinator.refactoredFeedVisible =
+        [self isNTPRefactoredAndFeedVisible];
+  }
+
   [self.contentSuggestionsCoordinator start];
 
   self.ntpMediator.refactoredFeedVisible = [self isNTPRefactoredAndFeedVisible];
@@ -223,6 +241,8 @@
         initWithContentSuggestionsViewController:
             self.contentSuggestionsCoordinator.viewController];
     self.ntpViewController.panGestureHandler = self.panGestureHandler;
+    self.ntpViewController.discoverFeedMetricsRecorder =
+        discoverFeedMetricsRecorder;
     self.ntpMediator.ntpViewController = self.ntpViewController;
 
     UIViewController* discoverFeedViewController =

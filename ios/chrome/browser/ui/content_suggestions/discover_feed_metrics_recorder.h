@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // Records different metrics for the NTP's Discover feed.
+// TODO(crbug.com/1200303): Move this file to */ui/ntp.
 @interface DiscoverFeedMetricsRecorder : NSObject
 
 // Record metrics for when the user has scrolled |scrollDistance| in the Feed.

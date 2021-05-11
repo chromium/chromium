@@ -118,8 +118,6 @@
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 @property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
@@ -220,14 +218,6 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  if (IsDiscoverFeedEnabled()) {
-    // Creating the DiscoverFeedService will start the DiscoverFeed.
-    DiscoverFeedService* discoverFeedService =
-        DiscoverFeedServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    self.discoverFeedMetricsRecorder =
-        discoverFeedService->GetDiscoverFeedMetricsRecorder();
-  }
   self.discoverFeedViewController = [self discoverFeed];
 
   TemplateURLService* templateURLService =
@@ -279,9 +269,10 @@
   }
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-      initWithStyle:CollectionViewControllerStyleDefault
-             offset:offset
-        feedVisible:[self isDiscoverFeedVisible]];
+              initWithStyle:CollectionViewControllerStyleDefault
+                     offset:offset
+                feedVisible:[self isDiscoverFeedVisible]
+      refactoredFeedVisible:[self isRefactoredFeedVisible]];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -833,6 +824,7 @@
   [self.contentSuggestionsMediator reloadAllData];
   [self.discoverFeedMetricsRecorder
       recordDiscoverFeedVisibilityChanged:visible];
+  self.suggestionsViewController.feedVisible = [self isDiscoverFeedVisible];
 }
 
 // YES if the Discover feed is currently visible.

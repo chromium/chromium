@@ -12,6 +12,7 @@
 
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
+@class DiscoverFeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
@@ -46,6 +47,10 @@
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports
 // ContentSuggestions.
 @property(nonatomic, weak) UIButton* identityDiscButton;
+
+// Discover Feed metrics recorder.
+@property(nonatomic, strong)
+    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
 // Initializes view controller with NTP content view controllers.
 // |discoverFeedViewController| represents the Discover feed for suggesting

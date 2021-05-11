@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -119,10 +120,13 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible {
+                  feedVisible:(BOOL)visible
+        refactoredFeedVisible:(BOOL)refactoredFeedVisible {
   _offset = offset;
-  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset
-                                                 feedVisible:visible];
+  _feedVisible = visible;
+  _layout =
+      [[ContentSuggestionsLayout alloc] initWithOffset:offset
+                                           feedVisible:refactoredFeedVisible];
   self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
@@ -802,11 +806,16 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
                                               willDecelerate:decelerate];
   [self.panGestureHandler scrollViewDidEndDragging:scrollView
                                     willDecelerate:decelerate];
-  if (IsDiscoverFeedEnabled()) {
+
+  // Track scrolling for the legacy NTP with visible Discover feed.
+  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
     [self.discoverFeedMetricsRecorder
         recordFeedScrolled:scrollView.contentOffset.y -
                            self.scrollStartPosition];
-  } else {
+  }
+
+  // Track scrolling for the visible Zine feed.
+  if (!IsDiscoverFeedEnabled() && [self isFeedVisible]) {
     [self.metricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
                                              self.scrollStartPosition];
   }
