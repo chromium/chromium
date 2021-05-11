@@ -124,7 +124,7 @@ void WaylandPointer::Axis(void* data,
                           wl_fixed_t value) {
   static const double kAxisValueScale = 10.0;
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
-  gfx::Vector2d offset;
+  gfx::Vector2dF offset;
   // Wayland compositors send axis events with values in the surface coordinate
   // space. They send a value of 10 per mouse wheel click by convention, so
   // clients (e.g. GTK+) typically scale down by this amount to convert to

@@ -13,7 +13,7 @@
 
 namespace gfx {
 class PointF;
-class Vector2d;
+class Vector2dF;
 }  // namespace gfx
 
 namespace ui {
@@ -89,7 +89,7 @@ class WaylandPointer::Delegate {
                                     int changed_button,
                                     WaylandWindow* window = nullptr) = 0;
   virtual void OnPointerMotionEvent(const gfx::PointF& location) = 0;
-  virtual void OnPointerAxisEvent(const gfx::Vector2d& offset) = 0;
+  virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
   virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;

@@ -24,6 +24,7 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
@@ -187,11 +188,13 @@ void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
   DispatchEvent(&event);
 }
 
-void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2d& offset) {
+void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset_f) {
+  auto offset = gfx::Vector2d(offset_f.x(), offset_f.y());
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseWheelEvent event(offset, pointer_location_, pointer_location_,
                         EventTimeForNow(), flags, 0);
   DispatchEvent(&event);
+
   current_pointer_frame_.dx += offset.x();
   current_pointer_frame_.dy += offset.y();
 }

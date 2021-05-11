@@ -28,7 +28,6 @@
 struct wl_display;
 
 namespace gfx {
-class Vector2d;
 class Vector2dF;
 }
 
@@ -104,7 +103,7 @@ class WaylandEventSource : public PlatformEventSource,
                             int changed_button,
                             WaylandWindow* window = nullptr) override;
   void OnPointerMotionEvent(const gfx::PointF& location) override;
-  void OnPointerAxisEvent(const gfx::Vector2d& offset) override;
+  void OnPointerAxisEvent(const gfx::Vector2dF& offset) override;
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis) override;
