@@ -27,6 +27,10 @@ void WrapReadCompressedIconCallback(
 
 }  // namespace
 
+WebAppIconManager* AppIconManager::AsWebAppIconManager() {
+  return nullptr;
+}
+
 void AppIconManager::ReadSmallestIconAny(const AppId& app_id,
                                          SquareSizePx min_icon_size,
                                          ReadIconCallback callback) const {

@@ -17,6 +17,8 @@
 
 namespace web_app {
 
+class WebAppIconManager;
+
 // Exclusively used from the UI thread.
 class AppIconManager {
  public:
@@ -27,6 +29,8 @@ class AppIconManager {
 
   virtual void Start() = 0;
   virtual void Shutdown() = 0;
+
+  virtual WebAppIconManager* AsWebAppIconManager();
 
   // Returns false if any icon in |icon_sizes_in_px| is missing from downloaded
   // icons for a given app and |purpose|.

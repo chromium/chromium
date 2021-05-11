@@ -18,6 +18,10 @@
 class GURL;
 class Profile;
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace web_app {
 
 class FileUtilsWrapper;
@@ -49,6 +53,11 @@ base::span<const int> GetIconSizes();
 
 bool ContainsOneIconOfEachSize(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps);
+
+void ExpectImageSkiaRep(const gfx::ImageSkia& image_skia,
+                        float scale,
+                        SquareSizePx size_px,
+                        SkColor color);
 
 }  // namespace web_app
 

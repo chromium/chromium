@@ -33,6 +33,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/layout.h"
+#include "ui/base/resource/scale_factor.h"
 #include "ui/gfx/favicon_size.h"
 
 namespace web_app {
@@ -276,6 +278,17 @@ class WebAppIconManagerTest : public WebAppTest {
     web_app->SetStartUrl(app_url);
 
     return web_app;
+  }
+
+  void StartIconManagerWaitFavicon(const AppId& app_id) {
+    base::RunLoop run_loop;
+    icon_manager().SetFaviconReadCallbackForTesting(
+        base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+          EXPECT_EQ(cached_app_id, app_id);
+          run_loop.Quit();
+        }));
+    icon_manager().Start();
+    run_loop.Run();
   }
 
   TestWebAppRegistryController& controller() {
@@ -1160,15 +1173,7 @@ TEST_F(WebAppIconManagerTest, CacheExistingAppFavicon) {
 
   controller().RegisterApp(std::move(web_app));
 
-  base::RunLoop run_loop;
-  icon_manager().SetFaviconReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        EXPECT_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-
-  icon_manager().Start();
-  run_loop.Run();
+  StartIconManagerWaitFavicon(app_id);
 
   SkBitmap bitmap = icon_manager().GetFavicon(app_id);
   EXPECT_FALSE(bitmap.empty());
@@ -1191,15 +1196,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFaviconWithResize) {
 
   controller().RegisterApp(std::move(web_app));
 
-  base::RunLoop run_loop;
-  icon_manager().SetFaviconReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        EXPECT_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-
-  icon_manager().Start();
-  run_loop.Run();
+  StartIconManagerWaitFavicon(app_id);
 
   SkBitmap bitmap = icon_manager().GetFavicon(app_id);
   EXPECT_FALSE(bitmap.empty());
@@ -1238,6 +1235,181 @@ TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
   EXPECT_EQ(gfx::kFaviconSize, bitmap.width());
   EXPECT_EQ(gfx::kFaviconSize, bitmap.height());
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, 0));
+}
+
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
+  ui::SetSupportedScaleFactors(
+      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App declares icons precisely matching suspported UI scale factors.
+  const std::vector<int> sizes_px{icon_size::k16, icon_size::k32,
+                                  icon_size::k64};
+  ASSERT_TRUE(base::Contains(sizes_px, gfx::kFaviconSize));
+
+  const std::vector<SkColor> colors{SK_ColorYELLOW, SK_ColorGREEN, SK_ColorRED};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  ASSERT_FALSE(image_skia.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.width());
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(image_skia, /*scale=*/1.0f, /*size_px=*/icon_size::k16,
+                       SK_ColorYELLOW);
+  }
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+                       SK_ColorGREEN);
+  }
+  {
+    SCOPED_TRACE(icon_size::k48);
+    ExpectImageSkiaRep(image_skia, /*scale=*/3.0f, /*size_px=*/icon_size::k48,
+                       SK_ColorRED);
+  }
+}
+
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
+  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App declares only bigger icons, forcing a downsize to suspported UI scale
+  // factors.
+  const std::vector<int> sizes_px{icon_size::k24, icon_size::k48};
+  ASSERT_FALSE(base::Contains(sizes_px, gfx::kFaviconSize));
+
+  const std::vector<SkColor> colors{SK_ColorCYAN, SK_ColorMAGENTA};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  ASSERT_FALSE(image_skia.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.width());
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(image_skia, /*scale=*/1.0f, /*size_px=*/icon_size::k16,
+                       SK_ColorCYAN);
+  }
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+                       SK_ColorMAGENTA);
+  }
+}
+
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
+  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  EXPECT_TRUE(image_skia.isNull());
+}
+
+TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
+  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App declares only smaller icon and implementations ignore it: no upsizing.
+  const std::vector<int> sizes_px{icon_size::k16};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, /*colors=*/{SK_ColorRED});
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  EXPECT_TRUE(image_skia.isNull());
+}
+
+TEST_F(WebAppIconManagerTest,
+       CacheAppFavicon_UiScaleFactors_DownsizingFromSingleIcon) {
+  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App declares only one jumbo icon.
+  const std::vector<int> sizes_px{icon_size::k512};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, /*colors=*/{SK_ColorLTGRAY});
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  ASSERT_FALSE(image_skia.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.width());
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(image_skia, /*scale=*/1.0f, /*size_px=*/icon_size::k16,
+                       SK_ColorLTGRAY);
+  }
+  {
+    SCOPED_TRACE(icon_size::k32);
+    ExpectImageSkiaRep(image_skia, /*scale=*/2.0f, /*size_px=*/icon_size::k32,
+                       SK_ColorLTGRAY);
+  }
+}
+
+TEST_F(WebAppIconManagerTest,
+       CacheAppFavicon_UiScaleFactors_BiggerUiScaleFactorIconMissing) {
+  ui::SetSupportedScaleFactors({ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
+
+  std::unique_ptr<WebApp> web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App declares the icon which is ok for 100P but small for 300P.
+  const std::vector<int> sizes_px{icon_size::k32};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, /*colors=*/{SK_ColorDKGRAY});
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  StartIconManagerWaitFavicon(app_id);
+
+  gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
+  ASSERT_FALSE(image_skia.isNull());
+
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.width());
+  EXPECT_EQ(gfx::kFaviconSize, image_skia.height());
+  {
+    SCOPED_TRACE(icon_size::k16);
+    ExpectImageSkiaRep(image_skia, /*scale=*/1.0f, /*size_px=*/icon_size::k16,
+                       SK_ColorDKGRAY);
+  }
+  EXPECT_FALSE(image_skia.HasRepresentation(2.0f));
+  EXPECT_FALSE(image_skia.HasRepresentation(3.0f));
 }
 
 }  // namespace web_app

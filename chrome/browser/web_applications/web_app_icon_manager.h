@@ -18,6 +18,8 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 
 class Profile;
 
@@ -26,11 +28,15 @@ namespace web_app {
 class FileUtilsWrapper;
 class WebAppRegistrar;
 
+using SquareSizeDip = int;
+
 // Exclusively used from the UI thread.
 class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
  public:
   using FaviconReadCallback =
       base::RepeatingCallback<void(const AppId& app_id)>;
+  using ReadImageSkiaCallback =
+      base::OnceCallback<void(gfx::ImageSkia image_skia)>;
 
   WebAppIconManager(Profile* profile,
                     WebAppRegistrar& registrar,
@@ -52,6 +58,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   void DeleteData(AppId app_id, WriteDataCallback callback);
 
   // AppIconManager:
+  WebAppIconManager* AsWebAppIconManager() override;
   void Start() override;
   void Shutdown() override;
   bool HasIcons(const AppId& app_id,
@@ -84,6 +91,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
       ReadCompressedIconWithPurposeCallback callback) const override;
   SkBitmap GetFavicon(const AppId& app_id) const override;
 
+  gfx::ImageSkia GetFaviconImageSkia(const AppId& app_id) const;
+
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
@@ -97,6 +106,14 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
                          SquareSizePx desired_icon_size,
                          ReadIconsCallback callback) const;
 
+  // Reads multiple densities of the icon for each supported UI scale factor.
+  // See ui/base/layout.h. Returns null image in |callback| if no icons found
+  // for all supported UI scale factors (matches only bigger icons, no
+  // upscaling).
+  void ReadUiScaleFactorsIcons(const AppId& app_id,
+                               SquareSizeDip size_in_dip,
+                               ReadImageSkiaCallback callback);
+
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
 
  private:
@@ -105,9 +122,12 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
       const std::vector<IconPurpose>& purposes,
       SquareSizePx max_size) const;
 
+  void OnReadUiScaleFactorsIcons(SquareSizeDip size_in_dip,
+                                 ReadImageSkiaCallback callback,
+                                 std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+
   void ReadFavicon(const AppId& app_id);
-  void OnReadFavicon(const AppId& app_id,
-                     std::map<SquareSizePx, SkBitmap> icons);
+  void OnReadFavicon(const AppId& app_id, gfx::ImageSkia image_skia);
 
   WebAppRegistrar& registrar_;
   base::FilePath web_apps_directory_;
@@ -116,8 +136,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
 
-  // We cache a single low-resolution icon for each app.
-  std::map<AppId, SkBitmap> favicon_cache_;
+  // We cache different densities for high-DPI displays per each app.
+  std::map<AppId, gfx::ImageSkia> favicon_cache_;
 
   FaviconReadCallback favicon_read_callback_;
 

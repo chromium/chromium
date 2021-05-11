@@ -11,8 +11,10 @@
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace web_app {
 
@@ -113,6 +115,19 @@ bool ContainsOneIconOfEachSize(
   }
 
   return true;
+}
+
+void ExpectImageSkiaRep(const gfx::ImageSkia& image_skia,
+                        float scale,
+                        SquareSizePx size_px,
+                        SkColor color) {
+  ASSERT_TRUE(image_skia.HasRepresentation(scale));
+
+  EXPECT_EQ(size_px, image_skia.GetRepresentation(scale).GetBitmap().width());
+  EXPECT_EQ(size_px, image_skia.GetRepresentation(scale).GetBitmap().height());
+
+  EXPECT_EQ(color,
+            image_skia.GetRepresentation(scale).GetBitmap().getColor(0, 0));
 }
 
 }  // namespace web_app
