@@ -16,7 +16,6 @@
 
 namespace base {
 class Value;
-class ListValue;
 }
 
 namespace extensions {
@@ -72,12 +71,12 @@ class APISignature {
     JSONParseResult(JSONParseResult&& other);
     JSONParseResult& operator=(JSONParseResult&& other);
 
-    bool succeeded() const { return !!arguments; }
+    bool succeeded() const { return !!arguments_list; }
 
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    std::unique_ptr<base::ListValue> arguments;
+    std::unique_ptr<base::Value> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;

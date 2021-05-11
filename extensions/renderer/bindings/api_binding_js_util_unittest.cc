@@ -173,7 +173,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   CallFunctionOnObject(context, v8_util, kSendRequestWithNoOptions);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
-  EXPECT_EQ("[\"someString\"]", ValueToString(*last_request()->arguments));
+  EXPECT_EQ("[\"someString\"]", ValueToString(*last_request()->arguments_list));
   reset_last_request();
 
   const char kSendRequestForUIThread[] =
@@ -183,7 +183,8 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   CallFunctionOnObject(context, v8_util, kSendRequestForUIThread);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
-  EXPECT_EQ("[\"someOtherString\"]", ValueToString(*last_request()->arguments));
+  EXPECT_EQ("[\"someOtherString\"]",
+            ValueToString(*last_request()->arguments_list));
   reset_last_request();
 
   const char kSendRequestWithCustomCallback[] =
@@ -199,7 +200,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   CallFunctionOnObject(context, v8_util, kSendRequestWithCustomCallback);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
-  EXPECT_EQ("[\"stringy\"]", ValueToString(*last_request()->arguments));
+  EXPECT_EQ("[\"stringy\"]", ValueToString(*last_request()->arguments_list));
   bindings_system()->CompleteRequest(last_request()->request_id,
                                      base::ListValue(), std::string());
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
@@ -224,7 +225,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestSerializationFailure) {
   CallFunctionOnObject(context, v8_util, kSendRequest);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
-  EXPECT_EQ("[null,null]", ValueToString(*last_request()->arguments));
+  EXPECT_EQ("[null,null]", ValueToString(*last_request()->arguments_list));
   reset_last_request();
 }
 

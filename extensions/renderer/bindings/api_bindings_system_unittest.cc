@@ -189,10 +189,10 @@ void APIBindingsSystemTest::ValidateLastRequest(
   ASSERT_TRUE(last_request());
   // Note that even if no arguments are provided by the API call, we should
   // have an empty list.
-  ASSERT_TRUE(last_request()->arguments);
+  ASSERT_TRUE(last_request()->arguments_list);
   EXPECT_EQ(expected_name, last_request()->method_name);
   EXPECT_EQ(ReplaceSingleQuotes(expected_arguments),
-            ValueToString(*last_request()->arguments));
+            ValueToString(*last_request()->arguments_list));
 }
 
 v8::Local<v8::Value> APIBindingsSystemTest::CallFunctionOnObject(

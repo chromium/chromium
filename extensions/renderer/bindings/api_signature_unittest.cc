@@ -245,14 +245,14 @@ class APISignatureTest : public APIBindingTest {
 
     APISignature::JSONParseResult parse_result =
         signature.ParseArgumentsToJSON(context, vector_args, type_refs_);
-    ASSERT_EQ(should_succeed, !!parse_result.arguments);
+    ASSERT_EQ(should_succeed, !!parse_result.arguments_list);
     ASSERT_NE(should_succeed, parse_result.error.has_value());
     EXPECT_EQ(expected_response_type, parse_result.async_type);
     EXPECT_EQ(expected_response_type == binding::AsyncResponseType::kCallback,
               !parse_result.callback.IsEmpty());
     if (should_succeed) {
       EXPECT_EQ(ReplaceSingleQuotes(expected_parsed_args),
-                ValueToString(*parse_result.arguments));
+                ValueToString(*parse_result.arguments_list));
     } else {
       EXPECT_EQ(expected_error, *parse_result.error);
     }
@@ -498,8 +498,8 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
-    ASSERT_TRUE(parse_result.arguments);
-    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments));
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
     EXPECT_FALSE(parse_result.callback.IsEmpty());
   }
 
@@ -513,8 +513,8 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
-    ASSERT_TRUE(parse_result.arguments);
-    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments));
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
   }
 
@@ -527,9 +527,9 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
-    ASSERT_TRUE(parse_result.arguments);
+    ASSERT_TRUE(parse_result.arguments_list);
     EXPECT_EQ(R"([{"not":"a string"}])",
-              ValueToString(*parse_result.arguments));
+              ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
   }
 
@@ -540,9 +540,9 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
-    ASSERT_TRUE(parse_result.arguments);
+    ASSERT_TRUE(parse_result.arguments_list);
     EXPECT_EQ(R"([{"other":"bar","prop1":"foo"}])",
-              ValueToString(*parse_result.arguments));
+              ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
   }
 
@@ -556,8 +556,8 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
-    ASSERT_TRUE(parse_result.arguments);
-    EXPECT_EQ("[1,null,null]", ValueToString(*parse_result.arguments));
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1,null,null]", ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
   }
 }

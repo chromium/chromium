@@ -22,7 +22,7 @@ namespace extensions {
 // arguments were used in construction).
 class APIRequestHandler::ArgumentAdapter {
  public:
-  explicit ArgumentAdapter(const base::ListValue* base_argumements);
+  explicit ArgumentAdapter(const base::Value* base_argumements);
   explicit ArgumentAdapter(
       const std::vector<v8::Local<v8::Value>>& v8_arguments);
   ~ArgumentAdapter();
@@ -31,14 +31,14 @@ class APIRequestHandler::ArgumentAdapter {
       v8::Local<v8::Context> context) const;
 
  private:
-  const base::ListValue* base_arguments_ = nullptr;
+  const base::Value* base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
 
   DISALLOW_COPY_AND_ASSIGN(ArgumentAdapter);
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
-    const base::ListValue* base_arguments)
+    const base::Value* base_arguments)
     : base_arguments_(base_arguments) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     const std::vector<v8::Local<v8::Value>>& v8_arguments)
@@ -56,7 +56,7 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
         << "GetArguments() should only be called once.";
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
-    v8_arguments_.reserve(base_arguments_->GetSize());
+    v8_arguments_.reserve(base_arguments_->GetList().size());
     for (const auto& arg : base_arguments_->GetList())
       v8_arguments_.push_back(converter->ToV8Value(&arg, context));
   }
@@ -247,7 +247,7 @@ APIRequestHandler::~APIRequestHandler() {}
 
 int APIRequestHandler::StartRequest(v8::Local<v8::Context> context,
                                     const std::string& method,
-                                    std::unique_ptr<base::ListValue> arguments,
+                                    std::unique_ptr<base::Value> arguments_list,
                                     v8::Local<v8::Function> callback,
                                     v8::Local<v8::Function> custom_callback) {
   std::unique_ptr<AsyncResultHandler> async_handler;
@@ -286,7 +286,7 @@ int APIRequestHandler::StartRequest(v8::Local<v8::Context> context,
         isolate, callback, std::move(callback_args));
   }
 
-  StartRequestImpl(context, request_id, method, std::move(arguments),
+  StartRequestImpl(context, request_id, method, std::move(arguments_list),
                    std::move(async_handler));
   return request_id;
 }
@@ -295,20 +295,20 @@ std::pair<int, v8::Local<v8::Promise>>
 APIRequestHandler::StartPromiseBasedRequest(
     v8::Local<v8::Context> context,
     const std::string& method,
-    std::unique_ptr<base::ListValue> arguments) {
+    std::unique_ptr<base::Value> arguments_list) {
   v8::Isolate* isolate = context->GetIsolate();
   v8::Local<v8::Promise::Resolver> resolver =
       v8::Promise::Resolver::New(context).ToLocalChecked();
   auto async_handler = std::make_unique<AsyncResultHandler>(isolate, resolver);
   int request_id = GetNextRequestId();
-  StartRequestImpl(context, request_id, method, std::move(arguments),
+  StartRequestImpl(context, request_id, method, std::move(arguments_list),
                    std::move(async_handler));
 
   return {request_id, resolver->GetPromise()};
 }
 
 void APIRequestHandler::CompleteRequest(int request_id,
-                                        const base::ListValue& response_args,
+                                        const base::Value& response_args,
                                         const std::string& error) {
   CompleteRequestImpl(request_id, ArgumentAdapter(&response_args), error);
 }
@@ -381,7 +381,7 @@ void APIRequestHandler::StartRequestImpl(
     v8::Local<v8::Context> context,
     int request_id,
     const std::string& method,
-    std::unique_ptr<base::ListValue> arguments,
+    std::unique_ptr<base::Value> arguments_list,
     std::unique_ptr<AsyncResultHandler> async_handler) {
   auto request = std::make_unique<Request>();
   request->request_id = request_id;
@@ -400,7 +400,7 @@ void APIRequestHandler::StartRequestImpl(
 
   request->has_user_gesture =
       interaction_provider_->HasActiveInteraction(context);
-  request->arguments = std::move(arguments);
+  request->arguments_list = std::move(arguments_list);
   request->method_name = method;
 
   last_sent_request_id_ = request_id;

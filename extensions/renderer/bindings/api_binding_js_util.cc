@@ -101,7 +101,7 @@ void APIBindingJSUtil::SendRequest(
   CHECK(parse_result.succeeded());
 
   request_handler_->StartRequest(context, name,
-                                 std::move(parse_result.arguments),
+                                 std::move(parse_result.arguments_list),
                                  parse_result.callback, custom_callback);
 }
 

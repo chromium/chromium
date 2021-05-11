@@ -208,9 +208,10 @@ void ContentSetting::HandleFunction(const std::string& method_name,
     }
   }
 
-  parse_result.arguments->Insert(0u, std::make_unique<base::Value>(pref_name_));
+  parse_result.arguments_list->Insert(
+      parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
   request_handler_->StartRequest(context, "contentSettings." + method_name,
-                                 std::move(parse_result.arguments),
+                                 std::move(parse_result.arguments_list),
                                  parse_result.callback,
                                  v8::Local<v8::Function>());
 }

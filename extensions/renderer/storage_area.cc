@@ -244,9 +244,10 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
     return;
   }
 
-  parse_result.arguments->Insert(0u, std::make_unique<base::Value>(name_));
+  parse_result.arguments_list->Insert(
+      parse_result.arguments_list->GetList().begin(), base::Value(name_));
   request_handler_->StartRequest(
-      context, full_method_name, std::move(parse_result.arguments),
+      context, full_method_name, std::move(parse_result.arguments_list),
       parse_result.callback, v8::Local<v8::Function>());
 }
 

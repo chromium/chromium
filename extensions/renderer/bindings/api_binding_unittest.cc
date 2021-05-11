@@ -324,7 +324,7 @@ void APIBindingUnittest::RunTest(v8::Local<v8::Context> context,
     RunFunction(func, context, 1, argv);
     ASSERT_TRUE(last_request_) << script_source;
     EXPECT_EQ(expected_json_arguments,
-              ValueToString(*last_request_->arguments));
+              ValueToString(*last_request_->arguments_list));
     EXPECT_EQ(expect_callback, last_request_->has_callback) << script_source;
   } else {
     RunFunctionAndExpectError(func, context, 1, argv, expected_error);
