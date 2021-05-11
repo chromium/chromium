@@ -48,6 +48,15 @@ android_webview/public/
 base/logging.h
 base/synchronization/lock_impl.h
 
+# Performance related exclusion based on sampling profiler data
+base/bind_internal.h
+base/message_loop/
+base/task/
+base/threading/
+base/timer/
+cc/
+content/browser/scheduler/responsiveness/
+
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
 # because they are sensitive to performance regressions (to a much higher
