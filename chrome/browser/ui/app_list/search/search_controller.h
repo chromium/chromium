@@ -18,129 +18,89 @@
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 
-class AppListControllerDelegate;
-class AppListModelUpdater;
 class ChromeSearchResult;
-class Profile;
 
 namespace ash {
-class AppListNotifier;
 enum class AppListSearchResultType;
 }
 
 namespace app_list {
 
-class SearchMetricsObserver;
 class SearchProvider;
-class RankerDelegate;
 enum class RankingItemType;
+
+// Common types used throughout result ranking.
+
+// The type of a particular result.
+using ResultType = ash::AppListSearchResultType;
+// The type of a search provider as a whole. This is currently just the 'main'
+// ResultType returned by the provider.
+using ProviderType = ash::AppListSearchResultType;
+
+using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
+using ResultsMap = base::flat_map<ProviderType, Results>;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
 // to all search providers, then invokes the mixer to mix and to publish the
 // results to the given SearchResults UI model.
+//
+// // TODO(crbug.com/1199206): The SearchController is being reimplemented with
+// a different ranking system. Once this reimplementation is finished, this pure
+// virtual class can be removed and replaced with SearchControllerImplNew.
 class SearchController {
  public:
   using ResultsChangedCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType)>;
+  virtual ~SearchController() {}
 
-  using ProviderType = ash::AppListSearchResultType;
-  using ResultType = ash::AppListSearchResultType;
+  virtual void InitializeRankers() = 0;
 
-  using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
-  using ResultsMap = base::flat_map<ProviderType, Results>;
+  virtual void Start(const std::u16string& query) = 0;
+  virtual void ViewClosing() = 0;
 
-  SearchController(AppListModelUpdater* model_updater,
-                   AppListControllerDelegate* list_controller,
-                   ash::AppListNotifier* notifier,
-                   Profile* profile);
-  virtual ~SearchController();
-
-  SearchController(const SearchController&) = delete;
-  SearchController& operator=(const SearchController&) = delete;
-
-  void InitializeRankers();
-
-  void Start(const std::u16string& query);
-  void ViewClosing();
-
-  void OpenResult(ChromeSearchResult* result, int event_flags);
-  void InvokeResultAction(ChromeSearchResult* result, int action_index);
+  virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
+  virtual void InvokeResultAction(ChromeSearchResult* result,
+                                  int action_index) = 0;
 
   // Adds a new mixer group. See Mixer::AddGroup.
-  size_t AddGroup(size_t max_results);
+  virtual size_t AddGroup(size_t max_results) = 0;
 
   // Takes ownership of |provider| and associates it with given mixer group.
-  void AddProvider(size_t group_id, std::unique_ptr<SearchProvider> provider);
+  virtual void AddProvider(size_t group_id,
+                           std::unique_ptr<SearchProvider> provider) = 0;
 
   // Update the controller with the given results. Used only if the categorical
   // search feature flag is enabled.
-  void SetResults(ash::AppListSearchResultType provider_type, Results results);
+  virtual void SetResults(ash::AppListSearchResultType provider_type,
+                          Results results) = 0;
 
-  virtual ChromeSearchResult* FindSearchResult(const std::string& result_id);
-  ChromeSearchResult* GetResultByTitleForTest(const std::string& title);
+  virtual ChromeSearchResult* FindSearchResult(
+      const std::string& result_id) = 0;
+  virtual ChromeSearchResult* GetResultByTitleForTest(
+      const std::string& title) = 0;
 
   // Sends training signal to each |providers_|
-  void Train(AppLaunchData&& app_launch_data);
+  virtual void Train(AppLaunchData&& app_launch_data) = 0;
 
   // Invoked when the app list is shown.
-  void AppListShown();
+  virtual void AppListShown() = 0;
 
   // Gets the length of the most recent query.
-  int GetLastQueryLength() const;
+  virtual int GetLastQueryLength() const = 0;
 
   // Called when items in the results list have been on screen for some amount
   // of time, or the user clicked a search result.
-  void OnSearchResultsImpressionMade(
+  virtual void OnSearchResultsImpressionMade(
       const std::u16string& trimmed_query,
       const ash::SearchResultIdWithPositionIndices& results,
-      int launched_index);
+      int launched_index) = 0;
 
-  void set_results_changed_callback_for_test(ResultsChangedCallback callback) {
-    results_changed_callback_ = std::move(callback);
-  }
+  virtual std::u16string get_query() = 0;
 
- private:
-  // Invoked when the search results are changed. Providers should use the one
-  // argument version, and pass the primary type of result produced by the
-  // invoking search provider.
-  void OnResultsChanged();
-  void OnResultsChangedWithType(ash::AppListSearchResultType result_type);
+  virtual base::Time session_start() = 0;
 
-  Profile* profile_;
-
-  bool dispatching_query_ = false;
-
-  // If true, the search results are shown on the launcher start page.
-  bool query_for_recommendation_ = false;
-
-  // The query associated with the most recent search.
-  std::u16string last_query_;
-
-  // The ID of the most recently launched app. This is used for app list launch
-  // recording.
-  std::string last_launched_app_id_;
-
-  // If set, called when OnResultsChanged is invoked.
-  ResultsChangedCallback results_changed_callback_;
-
-  // TODO(crbug/1199206): As part of the prototyping for category-based search,
-  // the behaviour of this class is significantly changed depending on whether
-  // the CategoricalSearch feature flag is enabled. Eventually, we intend to
-  // remove the Mixer class entirely.
-
-  // Top-level result ranker. Replaces the Mixer if the categorical search flag
-  // is enabled.
-  std::unique_ptr<RankerDelegate> ranker_;
-
-  // Storage for all search results for the current query. Only used when
-  // categorical search is enabled.
-  ResultsMap results_;
-
-  std::unique_ptr<Mixer> mixer_;
-  std::unique_ptr<SearchMetricsObserver> metrics_observer_;
-  using Providers = std::vector<std::unique_ptr<SearchProvider>>;
-  Providers providers_;
-  AppListControllerDelegate* list_controller_;
+  virtual void set_results_changed_callback_for_test(
+      ResultsChangedCallback callback) = 0;
 };
 
 }  // namespace app_list

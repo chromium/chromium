@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 
 #include <algorithm>
 
@@ -19,12 +19,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
-#include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
@@ -71,33 +71,26 @@ std::string RemoveAppShortcutLabel(const std::string& id) {
 
 }  // namespace
 
-SearchController::SearchController(AppListModelUpdater* model_updater,
-                                   AppListControllerDelegate* list_controller,
-                                   ash::AppListNotifier* notifier,
-                                   Profile* profile)
+SearchControllerImpl::SearchControllerImpl(
+    AppListModelUpdater* model_updater,
+    AppListControllerDelegate* list_controller,
+    ash::AppListNotifier* notifier,
+    Profile* profile)
     : profile_(profile),
+      mixer_(std::make_unique<Mixer>(model_updater)),
       metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
       list_controller_(list_controller) {
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    ranker_ = std::make_unique<RankerDelegate>(profile, model_updater, this);
-    mixer_ = nullptr;
-  } else {
-    mixer_ = std::make_unique<Mixer>(model_updater);
-    ranker_ = nullptr;
-  }
+  DCHECK(!app_list_features::IsCategoricalSearchEnabled());
 }
 
-SearchController::~SearchController() {}
+SearchControllerImpl::~SearchControllerImpl() {}
 
-void SearchController::InitializeRankers() {
-  if (ranker_) {
-    // TODO(crbug.com/1199206): Implement.
-  } else {
-    mixer_->InitializeRankers(profile_, this);
-  }
+void SearchControllerImpl::InitializeRankers() {
+  mixer_->InitializeRankers(profile_, this);
 }
 
-void SearchController::Start(const std::u16string& query) {
+void SearchControllerImpl::Start(const std::u16string& query) {
+  session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   if (query.length() > 0) {
@@ -117,12 +110,13 @@ void SearchController::Start(const std::u16string& query) {
   OnResultsChanged();
 }
 
-void SearchController::ViewClosing() {
+void SearchControllerImpl::ViewClosing() {
   for (const auto& provider : providers_)
     provider->ViewClosing();
 }
 
-void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
+void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
+                                      int event_flags) {
   // This can happen in certain circumstances due to races. See
   // https://crbug.com/534772
   if (!result)
@@ -144,65 +138,42 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
   }
 }
 
-void SearchController::InvokeResultAction(ChromeSearchResult* result,
-                                          int action_index) {
+void SearchControllerImpl::InvokeResultAction(ChromeSearchResult* result,
+                                              int action_index) {
   // TODO(xiyuan): Hook up with user learning.
   result->InvokeAction(action_index);
 }
 
-size_t SearchController::AddGroup(size_t max_results) {
-  if (ranker_) {
-    return 0ul;
-  } else {
-    return mixer_->AddGroup(max_results);
-  }
+size_t SearchControllerImpl::AddGroup(size_t max_results) {
+  return mixer_->AddGroup(max_results);
 }
 
-void SearchController::AddProvider(size_t group_id,
-                                   std::unique_ptr<SearchProvider> provider) {
-  if (ranker_) {
-    provider->set_controller(this);
-  } else {
-    mixer_->AddProviderToGroup(group_id, provider.get());
-    provider->set_controller(this);
-    provider->set_result_changed_callback(
-        base::BindRepeating(&SearchController::OnResultsChangedWithType,
-                            base::Unretained(this), provider->ResultType()));
-  }
+void SearchControllerImpl::AddProvider(
+    size_t group_id,
+    std::unique_ptr<SearchProvider> provider) {
+  mixer_->AddProviderToGroup(group_id, provider.get());
+  provider->set_controller(this);
+  provider->set_result_changed_callback(
+      base::BindRepeating(&SearchControllerImpl::OnResultsChangedWithType,
+                          base::Unretained(this), provider->ResultType()));
   providers_.emplace_back(std::move(provider));
 }
 
-void SearchController::SetResults(
+void SearchControllerImpl::SetResults(
     const ash::AppListSearchResultType provider_type,
     Results results) {
-  DCHECK(ranker_);
-
-  auto ui_thread = content::GetUIThreadTaskRunner({});
-  if (!ui_thread->RunsTasksInCurrentSequence()) {
-    ui_thread->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SearchController::SetResults, base::Unretained(this),
-                       provider_type, std::move(results)));
-    return;
-  }
-
-  results_[provider_type] = std::move(results);
+  // Should only be called when IsCategoricalSearchEnabled is true.
+  NOTREACHED();
 }
 
-void SearchController::OnResultsChangedWithType(
+void SearchControllerImpl::OnResultsChangedWithType(
     ash::AppListSearchResultType result_type) {
-  if (!mixer_)
-    return;
-
   OnResultsChanged();
   if (results_changed_callback_)
     results_changed_callback_.Run(result_type);
 }
 
-void SearchController::OnResultsChanged() {
-  if (!mixer_)
-    return;
-
+void SearchControllerImpl::OnResultsChanged() {
   if (dispatching_query_)
     return;
 
@@ -213,7 +184,7 @@ void SearchController::OnResultsChanged() {
   mixer_->MixAndPublish(num_max_results, last_query_);
 }
 
-ChromeSearchResult* SearchController::FindSearchResult(
+ChromeSearchResult* SearchControllerImpl::FindSearchResult(
     const std::string& result_id) {
   for (const auto& provider : providers_) {
     for (const auto& result : provider->results()) {
@@ -224,7 +195,7 @@ ChromeSearchResult* SearchController::FindSearchResult(
   return nullptr;
 }
 
-void SearchController::OnSearchResultsImpressionMade(
+void SearchControllerImpl::OnSearchResultsImpressionMade(
     const std::u16string& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int launched_index) {
@@ -242,41 +213,27 @@ void SearchController::OnSearchResultsImpressionMade(
   }
 }
 
-ChromeSearchResult* SearchController::GetResultByTitleForTest(
+ChromeSearchResult* SearchControllerImpl::GetResultByTitleForTest(
     const std::string& title) {
   std::u16string target_title = base::ASCIIToUTF16(title);
-  if (ranker_) {
-    for (const auto& provider_results : results_) {
-      for (const auto& result : provider_results.second) {
-        if (result->title() == target_title &&
-            result->result_type() ==
-                ash::AppListSearchResultType::kInstalledApp &&
-            !result->is_recommendation()) {
-          return result.get();
-        }
+  for (const auto& provider : providers_) {
+    for (const auto& result : provider->results()) {
+      if (result->title() == target_title &&
+          result->result_type() ==
+              ash::AppListSearchResultType::kInstalledApp &&
+          !result->is_recommendation()) {
+        return result.get();
       }
     }
-    return nullptr;
-  } else {
-    for (const auto& provider : providers_) {
-      for (const auto& result : provider->results()) {
-        if (result->title() == target_title &&
-            result->result_type() ==
-                ash::AppListSearchResultType::kInstalledApp &&
-            !result->is_recommendation()) {
-          return result.get();
-        }
-      }
-    }
-    return nullptr;
   }
+  return nullptr;
 }
 
-int SearchController::GetLastQueryLength() const {
+int SearchControllerImpl::GetLastQueryLength() const {
   return last_query_.size();
 }
 
-void SearchController::Train(AppLaunchData&& app_launch_data) {
+void SearchControllerImpl::Train(AppLaunchData&& app_launch_data) {
   app_launch_data.query = base::UTF16ToUTF8(last_query_);
 
   if (app_list_features::IsAppListLaunchRecordingEnabled()) {
@@ -318,16 +275,25 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
                      base::HashMetricName(base::UTF16ToUTF8(last_query_)))}});
 
   // Train all search result ranking models.
-  if (ranker_) {
-    // TODO(crbug.com/1199206): Implement.
-  } else {
-    mixer_->Train(app_launch_data);
-  }
+  mixer_->Train(app_launch_data);
 }
 
-void SearchController::AppListShown() {
+void SearchControllerImpl::AppListShown() {
   for (const auto& provider : providers_)
     provider->AppListShown();
+}
+
+std::u16string SearchControllerImpl::get_query() {
+  return last_query_;
+}
+
+base::Time SearchControllerImpl::session_start() {
+  return session_start_;
+}
+
+void SearchControllerImpl::set_results_changed_callback_for_test(
+    ResultsChangedCallback callback) {
+  results_changed_callback_ = std::move(callback);
 }
 
 }  // namespace app_list

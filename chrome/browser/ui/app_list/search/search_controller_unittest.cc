@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 
 #include <memory>
 #include <vector>
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 
@@ -44,9 +45,9 @@ class SearchControllerTest : public ChromeAshTestBase {
 
  private:
   TestAppListControllerDelegate list_controller_;
-  SearchController search_controller_{/*model_updater=*/nullptr,
-                                      &list_controller_, /*profile=*/nullptr,
-                                      /*notifier=*/nullptr};
+  SearchControllerImpl search_controller_{
+      /*model_updater=*/nullptr, &list_controller_, /*profile=*/nullptr,
+      /*notifier=*/nullptr};
 };
 
 // Tests -----------------------------------------------------------------------

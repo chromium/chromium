@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -91,9 +93,18 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
-  std::unique_ptr<SearchController> controller =
-      std::make_unique<SearchController>(model_updater, list_controller,
-                                         notifier, profile);
+  // TODO(crbug.com/1199206): We are prototyping new ranking, which reimplements
+  // the SearchController. Once we migrate to this new ranking, the following
+  // check can be removed and replaced by just creating a
+  // SearchControllerImplNew.
+  std::unique_ptr<SearchController> controller;
+  if (app_list_features::IsCategoricalSearchEnabled()) {
+    controller = std::make_unique<SearchControllerImplNew>(
+        model_updater, list_controller, notifier, profile);
+  } else {
+    controller = std::make_unique<SearchControllerImpl>(
+        model_updater, list_controller, notifier, profile);
+  }
 
   // Set up rankers for search results.
   controller->InitializeRankers();
