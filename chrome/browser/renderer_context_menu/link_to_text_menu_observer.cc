@@ -171,6 +171,12 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
     return;
   }
 
+  base::TimeDelta timeout_length_ms =
+      ShouldPreemptivelyGenerateLink()
+          ? base::TimeDelta::FromMilliseconds(
+                shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs())
+          : kTimeoutMs;
+
   // Make a call to the renderer to generate a string that uniquely represents
   // the selected text and any context around the text to distinguish it from
   // the rest of the contents. Get will call a callback with
@@ -182,7 +188,7 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
       FROM_HERE,
       base::BindOnce(&LinkToTextMenuObserver::Timeout,
                      weak_ptr_factory_.GetWeakPtr()),
-      kTimeoutMs);
+      timeout_length_ms);
 }
 
 void LinkToTextMenuObserver::CopyLinkToClipboard() {
