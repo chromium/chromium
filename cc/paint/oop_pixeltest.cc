@@ -2347,11 +2347,11 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
-    // Allow 4 pixels in 100x100 image to be different due to non-AA pixel
+    // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
     // rounding (hence 255 for error limit).
     FuzzyPixelComparator comparator(
         /*discard_alpha=*/false,
-        /*error_pixels_percentage_limit=*/0.04f,
+        /*error_pixels_percentage_limit=*/0.08f,
         /*small_error_pixels_percentage_limit=*/0.0f,
         /*avg_abs_error_limit=*/255,
         /*max_abs_error_limit=*/255,
