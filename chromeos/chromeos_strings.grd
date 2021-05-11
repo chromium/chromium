@@ -1082,6 +1082,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_CELLULAR_APN_ACCESS_POINT_NAME" desc="ONC Property label for APN-AccessPointName">
         Access point name
       </message>
+      <message name="IDS_ONC_CELLULAR_ICCID" desc="ONC Property label for Cellular.ICCID">
+        ICCID
+      </message>
+      <message name="IDS_ONC_CELLULAR_IMEI" desc="ONC Property label for Cellular.IMEI">
+        IMEI
+      </message>
       <message name="IDS_ONC_CELLULAR_APN_ACCESS_POINT_NAME_NONE" desc="ONC Property label for APN-AccessPointName = none (or empty)">
         None
       </message>

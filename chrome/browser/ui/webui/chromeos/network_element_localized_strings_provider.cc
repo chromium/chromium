@@ -167,6 +167,8 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncCellular-HomeProvider-Country",
        IDS_ONC_CELLULAR_HOME_PROVIDER_COUNTRY},
       {"OncCellular-HomeProvider-Name", IDS_ONC_CELLULAR_HOME_PROVIDER_NAME},
+      {"OncCellular-ICCID", IDS_ONC_CELLULAR_ICCID},
+      {"OncCellular-IMEI", IDS_ONC_CELLULAR_IMEI},
       {"OncCellular-Manufacturer", IDS_ONC_CELLULAR_MANUFACTURER},
       {"OncCellular-ModelID", IDS_ONC_CELLULAR_MODEL_ID},
       {"OncCellular-NetworkTechnology", IDS_ONC_CELLULAR_NETWORK_TECHNOLOGY},

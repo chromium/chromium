@@ -229,6 +229,10 @@ Polymer({
         result += 'VPN';
       } else if (subKey === 'wifi') {
         result += 'WiFi';
+      } else if (subKey === 'iccid') {
+        result += 'ICCID';
+      } else if (subKey === 'imei') {
+        result += 'IMEI';
       } else {
         result += subKey.charAt(0).toUpperCase() + subKey.slice(1);
       }
