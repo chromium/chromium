@@ -1953,6 +1953,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
+    expires_after="2022-05-04">
+  <owner>davidjm@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>Records the number of {TabType} Tabs loaded on startup.</summary>
+  <token key="TabType">
+    <variant name="Incognito" summary="Incognito"/>
+    <variant name="Regular" summary="Regular"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.StateTransfer.NumberOfOtherTabsActivatedBeforeMadeActive"
     units="tabs" expires_after="M77">
   <owner>kouhei@chromium.org</owner>
