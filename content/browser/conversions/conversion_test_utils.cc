@@ -322,11 +322,12 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
   base::RunLoop run_loop;
   std::vector<ConversionReport> conversion_reports;
   manager->conversion_storage_context_->GetConversionsToReport(
-      max_report_time, base::BindOnce(base::BindLambdaForTesting(
-                           [&](std::vector<ConversionReport> reports) {
-                             conversion_reports = std::move(reports);
-                             run_loop.Quit();
-                           })));
+      max_report_time, /*limit=*/-1,
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](std::vector<ConversionReport> reports) {
+            conversion_reports = std::move(reports);
+            run_loop.Quit();
+          })));
   run_loop.Run();
   return conversion_reports;
 }

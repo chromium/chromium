@@ -80,9 +80,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   void StoreImpression(const StorableImpression& impression) override;
   int MaybeCreateAndStoreConversionReports(
       const StorableConversion& conversion) override;
-  std::vector<ConversionReport> GetConversionsToReport(
-      base::Time expiry_time) override;
-  std::vector<StorableImpression> GetActiveImpressions() override;
+  std::vector<ConversionReport> GetConversionsToReport(base::Time expiry_time,
+                                                       int limit = -1) override;
+  std::vector<StorableImpression> GetActiveImpressions(int limit = -1) override;
   int DeleteExpiredImpressions() override;
   bool DeleteConversion(int64_t conversion_id) override;
   void ClearData(
@@ -103,7 +103,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   // only retrieve active impressions. |min_expiry_time| controls the minimum
   // impression expiry time to filter by. |start_impression_id| is the smallest
   // impression id that can be returned. |num_impressions| limits the number
-  // of rows returned.
+  // of rows returned; use a negative number for no limit.
   std::vector<StorableImpression> GetImpressions(ImpressionFilter filter,
                                                  base::Time min_expiry_time,
                                                  int64_t start_impression_id,

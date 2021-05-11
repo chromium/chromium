@@ -60,20 +60,22 @@ void ConversionStorageContext::MaybeCreateAndStoreConversionReports(
 
 void ConversionStorageContext::GetConversionsToReport(
     base::Time max_report_time,
+    int limit,
     base::OnceCallback<void(std::vector<ConversionReport>)> callback) {
   storage_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ConversionStorage::GetConversionsToReport,
-                     base::Unretained(storage_.get()), max_report_time),
+                     base::Unretained(storage_.get()), max_report_time, limit),
       std::move(callback));
 }
 
 void ConversionStorageContext::GetActiveImpressions(
+    int limit,
     base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
   storage_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ConversionStorage::GetActiveImpressions,
-                     base::Unretained(storage_.get())),
+                     base::Unretained(storage_.get()), limit),
       std::move(callback));
 }
 

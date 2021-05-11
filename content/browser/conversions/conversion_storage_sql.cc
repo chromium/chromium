@@ -346,13 +346,16 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
 }
 
 std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
-    base::Time max_report_time) {
+    base::Time max_report_time,
+    int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
-  // Get all entries in the conversions table with a |report_time| less than
-  // |expired_at| and their matching information from the impression table.
+  // Get at most |limit| entries in the conversions table with a |report_time|
+  // less than |max_report_time| and their matching information from the
+  // impression table. Negatives are treated as no limit
+  // (https://sqlite.org/lang_select.html#limitoffset).
   const char kGetExpiredConversionsSql[] =
       "SELECT C.conversion_data, C.conversion_time, "
       "C.report_time, "
@@ -360,10 +363,12 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
       "I.reporting_origin, I.impression_data, I.impression_time, "
       "I.expiry_time, I.impression_id, I.source_type, I.priority "
       "FROM conversions C JOIN impressions I ON "
-      "C.impression_id = I.impression_id WHERE C.report_time <= ?";
+      "C.impression_id = I.impression_id WHERE C.report_time <= ? "
+      "LIMIT ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetExpiredConversionsSql));
   statement.BindTime(0, max_report_time);
+  statement.BindInt(1, limit);
 
   std::vector<ConversionReport> conversions;
   while (statement.Step()) {
@@ -411,13 +416,14 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   return conversions;
 }
 
-std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions() {
+std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
+    int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
   return GetImpressions(ImpressionFilter::kOnlyActive, clock_->Now(),
-                        /*start_impression_id=*/0, /*num_impressions=*/INT_MAX);
+                        /*start_impression_id=*/0, /*num_impressions=*/limit);
 }
 
 int ConversionStorageSql::DeleteExpiredImpressions() {
@@ -745,7 +751,8 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
     base::Time min_expiry_time,
     int64_t start_impression_id,
     int num_impressions) {
-  DCHECK_GE(num_impressions, 0);
+  // Negatives are treated as no limit
+  // (https://sqlite.org/lang_select.html#limitoffset).
   const char kGetImpressionsSql[] =
       "SELECT impression_data, impression_origin, conversion_origin, "
       "reporting_origin, impression_time, expiry_time, impression_id, "

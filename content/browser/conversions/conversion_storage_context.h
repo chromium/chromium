@@ -56,8 +56,10 @@ class CONTENT_EXPORT ConversionStorageContext
       base::OnceCallback<void(int)> callback);
   void GetConversionsToReport(
       base::Time max_report_time,
+      int limit,
       base::OnceCallback<void(std::vector<ConversionReport>)> callback);
   void GetActiveImpressions(
+      int limit,
       base::OnceCallback<void(std::vector<StorableImpression>)> callback);
   void DeleteConversion(int64_t conversion_id,
                         base::OnceCallback<void(bool)> callback);

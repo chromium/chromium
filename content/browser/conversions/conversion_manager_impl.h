@@ -111,12 +111,14 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
-  // Retrieves reports from storage whose |report_time| <= |max_report_time|,
-  // and calls |handler_function| on them.
+  // Retrieves at most |limit| reports from storage whose |report_time| <=
+  // |max_report_time|, and calls |handler_function| on them; use a negative
+  // number for no limit.
   using ReportsHandlerFunc =
       base::OnceCallback<void(std::vector<ConversionReport>)>;
   void GetAndHandleReports(ReportsHandlerFunc handler_function,
-                           base::Time max_report_time);
+                           base::Time max_report_time,
+                           int limit = -1);
 
   // Get the next set of reports from storage that need to be sent before the
   // next call from |get_and_queue_reports_timer_|. Adds the reports to

@@ -155,13 +155,16 @@ void ConversionManagerImpl::HandleConversion(
 
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
-  conversion_storage_context_->GetActiveImpressions(std::move(callback));
+  const int kMaxImpressions = 1000;
+  conversion_storage_context_->GetActiveImpressions(kMaxImpressions,
+                                                    std::move(callback));
 }
 
 void ConversionManagerImpl::GetReportsForWebUI(
     base::OnceCallback<void(std::vector<ConversionReport>)> callback,
     base::Time max_report_time) {
-  GetAndHandleReports(std::move(callback), max_report_time);
+  const int kMaxReports = 1000;
+  GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
 }
 
 void ConversionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
@@ -186,9 +189,10 @@ void ConversionManagerImpl::ClearData(
 
 void ConversionManagerImpl::GetAndHandleReports(
     ReportsHandlerFunc handler_function,
-    base::Time max_report_time) {
+    base::Time max_report_time,
+    int limit) {
   conversion_storage_context_->GetConversionsToReport(
-      max_report_time, std::move(handler_function));
+      max_report_time, limit, std::move(handler_function));
 }
 
 void ConversionManagerImpl::GetAndQueueReportsForNextInterval() {

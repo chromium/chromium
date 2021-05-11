@@ -96,16 +96,20 @@ class ConversionStorage {
 
   // Returns all of the conversion reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
-  // underlying storage.
+  // underlying storage. |limit| limits the number of conversions to return; use
+  // a negative number for no limit.
   virtual std::vector<ConversionReport> GetConversionsToReport(
-      base::Time max_report_time) = 0;
+      base::Time max_report_time,
+      int limit = -1) = 0;
 
   // Returns all active impressions in storage. Active impressions are all
   // impressions that can still convert. Impressions that: are past expiry,
   // reached the conversion limit, or was marked inactive due to having
   // converted and then superceded by a matching impression should not be
-  // returned.
-  virtual std::vector<StorableImpression> GetActiveImpressions() = 0;
+  // returned. |limit| limits the number of impressions to return; use
+  // a negative number for no limit.
+  virtual std::vector<StorableImpression> GetActiveImpressions(
+      int limit = -1) = 0;
 
   // Deletes all impressions that have expired and have no pending conversion
   // reports. Returns the number of impressions that were deleted.
