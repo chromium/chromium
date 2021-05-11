@@ -1181,7 +1181,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.ServicesOnSameNetwork" units="units"
-    expires_after="2021-12-01">
+    expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1649,7 +1652,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.LinkMonitorBroadcastErrorsAtFailure"
-    units="units" expires_after="2021-12-01">
+    units="units" expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1660,7 +1666,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.LinkMonitorFailure"
-    enum="LinkMonitorFailureType" expires_after="2021-12-01">
+    enum="LinkMonitorFailureType" expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1670,7 +1679,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.LinkMonitorResponseTimeSample" units="ms"
-    expires_after="2021-12-01">
+    expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1718,7 +1730,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.LinkMonitorSecondsToFailure"
-    units="seconds" expires_after="2021-12-01">
+    units="seconds" expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1728,7 +1743,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.LinkMonitorUnicastErrorsAtFailure"
-    units="units" expires_after="2021-12-01">
+    units="units" expires_after="M92">
+  <obsolete>
+    Removed 05/2021
+  </obsolete>
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
