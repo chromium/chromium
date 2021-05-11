@@ -207,7 +207,7 @@ void SpellcheckService::GetDictionaries(
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
   std::set<std::string> spellcheck_dictionaries;
   for (const auto& value :
-       *prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)) {
+       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)->GetList()) {
     std::string dictionary;
     if (value.GetAsString(&dictionary))
       spellcheck_dictionaries.insert(dictionary);
