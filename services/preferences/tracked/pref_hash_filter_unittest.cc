@@ -1031,10 +1031,10 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
     const base::Value* split_value_in_store;
     ASSERT_TRUE(pref_store_contents_->Get(kSplitPref, &split_value_in_store));
     ASSERT_EQ(2U, dict_value->DictSize());
-    ASSERT_FALSE(dict_value->HasKey("a"));
-    ASSERT_TRUE(dict_value->HasKey("b"));
-    ASSERT_FALSE(dict_value->HasKey("c"));
-    ASSERT_TRUE(dict_value->HasKey("d"));
+    ASSERT_EQ(dict_value->FindKey("a"), nullptr);
+    ASSERT_NE(dict_value->FindKey("b"), nullptr);
+    ASSERT_EQ(dict_value->FindKey("c"), nullptr);
+    ASSERT_NE(dict_value->FindKey("d"), nullptr);
     ASSERT_EQ(dict_value, stored_split_value.first);
 
     VerifyRecordedReset(true);
@@ -1050,10 +1050,10 @@ TEST_P(PrefHashFilterTest, InitialValueChanged) {
     ASSERT_TRUE(pref_store_contents_->Get(kSplitPref, &split_value_in_store));
     ASSERT_EQ(dict_value, split_value_in_store);
     ASSERT_EQ(4U, dict_value->DictSize());
-    ASSERT_TRUE(dict_value->HasKey("a"));
-    ASSERT_TRUE(dict_value->HasKey("b"));
-    ASSERT_TRUE(dict_value->HasKey("c"));
-    ASSERT_TRUE(dict_value->HasKey("d"));
+    ASSERT_NE(dict_value->FindKey("a"), nullptr);
+    ASSERT_NE(dict_value->FindKey("b"), nullptr);
+    ASSERT_NE(dict_value->FindKey("c"), nullptr);
+    ASSERT_NE(dict_value->FindKey("d"), nullptr);
     ASSERT_EQ(dict_value, stored_split_value.first);
 
     VerifyRecordedReset(false);
