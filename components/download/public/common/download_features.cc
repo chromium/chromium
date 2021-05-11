@@ -68,7 +68,7 @@ const base::Feature kDeleteExpiredDownloads{"DeleteExpiredDownloads",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDeleteOverwrittenDownloads{
-    "DeleteOverwrittenDownloads", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DeleteOverwrittenDownloads", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 
