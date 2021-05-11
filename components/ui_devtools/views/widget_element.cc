@@ -44,7 +44,10 @@ void WidgetElement::OnWidgetBoundsChanged(views::Widget* widget,
 
 void WidgetElement::OnWidgetDestroyed(views::Widget* widget) {
   DCHECK_EQ(widget, widget_);
-  delegate()->OnUIElementRemoved(this);
+  if (parent())
+    parent()->RemoveChild(this);
+  else
+    delegate()->OnUIElementRemoved(this);
   widget_ = nullptr;
 }
 

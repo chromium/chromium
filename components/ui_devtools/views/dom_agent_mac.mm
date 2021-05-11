@@ -45,6 +45,7 @@ std::vector<UIElement*> DOMAgentMac::CreateChildrenForRoot() {
 }
 
 void DOMAgentMac::OnWidgetDestroying(views::Widget* widget) {
+  widget->RemoveObserver(this);
   roots_.erase(std::find(roots_.begin(), roots_.end(), widget), roots_.end());
 }
 
@@ -54,6 +55,7 @@ void DOMAgentMac::OnNativeWidgetAdded(views::NativeWidgetMac* native_widget) {
   roots_.push_back(widget);
   UIElement* widget_element = new WidgetElement(widget, this, element_root());
   element_root()->AddChild(widget_element);
+  widget->AddObserver(this);
 }
 
 std::unique_ptr<protocol::DOM::Node> DOMAgentMac::BuildTreeForWindow(
