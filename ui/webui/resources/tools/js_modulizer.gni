@@ -36,18 +36,16 @@ common_namespace_rewrites = [
 ]
 
 template("js_modulizer") {
+  _outputs = []
+  foreach(_input, invoker.input_files) {
+    _outputs += [ "$target_gen_dir/" + get_path_info(_input, "name") + ".m.js" ]
+  }
+
   action(target_name) {
     script = "//ui/webui/resources/tools/js_modulizer.py"
 
     inputs = invoker.input_files
-
-    outputs = []
-    foreach(_input, invoker.input_files) {
-      outputs +=
-          [ "$target_gen_dir/" + get_path_info(_input, "name") + ".m.js" ]
-    }
-
-    data = outputs
+    outputs = _outputs
 
     args = [
              "--in_folder",
@@ -66,5 +64,14 @@ template("js_modulizer") {
     if (defined(invoker.preserve_offsets)) {
       args += [ "--preserve_offsets" ] + invoker.preserve_offsets
     }
+  }
+
+  # Appends the compiled outputs of |target_name| to the dependent's
+  # runtime_data list.
+  source_set("${target_name}_runtime_data") {
+    testonly = true
+
+    deps = [ ":${invoker.target_name}" ]
+    data = _outputs
   }
 }
