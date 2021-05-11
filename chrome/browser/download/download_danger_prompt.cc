@@ -12,7 +12,10 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/file_type_policies.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 
 using safe_browsing::ClientDownloadResponse;
@@ -77,37 +80,48 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
       g_browser_process->safe_browsing_service();
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(&download));
-  ClientSafeBrowsingReportRequest report;
-  report.set_type(report_type);
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(report_type);
   switch (download.GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-      report.set_download_verdict(ClientDownloadResponse::DANGEROUS);
+      report->set_download_verdict(ClientDownloadResponse::DANGEROUS);
       break;
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-      report.set_download_verdict(ClientDownloadResponse::UNCOMMON);
+      report->set_download_verdict(ClientDownloadResponse::UNCOMMON);
       break;
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-      report.set_download_verdict(ClientDownloadResponse::POTENTIALLY_UNWANTED);
+      report->set_download_verdict(
+          ClientDownloadResponse::POTENTIALLY_UNWANTED);
       break;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-      report.set_download_verdict(ClientDownloadResponse::DANGEROUS_HOST);
+      report->set_download_verdict(ClientDownloadResponse::DANGEROUS_HOST);
       break;
     default:  // Don't send report for any other danger types.
       return;
   }
-  report.set_url(download.GetURL().spec());
-  report.set_did_proceed(did_proceed);
+  report->set_url(download.GetURL().spec());
+  report->set_did_proceed(did_proceed);
   std::string token =
     safe_browsing::DownloadProtectionService::GetDownloadPingToken(
         &download);
   if (!token.empty())
-    report.set_token(token);
+    report->set_token(token);
   std::string serialized_report;
-  if (report.SerializeToString(&serialized_report))
+  if (report->SerializeToString(&serialized_report)) {
     sb_service->SendSerializedDownloadReport(profile, serialized_report);
-  else
+
+    // The following is to log this ClientSafeBrowsingReportRequest on any open
+    // chrome://safe-browsing pages.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &safe_browsing::WebUIInfoSingleton::AddToCSBRRsSent,
+            base::Unretained(safe_browsing::WebUIInfoSingleton::GetInstance()),
+            std::move(report)));
+  } else {
     DLOG(ERROR) << "Unable to serialize the threat report.";
+  }
 }
 
 void DownloadDangerPrompt::RecordDownloadDangerPrompt(

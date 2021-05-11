@@ -36,8 +36,11 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/file_type_policies.h"
 #include "components/safe_browsing/core/proto/download_file_types.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -649,22 +652,34 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         safe_browsing::SafeBrowsingService* sb_service =
             g_browser_process->safe_browsing_service();
         // Compiles the uncommon download warning report.
-        safe_browsing::ClientSafeBrowsingReportRequest report;
-        report.set_type(safe_browsing::ClientSafeBrowsingReportRequest::
-                            DANGEROUS_DOWNLOAD_WARNING);
-        report.set_download_verdict(
+        auto report =
+            std::make_unique<safe_browsing::ClientSafeBrowsingReportRequest>();
+        report->set_type(safe_browsing::ClientSafeBrowsingReportRequest::
+                             DANGEROUS_DOWNLOAD_WARNING);
+        report->set_download_verdict(
             safe_browsing::ClientDownloadResponse::UNCOMMON);
-        report.set_url(GetURL().spec());
-        report.set_did_proceed(true);
+        report->set_url(GetURL().spec());
+        report->set_did_proceed(true);
         std::string token =
             safe_browsing::DownloadProtectionService::GetDownloadPingToken(
                 download_);
         if (!token.empty())
-          report.set_token(token);
+          report->set_token(token);
         std::string serialized_report;
-        if (report.SerializeToString(&serialized_report)) {
+        if (report->SerializeToString(&serialized_report)) {
           sb_service->SendSerializedDownloadReport(profile(),
                                                    serialized_report);
+
+          // The following is to log this ClientSafeBrowsingReportRequest on any
+          // open
+          // chrome://safe-browsing pages.
+          content::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &safe_browsing::WebUIInfoSingleton::AddToCSBRRsSent,
+                  base::Unretained(
+                      safe_browsing::WebUIInfoSingleton::GetInstance()),
+                  std::move(report)));
         } else {
           DCHECK(false)
               << "Unable to serialize the uncommon download warning report.";

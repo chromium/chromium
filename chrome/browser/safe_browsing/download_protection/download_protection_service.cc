@@ -37,6 +37,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/features.h"
@@ -425,15 +426,24 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
   if (sb_service_ &&
       !token.empty() &&  // Only dangerous downloads have token stored.
       profile && (IsExtendedReportingEnabled(*profile->GetPrefs()))) {
-    safe_browsing::ClientSafeBrowsingReportRequest report;
-    report.set_url(item->GetURL().spec());
-    report.set_type(safe_browsing::ClientSafeBrowsingReportRequest::
-                        DANGEROUS_DOWNLOAD_OPENED);
-    report.set_token(token);
-    report.set_show_download_in_folder(show_download_in_folder);
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_url(item->GetURL().spec());
+    report->set_type(
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
+    report->set_token(token);
+    report->set_show_download_in_folder(show_download_in_folder);
     std::string serialized_report;
-    if (report.SerializeToString(&serialized_report)) {
+    if (report->SerializeToString(&serialized_report)) {
       sb_service_->SendSerializedDownloadReport(profile, serialized_report);
+
+      // The following is to log this ClientSafeBrowsingReportRequest on any
+      // open
+      // chrome://safe-browsing pages.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
+                         base::Unretained(WebUIInfoSingleton::GetInstance()),
+                         std::move(report)));
     } else {
       DCHECK(false)
           << "Unable to serialize the dangerous download opened report.";

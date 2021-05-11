@@ -766,28 +766,31 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   return request_serialized;
 }
 
+std::string ClientDownloadResponseVerdictToString(
+    const ClientDownloadResponse::Verdict& verdict) {
+  switch (verdict) {
+    case ClientDownloadResponse::SAFE:
+      return "SAFE";
+    case ClientDownloadResponse::DANGEROUS:
+      return "DANGEROUS";
+    case ClientDownloadResponse::UNCOMMON:
+      return "UNCOMMON";
+    case ClientDownloadResponse::POTENTIALLY_UNWANTED:
+      return "POTENTIALLY_UNWANTED";
+    case ClientDownloadResponse::DANGEROUS_HOST:
+      return "DANGEROUS_HOST";
+    case ClientDownloadResponse::UNKNOWN:
+      return "UNKNOWN";
+  }
+}
+
 std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   base::DictionaryValue dict;
 
-  switch (cdr.verdict()) {
-    case ClientDownloadResponse::SAFE:
-      dict.SetKey("verdict", base::Value("SAFE"));
-      break;
-    case ClientDownloadResponse::DANGEROUS:
-      dict.SetKey("verdict", base::Value("DANGEROUS"));
-      break;
-    case ClientDownloadResponse::UNCOMMON:
-      dict.SetKey("verdict", base::Value("UNCOMMON"));
-      break;
-    case ClientDownloadResponse::POTENTIALLY_UNWANTED:
-      dict.SetKey("verdict", base::Value("POTENTIALLY_UNWANTED"));
-      break;
-    case ClientDownloadResponse::DANGEROUS_HOST:
-      dict.SetKey("verdict", base::Value("DANGEROUS_HOST"));
-      break;
-    case ClientDownloadResponse::UNKNOWN:
-      dict.SetKey("verdict", base::Value("UNKNOWN"));
-      break;
+  if (cdr.has_verdict()) {
+    dict.SetKey(
+        "verdict",
+        base::Value(ClientDownloadResponseVerdictToString(cdr.verdict())));
   }
 
   if (cdr.has_more_info()) {
@@ -905,6 +908,21 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   }
   if (report.has_did_proceed()) {
     report_request.SetInteger("did_proceed", report.did_proceed());
+  }
+  if (report.has_download_verdict()) {
+    report_request.SetString(
+        "download_verdict",
+        ClientDownloadResponseVerdictToString(report.download_verdict()));
+  }
+  if (report.has_url()) {
+    report_request.SetString("url", report.url());
+  }
+  if (report.has_token()) {
+    report_request.SetString("token", report.token());
+  }
+  if (report.has_show_download_in_folder()) {
+    report_request.SetBoolean("show_download_in_folder",
+                              report.show_download_in_folder());
   }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {
