@@ -35,7 +35,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // AssistantStateObserver:
   void OnAssistantConsentStatusChanged(int consent_status) override;

@@ -34,6 +34,9 @@ enum AssistantViewID {
   kUiElementContainer,
   kZeroStateView,
   kOnboardingView,
+
+  // UIs in OptInView
+  kOptInViewStyledLabel,
 };
 
 }  // namespace ash

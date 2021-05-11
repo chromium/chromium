@@ -111,10 +111,6 @@ void AssistantOptInView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-void AssistantOptInView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  label_->SizeToFit(width());
-}
-
 void AssistantOptInView::OnAssistantConsentStatusChanged(int consent_status) {
   UpdateLabel(consent_status);
 }
@@ -145,6 +141,7 @@ void AssistantOptInView::InitLayout() {
 
   // Label.
   label_ = container_->AddChildView(std::make_unique<views::StyledLabel>());
+  label_->SetID(AssistantViewID::kOptInViewStyledLabel);
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
