@@ -9,7 +9,10 @@ android_library("java") {
 }
 
 android_library_factory("factory_java") {
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+  ]
 
   sources = [ "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java" ]
 }

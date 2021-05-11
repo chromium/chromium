@@ -47,6 +47,8 @@ public class AttributionIntentIntegrationTest {
 
     @Before
     public void setUp() {
+        AttributionIntentHandlerFactory.setInputEventValidatorForTesting((inputEvent) -> true);
+
         // We need to pass Attribution Intents through a BroadcastReceiver if we want to track them
         // as ActivityMonitors don't work for PendingIntents.
         mReceiver = new BroadcastReceiver() {

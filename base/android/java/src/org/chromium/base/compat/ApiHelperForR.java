@@ -6,10 +6,13 @@ package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.storage.StorageManager;
 import android.view.Display;
+import android.view.InputEvent;
+import android.view.VerifiedInputEvent;
 
 import org.chromium.base.annotations.VerifiesOnR;
 
@@ -35,5 +38,12 @@ public final class ApiHelperForR {
      */
     public static File getVolumeDir(StorageManager manager, Uri uri) {
         return manager.getStorageVolume(uri).getDirectory();
+    }
+
+    /**
+     * See {@link InputManager#verifyInputEvent(InputEvent)}.
+     */
+    public static VerifiedInputEvent verifyInputEvent(InputManager manager, InputEvent inputEvent) {
+        return manager.verifyInputEvent(inputEvent);
     }
 }

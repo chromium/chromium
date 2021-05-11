@@ -4,6 +4,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/InputEventValidator.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/NoopAttributionIntentHandler.java",
   ]
   deps = [

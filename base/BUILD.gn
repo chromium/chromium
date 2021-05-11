@@ -3886,6 +3886,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/PathUtils.java",
       "android/java/src/org/chromium/base/PiiElider.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
+      "android/java/src/org/chromium/base/Predicate.java",
       "android/java/src/org/chromium/base/Promise.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/StreamUtil.java",

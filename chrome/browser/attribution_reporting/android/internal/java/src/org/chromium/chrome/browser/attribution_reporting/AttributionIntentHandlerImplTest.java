@@ -51,10 +51,12 @@ public class AttributionIntentHandlerImplTest {
 
     private String mPackageName = "packageName";
     private byte mPackageMac[];
+    private boolean mInputEventValid = true;
 
     @Before
     public void setUp() {
-        mAttributionIntentHandlerImpl = new AttributionIntentHandlerImpl();
+        mAttributionIntentHandlerImpl =
+                new AttributionIntentHandlerImpl((inputEvent) -> mInputEventValid);
         mPackageMac = AttributionIntentHandlerImpl.sHasher.doFinal(
                 ApiCompatibilityUtils.getBytesUtf8(mPackageName));
     }
@@ -153,6 +155,13 @@ public class AttributionIntentHandlerImplTest {
     public void testIsValidAttributionIntent_noInputEvent() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
                 mPackageName, mPackageMac, new Intent(), "event", "https://example.com", null));
+    }
+
+    @Test
+    public void testIsValidAttributionIntent_invalidInputEvent() {
+        mInputEventValid = false;
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(mPackageName,
+                mPackageMac, new Intent(), "event", "https://example.com", mInputEvent));
     }
 
     @Test

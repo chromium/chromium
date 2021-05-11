@@ -14,6 +14,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.Predicate;
 
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -69,6 +70,12 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
             // Should never happen.
             throw new RuntimeException(e);
         }
+    }
+
+    private Predicate<InputEvent> mInputEventValidator;
+
+    public AttributionIntentHandlerImpl(Predicate<InputEvent> inputEventValidator) {
+        mInputEventValidator = inputEventValidator;
     }
 
     @Override
@@ -135,18 +142,24 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
     public boolean isValidAttributionIntent(String senderPackage, byte[] packageMac,
             Intent originalIntent, String sourceEventId, String attributionDestination,
             InputEvent inputEvent) {
-        // TODO(https://crbug.com/1198308): Validate InputEvents from the sender.
         if (senderPackage == null || packageMac == null || originalIntent == null
                 || sourceEventId == null || attributionDestination == null || inputEvent == null) {
             Log.d(TAG, "Attribution intent missing attributes.");
             return false;
         }
+
         byte correctPackageMac[] =
                 sHasher.doFinal(ApiCompatibilityUtils.getBytesUtf8(senderPackage));
         if (!Arrays.equals(correctPackageMac, packageMac)) {
             Log.d(TAG, "Attribution intent package MAC incorrect.");
             return false;
         }
+
+        if (!mInputEventValidator.test(inputEvent)) {
+            Log.d(TAG, "InputEvent was not valid.");
+            return false;
+        }
+
         return true;
     }
 }
