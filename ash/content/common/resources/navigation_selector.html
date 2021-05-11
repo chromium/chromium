@@ -1,0 +1,27 @@
+<style include="cr-shared-style"></style>
+
+<div id="navigationSelectorComponent">
+  <div id="navigationSelectorMenu">
+    <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
+      <template is="dom-if" if="[[!isCollapsible_(item)]]">
+        <div class="navigation-item" on-click="onSelected_">
+          [[item.selectorItem.name]]
+        </div>
+      </template>
+      <template is="dom-if" if="[[isCollapsible_(item)]]">
+        <cr-expand-button class="expand-button" on-click="onExpandClicked_">
+          [[item.selectorItem.name]]
+        </cr-expand-button>
+        <iron-collapse opened="[[item.properties.isExpanded]]">
+          <template class="collapsed-list" is="dom-repeat"
+              items="{{item.properties.subMenuItems}}">
+            <div class="navigation-item nested-item"
+                on-click="onNestedSelected_">
+              [[item.name]]
+            </div>
+          </template>
+        </iron-collapse>
+      </template>
+    </template>
+  </div>
+</div>

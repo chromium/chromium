@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeMethodResolverTestSuite} from './fake_method_resolver_test.js';
 import {fakeObservablesTestSuite} from './fake_observables_test.js';
+import {navigationSelectorTestSuite} from './navigation_selector_test.js';
 
 window.test_suites_list = [];
 
@@ -17,3 +18,4 @@ function runSuite(suiteName, testFn) {
 
 runSuite('FakeObservables', fakeObservablesTestSuite);
 runSuite('FakeMethodResolver', fakeMethodResolverTestSuite);
+runSuite('NavigationSelector', navigationSelectorTestSuite);
