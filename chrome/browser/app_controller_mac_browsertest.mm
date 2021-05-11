@@ -531,6 +531,15 @@ class AppControllerProfilePickerBrowserTest
   }
   ~AppControllerProfilePickerBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    AppControllerNewProfileManagementBrowserTest::SetUpOnMainThread();
+
+    // Flag the profile picker as already shown in the past, to avoid additional
+    // feature onboarding logic.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kBrowserProfilePickerShown, true);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -610,10 +619,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 }
 
 // Test that the ProfilePicker is shown when there are multiple profiles.
-//
-// Flaky: crbug.com/1163620
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
-                       DISABLED_MultiProfilePickerShown) {
+                       MultiProfilePickerShown) {
   CreateAndWaitForSystemProfile();
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
@@ -628,7 +635,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"name_1";
-  params.gaia_id = "12345";
   profile_storage->AddProfile(std::move(params));
 
   EXPECT_EQ(1u, active_browser_list_->size());
