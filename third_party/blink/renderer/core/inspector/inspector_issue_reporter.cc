@@ -7,8 +7,11 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -57,4 +60,27 @@ void InspectorIssueReporter::DidFailLoading(
                 mojom::blink::InspectorIssueCode::kBlockedByResponseIssue,
                 std::move(details)));
 }
+
+void InspectorIssueReporter::DomContentLoadedEventFired(LocalFrame* frame) {
+  if (!frame)
+    return;
+
+  auto* document = frame->GetDocument();
+  if (!document || !document->GetExecutionContext())
+    return;
+
+  auto url = document->Url();
+  if (url.IsEmpty() || url.IsAboutBlankURL())
+    return;
+
+  if (document->InNoQuirksMode())
+    return;
+
+  AuditsIssue::ReportQuirksModeIssue(
+      document->GetExecutionContext(), document->InLimitedQuirksMode(),
+      DOMNodeIds::IdForNode(document), url.GetString(),
+      IdentifiersFactory::FrameId(frame),
+      IdentifiersFactory::LoaderId(document->Loader()));
+}
+
 }  // namespace blink
