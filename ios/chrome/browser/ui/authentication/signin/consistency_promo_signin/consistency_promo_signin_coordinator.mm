@@ -168,6 +168,7 @@
                                          SigninCoordinatorResultCanceledByUser
                                                identity:nil];
                          }];
+  _identityManagerObserverBridge.reset();
 }
 
 // Calls the sign-in completion block.

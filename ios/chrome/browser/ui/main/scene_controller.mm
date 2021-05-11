@@ -1581,7 +1581,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)showConsistencyPromoFromViewController:
             (UIViewController*)baseViewController
                                            URL:(const GURL&)url {
-  DCHECK(!self.signinCoordinator);
+  // Do not display the web sign-in promo if there are no identities on the
+  // device or if a sign-in is in progress.
+  if (self.signinCoordinator != nil || !ios::GetChromeBrowserProvider()
+                                            ->GetChromeIdentityService()
+                                            ->HasIdentities()) {
+    return;
+  }
+
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
