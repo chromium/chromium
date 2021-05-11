@@ -1390,8 +1390,8 @@ TEST(URLCanonTest, Ref) {
   output.Complete();
 
   EXPECT_EQ(1, out_comp.begin);
-  EXPECT_EQ(3, out_comp.len);
-  EXPECT_EQ("#abz", out_str);
+  EXPECT_EQ(6, out_comp.len);
+  EXPECT_EQ("#ab%00z", out_str);
 }
 
 TEST(URLCanonTest, CanonicalizeStandardURL) {

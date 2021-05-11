@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 619 tests; 303 PASS, 316 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 619 tests; 306 PASS, 313 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
@@ -623,14 +623,14 @@ PASS URL: Setting <http://example.net>.hash = '#foo`bar'
 PASS <a>: Setting <http://example.net>.hash = '#foo`bar'
 PASS <area>: Setting <http://example.net>.hash = '#foo`bar'
 FAIL URL: Setting <a:/>.hash = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%00%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 FAIL <a>: Setting <a:/>.hash = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%00%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 FAIL <area>: Setting <a:/>.hash = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
-FAIL URL: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment assert_equals: expected "http://example.net/#a%00b" but got "http://example.net/#ab"
-FAIL <a>: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment assert_equals: expected "http://example.net/#a%00b" but got "http://example.net/#ab"
-FAIL <area>: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment assert_equals: expected "http://example.net/#a%00b" but got "http://example.net/#ab"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%00%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+PASS URL: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment
+PASS <a>: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment
+PASS <area>: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS URL: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS <a>: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
 PASS <area>: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment

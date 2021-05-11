@@ -299,11 +299,6 @@ void DoCanonicalizeRef(const CHAR* spec,
   // Now iterate through all the characters, converting to UTF-8 and validating.
   int end = ref.end();
   for (int i = ref.begin; i < end; i++) {
-    if (spec[i] == 0) {
-      // IE just strips NULLs, so we do too.
-      continue;
-    }
-
     UCHAR current_char = static_cast<UCHAR>(spec[i]);
     if (current_char < 0x80) {
       if (kShouldEscapeCharInFragment[current_char])

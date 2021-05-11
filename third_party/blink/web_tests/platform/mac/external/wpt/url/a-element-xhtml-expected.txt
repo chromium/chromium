@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 604 tests; 363 PASS, 241 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 604 tests; 364 PASS, 240 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -587,7 +587,7 @@ PASS Parsing: <test-a-colon-slash.html> against <a:/>
 FAIL Parsing: <test-a-colon-slash-slash.html> against <a://> assert_equals: href expected "a:///test-a-colon-slash-slash.html" but got ""
 PASS Parsing: <test-a-colon-slash-b.html> against <a:/b>
 FAIL Parsing: <test-a-colon-slash-slash-b.html> against <a://b> assert_equals: href expected "a://b/test-a-colon-slash-slash-b.html" but got "a://b"
-FAIL Parsing: <http://example.org/test?a#b\0c> against <about:blank> assert_equals: href expected "http://example.org/test?a#b%00c" but got "http://example.org/test?a#bc"
+PASS Parsing: <http://example.org/test?a#b\0c> against <about:blank>
 FAIL Parsing: <non-spec://example.org/test?a#b\0c> against <about:blank> assert_equals: host expected "example.org" but got ""
 PASS Parsing: <non-spec:/test?a#b\0c> against <about:blank>
 PASS Parsing: <10.0.0.7:8080/foo.html> against <file:///some/dir/bar.html>
