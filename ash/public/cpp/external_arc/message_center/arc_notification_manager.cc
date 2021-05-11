@@ -42,6 +42,9 @@ namespace ash {
 namespace {
 
 constexpr char kPlayStorePackageName[] = "com.android.vending";
+constexpr char kArcGmsPackageName[] = "com.chromium.arc.gms";
+constexpr char kManagedProvisioningPackageName[] =
+    "com.android.managedprovisioning";
 
 std::unique_ptr<message_center::MessageView> CreateCustomMessageView(
     const message_center::Notification& notification) {
@@ -534,6 +537,14 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
   if (data->package_name.has_value() &&
       *data->package_name == kPlayStorePackageName &&
       delegate_->IsPublicSessionOrKiosk()) {
+    return true;
+  }
+
+  // (b/186419166) Ignore notifications from managed provisioning and ARC GMS
+  // Proxy.
+  if (data->package_name.has_value() &&
+      (*data->package_name == kManagedProvisioningPackageName ||
+       *data->package_name == kArcGmsPackageName)) {
     return true;
   }
 
