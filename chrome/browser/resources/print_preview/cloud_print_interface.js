@@ -4,7 +4,6 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {Destination, DestinationOrigin} from './data/destination.js';
-import {Invitation} from './data/invitation.js';
 import {NativeLayer} from './native_layer.js';
 
 /**
@@ -53,24 +52,6 @@ export let CloudPrintInterfaceSearchDoneDetail;
  */
 export let CloudPrintInterfacePrinterFailedDetail;
 
-/**
- * @typedef {{
- *   invitations: !Array<!Invitation>,
- *   user: string,
- * }}
- */
-export let CloudPrintInterfaceInvitesDoneDetail;
-
-/**
- * @typedef {{
- *   invitation: !Invitation,
- *   printer: ?Destination,
- *   accept: boolean,
- *   user: string,
- * }}
- */
-export let CloudPrintInterfaceProcessInviteDetail;
-
 /** @interface */
 export class CloudPrintInterface {
   /** @return {boolean} Whether cookie destinations are disabled. */
@@ -112,19 +93,6 @@ export class CloudPrintInterface {
    * @param {!Array<string>} users
    */
   setUsers(users) {}
-
-  /**
-   * Sends Google Cloud Print printer sharing invitations API requests.
-   * @param {string} account Account the request is sent for.
-   */
-  invites(account) {}
-
-  /**
-   * Accepts or rejects printer sharing invitation.
-   * @param {!Invitation} invitation Invitation to process.
-   * @param {boolean} accept Whether to accept this invitation.
-   */
-  processInvite(invitation, accept) {}
 
   /**
    * Sends a Google Cloud Print submit API request.

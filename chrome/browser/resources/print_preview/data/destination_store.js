@@ -8,7 +8,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfacePrinterFailedDetail, CloudPrintInterfaceProcessInviteDetail, CloudPrintInterfaceSearchDoneDetail} from '../cloud_print_interface.js';
+import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfacePrinterFailedDetail, CloudPrintInterfaceSearchDoneDetail} from '../cloud_print_interface.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos">
@@ -657,10 +657,6 @@ export class DestinationStore extends EventTarget {
         this.cloudPrintInterface_.getEventTarget(),
         CloudPrintInterfaceEventType.PRINTER_FAILED,
         this.onCloudPrintPrinterFailed_.bind(this));
-    this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
-        CloudPrintInterfaceEventType.PROCESS_INVITE_DONE,
-        this.onCloudPrintProcessInviteDone_.bind(this));
   }
 
   /** @param {string} key Key identifying the destination to select */
@@ -1198,19 +1194,6 @@ export class DestinationStore extends EventTarget {
       this.dispatchEvent(new CustomEvent(
           DestinationStore.EventType.ERROR,
           {detail: DestinationErrorType.INVALID}));
-    }
-  }
-
-  /**
-   * Called when printer sharing invitation was processed successfully.
-   * @param {!CustomEvent<!CloudPrintInterfaceProcessInviteDetail>}
-   *     event Contains detailed information about the invite and newly
-   *     accepted destination (if known).
-   * @private
-   */
-  onCloudPrintProcessInviteDone_(event) {
-    if (event.detail.accept && event.detail.printer) {
-      this.insertDestination_(event.detail.printer);
     }
   }
 

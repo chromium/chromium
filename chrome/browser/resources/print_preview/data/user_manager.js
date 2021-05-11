@@ -12,7 +12,6 @@ import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 
 import {Destination, DestinationOrigin} from './destination.js';
 import {DestinationStore} from './destination_store.js';
-import {InvitationStore} from './invitation_store.js';
 
 /**
  * @typedef {{ activeUser: string,
@@ -40,9 +39,6 @@ Polymer({
 
     /** @type {?DestinationStore} */
     destinationStore: Object,
-
-    /** @type {?InvitationStore} */
-    invitationStore: Object,
 
     /** @type {!Array<string>} */
     users: {
@@ -168,6 +164,5 @@ Polymer({
     }
 
     this.destinationStore.reloadUserCookieBasedDestinations(user);
-    this.invitationStore.startLoadingInvitations(user);
   },
 });

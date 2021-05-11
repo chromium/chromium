@@ -8,8 +8,7 @@
 <template is="dom-if" if="[[!cloudPrintDisabled_]]">
   <print-preview-user-manager id="userManager" active-user="{{activeUser_}}"
       cloud-print-disabled="[[cloudPrintDisabled_]]"
-      users="{{users_}}" destination-store="[[destinationStore_]]"
-      invitation-store="[[invitationStore_]]">
+      users="{{users_}}" destination-store="[[destinationStore_]]">
   </print-preview-user-manager>
 </template>
 <if expr="not chromeos">
@@ -28,7 +27,6 @@
     <template>
       <print-preview-destination-dialog
           destination-store="[[destinationStore_]]"
-          invitation-store="[[invitationStore_]]"
           recent-destination-list="[[recentDestinationList_]]"
           active-user="[[activeUser_]]" users="[[users_]]"
           current-destination-account="[[destination.account]]"
@@ -54,7 +52,6 @@
     <template>
       <print-preview-destination-dialog-cros
           destination-store="[[destinationStore_]]"
-          invitation-store="[[invitationStore_]]"
           recent-destination-list="[[recentDestinationList_]]"
           active-user="[[activeUser_]]" users="[[users_]]"
           current-destination-account="[[destination.account]]"

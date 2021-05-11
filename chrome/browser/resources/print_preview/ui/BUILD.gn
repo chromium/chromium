@@ -148,7 +148,6 @@ js_library("destination_settings") {
     "..:cloud_print_interface_impl",
     "../data:destination",
     "../data:destination_store",
-    "../data:invitation_store",
     "../data:state",
     "../data:user_manager",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -438,29 +437,16 @@ js_library("plugin_proxy") {
   ]
 }
 
-js_library("invitation_promo") {
-  deps = [
-    "..:metrics",
-    "../data:invitation",
-    "../data:invitation_store",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
 if (is_chromeos_ash) {
   js_library("destination_dialog_cros") {
     deps = [
       ":destination_list",
-      ":invitation_promo",
       ":print_preview_search_box",
       ":provisional_destination_resolver",
       "..:metrics",
       "..:native_layer",
       "../data:destination",
       "../data:destination_store",
-      "../data:invitation_store",
       "../data:print_server_store",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
       "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -474,13 +460,11 @@ if (is_chromeos_ash) {
   js_library("destination_dialog") {
     deps = [
       ":destination_list",
-      ":invitation_promo",
       ":print_preview_search_box",
       "..:metrics",
       "..:native_layer",
       "../data:destination",
       "../data:destination_store",
-      "../data:invitation_store",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
       "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
       "//ui/webui/resources/js:event_tracker.m",
@@ -581,7 +565,6 @@ html_to_js("web_components") {
     "duplex_settings.js",
     "header.js",
     "icons.js",
-    "invitation_promo.js",
     "layout_settings.js",
     "link_container.js",
     "margin_control_container.js",
