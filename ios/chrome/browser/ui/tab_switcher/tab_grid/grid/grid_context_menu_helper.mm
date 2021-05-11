@@ -87,13 +87,25 @@
                 }]];
           }
 
-          if ([weakSelf.contextMenuDelegate
-                  respondsToSelector:@selector(bookmarkURL:title:)]) {
-            [menuElements addObject:[actionFactory actionToBookmarkWithBlock:^{
-                            [weakSelf.contextMenuDelegate
-                                bookmarkURL:item.URL
-                                      title:item.title];
-                          }]];
+          bool currentlyBookmarked =
+              [weakSelf.actionsDataSource isGridItemBookmarked:item];
+          if (currentlyBookmarked) {
+            if ([weakSelf.contextMenuDelegate
+                    respondsToSelector:@selector(editBookmarkWithURL:)]) {
+              [menuElements
+                  addObject:[actionFactory actionToEditBookmarkWithBlock:^{
+                    [weakSelf.contextMenuDelegate editBookmarkWithURL:item.URL];
+                  }]];
+            }
+          } else {
+            if ([weakSelf.contextMenuDelegate
+                    respondsToSelector:@selector(bookmarkURL:title:)]) {
+              [menuElements
+                  addObject:[actionFactory actionToBookmarkWithBlock:^{
+                    [weakSelf.contextMenuDelegate bookmarkURL:item.URL
+                                                        title:item.title];
+                  }]];
+            }
           }
         }
 

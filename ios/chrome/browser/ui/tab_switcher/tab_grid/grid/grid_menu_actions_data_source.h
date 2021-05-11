@@ -17,6 +17,9 @@
 // |identifier|.
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier;
 
+// Asks the delegate if the grid |item| is already bookmarked.
+- (BOOL)isGridItemBookmarked:(GridItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_MENU_ACTIONS_DATA_SOURCE_H_

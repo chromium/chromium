@@ -13,8 +13,10 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
@@ -590,6 +592,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
                                   url:webState->GetVisibleURL()];
   return item;
+}
+
+- (BOOL)isGridItemBookmarked:(GridItem*)item {
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
+  return item && bookmarkModel &&
+         bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
 }
 
 #pragma mark - Private

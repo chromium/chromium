@@ -27,7 +27,8 @@ enum class MenuActionType {
   AddToReadingList = 15,
   AddToBookmarks = 16,
   CloseTab = 17,
-  kMaxValue = CloseTab
+  EditBookmark = 18,
+  kMaxValue = EditBookmark
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

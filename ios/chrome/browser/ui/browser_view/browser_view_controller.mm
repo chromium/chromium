@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -4471,10 +4472,18 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)bookmarkCurrentPage {
   [self initializeBookmarkInteractionController];
-  [_bookmarkInteractionController
-      presentBookmarkEditorForWebState:self.currentWebState
-                   currentlyBookmarked:[self.helper isWebStateBookmarkedByUser:
-                                                        self.currentWebState]];
+
+  GURL URL = self.currentWebState->GetLastCommittedURL();
+  BOOL alreadyBookmarked =
+      [self.helper isWebStateBookmarkedByUser:self.currentWebState];
+
+  if (alreadyBookmarked) {
+    [_bookmarkInteractionController presentBookmarkEditorForURL:URL];
+  } else {
+    [_bookmarkInteractionController
+        bookmarkURL:URL
+              title:tab_util::GetTabTitle(self.currentWebState)];
+  }
 }
 
 - (void)addToReadingList:(ReadingListAddCommand*)command {

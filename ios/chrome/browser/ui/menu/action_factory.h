@@ -116,6 +116,9 @@ API_AVAILABLE(ios(13.0))
 // Creates a UIAction instance for adding to bookmarks.
 - (UIAction*)actionToBookmarkWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for editing a bookmark.
+- (UIAction*)actionToEditBookmarkWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for closing a tab.
 - (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block;
 

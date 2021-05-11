@@ -884,10 +884,15 @@
   bool currentlyBookmarked =
       bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
 
-  [self.bookmarkInteractionController
-      presentBookmarkEditorForURL:URL
-                            title:title
-              currentlyBookmarked:currentlyBookmarked];
+  if (currentlyBookmarked) {
+    [self.bookmarkInteractionController presentBookmarkEditorForURL:URL];
+  } else {
+    [self.bookmarkInteractionController bookmarkURL:URL title:title];
+  }
+}
+
+- (void)editBookmarkWithURL:(const GURL&)URL {
+  [self.bookmarkInteractionController presentBookmarkEditorForURL:URL];
 }
 
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {

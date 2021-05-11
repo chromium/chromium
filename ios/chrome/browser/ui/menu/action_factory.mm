@@ -257,6 +257,14 @@
                          block:block];
 }
 
+- (UIAction*)actionToEditBookmarkWithBlock:(ProceduralBlock)block {
+  return [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)
+                image:[UIImage imageNamed:@"bookmark"]
+                 type:MenuActionType::EditBookmark
+                block:block];
+}
+
 - (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block {
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)

@@ -37,6 +37,9 @@ class DistantSession;
 // Tells the delegate to create a bookmark for |URL| with |title|.
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title;
 
+// Tells the delegate to edit the bookmark for |URL|.
+- (void)editBookmarkWithURL:(const GURL&)URL;
+
 // Tells the delegate to close the tab with the item identifier |identifier|.
 - (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito;
 

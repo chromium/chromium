@@ -33,15 +33,11 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Presents the bookmark UI for a single bookmark with |webState|'s current
-// committed URL and tab title.
-- (void)presentBookmarkEditorForWebState:(web::WebState*)webState
-                     currentlyBookmarked:(BOOL)bookmarked;
+// Adds a bookmark for |URL| with the given |title|.
+- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title;
 
-// Presents the bookmark UI for a single bookmark with |URL| and |title|.
-- (void)presentBookmarkEditorForURL:(const GURL&)URL
-                              title:(NSString*)title
-                currentlyBookmarked:(BOOL)bookmarked;
+// Presents the bookmark UI to edit an existing bookmark with |URL|.
+- (void)presentBookmarkEditorForURL:(const GURL&)URL;
 
 // Presents the bookmarks browser modally.
 - (void)presentBookmarks;

@@ -21,7 +21,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
@@ -129,9 +128,6 @@ enum class PresentedState {
 @property(nonatomic, strong)
     BookmarkTransitioningDelegate* bookmarkTransitioningDelegate;
 
-// Builds a controller and brings it on screen.
-- (void)presentBookmarkEditorForBookmarkedURL:(const GURL&)URL;
-
 // Dismisses the bookmark browser.  If |urlsToOpen| is not empty, then the user
 // has selected to navigate to those URLs with specified tab mode.
 - (void)dismissBookmarkBrowserAnimated:(BOOL)animated
@@ -191,44 +187,31 @@ enum class PresentedState {
   _bookmarkEditor.delegate = nil;
 }
 
-- (void)presentBookmarkEditorForBookmarkedURL:(const GURL&)URL {
+- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
+  if (!self.bookmarkModel->loaded())
+    return;
+
+  __weak BookmarkInteractionController* weakSelf = self;
+  // Copy of |URL| to be captured in block.
+  GURL bookmarkedURL(URL);
+  void (^editAction)() = ^{
+    [weakSelf presentBookmarkEditorForURL:bookmarkedURL];
+  };
+  [self.handler
+      showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
+                                                          URL:bookmarkedURL
+                                                   editAction:editAction]];
+}
+
+- (void)presentBookmarkEditorForURL:(const GURL&)URL {
+  if (!self.bookmarkModel->loaded())
+    return;
+
   const BookmarkNode* bookmark =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   if (!bookmark)
     return;
   [self presentEditorForNode:bookmark];
-}
-
-- (void)presentBookmarkEditorForWebState:(web::WebState*)webState
-                     currentlyBookmarked:(BOOL)bookmarked {
-  if (!webState)
-    return;
-
-  [self presentBookmarkEditorForURL:webState->GetLastCommittedURL()
-                              title:tab_util::GetTabTitle(webState)
-                currentlyBookmarked:bookmarked];
-}
-
-- (void)presentBookmarkEditorForURL:(const GURL&)URL
-                              title:(NSString*)title
-                currentlyBookmarked:(BOOL)bookmarked {
-  if (!self.bookmarkModel->loaded())
-    return;
-
-  if (bookmarked) {
-    [self presentBookmarkEditorForBookmarkedURL:URL];
-  } else {
-    __weak BookmarkInteractionController* weakSelf = self;
-    // Copy of |URL| to be captured in block.
-    GURL bookmarkedURL(URL);
-    void (^editAction)() = ^{
-      [weakSelf presentBookmarkEditorForBookmarkedURL:bookmarkedURL];
-    };
-    [self.handler
-        showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
-                                                            URL:bookmarkedURL
-                                                     editAction:editAction]];
-  }
 }
 
 - (void)presentBookmarks {
