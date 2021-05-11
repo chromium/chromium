@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -148,8 +148,8 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   SingleAppUninstalledDelegate single_app_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> observer_{this};
-
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
+      this};
 };
 
 // Convenience method to crreate an observer to wait for the next install

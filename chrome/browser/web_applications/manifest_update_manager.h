@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -92,7 +92,8 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   SystemWebAppManager* system_web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> registrar_observer_{this};
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+      registrar_observation_{this};
 
   base::flat_map<AppId, std::unique_ptr<ManifestUpdateTask>> tasks_;
 

@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -113,7 +113,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   base::FilePath web_apps_directory_;
   std::unique_ptr<FileUtilsWrapper> utils_;
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> registrar_observer_{this};
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+      registrar_observation_{this};
 
   // We cache a single low-resolution icon for each app.
   std::map<AppId, SkBitmap> favicon_cache_;

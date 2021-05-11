@@ -45,7 +45,7 @@ BookmarkAppRegistrar::BookmarkAppRegistrar(Profile* profile)
 BookmarkAppRegistrar::~BookmarkAppRegistrar() = default;
 
 void BookmarkAppRegistrar::Start() {
-  extension_observer_.Add(ExtensionRegistry::Get(profile()));
+  extension_observation_.Observe(ExtensionRegistry::Get(profile()));
 }
 
 bool BookmarkAppRegistrar::IsInstalled(const web_app::AppId& app_id) const {
@@ -118,7 +118,7 @@ void BookmarkAppRegistrar::OnExtensionUnloaded(
 
 void BookmarkAppRegistrar::OnShutdown(ExtensionRegistry* registry) {
   NotifyAppRegistrarShutdown();
-  extension_observer_.RemoveAll();
+  extension_observation_.Reset();
 }
 
 std::string BookmarkAppRegistrar::GetAppShortName(

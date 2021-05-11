@@ -35,7 +35,7 @@ WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
       provider_(WebAppProviderBase::GetProviderBase(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   DCHECK(provider_);
-  observer_.Add(&provider_->registrar());
+  observation_.Observe(&provider_->registrar());
   SetAppId(
       FindAppIdWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
 }
@@ -159,7 +159,7 @@ void WebAppTabHelper::OnAppRegistrarShutdown() {
 }
 
 void WebAppTabHelper::OnAppRegistrarDestroyed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void WebAppTabHelper::ResetAppId() {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -91,7 +91,8 @@ class WebAppTabHelper : public WebAppTabHelperBase,
 
   bool has_loaded_non_about_blank_page_ = false;
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> observer_{this};
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observation_{
+      this};
   WebAppProviderBase* provider_ = nullptr;
 
 };

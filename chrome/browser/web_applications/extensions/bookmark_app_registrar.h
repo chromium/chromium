@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -123,8 +123,8 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   const Extension* GetBookmarkAppDchecked(const web_app::AppId& app_id) const;
   const Extension* GetEnabledExtension(const web_app::AppId& app_id) const;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_observation_{this};
 
   // Observers may find this pointer via FindExtension method.
   const Extension* bookmark_app_being_observed_ = nullptr;

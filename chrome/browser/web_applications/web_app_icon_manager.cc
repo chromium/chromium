@@ -597,7 +597,7 @@ void WebAppIconManager::Start() {
   for (const AppId& app_id : registrar_.GetAppIds()) {
     ReadFavicon(app_id);
   }
-  registrar_observer_.Add(&registrar_);
+  registrar_observation_.Observe(&registrar_);
 }
 
 void WebAppIconManager::Shutdown() {}
@@ -758,7 +758,7 @@ void WebAppIconManager::OnWebAppInstalled(const AppId& app_id) {
 }
 
 void WebAppIconManager::OnAppRegistrarDestroyed() {
-  registrar_observer_.RemoveAll();
+  registrar_observation_.Reset();
 }
 
 void WebAppIconManager::ReadIconAndResize(const AppId& app_id,
