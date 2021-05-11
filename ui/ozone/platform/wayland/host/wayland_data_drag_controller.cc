@@ -161,9 +161,6 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   DCHECK(data_offer_);
   window_ = window;
 
-  // TODO(crbug.com/1004715): Set mime type the client can accept.  Now it sets
-  // all mime types offered because current implementation doesn't decide
-  // action based on mime type.
   unprocessed_mime_types_.clear();
   for (auto mime : data_offer_->mime_types()) {
     unprocessed_mime_types_.push_back(mime);
