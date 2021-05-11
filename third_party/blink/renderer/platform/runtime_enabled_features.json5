@@ -347,7 +347,7 @@
     },
     {
       name: "ClickPointerEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClickRetargetting",

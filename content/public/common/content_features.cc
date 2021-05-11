@@ -160,7 +160,7 @@ const base::Feature kCapabilityDelegationPaymentRequest{
     "CapabilityDelegationPaymentRequest", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kClickPointerEvent{"ClickPointerEvent",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCompositeBGColorAnimation{
     "CompositeBGColorAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
