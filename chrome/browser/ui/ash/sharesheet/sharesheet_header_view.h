@@ -27,7 +27,8 @@ class SharesheetHeaderView : public views::View {
   METADATA_HEADER(SharesheetHeaderView);
 
   explicit SharesheetHeaderView(apps::mojom::IntentPtr intent,
-                                Profile* profile);
+                                Profile* profile,
+                                bool show_content_previews);
   ~SharesheetHeaderView() override;
   SharesheetHeaderView(const SharesheetHeaderView&) = delete;
   SharesheetHeaderView& operator=(const SharesheetHeaderView&) = delete;

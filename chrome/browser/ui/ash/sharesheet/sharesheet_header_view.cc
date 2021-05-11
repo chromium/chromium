@@ -199,7 +199,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 // SharesheetHeaderView --------------------------------------------------------
 
 SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
-                                           Profile* profile)
+                                           Profile* profile,
+                                           bool show_content_previews)
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
@@ -217,7 +218,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
   const bool has_files =
       (intent_->file_urls.has_value() && !intent_->file_urls.value().empty());
   // The image view is initialised first to ensure its left most placement.
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+  if (show_content_previews) {
     auto file_count = (has_files) ? intent_->file_urls.value().size() : 0;
     image_preview_ =
         AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
@@ -232,7 +233,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
       CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
                        CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
                        kTitleTextColor, gfx::ALIGN_LEFT));
-  if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
+  if (show_content_previews) {
     ShowTextPreview();
     if (has_files) {
       ResolveImages();

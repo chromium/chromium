@@ -182,9 +182,14 @@ void SharesheetBubbleView::ShowBubble(
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
+  // When there are no targets, don't show any previews. Otherwise, show
+  // previews if the flag is enabled.
+  bool show_content_previews =
+      !targets.empty() &&
+      base::FeatureList::IsEnabled(features::kSharesheetContentPreviews);
   header_view_ =
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
-          intent_->Clone(), delegate_->GetProfile()));
+          intent_->Clone(), delegate_->GetProfile(), show_content_previews));
 
   if (targets.empty()) {
     auto* image =
