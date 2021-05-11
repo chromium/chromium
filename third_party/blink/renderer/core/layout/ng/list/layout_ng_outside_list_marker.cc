@@ -22,6 +22,13 @@ void LayoutNGOutsideListMarker::WillCollectInlines() {
   list_marker_.UpdateMarkerTextIfNeeded(*this);
 }
 
+LayoutBox::PaginationBreakability
+LayoutNGOutsideListMarker::GetPaginationBreakability(
+    FragmentationEngine engine) const {
+  // Outside list markers are always monolithic.
+  return kForbidBreaks;
+}
+
 bool LayoutNGOutsideListMarker::NeedsOccupyWholeLine() const {
   if (!GetDocument().InQuirksMode())
     return false;

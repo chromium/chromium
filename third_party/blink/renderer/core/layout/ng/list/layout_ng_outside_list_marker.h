@@ -27,6 +27,9 @@ class CORE_EXPORT LayoutNGOutsideListMarker final
   const ListMarker& Marker() const { return list_marker_; }
   ListMarker& Marker() { return list_marker_; }
 
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine engine) const final;
+
  private:
   bool IsOfType(LayoutObjectType) const override;
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
