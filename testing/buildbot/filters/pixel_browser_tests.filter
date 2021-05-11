@@ -17,7 +17,7 @@ HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
-PageInfoBubbleViewBrowserTest.*
+PageInfoBubbleViewDialogBrowserTest.*
 PasswordReuseModalWarningTest.*
 PermissionChipBrowserTest.*
 All/PermissionPromptBubbleViewBrowserTest.*

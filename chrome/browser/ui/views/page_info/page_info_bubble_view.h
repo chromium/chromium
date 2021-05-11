@@ -111,6 +111,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
 
  private:
   friend class PageInfoBubbleViewBrowserTest;
+  friend class PageInfoBubbleViewDialogBrowserTest;
   friend class PageInfoBubbleViewSyncBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
 
