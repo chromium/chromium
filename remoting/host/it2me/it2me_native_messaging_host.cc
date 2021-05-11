@@ -344,7 +344,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
 
   std::unique_ptr<base::DictionaryValue> policies =
       policy_watcher_->GetEffectivePolicies();
-  if (policies->size() == 0) {
+  if (policies->DictSize() == 0) {
     // At this point policies have been read, so if there are none set then
     // it indicates an error. Since this can be fixed by end users it has a
     // dedicated message type rather than the generic "error" so that the
