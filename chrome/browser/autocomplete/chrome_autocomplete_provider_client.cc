@@ -26,6 +26,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
+#include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -230,6 +231,11 @@ ChromeAutocompleteProviderClient::GetAutocompleteClassifier() {
 history::HistoryService* ChromeAutocompleteProviderClient::GetHistoryService() {
   return HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+history_clusters::MemoriesService*
+ChromeAutocompleteProviderClient::GetMemoriesService() {
+  return MemoriesServiceFactory::GetForBrowserContext(profile_);
 }
 
 scoped_refptr<history::TopSites>
