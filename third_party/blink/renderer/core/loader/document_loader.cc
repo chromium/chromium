@@ -1685,6 +1685,13 @@ void DocumentLoader::StartLoadingResponse() {
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
+  // This was called already during `InitializeWindow`, but it could be that we
+  // didn't have a Document then (which happens when `InitializeWindow` reuses
+  // the window and calls `LocalDOMWindow::ClearForReuse()`). This is
+  // idempotent, so it is safe to do it again (in fact, it will be called again
+  // also when parsing origin trials delivered in meta tags).
+  frame_->DomWindow()->GetOriginTrialContext()->InitializePendingFeatures();
+
   frame_->DomWindow()->BindContentSecurityPolicy();
 
   if (history_item_ && IsBackForwardLoadType(load_type_))

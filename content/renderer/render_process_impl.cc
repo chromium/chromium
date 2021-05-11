@@ -169,40 +169,44 @@ RenderProcessImpl::RenderProcessImpl()
 
   bool enable_wasm_threads =
       base::FeatureList::IsEnabled(features::kWebAssemblyThreads);
-  bool enable_shared_array_buffer =
+  bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
-  bool cross_origin_isolated =
-      base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
-      blink::IsCrossOriginIsolated();
 
 #if (!defined(OS_ANDROID))
-  if (!enable_shared_array_buffer) {
-    // Bypass the SAB restriction for the Finch "kill switch".
-    enable_shared_array_buffer =
-        base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
-    if (!enable_shared_array_buffer &&
-        command_line->HasSwitch(
-            switches::kSharedArrayBufferUnrestrictedAccessAllowed)) {
-      // Bypass the SAB restriction when enabled by Enterprise Policy.
-      enable_shared_array_buffer = true;
-      blink::WebRuntimeFeatures::
-          EnableSharedArrayBufferUnrestrictedAccessAllowed(true);
-    }
+  // Bypass the SAB restriction for the Finch "kill switch".
+  enable_shared_array_buffer_unconditionally =
+      enable_shared_array_buffer_unconditionally ||
+      base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
+
+  // Bypass the SAB restriction when enabled by Enterprise Policy.
+  if (!enable_shared_array_buffer_unconditionally &&
+      command_line->HasSwitch(
+          switches::kSharedArrayBufferUnrestrictedAccessAllowed)) {
+    enable_shared_array_buffer_unconditionally = true;
+    blink::WebRuntimeFeatures::EnableSharedArrayBufferUnrestrictedAccessAllowed(
+        true);
   }
 #endif
 
-  // WebAssembly Threads require the feature flag, or SharedArrayBuffer, or
-  // site isolation.
-  if (enable_wasm_threads || enable_shared_array_buffer ||
-      cross_origin_isolated) {
+  // WebAssembly Threads require the feature flag.
+  if (enable_wasm_threads) {
     blink::WebV8Features::EnableWasmThreads();
   }
-  // SharedArrayBuffer requires feature flags, or site isolation.
-  if (enable_shared_array_buffer || cross_origin_isolated) {
-    blink::WebV8Features::EnableSharedArrayBuffer();
-  } else {
-    constexpr char kNoSABFlag[] = "--no-harmony-sharedarraybuffer";
-    v8::V8::SetFlagsFromString(kNoSABFlag, sizeof(kNoSABFlag));
+
+  // The following line enables V8 support for SharedArrayBuffer. Note that the
+  // SharedArrayBuffer constructor will be added to every global object only if
+  // the v8 flag `sharedarraybuffer-per-context` is disabled (cf. next block of
+  // code).
+  blink::WebV8Features::EnableSharedArrayBuffer();
+
+  if (!enable_shared_array_buffer_unconditionally) {
+    // It is still possible to enable SharedArrayBuffer per context using the
+    // `SharedArrayBufferConstructorEnabledCallback`. This will be done if the
+    // context is cross-origin isolated or if it opts in into the reverse origin
+    // trial.
+    constexpr char kSABPerContextFlag[] =
+        "--enable-sharedarraybuffer-per-context";
+    v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
   SetV8FlagIfFeature(features::kWebAssemblyTiering, "--wasm-tier-up");

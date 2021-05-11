@@ -206,6 +206,11 @@
     "args": ["--enable-features=SharedArrayBuffer"]
   },
   {
+    "prefix": "shared_array_buffer_disabled_on_desktop",
+    "bases": ["wpt_internal/origin_trials/unrestricted_shared_array_buffer"],
+    "args": ["--disable-features=SharedArrayBufferOnDesktop"]
+  },
+  {
     "prefix": "mse-1mb-buffers",
     "bases": ["http/tests/media/media-source/stream_memory_tests"],
     "args": ["--mse-audio-buffer-size-limit-mb=1",

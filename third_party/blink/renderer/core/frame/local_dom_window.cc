@@ -651,17 +651,6 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
 
-#if !defined(OS_ANDROID)
-  // On desktop, enable SharedArrayBuffer for the reverse Origin Trial,
-  // or if the Finch "kill switch" is on, or if enabled by Enterprise Policy.
-  if (RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
-      RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled() ||
-      RuntimeEnabledFeatures::
-          SharedArrayBufferUnrestrictedAccessAllowedEnabled()) {
-    v8::V8::SetIsCrossOriginIsolated();
-  }
-#endif
-
   return document_;
 }
 

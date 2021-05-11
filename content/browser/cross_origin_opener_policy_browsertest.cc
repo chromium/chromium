@@ -2967,7 +2967,7 @@ IN_PROC_BROWSER_TEST_P(
                              "/set-header?"
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin&"
-                             "Permissions-Policy: cross-origin-isolated=()");
+                             "Permissions-Policy: cross-origin-isolated%3D()");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_TRUE(ExecJs(current_frame_host(),
                      JsReplace("g_iframe = document.createElement('iframe');"
@@ -3011,7 +3011,7 @@ IN_PROC_BROWSER_TEST_P(
                              "/set-header?"
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin&"
-                             "Permissions-Policy: cross-origin-isolated=()");
+                             "Permissions-Policy: cross-origin-isolated%3D()");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_TRUE(ExecJs(current_frame_host(),
                      JsReplace("g_iframe = document.createElement('iframe');"
@@ -3034,10 +3034,14 @@ IN_PROC_BROWSER_TEST_P(
   )",
                      EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
+  EXPECT_EQ(false, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
+
   // TODO(https://crbug.com/1144838): Being able to share SharedArrayBuffer from
   // a document with self.crossOriginIsolated == false sounds wrong.
   EXPECT_TRUE(ExecJs(sub_document, R"(
-    let sab = new SharedArrayBuffer(1234);
+    // Create a WebAssembly Memory to bypass the SAB constructor restriction.
+    let sab = new (new WebAssembly.Memory(
+        { shared:true, initial:1, maximum:1 }).buffer.constructor)(1234);
     parent.postMessage(sab, "*");
   )"));
 
@@ -3180,8 +3184,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 #if defined(OS_ANDROID)
     EXPECT_EQ(false, EvalJs(popup, "'SharedArrayBuffer' in globalThis"));
 #else
-    // TODO(https://crbug.com/1204271). This should be true instead.
-    EXPECT_EQ(false, EvalJs(popup, "'SharedArrayBuffer' in globalThis"));
+    EXPECT_EQ(true, EvalJs(popup, "'SharedArrayBuffer' in globalThis"));
 #endif
   }
 }
@@ -3202,10 +3205,14 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
 
   EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
-  // TODO(https://crbug.com/1197529) Defining the origin trial in <meta> is not
-  // supported for this feature.
+
+#if defined(OS_ANDROID)
   EXPECT_EQ(false,
             EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#else
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
@@ -3265,12 +3272,10 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 
 // Enable the reverse OriginTrial via a <meta> tag. Then send a Webassembly's
 // SharedArrayBuffer toward the iframe.
-// TODO(https://crbug.com/1201589) This currently crash.
-//
-// Temporarily disabled while merging a fix for this in v8.
+// Regression test for https://crbug.com/1201589).
 #if !defined(OS_ANDROID) // The SAB reverse origin trial only work on Desktop.
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
-                       DISABLED_CrashForBug1201589) {
+                       CrashForBug1201589) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         DCHECK_EQ(params->url_request.url, OriginTrialURL());
@@ -3297,14 +3302,8 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
 
-  // Despite the origin trial, no documents get access to the SharedArrayBuffer
-  // constructor.
-  EXPECT_EQ(false, EvalJs(main_document, "'SharedArrayBuffer' in globalThis"));
-  EXPECT_EQ(false, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
-
-  RenderProcessHost* renderer_process = main_document->GetProcess();
-  RenderProcessHostWatcher crash_observer(
-      renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_EQ(true, EvalJs(main_document, "'SharedArrayBuffer' in globalThis"));
+  EXPECT_EQ(true, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
 
   EXPECT_TRUE(ExecJs(sub_document, R"(
     g_sab_size = new Promise(resolve => {
@@ -3318,10 +3317,7 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
       shared:true, initial:0, maximum:0 });
     g_iframe.contentWindow.postMessage(wasm_shared_memory.buffer, "*");
   )"));
-
-  // TODO(https://crbug.com/1201589) The renderer process currently crash. This
-  // shouldn't happen.
-  crash_observer.Wait();
+  EXPECT_EQ(0, EvalJs(sub_document, "g_sab_size"));
 }
 #endif
 
