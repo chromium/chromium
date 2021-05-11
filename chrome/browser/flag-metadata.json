@@ -4564,7 +4564,7 @@
   {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 96
   },
   {
     "name": "run-video-capture-service-in-browser",
