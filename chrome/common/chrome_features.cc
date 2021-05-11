@@ -805,7 +805,7 @@ const base::Feature kRecordWebAppDebugInfo{"RecordWebAppDebugInfo",
 // Enables notification permission revocation for abusive origins.
 const base::Feature kAbusiveNotificationPermissionRevocation{
     "AbusiveOriginNotificationPermissionRevocation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRemoveStatusBarInWebApps{
     "RemoveStatusBarInWebApps",

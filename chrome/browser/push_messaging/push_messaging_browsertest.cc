@@ -1639,10 +1639,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
     : public PushMessagingBrowserTest {
  public:
-  PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation() {
-    feature_list_.InitAndEnableFeature(
-        features::kAbusiveNotificationPermissionRevocation);
-  }
+  PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation() = default;
 
   using SiteReputation = CrowdDenyPreloadData::SiteReputation;
 
