@@ -27,6 +27,9 @@ bool IsMobileIdentityConsistencyEnabled();
 
 // Feature flag for FRE related changes as part of MICE.
 extern const base::Feature kMobileIdentityConsistencyFRE;
+
+// Feature flag for promo-related changes of `kMobileIdentityConsistency`.
+extern const base::Feature kMobileIdentityConsistencyPromos;
 #endif
 
 enum class AccountConsistencyMethod : int {

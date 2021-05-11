@@ -19,10 +19,14 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -293,12 +297,21 @@ public class SigninPromoController {
 
         view.getDescription().setText(mDescriptionStringId);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+        String continueAsButtonText = context.getString(
+                R.string.signin_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail());
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            view.getPrimaryButton().setText(continueAsButtonText);
+        } else if (!ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)) {
             view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         } else {
-            String signinButtonText = context.getString(R.string.signin_promo_continue_as,
-                    mProfileData.getGivenNameOrFullNameOrEmail());
-            view.getPrimaryButton().setText(signinButtonText);
+            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                    Profile.getLastUsedRegularProfile());
+            boolean hasPrimaryAccount =
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null;
+            view.getPrimaryButton().setText(hasPrimaryAccount
+                            ? context.getString(R.string.sync_promo_turn_on_sync)
+                            : continueAsButtonText);
         }
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
 
