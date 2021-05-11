@@ -6863,3 +6863,8 @@ crbug.com/1207849 virtual/plz-service-worker/external/wpt/service-workers/servic
 crbug.com/1207851 virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Pass Failure Timeout ]
 crbug.com/1207851 virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
 crbug.com/1207851 virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
+
+# Sheriff 2021-05-10
+crbug.com/1207709 [ Mac10.13 ] external/wpt/resource-timing/document-domain-no-impact-opener.html [ Pass Failure ]
+crbug.com/1207709 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/document-domain-no-impact-opener.html [ Pass Failure ]
+crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Pass Failure ]
