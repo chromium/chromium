@@ -2691,6 +2691,7 @@ extern const char kLacrosPrimaryDescription[];
 
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
+extern const char kLacrosStabilityLeastStableDescription[];
 extern const char kLacrosStabilityLessStableDescription[];
 extern const char kLacrosStabilityMoreStableDescription[];
 

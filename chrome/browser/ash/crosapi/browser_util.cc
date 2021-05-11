@@ -238,6 +238,7 @@ const base::Feature kLacrosAllowOnStableChannel{
     "LacrosAllowOnStableChannel", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
+const char kLacrosStabilityLeastStable[] = "least-stable";
 const char kLacrosStabilityLessStable[] = "less-stable";
 const char kLacrosStabilityMoreStable[] = "more-stable";
 

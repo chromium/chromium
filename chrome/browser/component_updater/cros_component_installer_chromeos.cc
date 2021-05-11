@@ -51,7 +51,7 @@ const ComponentConfig kConfigs[] = {
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
     // NOTE: If you change the lacros component names, you must also update
     // chrome/browser/ash/crosapi/browser_loader.cc.
-    {"lacros-fishfood", ComponentConfig::PolicyType::kLacros, nullptr,
+    {"lacros-dogfood-canary", ComponentConfig::PolicyType::kLacros, nullptr,
      "7a85ffb4b316a3b89135a3f43660ef3049950a61a2f8df4237e1ec213852b848"},
     {"lacros-dogfood-dev", ComponentConfig::PolicyType::kLacros, nullptr,
      "b3e1ef1780c0acd2d3fa44b4d73c657a0f1ed3ad83fd8c964a18a3502ccf5f4f"},

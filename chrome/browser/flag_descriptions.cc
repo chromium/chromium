@@ -4626,10 +4626,9 @@ const char kLacrosPrimaryDescription[] =
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Frequency of Lacros updates.";
 
-const char kLacrosStabilityLessStableDescription[] =
-    "More frequent updates / less stable";
-const char kLacrosStabilityMoreStableDescription[] =
-    "Less frequent updates / more stable";
+const char kLacrosStabilityLeastStableDescription[] = "Daily updates";
+const char kLacrosStabilityLessStableDescription[] = "Weekly updates";
+const char kLacrosStabilityMoreStableDescription[] = "Monthly updates";
 
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =

@@ -25,15 +25,6 @@ namespace crosapi {
 
 namespace {
 
-// The Lacros dogfood is the logical successor to the Lacros fishfood. They are
-// no intrinsic differences other than a slight change to the app ids used for
-// deployment. This feature is a temporary measure to ensure that when the new
-// app ids are ready, ash can be immediately switched to the dogfood deployment.
-// At that point, this feature can only be removed from the code and we can
-// switch unconditionally to the dogfood deployment..
-const base::Feature kLacrosPreferDogfoodOverFishfood{
-    "LacrosPreferDogfoodOverFishfood", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Emergency kill switch in case the notification code doesn't work properly.
 const base::Feature kLacrosShowUpdateNotifications{
     "LacrosShowUpdateNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -48,28 +39,26 @@ struct ComponentInfo {
 
 // NOTE: If you change the lacros component names, you must also update
 // chrome/browser/component_updater/cros_component_installer_chromeos.cc
-constexpr ComponentInfo kLacrosFishfoodInfo = {
-    "lacros-fishfood", "hkifppleldbgkdlijbdfkdpedggaopda"};
+constexpr ComponentInfo kLacrosDogfoodCanaryInfo = {
+    "lacros-dogfood-canary", "hkifppleldbgkdlijbdfkdpedggaopda"};
 constexpr ComponentInfo kLacrosDogfoodDevInfo = {
     "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
 constexpr ComponentInfo kLacrosDogfoodStableInfo = {
     "lacros-dogfood-stable", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
 
 ComponentInfo GetLacrosComponentInfo() {
-  if (!base::FeatureList::IsEnabled(kLacrosPreferDogfoodOverFishfood))
-    return kLacrosFishfoodInfo;
-
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
     std::string value =
         cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    if (value == browser_util::kLacrosStabilityLessStable) {
+    if (value == browser_util::kLacrosStabilityLeastStable)
+      return kLacrosDogfoodCanaryInfo;
+    if (value == browser_util::kLacrosStabilityLessStable)
       return kLacrosDogfoodDevInfo;
-    } else if (value == browser_util::kLacrosStabilityMoreStable) {
+    if (value == browser_util::kLacrosStabilityMoreStable)
       return kLacrosDogfoodStableInfo;
-    }
   }
-  // Use more frequent updates by default.
+  // Use once a week / Dev style updates by default.
   return kLacrosDogfoodDevInfo;
 }
 

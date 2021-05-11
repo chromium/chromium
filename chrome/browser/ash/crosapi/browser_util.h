@@ -66,6 +66,7 @@ extern const base::Feature kLacrosAllowOnStableChannel;
 // A command-line switch that can also be set from chrome://flags that affects
 // the frequency of Lacros updates.
 extern const char kLacrosStabilitySwitch[];
+extern const char kLacrosStabilityLeastStable[];
 extern const char kLacrosStabilityLessStable[];
 extern const char kLacrosStabilityMoreStable[];
 

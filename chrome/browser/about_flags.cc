@@ -671,6 +671,9 @@ const char kWebAppsCrosapiInternalName[] = "web-apps-crosapi";
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kLacrosStabilityLeastStableDescription,
+     crosapi::browser_util::kLacrosStabilitySwitch,
+     crosapi::browser_util::kLacrosStabilityLeastStable},
     {flag_descriptions::kLacrosStabilityLessStableDescription,
      crosapi::browser_util::kLacrosStabilitySwitch,
      crosapi::browser_util::kLacrosStabilityLessStable},
