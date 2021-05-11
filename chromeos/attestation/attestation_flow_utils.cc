@@ -24,6 +24,8 @@ std::string GetKeyNameForProfile(
       return kEnterpriseUserKey;
     case PROFILE_CONTENT_PROTECTION_CERTIFICATE:
       return std::string(kContentProtectionKeyPrefix) + request_origin;
+    case PROFILE_SOFT_BIND_CERTIFICATE:
+      return kSoftBindKey;
   }
   NOTREACHED();
   return "";

@@ -81,6 +81,8 @@ base::Optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
     case PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE:
       return ::attestation::CertificateProfile::
           ENTERPRISE_ENROLLMENT_CERTIFICATE;
+    case PROFILE_SOFT_BIND_CERTIFICATE:
+      return ::attestation::CertificateProfile::SOFT_BIND_CERTIFICATE;
     default:
       return {};
   }

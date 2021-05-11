@@ -48,7 +48,10 @@ enum AttestationCertificateProfile {
   // A profile for certificates intended for protected content providers.
   PROFILE_CONTENT_PROTECTION_CERTIFICATE = 2,
   // A profile for certificates intended for enterprise registration.
-  PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE = 7
+  PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE = 7,
+  // A profile for certificates intended for local authorities which are
+  // used to bind software keys.
+  PROFILE_SOFT_BIND_CERTIFICATE = 10
 };
 
 // Status for operations involving an attestation server.
@@ -86,6 +89,11 @@ extern const char kEnterpriseUserKey[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kContentProtectionKeyPrefix[];
 
+// The key name for the soft bind key. This key should always be stored as a
+// USER_KEY.
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kSoftBindKey[];
+
 }  // namespace attestation
 }  // namespace chromeos
 
@@ -105,11 +113,13 @@ using ::chromeos::attestation::kEnterpriseMachineKey;
 using ::chromeos::attestation::kEnterpriseUserKey;
 using ::chromeos::attestation::KEY_DEVICE;
 using ::chromeos::attestation::KEY_USER;
+using ::chromeos::attestation::kSoftBindKey;
 using ::chromeos::attestation::PrivacyCAType;
 using ::chromeos::attestation::PROFILE_CONTENT_PROTECTION_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
 using ::chromeos::attestation::PROFILE_ENTERPRISE_USER_CERTIFICATE;
+using ::chromeos::attestation::PROFILE_SOFT_BIND_CERTIFICATE;
 using ::chromeos::attestation::TEST_PCA;
 }  // namespace attestation
 }  // namespace ash

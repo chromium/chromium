@@ -37,6 +37,8 @@ base::Optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
     case PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE:
       return ::attestation::CertificateProfile::
           ENTERPRISE_ENROLLMENT_CERTIFICATE;
+    case PROFILE_SOFT_BIND_CERTIFICATE:
+      return ::attestation::CertificateProfile::SOFT_BIND_CERTIFICATE;
   }
   return {};
 }
@@ -70,6 +72,7 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
       return KEY_DEVICE;
     case PROFILE_ENTERPRISE_USER_CERTIFICATE:
     case PROFILE_CONTENT_PROTECTION_CERTIFICATE:
+    case PROFILE_SOFT_BIND_CERTIFICATE:
       return KEY_USER;
   }
   NOTREACHED();
