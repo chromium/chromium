@@ -1396,9 +1396,9 @@ TEST_P(GuestHostContentSettingsMapTest, GuestProfile) {
       profile->GetPrefs()->GetDictionary(
           GetPrefName(ContentSettingsType::COOKIES));
   if (is_ephemeral())
-    EXPECT_FALSE(all_settings_dictionary->empty());
+    EXPECT_FALSE(all_settings_dictionary->DictEmpty());
   else
-    EXPECT_TRUE(all_settings_dictionary->empty());
+    EXPECT_TRUE(all_settings_dictionary->DictEmpty());
 }
 
 // Default settings should not be modifiable for OTR-Guest profile (there is no

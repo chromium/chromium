@@ -533,7 +533,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   for (const char* pref : cleared_prefs) {
     DictionaryPrefUpdate update(&prefs, pref);
     const base::DictionaryValue* dictionary = update.Get();
-    ASSERT_FALSE(dictionary->empty());
+    ASSERT_FALSE(dictionary->DictEmpty());
   }
 
   provider.ClearAllContentSettingsRules(ContentSettingsType::JAVASCRIPT);
@@ -543,7 +543,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   for (const char* pref : cleared_prefs) {
     DictionaryPrefUpdate update(&prefs, pref);
     const base::DictionaryValue* dictionary = update.Get();
-    EXPECT_TRUE(dictionary->empty());
+    EXPECT_TRUE(dictionary->DictEmpty());
   }
 
   // Test that the preferences for cookies and notifications are not empty.
