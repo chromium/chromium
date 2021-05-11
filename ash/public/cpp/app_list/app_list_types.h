@@ -288,13 +288,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The type of this result.
   AppListSearchResultType result_type = AppListSearchResultType::kUnknown;
 
-  // The subtype of this result. Derived search result classes can use this to
-  // represent their own subtypes. Currently, OmniboxResult sets this to
-  // indicate this is a history result, previous query, etc. If a result is an
-  // Answer, OmniboxResult will set this to be the answer type. A value of -1
-  // indicates no subtype has been set.
-  int result_subtype = -1;
-
   // A search result type used for metrics.
   ash::SearchResultType metrics_type = ash::SEARCH_RESULT_TYPE_BOUNDARY;
 

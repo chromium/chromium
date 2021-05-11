@@ -65,7 +65,6 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
   // description.
   bool IsUrlResultWithDescription() const;
 
-  bool IsRichEntityResult() const;
   void FetchRichEntityImage(const GURL& url);
 
   void OnFaviconFetched(const gfx::Image& icon);

@@ -213,14 +213,11 @@ OmniboxResult::OmniboxResult(Profile* profile,
   set_id(match_.stripped_destination_url.spec());
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
-  set_result_subtype(static_cast<int>(match_.type));
   SetMetricsType(GetSearchResultType());
 
   if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
     if (match_.answer.has_value()) {
       SetOmniboxType(OmniboxType::kAnswer);
-      // The answer subtype overrides the match subtype.
-      set_result_subtype(static_cast<int>(match_.answer->type()));
     } else if (match_.type == AutocompleteMatchType::CALCULATOR) {
       SetOmniboxType(OmniboxType::kCalculatorAnswer);
     } else if (!match_.image_url.is_empty()) {
@@ -228,11 +225,9 @@ OmniboxResult::OmniboxResult(Profile* profile,
     }
 
     // The stripped destination URL is no longer a unique identifier, so append
-    // result types.
-    // TODO(crbug.com/1130372): Consider generating a random unique ID instead.
+    // it to the omnibox type.
     const std::string id = base::JoinString(
         {base::NumberToString(static_cast<int>(omnibox_type())),
-         base::NumberToString(static_cast<int>(result_subtype())),
          match_.stripped_destination_url.spec()},
         "-");
     set_id(id);
@@ -350,15 +345,11 @@ GURL OmniboxResult::DestinationURL() const {
 }
 
 void OmniboxResult::UpdateIcon() {
-  // TODO(crbug.com/1201151): Refactor this method.
-
-  if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
-      IsRichEntityResult()) {
-    // Determine if we have a local icon. Calculator and non-weather answer
-    // results have local icons.
-    if (match_.type == AutocompleteMatchType::CALCULATOR) {
+  switch (omnibox_type()) {
+    case OmniboxType::kCalculatorAnswer:
       SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
-    } else if (match_.answer) {
+      return;
+    case OmniboxType::kAnswer:
       if (match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER &&
           !match_.answer->image_url().is_empty()) {
         // Weather icons are downloaded. Check this first so that the local
@@ -367,40 +358,43 @@ void OmniboxResult::UpdateIcon() {
       } else {
         SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
       }
-    } else if (!match_.image_url.is_empty()) {
-      // All remaining rich entity icons will have their image downloaded.
-      FetchRichEntityImage(match_.image_url);
-    }
-    return;
-  }
-
-  // Use a favicon if eligible. If the result should have a favicon but there
-  // isn't one in the cache, fall through to using a generic icon instead.
-  if (favicon_cache_ && MatchTypeToIconType(match_.type) == IconType::kDomain) {
-    const auto icon = favicon_cache_->GetFaviconForPageUrl(
-        match_.destination_url, base::BindOnce(&OmniboxResult::OnFaviconFetched,
-                                               weak_factory_.GetWeakPtr()));
-    if (!icon.IsEmpty()) {
-      SetOmniboxType(OmniboxType::kFavicon);
-      SetIcon(icon.AsImageSkia());
       return;
-    }
-  }
+    case OmniboxType::kRichImage:
+      FetchRichEntityImage(match_.image_url);
+      return;
+    default:
+      // Use a favicon if eligible. If the result should have a favicon but
+      // there isn't one in the cache, fall through to using a generic icon
+      // instead.
+      if (favicon_cache_ &&
+          MatchTypeToIconType(match_.type) == IconType::kDomain) {
+        const auto icon = favicon_cache_->GetFaviconForPageUrl(
+            match_.destination_url,
+            base::BindOnce(&OmniboxResult::OnFaviconFetched,
+                           weak_factory_.GetWeakPtr()));
+        if (!icon.IsEmpty()) {
+          SetOmniboxType(OmniboxType::kFavicon);
+          SetIcon(icon.AsImageSkia());
+          return;
+        }
+      }
 
-  // If this is neither a rich entity nor eligible for a favicon, use either the
-  // generic bookmark or another generic icon as appropriate.
-  BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-  if (bookmark_model && bookmark_model->IsBookmarked(match_.destination_url)) {
-    SetIcon(gfx::CreateVectorIcon(
-        omnibox::kBookmarkIcon,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        kListIconColor));
-  } else {
-    SetIcon(gfx::CreateVectorIcon(
-        TypeToVectorIcon(match_.type),
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        kListIconColor));
+      // If this is neither a rich entity nor eligible for a favicon, use either
+      // the generic bookmark or another generic icon as appropriate.
+      BookmarkModel* bookmark_model =
+          BookmarkModelFactory::GetForBrowserContext(profile_);
+      if (bookmark_model &&
+          bookmark_model->IsBookmarked(match_.destination_url)) {
+        SetIcon(gfx::CreateVectorIcon(
+            omnibox::kBookmarkIcon,
+            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+            kListIconColor));
+      } else {
+        SetIcon(gfx::CreateVectorIcon(
+            TypeToVectorIcon(match_.type),
+            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+            kListIconColor));
+      }
   }
 }
 
@@ -463,11 +457,6 @@ void OmniboxResult::UpdateTitleAndDetails() {
 bool OmniboxResult::IsUrlResultWithDescription() const {
   return !AutocompleteMatch::IsSearchType(match_.type) &&
          !match_.description.empty();
-}
-
-bool OmniboxResult::IsRichEntityResult() const {
-  return match_.type == AutocompleteMatchType::CALCULATOR || match_.answer ||
-         !match_.image_url.is_empty();
 }
 
 void OmniboxResult::FetchRichEntityImage(const GURL& url) {

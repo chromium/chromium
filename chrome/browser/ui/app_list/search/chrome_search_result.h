@@ -159,18 +159,9 @@ class ChromeSearchResult {
   static std::string TagsDebugStringForTest(const std::string& text,
                                             const Tags& tags);
 
-  // Subtype of a search result. -1 means no sub type. Derived classes
-  // can set this in their metadata to return useful values for rankers etc.
-  // Note set_result_subtype() does not call into ModelUpdater so changing the
-  // subtype after construction is not reflected in ash.
-  int result_subtype() const { return metadata_->result_subtype; }
-
  protected:
   // These id setters should be called in derived class constructors only.
   void set_id(const std::string& id) { metadata_->id = id; }
-  void set_result_subtype(int result_subtype) {
-    metadata_->result_subtype = result_subtype;
-  }
 
   // Get the context menu of a certain search result. This could be different
   // for different kinds of items.

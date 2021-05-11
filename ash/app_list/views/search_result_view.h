@@ -106,8 +106,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // Invoked when the context menu closes.
   void OnMenuClosed();
 
-  // Whether this result is one of the rich entity types.
-  bool IsAnswer() const;
+  // Whether this result has a rich image icon.
   bool IsRichImage() const;
 
   // Parent list view. Owned by views hierarchy.

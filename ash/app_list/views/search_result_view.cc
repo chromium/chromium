@@ -79,6 +79,22 @@ class RoundedCornerImageView : public views::ImageView {
   }
 };
 
+int OmniboxDisplayTypeToDimension(const SearchResultOmniboxDisplayType type) {
+  const auto& config = SharedAppListConfig::instance();
+  switch (type) {
+    case SearchResultOmniboxDisplayType::kAnswer:
+    case SearchResultOmniboxDisplayType::kCalculatorAnswer:
+      return config.search_list_answer_icon_dimension();
+    case SearchResultOmniboxDisplayType::kRichImage:
+      return config.search_list_image_icon_dimension();
+    case SearchResultOmniboxDisplayType::kFavicon:
+      return config.search_list_favicon_dimension();
+    case SearchResultOmniboxDisplayType::kDefault:
+    default:
+      return config.search_list_icon_dimension();
+  }
+}
+
 }  // namespace
 
 // static
@@ -406,42 +422,23 @@ void SearchResultView::OnMetadataChanged() {
   // clearing it out. It should work correctly as long as the SearchResult does
   // not forget to SetIcon when it's ready.
   if (result() && !result()->icon().isNull()) {
-    // TODO(crbug.com/1201151): These nested if/elses can be flattened into one
-    // switch statement pending decisions on rich entity icons.
+    gfx::ImageSkia image = result()->icon();
+
+    // Calculate the image dimensions. Images could be rectangular, and we
+    // should preserve the aspect ratio.
+    const int dimension =
+        OmniboxDisplayTypeToDimension(result()->omnibox_type());
+    const int max = std::max(image.width(), image.height());
+    const bool is_square = image.width() == image.height();
+    const int width = is_square ? dimension : dimension * image.width() / max;
+    const int height = is_square ? dimension : dimension * image.height() / max;
+
     if (IsRichImage()) {
-      gfx::ImageSkia image = result()->icon();
-
-      // Images could be rectangular, and we should preserve the aspect ratio.
-      const int dimension =
-          SharedAppListConfig::instance().search_list_image_icon_dimension();
-      int width = image.width();
-      int height = image.height();
-      if (width != height) {
-        const int max = std::max(width, height);
-        width = dimension * width / max;
-        height = dimension * height / max;
-        SetIconImage(image, image_icon_, gfx::Size(width, height));
-      } else {
-        SetIconImage(image, image_icon_, gfx::Size(dimension, dimension));
-      }
-
+      SetIconImage(image, image_icon_, gfx::Size(width, height));
       icon_->SetVisible(false);
       image_icon_->SetVisible(true);
     } else {
-      int dimension;
-      if (IsAnswer()) {
-        dimension =
-            SharedAppListConfig::instance().search_list_answer_icon_dimension();
-      } else if (result()->omnibox_type() ==
-                 SearchResultOmniboxDisplayType::kFavicon) {
-        dimension =
-            SharedAppListConfig::instance().search_list_favicon_dimension();
-      } else {
-        dimension =
-            SharedAppListConfig::instance().search_list_icon_dimension();
-      }
-
-      SetIconImage(result()->icon(), icon_, gfx::Size(dimension, dimension));
+      SetIconImage(image, icon_, gfx::Size(width, height));
       icon_->SetVisible(true);
       image_icon_->SetVisible(false);
     }
@@ -564,13 +561,6 @@ void SearchResultView::OnGetContextMenu(
                      views::MenuAnchorPosition::kTopLeft,
                      views::MenuRunner::HAS_MNEMONICS);
   source->RequestFocus();
-}
-
-bool SearchResultView::IsAnswer() const {
-  return app_list_features::IsOmniboxRichEntitiesEnabled() && result() &&
-         (result()->omnibox_type() == SearchResultOmniboxDisplayType::kAnswer ||
-          result()->omnibox_type() ==
-              SearchResultOmniboxDisplayType::kCalculatorAnswer);
 }
 
 bool SearchResultView::IsRichImage() const {

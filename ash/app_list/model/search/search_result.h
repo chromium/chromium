@@ -132,11 +132,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
     metadata_->position_priority = position_priority;
   }
 
-  int result_subtype() const { return metadata_->result_subtype; }
-  void set_result_subtype(int result_subtype) {
-    metadata_->result_subtype = result_subtype;
-  }
-
   const Actions& actions() const { return metadata_->actions; }
   void SetActions(const Actions& sets);
 
