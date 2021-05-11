@@ -613,6 +613,13 @@ void SystemTrayClientImpl::SetLocaleAndExit(
 
 void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
+  if (detector->upgrade_notification_stage() ==
+      UpgradeDetector::UPGRADE_ANNOYANCE_NONE) {
+    // Close any existing notifications.
+    ResetUpdateState();
+    return;
+  }
+
   if (update_type == ash::UpdateType::kSystem && !detector->notify_upgrade()) {
     LOG(ERROR) << "Tried to show update notification when no update available";
     return;
