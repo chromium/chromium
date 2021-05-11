@@ -105,6 +105,7 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
     InitITextChildProvider(text_child_of_text_node,
                            text_child_of_text_text_provider_raw_,
                            text_child_of_text_text_child_provider_);
+    AXPlatformNodeWinTest::SetUp();
   }
 
   void InitITextChildProvider(

@@ -60,9 +60,9 @@ constexpr const wchar_t* kGraphemeClusters[] = {
     L"\x0E01",
 };
 
-class AXPositionTest : public testing::Test, public TestAXTreeManager {
+class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
  public:
-  AXPositionTest() = default;
+  AXPositionTest();
   ~AXPositionTest() override = default;
 
  protected:
@@ -121,6 +121,7 @@ class AXPositionTest : public testing::Test, public TestAXTreeManager {
   AXNodeData inline_box2_;
 
  private:
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behaviour_;
   // Manages a minimalistic Views tree that is hosting the test webpage.
   TestAXTreeManager views_tree_manager_;
 
@@ -161,7 +162,7 @@ struct ExpandToEnclosingTextBoundaryTestParam {
 // |ExpandToEnclosingTextBoundary| method with all possible input arguments.
 class AXPositionExpandToEnclosingTextBoundaryTestWithParam
     : public AXPositionTest,
-      public testing::WithParamInterface<
+      public ::testing::WithParamInterface<
           ExpandToEnclosingTextBoundaryTestParam> {
  public:
   AXPositionExpandToEnclosingTextBoundaryTestWithParam() = default;
@@ -207,7 +208,7 @@ struct CreatePositionAtTextBoundaryTestParam {
 // |CreatePositionAtTextBoundary| method with all possible input arguments.
 class AXPositionCreatePositionAtTextBoundaryTestWithParam
     : public AXPositionTest,
-      public testing::WithParamInterface<
+      public ::testing::WithParamInterface<
           CreatePositionAtTextBoundaryTestParam> {
  public:
   AXPositionCreatePositionAtTextBoundaryTestWithParam() = default;
@@ -255,7 +256,7 @@ struct TextNavigationTestParam {
 // TODO(nektar): Only text positions are tested for now.
 class AXPositionTextNavigationTestWithParam
     : public AXPositionTest,
-      public testing::WithParamInterface<TextNavigationTestParam> {
+      public ::testing::WithParamInterface<TextNavigationTestParam> {
  public:
   AXPositionTextNavigationTestWithParam() = default;
   ~AXPositionTextNavigationTestWithParam() override = default;
@@ -263,12 +264,14 @@ class AXPositionTextNavigationTestWithParam
   DISALLOW_COPY_AND_ASSIGN(AXPositionTextNavigationTestWithParam);
 };
 
+// Most tests use kSuppressCharacter behavior.
+AXPositionTest::AXPositionTest()
+    : ax_embedded_object_behaviour_(
+          AXEmbeddedObjectBehavior::kSuppressCharacter) {}
+
 const char* AXPositionTest::TEXT_VALUE = "Line 1\nLine 2";
 
 void AXPositionTest::SetUp() {
-  // Most tests use kSuppressCharacter behavior.
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kSuppressCharacter;
-
   // First create a minimalistic Views tree that would host the test webpage.
   // Window (BrowserRootView)
   // ++NonClientView
@@ -2904,7 +2907,8 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithIgnoredNodes) {
 }
 
 TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithEmbeddedObjectCharacter) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // This test ensures that "At{Start|End}OfParagraph" work correctly when there
   // are embedded objects present near a paragraph boundary.
@@ -3693,7 +3697,8 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
 }
 
 TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kImage alt="Test image"
@@ -6986,7 +6991,8 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // This test only applies when "object replacement characters" are used in the
   // accessibility tree, e.g., in IAccessible2, UI Automation and Linux ATK
   // APIs.
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // This test ensures that "CreateParentPosition" (and by extension
   // "CreateAncestorPosition") works correctly when it is given either a tree or
@@ -7846,7 +7852,8 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 }
 
 TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++kRootWebArea "<embedded>Hello<embedded>"
   // ++++kParagraph "Paragraph"
@@ -8809,7 +8816,8 @@ TEST_F(AXPositionTest, AsValidPosition) {
 }
 
 TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kButton
@@ -9243,7 +9251,7 @@ TEST_F(AXPositionTest, CreateNextCharacterPositionAtGraphemeBoundary) {
     ASSERT_NE(nullptr, test_position);
     EXPECT_TRUE(test_position->IsTextPosition());
 
-    testing::Message message;
+    ::testing::Message message;
     message << "Expecting character boundary at " << text_offset << " in\n"
             << *test_position;
     SCOPED_TRACE(message);
@@ -9318,7 +9326,7 @@ TEST_F(AXPositionTest, CreatePreviousCharacterPositionAtGraphemeBoundary) {
     ASSERT_NE(nullptr, test_position);
     EXPECT_TRUE(test_position->IsTextPosition());
 
-    testing::Message message;
+    ::testing::Message message;
     message << "Expecting character boundary at " << text_offset << " in\n"
             << *test_position;
     SCOPED_TRACE(message);
@@ -9634,7 +9642,8 @@ TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdLeaf) {
 }
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kTextField editable
@@ -9698,7 +9707,8 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
 }
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kSearchBox editable
@@ -9799,7 +9809,8 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
 }
 
 TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kParagraph "<embedded_object>"
@@ -9932,7 +9943,8 @@ TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
 }
 
 TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kParagraph "<embedded_object>"
@@ -10799,7 +10811,8 @@ TEST_F(AXPositionTest, CreatePreviousWordPositionInList) {
 }
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText
@@ -11118,7 +11131,8 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 }
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // Parent Tree
   // ++1 kRootWebArea
@@ -11169,7 +11183,8 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   // collapsed, the subtree of that combobox needs to be hidden and, when
   // expanded, it must be accessible in the tree. This test ensures we can't
   // navigate into the options of a collapsed menu list popup.
-  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText "Hi"
@@ -11376,7 +11391,7 @@ TEST_P(AXPositionTextNavigationTestWithParam,
 INSTANTIATE_TEST_SUITE_P(
     ExpandToEnclosingTextBoundary,
     AXPositionExpandToEnclosingTextBoundaryTestWithParam,
-    testing::Values(
+    ::testing::Values(
         ExpandToEnclosingTextBoundaryTestParam{
             ax::mojom::TextBoundary::kCharacter,
             AXRangeExpandBehavior::kLeftFirst,
@@ -11564,7 +11579,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePositionAtTextBoundary,
     AXPositionCreatePositionAtTextBoundaryTestWithParam,
-    testing::Values(
+    ::testing::Values(
         CreatePositionAtTextBoundaryTestParam{
             ax::mojom::TextBoundary::kCharacter,
             ax::mojom::MoveDirection::kBackward,
@@ -11722,7 +11737,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordStartPosition(
@@ -11779,7 +11794,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordStartPosition(
@@ -11836,7 +11851,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordStartPosition(
@@ -11885,7 +11900,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordStartPosition(
@@ -11954,7 +11969,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordStartPosition(
@@ -12015,7 +12030,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordStartPosition(
@@ -12076,7 +12091,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordStartPosition(
@@ -12123,7 +12138,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordStartPosition(
@@ -12188,7 +12203,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordEndPosition(
@@ -12251,7 +12266,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordEndPosition(
@@ -12314,7 +12329,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordEndPosition(
@@ -12361,7 +12376,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextWordEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextWordEndPosition(
@@ -12428,7 +12443,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordEndPosition(
@@ -12483,7 +12498,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordEndPosition(
@@ -12540,7 +12555,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordEndPosition(
@@ -12583,7 +12598,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousWordEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousWordEndPosition(
@@ -12650,7 +12665,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -12693,7 +12708,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -12738,7 +12753,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -12784,7 +12799,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineStartPosition(
@@ -12839,7 +12854,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineStartPosition(
@@ -12890,7 +12905,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineStartPosition(
@@ -12943,7 +12958,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineStartPosition(
@@ -12992,7 +13007,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineStartPosition(
@@ -13047,7 +13062,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineEndPosition(
@@ -13098,7 +13113,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineEndPosition(
@@ -13151,7 +13166,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineEndPosition(
@@ -13200,7 +13215,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextLineEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextLineEndPosition(
@@ -13255,7 +13270,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineEndPosition(
@@ -13316,7 +13331,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineEndPosition(
@@ -13387,7 +13402,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineEndPosition(
@@ -13444,7 +13459,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousLineEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousLineEndPosition(
@@ -13523,7 +13538,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphStartPosition(
@@ -13563,7 +13578,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphStartPosition(
@@ -13608,7 +13623,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphStartPosition(
@@ -13654,7 +13669,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphStartPosition(
@@ -13709,7 +13724,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphStartPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphStartPosition(
@@ -13760,7 +13775,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphStartPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphStartPosition(
@@ -13813,7 +13828,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphStartPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphStartPosition(
@@ -13862,7 +13877,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphStartPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphStartPosition(
@@ -13919,7 +13934,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphEndPosition(
@@ -13970,7 +13985,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphEndPosition(
@@ -14027,7 +14042,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphEndPosition(
@@ -14098,7 +14113,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreateNextParagraphEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreateNextParagraphEndPosition(
@@ -14153,7 +14168,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphEndPositionWithBoundaryBehaviorCrossBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphEndPosition(
@@ -14224,7 +14239,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphEndPositionWithBoundaryBehaviorStopAtAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphEndPosition(
@@ -14299,7 +14314,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphEndPositionWithBoundaryBehaviorStopIfAlreadyAtBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphEndPosition(
@@ -14381,7 +14396,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CreatePreviousParagraphEndPositionWithBoundaryBehaviorStopAtLastAnchorBoundary,
     AXPositionTextNavigationTestWithParam,
-    testing::Values(
+    ::testing::Values(
         TextNavigationTestParam{
             base::BindRepeating([](const TestPositionType& position) {
               return position->CreatePreviousParagraphEndPosition(

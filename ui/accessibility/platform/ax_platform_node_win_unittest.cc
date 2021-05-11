@@ -264,7 +264,8 @@ IFACEMETHODIMP MockIRawElementProviderSimple::get_HostRawElementProvider(
   return E_NOTIMPL;
 }
 
-AXPlatformNodeWinTest::AXPlatformNodeWinTest() {
+AXPlatformNodeWinTest::AXPlatformNodeWinTest()
+    : ax_embedded_object_behavior_(AXEmbeddedObjectBehavior::kExposeCharacter) {
   scoped_feature_list_.InitAndEnableFeature(features::kIChromeAccessible);
 }
 
@@ -279,6 +280,7 @@ void AXPlatformNodeWinTest::TearDown() {
   ax_fragment_root_.reset(nullptr);
   DestroyTree();
   TestAXNodeWrapper::SetGlobalIsWebContent(false);
+  TestAXNodeWrapper::ResetGlobalState();
   ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
 }
 

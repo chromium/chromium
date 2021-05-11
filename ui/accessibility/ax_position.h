@@ -126,7 +126,23 @@ enum class AXEmbeddedObjectBehavior {
 // character and a word boundary. For example, an empty text field should act as
 // a character and a word boundary when a screen reader user tries to navigate
 // through it, otherwise the text field would be missed by the user.
-AX_EXPORT extern AXEmbeddedObjectBehavior g_ax_embedded_object_behavior;
+// Tests should use ScopedAXEmbeddedObjectBehaviorSetter to change this.
+// TODO(crbug.com/1204592) Don't export this so tests can't change it.
+extern AX_EXPORT AXEmbeddedObjectBehavior g_ax_embedded_object_behavior;
+
+namespace testing {
+
+class AX_EXPORT ScopedAXEmbeddedObjectBehaviorSetter {
+ public:
+  explicit ScopedAXEmbeddedObjectBehaviorSetter(
+      AXEmbeddedObjectBehavior behavior);
+  ~ScopedAXEmbeddedObjectBehaviorSetter();
+
+ private:
+  AXEmbeddedObjectBehavior prev_behavior_;
+};
+
+}  // namespace testing
 
 // Forward declarations.
 template <class AXPositionType, class AXNodeType>

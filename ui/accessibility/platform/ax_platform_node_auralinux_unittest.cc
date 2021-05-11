@@ -1387,7 +1387,6 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextSentenceGranularity) {
     message << "While checking at index " << test.offset << " for \'"
             << test.content << "\' at " << test.start_offset << '-'
             << test.end_offset << '.';
-    SCOPED_TRACE(message);
 
     int start_offset = -1, end_offset = -1;
     char* content = atk_text_get_string_at_offset(atk_text, test.offset,

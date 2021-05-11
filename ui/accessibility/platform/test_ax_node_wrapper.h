@@ -55,6 +55,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   // the result.
   static void SetHitTestResult(AXNodeID src_node_id, AXNodeID dst_node_id);
 
+  // This is used to make sure global state doesn't persist across tests.
+  static void ResetGlobalState();
+
   ~TestAXNodeWrapper() override;
 
   AXPlatformNode* ax_platform_node() const { return platform_node_; }

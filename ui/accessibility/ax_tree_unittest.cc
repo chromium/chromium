@@ -4583,7 +4583,7 @@ TEST(AXTreeTest, OnNodeHasBeenDeleted) {
   // Verify that the nodes we intend to delete in the update are actually
   // absent from the tree.
   for (auto id : test_observer.deleted_ids()) {
-    SCOPED_TRACE(testing::Message()
+    SCOPED_TRACE(::testing::Message()
                  << "Node with id=" << id << ", should not exist in the tree");
     EXPECT_EQ(nullptr, tree.GetFromId(id));
   }

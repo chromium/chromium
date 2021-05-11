@@ -120,6 +120,18 @@ void TestAXNodeWrapper::SetHitTestResult(AXNodeID src_node_id,
   g_hit_test_result[src_node_id] = dst_node_id;
 }
 
+// static
+void TestAXNodeWrapper::ResetGlobalState() {
+  g_node_id_to_wrapper_map.clear();
+  g_focused_node_in_tree.clear();
+  g_hit_test_result.clear();
+  g_node_from_last_show_context_menu = nullptr;
+  g_node_from_last_default_action = nullptr;
+  g_scale_factor = 1.0;
+  g_offset.set_x(0);
+  g_offset.set_y(0);
+}
+
 TestAXNodeWrapper::~TestAXNodeWrapper() {
   platform_node_->Destroy();
 }

@@ -22,6 +22,20 @@ AXEmbeddedObjectBehavior g_ax_embedded_object_behavior =
     AXEmbeddedObjectBehavior::kSuppressCharacter;
 #endif  // defined(OS_WIN) || BUILDFLAG(USE_ATK)
 
+namespace testing {
+
+ScopedAXEmbeddedObjectBehaviorSetter::ScopedAXEmbeddedObjectBehaviorSetter(
+    AXEmbeddedObjectBehavior behavior) {
+  prev_behavior_ = g_ax_embedded_object_behavior;
+  g_ax_embedded_object_behavior = behavior;
+}
+
+ScopedAXEmbeddedObjectBehaviorSetter::~ScopedAXEmbeddedObjectBehaviorSetter() {
+  g_ax_embedded_object_behavior = prev_behavior_;
+}
+
+}  // namespace testing
+
 // static
 AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     const AXNode& node,
