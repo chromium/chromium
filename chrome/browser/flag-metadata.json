@@ -4743,6 +4743,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "settings-landing-page-redesign",
+    "owners": [ "dpapad@chromium.org", "johntlee@chromium.org" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "settings-refresh",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 92

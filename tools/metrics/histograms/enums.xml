@@ -45753,6 +45753,7 @@ from previous Chrome versions.
   <int value="-992785453" label="ExplicitLanguageAsk:disabled"/>
   <int value="-992554993" label="TemporaryHoldingSpacePreviews:disabled"/>
   <int value="-991416218" label="PdfViewerPresentationMode:enabled"/>
+  <int value="-991412904" label="SettingsLandingPageRedesign:disabled"/>
   <int value="-991253797"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:disabled"/>
   <int value="-990187062" label="SendTabToSelfShowSendingUI:enabled"/>
@@ -48691,6 +48692,7 @@ from previous Chrome versions.
   <int value="1604893983" label="VizForWebView:disabled"/>
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
+  <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
   <int value="1611838284" label="CellularUseExternalEuicc:enabled"/>

@@ -6959,6 +6959,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyCheckWeakPasswordsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyCheckWeakPasswords)},
 
+#if !defined(OS_ANDROID)
+    {"settings-landing-page-redesign",
+     flag_descriptions::kSettingsLandingPageRedesignName,
+     flag_descriptions::kSettingsLandingPageRedesignDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSettingsLandingPageRedesign)},
+#endif  // !defined(OS_ANDROID)
+
 #if defined(OS_ANDROID)
     {"continuous-feeds", flag_descriptions::kContinuousFeedsName,
      flag_descriptions::kContinuousFeedsDescription, kOsAndroid,
