@@ -18,7 +18,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
@@ -45,7 +44,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         @Override
         public void onResult(Integer result) {}
     };
-    private static final int DECREMENT_SEMAPHORE_VAL = 1;
+    protected static final int DECREMENT_SEMAPHORE_VAL = 1;
 
     private static final String sBaseDirName = "persisted_tab_data_storage";
     private static class BaseStorageDirectoryHolder {
@@ -79,10 +78,10 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     // Callback used for test synchronization between save, restore and delete operations
+    @MainThread
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected void save(
             int tabId, String dataId, Supplier<byte[]> dataSupplier, Callback<Integer> callback) {
-        ThreadUtils.assertOnUiThread();
         // TODO(crbug.com/1059637) we should introduce a retry mechanisms
         addSaveRequest(new FileSaveRequest(tabId, dataId, dataSupplier, callback));
         processNextItemOnQueue();
@@ -99,9 +98,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     @MainThread
     @Override
     public void restore(int tabId, String dataId, Callback<byte[]> callback) {
-        ThreadUtils.assertOnUiThread();
-        mQueue.add(new FileRestoreRequest(tabId, dataId, callback));
-        processNextItemOnQueue();
+        addStorageRequestAndProcessNext(new FileRestoreRequest(tabId, dataId, callback));
     }
 
     @MainThread
@@ -117,10 +114,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     // Callback used for test synchronization between save, restore and delete operations
+    @MainThread
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected void delete(int tabId, String dataId, Callback<Integer> callback) {
-        ThreadUtils.assertOnUiThread();
-        mQueue.add(new FileDeleteRequest(tabId, dataId, callback));
+        addStorageRequestAndProcessNext(new FileDeleteRequest(tabId, dataId, callback));
+    }
+
+    protected void addStorageRequestAndProcessNext(StorageRequest storageRequest) {
+        mQueue.add(storageRequest);
         processNextItemOnQueue();
     }
 
@@ -141,7 +142,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     /**
      * Request for saving, restoring and deleting {@link PersistedTabData}
      */
-    private abstract class StorageRequest<T> {
+    protected abstract class StorageRequest<T> {
         protected final int mTabId;
         protected final String mDataId;
         protected final File mFile;
@@ -202,10 +203,9 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     /**
      * Request to save {@link PersistedTabData}
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected class FileSaveRequest extends StorageRequest<Void> {
-        private Supplier<byte[]> mDataSupplier;
-        private Callback<Integer> mCallback;
+        protected Supplier<byte[]> mDataSupplier;
+        protected Callback<Integer> mCallback;
 
         /**
          * @param tabId identifier for the {@link Tab}
@@ -352,8 +352,8 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     /**
      * Request to restore saved serialized {@link PersistedTabData}
      */
-    private class FileRestoreRequest extends StorageRequest<byte[]> {
-        private Callback<byte[]> mCallback;
+    protected class FileRestoreRequest extends StorageRequest<byte[]> {
+        protected Callback<byte[]> mCallback;
 
         /**
          * @param tabId identifier for the {@link Tab}
