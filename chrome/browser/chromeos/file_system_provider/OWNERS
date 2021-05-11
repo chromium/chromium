@@ -1,1 +1,3 @@
-yamaguchi@chromium.org
+# TODO(https://crbug.com/1164001): Share OWNERS until the migration of
+# //chrome/browser/chromeos/file_system_provider completes.
+file://chrome/browser/ash/file_system_provider/OWNERS
