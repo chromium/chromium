@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -20,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -37,9 +39,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -48,6 +52,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/feature_engagement/test/test_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -118,6 +125,10 @@ Profile* CreateTestingProfile(const base::FilePath& path) {
   return profile_ptr;
 }
 
+std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
+  return feature_engagement::CreateTestTracker();
+}
+
 }  // namespace
 
 class ProfileMenuViewTestBase {
@@ -184,6 +195,20 @@ class ProfileMenuViewTestBase {
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                                       public extensions::ExtensionBrowserTest {
+ public:
+  ProfileMenuViewExtensionsTest() {
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileMenuViewExtensionsTest::RegisterTestTracker));
+  }
+
+ private:
+  static void RegisterTestTracker(content::BrowserContext* context) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestTracker));
+  }
+  base::CallbackListSubscription subscription_;
 };
 
 // Make sure nothing bad happens when the browser theme changes while the
@@ -263,6 +288,42 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   tab_strip->CloseWebContentsAt(0, TabStripModel::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(ProfileMenuView::IsShowing());
+}
+
+// Opening the profile menu dismisses any existing IPH.
+// Regression test for https://crbug.com/1205901
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
+  // Display the IPH.
+  FeaturePromoControllerViews* promo_controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->feature_promo_controller();
+  feature_engagement::Tracker* tracker =
+      promo_controller->feature_engagement_tracker();
+  base::RunLoop loop;
+  tracker->AddOnInitializedCallback(
+      base::BindLambdaForTesting([&loop](bool success) {
+        DCHECK(success);
+        loop.Quit();
+      }));
+  loop.Run();
+  ASSERT_TRUE(tracker->IsInitialized());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The IPH is not implemented on Lacros.
+  bool should_show = false;
+#else
+  bool should_show = true;
+#endif
+  EXPECT_EQ(should_show, promo_controller->MaybeShowPromo(
+                             feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_EQ(should_show, promo_controller->BubbleIsShowing(
+                             feature_engagement::kIPHProfileSwitchFeature));
+
+  // Open the menu.
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+
+  // Check the IPH is no longer showing.
+  EXPECT_FALSE(promo_controller->BubbleIsShowing(
+      feature_engagement::kIPHProfileSwitchFeature));
 }
 
 // Test that sets up a primary account (without sync) and simulates a click on

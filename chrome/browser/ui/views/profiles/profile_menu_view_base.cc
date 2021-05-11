@@ -20,15 +20,18 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -501,9 +504,12 @@ void ProfileMenuViewBase::ShowBubble(
     return;
 
   signin_ui_util::RecordProfileMenuViewShown(browser->profile());
+  // Close any existing IPH bubble for the profile menu.
+  FeaturePromoController* promo_controller =
+      browser->window()->GetFeaturePromoController();
+  promo_controller->CloseBubble(feature_engagement::kIPHProfileSwitchFeature);
 
-  ProfileMenuViewBase* bubble;
-
+  ProfileMenuViewBase* bubble = nullptr;
   if (view_mode == profiles::BUBBLE_VIEW_MODE_INCOGNITO) {
     DCHECK(browser->profile()->IsIncognitoProfile());
     bubble = new IncognitoMenuView(anchor_button, browser);
