@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/page_switcher_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
@@ -60,16 +62,30 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
       url);
+  view_factory_ = std::make_unique<PageInfoViewFactory>(
+      presenter_.get(), ui_delegate_.get(), this);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   page_container_ = AddChildView(std::make_unique<PageSwitcherView>());
-  page_container_->SwitchToPage(
-      std::make_unique<PageInfoMainView>(presenter_.get(), ui_delegate_.get()));
+  OpenMainPage();
   SizeToContents();
 }
 
 PageInfoNewBubbleView::~PageInfoNewBubbleView() = default;
+
+void PageInfoNewBubbleView::OpenMainPage() {
+  page_container_->SwitchToPage(view_factory_->CreateMainPageView());
+}
+
+void PageInfoNewBubbleView::OpenSecurityPage() {
+  page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
+}
+
+void PageInfoNewBubbleView::CloseBubble() {
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+}
 
 void PageInfoNewBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);

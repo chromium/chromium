@@ -271,6 +271,11 @@ class PageInfo : public content::WebContentsObserver {
     return safe_browsing_status_;
   }
 
+  // Returns site origin in a concise and human-friendly way, without the
+  // HTTP/HTTPS scheme, the username and password, the path and trivial
+  // subdomains.
+  std::u16string GetSimpleSiteName() const;
+
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
   static std::vector<ContentSettingsType> GetAllPermissionsForTesting();

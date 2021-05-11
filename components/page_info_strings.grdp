@@ -669,4 +669,9 @@
   <message name="IDS_CERT_X509_SUBJECT_ALT_NAME" desc="description of extension Certificate Subject Alternative Name">
     Certificate Subject Alternative Name
   </message>
+
+  <!-- Subpages headers -->
+  <message name="IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER" desc="The header label of the Security subpage in page info bubble.">
+    Security
+  </message>
 </grit-part>

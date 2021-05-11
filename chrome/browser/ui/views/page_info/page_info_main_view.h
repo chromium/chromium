@@ -16,6 +16,7 @@
 #include "ui/views/view.h"
 
 class PageInfoSecurityContentView;
+class PageInfoNavigationHandler;
 
 // The main view of the page info, contains security information, permissions
 // and  site-related settings. This is used in the experimental
@@ -28,7 +29,9 @@ class PageInfoMainView : public views::View,
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
 
-  PageInfoMainView(PageInfo* presenter, PageInfoUiDelegate* ui_delegate);
+  PageInfoMainView(PageInfo* presenter,
+                   PageInfoUiDelegate* ui_delegate,
+                   PageInfoNavigationHandler* navigation_handler);
   ~PageInfoMainView() override;
 
   enum PageInfoBubbleViewID {
@@ -89,6 +92,8 @@ class PageInfoMainView : public views::View,
   PageInfo* presenter_;
 
   PageInfoUiDelegate* ui_delegate_;
+
+  PageInfoNavigationHandler* navigation_handler_;
 
   // The raw details of the status of the identity check for this site.
   std::u16string details_text_ = std::u16string();

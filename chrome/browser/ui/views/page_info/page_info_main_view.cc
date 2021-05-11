@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -55,9 +56,13 @@ int GetImageButtonRightPadding() {
 
 }  // namespace
 
-PageInfoMainView::PageInfoMainView(PageInfo* presenter,
-                                   PageInfoUiDelegate* ui_delegate)
-    : presenter_(presenter), ui_delegate_(ui_delegate) {
+PageInfoMainView::PageInfoMainView(
+    PageInfo* presenter,
+    PageInfoUiDelegate* ui_delegate,
+    PageInfoNavigationHandler* navigation_handler)
+    : presenter_(presenter),
+      ui_delegate_(ui_delegate),
+      navigation_handler_(navigation_handler) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // In Harmony, the last view is a HoverButton, which overrides the bottom
@@ -274,13 +279,13 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   security_container_view_->RemoveAllChildViews(true);
   if (security_description->summary_style == SecuritySummaryColor::GREEN) {
+    // base::Unretained(navigation_handler_) is safe because navigation_handler_
+    // is the bubble view which is the owner of this view and therefore will
+    // always exist when this view exists.
     connection_button_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view) {
-                  // TODO(olesiamarukhno): Open Connection page.
-                },
-                this),
+            base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
+                                base::Unretained(navigation_handler_)),
             PageInfoUI::GetConnectionSecureIcon(), 0, std::u16string(),
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
             std::u16string(), std::u16string(),
@@ -460,8 +465,8 @@ gfx::Size PageInfoMainView::CalculatePreferredSize() const {
 
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
-  auto* flex_layout =
-      header->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE));
   title_->SetMultiLine(true);
@@ -473,21 +478,17 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  auto close_button =
-      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
-          [](View* view) {
-            view->GetWidget()->CloseWithReason(
-                views::Widget::ClosedReason::kCloseButtonClicked);
-          },
-          base::Unretained(this)));
+  auto close_button = views::BubbleFrameView::CreateCloseButton(
+      base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
+                          base::Unretained(navigation_handler_)));
 
-  // To align with other UI elements on the right side, adjust right padding by
-  // the value of the close button insets.
-  flex_layout->SetInteriorMargin(gfx::Insets(
-      0, kIconColumnWidth, 0, kIconColumnWidth - GetImageButtonRightPadding()));
   close_button->SetVisible(true);
   close_button->SetProperty(views::kCrossAxisAlignmentKey,
                             views::LayoutAlignment::kStart);
+  // Set views::kInternalPaddingKey for flex layout to account for internal
+  // button padding when calculating margins.
+  close_button->SetProperty(views::kInternalPaddingKey,
+                            close_button->GetInsets());
   header->AddChildView(close_button.release());
 
   return header;
