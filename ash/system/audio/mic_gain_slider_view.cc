@@ -156,6 +156,7 @@ const char* MicGainSliderView::GetClassName() const {
 }
 
 void MicGainSliderView::OnThemeChanged() {
+  UnifiedSliderView::OnThemeChanged();
   if (toast_label_) {
     toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
