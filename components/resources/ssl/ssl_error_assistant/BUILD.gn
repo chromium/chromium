@@ -5,8 +5,7 @@
 import("//build/config/python.gni")
 
 # Generate the binary proto form of "ssl_error_assistant" from the ascii proto.
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("make_ssl_error_assistant_protobuf") {
+action("make_ssl_error_assistant_protobuf") {
   script = "gen_ssl_error_assistant_proto.py"
 
   # The output goes in $target_gen_dir since that's where
