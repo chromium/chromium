@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
@@ -60,15 +61,14 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
  private:
   Profile* const profile_;
   Observer* supervisor_observer_;
-  ScopedObserver<SupervisedUserService, SupervisedUserServiceObserver>
-      register_observer_;
+  base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
+      register_observation_{this};
 };
 
 SupervisorBridge::SupervisorBridge(Profile* profile)
-    : profile_(profile),
-      supervisor_observer_(nullptr),
-      register_observer_(this) {
-  register_observer_.Add(SupervisedUserServiceFactory::GetForProfile(profile_));
+    : profile_(profile), supervisor_observer_(nullptr) {
+  register_observation_.Observe(
+      SupervisedUserServiceFactory::GetForProfile(profile_));
 }
 
 SupervisorBridge::~SupervisorBridge() {}
