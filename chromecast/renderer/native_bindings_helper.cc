@@ -71,6 +71,8 @@ void CastBinding::TryInstall() {
   if (!isolate)
     return;
 
+  v8::MicrotasksScope microtasks(isolate,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   if (context.IsEmpty())
