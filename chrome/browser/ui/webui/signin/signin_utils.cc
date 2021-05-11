@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/web_contents.h"

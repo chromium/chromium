@@ -15,6 +15,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"
 #else
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/web_usb_chooser_desktop.h"

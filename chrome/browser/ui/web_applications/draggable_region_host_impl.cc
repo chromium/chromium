@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"

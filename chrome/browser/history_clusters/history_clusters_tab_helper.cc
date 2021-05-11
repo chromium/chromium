@@ -23,14 +23,15 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
+#else  // defined(OS_ANDROID)
 #include "base/containers/contains.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
-#else  // defined(OS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #endif  // defined(OS_ANDROID)
 
 namespace {

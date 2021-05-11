@@ -7,13 +7,14 @@
 
 #include <stddef.h>
 
-#include "chrome/browser/ui/browser.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/native_widget_types.h"
 
+class Browser;
 class Profile;
+class SessionID;
 
-namespace contents {
+namespace content {
 class WebContents;
 }
 

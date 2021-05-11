@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/handoff_active_url_observer.h"
 
 #include "base/check.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/cocoa/handoff_active_url_observer_delegate.h"

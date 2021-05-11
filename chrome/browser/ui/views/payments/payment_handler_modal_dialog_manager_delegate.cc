@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
