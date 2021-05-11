@@ -390,10 +390,6 @@ export class DestinationStore extends EventTarget {
       this.createLocalDrivePrintDestination_();
     }
     // </if>
-    // <if expr="not chromeos">
-    // Start cloud printers, so that we can determine whether to show Drive.
-    this.startLoadCloudDestinations();
-    // </if>
 
     // Nothing recent, no system default ==> try to get a fallback printer as
     // destinationsInserted_ may never be called.
@@ -405,7 +401,9 @@ export class DestinationStore extends EventTarget {
     // Load all possible printers.
     for (const printerType of this.typesToSearch_) {
       if (printerType === PrinterType.CLOUD_PRINTER) {
-        this.startLoadCloudDestinations();
+        // Accounts are not known on startup. Send an initial search query to
+        // get tokens and user accounts.
+        this.cloudPrintInterface_.search();
       } else if (
           printerType !== PrinterType.PRIVET_PRINTER ||
           loadTimeData.getBoolean('forceEnablePrivetPrinting')) {

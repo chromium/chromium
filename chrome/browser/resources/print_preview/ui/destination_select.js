@@ -46,8 +46,6 @@ Polymer({
 
     disabled: Boolean,
 
-    driveDestinationKey: String,
-
     loaded: Boolean,
 
     noDestinations: Boolean,
