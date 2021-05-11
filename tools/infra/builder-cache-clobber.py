@@ -21,13 +21,14 @@ def main(raw_args):
   parser.add_argument('--builder', required=True)
   parser.add_argument('--bucket', required=True)
   parser.add_argument('--project', default='chromium')
+  parser.add_argument('--pool', default=None)
   parser.add_argument('--bot-id', default=None)
   args = parser.parse_args(raw_args)
 
   # Matches http://bit.ly/2WZO33P
   h = hashlib.sha256('%s/%s/%s' % (args.project, args.bucket, args.builder))
   cache = 'builder_%s_v2' % (h.hexdigest())
-  pool = 'luci.%s.%s' % (args.project, args.bucket)
+  pool = args.pool or 'luci.%s.%s' % (args.project, args.bucket)
 
   clobber_cache_utils.clobber_caches(args.swarming_server,
                                      pool,
