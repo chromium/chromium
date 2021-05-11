@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -185,7 +184,7 @@ class IDBRequestTest : public testing::Test {
       std::unique_ptr<MockWebIDBTransaction> transaction_backend) {
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
-        MakeGarbageCollected<IDBDatabaseCallbacks>(), mojo::NullRemote());
+        mojo::NullAssociatedReceiver(), mojo::NullRemote());
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(
@@ -396,8 +395,6 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
   const int64_t kVersion = 1;
   const int64_t kOldVersion = 0;
   const IDBDatabaseMetadata metadata;
-  Persistent<IDBDatabaseCallbacks> callbacks =
-      MakeGarbageCollected<IDBDatabaseCallbacks>();
 
   {
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
@@ -410,9 +407,9 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
         kTransactionId);
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
-        scope.GetScriptState(), callbacks, std::move(transaction_backend),
-        kTransactionId, kVersion, IDBRequest::AsyncTraceState(),
-        mojo::NullRemote());
+        scope.GetScriptState(), mojo::NullAssociatedReceiver(),
+        std::move(transaction_backend), kTransactionId, kVersion,
+        IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
     std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
 
@@ -433,9 +430,9 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
         kTransactionId);
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
-        scope.GetScriptState(), callbacks, std::move(transaction_backend),
-        kTransactionId, kVersion, IDBRequest::AsyncTraceState(),
-        mojo::NullRemote());
+        scope.GetScriptState(), mojo::NullAssociatedReceiver(),
+        std::move(transaction_backend), kTransactionId, kVersion,
+        IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
     std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
 

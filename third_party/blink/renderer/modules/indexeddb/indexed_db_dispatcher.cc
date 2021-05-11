@@ -8,7 +8,6 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
 
 namespace blink {
 // static

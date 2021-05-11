@@ -47,7 +47,6 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
-class IndexedDBDatabaseCallbacksImpl;
 class WebIDBCallbacks;
 
 class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
@@ -102,9 +101,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
 
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
       std::unique_ptr<WebIDBCallbacks> callbacks);
-  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
-  GetDatabaseCallbacksProxy(
-      std::unique_ptr<IndexedDBDatabaseCallbacksImpl> callbacks);
   mojo::PendingRemote<mojom::blink::ObservedFeature> GetObservedFeature();
 
   mojo::Remote<mojom::blink::IDBFactory> factory_;

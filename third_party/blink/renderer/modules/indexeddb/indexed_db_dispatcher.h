@@ -10,7 +10,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/renderer/modules/indexeddb/indexed_db_database_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

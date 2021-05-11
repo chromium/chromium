@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -43,7 +42,8 @@ namespace blink {
 
 IDBOpenDBRequest::IDBOpenDBRequest(
     ScriptState* script_state,
-    IDBDatabaseCallbacks* callbacks,
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
+        callbacks_receiver,
     std::unique_ptr<WebIDBTransaction> transaction_backend,
     int64_t transaction_id,
     int64_t version,
@@ -53,7 +53,7 @@ IDBOpenDBRequest::IDBOpenDBRequest(
                  IDBRequest::Source(),
                  nullptr,
                  std::move(metrics)),
-      database_callbacks_(callbacks),
+      callbacks_receiver_(std::move(callbacks_receiver)),
       transaction_backend_(std::move(transaction_backend)),
       transaction_id_(transaction_id),
       version_(version),
@@ -65,14 +65,11 @@ IDBOpenDBRequest::IDBOpenDBRequest(
 IDBOpenDBRequest::~IDBOpenDBRequest() = default;
 
 void IDBOpenDBRequest::Trace(Visitor* visitor) const {
-  visitor->Trace(database_callbacks_);
   IDBRequest::Trace(visitor);
 }
 
 void IDBOpenDBRequest::ContextDestroyed() {
   IDBRequest::ContextDestroyed();
-  if (database_callbacks_)
-    database_callbacks_->DetachWebCallbacks();
 }
 
 const AtomicString& IDBOpenDBRequest::InterfaceName() const {
@@ -103,10 +100,10 @@ void IDBOpenDBRequest::EnqueueUpgradeNeeded(
     return;
   }
 
-  DCHECK(database_callbacks_);
+  DCHECK(callbacks_receiver_);
 
   auto* idb_database = MakeGarbageCollected<IDBDatabase>(
-      GetExecutionContext(), std::move(backend), database_callbacks_.Release(),
+      GetExecutionContext(), std::move(backend), std::move(callbacks_receiver_),
       std::move(connection_lifetime_));
   idb_database->SetMetadata(metadata);
 
@@ -144,13 +141,13 @@ void IDBOpenDBRequest::EnqueueResponse(std::unique_ptr<WebIDBDatabase> backend,
     DCHECK(!backend.get());
     idb_database = ResultAsAny()->IdbDatabase();
     DCHECK(idb_database);
-    DCHECK(!database_callbacks_);
+    DCHECK(!callbacks_receiver_);
   } else {
     DCHECK(backend.get());
-    DCHECK(database_callbacks_);
+    DCHECK(callbacks_receiver_);
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), std::move(backend),
-        database_callbacks_.Release(), std::move(connection_lifetime_));
+        std::move(callbacks_receiver_), std::move(connection_lifetime_));
     SetResult(MakeGarbageCollected<IDBAny>(idb_database));
   }
   idb_database->SetMetadata(metadata);

@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -65,15 +64,6 @@ namespace {
 void DeactivateNewTransactions(v8::Isolate* isolate) {
   V8PerIsolateData::From(isolate)->RunEndOfScopeTasks();
 }
-
-class FakeIDBDatabaseCallbacks final : public IDBDatabaseCallbacks {
- public:
-  FakeIDBDatabaseCallbacks() = default;
-  void OnVersionChange(int64_t old_version, int64_t new_version) override {}
-  void OnForcedClose() override {}
-  void OnAbort(int64_t transaction_id, DOMException* error) override {}
-  void OnComplete(int64_t transaction_id) override {}
-};
 
 class IDBTransactionTest : public testing::Test,
                            public ScopedMockOverlayScrollbars {
@@ -96,7 +86,7 @@ class IDBTransactionTest : public testing::Test,
       std::unique_ptr<MockWebIDBTransaction> transaction_backend) {
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
-        MakeGarbageCollected<FakeIDBDatabaseCallbacks>(), mojo::NullRemote());
+        mojo::NullAssociatedReceiver(), mojo::NullRemote());
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(
@@ -383,8 +373,8 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
 
   // Fire an abort to make sure this doesn't free the transaction during use.
   // The test will not fail if it is, but ASAN would notice the error.
-  db_->OnAbort(kTransactionId, MakeGarbageCollected<DOMException>(
-                                   DOMExceptionCode::kAbortError, "Aborted"));
+  db_->Abort(kTransactionId, mojom::blink::IDBException::kAbortError,
+             "Aborted");
 
   // OnAbort() should have cleared the transaction's reference to the database.
   ThreadState::Current()->CollectAllGarbageForTesting();

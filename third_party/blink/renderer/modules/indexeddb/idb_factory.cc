@@ -51,14 +51,11 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
-#include "third_party/blink/renderer/modules/indexeddb/indexed_db_database_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -345,7 +342,6 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
                       WebFeature::kFileAccessedDatabase);
   }
 
-  auto* database_callbacks = MakeGarbageCollected<IDBDatabaseCallbacks>();
   int64_t transaction_id = IDBDatabase::NextTransactionId();
 
   auto& factory = GetFactory(ExecutionContext::From(script_state));
@@ -356,9 +352,12 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       transaction_id);
   mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
       transaction_receiver = transaction_backend->CreateReceiver();
+  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      callbacks_remote;
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
-      script_state, database_callbacks, std::move(transaction_backend),
-      transaction_id, version, std::move(metrics), GetObservedFeature());
+      script_state, callbacks_remote.InitWithNewEndpointAndPassReceiver(),
+      std::move(transaction_backend), transaction_id, version,
+      std::move(metrics), GetObservedFeature());
 
   if (!AllowIndexedDB(script_state)) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
@@ -369,13 +368,9 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
   auto callbacks = request->CreateWebCallbacks();
   callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
 
-  auto database_callbacks_impl =
-      std::make_unique<IndexedDBDatabaseCallbacksImpl>(
-          database_callbacks->CreateWebCallbacks());
-
   factory->Open(GetCallbacksProxy(std::move(callbacks)),
-                GetDatabaseCallbacksProxy(std::move(database_callbacks_impl)),
-                name, version, std::move(transaction_receiver), transaction_id);
+                std::move(callbacks_remote), name, version,
+                std::move(transaction_receiver), transaction_id);
   return request;
 }
 
@@ -427,7 +422,9 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
   auto& factory = GetFactory(ExecutionContext::From(script_state));
 
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
-      script_state, nullptr, /*IDBTransactionAssociatedPtr=*/nullptr, 0,
+      script_state,
+      /*callbacks_receiver=*/mojo::NullAssociatedReceiver(),
+      /*IDBTransactionAssociatedPtr=*/nullptr, 0,
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
       GetObservedFeature());
 
@@ -508,16 +505,6 @@ IDBFactory::GetCallbacksProxy(std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
       std::move(callbacks_impl),
       pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
   return pending_callbacks;
-}
-
-mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
-IDBFactory::GetDatabaseCallbacksProxy(
-    std::unique_ptr<IndexedDBDatabaseCallbacksImpl> callbacks) {
-  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks> remote;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks), remote.InitWithNewEndpointAndPassReceiver(),
-      task_runner_);
-  return remote;
 }
 
 mojo::PendingRemote<mojom::blink::ObservedFeature>
