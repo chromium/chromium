@@ -36,7 +36,12 @@ InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
       render_frame_host->GetJavaRenderFrameHost());
 }
 
-InternalAuthenticatorAndroid::~InternalAuthenticatorAndroid() = default;
+InternalAuthenticatorAndroid::~InternalAuthenticatorAndroid() {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(!java_internal_authenticator_ref_.is_null());
+  Java_InternalAuthenticator_clearNativePtr(env,
+                                            java_internal_authenticator_ref_);
+}
 
 void InternalAuthenticatorAndroid::SetEffectiveOrigin(
     const url::Origin& origin) {
