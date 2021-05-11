@@ -1,3 +1,4 @@
+android/util/SparseArray#set(ILjava/lang/Object;)V
 java/lang/Boolean#compare(ZZ)I
 java/lang/Boolean#hashCode(Z)I
 java/lang/Boolean#logicalAnd(ZZ)Z
@@ -28,6 +29,7 @@ java/lang/Integer#divideUnsigned(II)I
 java/lang/Integer#hashCode(I)I
 java/lang/Integer#max(II)I
 java/lang/Integer#min(II)I
+java/lang/Integer#parseInt(Ljava/lang/CharSequence;III)I
 java/lang/Integer#parseUnsignedInt(Ljava/lang/String;)I
 java/lang/Integer#parseUnsignedInt(Ljava/lang/String;I)I
 java/lang/Integer#remainderUnsigned(II)I
@@ -41,6 +43,8 @@ java/lang/Long#divideUnsigned(JJ)J
 java/lang/Long#hashCode(J)I
 java/lang/Long#max(JJ)J
 java/lang/Long#min(JJ)J
+java/lang/Long#parseLong(Ljava/lang/CharSequence;III)J
+java/lang/Long#parseUnsignedLong(Ljava/lang/CharSequence;III)J
 java/lang/Long#parseUnsignedLong(Ljava/lang/String;)J
 java/lang/Long#parseUnsignedLong(Ljava/lang/String;I)J
 java/lang/Long#remainderUnsigned(JJ)J
