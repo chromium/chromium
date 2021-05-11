@@ -7,7 +7,6 @@
 
 #include <android/native_window.h>
 #include <jni.h>
-#include <memory>
 
 #include "android_webview/test/shell/src/draw_fn/overlays_manager.h"
 #include "base/android/scoped_java_ref.h"

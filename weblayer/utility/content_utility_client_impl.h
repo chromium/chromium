@@ -5,8 +5,6 @@
 #ifndef WEBLAYER_UTILITY_CONTENT_UTILITY_CLIENT_IMPL_H_
 #define WEBLAYER_UTILITY_CONTENT_UTILITY_CLIENT_IMPL_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "content/public/utility/content_utility_client.h"
 

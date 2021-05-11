@@ -5,9 +5,6 @@
 #ifndef WEBLAYER_BROWSER_HTTP_AUTH_HANDLER_IMPL_H_
 #define WEBLAYER_BROWSER_HTTP_AUTH_HANDLER_IMPL_H_
 
-#include <memory>
-#include <string>
-
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/login_delegate.h"

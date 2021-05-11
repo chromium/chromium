@@ -5,8 +5,6 @@
 #ifndef WEBLAYER_PUBLIC_NEW_TAB_DELEGATE_H_
 #define WEBLAYER_PUBLIC_NEW_TAB_DELEGATE_H_
 
-#include <memory>
-
 namespace weblayer {
 
 class Tab;

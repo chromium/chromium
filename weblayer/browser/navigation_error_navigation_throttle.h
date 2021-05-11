@@ -5,8 +5,6 @@
 #ifndef WEBLAYER_BROWSER_NAVIGATION_ERROR_NAVIGATION_THROTTLE_H_
 #define WEBLAYER_BROWSER_NAVIGATION_ERROR_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
 
 namespace weblayer {

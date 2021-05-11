@@ -5,8 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_BROWSER_TERMINATOR_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_TERMINATOR_H_
 
-#include <map>
-
 #include "base/macros.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 

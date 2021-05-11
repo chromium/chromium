@@ -5,8 +5,6 @@
 #ifndef WEBLAYER_PUBLIC_PRERENDER_CONTROLLER_H_
 #define WEBLAYER_PUBLIC_PRERENDER_CONTROLLER_H_
 
-#include <string>
-
 class GURL;
 
 namespace weblayer {
