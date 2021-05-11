@@ -279,21 +279,22 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                    queryResultsInfo
                         continuationClosure:
                             (base::OnceClosure)continuationClosure {
+  if (!self.browser)
+    return;
+
   self.loading = NO;
   _query_history_continuation = std::move(continuationClosure);
 
   // If history sync is enabled and there hasn't been a response from synced
   // history, try fetching again.
-  if (self.browser) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    if (syncSetupService->IsSyncEnabled() &&
-        syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
-        queryResultsInfo.sync_timed_out) {
-      [self showHistoryMatchingQuery:_currentQuery];
-      return;
-    }
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  if (syncSetupService->IsSyncEnabled() &&
+      syncSetupService->IsDataTypeActive(syncer::HISTORY_DELETE_DIRECTIVES) &&
+      queryResultsInfo.sync_timed_out) {
+    [self showHistoryMatchingQuery:_currentQuery];
+    return;
   }
 
   // At this point there has been a response, stop the loading indicator.
@@ -542,6 +543,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Deletes selected items from browser history and removes them from the
 // tableView.
 - (void)deleteSelectedItemsFromHistory {
+  if (!self.browser)
+    return;
+
   NSArray* toDeleteIndexPaths = self.tableView.indexPathsForSelectedRows;
 
   // Delete items from Browser History.
@@ -771,6 +775,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // recent results are fetched, otherwise the results more recent than the
 // previous query will be returned.
 - (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation {
+  if (!self.browser)
+    return;
+
   self.loading = YES;
   // Add loading indicator if no items are shown.
   if (self.empty && !self.searchInProgress) {
@@ -1201,10 +1208,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    if (weakSelf.browser) {
-      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
-      [weakSelf.presentationDelegate showActiveRegularTabFromHistory];
-    }
+    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:NO];
   }];
 }
 
@@ -1226,14 +1230,26 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   params.in_incognito = YES;
   __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    if (weakSelf.browser) {
-      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
-      [weakSelf.presentationDelegate showActiveIncognitoTabFromHistory];
-    }
+    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:YES];
   }];
 }
 
 #pragma mark Helper Methods
+
+// Loads and opens a tab using |params|. If |incognito| is YES the tab will be
+// opened in incognito mode.
+- (void)loadAndActivateTabFromHistoryWithParams:(const UrlLoadParams&)params
+                                      incognito:(BOOL)incognito {
+  if (!self.browser)
+    return;
+
+  UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+  if (incognito) {
+    [self.presentationDelegate showActiveIncognitoTabFromHistory];
+  } else {
+    [self.presentationDelegate showActiveRegularTabFromHistory];
+  }
+}
 
 // Returns YES if the history is actually empty, and the user is neither
 // searching nor editing.
@@ -1291,10 +1307,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   params.load_strategy = self.loadStrategy;
   __weak __typeof(self) weakSelf = self;
   [self.delegate dismissHistoryWithCompletion:^{
-    if (weakSelf.browser) {
-      UrlLoadingBrowserAgent::FromBrowser(weakSelf.browser)->Load(params);
-      [weakSelf.presentationDelegate showActiveRegularTabFromHistory];
-    }
+    [weakSelf loadAndActivateTabFromHistoryWithParams:params incognito:NO];
   }];
 }
 

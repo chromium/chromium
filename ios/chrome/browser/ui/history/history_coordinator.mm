@@ -80,6 +80,7 @@
     self.historyTableViewController.menuProvider = self;
   }
 
+  DCHECK(!_browserObserver);
   _browserObserver = std::make_unique<BrowserObserverBridge>(self);
   self.browser->AddObserver(_browserObserver.get());
 
@@ -142,8 +143,11 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
-  self.browser->RemoveObserver(_browserObserver.get());
-  _browserObserver.reset();
+  if (_browserObserver) {
+    DCHECK(self.browser);
+    self.browser->RemoveObserver(_browserObserver.get());
+    _browserObserver.reset();
+  }
 
   if (self.historyNavigationController) {
     if (self.historyClearBrowsingDataCoordinator) {
@@ -267,7 +271,10 @@
 #pragma mark - BrowserObserving
 
 - (void)browserDestroyed:(Browser*)browser {
+  DCHECK_EQ(browser, self.browser);
   self.historyTableViewController.browser = nil;
+  browser->RemoveObserver(_browserObserver.get());
+  _browserObserver.reset();
 }
 
 #pragma mark - Private
