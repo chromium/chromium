@@ -1035,6 +1035,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Histogram for user clicks of the most visited tile. The value is equal to
     the index of the tile.
 
+    For special types of results:
+
+    * Clicks on the &quot;Add Shortcut&quot; tile are not counted.
+
+    * Clicks on the Explore Sites tile on Android are counted.
+
     The user action NewTabPage.MostVisited.Clicked is also logged at the same
     time as this histogram.
 
