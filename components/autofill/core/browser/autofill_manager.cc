@@ -674,6 +674,8 @@ bool AutofillManager::ShouldParseForms(const std::vector<FormData>& forms) {
 void AutofillManager::OnFormSubmittedImpl(const FormData& form,
                                           bool known_success,
                                           SubmissionSource source) {
+  base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
+                                client()->GetProfileType());
   if (log_manager()) {
     log_manager()->Log() << LoggingScope::kSubmission
                          << LogMessage::kFormSubmissionDetected << Br{}
@@ -707,9 +709,6 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
   }
   autocomplete_history_manager_->OnWillSubmitForm(
       form_for_autocomplete, client()->IsAutocompleteEnabled());
-
-  base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
-                                client()->GetProfileType());
 
   if (IsAutofillProfileEnabled()) {
     address_form_event_logger_->OnWillSubmitForm(sync_state_, *submitted_form);
