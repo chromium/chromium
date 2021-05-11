@@ -14,6 +14,7 @@ import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -95,14 +97,14 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
     private final boolean mIsScrollToLoadDisabled;
-    private final SelectableListLayout<HistoryItem> mSelectableListLayout;
-    private final HistoryAdapter mHistoryAdapter;
-    private final SelectionDelegate<HistoryItem> mSelectionDelegate;
-    private final HistoryManagerToolbar mToolbar;
-    private final TextView mEmptyView;
-    private final RecyclerView mRecyclerView;
+    private SelectableListLayout<HistoryItem> mSelectableListLayout;
+    private HistoryAdapter mHistoryAdapter;
+    private SelectionDelegate<HistoryItem> mSelectionDelegate;
+    private HistoryManagerToolbar mToolbar;
+    private TextView mEmptyView;
+    private RecyclerView mRecyclerView;
     private final SnackbarManager mSnackbarManager;
-    private final PrefChangeRegistrar mPrefChangeRegistrar;
+    private PrefChangeRegistrar mPrefChangeRegistrar;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Tab> mTabSupplier;
     private LargeIconBridge mLargeIconBridge;
@@ -137,6 +139,13 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
                         mActivity.getResources().getConfiguration());
+
+        recordUserAction("Show");
+        // If Incognito placeholder is shown, the  we don't need to create elements for History
+        // UI.
+        if (shouldShowIncognitoPlaceholder()) {
+            return;
+        }
 
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
@@ -219,8 +228,6 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mPrefChangeRegistrar = new PrefChangeRegistrar();
         mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, this);
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
-
-        recordUserAction("Show");
     }
 
     /**
@@ -299,13 +306,30 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      * @return The view that shows the main browsing history UI.
      */
     public ViewGroup getView() {
-        return mSelectableListLayout;
+        return shouldShowIncognitoPlaceholder() ? getIncognitoHistoryPlaceholderView()
+                                                : mSelectableListLayout;
+    }
+
+    /**
+     * @return The placeholder view to be shown instead of history UI in incognito mode.
+     */
+    private ViewGroup getIncognitoHistoryPlaceholderView() {
+        ViewGroup placeholderView = (ViewGroup) LayoutInflater.from(mActivity).inflate(
+                R.layout.incognito_history_placeholder, null);
+        ImageButton dismissButton =
+                placeholderView.findViewById(R.id.close_history_placeholder_button);
+        dismissButton.setOnClickListener(v -> mActivity.finish());
+        return placeholderView;
     }
 
     /**
      * Called when the activity/native page is destroyed.
      */
     public void onDestroyed() {
+        if (shouldShowIncognitoPlaceholder()) {
+            // If Incognito placeholder is shown no need to call any destroy method.
+            return;
+        }
         mSelectableListLayout.onDestroyed();
         mHistoryAdapter.onDestroyed();
         mLargeIconBridge.destroy();
@@ -322,6 +346,10 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      * @return True if manager handles this event, false if it decides to ignore.
      */
     public boolean onBackPressed() {
+        if (shouldShowIncognitoPlaceholder()) {
+            // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
+            return false;
+        }
         return mSelectableListLayout.onBackPressed();
     }
 
@@ -378,6 +406,12 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      */
     public boolean isIncognito() {
         return mIsIncognito;
+    }
+
+    private boolean shouldShowIncognitoPlaceholder() {
+        return isIncognito()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO);
     }
 
     @VisibleForTesting
