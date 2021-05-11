@@ -38,11 +38,11 @@ class RealTimeReportGenerator {
   explicit RealTimeReportGenerator(ReportingDelegateFactory* delegate_factory);
   RealTimeReportGenerator(const RealTimeReportGenerator&) = delete;
   RealTimeReportGenerator& operator=(const RealTimeReportGenerator&) = delete;
-  ~RealTimeReportGenerator();
+  virtual ~RealTimeReportGenerator();
 
   // Generates and returns reports for |type|. Multiple reports can be generated
   // together in case of previous events are not generated successfully.
-  std::vector<std::unique_ptr<google::protobuf::MessageLite>> Generate(
+  virtual std::vector<std::unique_ptr<google::protobuf::MessageLite>> Generate(
       ReportType type);
 
  private:

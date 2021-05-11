@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -39,6 +40,7 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
       return true;
     case ReportScheduler::kTriggerNone:
     case ReportScheduler::kTriggerExtensionRequest:
+    case ReportScheduler::kTriggerExtensionRequestRealTime:
       return false;
   }
 }
@@ -47,12 +49,20 @@ bool IsExtensionRequestUploaded(ReportScheduler::ReportTrigger trigger) {
   switch (trigger) {
     case ReportScheduler::kTriggerTimer:
     case ReportScheduler::kTriggerExtensionRequest:
+    case ReportScheduler::kTriggerExtensionRequestRealTime:
       return true;
     case ReportScheduler::kTriggerNone:
     case ReportScheduler::kTriggerUpdate:
     case ReportScheduler::kTriggerNewVersion:
       return false;
   }
+}
+
+void OnExtensionRequestEnqueued(bool success) {
+  // So far, there is nothing handle the enqueue failure as the CBCM status
+  // report will cover all failed requests. However, we may need a retry logic
+  // here if Extension workflow is decoupled from the status report.
+  LOG(ERROR) << "Extension request failed to be added to the pipeline.";
 }
 
 }  // namespace
@@ -69,18 +79,22 @@ void ReportScheduler::Delegate::SetReportTriggerCallback(
 ReportScheduler::ReportScheduler(
     policy::CloudPolicyClient* client,
     std::unique_ptr<ReportGenerator> report_generator,
+    std::unique_ptr<RealTimeReportGenerator> real_time_report_generator,
     ReportingDelegateFactory* delegate_factory)
     : ReportScheduler(std::move(client),
                       std::move(report_generator),
+                      std::move(real_time_report_generator),
                       delegate_factory->GetReportSchedulerDelegate()) {}
 
 ReportScheduler::ReportScheduler(
     policy::CloudPolicyClient* client,
     std::unique_ptr<ReportGenerator> report_generator,
+    std::unique_ptr<RealTimeReportGenerator> real_time_report_generator,
     std::unique_ptr<ReportScheduler::Delegate> delegate)
     : delegate_(std::move(delegate)),
       cloud_policy_client_(std::move(client)),
-      report_generator_(std::move(report_generator)) {
+      report_generator_(std::move(report_generator)),
+      real_time_report_generator_(std::move(real_time_report_generator)) {
   delegate_->SetReportTriggerCallback(
       base::BindRepeating(&ReportScheduler::GenerateAndUploadReport,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -100,6 +114,11 @@ bool ReportScheduler::IsNextReportScheduledForTesting() const {
 void ReportScheduler::SetReportUploaderForTesting(
     std::unique_ptr<ReportUploader> uploader) {
   report_uploader_ = std::move(uploader);
+}
+
+void ReportScheduler::SetExtensionRequestUploaderForTesting(
+    std::unique_ptr<RealTimeUploader> uploader) {
+  extension_request_uploader_ = std::move(uploader);
 }
 
 void ReportScheduler::OnDMTokenUpdated() {
@@ -146,6 +165,7 @@ void ReportScheduler::Stop() {
   request_timer_.Stop();
   delegate_->StopWatchingUpdates();
   delegate_->StopWatchingExtensionRequest();
+  extension_request_uploader_.reset();
 }
 
 bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
@@ -183,6 +203,12 @@ void ReportScheduler::Start(base::Time last_upload_time) {
 }
 
 void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
+  // Real time report is generated and uploaded separately.
+  if (trigger == kTriggerExtensionRequestRealTime) {
+    UploadExtensionRequests();
+    return;
+  }
+
   if (active_trigger_ != kTriggerNone) {
     // A report is already being generated. Remember this trigger to be handled
     // once the current report completes.
@@ -194,6 +220,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   ReportType report_type = kFull;
   switch (trigger) {
     case kTriggerNone:
+    case kTriggerExtensionRequestRealTime:
       NOTREACHED();
       FALLTHROUGH;
     case kTriggerTimer:
@@ -303,6 +330,27 @@ void ReportScheduler::RunPendingTriggers() {
   GenerateAndUploadReport(trigger);
 }
 
+void ReportScheduler::UploadExtensionRequests() {
+  RecordUploadTrigger(kTriggerExtensionRequestRealTime);
+  DCHECK(real_time_report_generator_);
+  VLOG(1) << "Create extension request and add it to the pipeline.";
+  if (!extension_request_uploader_) {
+    extension_request_uploader_ =
+        RealTimeUploader::Create(cloud_policy_client_->dm_token(),
+                                 reporting::Destination::EXTENSIONS_WORKFLOW,
+                                 reporting::Priority::FAST_BATCH);
+  }
+  auto reports = real_time_report_generator_->Generate(
+      RealTimeReportGenerator::kExtensionRequest);
+
+  for (auto& report : reports) {
+    extension_request_uploader_->Upload(
+        std::move(report), base::BindOnce(&OnExtensionRequestEnqueued));
+  }
+
+  delegate_->OnExtensionRequestUploaded();
+}
+
 // static
 void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -313,7 +361,8 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kUpdate = 2,
     kNewVersion = 3,
     kExtensionRequest = 4,
-    kMaxValue = kExtensionRequest
+    kExtensionRequestRealTime = 5,
+    kMaxValue = kExtensionRequestRealTime
   } sample = Sample::kNone;
   switch (trigger) {
     case kTriggerNone:
@@ -329,6 +378,9 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
       break;
     case kTriggerExtensionRequest:
       sample = Sample::kExtensionRequest;
+      break;
+    case kTriggerExtensionRequestRealTime:
+      sample = Sample::kExtensionRequestRealTime;
       break;
   }
   base::UmaHistogramEnumeration("Enterprise.CloudReportingUploadTrigger",

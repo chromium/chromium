@@ -1522,7 +1522,6 @@ const FeatureEntry::FeatureVariation kNtpRepeatableQueriesVariations[] = {
 
 #if !defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kEnterpriseRealtimeExtensionRequestParam[] = {
-    {"with_erp", "false"},
     {"with_erp", "true"}};
 const FeatureEntry::FeatureVariation
     kEnterpriseRealtimeExtensionRequestVariation[] = {

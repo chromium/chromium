@@ -794,6 +794,8 @@ void UserCloudPolicyManagerChromeOS::StartReportSchedulerIfReady(
       client(),
       std::make_unique<enterprise_reporting::ReportGenerator>(
           &delegate_factory),
+      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
+          &delegate_factory),
       std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_));
 
   report_scheduler_->OnDMTokenUpdated();

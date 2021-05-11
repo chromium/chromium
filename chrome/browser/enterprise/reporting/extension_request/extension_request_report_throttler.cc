@@ -25,10 +25,12 @@ void ExtensionRequestReportThrottler::Enable(
   DCHECK(report_trigger);
   DCHECK(!report_trigger_);
   report_trigger_ = report_trigger;
-  throttle_timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, throttle_time,
-      base::BindRepeating(&ExtensionRequestReportThrottler::MaybeUpload,
-                          base::Unretained(this)));
+  if (!throttle_time.is_zero()) {
+    throttle_timer_ = std::make_unique<base::RetainingOneShotTimer>(
+        FROM_HERE, throttle_time,
+        base::BindRepeating(&ExtensionRequestReportThrottler::MaybeUpload,
+                            base::Unretained(this)));
+  }
   ongoing_upload_ = false;
   ResetProfiles();
 }
@@ -65,15 +67,16 @@ void ExtensionRequestReportThrottler::OnExtensionRequestUploaded() {
 }
 
 bool ExtensionRequestReportThrottler::ShouldUpload() {
-  return !throttle_timer_->IsRunning() && !ongoing_upload_ &&
-         !profiles_.empty();
+  return (!throttle_timer_ || !throttle_timer_->IsRunning()) &&
+         !ongoing_upload_ && !profiles_.empty();
 }
 
 void ExtensionRequestReportThrottler::MaybeUpload() {
   if (!ShouldUpload())
     return;
   ongoing_upload_ = true;
-  throttle_timer_->Reset();
+  if (throttle_timer_)
+    throttle_timer_->Reset();
   report_trigger_.Run();
 }
 

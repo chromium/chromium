@@ -39,8 +39,8 @@ class RealTimeUploader {
   // afterwards.
   // The |callback| will be called once the report is in the queue. There is no
   // callback for report uploading.
-  void Upload(std::unique_ptr<google::protobuf::MessageLite> report,
-              EnqueueCallback callback);
+  virtual void Upload(std::unique_ptr<google::protobuf::MessageLite> report,
+                      EnqueueCallback callback);
 
  protected:
   explicit RealTimeUploader(reporting::Priority priority);

@@ -68142,6 +68142,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="kTriggerExtensionRequest">
     A new extension request is added
   </int>
+  <int value="5" label="kTriggerExtensionRequest">
+    A new extension request is added and uploaded with ERP.
+  </int>
 </enum>
 
 <enum name="RequestAction">

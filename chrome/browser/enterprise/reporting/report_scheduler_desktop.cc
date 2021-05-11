@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
@@ -14,7 +15,9 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/prefs/pref_service.h"
+#include "components/reporting/client/report_queue_provider.h"
 
 namespace em = enterprise_management;
 
@@ -37,6 +40,13 @@ constexpr bool ShouldReportUpdates() {
 bool ShouldReportExtensionRequestRealtime() {
   return base::FeatureList::IsEnabled(
       features::kEnterpriseRealtimeExtensionRequest);
+}
+
+bool IsRealTimePipielineEnabled() {
+  return reporting::ReportQueueProvider::
+             IsEncryptedReportingPipelineEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             features::kEnterpriseRealtimeExtensionRequest, "with_erp", false);
 }
 
 }  // namespace
@@ -106,7 +116,11 @@ void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
     return;
 
   ExtensionRequestReportThrottler::Get()->Enable(
-      features::kEnterpiseRealtimeExtensionRequestThrottleDelay.Get(),
+      // The ERP pipeline will batch requests for us, hence there is no throttle
+      // delay needed.
+      IsRealTimePipielineEnabled()
+          ? base::TimeDelta()
+          : features::kEnterpiseRealtimeExtensionRequestThrottleDelay.Get(),
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
                           base::Unretained(this)));
 }
@@ -135,8 +149,11 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
 
 void ReportSchedulerDesktop::TriggerExtensionRequest() {
   if (!trigger_report_callback_.is_null()) {
-    trigger_report_callback_.Run(
-        ReportScheduler::ReportTrigger::kTriggerExtensionRequest);
+    auto trigger =
+        IsRealTimePipielineEnabled()
+            ? ReportScheduler::ReportTrigger::kTriggerExtensionRequestRealTime
+            : ReportScheduler::ReportTrigger::kTriggerExtensionRequest;
+    trigger_report_callback_.Run(trigger);
   }
 }
 

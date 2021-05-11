@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,7 +105,9 @@ class ReportSchedulerIOSTest : public PlatformTest {
 
   void CreateScheduler() {
     scheduler_ = std::make_unique<ReportScheduler>(
-        client_, std::move(generator_ptr_), &report_delegate_factory_);
+        client_, std::move(generator_ptr_),
+        std::make_unique<RealTimeReportGenerator>(&report_delegate_factory_),
+        &report_delegate_factory_);
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
   }
 

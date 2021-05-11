@@ -198,8 +198,12 @@ ChromeBrowserCloudManagementControllerDesktop::CreateReportScheduler(
     CloudPolicyClient* client) {
   auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
       &reporting_delegate_factory_);
+  auto real_time_generator =
+      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
+          &reporting_delegate_factory_);
   return std::make_unique<enterprise_reporting::ReportScheduler>(
-      client, std::move(generator), &reporting_delegate_factory_);
+      client, std::move(generator), std::move(real_time_generator),
+      &reporting_delegate_factory_);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

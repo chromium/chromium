@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
 #include <utility>
@@ -27,8 +28,12 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/real_time_uploader.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
+#include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/reporting/client/report_queue_provider.h"
+#include "components/reporting/proto/record_constants.pb.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,12 +42,13 @@
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::DoAll;
 using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::WithArgs;
 
 namespace em = enterprise_management;
-
 namespace enterprise_reporting {
 
 namespace {
@@ -88,6 +94,31 @@ class MockReportUploader : public ReportUploader {
   DISALLOW_COPY_AND_ASSIGN(MockReportUploader);
 };
 
+class MockRealTimeReportGenerator : public RealTimeReportGenerator {
+ public:
+  explicit MockRealTimeReportGenerator(
+      ReportingDelegateFactoryDesktop* delegate_factory)
+      : RealTimeReportGenerator(delegate_factory) {}
+
+  MOCK_METHOD1(Generate,
+               std::vector<std::unique_ptr<google::protobuf::MessageLite>>(
+                   ReportType type));
+};
+
+class MockRealTimeUploader : public RealTimeUploader {
+ public:
+  MockRealTimeUploader() : RealTimeUploader(reporting::Priority::FAST_BATCH) {}
+
+  void Upload(std::unique_ptr<google::protobuf::MessageLite> report,
+              EnqueueCallback callback) override {
+    OnUpload(report.get(), callback);
+  }
+
+  MOCK_METHOD2(OnUpload,
+               void(google::protobuf::MessageLite* report,
+                    EnqueueCallback& callback));
+};
+
 class ReportSchedulerTest : public ::testing::Test {
  public:
   ReportSchedulerTest()
@@ -95,6 +126,7 @@ class ReportSchedulerTest : public ::testing::Test {
         local_state_(TestingBrowserProcess::GetGlobal()),
         profile_manager_(TestingBrowserProcess::GetGlobal(), &local_state_) {}
   ~ReportSchedulerTest() override = default;
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kEnterpriseRealtimeExtensionRequest);
@@ -106,6 +138,13 @@ class ReportSchedulerTest : public ::testing::Test {
     generator_ = generator_ptr_.get();
     uploader_ptr_ = std::make_unique<MockReportUploader>();
     uploader_ = uploader_ptr_.get();
+
+    real_time_generator_ptr_ = std::make_unique<MockRealTimeReportGenerator>(
+        &report_delegate_factory_);
+    real_time_generator_ = real_time_generator_ptr_.get();
+    extension_request_uploader_ptr_ = std::make_unique<MockRealTimeUploader>();
+    extension_request_uploader_ = extension_request_uploader_ptr_.get();
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     SetLastUploadVersion(chrome::kChromeVersion);
 #endif
@@ -122,8 +161,11 @@ class ReportSchedulerTest : public ::testing::Test {
 
   void CreateScheduler() {
     scheduler_ = std::make_unique<ReportScheduler>(
-        client_, std::move(generator_ptr_), &report_delegate_factory_);
+        client_, std::move(generator_ptr_), std::move(real_time_generator_ptr_),
+        &report_delegate_factory_);
     scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
+    scheduler_->SetExtensionRequestUploaderForTesting(
+        std::move(extension_request_uploader_ptr_));
   }
 
   void SetLastUploadInHour(base::TimeDelta gap) {
@@ -203,6 +245,8 @@ class ReportSchedulerTest : public ::testing::Test {
   policy::MockCloudPolicyClient* client_;
   MockReportGenerator* generator_;
   MockReportUploader* uploader_;
+  MockRealTimeReportGenerator* real_time_generator_;
+  MockRealTimeUploader* extension_request_uploader_;
   policy::FakeBrowserDMTokenStorage storage_;
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;
@@ -211,6 +255,8 @@ class ReportSchedulerTest : public ::testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_ptr_;
   std::unique_ptr<MockReportGenerator> generator_ptr_;
   std::unique_ptr<MockReportUploader> uploader_ptr_;
+  std::unique_ptr<MockRealTimeReportGenerator> real_time_generator_ptr_;
+  std::unique_ptr<MockRealTimeUploader> extension_request_uploader_ptr_;
   DISALLOW_COPY_AND_ASSIGN(ReportSchedulerTest);
 };
 
@@ -702,6 +748,39 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
   histogram_tester_.ExpectTotalCount(kUploadTriggerMetricName, 2);
   histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 2, 1);
   histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 4, 1);
+}
+
+TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
+                             {{"with_erp", "true"}}},
+                            {reporting::ReportQueueProvider::
+                                 kEncryptedReportingPipeline,
+                             {{}}}},
+      /*disabled_features=*/{});
+
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(_, _)).Times(0);
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
+
+  std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports;
+  reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
+  reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
+  EXPECT_CALL(*real_time_generator_,
+              Generate(RealTimeReportGenerator::kExtensionRequest))
+      .WillOnce(DoAll(InvokeWithoutArgs([]() {
+                        ExtensionRequestReportThrottler::Get()->ResetProfiles();
+                      }),
+                      Return(ByMove(std::move(reports)))));
+  EXPECT_CALL(*extension_request_uploader_, OnUpload(_, _)).Times(2);
+  CreateScheduler();
+
+  TriggerExtensionRequestReport();
+
+  ExpectLastUploadTimestampUpdated(false);
+
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 5, 1);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
