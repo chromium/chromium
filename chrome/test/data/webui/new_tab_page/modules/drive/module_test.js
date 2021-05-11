@@ -85,6 +85,40 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertFalse(!!module);
   });
 
+  test('backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const data = {
+      files: [
+        {
+          justificationText: '',
+          title: '',
+          id: '',
+          mimeType: '',
+          itemUrl: {url: ''},
+        },
+      ]
+    };
+    testProxy.handler.setResultFor('getFiles', Promise.resolve(data));
+    const moduleElement = await driveDescriptor.initialize();
+    document.body.append(moduleElement);
+
+    // Act.
+    const dismiss = {event: null};
+    moduleElement.addEventListener('dismiss-module', (e) => dismiss.event = e);
+    $$(moduleElement, 'ntp-module-header')
+        .dispatchEvent(new Event('dismiss-button-click'));
+
+    // Assert.
+    assertEquals('Files hidden', dismiss.event.detail.message);
+    assertEquals(1, testProxy.handler.getCallCount('dismissModule'));
+
+    // Act.
+    dismiss.event.detail.restoreCallback();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreModule'));
+  });
+
   test('info button click opens info dialog', async () => {
     // Arrange.
     const data = {

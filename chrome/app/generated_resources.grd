@@ -5717,6 +5717,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_SENTENCE2" desc="Variant of the name of the Drive module in sentence case shown in various UIs.">
         Drive files
       </message>
+      <message name="IDS_NTP_MODULES_DRIVE_FILES_SENTENCE" desc="Name of the files in the Drive module in sentence case shown in various UIs.">
+        Files
+      </message>
+      <message name="IDS_NTP_MODULES_DRIVE_FILES_LOWER" desc="Name of the files in the Drive module in lowercase shown in various UIs.">
+        these files
+      </message>
       <message name="IDS_NTP_MODULES_DUMMY_LOWER" translateable="false" desc="Name of the dummy module in lowercase shown in various UIs.">
         this module
       </message>

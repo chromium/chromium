@@ -225,6 +225,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       {"modulesCartLowerYour", IDS_NTP_MODULES_CART_LOWER_YOUR},
       {"modulesDriveSentence", IDS_NTP_MODULES_DRIVE_SENTENCE},
       {"modulesDriveSentence2", IDS_NTP_MODULES_DRIVE_SENTENCE2},
+      {"modulesDriveFilesSentence", IDS_NTP_MODULES_DRIVE_FILES_SENTENCE},
+      {"modulesDriveFilesLower", IDS_NTP_MODULES_DRIVE_FILES_LOWER},
       {"modulesDummyLower", IDS_NTP_MODULES_DUMMY_LOWER},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_TITLE},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},

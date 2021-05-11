@@ -6,6 +6,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -17,15 +18,17 @@
 class DriveServiceTest : public testing::Test {
  public:
   DriveServiceTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     testing::Test::SetUp();
     service_ = std::make_unique<DriveService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env.identity_manager(), "en-US");
+        identity_test_env.identity_manager(), "en-US", &prefs_);
     identity_test_env.MakePrimaryAccountAvailable("example@google.com");
+    service_->RegisterProfilePrefs(prefs_.registry());
   }
 
   void TearDown() override {
@@ -39,6 +42,7 @@ class DriveServiceTest : public testing::Test {
   std::unique_ptr<DriveService> service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(DriveServiceTest, PassesDataOnSuccess) {
@@ -51,6 +55,10 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
           testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
           }));
+
+  // Make sure we are not in the dismissed time window.
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(DriveService::kDismissDuration);
 
   service_->GetDriveFiles(callback.Get());
 
@@ -227,6 +235,22 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   EXPECT_EQ("234", response4.at(0)->id);
 }
 
+TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
+  bool passed_no_data = false;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&passed_no_data](std::vector<drive::mojom::FilePtr> suggestions) {
+            passed_no_data = suggestions.empty();
+          }));
+
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  service_->GetDriveFiles(callback.Get());
+
+  EXPECT_TRUE(passed_no_data);
+}
+
 TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   bool token_is_valid = true;
 
@@ -327,4 +351,16 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(actual_documents.empty());
+}
+
+TEST_F(DriveServiceTest, DismissModule) {
+  service_->DismissModule();
+  EXPECT_EQ(base::Time::Now(),
+            prefs_.GetTime(DriveService::kLastDismissedTimePrefName));
+}
+
+TEST_F(DriveServiceTest, RestoreModule) {
+  service_->RestoreModule();
+  EXPECT_EQ(base::Time(),
+            prefs_.GetTime(DriveService::kLastDismissedTimePrefName));
 }

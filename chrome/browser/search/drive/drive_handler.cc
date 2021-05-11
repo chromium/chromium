@@ -18,3 +18,11 @@ void DriveHandler::GetFiles(GetFilesCallback callback) {
   DriveServiceFactory::GetForProfile(profile_)->GetDriveFiles(
       std::move(callback));
 }
+
+void DriveHandler::DismissModule() {
+  DriveServiceFactory::GetForProfile(profile_)->DismissModule();
+}
+
+void DriveHandler::RestoreModule() {
+  DriveServiceFactory::GetForProfile(profile_)->RestoreModule();
+}

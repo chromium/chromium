@@ -9,7 +9,10 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -82,20 +85,46 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       })");
 }  // namespace
 
+// static
+const char DriveService::kLastDismissedTimePrefName[] =
+    "NewTabPage.Drive.LastDimissedTime";
+
+// static
+const base::TimeDelta DriveService::kDismissDuration =
+    base::TimeDelta::FromDays(14);
+
 DriveService::~DriveService() = default;
 
 DriveService::DriveService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    const std::string& application_locale)
+    const std::string& application_locale,
+    PrefService* pref_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
-      application_locale_(application_locale) {}
+      application_locale_(application_locale),
+      pref_service_(pref_service) {}
+
+// static
+void DriveService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
+}
 
 void DriveService::GetDriveFiles(GetFilesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callbacks_.push_back(std::move(callback));
   if (callbacks_.size() > 1) {
+    return;
+  }
+
+  // Bail if module is still dismissed.
+  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
+          kDismissDuration) {
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    }
+    callbacks_.clear();
     return;
   }
 
@@ -105,6 +134,14 @@ void DriveService::GetDriveFiles(GetFilesCallback callback) {
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSync);
+}
+
+void DriveService::DismissModule() {
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time::Now());
+}
+
+void DriveService::RestoreModule() {
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
 }
 
 void DriveService::OnTokenReceived(GoogleServiceAuthError error,

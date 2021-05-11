@@ -24,4 +24,8 @@ struct File {
 interface DriveHandler {
   // Fetches document suggestions from ItemSuggest API.
   GetFiles() => (array<File> files);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
 };

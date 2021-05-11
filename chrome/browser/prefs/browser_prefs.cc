@@ -234,6 +234,7 @@
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/search/drive/drive_service.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/search_suggest/search_suggest_service.h"
@@ -1069,6 +1070,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   captions::CaptionController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
+  DriveService::RegisterProfilePrefs(registry);
   enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   extensions::CommandService::RegisterProfilePrefs(registry);
