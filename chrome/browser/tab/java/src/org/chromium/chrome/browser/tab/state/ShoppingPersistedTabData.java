@@ -126,8 +126,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static class OptimizationGuideBridgeFactoryHolder {
         private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
         static {
-            sOptimizationGuideBridgeFactory = new OptimizationGuideBridgeFactory(
-                    Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR));
+            List<HintsProto.OptimizationType> optimizationTypes;
+            if (PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE.getValue()) {
+                optimizationTypes =
+                        Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
+                                HintsProto.OptimizationType.PRICE_TRACKING);
+            } else {
+                optimizationTypes =
+                        Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR);
+            }
+            sOptimizationGuideBridgeFactory = new OptimizationGuideBridgeFactory(optimizationTypes);
         }
     }
 
