@@ -56,6 +56,7 @@
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
+#include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/tracing/background_tracing_metrics_provider.h"
@@ -691,6 +692,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(MakeDemographicMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType::UMA));
+
+  // TODO(crbug.com/1207574): Add metrics registration for WebView, iOS and
+  // WebLayer.
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());
 
 #if defined(OS_ANDROID)
   metrics_service_->RegisterMetricsProvider(

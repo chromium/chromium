@@ -1482,6 +1482,8 @@ static_library("browser") {
     "resource_coordinator/utils.h",
     "resources_util.cc",
     "resources_util.h",
+    "safe_browsing/metrics/safe_browsing_metrics_provider.cc",
+    "safe_browsing/metrics/safe_browsing_metrics_provider.h",
     "search/search.cc",
     "search/search.h",
     "search/suggestions/suggestions_service_factory.cc",
