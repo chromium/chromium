@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,9 +6,13 @@
 #pylint: disable=protected-access
 
 import os
+import sys
 import unittest
 
-import mock
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from skia_gold_common import skia_gold_properties
 from skia_gold_common import unittest_utils

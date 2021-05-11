@@ -202,3 +202,8 @@ wheel: <
   name: "infra/python/wheels/atomicwrites-py2_py3"
   version: "version:1.3.0"
 >
+
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py2_py3"
+  version: "version:3.7.2"
+>

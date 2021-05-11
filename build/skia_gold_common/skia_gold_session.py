@@ -293,7 +293,7 @@ class SkiaGoldSession(object):
       compare_cmd.extend(inexact_matching_args)
 
     optional_keys = optional_keys or {}
-    for k, v in optional_keys.iteritems():
+    for k, v in optional_keys.items():
       compare_cmd.extend([
           '--add-test-optional-key',
           '%s:%s' % (k, v),
