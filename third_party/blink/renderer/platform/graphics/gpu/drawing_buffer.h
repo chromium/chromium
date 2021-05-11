@@ -244,6 +244,13 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // DrawingBuffer.
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
+  // Returns a UnacceleratedStaticBitmapImage backed by a bitmap that will have
+  // a copy of the contents of the front buffer. This is only meant to be used
+  // for unaccelerated canvases as for accelerated contexts there are better
+  // ways to get a copy of the internal contents.
+  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage(
+      bool flip_y = false);
+
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
                              GLenum dst_target,
                              GLuint dst_texture,
@@ -441,6 +448,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Resolves m_multisampleFBO into m_fbo, if multisampling.
   void ResolveIfNeeded();
 
+  // This method checks if the context or the resource has been destroyed,
+  // ensures that there are changes in the content, check that the context is
+  // not lost and resolve the multisampled buffer if needed.
+  bool CheckForDestructionChangeAndResolveIfNeeded();
+
   bool PrepareTransferableResourceInternal(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
@@ -479,6 +491,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Updates the current size of the buffer, ensuring that
   // s_currentResourceUsePixels is updated.
   void SetSize(const IntSize&);
+
+  // Read the content of the FrameBuffer into the bitmap.
+  void ReadFramebufferIntoBitmapPixels(uint8_t* pixels);
 
   // Helper function which does a readback from the currently-bound
   // framebuffer into a buffer of a certain size with 4-byte pixels.
@@ -629,13 +644,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Mailboxes that were released by the compositor can be used again by this
   // DrawingBuffer.
   Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
-
-  // If the width and height of the Canvas's backing store don't
-  // match those that we were given in the most recent call to
-  // reshape(), then we need an intermediate bitmap to read back the
-  // frame buffer into. This seems to happen when CSS styles are
-  // used to resize the Canvas.
-  SkBitmap resizing_bitmap_;
 
   // In the case of OffscreenCanvas, we do not want to enable the
   // WebGLImageChromium flag, so we replace all the

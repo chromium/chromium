@@ -346,11 +346,7 @@ bool DrawingBuffer::PrepareTransferableResource(
       bitmap_registrar, out_resource, out_release_callback, force_gpu_result);
 }
 
-bool DrawingBuffer::PrepareTransferableResourceInternal(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
-    viz::TransferableResource* out_resource,
-    viz::ReleaseCallback* out_release_callback,
-    bool force_gpu_result) {
+bool DrawingBuffer::CheckForDestructionChangeAndResolveIfNeeded() {
   DCHECK(state_restorer_);
   if (destruction_in_progress_) {
     // It can be hit in the following sequence.
@@ -379,6 +375,17 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
   // Resolve the multisampled buffer into the texture attached to fbo_.
   ResolveIfNeeded();
 
+  return true;
+}
+
+bool DrawingBuffer::PrepareTransferableResourceInternal(
+    cc::SharedBitmapIdRegistrar* bitmap_registrar,
+    viz::TransferableResource* out_resource,
+    viz::ReleaseCallback* out_release_callback,
+    bool force_gpu_result) {
+  if (!CheckForDestructionChangeAndResolveIfNeeded())
+    return false;
+
   if (!IsUsingGpuCompositing() && !force_gpu_result) {
     return FinishPrepareTransferableResourceSoftware(
         bitmap_registrar, out_resource, out_release_callback);
@@ -388,6 +395,45 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
                                               out_release_callback);
 }
 
+scoped_refptr<StaticBitmapImage>
+DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
+  ScopedStateRestorer scoped_state_restorer(this);
+
+  if (!CheckForDestructionChangeAndResolveIfNeeded())
+    return nullptr;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size_.Width(), size_.Height());
+  ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
+  auto sk_image = SkImage::MakeFromBitmap(bitmap);
+
+  bool origin_top_left =
+      flip_y ? opengl_flip_y_extension_ : !opengl_flip_y_extension_;
+
+  return sk_image ? UnacceleratedStaticBitmapImage::Create(
+                        sk_image, origin_top_left
+                                      ? ImageOrientationEnum::kOriginTopLeft
+                                      : ImageOrientationEnum::kOriginBottomLeft)
+                  : nullptr;
+}
+
+void DrawingBuffer::ReadFramebufferIntoBitmapPixels(uint8_t* pixels) {
+  DCHECK(pixels);
+  DCHECK(state_restorer_);
+  bool need_premultiply = want_alpha_channel_ && !premultiplied_alpha_;
+  WebGLImageConversion::AlphaOp op =
+      need_premultiply ? WebGLImageConversion::kAlphaDoPremultiply
+                       : WebGLImageConversion::kAlphaDoNothing;
+  state_restorer_->SetFramebufferBindingDirty();
+  gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
+
+  // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
+  const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+      static_cast<gfx::Size>(size_), viz::RGBA_8888);
+  ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
+                      kN32_SkColorType, op);
+}
+
 bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
@@ -395,23 +441,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   DCHECK(state_restorer_);
   RegisteredBitmap registered = CreateOrRecycleBitmap(bitmap_registrar);
 
-  // Read the framebuffer into |bitmap|.
-  {
-    uint8_t* pixels = static_cast<uint8_t*>(registered.bitmap->memory());
-    DCHECK(pixels);
-    bool need_premultiply = want_alpha_channel_ && !premultiplied_alpha_;
-    WebGLImageConversion::AlphaOp op =
-        need_premultiply ? WebGLImageConversion::kAlphaDoPremultiply
-                         : WebGLImageConversion::kAlphaDoNothing;
-    state_restorer_->SetFramebufferBindingDirty();
-    gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
-
-    // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
-    const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-        static_cast<gfx::Size>(size_), viz::RGBA_8888);
-    ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
-                        kN32_SkColorType, op);
-  }
+  ReadFramebufferIntoBitmapPixels(
+      static_cast<uint8_t*>(registered.bitmap->memory()));
 
   *out_resource = viz::TransferableResource::MakeSoftware(
       registered.bitmap->id(), static_cast<gfx::Size>(size_), viz::RGBA_8888);

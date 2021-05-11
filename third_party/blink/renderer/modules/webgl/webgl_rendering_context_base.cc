@@ -637,8 +637,6 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           is_origin_top_left_, 0u /*shared_image_usage_flags*/);
-  // todo(bug 1090962) This CPU fallback is needed as it would break
-  // webgl_conformance_gles_passthrough_tests on Android FYI for Nexus 5x.
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         size, GetDrawingBuffer()->FilterQuality(), color_params,
@@ -1679,9 +1677,10 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   DCHECK(!resource_provider->IsSingleBuffered());
 
   // Early-out if the context has been lost.
-  if (!drawing_buffer_)
+  if (!GetDrawingBuffer())
     return false;
 
+  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
@@ -1700,22 +1699,29 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     raster_interface->Flush();
 
-    bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
-    return drawing_buffer_->CopyToPlatformMailbox(
+    return GetDrawingBuffer()->CopyToPlatformMailbox(
         raster_interface, mailbox, texture_target, flip_y, IntPoint(0, 0),
         IntRect(IntPoint(0, 0), drawing_buffer_->Size()), source_buffer);
   }
 
-  // Note: This code path could work for all cases. The only reason there
-  // is a separate path for the accelerated case is that we assume texture
-  // copying is faster than drawImage.
-  scoped_refptr<StaticBitmapImage> image = GetImage();
+  // As the resource provider is not accelerated, we don't need an accelerated
+  // image.
+  scoped_refptr<StaticBitmapImage> image =
+      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
+
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
-  cc::PaintFlags paint_flags;
-  paint_flags.setBlendMode(SkBlendMode::kSrc);
-  resource_provider->Canvas()->drawImage(image->PaintImageForCurrentFrame(), 0,
-                                         0, SkSamplingOptions(), &paint_flags);
+
+  IntRect src_rect(IntPoint(), image->Size());
+  IntRect dest_rect(IntPoint(), resource_provider->Size());
+  PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrc);
+  // We use this draw helper as we need to take into account the
+  // ImageOrientation of the UnacceleratedStaticBitmapImage.
+  image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
+              FloatRect(src_rect), SkSamplingOptions(),
+              kRespectImageOrientation, Image::kDoNotClampImageToSourceRect,
+              Image::kSyncDecode);
   return true;
 }
 
