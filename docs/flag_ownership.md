@@ -14,12 +14,10 @@ you find, either:
 - **If it is still in use:** add entries to the owners list (see the comment at
   the top of the file) and set an appropriate expiration milestone;
 
-- **If it is not in use:** delete it from `kFeatureEntries` in
-  [`chrome/browser/about_flags.cc`](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc?sq=package:chromium&g=0&l=1319) or 
-  [`ios/chrome/browser/about_flags.mm`](https://cs.chromium.org/chromium/src/ios/chrome/browser/about_flags.mm) for iOS.
-  Remember to file a cleanup bug to remove code paths that become dead. It is
-  not necessary to delete the corresponding entry in `flag-metadata.json` as it
-  will be cleaned up for you in the future.
+- **If it is not in use:** delete the entry from the [`chrome/browser/flag-metadata.json`](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json?sq=package:chromium&q=flag-metadata.json&g=0&l=1)
+  file, and delete it from `kFeatureEntries` in
+  [`chrome/browser/about_flags.cc`](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc?sq=package:chromium&g=0&l=1319) or
+  [`ios/chrome/browser/about_flags.mm`](https://cs.chromium.org/chromium/src/ios/chrome/browser/about_flags.mm) for iOS. Remember to file a cleanup bug to remove code paths that become dead.
 
 ## Wait, What Are You Doing?
 
