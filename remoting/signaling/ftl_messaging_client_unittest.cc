@@ -219,13 +219,13 @@ TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresMessageWithoutRegId) {
   message->clear_sender_registration_id();
   test_responder_.AddResponseToMostRecentRequestUrl(response);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
+  EXPECT_EQ(1, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
 
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
   run_loop.Run();
 }
 
@@ -244,13 +244,13 @@ TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresUnknownMessageType) {
   message->set_message_type(ftl::InboxMessage_MessageType_UNKNOWN);
   test_responder_.AddResponseToMostRecentRequestUrl(response);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
+  EXPECT_EQ(1, request.message_ids().size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
 
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
   run_loop.Run();
 }
 
@@ -279,15 +279,14 @@ TEST_F(FtlMessagingClientTest, TestPullMessages_ReturnsAndAcksTwoMessages) {
   *message = CreateInboxMessage(kMessage2Id, kMessage2Text);
   test_responder_.AddResponseToMostRecentRequestUrl(pull_messages_response);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(2, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  EXPECT_EQ(kMessage2Id, request.messages(1).message_id());
+  EXPECT_EQ(2, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
+  EXPECT_EQ(kMessage2Id, request.message_ids(1));
 
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
   run_loop.Run();
 }
 
@@ -422,12 +421,12 @@ TEST_F(FtlMessagingClientTest,
   ftl::InboxMessage message = CreateInboxMessage(kMessage1Id, kMessage1Text);
   mock_message_reception_channel_->on_incoming_msg()->Run(message);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(1, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  EXPECT_EQ(1, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
 
   run_loop.Run();
 }
@@ -453,14 +452,13 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
       CreateInboxMessage(kMessage1Id, kMessage1Text);
   test_responder_.AddResponseToMostRecentRequestUrl(pull_messages_response);
 
-  ftl::AckMessagesRequest request;
+  ftl::BatchAckMessagesRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
-  EXPECT_EQ(2, request.messages_size());
-  EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-  EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-  EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-  EXPECT_EQ(kMessage1Id, request.messages(1).message_id());
-  test_responder_.AddResponseToMostRecentRequestUrl(ftl::AckMessagesResponse());
+  EXPECT_EQ(2, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
+  EXPECT_EQ(kMessage1Id, request.message_ids(1));
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
 
   run_loop.Run();
 }

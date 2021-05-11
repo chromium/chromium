@@ -198,12 +198,12 @@ message PullMessagesResponse {
   bool pulled_all = 3;
 }
 
-message AckMessagesRequest {
+message BatchAckMessagesRequest {
   RequestHeader header = 1;
-  repeated ReceiverMessage messages = 4;
+  repeated string message_ids = 4;
 }
 
-message AckMessagesResponse {
+message BatchAckMessagesResponse {
   ResponseHeader header = 1;
 }
 
