@@ -336,6 +336,21 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls an ablation study in which autofill for addresses and payment data
+// can be suppressed.
+const base::Feature kAutofillEnableAblationStudy{
+    "AutofillEnableAblationStudy", base::FEATURE_DISABLED_BY_DEFAULT};
+// The following parameters are only effective if the study is enabled.
+const base::FeatureParam<bool> kAutofillAblationStudyEnabledForAddressesParam{
+    &kAutofillEnableAblationStudy, "enabled_for_addresses", false};
+const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
+    &kAutofillEnableAblationStudy, "enabled_for_payments", false};
+// The ratio of ablation_weight_per_mille / 1000 determines the chance of
+// autofill being disabled on a given combination of site * day * browser
+// session.
+const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
+    &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 10};
+
 #if defined(OS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.
