@@ -67,7 +67,6 @@ import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -467,10 +466,10 @@ class LocationBarMediator
                     headers.append(prevHeader);
                     headers.append("\r\n");
                 }
-                loadUrlParams.setExtraHeaders(new HashMap<String, String>() {
-                    { put("Content-Type", postDataType); }
-                });
-                headers.append(loadUrlParams.getExtraHttpRequestHeadersString());
+
+                headers.append("Content-Type: ");
+                headers.append(postDataType);
+
                 loadUrlParams.setVerbatimHeaders(headers.toString());
             }
 
