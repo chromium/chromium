@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
@@ -61,6 +62,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
         mock_user_manager->AddPublicAccountUser(account_id);
+    chromeos::ProfileHelper::Get()->SetActiveUserIdForTesting(
+        profile_->GetProfileUserName());
     mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
