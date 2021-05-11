@@ -36,8 +36,6 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/printer_manager_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -61,8 +59,6 @@
 #include "components/cloud_devices/common/printer_description.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -188,12 +184,6 @@ const char kPdfPrinterDisabled[] = "pdfPrinterDisabled";
 const char kDestinationsManaged[] = "destinationsManaged";
 // Name of a dictionary field holding the cloud print URL.
 const char kCloudPrintURL[] = "cloudPrintURL";
-// Name of a dictionary field holding the signed in user accounts.
-const char kUserAccounts[] = "userAccounts";
-// Name of a dictionary field indicating whether sync is available. If false,
-// Print Preview will always send a request to the Google Cloud Print server on
-// load, to check the user's sign in state.
-const char kSyncAvailable[] = "syncAvailable";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Name of a dictionary field indicating whether the user's Drive directory is
 // mounted.
@@ -338,9 +328,7 @@ PrintPreviewHandler::PrintPreviewHandler() {
   ReportUserActionHistogram(UserActionBuckets::kPreviewStarted);
 }
 
-PrintPreviewHandler::~PrintPreviewHandler() {
-  UnregisterForGaiaCookieChanges();
-}
+PrintPreviewHandler::~PrintPreviewHandler() = default;
 
 void PrintPreviewHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -394,10 +382,7 @@ void PrintPreviewHandler::RegisterMessages() {
 
 void PrintPreviewHandler::OnJavascriptAllowed() {
   print_preview_ui()->SetPreviewUIId();
-  // Now that the UI is initialized, any future account changes will require
-  // a printer list refresh.
   ReadPrinterTypeDenyListFromPrefs();
-  RegisterForGaiaCookieChanges();
 }
 
 void PrintPreviewHandler::OnJavascriptDisallowed() {
@@ -408,7 +393,6 @@ void PrintPreviewHandler::OnJavascriptDisallowed() {
   preview_callbacks_.clear();
   preview_failures_.clear();
   printer_type_deny_list_.clear();
-  UnregisterForGaiaCookieChanges();
 }
 
 WebContents* PrintPreviewHandler::preview_web_contents() const {
@@ -729,11 +713,6 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
 }
 
 void PrintPreviewHandler::OnSignInTabClosed() {
-  if (identity_manager_) {
-    // Sign in state will be reported in OnAccountsInCookieJarUpdated, so no
-    // need to do anything here.
-    return;
-  }
   FireWebUIListener("check-for-account-update");
 }
 
@@ -805,21 +784,6 @@ void PrintPreviewHandler::HandleGetInitialSettings(
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void PrintPreviewHandler::GetUserAccountList(base::Value* settings) {
-  base::Value account_list(base::Value::Type::LIST);
-  if (identity_manager_) {
-    const std::vector<gaia::ListedAccount>& accounts =
-        identity_manager_->GetAccountsInCookieJar().signed_in_accounts;
-    for (const gaia::ListedAccount& account : accounts) {
-      account_list.Append(account.email);
-    }
-    settings->SetKey(kSyncAvailable, base::Value(true));
-  } else {
-    settings->SetKey(kSyncAvailable, base::Value(false));
-  }
-  settings->SetKey(kUserAccounts, std::move(account_list));
-}
-
 void PrintPreviewHandler::SendInitialSettings(
     const std::string& callback_id,
     const std::string& default_printer) {
@@ -880,9 +844,6 @@ void PrintPreviewHandler::SendInitialSettings(
   }
 
   GetLocaleInformation(&initial_settings);
-  if (IsCloudPrintEnabled()) {
-    GetUserAccountList(&initial_settings);
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   drive::DriveIntegrationService* drive_service =
@@ -940,18 +901,6 @@ WebContents* PrintPreviewHandler::GetInitiator() const {
   if (!dialog_controller)
     return NULL;
   return dialog_controller->GetInitiator(preview_web_contents());
-}
-
-void PrintPreviewHandler::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-    const GoogleServiceAuthError& error) {
-  base::Value account_list(base::Value::Type::LIST);
-  const std::vector<gaia::ListedAccount>& accounts =
-      accounts_in_cookie_jar_info.signed_in_accounts;
-  for (const auto& account : accounts) {
-    account_list.Append(account.email);
-  }
-  FireWebUIListener("user-accounts-updated", std::move(account_list));
 }
 
 void PrintPreviewHandler::OnPrintPreviewReady(int preview_uid, int request_id) {
@@ -1146,36 +1095,9 @@ void PrintPreviewHandler::OnPrintResult(const std::string& callback_id,
   }
 }
 
-void PrintPreviewHandler::RegisterForGaiaCookieChanges() {
-  DCHECK(!identity_manager_);
-  cloud_print_enabled_ =
-      !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
-
-  if (!cloud_print_enabled_)
-    return;
-
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (!AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile) &&
-      !AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return;
-  }
-
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-  identity_manager_->AddObserver(this);
-}
-
-void PrintPreviewHandler::UnregisterForGaiaCookieChanges() {
-  if (!identity_manager_)
-    return;
-
-  identity_manager_->RemoveObserver(this);
-  identity_manager_ = nullptr;
-  cloud_print_enabled_ = false;
-}
-
 bool PrintPreviewHandler::IsCloudPrintEnabled() {
-  return cloud_print_enabled_;
+  return !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
+         GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
 }
 
 void PrintPreviewHandler::BadMessageReceived() {

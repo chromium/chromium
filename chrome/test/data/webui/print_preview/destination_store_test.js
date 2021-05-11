@@ -53,6 +53,9 @@ suite(destination_store_test.suiteName, function() {
   /** @type {!NativeInitialSettings} */
   let initialSettings;
 
+  /** @type {!Array<string>} */
+  let userAccounts = [];
+
   /** @type {!Array<!LocalDestinationInfo>} */
   let localDestinations = [];
 
@@ -79,7 +82,6 @@ suite(destination_store_test.suiteName, function() {
     // </if>
 
     initialSettings = getDefaultInitialSettings();
-    initialSettings.userAccounts = [];
     localDestinations = [];
     destinations = getDestinations(localDestinations);
   });
@@ -109,10 +111,6 @@ suite(destination_store_test.suiteName, function() {
         DestinationStore.EventType.DESTINATION_SELECT, function() {
           numPrintersSelected++;
         });
-    destinationStore.setActiveUser(
-        initialSettings.userAccounts.length > 0 ?
-            initialSettings.userAccounts[0] :
-            '');
 
     // Initialize.
     const recentDestinations = initialSettings.serializedAppStateStr ?
@@ -126,6 +124,11 @@ suite(destination_store_test.suiteName, function() {
         initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
+
+    if (userAccounts) {
+      destinationStore.setActiveUser(userAccounts[0]);
+      destinationStore.reloadUserCookieBasedDestinations(userAccounts[0]);
+    }
     return opt_expectPrinterFailure ? Promise.resolve() : Promise.race([
       nativeLayer.whenCalled('getPrinterCapabilities'), whenCapabilitiesReady
     ]);
@@ -346,7 +349,7 @@ suite(destination_store_test.suiteName, function() {
           version: 2,
           recentDestinations: [recentDestination],
         });
-        initialSettings.userAccounts = ['foo@chromium.org'];
+        userAccounts = ['foo@chromium.org'];
 
         return setInitialSettings(false).then(function(args) {
           assertEquals('FooDevice', args.destinationId);
@@ -368,7 +371,6 @@ suite(destination_store_test.suiteName, function() {
       recentDestinations: [recentDestination],
     });
 
-    DestinationStore.AUTO_SELECT_TIMEOUT = 0;
     return setInitialSettings(false)
         .then(function() {
           assertEquals(
@@ -410,8 +412,7 @@ suite(destination_store_test.suiteName, function() {
           version: 2,
           recentDestinations: recentDestinations,
         });
-        initialSettings.userAccounts = [account1, account2];
-        initialSettings.syncAvailable = true;
+        userAccounts = [account1, account2];
 
         const waitForPrinterDone = () => {
           return eventToPromise(
@@ -562,8 +563,7 @@ suite(destination_store_test.suiteName, function() {
           version: 2,
           recentDestinations: recentDestinations,
         });
-        initialSettings.userAccounts = [account1, account2];
-        initialSettings.syncAvailable = true;
+        userAccounts = [account1, account2];
 
         const waitForPrinterDone = () => {
           return eventToPromise(

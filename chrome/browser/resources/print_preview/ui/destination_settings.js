@@ -290,14 +290,10 @@ Polymer({
         on Chrome OS.
    * @param {string} serializedDefaultDestinationRulesStr String with rules
    *     for selecting a default destination.
-   * @param {?Array<string>} userAccounts The signed in user accounts.
-   * @param {boolean} syncAvailable Whether sync is available. Used to
-   *     determine whether to wait for user info updates from the handler, or
-   *     to always send requests to the Google Cloud Print server.
    */
   init(
       defaultPrinter, pdfPrinterDisabled, isDriveMounted,
-      serializedDefaultDestinationRulesStr, userAccounts, syncAvailable) {
+      serializedDefaultDestinationRulesStr) {
     const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =
@@ -310,8 +306,7 @@ Polymer({
       this.invitationStore_ = new InvitationStore();
       this.invitationStore_.setCloudPrintInterface(cloudPrintInterface);
       beforeNextRender(this, () => {
-        this.shadowRoot.querySelector('#userManager')
-            .initUserAccounts(userAccounts, syncAvailable);
+        this.shadowRoot.querySelector('#userManager').initUserAccounts();
         recentDestinations = recentDestinations.slice(
             0, this.getRecentDestinationsDisplayCount_(recentDestinations));
         this.destinationStore_.init(

@@ -217,12 +217,6 @@ export class DestinationStore extends EventTarget {
     /** @private {boolean} */
     this.initialDestinationSelected_ = false;
 
-    /** @private {boolean} */
-    this.initialized_ = false;
-
-    /** @private {boolean} */
-    this.readyToReloadCookieDestinations_ = false;
-
     /**
      * Maps user account to the list of origins for which destinations are
      * already loaded.
@@ -396,15 +390,15 @@ export class DestinationStore extends EventTarget {
       this.createLocalDrivePrintDestination_();
     }
     // </if>
+    // <if expr="not chromeos">
+    // Start cloud printers, so that we can determine whether to show Drive.
+    this.startLoadCloudDestinations();
+    // </if>
 
     // Nothing recent, no system default ==> try to get a fallback printer as
     // destinationsInserted_ may never be called.
     if (this.typesToSearch_.size === 0) {
       this.tryToSelectInitialDestination_();
-      this.initialized_ = true;
-      if (this.readyToReloadCookieDestinations_) {
-        this.reloadUserCookieBasedDestinations(this.activeUser_);
-      }
       return;
     }
 
@@ -417,10 +411,6 @@ export class DestinationStore extends EventTarget {
           loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
         this.startLoadDestinations_(printerType);
       }
-    }
-    this.initialized_ = true;
-    if (this.readyToReloadCookieDestinations_) {
-      this.reloadUserCookieBasedDestinations(this.activeUser_);
     }
   }
 
@@ -834,11 +824,6 @@ export class DestinationStore extends EventTarget {
    * @param {string} account
    */
   reloadUserCookieBasedDestinations(account) {
-    if (!this.initialized_) {
-      this.readyToReloadCookieDestinations_ = true;
-      return;
-    }
-
     const origins = this.loadedCloudOrigins_.get(account) || [];
     if (origins.includes(DestinationOrigin.COOKIES)) {
       this.dispatchEvent(
@@ -1164,13 +1149,15 @@ export class DestinationStore extends EventTarget {
     const payload = event.detail;
     const searchingCloudPrintersDone =
         this.typesToSearch_.has(PrinterType.CLOUD_PRINTER) &&
-        !this.cloudPrintInterface_.isCloudDestinationSearchInProgress();
+        !this.cloudPrintInterface_.isCloudDestinationSearchInProgress() &&
+        !!payload.user;
     if (searchingCloudPrintersDone) {
       this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
     }
     if (payload.printers && payload.printers.length > 0) {
       this.insertDestinations_(payload.printers);
-    } else if (searchingCloudPrintersDone) {
+    }
+    if (searchingCloudPrintersDone) {
       this.tryToSelectInitialDestination_();
     }
     if (payload.searchDone) {

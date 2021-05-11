@@ -338,7 +338,6 @@ Polymer({
       this.$.sidebar.init(
           settings.isInAppKioskMode, settings.printerName,
           settings.serializedDefaultDestinationSelectionRulesStr,
-          settings.userAccounts || null, settings.syncAvailable,
           settings.pdfPrinterDisabled, settings.isDriveMounted || false);
       this.destinationsManaged_ = settings.destinationsManaged;
       this.isInKioskAutoPrintMode_ = settings.isInKioskAutoPrintMode;

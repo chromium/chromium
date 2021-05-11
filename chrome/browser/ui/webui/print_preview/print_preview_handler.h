@@ -20,7 +20,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/backend/print_backend.h"
@@ -44,8 +43,7 @@ class PrinterHandler;
 class PrintPreviewUI;
 
 // The handler for Javascript messages related to the print preview dialog.
-class PrintPreviewHandler : public content::WebUIMessageHandler,
-                            public signin::IdentityManager::Observer {
+class PrintPreviewHandler : public content::WebUIMessageHandler {
  public:
   PrintPreviewHandler();
   ~PrintPreviewHandler() override;
@@ -54,11 +52,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
-
-  // IdentityManager::Observer implementation.
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
 
   // Called when print preview failed. |request_id| identifies the request that
   // failed.
@@ -125,11 +118,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
 
   // Gets the initiator for the print preview dialog.
   virtual content::WebContents* GetInitiator() const;
-
-  // Register/unregister from notifications of changes done to the GAIA
-  // cookie. Protected so unit tests can override.
-  virtual void RegisterForGaiaCookieChanges();
-  virtual void UnregisterForGaiaCookieChanges();
 
  private:
   friend class PrintPreviewPdfGeneratedBrowserTest;
@@ -280,15 +268,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // Whether we have already logged the number of printers this session.
   bool has_logged_printers_count_ = false;
 
-  // Whether Google Cloud Print is enabled for the active profile.
-  bool cloud_print_enabled_ = false;
-
   // The settings used for the most recent preview request.
   base::Value last_preview_settings_;
-
-  // Pointer to the identity manager service so that print preview can listen
-  // for GAIA cookie changes.
-  signin::IdentityManager* identity_manager_ = nullptr;
 
   // Handles requests for extension printers. Created lazily by calling
   // GetPrinterHandler().

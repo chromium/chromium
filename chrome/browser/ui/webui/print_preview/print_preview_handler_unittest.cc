@@ -297,9 +297,6 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
 
   bool IsCloudPrintEnabled() override { return true; }
 
-  void RegisterForGaiaCookieChanges() override {}
-  void UnregisterForGaiaCookieChanges() override {}
-
   void BadMessageReceived() override { bad_messages_++; }
 
   content::WebContents* GetInitiator() const override { return initiator_; }
@@ -484,10 +481,6 @@ class PrintPreviewHandlerTest : public testing::Test {
                                         base::Value::Type::BOOLEAN));
     ASSERT_TRUE(
         settings->FindKeyOfType("cloudPrintURL", base::Value::Type::STRING));
-    ASSERT_TRUE(
-        settings->FindKeyOfType("userAccounts", base::Value::Type::LIST));
-    ASSERT_TRUE(
-        settings->FindKeyOfType("syncAvailable", base::Value::Type::BOOLEAN));
   }
 
   // Returns |policy_name| entry from initial settings policies.

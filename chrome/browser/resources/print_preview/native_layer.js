@@ -80,8 +80,6 @@ export let Policies;
  *   pdfPrinterDisabled: boolean,
  *   destinationsManaged: boolean,
  *   cloudPrintURL: (string | undefined),
- *   userAccounts: (Array<string> | undefined),
- *   syncAvailable: boolean,
  *   isDriveMounted: (boolean | undefined),
  * }}
  * @see corresponding field name definitions in print_preview_handler.cc
