@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -477,8 +476,7 @@ void ConciergeClient::Initialize(dbus::Bus* bus) {
 
 // static
 void ConciergeClient::InitializeFake() {
-  InitializeFake(static_cast<FakeCiceroneClient*>(
-      DBusThreadManager::Get()->GetCiceroneClient()));
+  InitializeFake(FakeCiceroneClient::Get());
 }
 
 // static

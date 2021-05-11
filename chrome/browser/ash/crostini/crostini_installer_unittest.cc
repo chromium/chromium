@@ -22,6 +22,8 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
+#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -107,9 +109,9 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::DlcserviceClient::InitializeFake();
     chromeos::DBusThreadManager::GetSetterForTesting();
-    waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(
-        reinterpret_cast<chromeos::FakeCiceroneClient*>(
-            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
+    chromeos::CiceroneClient::InitializeFake();
+    waiting_fake_concierge_client_ =
+        new WaitingFakeConciergeClient(chromeos::FakeCiceroneClient::Get());
     chromeos::SeneschalClient::InitializeFake();
 
     disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
@@ -139,6 +141,7 @@ class CrostiniInstallerTest : public testing::Test {
     chromeos::disks::MockDiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
+    chromeos::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
 

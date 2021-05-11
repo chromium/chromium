@@ -21,8 +21,7 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
       base::BindOnce(&GuestOsStabilityMonitor::ConciergeStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  auto* cicerone_client =
-      chromeos::DBusThreadManager::Get()->GetCiceroneClient();
+  auto* cicerone_client = chromeos::CiceroneClient::Get();
   DCHECK(cicerone_client);
   cicerone_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::CiceroneStarted,
@@ -55,8 +54,7 @@ void GuestOsStabilityMonitor::ConciergeStarted(bool is_available) {
 void GuestOsStabilityMonitor::CiceroneStarted(bool is_available) {
   DCHECK(is_available);
 
-  auto* cicerone_client =
-      chromeos::DBusThreadManager::Get()->GetCiceroneClient();
+  auto* cicerone_client = chromeos::CiceroneClient::Get();
   DCHECK(cicerone_client);
   cicerone_observer_.Observe(cicerone_client);
 }

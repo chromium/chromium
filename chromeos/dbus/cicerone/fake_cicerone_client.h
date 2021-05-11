@@ -25,8 +25,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
       const vm_tools::cicerone::UninstallPackageOwningFileRequest&,
       DBusMethodCallback<
           vm_tools::cicerone::UninstallPackageOwningFileResponse>)>;
-  FakeCiceroneClient();
-  ~FakeCiceroneClient() override;
+
+  // Returns the fake global instance if initialized. May return null.
+  static FakeCiceroneClient* Get();
 
   // CiceroneClient:
   void AddObserver(Observer* observer) override;
@@ -387,6 +388,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   void NotifyCiceroneStarted();
 
  protected:
+  friend class CiceroneClient;
+
+  FakeCiceroneClient();
+  ~FakeCiceroneClient() override;
+
   void Init(dbus::Bus* bus) override {}
 
  private:

@@ -8,18 +8,24 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/vm_cicerone/dbus-constants.h"
 
 namespace chromeos {
+
 namespace {
+
+CiceroneClient* g_instance = nullptr;
+
 // How long to wait before timing out on regular RPCs.
 constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromMinutes(1);
 
@@ -27,11 +33,12 @@ constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromMinutes(1);
 // creating a container.
 constexpr base::TimeDelta kLongOperationTimeout =
     base::TimeDelta::FromMinutes(3);
+
 }  // namespace
 
 class CiceroneClientImpl : public CiceroneClient {
  public:
-  CiceroneClientImpl() {}
+  CiceroneClientImpl() = default;
 
   ~CiceroneClientImpl() override = default;
 
@@ -617,7 +624,6 @@ class CiceroneClientImpl : public CiceroneClient {
     cicerone_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     cicerone_proxy_ = bus->GetObjectProxy(
         vm_tools::cicerone::kVmCiceroneServiceName,
@@ -1082,12 +1088,38 @@ class CiceroneClientImpl : public CiceroneClient {
   DISALLOW_COPY_AND_ASSIGN(CiceroneClientImpl);
 };
 
-CiceroneClient::CiceroneClient() = default;
+CiceroneClient::CiceroneClient() {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
 
-CiceroneClient::~CiceroneClient() = default;
+CiceroneClient::~CiceroneClient() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
-std::unique_ptr<CiceroneClient> CiceroneClient::Create() {
-  return std::make_unique<CiceroneClientImpl>();
+// static
+void CiceroneClient::Initialize(dbus::Bus* bus) {
+  DCHECK(bus);
+  (new CiceroneClientImpl())->Init(bus);
+}
+
+// static
+void CiceroneClient::InitializeFake() {
+  // Do not create a new fake if it was initialized early in a browser test to
+  // allow the test to set its own client.
+  if (!FakeCiceroneClient::Get())
+    new FakeCiceroneClient();
+}
+
+// static
+void CiceroneClient::Shutdown() {
+  delete g_instance;
+}
+
+// static
+CiceroneClient* CiceroneClient::Get() {
+  return g_instance;
 }
 
 }  // namespace chromeos

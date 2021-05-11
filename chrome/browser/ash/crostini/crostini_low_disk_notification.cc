@@ -40,7 +40,7 @@ constexpr base::TimeDelta kNotificationInterval =
     base::TimeDelta::FromMinutes(2);
 
 chromeos::CiceroneClient* GetCiceroneClient() {
-  return chromeos::DBusThreadManager::Get()->GetCiceroneClient();
+  return chromeos::CiceroneClient::Get();
 }
 
 }  // namespace
