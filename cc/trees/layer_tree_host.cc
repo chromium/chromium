@@ -728,6 +728,8 @@ bool LayerTreeHost::UpdateLayers() {
     return false;
   }
 
+  recordreplay::Assert("LayerTreeHost::UpdateLayers #1");
+
   DCHECK(!root_layer()->parent());
   base::ElapsedTimer timer;
 
