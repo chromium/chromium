@@ -92,26 +92,22 @@ void SearchControllerImplNew::InitializeRankers() {
 
 void SearchControllerImplNew::Start(const std::u16string& query) {
   session_start_ = base::Time::Now();
-  dispatching_query_ = true;
+
+  // TODO(crbug.com/1199206): We should move this histogram logic somewhere
+  // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   if (query.length() > 0) {
     const int length_diff = query.length() >= last_query_.length()
                                 ? query.length() - last_query_.length()
                                 : last_query_.length() - query.length();
+
     UMA_HISTOGRAM_BOOLEAN(kLauncherSearchQueryLengthJumped, length_diff > 1);
   }
+
+  last_query_ = query;
   for (const auto& provider : providers_) {
     provider->Start(query);
   }
-
-  dispatching_query_ = false;
-  last_query_ = query;
-  query_for_recommendation_ = query.empty();
-}
-
-void SearchControllerImplNew::ViewClosing() {
-  for (const auto& provider : providers_)
-    provider->ViewClosing();
 }
 
 void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
@@ -122,6 +118,8 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
     return;
 
   // Log the length of the last query that led to the clicked result.
+  // TODO(crbug.com/1199206): This histogram logic should be moved somewhere
+  // else.
   ash::RecordLauncherClickedSearchQueryLength(last_query_.length());
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
@@ -139,7 +137,8 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
 
 void SearchControllerImplNew::InvokeResultAction(ChromeSearchResult* result,
                                                  int action_index) {
-  // TODO(xiyuan): Hook up with user learning.
+  if (!result)
+    return;
   result->InvokeAction(action_index);
 }
 
@@ -222,6 +221,7 @@ int SearchControllerImplNew::GetLastQueryLength() const {
 void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
   app_launch_data.query = base::UTF16ToUTF8(last_query_);
 
+  // TODO(crbug.com/1199206): This logging code should move elsewhere.
   if (app_list_features::IsAppListLaunchRecordingEnabled()) {
     // Record a structured metrics event.
     const base::Time now = base::Time::Now();
@@ -267,6 +267,11 @@ void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
 void SearchControllerImplNew::AppListShown() {
   for (const auto& provider : providers_)
     provider->AppListShown();
+}
+
+void SearchControllerImplNew::ViewClosing() {
+  for (const auto& provider : providers_)
+    provider->ViewClosing();
 }
 
 std::u16string SearchControllerImplNew::get_query() {

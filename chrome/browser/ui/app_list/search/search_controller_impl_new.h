@@ -56,7 +56,6 @@ class SearchControllerImplNew : public SearchController {
   // SearchController:
   void InitializeRankers() override;
   void Start(const std::u16string& query) override;
-  void ViewClosing() override;
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,
                           int action_index) override;
@@ -70,6 +69,7 @@ class SearchControllerImplNew : public SearchController {
       const std::string& title) override;
   void Train(AppLaunchData&& app_launch_data) override;
   void AppListShown() override;
+  void ViewClosing() override;
   int GetLastQueryLength() const override;
   void OnSearchResultsImpressionMade(
       const std::u16string& trimmed_query,
@@ -82,11 +82,6 @@ class SearchControllerImplNew : public SearchController {
 
  private:
   Profile* profile_;
-
-  bool dispatching_query_ = false;
-
-  // If true, the search results are shown on the launcher start page.
-  bool query_for_recommendation_ = false;
 
   // The query associated with the most recent search.
   std::u16string last_query_;

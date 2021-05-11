@@ -56,6 +56,8 @@ class SearchController {
   virtual void InitializeRankers() = 0;
 
   virtual void Start(const std::u16string& query) = 0;
+  // TODO(crbug.com/1199206): We should rename this to AppListClosing for
+  // consistency with AppListShown.
   virtual void ViewClosing() = 0;
 
   virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
@@ -86,8 +88,11 @@ class SearchController {
   virtual void AppListShown() = 0;
 
   // Gets the length of the most recent query.
+  // TODO(crbug.com/1199206): This should be replaced with calls to
+  // get_query().size().
   virtual int GetLastQueryLength() const = 0;
 
+  // TODO(crbug.com/1199206): This is unused and can be deleted.
   // Called when items in the results list have been on screen for some amount
   // of time, or the user clicked a search result.
   virtual void OnSearchResultsImpressionMade(
