@@ -611,7 +611,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Serial.ChooserClosed" enum="SerialChooserOutcome"
-    expires_after="2021-06-21">
+    expires_after="never">
+<!-- expires-never: Used to monitor user interaction with the Web Serial API. -->
+
   <owner>reillyg@chromium.org</owner>
   <owner>src/content/browser/serial/OWNERS</owner>
   <summary>
@@ -621,7 +623,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.Serial.Revoked" enum="SerialPermissionRevoked"
-    expires_after="2021-06-21">
+    expires_after="never">
+<!-- expires-never: Used to monitor user interaction with the Web Serial API. -->
+
   <owner>reillyg@chromium.org</owner>
   <owner>src/content/browser/serial/OWNERS</owner>
   <summary>Records when permission to access a serial port is revoked.</summary>
