@@ -1,4 +1,38 @@
 <style include="diagnostics-shared diagnostics-fonts">
 </style>
 
-<div id="wifiInfoContainer">WiFi</div>
+<div id="wifiInfoContainer">
+  <data-point id="state" header="State"
+    value="[[network.state]]">
+  </data-point>
+  <data-point id="signalStrength" header="Signal strength"
+    value="[[network.networkProperties.signalStrength]]">
+  </data-point>
+  <data-point id="frequency" header="Frequency"
+    value="[[network.networkProperties.frequency]]">
+  </data-point>
+  <data-point id="bssid" header="bssid"
+    value="[[network.networkProperties.bssid]]">
+  </data-point>
+  <data-point id="ssid" header="ssid"
+    value="[[network.networkProperties.ssid]]">
+  </data-point>
+  <data-point id="guid" header="Guid"
+    value="[[network.guid]]">
+  </data-point>
+  <data-point id="macAddress" header="MAC Address"
+    value="[[network.macAddress]]">
+  </data-point>
+  <data-point id="ipAddress" header="IP Address"
+    value="[[network.ipConfigProperties.ipAddress]]">
+  </data-point>
+  <data-point id="gateway" header="Gateway"
+    value="[[network.ipConfigProperties.gateway]]">
+  </data-point>
+  <data-point id="nameServers" header="Name Servers"
+    value="[[network.ipConfigProperties.gateway]]">
+  </data-point>
+  <data-point id="subnetMask" header="Subnet Mask"
+    value="[[network.ipConfigProperties.subnetMask]]">
+  </data-point>
+</div>

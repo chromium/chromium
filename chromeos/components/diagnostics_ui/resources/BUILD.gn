@@ -278,6 +278,7 @@ js_library("text_badge") {
 
 js_library("wifi_info") {
   deps = [
+    ":data_point",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
