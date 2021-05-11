@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/notreached.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 

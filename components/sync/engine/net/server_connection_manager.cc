@@ -13,7 +13,6 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/syncer.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 

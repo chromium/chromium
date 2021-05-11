@@ -21,7 +21,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/protocol/sync.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;

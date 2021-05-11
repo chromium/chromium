@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/commit_processor.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/notreached.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/commit_contributor.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 
