@@ -37,8 +37,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ClipboardAndroidTest extends DummyUiActivityTestCase {
-    private static final String TEXT_URL = "http://www.foo.com";
+    private static final String TEXT_URL = "http://www.foo.com/";
     private static final String MIX_TEXT_URL = "test http://www.foo.com http://www.bar.com";
+    private static final String MIX_TEXT_URL_NO_PROTOCOL = "test www.foo.com www.bar.com";
 
     @Override
     public void setUpTest() throws Exception {
@@ -152,6 +153,20 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
     public void hasUrlAndGetUrlMixTextAndLinkTest() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Clipboard.getInstance().setText(MIX_TEXT_URL); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
+        });
+    }
+
+    // Only first URL is returned on S+ if clipboard contains multiple URLs.
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(BuildInfo.ANDROID_S_API_SDK_INT)
+    public void hasUrlAndGetUrlMixTextAndLinkWithoutProtocolTest() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Clipboard.getInstance().setText(MIX_TEXT_URL_NO_PROTOCOL); });
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));

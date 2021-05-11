@@ -8,6 +8,7 @@ include_rules = [
   "+cc/test/test_task_graph_runner.h",
   "+cc/trees/layer_tree_host.h",
   "+cc/trees/swap_promise.h",
+  "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
   "+components/viz/host",
