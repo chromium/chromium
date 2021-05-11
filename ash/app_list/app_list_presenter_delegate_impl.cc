@@ -35,6 +35,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
+#include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -85,9 +86,7 @@ AppListPresenterDelegateImpl::AppListPresenterDelegateImpl(
   display_observation_.Observe(display::Screen::GetScreen());
 }
 
-AppListPresenterDelegateImpl::~AppListPresenterDelegateImpl() {
-  Shell::Get()->RemovePreTargetHandler(this);
-}
+AppListPresenterDelegateImpl::~AppListPresenterDelegateImpl() = default;
 
 void AppListPresenterDelegateImpl::SetPresenter(
     AppListPresenterImpl* presenter) {
@@ -130,7 +129,7 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
 
   SnapAppListBoundsToDisplayEdge();
 
-  Shell::Get()->AddPreTargetHandler(this);
+  event_filter_ = std::make_unique<EventFilter>(controller_, presenter_, view_);
   controller_->ViewShown(display_id);
 }
 
@@ -138,7 +137,7 @@ void AppListPresenterDelegateImpl::OnClosing() {
   DCHECK(is_visible_);
   DCHECK(view_);
   is_visible_ = false;
-  Shell::Get()->RemovePreTargetHandler(this);
+  event_filter_.reset();
   controller_->ViewClosing();
 }
 
@@ -166,13 +165,49 @@ void AppListPresenterDelegateImpl::OnBackgroundTypeChanged(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AppListPresenterDelegateImpl, private:
+// AppListPresenterDelegateImpl::EventFilter:
 
-void AppListPresenterDelegateImpl::ProcessLocatedEvent(
+// Listens to shell events and touches/mouse clicks outside the app list to auto
+// dismiss the UI when necessary.
+class AppListPresenterDelegateImpl::EventFilter : public ui::EventHandler {
+ public:
+  EventFilter(AppListControllerImpl* controller,
+              AppListPresenterImpl* presenter,
+              AppListView* view);
+  EventFilter(const EventFilter&) = delete;
+  EventFilter& operator=(const EventFilter&) = delete;
+  ~EventFilter() override;
+
+ private:
+  void ProcessLocatedEvent(ui::LocatedEvent* event);
+
+  // ui::EventHandler overrides:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
+  AppListControllerImpl* const controller_;
+  AppListPresenterImpl* const presenter_;
+  AppListView* const view_;
+};
+
+AppListPresenterDelegateImpl::EventFilter::EventFilter(
+    AppListControllerImpl* controller,
+    AppListPresenterImpl* presenter,
+    AppListView* view)
+    : controller_(controller), presenter_(presenter), view_(view) {
+  DCHECK(controller_);
+  DCHECK(presenter_);
+  DCHECK(view_);
+  Shell::Get()->AddPreTargetHandler(this);
+}
+
+AppListPresenterDelegateImpl::EventFilter::~EventFilter() {
+  Shell::Get()->RemovePreTargetHandler(this);
+}
+
+void AppListPresenterDelegateImpl::EventFilter::ProcessLocatedEvent(
     ui::LocatedEvent* event) {
-  if (!view_ || !is_visible_)
-    return;
-
   // Users in a capture session may be trying to capture the app list.
   if (features::IsCaptureModeEnabled() &&
       CaptureModeController::Get()->IsActive()) {
@@ -269,10 +304,8 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// AppListPresenterDelegateImpl, aura::EventFilter implementation:
-
-void AppListPresenterDelegateImpl::OnMouseEvent(ui::MouseEvent* event) {
+void AppListPresenterDelegateImpl::EventFilter::OnMouseEvent(
+    ui::MouseEvent* event) {
   // Moving the mouse shouldn't hide focus rings.
   if (event->IsAnyButton())
     controller_->SetKeyboardTraversalMode(false);
@@ -281,7 +314,8 @@ void AppListPresenterDelegateImpl::OnMouseEvent(ui::MouseEvent* event) {
     ProcessLocatedEvent(event);
 }
 
-void AppListPresenterDelegateImpl::OnGestureEvent(ui::GestureEvent* event) {
+void AppListPresenterDelegateImpl::EventFilter::OnGestureEvent(
+    ui::GestureEvent* event) {
   controller_->SetKeyboardTraversalMode(false);
 
   if (event->type() == ui::ET_GESTURE_TAP ||
@@ -291,7 +325,8 @@ void AppListPresenterDelegateImpl::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void AppListPresenterDelegateImpl::OnKeyEvent(ui::KeyEvent* event) {
+void AppListPresenterDelegateImpl::EventFilter::OnKeyEvent(
+    ui::KeyEvent* event) {
   // If keyboard traversal is already engaged, no-op.
   if (controller_->KeyboardTraversalEngaged())
     return;
@@ -319,6 +354,9 @@ void AppListPresenterDelegateImpl::OnKeyEvent(ui::KeyEvent* event) {
     controller_->SetKeyboardTraversalMode(true);
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// AppListPresenterDelegateImpl, private:
 
 void AppListPresenterDelegateImpl::SnapAppListBoundsToDisplayEdge() {
   CHECK(view_ && view_->GetWidget());

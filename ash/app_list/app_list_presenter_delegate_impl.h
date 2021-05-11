@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "ash/app_list/app_list_presenter_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
@@ -16,11 +18,6 @@
 #include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
-#include "ui/events/event_handler.h"
-
-namespace ui {
-class LocatedEvent;
-}  // namespace ui
 
 namespace ash {
 class AppListControllerImpl;
@@ -29,11 +26,8 @@ class AppListView;
 enum class AppListViewState;
 
 // Responsible for laying out the app list UI as well as updating the Shelf
-// launch icon as the state of the app list changes. Listens to shell events
-// and touches/mouse clicks outside the app list to auto dismiss the UI or
-// update its layout as necessary.
+// launch icon as the state of the app list changes.
 class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
-                                                public ui::EventHandler,
                                                 public display::DisplayObserver,
                                                 public ShelfObserver {
  public:
@@ -57,12 +51,7 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
                                AnimationChangeType change_type) override;
 
  private:
-  void ProcessLocatedEvent(ui::LocatedEvent* event);
-
-  // ui::EventHandler overrides:
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnKeyEvent(ui::KeyEvent* event) override;
+  class EventFilter;
 
   // Snaps the app list window bounds to fit the screen size. (See
   // https://crbug.com/884889).
@@ -79,6 +68,9 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
 
   // Not owned, owns this class.
   AppListControllerImpl* const controller_ = nullptr;
+
+  // Closes the app list when the user clicks outside its bounds.
+  std::unique_ptr<EventFilter> event_filter_;
 
   // An observer that notifies AppListView when the display has changed.
   base::ScopedObservation<display::Screen, display::DisplayObserver>
