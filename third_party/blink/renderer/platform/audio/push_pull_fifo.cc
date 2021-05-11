@@ -213,16 +213,15 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, size_t frames_requested) {
 
 size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
                                           size_t frames_requested) {
-  TRACE_EVENT2("webaudio",
-               "PushPullFIFO::PullAndUpdateEarmark",
-               "frames_requested", frames_requested,
-               "pull_count_", pull_count_);
+  TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark", "this",
+               static_cast<void*>(this), "frames_requested", frames_requested);
 
   CHECK(output_bus);
   SECURITY_CHECK(frames_requested <= output_bus->length());
 
   MutexLocker locker(lock_);
-  TRACE_EVENT0("webaudio", "PushPullFIFO::PullAndUpdateEarmark (under lock)");
+  TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark (under lock)",
+               "pull_count_", pull_count_, "earmark_frames_", earmark_frames_);
 
   SECURITY_CHECK(frames_requested <= fifo_length_);
   SECURITY_CHECK(index_read_ < fifo_length_);
