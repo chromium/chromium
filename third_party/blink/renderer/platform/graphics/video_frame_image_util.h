@@ -62,6 +62,8 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // If |prefer_tagged_orientation| is true, CreateImageFromVideoFrame() will just
 // tag the StaticBitmapImage with the correct orientation ("soft flip") instead
 // of drawing the frame with the correct orientation ("hard flip").
+//
+// Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool allow_zero_copy_images = true,
