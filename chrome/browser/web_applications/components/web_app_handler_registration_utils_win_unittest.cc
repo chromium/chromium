@@ -172,7 +172,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 
   // Update installations external to profile 2 (i.e. profile1).
   CheckAndUpdateExternalInstallations(profile2->GetPath(), app_id(),
-                                      base::DoNothing());
+                                      base::DoNothing::Once<bool>());
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   // Test that the profile1 installation is updated with a profile-specific
@@ -193,7 +193,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
   Profile* profile2 =
       testing_profile_manager()->CreateTestingProfile("Profile 2");
   CheckAndUpdateExternalInstallations(profile2->GetPath(), app_id(),
-                                      base::DoNothing());
+                                      base::DoNothing::Once<bool>());
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   // Ensure that after updating from profile2 (which has no installation),
@@ -220,7 +220,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
   // in other profiles shouldn't change the original 2 installations since they
   // already have app-specific names.
   CheckAndUpdateExternalInstallations(profile3->GetPath(), app_id(),
-                                      base::DoNothing());
+                                      base::DoNothing::Once<bool>());
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   TestRegisteredApp(app_id(), app_name(), L" (Default)", profile1->GetPath());

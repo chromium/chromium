@@ -10,9 +10,11 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -210,11 +212,13 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
           barrier->CreateBarrierCallbackForType(OsHookType::kShortcuts));
     }
   }
-  // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
   // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
-  if (os_hooks[OsHookType::kFileHandlers])
-    UnregisterFileHandlers(app_id, nullptr, base::DoNothing());
+  if (os_hooks[OsHookType::kFileHandlers]) {
+    UnregisterFileHandlers(
+        app_id, nullptr,
+        barrier->CreateBarrierCallbackForType(OsHookType::kFileHandlers));
+  }
 
   // TODO(https://crbug.com/1108109) we should return the result of protocol
   // handler unregistration and record errors during unregistration.
@@ -489,7 +493,7 @@ void OsIntegrationManager::DeleteShortcuts(
 void OsIntegrationManager::UnregisterFileHandlers(
     const AppId& app_id,
     std::unique_ptr<ShortcutInfo> info,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(file_handler_manager_);
 
   file_handler_manager_->DisableAndUnregisterOsFileHandlers(
@@ -567,18 +571,26 @@ void OsIntegrationManager::UpdateFileHandlersWithShortcutInfo(
   if (!IsFileHandlingAPIAvailable(app_id))
     return;
 
-  base::OnceClosure callback_after_removal;
+  base::OnceCallback<void(bool)> callback_after_removal;
   switch (file_handlers_need_os_update) {
     case FileHandlerUpdateAction::kNoUpdate:
       return;
     case FileHandlerUpdateAction::kUpdate:
-      callback_after_removal =
-          base::BindOnce(&OsIntegrationManager::RegisterFileHandlers,
-                         weak_ptr_factory_.GetWeakPtr(), app_id,
-                         base::DoNothing::Once<bool>());
+      callback_after_removal = base::BindOnce(
+          [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
+             const AppId& app_id, bool unregister_success) {
+            // Re-register file handlers regardless of `unregister_success`.
+            // TODO(https://crbug.com/1124047): Report `unregister_success` in
+            // an UMA metric.
+            if (!os_integration_manager)
+              return;
+            os_integration_manager->RegisterFileHandlers(
+                app_id, base::DoNothing::Once<bool>());
+          },
+          weak_ptr_factory_.GetWeakPtr(), app_id);
       break;
     case FileHandlerUpdateAction::kRemove:
-      callback_after_removal = base::DoNothing::Once();
+      callback_after_removal = base::DoNothing::Once<bool>();
       break;
   }
 
