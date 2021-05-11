@@ -1653,8 +1653,7 @@ std::vector<MediaAudioVideoState> MediaSessionImpl::GetMediaAudioVideoStates() {
           states->push_back(MediaAudioVideoState::kAudioVideo);
         } else if (has_audio) {
           states->push_back(MediaAudioVideoState::kAudioOnly);
-        } else {
-          DCHECK(has_video);
+        } else if (has_video) {
           states->push_back(MediaAudioVideoState::kVideoOnly);
         }
       },
