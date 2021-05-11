@@ -1191,6 +1191,7 @@ public class StartSurfaceTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1205218")
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
@@ -1557,6 +1558,7 @@ public class StartSurfaceTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1207947")
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
