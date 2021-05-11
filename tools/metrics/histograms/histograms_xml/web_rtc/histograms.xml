@@ -839,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRate" enum="AudioSampleRate"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>Audio output sample rate for WebRTC (in Hz).</summary>
@@ -1394,7 +1394,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="2021-09-05">
+    enum="PeerConnectionKeyProtocol" expires_after="2021-11-07">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1405,7 +1405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocolByMedia"
-    enum="PeerConnectionKeyProtocolByMedia" expires_after="2021-09-05">
+    enum="PeerConnectionKeyProtocolByMedia" expires_after="2021-11-07">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1437,7 +1437,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2021-09-05">
+    enum="PeerConnectionSdpUsageCategory" expires_after="2021-11-07">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1542,7 +1542,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticNegotiated"
-    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2021-09-05">
+    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2021-11-07">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -3671,7 +3671,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>eladalon@chromium.org</owner>
   <owner>saeedj@google.com</owner>
   <owner>manj@google.com</owner>

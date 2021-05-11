@@ -736,7 +736,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
-    enum="PasswordCheckResolutionAction" expires_after="2021-08-15">
+    enum="PasswordCheckResolutionAction" expires_after="2021-11-07">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2084,7 +2084,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
-    enum="PasswordManagerUIDismissalReason" expires_after="2021-09-05">
+    enum="PasswordManagerUIDismissalReason" expires_after="2021-11-07">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

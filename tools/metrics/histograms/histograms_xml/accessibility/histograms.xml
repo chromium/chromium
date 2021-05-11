@@ -762,7 +762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -855,7 +855,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled"
-    enum="BooleanEnabled" expires_after="2021-09-05">
+    enum="BooleanEnabled" expires_after="2021-11-07">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -890,7 +890,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session"
-    enum="LiveCaptionSessionEvent" expires_after="2021-09-05">
+    enum="LiveCaptionSessionEvent" expires_after="2021-11-07">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -919,7 +919,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
-    enum="BooleanEnabled" expires_after="2021-09-05">
+    enum="BooleanEnabled" expires_after="2021-11-07">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

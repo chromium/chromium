@@ -199,7 +199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppsGridAddPage" enum="AppListAddPageType"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -978,7 +978,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListAppTypeClicked" enum="AppListAppType"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>charleszhao@chromium.org</owner>
   <owner>pdyson@chromium.org</owner>
   <summary>
@@ -1265,7 +1265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchCommenced" units="searches"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>tapted@chromium.org</owner>
   <summary>
     The number of searches that are started in the app list. This is gathered

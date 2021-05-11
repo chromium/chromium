@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="VideoTutorials.LanguagePicker.Action"
-    enum="VideoTutorials.LanguagePickerAction" expires_after="2021-09-05">
+    enum="VideoTutorials.LanguagePickerAction" expires_after="2021-11-07">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
-    units="position" expires_after="2021-09-05">
+    units="position" expires_after="2021-11-07">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

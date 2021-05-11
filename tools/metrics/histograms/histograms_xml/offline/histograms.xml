@@ -744,7 +744,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateRequested"
-    units="seconds" expires_after="2021-09-05">
+    units="seconds" expires_after="2021-11-07">
   <owner>dewittj@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>

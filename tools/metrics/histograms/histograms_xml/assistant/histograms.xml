@@ -342,7 +342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2021-10-31">
+    expires_after="2021-11-07">
   <owner>updowndota@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

@@ -2018,7 +2018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.NavigationButtonsInTabletMode.ReasonShown"
-    enum="ReasonToShowShelfNavigationButtons" expires_after="2021-09-05">
+    enum="ReasonToShowShelfNavigationButtons" expires_after="2021-11-07">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>

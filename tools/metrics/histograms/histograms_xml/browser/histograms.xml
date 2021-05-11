@@ -302,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.FirstPaintBeforeTabLoad"
-    units="Boolean" expires_after="2021-09-05">
+    units="Boolean" expires_after="2021-11-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -441,7 +441,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds2"
-    units="janks" expires_after="2021-07-31">
+    units="janks" expires_after="2021-11-07">
 <!-- JankyIntervalsPerThirtySeconds3 is on probation to replace this -->
 
   <owner>erikchen@chromium.org</owner>

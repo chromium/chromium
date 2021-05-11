@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.AddressProfileImportCountrySpecificFieldRequirements"
     enum="AutofillAddressProfileImportCountrySpecificFieldRequirement"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>koerber@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -117,7 +117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2021-09-05">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2021-11-07">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Autocomplete.NotOff.FillingAcceptance"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2021-09-05">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2021-11-07">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2021-09-05">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2021-11-07">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Autocomplete.Off.FillingAcceptance"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2021-09-05">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2021-11-07">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -570,7 +570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.Aggregate"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2021-09-05">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2021-11-07">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -840,7 +840,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Funnel.FillAfterSuggestion"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2021-09-05">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -858,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Autofill.Funnel.InteractionAfterParsedAsType"
     enum="BooleanAutofillInteractionAfterParsedAsType"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -879,7 +879,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Funnel.ParsedAsType"
-    enum="BooleanAutofillParsedAsType" expires_after="2021-09-05">
+    enum="BooleanAutofillParsedAsType" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -894,7 +894,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Funnel.SubmissionAfterFill"
-    enum="BooleanAutofillSubmissionAfterFill" expires_after="2021-09-05">
+    enum="BooleanAutofillSubmissionAfterFill" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -907,7 +907,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.Funnel.SuggestionAfterInteraction"
-    enum="BooleanAutofillSuggestionAfterInteraction" expires_after="2021-09-05">
+    enum="BooleanAutofillSuggestionAfterInteraction" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -997,7 +997,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FillingAcceptance"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2021-09-05">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1010,7 +1010,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FillingAssistance"
-    enum="BooleanAutofillFillingAssistance" expires_after="2021-09-05">
+    enum="BooleanAutofillFillingAssistance" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1052,7 +1052,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FormSubmission.Autofilled"
-    enum="BooleanAutofillSubmission" expires_after="2021-09-05">
+    enum="BooleanAutofillSubmission" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1068,7 +1068,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FormSubmission.NotAutofilled"
-    enum="BooleanAutofillSubmission" expires_after="2021-09-05">
+    enum="BooleanAutofillSubmission" expires_after="2021-11-07">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1085,7 +1085,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleOffer"
-    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2021-09-05">
+    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2021-11-07">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1095,7 +1095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleResult"
-    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2021-09-05">
+    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2021-11-07">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1576,7 +1576,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptOffer"
-    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2021-09-05">
+    enum="AutofillSaveCreditCardPromptOfferEnum" expires_after="2021-11-07">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -1587,7 +1587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.SaveCreditCardPromptResult"
-    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2021-09-05">
+    enum="AutofillSaveCreditCardPromptResultEnum" expires_after="2021-11-07">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -2129,7 +2129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FromAutocomplete" units="Boolean"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2141,7 +2141,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhoneNumberCollection.ParseResult"
-    units="Boolean" expires_after="2021-09-05">
+    units="Boolean" expires_after="2021-11-07">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2158,7 +2158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhonePlusWebOTPPlusOTC"
-    enum="PhoneCollectionState" expires_after="2021-09-05">
+    enum="PhoneCollectionState" expires_after="2021-11-07">
   <owner>yigu@chromium.org</owner>
   <owner>madjivp@chromium.org</owner>
   <owner>web-identity@google.com</owner>

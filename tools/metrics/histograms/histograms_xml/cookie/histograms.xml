@@ -562,7 +562,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteContextDowngradeRequest"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -579,7 +579,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteContextDowngradeResponse"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -715,7 +715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.TimeDatabaseMigrationToV14" units="ms"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>wfh@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>

@@ -211,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2021-09-05">
+    expires_after="2021-11-07">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
