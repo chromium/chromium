@@ -77,7 +77,7 @@ void SurfaceTextureGLOwner::UpdateTexImage() {
     surface_texture_->UpdateTexImage();
 }
 
-void SurfaceTextureGLOwner::EnsureTexImageBound() {
+void SurfaceTextureGLOwner::EnsureTexImageBound(GLuint service_id) {
   NOTREACHED();
 }
 

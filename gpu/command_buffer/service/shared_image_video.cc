@@ -13,6 +13,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/command_buffer/service/abstract_texture_impl.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -148,14 +149,20 @@ SharedImageVideo::GetAHardwareBuffer() {
 class SharedImageRepresentationGLTextureVideo
     : public SharedImageRepresentationGLTexture {
  public:
-  SharedImageRepresentationGLTextureVideo(SharedImageManager* manager,
-                                          SharedImageVideo* backing,
-                                          MemoryTypeTracker* tracker,
-                                          gles2::Texture* texture)
+  SharedImageRepresentationGLTextureVideo(
+      SharedImageManager* manager,
+      SharedImageVideo* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<gles2::AbstractTexture> texture)
       : SharedImageRepresentationGLTexture(manager, backing, tracker),
-        texture_(texture) {}
+        texture_(std::move(texture)) {}
 
-  gles2::Texture* GetTexture() override { return texture_; }
+  gles2::Texture* GetTexture() override {
+    auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
+    DCHECK(texture);
+
+    return texture;
+  }
 
   bool BeginAccess(GLenum mode) override {
     // This representation should only be called for read or overlay.
@@ -163,14 +170,14 @@ class SharedImageRepresentationGLTextureVideo
            mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
 
     auto* video_backing = static_cast<SharedImageVideo*>(backing());
-    video_backing->BeginGLReadAccess();
+    video_backing->BeginGLReadAccess(texture_->service_id());
     return true;
   }
 
   void EndAccess() override {}
 
  private:
-  gles2::Texture* texture_;
+  std::unique_ptr<gles2::AbstractTexture> texture_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTextureVideo);
 };
@@ -183,18 +190,20 @@ class SharedImageRepresentationGLTexturePassthroughVideo
       SharedImageManager* manager,
       SharedImageVideo* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture)
+      std::unique_ptr<gles2::AbstractTexture> abstract_texture)
       : SharedImageRepresentationGLTexturePassthrough(manager,
                                                       backing,
                                                       tracker),
-        texture_(std::move(texture)) {
+        abstract_texture_(std::move(abstract_texture)),
+        passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
+            abstract_texture_->GetTextureBase())) {
     // TODO(https://crbug.com/1172769): Remove this CHECK.
-    CHECK(texture_);
+    CHECK(passthrough_texture_);
   }
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override {
-    return texture_;
+    return passthrough_texture_;
   }
 
   bool BeginAccess(GLenum mode) override {
@@ -203,14 +212,15 @@ class SharedImageRepresentationGLTexturePassthroughVideo
            mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
 
     auto* video_backing = static_cast<SharedImageVideo*>(backing());
-    video_backing->BeginGLReadAccess();
+    video_backing->BeginGLReadAccess(passthrough_texture_->service_id());
     return true;
   }
 
   void EndAccess() override {}
 
  private:
-  scoped_refptr<gles2::TexturePassthrough> texture_;
+  std::unique_ptr<gles2::AbstractTexture> abstract_texture_;
+  scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTexturePassthroughVideo);
 };
@@ -325,15 +335,14 @@ SharedImageVideo::ProduceGLTexture(SharedImageManager* manager,
   // which should result in no image.
   if (!stream_texture_sii_->HasTextureOwner())
     return nullptr;
-  // TODO(vikassoni): We would want to give the TextureOwner's underlying
-  // Texture, but it was not set with the correct size. The AbstractTexture,
-  // that we use for legacy mailbox, is correctly set.
-  auto* texture =
-      gles2::Texture::CheckedCast(abstract_texture_->GetTextureBase());
-  DCHECK(texture);
+
+  // Generate an abstract texture.
+  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/false);
+  if (!texture)
+    return nullptr;
 
   return std::make_unique<SharedImageRepresentationGLTextureVideo>(
-      manager, this, tracker, texture);
+      manager, this, tracker, std::move(texture));
 }
 
 // TODO(vikassoni): Currently GLRenderer doesn't support overlays with shared
@@ -347,13 +356,11 @@ SharedImageVideo::ProduceGLTexturePassthrough(SharedImageManager* manager,
   // which should result in no image.
   if (!stream_texture_sii_->HasTextureOwner())
     return nullptr;
-  // TODO(vikassoni): We would want to give the TextureOwner's underlying
-  // Texture, but it was not set with the correct size. The AbstractTexture,
-  // that we use for legacy mailbox, is correctly set.
-  scoped_refptr<gles2::TexturePassthrough> texture =
-      gles2::TexturePassthrough::CheckedCast(
-          abstract_texture_->GetTextureBase());
-  DCHECK(texture);
+
+  // Generate an abstract texture.
+  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/true);
+  if (!texture)
+    return nullptr;
 
   return std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
       manager, this, tracker, std::move(texture));
@@ -378,32 +385,60 @@ std::unique_ptr<SharedImageRepresentationSkia> SharedImageVideo::ProduceSkia(
   }
 
   DCHECK(context_state->GrContextIsGL());
-  auto* texture_base = stream_texture_sii_->GetTextureBase();
-  DCHECK(texture_base);
+  const bool passthrough = Passthrough();
+  auto texture = GenAbstractTexture(context_state, passthrough);
+  if (!texture)
+    return nullptr;
 
-  // In GL mode, create the SharedImageRepresentationGLTexture*Video
-  // representation to use with SharedImageRepresentationVideoSkiaGL.
   std::unique_ptr<gpu::SharedImageRepresentationGLTextureBase>
       gl_representation;
-  if (texture_base->GetType() == gpu::TextureBase::Type::kValidated) {
-    gl_representation =
-        std::make_unique<SharedImageRepresentationGLTextureVideo>(
-            manager, this, tracker, gles2::Texture::CheckedCast(texture_base));
-  } else {
+  if (passthrough) {
     gl_representation =
         std::make_unique<SharedImageRepresentationGLTexturePassthroughVideo>(
-            manager, this, tracker,
-            gles2::TexturePassthrough::CheckedCast(texture_base));
+            manager, this, tracker, std::move(texture));
+  } else {
+    gl_representation =
+        std::make_unique<SharedImageRepresentationGLTextureVideo>(
+            manager, this, tracker, std::move(texture));
   }
-
   return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
                                                  std::move(context_state),
                                                  manager, this, tracker);
 }
 
-void SharedImageVideo::BeginGLReadAccess() {
-  // Render the codec image.
-  stream_texture_sii_->UpdateAndBindTexImage();
+bool SharedImageVideo::Passthrough() {
+  auto* texture_base = stream_texture_sii_->GetTextureBase();
+  DCHECK(texture_base);
+
+  return (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough);
+}
+
+std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
+    scoped_refptr<SharedContextState> context_state,
+    const bool passthrough) {
+  std::unique_ptr<gles2::AbstractTexture> texture;
+  if (passthrough) {
+    texture = std::make_unique<gles2::AbstractTextureImplPassthrough>(
+        GL_TEXTURE_EXTERNAL_OES);
+  } else {
+    texture = std::make_unique<gles2::AbstractTextureImpl>(
+        GL_TEXTURE_EXTERNAL_OES, GL_RGBA, size().width(), size().height(), 1, 0,
+        GL_RGBA, GL_UNSIGNED_BYTE);
+  }
+
+  // If TextureOwner binds texture implicitly on update, that means it will use
+  // TextureOwner texture_id to update and bind. Hence use TextureOwner
+  // texture_id in abstract texture via BindStreamTextureImage().
+  if (stream_texture_sii_->TextureOwnerBindsTextureOnUpdate()) {
+    texture->BindStreamTextureImage(
+        stream_texture_sii_.get(),
+        stream_texture_sii_->GetTextureBase()->service_id());
+  }
+  return texture;
+}
+
+void SharedImageVideo::BeginGLReadAccess(const GLuint service_id) {
+  stream_texture_sii_->UpdateAndBindTexImage(service_id);
 }
 
 // Representation of SharedImageVideo as an overlay plane.

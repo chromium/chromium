@@ -134,8 +134,8 @@ bool StreamTexture::IsUsingGpuMemory() const {
   return true;
 }
 
-void StreamTexture::UpdateAndBindTexImage() {
-  UpdateTexImage(BindingsMode::kEnsureTexImageBound);
+void StreamTexture::UpdateAndBindTexImage(GLuint service_id) {
+  UpdateTexImage(BindingsMode::kEnsureTexImageBound, service_id);
 }
 
 bool StreamTexture::HasTextureOwner() const {
@@ -154,25 +154,40 @@ bool StreamTexture::RenderToOverlay() {
   return false;
 }
 
+bool StreamTexture::TextureOwnerBindsTextureOnUpdate() {
+  DCHECK(texture_owner_);
+  return texture_owner_->binds_texture_on_update();
+}
+
 void StreamTexture::OnContextLost() {
   texture_owner_ = nullptr;
 }
 
-void StreamTexture::UpdateTexImage(BindingsMode bindings_mode) {
+void StreamTexture::UpdateTexImage(BindingsMode bindings_mode,
+                                   GLuint service_id) {
   DCHECK(texture_owner_.get());
 
-  if (!has_pending_frame_) return;
+  if (!has_pending_frame_) {
+    // Same frame can be bound multiple times to a different |service_id|. For
+    // eg: SharedImageVideo::ProduceGLTexture/ProduceSkia() and hence
+    // BeginAccess() can happen multiple times with the same frame by the time
+    // next frame is available. In those cases new service_id is generated and
+    // the frame although doesn't require any update, still needs to be bound to
+    // new service_id.
+    EnsureBoundIfNeeded(bindings_mode, service_id);
+    return;
+  }
 
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
   base::Optional<ScopedRestoreTextureBinding> scoped_restore_texture;
-  if (texture_owner_->binds_texture_on_update() ||
-      (bindings_mode == BindingsMode::kEnsureTexImageBound)) {
+  if (texture_owner_->binds_texture_on_update()) {
     // If the texture_owner() binds the texture while doing the texture update
-    // (UpdateTexImage), like in SurfaceTexture case, OR if it was explicitly
-    // specified to bind the texture via bindings_mode, then only make the
-    // context current. For AImageReader, since we only acquire the latest image
-    // from it during the texture update process, there is no need to make it's
-    // context current if its not specified via bindings_mode.
+    // (UpdateTexImage), like in SurfaceTexture case, then make sure that the
+    // texture owner's context is made current. This is because the texture
+    // which will be bound was generated on TextureOwner's context.
+    // For AImageReader case, the texture which will be bound will not
+    // necessarily be TextureOwner's texture and hence caller is responsible to
+    // handle making correct context current before binding the texture.
     scoped_make_current = MakeCurrent(context_state_.get());
 
     // If updating the image will implicitly update the texture bindings then
@@ -183,18 +198,24 @@ void StreamTexture::UpdateTexImage(BindingsMode bindings_mode) {
     }
   }
   texture_owner_->UpdateTexImage();
-  EnsureBoundIfNeeded(bindings_mode);
+  EnsureBoundIfNeeded(bindings_mode, service_id);
   has_pending_frame_ = false;
 }
 
-void StreamTexture::EnsureBoundIfNeeded(BindingsMode mode) {
+void StreamTexture::EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id) {
   DCHECK(texture_owner_);
 
-  if (texture_owner_->binds_texture_on_update())
+  if (texture_owner_->binds_texture_on_update()) {
+    if (mode == BindingsMode::kEnsureTexImageBound) {
+      DCHECK_EQ(service_id, texture_owner_->GetTextureId());
+    }
     return;
+  }
   if (mode != BindingsMode::kEnsureTexImageBound)
     return;
-  texture_owner_->EnsureTexImageBound();
+
+  DCHECK_GT(service_id, static_cast<unsigned>(0));
+  texture_owner_->EnsureTexImageBound(service_id);
 }
 
 bool StreamTexture::CopyTexImage(unsigned target) {
@@ -207,17 +228,21 @@ bool StreamTexture::CopyTexImage(unsigned target) {
   GLint texture_id;
   glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
 
-  // The following code only works if we're being asked to copy into
-  // |texture_id_|. Copying into a different texture is not supported.
-  // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
-  // glGetIntegerv() parameter. In this case the value of |texture_id| will be
-  // zero and we assume that it is properly bound to |texture_id_|.
+  // CopyTexImage will only be called for TextureOwner's SurfaceTexture
+  // implementation which binds texture to TextureOwner's texture_id on update.
+  // Also ensure that the CopyTexImage() is always called on TextureOwner's
+  // context.
+  DCHECK(texture_owner_->binds_texture_on_update());
+  DCHECK(texture_owner_->GetContext()->IsCurrent(nullptr));
   if (texture_id > 0 &&
       static_cast<unsigned>(texture_id) != texture_owner_->GetTextureId())
     return false;
 
-  UpdateTexImage(BindingsMode::kEnsureTexImageBound);
-
+  // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
+  // glGetIntegerv() parameter. In this case the value of |texture_id| will be
+  // zero and we assume that it is properly bound to TextureOwner's texture id..
+  UpdateTexImage(BindingsMode::kEnsureTexImageBound,
+                 texture_owner_->GetTextureId());
   return true;
 }
 
@@ -232,7 +257,10 @@ void StreamTexture::OnFrameAvailable() {
   if (rotated_visible_size_.IsEmpty())
     return;
 
-  UpdateTexImage(BindingsMode::kEnsureTexImageBound);
+  // We only need TextureOwner to get the latest image and do not require it to
+  // be bound to a texture if TextureOwner does not binds texture on update.
+  // Hence pass service_id as 0.
+  UpdateTexImage(BindingsMode::kRestoreIfBound, /*service_id=*/0);
 
   gfx::Rect visible_rect;
   gfx::Size coded_size;
@@ -406,7 +434,8 @@ StreamTexture::GetAHardwareBuffer() {
 
   // Using BindingsMode::kDontRestoreIfBound here since we do not want to bind
   // the image. We just want to get the AHardwareBuffer from the latest image.
-  UpdateTexImage(BindingsMode::kDontRestoreIfBound);
+  // Hence pass service_id as 0.
+  UpdateTexImage(BindingsMode::kDontRestoreIfBound, /*service_id=*/0);
   return texture_owner_->GetAHardwareBuffer();
 }
 

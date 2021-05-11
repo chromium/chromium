@@ -320,9 +320,9 @@ void ImageReaderGLOwner::UpdateTexImage() {
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
 }
 
-void ImageReaderGLOwner::EnsureTexImageBound() {
+void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
   if (current_image_ref_)
-    current_image_ref_->EnsureBound();
+    current_image_ref_->EnsureBound(service_id);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
@@ -508,17 +508,19 @@ base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
   return base::ScopedFD(HANDLE_EINTR(dup(ready_fence_.get())));
 }
 
-void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound() {
-  if (image_bound_)
-    return;
-
-  // Insert an EGL fence and make server wait for image to be available.
+void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
+  // Same |image_| can be bound multiple times to different |service_id|. So
+  // even if |image_bound_| is true, it might not be for current |service_id|.
+  // Hence we still need to create and bind egl image to the |service_id|.
+  // Also continue to wait on the fence even if it was waited upon during
+  // previous EnsureBound() calls on same image since this call could be on a
+  // different context. Insert an EGL fence and make server wait for image to be
+  // available.
   if (!InsertEglFenceAndWait(GetReadyFence()))
     return;
 
   // Create EGL image from the AImage and bind it to the texture.
-  if (!CreateAndBindEglImage(image_, texture_owner_->GetTextureId(),
-                             &texture_owner_->loader_))
+  if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))
     return;
 
   image_bound_ = true;

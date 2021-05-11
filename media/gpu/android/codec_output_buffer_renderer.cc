@@ -14,6 +14,7 @@
 #include "ui/gl/scoped_make_current.h"
 
 namespace media {
+
 namespace {
 
 // Makes |texture_owner|'s context current if it isn't already.
@@ -80,7 +81,8 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
 }
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
-    BindingsMode bindings_mode) {
+    BindingsMode bindings_mode,
+    GLuint service_id) {
   // Normally, we should have a wait coordinator if we're called.  However, if
   // the renderer is torn down (either VideoFrameSubmitter or the whole process)
   // before we get returns back from viz, then we can be notified that we're
@@ -90,7 +92,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     return false;
 
   if (phase_ == Phase::kInFrontBuffer) {
-    EnsureBoundIfNeeded(bindings_mode);
+    EnsureBoundIfNeeded(bindings_mode, service_id);
     return true;
   }
   if (phase_ == Phase::kInvalidated)
@@ -100,14 +102,14 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
   base::Optional<gpu::ScopedRestoreTextureBinding> scoped_restore_texture;
 
   if (codec_buffer_wait_coordinator_->texture_owner()
-          ->binds_texture_on_update() ||
-      (bindings_mode == BindingsMode::kEnsureTexImageBound)) {
+          ->binds_texture_on_update()) {
     // If the texture_owner() binds the texture while doing the texture update
-    // (UpdateTexImage), like in SurfaceTexture case, OR if it was explicitly
-    // specified to bind the texture via bindings_mode, then only make the
-    // context current. For AImageReader, since we only acquire the latest image
-    // from it during the texture update process, there is no need to make it's
-    // context current if its not specified via bindings_mode.
+    // (UpdateTexImage), like in SurfaceTexture case, then make sure that the
+    // texture owner's context is made current. This is because the texture
+    // which will be bound was generated on TextureOwner's context.
+    // For AImageReader case, the texture which will be bound will not
+    // necessarily be TextureOwner's texture and hence caller is responsible to
+    // handle making correct context current before binding the texture.
     scoped_make_current = MakeCurrentIfNeeded(
         codec_buffer_wait_coordinator_->texture_owner().get());
 
@@ -144,21 +146,30 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     codec_buffer_wait_coordinator_->WaitForFrameAvailable();
 
   codec_buffer_wait_coordinator_->texture_owner()->UpdateTexImage();
-  EnsureBoundIfNeeded(bindings_mode);
+  EnsureBoundIfNeeded(bindings_mode, service_id);
   return true;
 }
 
-void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode) {
+void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
+                                                    GLuint service_id) {
   DCHECK(codec_buffer_wait_coordinator_);
 
   if (codec_buffer_wait_coordinator_->texture_owner()
           ->binds_texture_on_update()) {
+    if (mode == BindingsMode::kEnsureTexImageBound) {
+      DCHECK_EQ(
+          service_id,
+          codec_buffer_wait_coordinator_->texture_owner()->GetTextureId());
+    }
     was_tex_image_bound_ = true;
     return;
   }
   if (mode != BindingsMode::kEnsureTexImageBound)
     return;
-  codec_buffer_wait_coordinator_->texture_owner()->EnsureTexImageBound();
+
+  DCHECK_GT(service_id, 0u);
+  codec_buffer_wait_coordinator_->texture_owner()->EnsureTexImageBound(
+      service_id);
   was_tex_image_bound_ = true;
 }
 
@@ -178,9 +189,11 @@ bool CodecOutputBufferRenderer::RenderToOverlay() {
 
 bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
   // This code is used to trigger early rendering of the image before it is used
-  // for compositing, there is no need to bind the image.
+  // for compositing, there is no need to bind the image. Hence pass texture
+  // service_id as 0.
   return codec_buffer_wait_coordinator_
-             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kRestoreIfBound)
+             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kRestoreIfBound,
+                                               0 /* service_id */)
              : RenderToOverlay();
 }
 

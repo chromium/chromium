@@ -39,7 +39,11 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer {
   // Renders this image to the texture owner front buffer by first rendering
   // it to the back buffer if it's not already there, and then waiting for the
   // frame available event before calling UpdateTexImage().
-  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode);
+  // Also bind the latest imagecto the provided |service_id| if TextureOwner
+  // does not binds texture on update. If |bindings_mode| is other than
+  // kEnsureTexImageBound, then |service_id| is not required.
+  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode,
+                                       GLuint service_id);
 
   // Renders this image to the front buffer of its backing surface.
   // Returns true if the buffer is in the front buffer. Returns false if the
@@ -80,7 +84,11 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer {
   // kInFrontBuffer and kInvalidated are terminal.
   enum class Phase { kInCodec, kInBackBuffer, kInFrontBuffer, kInvalidated };
 
-  void EnsureBoundIfNeeded(BindingsMode mode);
+  // Ensure that the latest image is bound to the texture |service_id| if
+  // TextureOwner does not binds texture on update. If TextureOwner binds
+  // texture on update, then it will always be bound to the TextureOwners
+  // texture and |service_id| will be ignored.
+  void EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id);
 
   void set_phase_for_testing(Phase phase) { phase_ = phase; }
 
