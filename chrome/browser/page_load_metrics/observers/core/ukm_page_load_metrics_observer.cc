@@ -701,6 +701,18 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetInteractiveTiming_FirstInputProcessingTimes(
         first_input_processing_time.InMilliseconds());
   }
+  if (timing.user_timing_mark_fully_loaded) {
+    builder.SetPageTiming_UserTimingMarkFullyLoaded(
+        timing.user_timing_mark_fully_loaded.value().InMilliseconds());
+  }
+  if (timing.user_timing_mark_fully_visible) {
+    builder.SetPageTiming_UserTimingMarkFullyVisible(
+        timing.user_timing_mark_fully_visible.value().InMilliseconds());
+  }
+  if (timing.user_timing_mark_interactive) {
+    builder.SetPageTiming_UserTimingMarkInteractive(
+        timing.user_timing_mark_interactive.value().InMilliseconds());
+  }
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
   // Use a bucket spacing factor of 1.3 for bytes.

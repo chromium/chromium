@@ -663,6 +663,15 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         *perf.LastPortalActivatedPaint();
   }
 
+  if (perf.UserTimingMarkFullyLoaded().has_value())
+    timing->user_timing_mark_fully_loaded = perf.UserTimingMarkFullyLoaded();
+
+  if (perf.UserTimingMarkFullyVisible().has_value())
+    timing->user_timing_mark_fully_visible = perf.UserTimingMarkFullyVisible();
+
+  if (perf.UserTimingMarkInteractive().has_value())
+    timing->user_timing_mark_interactive = perf.UserTimingMarkInteractive();
+
   return Timing(std::move(timing), monotonic_timing);
 }
 

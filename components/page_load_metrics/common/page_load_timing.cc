@@ -17,7 +17,8 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
                               base::nullopt, base::nullopt, base::nullopt),
       mojom::ParseTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
-      base::Optional<base::TimeDelta>());
+      base::Optional<base::TimeDelta>(), base::Optional<base::TimeDelta>(),
+      base::Optional<base::TimeDelta>(), base::Optional<base::TimeDelta>());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
@@ -65,7 +66,10 @@ bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
           page_load_metrics::IsEmpty(*timing.paint_timing)) &&
          (!timing.parse_timing ||
           page_load_metrics::IsEmpty(*timing.parse_timing)) &&
-         timing.back_forward_cache_timings.empty();
+         timing.back_forward_cache_timings.empty() &&
+         !timing.user_timing_mark_fully_loaded &&
+         !timing.user_timing_mark_fully_visible &&
+         !timing.user_timing_mark_interactive;
 }
 
 void InitPageLoadTimingForTest(mojom::PageLoadTiming* timing) {

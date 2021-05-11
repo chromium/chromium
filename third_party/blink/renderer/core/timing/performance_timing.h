@@ -177,6 +177,15 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   base::Optional<base::TimeTicks> UnloadEnd() const;
   // The timestamp of when the commit navigation finished in the frame loader.
   base::Optional<base::TimeTicks> CommitNavigationEnd() const;
+  // The timestamp of the user timing mark 'mark_fully_loaded', if
+  // available.
+  base::Optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
+  // The timestamp of the user timing mark 'mark_fully_visible', if
+  // available.
+  base::Optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
+  // The timestamp of the user timing mark 'mark_interactive', if
+  // available.
+  base::Optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
   uint64_t ParseStart() const;
   uint64_t ParseStop() const;

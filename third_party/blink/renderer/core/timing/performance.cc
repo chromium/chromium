@@ -759,6 +759,12 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                    const AtomicString& mark_name,
                                    PerformanceMarkOptions* mark_options,
                                    ExceptionState& exception_state) {
+  DEFINE_STATIC_LOCAL(const AtomicString, mark_fully_loaded,
+                      ("mark_fully_loaded"));
+  DEFINE_STATIC_LOCAL(const AtomicString, mark_fully_visible,
+                      ("mark_fully_visible"));
+  DEFINE_STATIC_LOCAL(const AtomicString, mark_interactive,
+                      ("mark_interactive"));
   if (mark_options &&
       (mark_options->hasStartTime() || mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
@@ -769,6 +775,34 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
     background_tracing_helper_->MaybeEmitBackgroundTracingPerformanceMarkEvent(
         *performance_mark);
     GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark);
+    if (mark_name == mark_fully_loaded) {
+      if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+        window->GetFrame()
+            ->Loader()
+            .GetDocumentLoader()
+            ->GetTiming()
+            .SetUserTimingMarkFullyLoaded(base::TimeDelta::FromMillisecondsD(
+                performance_mark->startTime()));
+      }
+    } else if (mark_name == mark_fully_visible) {
+      if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+        window->GetFrame()
+            ->Loader()
+            .GetDocumentLoader()
+            ->GetTiming()
+            .SetUserTimingMarkFullyVisible(base::TimeDelta::FromMillisecondsD(
+                performance_mark->startTime()));
+      }
+    } else if (mark_name == mark_interactive) {
+      if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+        window->GetFrame()
+            ->Loader()
+            .GetDocumentLoader()
+            ->GetTiming()
+            .SetUserTimingMarkInteractive(base::TimeDelta::FromMillisecondsD(
+                performance_mark->startTime()));
+      }
+    }
     NotifyObserversOfEntry(*performance_mark);
   }
   return performance_mark;

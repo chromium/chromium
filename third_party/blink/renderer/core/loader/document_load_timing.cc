@@ -162,6 +162,24 @@ void DocumentLoadTiming::SetInputStart(base::TimeTicks input_start) {
   NotifyDocumentTimingChanged();
 }
 
+void DocumentLoadTiming::SetUserTimingMarkFullyLoaded(
+    base::TimeDelta loaded_time) {
+  user_timing_mark_fully_loaded_ = loaded_time;
+  NotifyDocumentTimingChanged();
+}
+
+void DocumentLoadTiming::SetUserTimingMarkFullyVisible(
+    base::TimeDelta visible_time) {
+  user_timing_mark_fully_visible_ = visible_time;
+  NotifyDocumentTimingChanged();
+}
+
+void DocumentLoadTiming::SetUserTimingMarkInteractive(
+    base::TimeDelta interactive_time) {
+  user_timing_mark_interactive_ = interactive_time;
+  NotifyDocumentTimingChanged();
+}
+
 void DocumentLoadTiming::AddRedirect(const KURL& redirecting_url,
                                      const KURL& redirected_url) {
   redirect_count_++;

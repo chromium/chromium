@@ -663,6 +663,27 @@ base::Optional<base::TimeTicks> PerformanceTiming::CommitNavigationEnd() const {
   return timing->CommitNavigationEnd();
 }
 
+base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyLoaded()
+    const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+
+  return timing->UserTimingMarkFullyLoaded();
+}
+
+base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyVisible()
+    const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+
+  return timing->UserTimingMarkFullyVisible();
+}
+
+base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkInteractive()
+    const {
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+
+  return timing->UserTimingMarkInteractive();
+}
+
 DocumentLoader* PerformanceTiming::GetDocumentLoader() const {
   return DomWindow() ? DomWindow()->GetFrame()->Loader().GetDocumentLoader()
                      : nullptr;

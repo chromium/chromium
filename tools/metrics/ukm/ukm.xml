@@ -11544,6 +11544,27 @@ be describing additional metrics about the same event.
       loads that failed in the foreground.
     </summary>
   </metric>
+  <metric name="PageTiming.UserTimingMarkFullyLoaded">
+    <summary>
+      When the page UserTiming mark API is called with the standard
+      'mark_fully_loaded' name to mark that the page is fully loaded. If the
+      mark is called more than once, the last is used.
+    </summary>
+  </metric>
+  <metric name="PageTiming.UserTimingMarkFullyVisible">
+    <summary>
+      When the page UserTiming mark API is called with the standard
+      'mark_fully_visible' name to mark that the page is fully visible. If the
+      mark is called more than once, the last is used.
+    </summary>
+  </metric>
+  <metric name="PageTiming.UserTimingMarkInteractive">
+    <summary>
+      When the page UserTiming mark API is called with the standard
+      'mark_interactive' name to mark that the page is interactive. If the mark
+      is called more than once, the last is used.
+    </summary>
+  </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
     <obsolete>
       Replaced by PaintTiming.NavigationToLargestContentfulPaint2 on Oct 2020.

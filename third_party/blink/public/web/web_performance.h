@@ -141,6 +141,12 @@ class WebPerformance {
   BLINK_EXPORT base::Optional<base::TimeTicks> UnloadStart() const;
   BLINK_EXPORT base::Optional<base::TimeTicks> UnloadEnd() const;
   BLINK_EXPORT base::Optional<base::TimeTicks> CommitNavigationEnd() const;
+  BLINK_EXPORT base::Optional<base::TimeDelta> UserTimingMarkFullyLoaded()
+      const;
+  BLINK_EXPORT base::Optional<base::TimeDelta> UserTimingMarkFullyVisible()
+      const;
+  BLINK_EXPORT base::Optional<base::TimeDelta> UserTimingMarkInteractive()
+      const;
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebPerformance(WindowPerformance*);

@@ -163,6 +163,15 @@ struct PageLoadTiming {
   // initiated by a link click in the renderer, or from the desktop omnibox.
   mojo_base.mojom.TimeDelta? input_to_navigation_start;
 
+  // Time when the standard UserTiming mark `mark_fully_loaded` occurs.
+  mojo_base.mojom.TimeDelta? user_timing_mark_fully_loaded;
+
+  // Time when the standard UserTiming mark `mark_fully_visible` occurs.
+  mojo_base.mojom.TimeDelta? user_timing_mark_fully_visible;
+
+  // Time when the standard UserTiming mark `mark_interactive` occurs.
+  mojo_base.mojom.TimeDelta? user_timing_mark_interactive;
+
   // If you add additional members, also be sure to update page_load_timing.h.
 };
 

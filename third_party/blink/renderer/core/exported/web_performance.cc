@@ -320,6 +320,21 @@ base::Optional<base::TimeTicks> WebPerformance::CommitNavigationEnd() const {
   return private_->timing()->CommitNavigationEnd();
 }
 
+base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyLoaded()
+    const {
+  return private_->timing()->UserTimingMarkFullyLoaded();
+}
+
+base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyVisible()
+    const {
+  return private_->timing()->UserTimingMarkFullyVisible();
+}
+
+base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkInteractive()
+    const {
+  return private_->timing()->UserTimingMarkInteractive();
+}
+
 WebPerformance::WebPerformance(WindowPerformance* performance)
     : private_(performance) {}
 
