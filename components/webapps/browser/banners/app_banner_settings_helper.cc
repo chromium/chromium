@@ -101,7 +101,7 @@ class AppPrefs {
                                         base::Value::Type::DICTIONARY);
     if (!dict_) {
       // Don't allow more than kMaxAppsPerSite dictionaries.
-      if (origin_dict_->size() < kMaxAppsPerSite) {
+      if (origin_dict_->DictSize() < kMaxAppsPerSite) {
         dict_ =
             origin_dict_->SetKey(package_name_or_start_url,
                                  base::Value(base::Value::Type::DICTIONARY));
