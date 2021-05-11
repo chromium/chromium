@@ -70,7 +70,10 @@ SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
 class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
   explicit FakeContainerWrapper(PdfViewWebPlugin* web_plugin)
-      : web_plugin_(web_plugin) {}
+      : web_plugin_(web_plugin) {
+    UpdateTextInputState();
+  }
+
   FakeContainerWrapper(const FakeContainerWrapper&) = delete;
   FakeContainerWrapper& operator=(const FakeContainerWrapper&) = delete;
   ~FakeContainerWrapper() override = default;
@@ -117,8 +120,7 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   float device_scale_ = 1.0f;
 
   // Represents the frame widget's text input type.
-  blink::WebTextInputType widget_text_input_type_ =
-      blink::WebTextInputType::kWebTextInputTypeNone;
+  blink::WebTextInputType widget_text_input_type_;
 
   PdfViewWebPlugin* web_plugin_;
 };
@@ -281,6 +283,9 @@ TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
 }
 
 TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
+  ASSERT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
+            wrapper_ptr_->widget_text_input_type());
+
   plugin_->FormTextFieldFocusChange(true);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
             wrapper_ptr_->widget_text_input_type());
