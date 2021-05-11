@@ -1448,20 +1448,23 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Clear history and ensure the stored isolated origins are cleared.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Re-add foo.com to stored isolated origins.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Now clear cookies and other site data, and ensure foo.com is cleared.
   // Note that this uses a short time period to document that time ranges are
@@ -1470,26 +1473,30 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
                                 constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Re-add foo.com.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Clear the isolated origins data type.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_ISOLATED_ORIGINS, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Re-add foo.com.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 
   // Clear both history and site data, and ensure the stored isolated origins
   // are cleared.
@@ -1498,7 +1505,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
       constants::DATA_TYPE_HISTORY | constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->empty());
+          ->GetList()
+          .empty());
 }
 
 // Test that clearing history deletes favicons not associated with bookmarks.
