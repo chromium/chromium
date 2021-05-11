@@ -18,7 +18,21 @@
 
 namespace extensions {
 
-DisplayInfoProviderLacros::DisplayInfoProviderLacros() = default;
+DisplayInfoProviderLacros::DisplayInfoProviderLacros() {
+  // Relies on the fact that the instance is a singleton managed by
+  // DisplayInfoProvider::Get(), and assumes that instantiation takes place
+  // after LacrosChromeServiceImpl has been initialized.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  DCHECK(lacros_service);
+  if (lacros_service->IsAvailable<crosapi::mojom::SystemDisplay>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::SystemDisplay::Uuid_) >=
+          static_cast<int>(crosapi::mojom::SystemDisplay::
+                               kAddDisplayChangeObserverMinVersion)) {
+    lacros_service->GetRemote<crosapi::mojom::SystemDisplay>()
+        ->AddDisplayChangeObserver(receiver_.BindNewPipeAndPassRemote());
+  }
+}
 
 DisplayInfoProviderLacros::~DisplayInfoProviderLacros() = default;
 
@@ -30,8 +44,7 @@ void DisplayInfoProviderLacros::GetAllDisplaysInfo(
     auto cb =
         base::BindOnce(&DisplayInfoProviderLacros::OnCrosapiResult,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-    chromeos::LacrosChromeServiceImpl::Get()
-        ->GetRemote<crosapi::mojom::SystemDisplay>()
+    lacros_service->GetRemote<crosapi::mojom::SystemDisplay>()
         ->GetDisplayUnitInfoList(single_unified, std::move(cb));
 
   } else {
@@ -49,6 +62,10 @@ void DisplayInfoProviderLacros::OnCrosapiResult(
         *src_info_list[i], &dst_info_list[i]);
   }
   std::move(callback).Run(std::move(dst_info_list));
+}
+
+void DisplayInfoProviderLacros::OnCrosapiDisplayChanged() {
+  DispatchOnDisplayChangedEvent();
 }
 
 std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {

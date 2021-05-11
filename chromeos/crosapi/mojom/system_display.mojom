@@ -140,6 +140,14 @@ struct DisplayUnitInfo {
   double display_zoom_factor@21;
 };
 
+// Interface for display change observer. Implemented by lacros-chrome. Used by
+// ash-chrome to send display change event.
+[Stable, Uuid="5c1e28fd-2f79-4b47-ab7c-780ef0cd2b0a"]
+interface DisplayChangeObserver {
+  // Called by ash-chrome when display changes.
+  OnCrosapiDisplayChanged@0();
+};
+
 // Crosapi support for chrome.system.display extensions API.
 [Stable, Uuid="07f25a88-9762-4876-a8ce-2c1e6ad9f797"]
 interface SystemDisplay {
@@ -147,4 +155,8 @@ interface SystemDisplay {
   // single display will be returned if the display layout is in unifed mode.
   GetDisplayUnitInfoList@0(bool single_unified) =>
     (array<DisplayUnitInfo> info_list);
+
+  // Adds an observer for display change. Multiple observers may be registered.
+  [MinVersion=1] AddDisplayChangeObserver@1(
+      pending_remote<DisplayChangeObserver> observer);
 };

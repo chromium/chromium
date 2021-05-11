@@ -12,12 +12,15 @@
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/common/api/system_display.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace extensions {
 
-// DisplayInfoProvider used by lacros-chrome that uses crosapi to get
-// DisplayUnitInfoList from ash-chrome, and handle potential version skew.
-class DisplayInfoProviderLacros : public DisplayInfoProvider {
+// DisplayInfoProvider used by lacros-chrome that uses crosapi to:
+// * Get DisplayUnitInfoList from ash-chrome, handling potential version skew.
+// * Pass display change events from ash-chrome to lacros-chrome.
+class DisplayInfoProviderLacros : public DisplayInfoProvider,
+                                  public crosapi::mojom::DisplayChangeObserver {
  public:
   DisplayInfoProviderLacros();
   ~DisplayInfoProviderLacros() override;
@@ -35,6 +38,12 @@ class DisplayInfoProviderLacros : public DisplayInfoProvider {
   void OnCrosapiResult(
       base::OnceCallback<void(DisplayUnitInfoList)> callback,
       std::vector<crosapi::mojom::DisplayUnitInfoPtr> src_info_list);
+
+  // crosapi::mojom::DisplayChangeObserver:
+  void OnCrosapiDisplayChanged() override;
+
+  // Receives mojo messages from ash-chrome.
+  mojo::Receiver<crosapi::mojom::DisplayChangeObserver> receiver_{this};
 
   base::WeakPtrFactory<DisplayInfoProviderLacros> weak_ptr_factory_{this};
 };
