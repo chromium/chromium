@@ -66,7 +66,6 @@ public class ChromeCachedFlags {
         // clang-format off
         List<String> featuresToCache = Arrays.asList(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-                ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
                 ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION,
                 ChromeFeatureList.APP_TO_WEB_ATTRIBUTION,

@@ -134,7 +134,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,
     &kAndroidLayoutChangeTabReparenting,
-    &kAndroidManagedByMenuItem,
     &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantIntentExperimentId,
@@ -337,9 +336,6 @@ const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",
 
 const base::Feature kAndroidLayoutChangeTabReparenting{
     "AndroidLayoutChangeTabReparenting", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kAndroidManagedByMenuItem{"AndroidManagedByMenuItem",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAllowNewIncognitoTabIntents{
     "AllowNewIncognitoTabIntents", base::FEATURE_ENABLED_BY_DEFAULT};

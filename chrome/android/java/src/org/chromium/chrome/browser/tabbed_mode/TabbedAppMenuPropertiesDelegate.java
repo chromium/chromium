@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -127,9 +125,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     protected boolean shouldShowManagedByMenuItem(Tab currentTab) {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM)
-                && ManagedBrowserUtils.hasBrowserPoliciesApplied(
-                        Profile.fromWebContents(currentTab.getWebContents()));
+        return ManagedBrowserUtils.hasBrowserPoliciesApplied(
+                Profile.fromWebContents(currentTab.getWebContents()));
     }
 
     @Override

@@ -17,7 +17,6 @@ extern const base::Feature kAddToHomescreenIPH;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAllowRemoteContextForNotifications;
 extern const base::Feature kAndroidLayoutChangeTabReparenting;
-extern const base::Feature kAndroidManagedByMenuItem;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
 extern const base::Feature kAssistantIntentExperimentId;

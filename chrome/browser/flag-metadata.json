@@ -123,11 +123,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "android-managed-by-menu-item",
-    "owners": [ "gangwu@google.com", "twellington" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "android-multiple-display",
     "owners": [ "lazzzis@google.com", "twellington" ],
     "expiry_milestone": 87

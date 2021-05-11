@@ -2799,11 +2799,6 @@ const char kAndroidLayoutChangeTabReparentingDescription[] =
     "the UI layout updates to the proper one and the current tabs are "
     "reparented instead of reloaded.";
 
-const char kAndroidManagedByMenuItemName[] = "Managed by menu item";
-const char kAndroidManagedByMenuItemDescription[] =
-    "whether policies have been applied to this browser at the profile or "
-    "machine level.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "
