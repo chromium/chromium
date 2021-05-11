@@ -256,13 +256,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This does not consider inner frame trees.
   virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
 
-  // |ForEachFrame| traverses this RenderFrameHost and all of its descendants,
-  // including frames in any inner frame trees, in breadth-first order.
-  // Examples of features that have inner frame trees are portals or GuestViews.
-  // Note: The RenderFrameHost parameter is not guaranteed to have a live
-  // RenderFrame counterpart in the renderer process. Callbacks should check
-  // IsRenderFrameLive(), as sending IPC messages to it in this case will fail
-  // silently.
+  // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
+  // descendants, including frames in any inner frame trees, in breadth-first
+  // order. Examples of features that have inner frame trees are portals or
+  // GuestViews. Note: The RenderFrameHost parameter is not guaranteed to have a
+  // live RenderFrame counterpart in the renderer process. Callbacks should
+  // check IsRenderFrameLive(), as sending IPC messages to it in this case will
+  // fail silently.
   //
   // The callback returns a FrameIterationAction which determines if/how
   // iteration on subsequent frames continues. The FrameIterationAction may be
@@ -281,8 +281,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       base::RepeatingCallback<FrameIterationAction(RenderFrameHost*)>;
   using FrameIterationAlwaysContinueCallback =
       base::RepeatingCallback<void(RenderFrameHost*)>;
-  virtual void ForEachFrame(FrameIterationCallback on_frame) = 0;
-  virtual void ForEachFrame(FrameIterationAlwaysContinueCallback on_frame) = 0;
+  virtual void ForEachRenderFrameHost(FrameIterationCallback on_frame) = 0;
+  virtual void ForEachRenderFrameHost(
+      FrameIterationAlwaysContinueCallback on_frame) = 0;
 
   // Returns the FrameTreeNode ID for this frame. This ID is browser-global and
   // uniquely identifies a frame that hosts content. The identifier is fixed at

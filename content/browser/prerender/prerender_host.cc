@@ -43,7 +43,7 @@ void CollectAllChildren(RenderFrameHostImpl& rfh,
 // because the |rfh| root node will not have a current_frame_host value. The
 // root node is set to null in MPArch prerender activation when generating a
 // BackForwardCacheImpl::Entry.
-// TODO(mcnee): Implement in terms of RenderFrameHost::ForEachFrame.
+// TODO(mcnee): Implement in terms of RenderFrameHost::ForEachRenderFrameHost.
 std::vector<RenderFrameHostImpl*> AllDescendantActiveRenderFrameHosts(
     RenderFrameHostImpl& rfh) {
   std::vector<RenderFrameHostImpl*> result;

@@ -872,9 +872,10 @@ bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
 // RenderFrameHost.  Returns nullptr if such child frame does not exist.
 RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index);
 
-// Returns the frames visited by |RenderFrameHost::ForEachFrame| in the same
-// order.
-std::vector<RenderFrameHost*> CollectAllFrames(RenderFrameHost* starting_rfh);
+// Returns the frames visited by |RenderFrameHost::ForEachRenderFrameHost| in
+// the same order.
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
+    RenderFrameHost* starting_rfh);
 
 // Executes the WebUI resource test runner injecting each resource ID in
 // |js_resource_ids| prior to executing the tests.

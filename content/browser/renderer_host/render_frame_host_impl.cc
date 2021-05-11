@@ -1717,7 +1717,8 @@ RenderFrameHostImpl::FrameIterationCallbackImpl ContinueIterationWrapper(
 
 }  // namespace
 
-void RenderFrameHostImpl::ForEachFrame(FrameIterationCallback on_frame) {
+void RenderFrameHostImpl::ForEachRenderFrameHost(
+    FrameIterationCallback on_frame) {
   // There's no automatic conversion from FrameIterationCallback to
   // FrameIterationCallbackImpl, so this wrapper just forwards the
   // RenderFrameHost argument.
@@ -1726,35 +1727,38 @@ void RenderFrameHostImpl::ForEachFrame(FrameIterationCallback on_frame) {
         return on_frame.Run(rfh);
       },
       on_frame);
-  ForEachFrame(on_frame_impl);
+  ForEachRenderFrameHost(on_frame_impl);
 }
 
-void RenderFrameHostImpl::ForEachFrame(
+void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationAlwaysContinueCallback on_frame) {
-  ForEachFrame(ContinueIterationWrapper(on_frame));
+  ForEachRenderFrameHost(ContinueIterationWrapper(on_frame));
 }
 
-void RenderFrameHostImpl::ForEachFrame(FrameIterationCallbackImpl on_frame) {
-  ForEachFrameImpl(on_frame, /* include_speculative */ false);
-}
-
-void RenderFrameHostImpl::ForEachFrame(
-    FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachFrame(ContinueIterationWrapper(on_frame));
-}
-
-void RenderFrameHostImpl::ForEachFrameIncludingSpeculative(
+void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationCallbackImpl on_frame) {
-  ForEachFrameImpl(on_frame, /* include_speculative */ true);
+  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ false);
 }
 
-void RenderFrameHostImpl::ForEachFrameIncludingSpeculative(
+void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachFrameIncludingSpeculative(ContinueIterationWrapper(on_frame));
+  ForEachRenderFrameHost(ContinueIterationWrapper(on_frame));
 }
 
-void RenderFrameHostImpl::ForEachFrameImpl(FrameIterationCallbackImpl on_frame,
-                                           bool include_speculative) {
+void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
+    FrameIterationCallbackImpl on_frame) {
+  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ true);
+}
+
+void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
+    FrameIterationAlwaysContinueCallbackImpl on_frame) {
+  ForEachRenderFrameHostIncludingSpeculative(
+      ContinueIterationWrapper(on_frame));
+}
+
+void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
+    FrameIterationCallbackImpl on_frame,
+    bool include_speculative) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!include_speculative &&
@@ -2921,7 +2925,7 @@ void RenderFrameHostImpl::Init() {
 
   // TODO(danakj): We only blocked the main frame, so we should only need to
   // resume that?
-  ForEachFrameIncludingSpeculative(base::BindRepeating(
+  ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
       [](RenderFrameHostImpl* main_rfh,
          RenderFrameHostImpl* render_frame_host) {
         // Inner frame trees shouldn't be possible here.

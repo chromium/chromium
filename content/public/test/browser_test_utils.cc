@@ -1815,9 +1815,10 @@ RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index) {
   return rfh->frame_tree_node()->child_at(index)->current_frame_host();
 }
 
-std::vector<RenderFrameHost*> CollectAllFrames(RenderFrameHost* starting_rfh) {
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
+    RenderFrameHost* starting_rfh) {
   std::vector<RenderFrameHost*> visited_frames;
-  starting_rfh->ForEachFrame(base::BindLambdaForTesting(
+  starting_rfh->ForEachRenderFrameHost(base::BindLambdaForTesting(
       [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
   return visited_frames;
 }

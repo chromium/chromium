@@ -1454,8 +1454,9 @@ IN_PROC_BROWSER_TEST_F(
   ExpectCached(*delete_observers[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
-// Tests that RenderFrameHost::ForEachFrame behaves correctly when bfcached.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachFrame) {
+// Tests that RenderFrameHost::ForEachRenderFrameHost behaves correctly when
+// bfcached.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
@@ -1476,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachFrame) {
 
   // Ensure the visited frames are what we would expect for the page before
   // entering bfcache.
-  EXPECT_THAT(CollectAllFrames(rfh_a),
+  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
               testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
 
   // 2) Navigate to e.
@@ -1491,23 +1492,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachFrame) {
 
   // When starting iteration from the primary frame, we shouldn't see any of the
   // frames in bfcache.
-  EXPECT_THAT(CollectAllFrames(rfh_e), testing::ElementsAre(rfh_e));
+  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_e), testing::ElementsAre(rfh_e));
 
   // When starting iteration from a bfcached RFH, we should see the frame itself
   // and its descendants in breadth first order.
-  EXPECT_THAT(CollectAllFrames(rfh_a),
+  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_a),
               testing::ElementsAre(rfh_a, rfh_b, rfh_d, rfh_c));
 
   // Ensure that starting iteration from a subframe of a bfcached frame also
   // works.
-  EXPECT_THAT(CollectAllFrames(rfh_b), testing::ElementsAre(rfh_b, rfh_c));
+  EXPECT_THAT(CollectAllRenderFrameHosts(rfh_b),
+              testing::ElementsAre(rfh_b, rfh_c));
 }
 
-// Tests that RenderFrameHostImpl::ForEachFrameIncludingSpeculative behaves
-// correctly when a FrameTreeNode has both a speculative RFH and a bfcached
-// RFH.
+// Tests that RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative
+// behaves correctly when a FrameTreeNode has both a speculative RFH and a
+// bfcached RFH.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ForEachFrameWithSpeculative) {
+                       ForEachRenderFrameHostWithSpeculative) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1546,17 +1548,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // When starting iteration from the bfcached RFH, we should not see the
   // speculative RFH.
-  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_a),
+  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_a),
               testing::ElementsAre(rfh_a));
 
   // When starting iteration from the primary frame, we shouldn't see the
   // bfcached RFH, but we should see the speculative RFH.
-  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_b),
+  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_b),
               testing::UnorderedElementsAre(rfh_b, rfh_c));
 
   // When starting iteration from the speculative RFH, we should only see
   // the speculative RFH. In particular, we should not see the bfcached RFH.
-  EXPECT_THAT(CollectAllFramesIncludingSpeculative(rfh_c),
+  EXPECT_THAT(CollectAllRenderFrameHostsIncludingSpeculative(rfh_c),
               testing::ElementsAre(rfh_c));
 }
 

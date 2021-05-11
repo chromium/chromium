@@ -1788,10 +1788,10 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
 }
 
 // Creates a guest in a unattached state, then confirms that calling
-// |RenderFrameHost::ForEachFrame| on the embedder will include the guest's
-// frame.
+// |RenderFrameHost::ForEachRenderFrameHost| on the embedder will include the
+// guest's frame.
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
-                       NewWindow_UnattachedVisitedByForEachFrame) {
+                       NewWindow_UnattachedVisitedByForEachRenderFrameHost) {
   TestHelper("testNewWindowDeferredAttachmentIndefinitely",
              "web_view/newwindow", NEEDS_TEST_SERVER);
   // The test creates two guests, one of which is created but left in an
@@ -1821,7 +1821,7 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
       other_guest->GetMainFrame();
 
   EXPECT_THAT(
-      content::CollectAllFrames(embedder_main_frame),
+      content::CollectAllRenderFrameHosts(embedder_main_frame),
       testing::UnorderedElementsAre(embedder_main_frame, other_guest_main_frame,
                                     unattached_guest_main_frame));
 }

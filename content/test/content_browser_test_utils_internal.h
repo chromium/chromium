@@ -83,11 +83,12 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 const GURL& url,
                                 bool wait_for_navigation);
 
-// Returns the frames visited by |RenderFrameHostImpl::ForEachFrame| in the same
-// order.
-std::vector<RenderFrameHostImpl*> CollectAllFrames(
+// Returns the frames visited by |RenderFrameHostImpl::ForEachRenderFrameHost|
+// in the same order.
+std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     RenderFrameHostImpl* starting_rfh);
-std::vector<RenderFrameHostImpl*> CollectAllFramesIncludingSpeculative(
+std::vector<RenderFrameHostImpl*>
+CollectAllRenderFrameHostsIncludingSpeculative(
     RenderFrameHostImpl* starting_rfh);
 
 // Open a new popup passing no URL to window.open, which results in a blank page

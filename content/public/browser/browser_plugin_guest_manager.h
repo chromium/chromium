@@ -24,7 +24,7 @@ class CONTENT_EXPORT BrowserPluginGuestManager {
       WebContents* owner_web_contents,
       base::RepeatingCallback<void(WebContents*)> callback) {}
 
-  // Prefer using |RenderFrameHost::ForEachFrame|.
+  // Prefer using |RenderFrameHost::ForEachRenderFrameHost|.
   // Iterates over all WebContents belonging to a given |owner_web_contents|,
   // calling |callback| for each. If one of the callbacks returns true, then
   // the iteration exits early.

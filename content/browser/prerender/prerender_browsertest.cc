@@ -808,8 +808,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_PrerenderBlankIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
-// Tests that RenderFrameHost::ForEachFrame behaves correctly when prerendering.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachFrame) {
+// Tests that RenderFrameHost::ForEachRenderFrameHost behaves correctly when
+// prerendering.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   // All frames are same-origin due to prerendering restrictions for
   // cross-origin.
@@ -827,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachFrame) {
   RenderFrameHostImpl* rfh_sub_2 =
       prerendered_render_frame_host->child_at(1)->current_frame_host();
 
-  EXPECT_THAT(CollectAllFrames(prerendered_render_frame_host),
+  EXPECT_THAT(CollectAllRenderFrameHosts(prerendered_render_frame_host),
               testing::ElementsAre(prerendered_render_frame_host, rfh_sub_1,
                                    rfh_sub_2, rfh_sub_1_1));
 }
