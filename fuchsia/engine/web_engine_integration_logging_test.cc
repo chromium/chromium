@@ -11,8 +11,8 @@
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
-#include "fuchsia/base/context_provider_test_connector.h"
-#include "fuchsia/base/frame_test_util.h"
+#include "fuchsia/base/test/context_provider_test_connector.h"
+#include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/engine/web_engine_integration_test_base.h"
 
 namespace {

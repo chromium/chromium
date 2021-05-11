@@ -5,7 +5,7 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

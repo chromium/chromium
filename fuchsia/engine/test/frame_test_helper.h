@@ -9,7 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <memory>
 
-#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 
 namespace cr_fuchsia {
 

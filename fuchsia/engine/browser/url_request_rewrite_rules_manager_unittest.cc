@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/url_request_rewrite_test_util.h"
+#include "fuchsia/base/test/url_request_rewrite_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class UrlRequestRewriteRulesManagerTest : public testing::Test {

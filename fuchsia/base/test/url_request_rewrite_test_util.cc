@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/url_request_rewrite_test_util.h"
+#include "fuchsia/base/test/url_request_rewrite_test_util.h"
 
 #include "base/strings/string_piece.h"
 #include "fuchsia/base/string_util.h"

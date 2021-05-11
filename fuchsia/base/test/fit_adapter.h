@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_FIT_ADAPTER_H_
-#define FUCHSIA_BASE_FIT_ADAPTER_H_
+#ifndef FUCHSIA_BASE_TEST_FIT_ADAPTER_H_
+#define FUCHSIA_BASE_TEST_FIT_ADAPTER_H_
 
 #include <lib/fit/function.h>
 
@@ -25,4 +25,4 @@ fit::function<ReturnType(ArgumentTypes...)> CallbackToFitFunction(
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_FIT_ADAPTER_H_
+#endif  // FUCHSIA_BASE_TEST_FIT_ADAPTER_H_

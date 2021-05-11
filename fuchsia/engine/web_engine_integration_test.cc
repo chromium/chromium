@@ -9,11 +9,11 @@
 #include <lib/zx/vmo.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/base/result_receiver.h"
-#include "fuchsia/base/test_devtools_list_fetcher.h"
+#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/result_receiver.h"
+#include "fuchsia/base/test/test_devtools_list_fetcher.h"
 #include "fuchsia/engine/web_engine_integration_test_base.h"
 #include "media/base/media_switches.h"
 #include "media/fuchsia/audio/fake_audio_consumer.h"

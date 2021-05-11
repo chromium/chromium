@@ -17,7 +17,7 @@
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

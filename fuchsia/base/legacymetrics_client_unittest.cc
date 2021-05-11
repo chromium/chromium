@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/base/legacymetrics_histogram_flattener.h"
-#include "fuchsia/base/result_receiver.h"
+#include "fuchsia/base/test/result_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

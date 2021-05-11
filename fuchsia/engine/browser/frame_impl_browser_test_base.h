@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_BROWSER_TEST_BASE_H_
 #define FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_BROWSER_TEST_BASE_H_
 
-#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 

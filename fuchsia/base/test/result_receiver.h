@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_RESULT_RECEIVER_H_
-#define FUCHSIA_BASE_RESULT_RECEIVER_H_
+#ifndef FUCHSIA_BASE_TEST_RESULT_RECEIVER_H_
+#define FUCHSIA_BASE_TEST_RESULT_RECEIVER_H_
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -61,4 +61,4 @@ class ResultReceiver {
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_RESULT_RECEIVER_H_
+#endif  // FUCHSIA_BASE_TEST_RESULT_RECEIVER_H_

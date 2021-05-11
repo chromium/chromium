@@ -10,8 +10,8 @@
 
 #include "base/logging.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/result_receiver.h"
+#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/application_controller_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"

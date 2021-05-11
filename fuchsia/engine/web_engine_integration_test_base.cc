@@ -13,8 +13,8 @@
 #include "base/fuchsia/process_context.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/context_provider_test_connector.h"
-#include "fuchsia/base/frame_test_util.h"
+#include "fuchsia/base/test/context_provider_test_connector.h"
+#include "fuchsia/base/test/frame_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 
 namespace {

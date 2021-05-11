@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_FRAME_TEST_UTIL_H_
-#define FUCHSIA_BASE_FRAME_TEST_UTIL_H_
+#ifndef FUCHSIA_BASE_TEST_FRAME_TEST_UTIL_H_
+#define FUCHSIA_BASE_TEST_FRAME_TEST_UTIL_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 
@@ -39,4 +39,4 @@ fuchsia::web::WebMessage CreateWebMessageWithMessagePortRequest(
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_FRAME_TEST_UTIL_H_
+#endif  // FUCHSIA_BASE_TEST_FRAME_TEST_UTIL_H_

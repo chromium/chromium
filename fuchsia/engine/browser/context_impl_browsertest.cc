@@ -4,9 +4,9 @@
 
 #include "base/no_destructor.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/frame_test_util.h"
-#include "fuchsia/base/result_receiver.h"
-#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/result_receiver.h"
+#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

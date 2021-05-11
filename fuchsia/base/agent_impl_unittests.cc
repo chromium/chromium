@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/testfidl/cpp/fidl.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/result_receiver.h"
+#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia/base/test/result_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cr_fuchsia {
