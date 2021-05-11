@@ -72,7 +72,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
 
 content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
     web_app::SystemAppType type,
-    const base::FilePath file_path) {
+    const base::FilePath& file_path) {
   apps::AppLaunchParams params = LaunchParamsForApp(type);
   params.launch_files.push_back(file_path);
   return LaunchApp(std::move(params));
@@ -80,7 +80,7 @@ content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
 
 void SystemWebAppIntegrationTest::LaunchAppWithFileWithoutWaiting(
     web_app::SystemAppType type,
-    const base::FilePath file_path) {
+    const base::FilePath& file_path) {
   apps::AppLaunchParams params = LaunchParamsForApp(type);
   params.launch_files.push_back(file_path);
   LaunchAppWithoutWaiting(std::move(params));

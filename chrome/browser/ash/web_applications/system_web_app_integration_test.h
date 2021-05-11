@@ -36,12 +36,12 @@ class SystemWebAppIntegrationTest
   // Launch the given System App |type| with the given |file_path| as a launch
   // file, and wait for the application to finish loading.
   content::WebContents* LaunchAppWithFile(web_app::SystemAppType type,
-                                          const base::FilePath file_path);
+                                          const base::FilePath& file_path);
 
   // Launch the given System App |type| with the given |file_path| as a launch
   // file, without waiting for the application to finish loading.
   void LaunchAppWithFileWithoutWaiting(web_app::SystemAppType type,
-                                       const base::FilePath file_path);
+                                       const base::FilePath& file_path);
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_SYSTEM_WEB_APP_INTEGRATION_TEST_H_
