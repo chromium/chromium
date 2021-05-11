@@ -199,7 +199,7 @@ SettingsResetPromptConfig::ParseDomainHashes(
   std::unique_ptr<base::DictionaryValue> domains_dict =
       base::DictionaryValue::From(
           base::JSONReader::ReadDeprecated(domain_hashes_json));
-  if (!domains_dict || domains_dict->empty())
+  if (!domains_dict || domains_dict->DictEmpty())
     return CONFIG_ERROR_BAD_DOMAIN_HASHES_PARAM;
 
   // The input JSON should be a hash object with hex-encoded 32-byte
