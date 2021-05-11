@@ -2430,13 +2430,20 @@ void StyleEngine::ChangeRenderingForHTMLSelect(HTMLSelectElement& select) {
   // that we are in a dom removal to make the style recalc root be updated
   // correctly.
   StyleEngine::DOMRemovalScope removal_scope(*this);
-  auto& element = To<Element>(select);
-  element.DetachLayoutTree();
+  To<Element>(select).DetachLayoutTree();
   // If the recalc root is in this subtree, DetachLayoutTree() above clears the
   // bits and we need to update the root. Otherwise the AssertRootNodeInvariants
   // will fail for SetNeedsStyleRecalc below.
-  style_recalc_root_.SubtreeModified(element);
-  element.SetNeedsStyleRecalc(
+  if (Element* parent = select.GetStyleRecalcParent()) {
+    style_recalc_root_.SubtreeModified(*parent);
+  } else {
+    // If the <select> does not have a recalc parent, we are in the unlikely
+    // situation where the <select> is a direct child of the Document node.
+    DCHECK(GetDocument() == select.parentNode());
+    DCHECK(GetDocument().documentElement() == select);
+    style_recalc_root_.Clear();
+  }
+  select.SetNeedsStyleRecalc(
       kLocalStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControl));
 }
