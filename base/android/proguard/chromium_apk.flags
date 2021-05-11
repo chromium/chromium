@@ -91,6 +91,13 @@
   int intValue() return 0;
 }
 
+# This is to workaround crbug.com/1204690 - an old GMS app version crashes when
+# ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
+# synthetic field.
+-keep class com.google.android.gms.dynamic.ObjectWrapper {
+  <fields>;
+}
+
 # Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly
 # removed even though they are required for the derived class GmsClient
 # to correctly implement Api$Client.
