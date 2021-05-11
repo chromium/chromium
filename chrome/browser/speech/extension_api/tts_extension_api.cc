@@ -197,13 +197,13 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::string voice_name;
-  if (options->HasKey(constants::kVoiceNameKey)) {
+  if (options->FindKey(constants::kVoiceNameKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetString(constants::kVoiceNameKey, &voice_name));
   }
 
   std::string lang;
-  if (options->HasKey(constants::kLangKey))
+  if (options->FindKey(constants::kLangKey))
     EXTENSION_FUNCTION_VALIDATE(options->GetString(constants::kLangKey, &lang));
   if (!lang.empty() && !l10n_util::IsValidLocaleSyntax(lang)) {
     return RespondNow(Error(constants::kErrorInvalidLang));
@@ -212,14 +212,14 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   // TODO(katie): Remove this after M73. This is just used to track how the
   // gender deprecation is progressing.
   std::string gender_str;
-  if (options->HasKey(constants::kGenderKey))
+  if (options->FindKey(constants::kGenderKey))
     EXTENSION_FUNCTION_VALIDATE(
         options->GetString(constants::kGenderKey, &gender_str));
   UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasGender",
                         !gender_str.empty());
 
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kRateKey)) {
+  if (options->FindKey(constants::kRateKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kRateKey, &rate));
     if (rate < 0.1 || rate > 10.0) {
@@ -228,7 +228,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kPitchKey)) {
+  if (options->FindKey(constants::kPitchKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kPitchKey, &pitch));
     if (pitch < 0.0 || pitch > 2.0) {
@@ -237,7 +237,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kVolumeKey)) {
+  if (options->FindKey(constants::kVolumeKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kVolumeKey, &volume));
     if (volume < 0.0 || volume > 1.0) {
@@ -246,13 +246,13 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   bool can_enqueue = false;
-  if (options->HasKey(constants::kEnqueueKey)) {
+  if (options->FindKey(constants::kEnqueueKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetBoolean(constants::kEnqueueKey, &can_enqueue));
   }
 
   std::set<content::TtsEventType> required_event_types;
-  if (options->HasKey(constants::kRequiredEventTypesKey)) {
+  if (options->FindKey(constants::kRequiredEventTypesKey)) {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kRequiredEventTypesKey, &list));
@@ -264,7 +264,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::set<content::TtsEventType> desired_event_types;
-  if (options->HasKey(constants::kDesiredEventTypesKey)) {
+  if (options->FindKey(constants::kDesiredEventTypesKey)) {
     base::ListValue* list;
     EXTENSION_FUNCTION_VALIDATE(
         options->GetList(constants::kDesiredEventTypesKey, &list));
@@ -276,13 +276,13 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   std::string voice_extension_id;
-  if (options->HasKey(constants::kExtensionIdKey)) {
+  if (options->FindKey(constants::kExtensionIdKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetString(constants::kExtensionIdKey, &voice_extension_id));
   }
 
   int src_id = -1;
-  if (options->HasKey(constants::kSrcIdKey)) {
+  if (options->FindKey(constants::kSrcIdKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetInteger(constants::kSrcIdKey, &src_id));
   }
