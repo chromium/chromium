@@ -5407,14 +5407,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_ANDROID)
-    {"autofill-assistant-proactive-help",
-     flag_descriptions::kAutofillAssistantProactiveHelpName,
-     flag_descriptions::kAutofillAssistantProactiveHelpDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill_assistant::features::kAutofillAssistantProactiveHelp)},
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_ANDROID)
     {"deprecate-menagerie-api", flag_descriptions::kDeprecateMenagerieAPIName,
      flag_descriptions::kDeprecateMenagerieAPIDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kDeprecateMenagerieAPI)},
