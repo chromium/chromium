@@ -33,6 +33,7 @@
 <translation id="122699739164161391">တဘ်အားလုံး ပိတ်ရန်</translation>
 <translation id="1229222343402087523">Chrome တွင် ${searchPhrase} ရှာရန်</translation>
 <translation id="1231733316453485619">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
+<translation id="1242044645101871359">ထပ်၍လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1254117744268754948">ဖိုလ်ဒါကို ရွေးရန်</translation>
 <translation id="1265739287306757398">လုပ်ပုံကို လေ့လာပါ</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">ဖတ်ရန်စာရင်းသို့ ထည့်လိုက်ပါပြီ</translation>
 <translation id="1870148520156231997">စကားဝှက်ကို ပြသရန်</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
+<translation id="1894205589103145703">လက်မှတ်ထိုးဝင်နေစဉ် တစ်ခုခု မှားသွားသည်။</translation>
 <translation id="1911619930368729126">Google Drive သို့အပ်လုဒ်လုပ်မည်</translation>
 <translation id="1923342640370224680">နောက်ဆုံး နာရီ</translation>
 <translation id="1941314575388338491">ကူးယူရန် နှစ်ချက်တို့ပါ။</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">ပြီးခဲ့သော <ph name="DAYS" /> ရက်က အသုံးပြုထားသည်</translation>
 <translation id="2074131957428911366">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="2086623437239112659">သိမ်းထားသော လက်မှတ်ထိုးဝင်သည့် အချက်အလက် ဟောင်းနေခြင်း ဖြစ်နိုင်သည်။</translation>
 <translation id="209018056901015185">ဒက်စတော့ပ် ဆိုက် တောင်းဆိုမည်</translation>
 <translation id="2103075008456228677">history.google.com ကိုဖွင့်ပါ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ရွှေ့ပြောင်းပြီးပါပြီ</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
 <translation id="5140288047769711648">Chrome က ဤစကားဝှက်ကို သင့်အတွက် မှတ်ထားပေးပါမည်။ သင်မှတ်ထားစရာ မလိုပါ။</translation>
 <translation id="5150492518600715772">သင့်စက်သို့ ပို့ရန်</translation>
+<translation id="5168414296986405587">iPadOS အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="5181140330217080051">ဒေါင်းလုဒ် လုပ်နေ</translation>
 <translation id="5186185447130319458">ကိုယ်ပိုင်သီးသန့်</translation>
 <translation id="5188482106078495165">သင့်ကွတ်ကီးများဆက်တင်က တဘ်အားလုံးသို့ သက်ရောက်ပါသည်။ ဖွင့်ထားသောတဘ်သို့ ဆက်တင်အသစ်ထည့်သွင်းရန် တဘ်ကိုပြန်စတင်ပါ။</translation>
@@ -429,6 +433,7 @@
 <translation id="5508435575041083207">ထွက်ပြီး ဤစက်မှဒေတာများ ရှင်းထုတ်ရန်</translation>
 <translation id="5513681519188741830">ပြီးခဲ့သော <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">စကားစုဝှက် ဖန်တီးမည်</translation>
+<translation id="5532698011560297095">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="5548760955356983418">Handoff သည် သင့်အားဤကိရိယာပေါ်တွင် ဝက်ဆိုက်ရွေးချယ်ခြင်းကို စတင်ခွင့်ပြုမည်ဖြစ်ပြီး သင့် Mac ပေါ်တွင်လွယ်ကူစွာ ဆက်လက်လုပ်ဆောင်နိုင်ပါသည်။ လက်ရှိဖွင့်ထားသော ဝက်ဆိုက်သည် သင့်Mac၏ အထိုင်ပေါ်တွင် ပေါ်လာပါလိမ့်မည်။
 Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိုင်းတွင် ဖွင့်ထားရမည်ဖြစ်ပြီး၊ သင့်ကိရိယာများသည်လည်း တူညီသော iCloud အကောင့်ကို အသုံးပြုရမည်ဖြစ်သည်။</translation>
 <translation id="5551897871312988470">ဘာသာပြန်ရန် ကမ်းလှမ်းချက်</translation>
@@ -505,7 +510,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6255097610484507482">အကြွေးဝယ်ကဒ် တည်းဖြတ်မည်</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> သို့ ဘာသာပြန်ဆိုရန်အတွက် ကမ်းလှမ်းရန်</translation>
 <translation id="6293101329759844770">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကိုဖွင့်ရန် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> တွင် 'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကို တို့ပါ။</translation>
-<translation id="6303969859164067831">ထွက်ပြီးနောက် စင့်ခ်လုပ်ခြင်းကို ပိတ်ပါ</translation>
 <translation id="6308436439357671616">၎င်းသည် ဓာတ်ပုံရိုက်ရန်နှင့် အပ်လုဒ်လုပ်ရန် ခွင့်ပြုပါသည်။</translation>
 <translation id="6321526113093607004">လိပ်စာများသို့ ထည့်ရန်</translation>
 <translation id="6324528485781869530">စင့်ခ်အကောင့်ကို ပြောင်းလဲခြင်း</translation>

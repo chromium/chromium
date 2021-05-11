@@ -2813,6 +2813,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="398477389655464998">උද්දීපනයට සබැඳිය පිටපත් කරන්න</translation>
 <translation id="3987544746655539083">ඔබගේ ස්ථානයට පිවිසීමෙන් මෙම අඩවිය අවහිර කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="3987938432087324095">කනගාටුයි, එය තේරුණේ නැහැ.</translation>
+<translation id="3987993985790029246">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="3988996860813292272">වේලා කලාපය තෝරන්න</translation>
 <translation id="399179161741278232">ආයාත කෙරිණි</translation>
 <translation id="3994374631886003300">ඔබේ දුරකථනය අගුලු හැර <ph name="DEVICE_TYPE" /> අගුලු හැරීමට එය සමීපයට ගෙන එන්න.</translation>
@@ -5765,6 +5766,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ධාවනය කිරීමට දකුණු-ක්ලික් කරන්න</translation>
 <translation id="7362387053578559123">අඩවි බ්ලූටූත් උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="7364591875953874521">ප්‍රවේශය ඉල්ලුවා</translation>
+<translation id="7364745943115323529">විකාශය කරන්න...</translation>
 <translation id="7364796246159120393">ගොනුව තෝරන්න</translation>
 <translation id="7365076891350562061">මොනිටරයේ තරම</translation>
 <translation id="7366316827772164604">අවට උපාංග සඳහා ස්කෑන් කරමින්…</translation>
@@ -6811,7 +6813,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8498395510292172881">Chrome හි කියවීම දිගටම කරන්න</translation>
 <translation id="8499083585497694743">මයික්‍රෆෝනය නිහඬ කිරීම ඉවත් කරන්න</translation>
 <translation id="8502536196501630039">Google Play වෙතින් යෙදුම් භාවිතා කිරීම සඳහා, පළමුව ඔබ ඔබගේ යෙදුම් ප්‍රතිස්ථාපනය කළ යුතුය. ඇතැම් දත්ත නොමැති වී යනු ඇත.</translation>
-<translation id="850314194061055138">නැවත කැමරාව භාවිතා කරන්න</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8507227974644337342">තිර විභේදනය</translation>
 <translation id="850875081535031620">හානිකර මෘදුකාංගයක් හමු නොවිණි</translation>

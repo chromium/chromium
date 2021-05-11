@@ -140,6 +140,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2079504693865562705">Skjul apper på hyllen</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
+<translation id="2108303511227308752">Hurtigtasten Alt + tilbaketast er endret. For å bruke Delete-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + tilbaketasten.</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
 <translation id="2127372758936585790">Lading med lav effekt</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
@@ -367,6 +368,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4021716437419160885">Rull ned</translation>
 <translation id="4028481283645788203">Passord kreves for mer sikkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke F-tastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="4057003836560082631">Nettleserfane <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av for én app}other{Av for # apper}}</translation>
@@ -392,6 +394,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="425364040945105958">Uten SIM-kort</translation>
 <translation id="4261870227682513959">Vis innstillinger for varsler. Varsler er av</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
+<translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
@@ -400,6 +403,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4303223480529385476">Vis statusområdet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykket på hurtigtasten for høy kontrast. Vil du slå det på?</translation>
+<translation id="4322742403972824594">Hurtigtasten Ctrl + Alt + oppoverpil er endret. For å bruke Home-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + venstrepilen.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
@@ -417,6 +421,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4445159312344259901">Logg inn for å låse opp</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig varsel}other{# viktige varsler}}</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
+<translation id="4451374464530248585">Hurtigtasten Alt + nedoverpil er endret. For å bruke Page Down-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + nedoverpilen.</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
@@ -708,6 +713,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
+<translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>

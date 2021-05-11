@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Թարմացրեք Chrome OS-ը</translation>
 <translation id="1067048845568873861">Ստեղծվել է</translation>
 <translation id="1067922213147265141">Google-ի այլ ծառայություններ</translation>
+<translation id="1069355737714877171">Հեռացնել eSIM պրոֆիլը (<ph name="PROFILE_NAME" />)</translation>
 <translation id="1070377999570795893">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է ընդլայնում, որը կարող է միջամտել Chrome-ի աշխատանքին:
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -357,6 +358,7 @@
 <translation id="138784436342154190">Վերականգնե՞լ մեկնարկի կանխադրված էջը</translation>
 <translation id="1388253969141979417">Թույլատրվում է օգտագործել ձեր խոսափողը</translation>
 <translation id="1388728792929436380">Հենց որ թարմացումները տեղադրվեն, <ph name="DEVICE_TYPE" /> սարքը կվերագործարկվի։</translation>
+<translation id="138900021244932468">Պրոֆիլներ չեն գտնվել։ Նոր ցանց կարգավորելու համար սկանավորեք QR կոդը սարքի տեսախցիկի միջոցով կամ մուտքագրեք օպերատորի տրամադրած ակտիվացման կոդը։</translation>
 <translation id="139013308650923562">Կայքեր, որոնց թույլատրված է օգտագործել ձեր սարքում տեղադրված տառատեսակները</translation>
 <translation id="1390548061267426325">Բացել որպես սովորական ներդիր</translation>
 <translation id="1393283411312835250">Արև և ամպեր</translation>
@@ -985,6 +987,7 @@
 Այս հաշվի կարգավորումները կառավարելու համար կարող եք սարքում տեղադրել Family Link հավելվածը:  Մենք հրահանգներ ենք ուղարկել ձեր էլ. հասցեին:</translation>
 <translation id="2040460856718599782">Իսկորոշման ընթացքում սխալ տեղի ունեցավ: Եվս մեկ անգամ ստուգեք ձեր մուտքի հավատարմագրերը և նորից փորձեք:</translation>
 <translation id="2044014337866019681">Հաստատեք <ph name="ACCOUNT" /> հաշիվը՝ աշխատաշրջանն ապակողպելու համար։</translation>
+<translation id="2044023416777079300">Մոդեմը գրանցված չէ</translation>
 <translation id="204497730941176055">Microsoft-ի վկայագրի ձևանմուշի անունը</translation>
 <translation id="2045117674524495717">Ստեղնային դյուրանցումների օգնական</translation>
 <translation id="2045969484888636535">Շարունակել քուքիների արգելափակումը</translation>
@@ -2807,6 +2810,7 @@
 <translation id="398477389655464998">Պատճենել հղումը որպես ընդգծված տեքստ</translation>
 <translation id="3987544746655539083">Արգելափակել տեղադրության տվյալների հասանելիությունն այս կայքի համար</translation>
 <translation id="3987938432087324095">Ներեցեք, չի լսվում:</translation>
+<translation id="3987993985790029246">Պատճենել հղումը</translation>
 <translation id="3988996860813292272">Ընտրեք ժամային գոտին</translation>
 <translation id="399179161741278232">Ներմուծված</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար ապակողպեք ձեր հեռախոսը և այն մոտեցրեք սարքին։</translation>
@@ -4086,6 +4090,7 @@
 <translation id="5486261815000869482">Հաստատեք գաղտնաբառը</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> հավելվածը համօգտագործում է ձեր էկրանը <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="5486561344817861625">Նմանակել դիտարկիչի վերագործարկումը</translation>
+<translation id="5487460042548760727">Վերանվանել պրոֆիլը <ph name="PROFILE_NAME" />-ի</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» տարրը պատճենվեց</translation>
 <translation id="5488508217173274228">Համաժամացնել գաղտնագրման ընտրանքները</translation>
@@ -4827,6 +4832,7 @@
 <translation id="6308937455967653460">Պահել հղ&amp;ումը որպես…</translation>
 <translation id="6309443618838462258">Ձեր ադմինիստրատորը թույլ չի տալիս ներածման այս մեթոդը</translation>
 <translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատված է</translation>
+<translation id="6310141306111263820">Չհաջողվեց տեղադրել eSIM պրոֆիլը։ Օգնության համար դիմեք ձեր օպերատորին։</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Անվտանգության ստուգումն արվել է 1 օր առաջ}one{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}other{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}}</translation>
@@ -5761,6 +5767,7 @@
 <translation id="7361297102842600584">Սեղմեք մկնիկի աջ կոճակը՝ <ph name="PLUGIN_NAME" /> փլագինն աշխատեցնելու համար</translation>
 <translation id="7362387053578559123">Կայքերը կարող են Bluetooth սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="7364591875953874521">Մուտքի հարցում է արված</translation>
+<translation id="7364745943115323529">Հեռարձակել...</translation>
 <translation id="7364796246159120393">Ընտրել ֆայլ</translation>
 <translation id="7365076891350562061">Էկրանի չափը</translation>
 <translation id="7366316827772164604">Մոտակա սարքերի որոնում…</translation>
@@ -5963,6 +5970,7 @@
 <translation id="7582582252461552277">Նախընտրել այս ցանցը</translation>
 <translation id="7582844466922312471">Բջջային մոդեմ</translation>
 <translation id="7583948862126372804">Քանակ</translation>
+<translation id="7586051298768394542">Չհաջողվեց ներբեռնել ենթագրերի ֆայլը։ Թելադրումը կշարունակի աշխատել, սակայն ձեր ձայնը կուղարկվի Google-ին։</translation>
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
 <translation id="7589461650300748890">Զգո՛ւյշ եղեք:</translation>
 <translation id="7593653750169415785">Ավտոմատ արգելափակվում են, քանի որ դուք դրանք մի քանի անգամ մերժել եք</translation>
@@ -6550,6 +6558,7 @@
 <translation id="8191230140820435481">Կառավարել հավելվածները, ընդլայնումները և թեմաները</translation>
 <translation id="8195027750202970175">Սկավառակի տարածքը</translation>
 <translation id="8198323535106903877">Մենք կտեղադրենք այս <ph name="NUMBER_OF_APPS" /> հավելվածը ձեզ համար</translation>
+<translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8199300056570174101">Ցանցի (ծառայության) և սարքի կարգավորումներ</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8201717382574620700">Ընտրել <ph name="TOPIC_SOURCE" />ի ալբոմներ</translation>
@@ -6805,7 +6814,6 @@
 <translation id="8498395510292172881">Շարունակեք կարդալ Chrome-ում</translation>
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>
 <translation id="8502536196501630039">Google Play-ից հավելվածներ օգտագործելու համար նախ պետք է վերականգնեք ձեր հավելվածները: Որոշ տվյալներ հնարավոր է չպահպանվեն:</translation>
-<translation id="850314194061055138">նորից օգտագործել տեսախցիկը</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8507227974644337342">Էկրանի լուծաչափը</translation>
 <translation id="850875081535031620">Վնասաբեր ծրագրեր չեն գտնվել</translation>
@@ -7135,6 +7143,7 @@
 <translation id="8847523528195140327">Դուրս գալ հաշվից, երբ պատյանի շապիկը փակ է</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Թաքցված է</translation>
+<translation id="8849219423513870962">Չեղարկել eSIM պրոֆիլի (<ph name="PROFILE_NAME" />) հեռացումը</translation>
 <translation id="8850251000316748990">Ավելին…</translation>
 <translation id="885246833287407341">API-ի ֆունկցիայի փոփոխականներ</translation>
 <translation id="8853586775156634952">Այս քարտը կպահվի միայն այս սարքում</translation>

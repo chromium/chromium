@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Закрыть все вкладки</translation>
 <translation id="1229222343402087523">Искать "${searchPhrase}" в Chrome</translation>
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
+<translation id="1242044645101871359">Повторите вход</translation>
 <translation id="1254117744268754948">Выбор папки</translation>
 <translation id="1265739287306757398">Подробнее</translation>
 <translation id="1272079795634619415">Остановить</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
+<translation id="1894205589103145703">Не удалось войти в систему.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
+<translation id="2086623437239112659">Сохраненные учетные данные могли устареть.</translation>
 <translation id="209018056901015185">Версия для ПК</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
 <translation id="5140288047769711648">Вам не нужно запоминать этот пароль, так как он будет сохранен в Chrome.</translation>
 <translation id="5150492518600715772">Отправить на свое устройство</translation>
+<translation id="5168414296986405587">Создано для iPadOS</translation>
 <translation id="5181140330217080051">Скачивается</translation>
 <translation id="5186185447130319458">Конфиденциально</translation>
 <translation id="5188482106078495165">Заданные вами параметры в отношении файлов cookie действуют для всех вкладок. Если вам нужно применить новый параметр к открытой вкладке, перезагрузите ее.</translation>
@@ -507,7 +511,6 @@
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
-<translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6308436439357671616">Это нужно, чтобы делать снимки и загружать фотографии</translation>
 <translation id="6321526113093607004">Добавить в закладки</translation>
 <translation id="6324528485781869530">Смена аккаунта</translation>

@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS-update vereist</translation>
 <translation id="1067048845568873861">Gemaakt</translation>
 <translation id="1067922213147265141">Andere Google-services</translation>
+<translation id="1069355737714877171">E-simkaartprofiel <ph name="PROFILE_NAME" /> verwijderen</translation>
 <translation id="1070377999570795893">Een ander programma op je computer heeft een extensie toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -355,6 +356,7 @@
 <translation id="138784436342154190">Standaardstartpagina herstellen?</translation>
 <translation id="1388253969141979417">Toestemming om je microfoon te gebruiken</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> wordt opnieuw opgestart als de updates zijn voltooid.</translation>
+<translation id="138900021244932468">Er zijn geen profielen gevonden. Als je een nieuw netwerk wilt instellen, scan je de QR-code met de camera van je apparaat en geef je de activeringscode op die je van je provider hebt gekregen.</translation>
 <translation id="139013308650923562">Mogen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="1390548061267426325">Openen als normaal tabblad</translation>
 <translation id="1393283411312835250">Zon en wolken</translation>
@@ -983,6 +985,7 @@ Log anders uit zodat de wijzigingen in dit account kunnen worden doorgevoerd op 
 Je kunt de instellingen van dit account beheren door de Family Link-app op je apparaat te installeren.  We hebben je een e-mail met instructies gestuurd.</translation>
 <translation id="2040460856718599782">Er is iets verkeerd gegaan tijdens de verificatie. Controleer je inloggegevens en probeer het opnieuw.</translation>
 <translation id="2044014337866019681">Zorg dat je <ph name="ACCOUNT" /> verifieert om de sessie te ontgrendelen.</translation>
+<translation id="2044023416777079300">Modem niet geregistreerd</translation>
 <translation id="204497730941176055">Sjabloonnaam van Microsoft-certificaat</translation>
 <translation id="2045117674524495717">Helper voor sneltoetsen</translation>
 <translation id="2045969484888636535">Cookies blijven blokkeren</translation>
@@ -2805,6 +2808,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="398477389655464998">Link naar markering kopiëren</translation>
 <translation id="3987544746655539083">Toegang tot je locatie blijven blokkeren voor deze site</translation>
 <translation id="3987938432087324095">Sorry, dat heb ik niet verstaan.</translation>
+<translation id="3987993985790029246">Link kop.</translation>
 <translation id="3988996860813292272">Tijdzone selecteren</translation>
 <translation id="399179161741278232">Geïmporteerd</translation>
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
@@ -4079,6 +4083,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5486261815000869482">Wachtwoord bevestigen</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> deelt je scherm met <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Opnieuw starten van browser simuleren</translation>
+<translation id="5487460042548760727">Naam van profiel wijzigen in <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Gegevens wissen</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' gekopieerd</translation>
 <translation id="5488508217173274228">Opties voor versleuteling synchroniseren</translation>
@@ -4820,6 +4825,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6308937455967653460">Lin&amp;k opslaan als...</translation>
 <translation id="6309443618838462258">Je beheerder staat deze invoermethode niet toe</translation>
 <translation id="6309510305002439352">Microfoon staat uit</translation>
+<translation id="6310141306111263820">Kan e-simkaartprofiel niet installeren. Neem contact op met je provider voor hulp.</translation>
 <translation id="6311220991371174222">Kan Chrome niet starten omdat er een fout is opgetreden bij het openen van je profiel. Probeer Chrome opnieuw te starten.</translation>
 <translation id="6312403991423642364">Onbekende netwerkfout</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Veiligheidscheck is 1 dag geleden uitgevoerd}other{Veiligheidscheck is {NUM_DAYS} dagen geleden uitgevoerd}}</translation>
@@ -5754,6 +5760,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7361297102842600584">Klik met de rechtermuisknop om <ph name="PLUGIN_NAME" /> uit te voeren</translation>
 <translation id="7362387053578559123">Sites kunnen vragen of ze verbinding mogen maken met bluetooth-apparaten</translation>
 <translation id="7364591875953874521">Toegang aangevraagd</translation>
+<translation id="7364745943115323529">Casten...</translation>
 <translation id="7364796246159120393">Bestand kiezen</translation>
 <translation id="7365076891350562061">Beeldschermgrootte</translation>
 <translation id="7366316827772164604">Zoeken naar apparaten in de buurt...</translation>
@@ -5956,6 +5963,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7582582252461552277">Dit netwerk voorrang geven</translation>
 <translation id="7582844466922312471">Mobiele netwerk</translation>
 <translation id="7583948862126372804">Aantal</translation>
+<translation id="7586051298768394542">Kan spraakbestanden niet downloaden. Dicteren blijft werken door je spraak naar Google te sturen.</translation>
 <translation id="7586498138629385861">Chrome blijft actief terwijl er Chrome-apps zijn geopend.</translation>
 <translation id="7589461650300748890">Oei, wees voorzichtig!</translation>
 <translation id="7593653750169415785">Automatisch geblokkeerd omdat je meldingen een paar keer hebt geweigerd</translation>
@@ -6544,6 +6552,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8191230140820435481">Je apps, extensies en thema's beheren</translation>
 <translation id="8195027750202970175">Grootte op schijf</translation>
 <translation id="8198323535106903877">We installeren deze <ph name="NUMBER_OF_APPS" /> apps voor je</translation>
+<translation id="8198456017687137612">Tabblad casten</translation>
 <translation id="8199300056570174101">Eigenschappen van netwerk (service) en apparaat</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />-albums selecteren</translation>
@@ -6799,7 +6808,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8498395510292172881">Verder lezen in Chrome</translation>
 <translation id="8499083585497694743">Microfoon aanzetten</translation>
 <translation id="8502536196501630039">Als je apps van Google Play wilt gebruiken, moet je eerst je apps herstellen. Sommige gegevens zijn mogelijk verloren gegaan.</translation>
-<translation id="850314194061055138">camera opnieuw gebruiken</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8507227974644337342">Schermresolutie</translation>
 <translation id="850875081535031620">Er is geen schadelijke software gevonden</translation>
@@ -7129,6 +7137,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8847523528195140327">Uitloggen als de klep wordt gesloten</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Verborgen</translation>
+<translation id="8849219423513870962">Verwijdering van e-simkaartprofiel <ph name="PROFILE_NAME" /> annuleren</translation>
 <translation id="8850251000316748990">Meer tonen…</translation>
 <translation id="885246833287407341">Argumenten voor API-functie</translation>
 <translation id="8853586775156634952">Deze pas wordt alleen op dit apparaat opgeslagen</translation>

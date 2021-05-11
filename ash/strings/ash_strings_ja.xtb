@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
 <translation id="1119348796022671382">壁紙から抽出した色を使用して、インターフェースに薄く色付けします。</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1165712434476988950">アップデートを適用するにはデバイスの再起動が必要です。</translation>
 <translation id="1175572348579024023">スクロール</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">プレビューを表示</translation>
 <translation id="4578906031062871102">設定メニューが開いています</translation>
+<translation id="4581047786858252841">マイクをオンにしました</translation>
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
+<translation id="4587299710837179226">マイクをオフにしました</translation>
 <translation id="4596144739579517758">ダークテーマはオフになっています</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">画面の共有を解除しますか？</translation>
 <translation id="5779721926447984944">固定したファイル</translation>
 <translation id="5790085346892983794">完了</translation>
+<translation id="5805809050170488595">クリックすると <ph name="NETWORK_NAME" /> が有効になります</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>

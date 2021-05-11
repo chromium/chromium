@@ -3349,6 +3349,19 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política não for definida, os usuários poderão controlar a visibilidade dos cards. O padrão é visível.
       </translation>
+<translation id="5455888515928026628">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
+
+      Quando esta política é definida como -2, ela corresponde ao valor do limite de tempo de login off-line da tela de login definido pela <ph name="POLICY" />.
+
+      Quando a política é definida com um valor -1 ou é deixada sem definição, ela não exige a autenticação on-line na tela de bloqueio, permitindo que o usuário faça uma autenticação off-line até que um motivo diferente aplique a on-line.
+
+      Se a política for definida com um valor 0, a autenticação on-line sempre será exigida.
+
+      Quando definida com qualquer outro valor, a política especifica o número de dias entre a última autenticação on-line e o momento em que o usuário precisará fazer outra autenticação on-line no próximo login pela tela de bloqueio.
+
+      Esta política afeta usuários que fizeram a autenticação com SAML.
+
+      O valor da política precisa ser especificado em dias.</translation>
 <translation id="5457065417344056871">Ativar o modo visitante no navegador</translation>
 <translation id="5457387982448145430">Se a política for definida como ativada, as senhas salvas serão importadas do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhuma senha será importada durante a primeira execução.
 
@@ -5685,7 +5698,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Quando a política é definida como "False", o recurso de segurança é desativado,
       e os scripts de PAC podem ver todos os componentes de um URL https://.
-      Essa configuração se aplica a todos os scripts de PAC, independentemente de origem
+      Essa configuração é válida para todos os scripts de PAC, independentemente de origem
       (incluindo aqueles adquiridos por um transporte não seguro ou descobertos de forma 
       não segura por meio de WPAD).
 
@@ -6004,6 +6017,19 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8917070657147922192">Permite que o usuário gerencie os certificados de CA instalados.</translation>
 <translation id="8919100556245407184">O tempo, em dias, após a postagem de expiração da atualização automática até o usuário ser desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for menor que a <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permitir que o dispositivo receba atualizações de LTS</translation>
+<translation id="8930064580550462145">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
+
+      Quando esta política é definida como -2, ela corresponde ao valor do limite de tempo de login off-line da tela de login definido pela <ph name="POLICY" />.
+
+      Quando a política é definida com um valor -1 ou é deixada sem definição, ela não exige a autenticação on-line na tela de bloqueio, permitindo que o usuário faça uma autenticação off-line até que um motivo diferente aplique a on-line.
+
+      Se a política for definida com um valor 0, a autenticação on-line sempre será exigida.
+
+      Quando definida com qualquer outro valor, a política especifica o número de dias entre a última autenticação on-line e o momento em que o usuário precisará fazer outra autenticação on-line no próximo login pela tela de bloqueio.
+
+      Esta política afeta usuários que fizeram a autenticação usando GAIA sem SAML.
+
+      O valor da política precisa ser especificado em dias.</translation>
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>

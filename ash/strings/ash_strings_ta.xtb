@@ -21,6 +21,7 @@
 <translation id="1104621072296271835">இணைத்தால், உங்கள் சாதனங்கள் இன்னும் சிறப்பாக வேலை செய்யும்</translation>
 <translation id="1119348796022671382">இடைமுகத்தைக் கொஞ்சம் வண்ணமயமாக்குவதற்கு வால்பேப்பரிலிருந்து எடுக்கப்பட்ட வண்ணங்களைத் தீம் வண்ணப் பயன்முறை பயன்படுத்துகிறது.</translation>
 <translation id="112308213915226829">அடுக்கைத் தானாக மறை</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="1153356358378277386">இணைத்த சாதனங்கள்</translation>
 <translation id="1165712434476988950">புதுப்பிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1175572348579024023">நகர்த்து</translation>
@@ -437,7 +438,9 @@
 <translation id="4577274620589681794">நேரம் முடிந்தது · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">மாதிரிக்காட்சிகளைக் காட்டு</translation>
 <translation id="4578906031062871102">அமைப்புகள் மெனு திறக்கப்பட்டுள்ளது</translation>
+<translation id="4581047786858252841">மைக்ரோஃபோன் இயக்கப்பட்டது</translation>
 <translation id="4585337515783392668">தெரியாத ரிசீவருக்கு அனுப்புவதை நிறுத்து</translation>
+<translation id="4587299710837179226">மைக்ரோஃபோன் முடக்கப்பட்டது</translation>
 <translation id="4596144739579517758">டார்க் தீம் முடக்கப்பட்டுள்ளது</translation>
 <translation id="4611292653554630842">உள்நுழைக</translation>
 <translation id="4623167406982293031">கணக்கைச் சரிபார்க்கவும்</translation>
@@ -569,6 +572,7 @@
 <translation id="5777841717266010279">திரைப் பகிர்வதை நிறுத்தவா?</translation>
 <translation id="5779721926447984944">பின் (pin) செய்யப்பட்ட கோப்புகள்</translation>
 <translation id="5790085346892983794">வெற்றி</translation>
+<translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>

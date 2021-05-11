@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">តម្រូវឱ្យដំឡើងកំណែ Chrome OS</translation>
 <translation id="1067048845568873861">បានបង្កើត</translation>
 <translation id="1067922213147265141">សេវាកម្ម​​ Google ផ្សេងទៀត</translation>
+<translation id="1069355737714877171">លុបកម្រងព័ត៌មាន eSIM ដែលមានឈ្មោះ <ph name="PROFILE_NAME" /></translation>
 <translation id="1070377999570795893">កម្មវិធីផ្សេងទៀតនៅលើកុំព្យូទ័ររបស់អ្នកបានបន្ថែមផ្នែកបន្ថែមមួយដែលអាចផ្លាស់ប្តូររបៀបដែល Chrome ដំណើរការ។
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -357,6 +358,7 @@
 <translation id="138784436342154190">ស្តារទំព័រចាប់ផ្តើមលំនាំដើម?</translation>
 <translation id="1388253969141979417">អនុញ្ញាតឱ្យប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ​នឹងចាប់ផ្ដើម​ឡើងវិញ នៅពេលបញ្ចប់​ការដំឡើងកំណែ​។</translation>
+<translation id="138900021244932468">រកមិនឃើញកម្រងព័ត៌មានទេ។ ដើម្បីរៀបចំ​បណ្ដាញថ្មី សូមស្កេនកូដ QR ដោយប្រើ​កាមេរ៉ារបស់ឧបករណ៍ ឬបញ្ចូលលេខកូដ​បើកដំណើរការ ដែលបានផ្ដល់​ដោយក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក។</translation>
 <translation id="139013308650923562">អនុញ្ញាតឱ្យប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="1390548061267426325">បើកជាផ្ទាំងធម្មតា</translation>
 <translation id="1393283411312835250">ព្រះអាទិត្យ និងពពក</translation>
@@ -995,6 +997,7 @@
 អ្នក​អាច​គ្រប់គ្រង​ការកំណត់​របស់គណនី​នេះ​ដោយដំឡើង​កម្មវិធី Family Link នៅលើ​ឧបករណ៍របស់អ្នក។  យើង​បានផ្ញើ​ការណែនាំទៅអ្នក​តាមរយៈអ៊ីមែល។</translation>
 <translation id="2040460856718599782">អូ! មានបញ្ហាអ្វីមួយកើតឡើង នៅពេលកំពុងព្យាយាមសម្គាល់អត្តសញ្ញាណរបស់អ្នក។  សូមពិនិត្យភាពត្រឹមត្រូវនៃការចូលរបស់អ្នកដោយប្រុងប្រយ័ត្ន ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="2044014337866019681">សូមប្រាកដថា អ្នកកំពុងផ្ទៀងផ្ទាត់ <ph name="ACCOUNT" /> ដើម្បីដោះសោវគ្គនេះ។</translation>
+<translation id="2044023416777079300">មិនបានចុះឈ្មោះម៉ូដឹមទេ</translation>
 <translation id="204497730941176055">ឈ្មោះពុម្ពវិញ្ញាបនប័ត្រ Microsoft</translation>
 <translation id="2045117674524495717">ឧបករណ៍ជំនួយ​ផ្លូវកាត់​ក្ដារចុច</translation>
 <translation id="2045969484888636535">បន្តរារាំងខុកឃី</translation>
@@ -2821,6 +2824,7 @@
 <translation id="398477389655464998">ចម្លងតំណទៅកាន់អត្ថបទ​ដែលបានរំលេច</translation>
 <translation id="3987544746655539083">បន្ត​ទប់ស្កាត់​គេហទំព័រ​នេះ​មិនឱ្យ​ចូលប្រើទីតាំងរបស់អ្នក</translation>
 <translation id="3987938432087324095">សូមអភ័យទោស មិន​អាច​ចាប់សំឡេងបានទេ។</translation>
+<translation id="3987993985790029246">ចម្លងតំណ</translation>
 <translation id="3988996860813292272">ជ្រើសរើស​ល្វែង​ម៉ោង</translation>
 <translation id="399179161741278232">បាននាំចូល</translation>
 <translation id="3994374631886003300">ដោះសោទូរសព្ទរបស់អ្នក រួចដាក់វាឲ្យកាន់តែជិត ដើម្បីដោះសោ <ph name="DEVICE_TYPE" /> របស់អ្នក។</translation>
@@ -4098,6 +4102,7 @@
 <translation id="5486261815000869482">អះអាងពាក្យសម្ងាត់</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> កំពុងចែករំលែកអេក្រង់ជាមួយ <ph name="TAB_NAME" />។</translation>
 <translation id="5486561344817861625">កម្មវិធីរុករកសាកល្បងចាប់ផ្តើមឡើងវិញ</translation>
+<translation id="5487460042548760727">ប្ដូរឈ្មោះ​កម្រងព័ត៌មានទៅ <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">ជម្រះទិន្នន័យ</translation>
 <translation id="5488093641312826914">បានចម្លង '<ph name="COPIED_ITEM_NAME" />'</translation>
 <translation id="5488508217173274228">ជម្រើសនៃការអ៊ីនគ្រីបដែល​បាន​ធ្វើ​សមកាលកម្ម</translation>
@@ -4840,6 +4845,7 @@
 <translation id="6308937455967653460">រក្សាតំណជា...</translation>
 <translation id="6309443618838462258">អ្នកគ្រប់គ្រង​របស់អ្នក​មិនអនុញ្ញាត​ឱ្យប្រើវិធីសាស្ត្រ​បញ្ចូលនេះ​ទេ</translation>
 <translation id="6309510305002439352">បានបិទ​មីក្រូហ្វូន</translation>
+<translation id="6310141306111263820">មិនអាចដំឡើង​កម្រងព័ត៌មាន eSIM បានទេ។ ដើម្បីទទួលបានជំនួយ សូមទាក់ទងក្រុមហ៊ុន​សេវាទូរសព្ទ​របស់អ្នក។</translation>
 <translation id="6311220991371174222">មិនអាចចាប់ផ្តើម Chrome របស់អ្នកបានទេ ពីព្រោះមានអ្វីមួយខុសប្រក្រតីនៅពេលបើកប្រវត្តិរូបរបស់អ្នក។ សូមព្យាយាមចាប់ផ្តើម Chrome ឡើងវិញ។</translation>
 <translation id="6312403991423642364">កំហុសឆ្គងបណ្តាញដែលមិនស្គាល់</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ការពិនិត្យ​សុវត្ថិភាព​បានដំណើរការ 1 ថ្ងៃ​មុន}other{ការពិនិត្យ​សុវត្ថិភាព​បានដំណើរការ {NUM_DAYS} ថ្ងៃ​មុន}}</translation>
@@ -5774,6 +5780,7 @@
 <translation id="7361297102842600584">ចុចខាងស្តាំដើម្បីដំណើរការ <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">គេហទំព័រ​អាចស្នើសុំ​ភ្ជាប់ជាមួយ​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="7364591875953874521">បាន​ស្នើសុំ​ការ​ចូលប្រើ</translation>
+<translation id="7364745943115323529">ខាស...</translation>
 <translation id="7364796246159120393">ជ្រើសរើសឯកសារ</translation>
 <translation id="7365076891350562061">ទំហំ​ផ្ទាំងអេក្រង់</translation>
 <translation id="7366316827772164604">កំពុង​ស្កេនរក​ឧបករណ៍​នៅជិត...</translation>
@@ -5976,6 +5983,7 @@
 <translation id="7582582252461552277">ពេញចិត្តបណ្តាញនេះ</translation>
 <translation id="7582844466922312471">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="7583948862126372804">ចំនួន</translation>
+<translation id="7586051298768394542">មិនអាចទាញយក​ឯកសារនិយាយ​បានទេ។ ការសរសេរ​តាមអាននឹងបន្តដំណើរការ​ដោយផ្ញើសំឡេង​របស់អ្នក​ទៅ Google។</translation>
 <translation id="7586498138629385861">Chrome នឹងបន្តដំណើរការ ខណៈពេលដែល Chrome កម្មវិធីបើក។</translation>
 <translation id="7589461650300748890">អូយ នៅទីនោះ។ ប្រយ័ត្ន។</translation>
 <translation id="7593653750169415785">បាន​ទប់ស្កាត់​ដោយស្វ័យប្រវត្តិ ដោយសារ​អ្នកបាន​បដិសេធ​ការជូនដំណឹង​ពីរបីដង</translation>
@@ -6564,6 +6572,7 @@
 <translation id="8191230140820435481">គ្រប់គ្រងកម្មវិធី កម្មវិធីបន្ថែម និងធីមរបស់អ្នក</translation>
 <translation id="8195027750202970175">ទំហំផ្ទុករបស់ថាស</translation>
 <translation id="8198323535106903877">យើង​នឹង​ដំឡើង​កម្មវិធីទាំង <ph name="NUMBER_OF_APPS" /> នោះសម្រាប់អ្នក</translation>
+<translation id="8198456017687137612">កំពុងបញ្ជូនផ្ទាំង</translation>
 <translation id="8199300056570174101">លក្ខណៈ​សម្បត្តិ​បណ្ដាញ (សេវាកម្ម) និង​ឧបករណ៍</translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="8201717382574620700">ជ្រើសរើស​អាល់ប៊ុម <ph name="TOPIC_SOURCE" /></translation>
@@ -6819,7 +6828,6 @@
 <translation id="8498395510292172881">បន្ត​អាន​នៅក្នុង Chrome</translation>
 <translation id="8499083585497694743">បើក​សំឡេង​មីក្រូហ្វូន</translation>
 <translation id="8502536196501630039">ដើម្បី​ប្រើ​កម្មវិធីពី Google Play អ្នកត្រូវស្ដារកម្មវិធី​របស់អ្នក​ជាមុនសិន។ ទិន្នន័យ​មួយចំនួន​អាចនឹង​​បាត់បង់។</translation>
-<translation id="850314194061055138">ប្រើកាមេរ៉ាម្ដងទៀត</translation>
 <translation id="8503813439785031346">ឈ្មោះអ្នកប្រើ</translation>
 <translation id="8507227974644337342">កម្រិតច្បាស់របស់​អេក្រង់</translation>
 <translation id="850875081535031620">រកមិន​ឃើញ​កម្មវិធី​គ្រោះថ្នាក់ទេ</translation>
@@ -7148,6 +7156,7 @@
 <translation id="8847523528195140327">ចេញ​នៅពេល​បិទគម្រប</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">លាក់</translation>
+<translation id="8849219423513870962">បោះបង់​ការលុបកម្រងព័ត៌មាន eSIM ដែលមានឈ្មោះ <ph name="PROFILE_NAME" /></translation>
 <translation id="8850251000316748990">មើលបន្ថែមទៀត...</translation>
 <translation id="885246833287407341">អញ្ញត្តិអនុគមន៍ API</translation>
 <translation id="8853586775156634952">បណ្ណនេះ​នឹងត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ</translation>

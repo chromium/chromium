@@ -33,6 +33,7 @@
 <translation id="122699739164161391">탭 모두 닫기</translation>
 <translation id="1229222343402087523">Chrome에서 ${searchPhrase} 검색</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
+<translation id="1242044645101871359">다시 로그인</translation>
 <translation id="1254117744268754948">폴더 선택</translation>
 <translation id="1265739287306757398">자세히 알아보기</translation>
 <translation id="1272079795634619415">중지</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">읽기 목록에 추가됨</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
+<translation id="1894205589103145703">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
+<translation id="2086623437239112659">저장된 로그인 정보가 오래되었을 수 있습니다.</translation>
 <translation id="209018056901015185">데스크톱 버전으로 보기</translation>
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5140288047769711648">Chrome에서 이 비밀번호를 기억합니다. 따라서 기억하지 않아도 됩니다.</translation>
 <translation id="5150492518600715772">기기로 보내기</translation>
+<translation id="5168414296986405587">iPadOS 최적화</translation>
 <translation id="5181140330217080051">다운로드 중</translation>
 <translation id="5186185447130319458">비공개</translation>
 <translation id="5188482106078495165">쿠키 설정이 모든 탭에 적용됩니다. 새로운 설정을 열려 있는 탭에 적용하려면 탭을 새로고침하세요.</translation>
@@ -507,7 +511,6 @@
 <translation id="6255097610484507482">신용카드 수정</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
-<translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6308436439357671616">액세스를 허용하면 사진을 찍고 업로드할 수 있습니다.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324528485781869530">동기화 계정 전환</translation>

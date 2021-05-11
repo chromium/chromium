@@ -33,6 +33,7 @@
 <translation id="122699739164161391">ყველა ჩანართის დახურვა</translation>
 <translation id="1229222343402087523">მოიძიეთ ${searchPhrase} Chrome-ში</translation>
 <translation id="1231733316453485619">გსურთ სინქრონიზაციის ჩართვა?</translation>
+<translation id="1242044645101871359">შედით ხელახლა</translation>
 <translation id="1254117744268754948">აირჩიეთ საქაღალდე</translation>
 <translation id="1265739287306757398">შეიტყვეთ როგორ</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">დაემატა საკითხავ სიას</translation>
 <translation id="1870148520156231997">პაროლის გამოჩენა</translation>
 <translation id="1872096359983322073">ჩირაღდანი</translation>
+<translation id="1894205589103145703">შესვლისას წარმოიქმნა შეფერხება.</translation>
 <translation id="1911619930368729126">ატვირთვა Google Drive-ზე</translation>
 <translation id="1923342640370224680">ბოლო საათი</translation>
 <translation id="1941314575388338491">კოპირებისთვის, შეეხეთ ორმაგად.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
+<translation id="2086623437239112659">სისტემაში შესვლის თქვენ მიერ შენახული ინფორმაცია, შესაძლოა, მოძველებული იყოს.</translation>
 <translation id="209018056901015185">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">მოახდინეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="5140288047769711648">Chrome დაიმახსოვრებს ამ პაროლს. თქვენ მისი დამახსოვრება არ გჭირდებათ.</translation>
 <translation id="5150492518600715772">თქვენს მოწყობილობებზე გაგზავნა</translation>
+<translation id="5168414296986405587">შექმნილია iPadOS-ისთვის</translation>
 <translation id="5181140330217080051">ჩამოტვირთვა</translation>
 <translation id="5186185447130319458">პირადი</translation>
 <translation id="5188482106078495165">ქუქი-ჩანაწერების პარამეტრები ვრცელდება ყველა ჩანართზე. ახალი პარამეტრის გახსნილ ჩანართზე მისასადაგებლად გადატვირთეთ ჩანართი.</translation>
@@ -429,6 +433,7 @@
 <translation id="5508435575041083207">გამოსვლა და მონაცემების გასუფთავება ამ მოწყობილობაზე</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> საათის წინ</translation>
 <translation id="5525269841082836315">საიდუმლო ფრაზის შექმნა</translation>
+<translation id="5532698011560297095">სისტემაში შესვლა ვერ მოხერხდა</translation>
 <translation id="5548760955356983418">Handoff საშუალებით შეგიძლიათ დაიწყოთ ვებსაიტის დათვალიერება ამ მოწყობილობაში და ადვილად გააგრძელოთ Mac მოწყობილობაში. მიმდინარე გახსნილი ვებსაიტი გამოჩნდება Mac მოწყობილობის Dock-ში.
 
 Handoff ასევე უნდა იყოს ჩართული პარამეტრების სექციაში „ძირითადი“ და მოწყობილობებში უნდა გამოიყენებოდეს ერთი და იგივე iCloud ანგარიში.</translation>
@@ -506,7 +511,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6255097610484507482">საკრედიტო ბარათის რედაქტირება</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ენის თარგმნის შემოთავაზება</translation>
 <translation id="6293101329759844770">Safe Browsing-ის ჩასართავად გახსენით <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" /> და შეეხეთ Safe Browsing-ს.</translation>
-<translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6308436439357671616">საშუალებას გაძლევთ, გადაიღოთ და ატვირთოთ ფოტოები.</translation>
 <translation id="6321526113093607004">სანიშნეებში დამატება</translation>
 <translation id="6324528485781869530">სინქრონიზაციის ანგარიშის გადართვა</translation>

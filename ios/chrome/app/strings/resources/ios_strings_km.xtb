@@ -33,6 +33,7 @@
 <translation id="122699739164161391">បិទផ្ទាំងទាំងអស់</translation>
 <translation id="1229222343402087523">ស្វែងរក ${searchPhrase} នៅក្នុង Chrome</translation>
 <translation id="1231733316453485619">បើក​សមកាលកម្ម?</translation>
+<translation id="1242044645101871359">ចូលគណនីម្តងទៀត</translation>
 <translation id="1254117744268754948">ជ្រើសរើសថតឯកសារ</translation>
 <translation id="1265739287306757398">ស្វែងយល់​អំពី​របៀប</translation>
 <translation id="1272079795634619415">ឈប់</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">បាន​បញ្ចូល​ទៅ​ក្នុង​បញ្ជី​អាន​</translation>
 <translation id="1870148520156231997">បង្ហាញ​ពាក្យសម្ងាត់</translation>
 <translation id="1872096359983322073">ពិល</translation>
+<translation id="1894205589103145703">មានអ្វីមួយខុសប្រក្រតី ក្នុងអំឡុងពេល​ចូលគណនី។</translation>
 <translation id="1911619930368729126">អាប់ឡូត Google Drive</translation>
 <translation id="1923342640370224680">ម៉ោងមុន</translation>
 <translation id="1941314575388338491">ប៉ះពីរដងដើម្បីចម្លង</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">ដំណើរការ <ph name="DAYS" /> ថ្ងៃ​មុន</translation>
 <translation id="2074131957428911366">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
+<translation id="2086623437239112659">ព័ត៌មានចូលគណនី​ដែលអ្នកបានរក្សាទុកប្រហែលជា​ហួសសម័យហើយ។</translation>
 <translation id="209018056901015185">ស្នើសុំគេហទំព័រដេស៍ថប</translation>
 <translation id="2103075008456228677">បើក history.google.com</translation>
 <translation id="2116625576999540962">ធាតុ <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ត្រូវបានផ្លាស់ទី។</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">ធ្វើសម​កាល​កម្មពាក្យសម្ងាត់ ប្រវត្តិ និងអ្វីៗ​ជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="5140288047769711648">Chrome នឹងចងចាំ​ពាក្យសម្ងាត់នេះ​សម្រាប់អ្នក។ អ្នកមិនចាំបាច់​ចងចាំពាក្យសម្ងាត់​នេះទេ។</translation>
 <translation id="5150492518600715772">ផ្ញើ​ទៅ​ឧបករណ៍​របស់អ្នក</translation>
+<translation id="5168414296986405587">បានបង្កើតឡើងសម្រាប់ iPadOS</translation>
 <translation id="5181140330217080051">កំពុងទាញយក</translation>
 <translation id="5186185447130319458">ឯកជន</translation>
 <translation id="5188482106078495165">ការកំណត់ខូគីរបស់អ្នកត្រូវ​បាន​អនុវត្តនៅក្នុងផ្ទាំងទាំងអស់។ ដើម្បីប្រើការកំណត់ថ្មីនៅក្នុងផ្ទាំងដែលបើក សូមផ្ទុកផ្ទាំងនោះឡើងវិញ។</translation>
@@ -429,6 +433,7 @@
 <translation id="5508435575041083207">ចេញពីគណនី និងសម្អាតទិន្នន័យចេញ​ពីឧបករណ៍នេះ</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ម៉ោង​មុន</translation>
 <translation id="5525269841082836315">បង្កើតឃ្លាសម្ងាត់</translation>
+<translation id="5532698011560297095">មិនអាចចូលគណនីបានទេ</translation>
 <translation id="5548760955356983418">Handoff អនុញ្ញាតឲ្យអ្នកចាប់ផ្តើមរុករកគេហទំព័រលើឧបករណ៍នេះ ហើយបន្តប្រើប្រាស់យ៉ាងងាយស្រួលនៅលើឧបករណ៍ Mac របស់អ្នក។ គេហទំព័រដែលបើកពេលបច្ចុប្បន្ននឹងបង្ហាញលើរបារកម្មវិធីនៃឧបករណ៍ Mac របស់អ្នក។
 
 Handoff ត្រូវបើកដំណើរការនៅក្នុងផ្នែកទូទៅនៃការកំណត់ ហើយឧបករណ៍របស់អ្នកត្រួវតែប្រើគណនី iCloud តែមួយ។</translation>
@@ -506,7 +511,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6255097610484507482">កែប្រែកាតឥណទាន</translation>
 <translation id="6284652193729350524">ផ្ដល់​ការបកប្រែ<ph name="LANGUAGE" /></translation>
 <translation id="6293101329759844770">ដើម្បីបើក "ការរុករកដោយសុវត្ថិភាព" សូមបើក​<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" /> រួចចុច "ការរុករកដោយសុវត្ថិភាព"។</translation>
-<translation id="6303969859164067831">ចាកចេញ ហើយបិទការធ្វើសមកាលកម្ម</translation>
 <translation id="6308436439357671616">វាអនុញ្ញាតឲ្យអ្នកថត និងអាប់ឡូតរូបថត</translation>
 <translation id="6321526113093607004">បញ្ចូល​ទៅ​ក្នុង​ចំណាំ</translation>
 <translation id="6324528485781869530">ប្តូរ​គណនី​សមកាលកម្ម</translation>

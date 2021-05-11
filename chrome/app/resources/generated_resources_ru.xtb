@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Обновите Chrome OS</translation>
 <translation id="1067048845568873861">Создано</translation>
 <translation id="1067922213147265141">Другие сервисы Google</translation>
+<translation id="1069355737714877171">Удалить профиль eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="1070377999570795893">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -358,6 +359,7 @@
 <translation id="138784436342154190">Восстановить настройки стартовой страницы по умолчанию?</translation>
 <translation id="1388253969141979417">Разрешить сайтам использовать микрофон</translation>
 <translation id="1388728792929436380">После установки обновлений <ph name="DEVICE_TYPE" /> перезагрузится.</translation>
+<translation id="138900021244932468">Профили не найдены. Чтобы настроить новую сеть, отсканируйте QR-код с помощью камеры устройства или введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="139013308650923562">Сайты, которым разрешено использовать шрифты, установленные на устройстве</translation>
 <translation id="1390548061267426325">Открыть в обычной вкладке</translation>
 <translation id="1393283411312835250">Солнце и облака</translation>
@@ -985,6 +987,7 @@
 Вы можете управлять настройками этого аккаунта, установив приложение Family Link на своем устройстве.  Мы отправили вам инструкции по электронной почте.</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
 <translation id="2044014337866019681">Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
+<translation id="2044023416777079300">Модем не зарегистрирован.</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
 <translation id="2045117674524495717">Справка по быстрым клавишам</translation>
 <translation id="2045969484888636535">Всегда блокировать сохранение cookie</translation>
@@ -2806,6 +2809,7 @@
 <translation id="398477389655464998">Копировать ссылку на выделенный текст</translation>
 <translation id="3987544746655539083">Не сообщать этому сайту, где я нахожусь</translation>
 <translation id="3987938432087324095">Извините, не слышно.</translation>
+<translation id="3987993985790029246">Копировать ссылку</translation>
 <translation id="3988996860813292272">Выбор часового пояса</translation>
 <translation id="399179161741278232">Выполнен импорт</translation>
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
@@ -4082,6 +4086,7 @@
 <translation id="5486261815000869482">Подтвердите пароль</translation>
 <translation id="5486275809415469523">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к вашему экрану.</translation>
 <translation id="5486561344817861625">Симулировать перезапуск браузера</translation>
+<translation id="5487460042548760727">Переименовать профиль в "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Удалить данные</translation>
 <translation id="5488093641312826914">Объект "<ph name="COPIED_ITEM_NAME" />" скопирован</translation>
 <translation id="5488508217173274228">Варианты шифрования при синхронизации</translation>
@@ -4823,6 +4828,7 @@
 <translation id="6308937455967653460">Сохранить ссыл&amp;ку как...</translation>
 <translation id="6309443618838462258">Администратор запретил использовать этот способ ввода</translation>
 <translation id="6309510305002439352">Микрофон отключен</translation>
+<translation id="6310141306111263820">Не удалось установить профиль eSIM. Обратитесь за помощью к своему оператору.</translation>
 <translation id="6311220991371174222">Не удалось открыть профиль. Перезапустите Chrome.</translation>
 <translation id="6312403991423642364">Неизвестная ошибка сети</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Проверка безопасности выполнена 1 день назад.}one{Проверка безопасности выполнена {NUM_DAYS} день назад.}few{Проверка безопасности выполнена {NUM_DAYS} дня назад.}many{Проверка безопасности выполнена {NUM_DAYS} дней назад.}other{Проверка безопасности выполнена {NUM_DAYS} дня назад.}}</translation>
@@ -5757,6 +5763,7 @@
 <translation id="7361297102842600584">Нажмите правой кнопкой мыши, чтобы запустить плагин "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="7362387053578559123">Разрешить сайтам отправлять запрос на подключение к устройствам Bluetooth</translation>
 <translation id="7364591875953874521">Расширения, запросившие доступ</translation>
+<translation id="7364745943115323529">Транслировать...</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
 <translation id="7365076891350562061">Масштаб изображения на мониторе</translation>
 <translation id="7366316827772164604">Поиск устройств поблизости…</translation>
@@ -5959,6 +5966,7 @@
 <translation id="7582582252461552277">Предпочитать эту сеть</translation>
 <translation id="7582844466922312471">Мобильный модем</translation>
 <translation id="7583948862126372804">Количество</translation>
+<translation id="7586051298768394542">Не удалось скачать файлы распознавания речи. Голосовой ввод продолжит работать, но ваша речь будет отправляться в Google.</translation>
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
 <translation id="7589461650300748890">Осторожно!</translation>
 <translation id="7593653750169415785">Блокируются автоматически, потому что вы несколько раз их отклонили</translation>
@@ -6547,6 +6555,7 @@
 <translation id="8191230140820435481">Управление приложениями, расширениями и темами</translation>
 <translation id="8195027750202970175">Объем на диске</translation>
 <translation id="8198323535106903877">Эти приложения (<ph name="NUMBER_OF_APPS" />) будут установлены на ваше устройство</translation>
+<translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8201717382574620700">Выбрать альбомы здесь: <ph name="TOPIC_SOURCE" /></translation>
@@ -6802,7 +6811,6 @@
 <translation id="8498395510292172881">Продолжить чтение в Chrome</translation>
 <translation id="8499083585497694743">Включить микрофон</translation>
 <translation id="8502536196501630039">Чтобы использовать приложения из Google Play, сначала восстановите свои приложения. Некоторые данные могли быть потеряны.</translation>
-<translation id="850314194061055138">использовать камеру ещё раз</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8507227974644337342">Разрешение экрана</translation>
 <translation id="850875081535031620">Вредоносных программ не найдено.</translation>
@@ -7134,6 +7142,7 @@
 <translation id="8847523528195140327">Выйти из системы, когда обложка закрыта</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Никто</translation>
+<translation id="8849219423513870962">Отменить удаление профиля eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8850251000316748990">Ещё...</translation>
 <translation id="885246833287407341">Аргументы функций API</translation>
 <translation id="8853586775156634952">Карта будет сохранена только на этом устройстве.</translation>

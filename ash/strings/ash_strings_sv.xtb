@@ -140,6 +140,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2079504693865562705">Dölj appar på hyllan</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
+<translation id="2108303511227308752">Kortkommandot Alt + backsteg har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + backsteg för att använda Delete-tangenten.</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
@@ -367,6 +368,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4021716437419160885">Rulla ned</translation>
 <translation id="4028481283645788203">Du måste ange lösenord för större säkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent på översta raden om du vill använda F-tangenterna.</translation>
 <translation id="4042660782729322247">Skärmen delas</translation>
 <translation id="4057003836560082631">Webbläsarflik <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av för en app}other{Av för # appar}}</translation>
@@ -392,6 +394,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
+<translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="4294319844246081198">Hej <ph name="GIVEN_NAME" />!</translation>
@@ -400,6 +403,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4303223480529385476">Utöka statusfält</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du tryckte på kortkommandot för högkontrastläge. Vill du aktivera funktionen?</translation>
+<translation id="4322742403972824594">Kortkommandot Ctrl + Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" /> tangenten + vänsterpil för att använda Home-tangenten.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
@@ -417,6 +421,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4445159312344259901">Logga in för att låsa upp</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig avisering}other{# viktiga aviseringar}}</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
+<translation id="4451374464530248585">Kortkommandot Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + nedåtpil för att använda Page Down-tangenten.</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
 <translation id="4472575034687746823">Kom igång</translation>
@@ -708,6 +713,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
+<translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Komma igång</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>

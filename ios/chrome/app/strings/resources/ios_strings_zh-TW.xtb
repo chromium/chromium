@@ -32,7 +32,8 @@
 <translation id="1219674500290482172">無法連線至網際網路。</translation>
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
-<translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
+<translation id="1231733316453485619">要開啟同步功能嗎？</translation>
+<translation id="1242044645101871359">重新登入</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">已加入閱讀清單</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
+<translation id="1894205589103145703">登入時發生問題。</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">上次使用時間：<ph name="DAYS" /> 天前</translation>
 <translation id="2074131957428911366">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
+<translation id="2086623437239112659">你儲存的登入資訊可能已過時。</translation>
 <translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
@@ -213,7 +216,7 @@
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">網路服務</translation>
 <translation id="3178650076442119961">上次使用時間：今天</translation>
-<translation id="3181825792072797598">開啟同步處理功能</translation>
+<translation id="3181825792072797598">開啟同步功能</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5140288047769711648">Chrome 會為你儲存這組密碼，因此你不必記住密碼。</translation>
 <translation id="5150492518600715772">傳送到你的裝置</translation>
+<translation id="5168414296986405587">專為 iPadOS 打造</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5186185447130319458">私人</translation>
 <translation id="5188482106078495165">你的 Cookie 設定會套用到所有分頁。如要將新的設定套用到已開啟的分頁，請重新載入分頁。</translation>
@@ -507,7 +511,6 @@
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
-<translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6308436439357671616">可讓你拍照並上傳相片。</translation>
 <translation id="6321526113093607004">加入書籤</translation>
 <translation id="6324528485781869530">切換同步處理帳戶</translation>

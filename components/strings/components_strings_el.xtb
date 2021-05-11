@@ -1177,6 +1177,7 @@
 <translation id="5314967030527622926">Εργαλείο δημιουργίας φυλλαδίων</translation>
 <translation id="5316812925700871227">Περιστροφή προς τα αριστερά</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
+<translation id="5321288445143113935">Μεγιστοποιημένη</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> από <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Επιλογή στοιχείων επικοινωνίας</translation>
 <translation id="5327248766486351172">Όνομα</translation>
@@ -1403,6 +1404,7 @@
 <translation id="6218753634732582820">Να καταργηθεί η διεύθυνση από το Chromium;</translation>
 <translation id="622039917539443112">Παράλληλη δίπλωση</translation>
 <translation id="6221345481584921695">Πρόσφατα η Ασφαλής περιήγηση Google <ph name="BEGIN_LINK" />εντόπισε κακόβουλο λογισμικό<ph name="END_LINK" /> στον ιστότοπο <ph name="SITE" />. Οι ιστότοποι που είναι ασφαλείς υπό φυσιολογικές συνθήκες μερικές φορές προσβάλλονται από κακόβουλα λογισμικά. Το κακόβουλο περιεχόμενο προέρχεται από το <ph name="SUBRESOURCE_HOST" />, έναν γνωστό διανομέα κακόβουλου λογισμικού.</translation>
+<translation id="6232619828520900263">Το αναγνωριστικό δεν είναι έγκυρο αυτήν τη στιγμή</translation>
 <translation id="6234122620015464377">Περικοπή μετά από κάθε έγγραφο</translation>
 <translation id="6240447795304464094">Λογότυπο Google Pay</translation>
 <translation id="6241121617266208201">Απόκρυψη προτάσεων</translation>
@@ -1422,6 +1424,7 @@
 <translation id="6289939620939689042">Χρώμα σελίδας</translation>
 <translation id="6290238015253830360">Τα προτεινόμενα άρθρα σας εμφανίζονται εδώ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Διακοπή Βοηθού Google στο Chrome</translation>
 <translation id="6305205051461490394">Δεν είναι δυνατή η πρόσβαση στο <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Η ιστοσελίδα δεν είναι διαθέσιμη</translation>

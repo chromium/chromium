@@ -4470,7 +4470,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etcétera.
 
       Cada regla consta de lo siguiente:
-      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales y se les aplicarán restricciones conforme a esta condición)
+      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales; se les aplicarán restricciones conforme a esta condición)
       - Una lista de destinos definidos como URL o componentes (se podrá determinar si se pueden compartir o no los datos confidenciales con estos destinos)
       - Una lista de restricciones que se aplicarán a los datos de los orígenes
 
@@ -4482,9 +4482,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       - Controlar la función de compartir pantalla de los orígenes
 
       Puedes establecer BLOCK, ALLOW o REPORT como nivel de restricción.
-      - Si se establece el nivel de restricción como BLOCK, no se permitirá la acción. Si se establece la política <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> como verdadera, el administrador recibirá un informe sobre la acción bloqueada.
+      - Si se establece el nivel de restricción como BLOCK, no se permitirá la acción. Si se establece la política <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> como verdadera, se informará al administrador sobre la acción bloqueada.
       - Si se establece el nivel de restricción como ALLOW, se permitirá la acción.
-      Si se establece el nivel de restricción como ALLOW y la política <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> como verdadera, el administrador recibirá un informe sobre la acción bloqueada.
+      Si se establece el nivel de restricción como REPORT y la política <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> como verdadera, se informará al administrador sobre la acción.
 
       Notas:
       - La restricción de PRIVACY_SCREEN no impide que se active la pantalla de privacidad, pero sí lo hace cuando se establece la clase de restricción como BLOCK.
@@ -5503,11 +5503,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8217664958939773083">Si estableces esta política como <ph name="ENABLED" /> o no la estableces, se podrá usar el modo sin interfaz gráfica. Si estableces esta política como <ph name="DISABLED" />, no se podrá usar el modo sin interfaz gráfica.</translation>
 <translation id="8220023426952118761">Tasa de descarga deseada en kbit/s.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>
-<translation id="8234316309673661069">Advertencia: En la versión 95 de <ph name="PRODUCT_NAME" /> (aproximadamente octubre de 2021), se quitará por completo 3DES, y esta política dejará de funcionar.
+<translation id="8234316309673661069">Advertencia: 3DES se quitará por completo en la versión 95 de <ph name="PRODUCT_NAME" /> (alrededor de octubre de 2021) y esta política dejará de funcionar.
 
       Si estableces la política como verdadera, se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS. Si la estableces como falsa, se inhabilitarán los conjuntos. Si no estableces la política, se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS de forma predeterminada. En la versión 93 de <ph name="PRODUCT_NAME" />, se inhabilitarán de forma predeterminada.
 
-      En la versión 92 de <ph name="PRODUCT_NAME" />, se puede usar esta política para previsualizar el cambio y buscar incompatibilidades. En la versión 93 de <ph name="PRODUCT_NAME" /> y versiones posteriores, se puede usar para asegurar la compatibilidad de forma temporal con un servidor desactualizado. Esta es una medida provisoria, y debes volver a configurar el servidor.
+      En la versión 92 de <ph name="PRODUCT_NAME" />, se puede usar esta política para previsualizar el cambio y buscar incompatibilidades. En la versión 93 de <ph name="PRODUCT_NAME" /> y versiones posteriores, se puede usar para asegurar la compatibilidad de forma temporal con un servidor desactualizado. Esta es una medida provisoria; deberás volver a configurar el servidor.
       </translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>

@@ -3371,6 +3371,19 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se le asigna ningún valor, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas serán visibles de forma predeterminada.
       </translation>
+<translation id="5455888515928026628">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
+
+      Si se le asigna el valor -2 a esta política, coincidirá con el valor del límite de tiempo de inicio de sesión sin conexión de la pantalla de inicio de sesión dado por <ph name="POLICY" />.
+
+      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
+
+      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
+
+      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios que se hayan autenticado mediante SAML.
+
+      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="5457065417344056871">Habilitar el modo invitados en el navegador</translation>
 <translation id="5457387982448145430">Si se asigna el valor "Habilitada" a esta política, se importarán las contraseñas guardadas del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ninguna contraseña al ejecutarse por primera vez.
 
@@ -6044,6 +6057,19 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8917070657147922192">Permite que los usuarios gestionen los certificados de CA instalados.</translation>
 <translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>
+<translation id="8930064580550462145">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
+
+      Si se le asigna el valor -2 a esta política, coincidirá con el valor del límite de tiempo de inicio de sesión sin conexión de la pantalla de inicio de sesión dado por <ph name="POLICY" />.
+
+      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
+
+      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
+
+      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios que se hayan autenticado mediante GAIA sin SAML.
+
+      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="8931555638815157255">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre su versión de firmware y de SO de forma periódica.
 
       Si se inhabilita la política, los dispositivos registrados no informarán sobre su versión.</translation>

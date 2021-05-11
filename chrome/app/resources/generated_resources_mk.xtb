@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Потребно е ажурирање на Chrome OS</translation>
 <translation id="1067048845568873861">Создадено</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
+<translation id="1069355737714877171">Отстранете го профилот на eSIM наречен <ph name="PROFILE_NAME" /></translation>
 <translation id="1070377999570795893">Друга програма на компјутерот додаде екстензија што може да промени како работи Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -358,6 +359,7 @@
 <translation id="138784436342154190">Да се врати стандардната страница на стартување?</translation>
 <translation id="1388253969141979417">Дозволено им е да го користат микрофонот</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ќе се рестартира кога ќе завршат ажурирањата.</translation>
+<translation id="138900021244932468">Не се откриени профили. За да поставите нова мрежа, скенирајте го QR-кодот со камерата на уредот или внесете код за активација од операторот.</translation>
 <translation id="139013308650923562">Дозволено им е да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="1390548061267426325">Отвори како обична картичка</translation>
 <translation id="1393283411312835250">Сонце и облаци</translation>
@@ -996,6 +998,7 @@
 Инсталирајте ја апликацијата Family Link на уредот за да може да управувате со поставките на сметкава.  Ви испративме упатства по е-пошта.</translation>
 <translation id="2040460856718599782">Ах! Нешто тргна наопаку кога се обидовме да ве автентицираме. Проверете ја убаво акредитацијата и обидете се повторно.</translation>
 <translation id="2044014337866019681">Проверете дали ја потврдувате <ph name="ACCOUNT" /> за да ја отклучите сесијата.</translation>
+<translation id="2044023416777079300">Модемот не е регистриран</translation>
 <translation id="204497730941176055">Име на шаблон на сертификат на Microsoft</translation>
 <translation id="2045117674524495717">Помош за кратенка од тастатурата</translation>
 <translation id="2045969484888636535">Продолжи да блокираш колачиња</translation>
@@ -2822,6 +2825,7 @@
 <translation id="398477389655464998">Копирај го линкот до нагласената ставка</translation>
 <translation id="3987544746655539083">Продолжи да го блокираш пристапот на сајтов до локацијата</translation>
 <translation id="3987938432087324095">Извинете, не го разбрав тоа.</translation>
+<translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3988996860813292272">Изберете временска зона…</translation>
 <translation id="399179161741278232">Увезени</translation>
 <translation id="3994374631886003300">Отклучете го телефонот и приближете го за отклучување на вашиот <ph name="DEVICE_TYPE" />.</translation>
@@ -4099,6 +4103,7 @@
 <translation id="5486261815000869482">Потврди лозинка</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> го споделува вашиот екран со <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Симулирај рестартирање на прелистувач</translation>
+<translation id="5487460042548760727">Преименувајте го профилот во <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
 <translation id="5488093641312826914">Ставката „<ph name="COPIED_ITEM_NAME" />“ е копирана</translation>
 <translation id="5488508217173274228">Опции за шифрирање на синхронизираните податоци</translation>
@@ -4840,6 +4845,7 @@
 <translation id="6308937455967653460">Сними ја врс&amp;ката како…</translation>
 <translation id="6309443618838462258">Администраторот не го дозволува овој метод за внесување</translation>
 <translation id="6309510305002439352">Микрофонот е исклучен</translation>
+<translation id="6310141306111263820">Не можеше да се инсталира профилот на eSIM. За помош, контактирајте со операторот.</translation>
 <translation id="6311220991371174222">Chrome не може да се стартува, бидејќи нешто тргна наопаку при отворањето на профилот. Обидете се да го рестартирате Chrome.</translation>
 <translation id="6312403991423642364">Непозната мрежна грешка</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Безбедносната проверка беше извршена пред 1 ден}one{Безбедносната проверка беше извршена пред {NUM_DAYS} ден}other{Безбедносната проверка беше извршена пред {NUM_DAYS} дена}}</translation>
@@ -5774,6 +5780,7 @@
 <translation id="7361297102842600584">Кликнете за да го активирате приклучокот <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сајтовите може да прашуваат за да се поврзат со уреди со Bluetooth</translation>
 <translation id="7364591875953874521">Побаран е пристап</translation>
+<translation id="7364745943115323529">Емитувај...</translation>
 <translation id="7364796246159120393">Избери датотека</translation>
 <translation id="7365076891350562061">Големина на мониторот</translation>
 <translation id="7366316827772164604">Се скенираат уреди во близина…</translation>
@@ -5976,6 +5983,7 @@
 <translation id="7582582252461552277">Се претпочита оваа мрежа</translation>
 <translation id="7582844466922312471">Мобилен интернет</translation>
 <translation id="7583948862126372804">Број</translation>
+<translation id="7586051298768394542">Не може да се преземат датотеките за говор. Диктирањето и понатаму ќе работи така што вашиот глас ќе се испраќа до Google.</translation>
 <translation id="7586498138629385861">Chrome ќе продолжи да работи додека се отворени Chrome Apps.</translation>
 <translation id="7589461650300748890">Полека. Внимателно.</translation>
 <translation id="7593653750169415785">Поставкава е автоматски блокирана бидејќи неколкупати ги одбивте известувањата</translation>
@@ -6564,6 +6572,7 @@
 <translation id="8191230140820435481">Управувајте со вашите апликации, наставки и теми</translation>
 <translation id="8195027750202970175">Големина на диск</translation>
 <translation id="8198323535106903877">Ќе ги инсталираме тие <ph name="NUMBER_OF_APPS" /> апликации за вас</translation>
+<translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8199300056570174101">Својства на уредот и мрежата (услугата)</translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8201717382574620700">Изберете албуми од <ph name="TOPIC_SOURCE" /></translation>
@@ -6822,7 +6831,6 @@
 <translation id="8498395510292172881">Продолжете со читање во Chrome</translation>
 <translation id="8499083585497694743">Вклучи го звукот на микрофонот</translation>
 <translation id="8502536196501630039">За да ги користите апликациите од Google Play, мора прво да ги вратите вашите апликации. Дел од податоците можеби се загубени.</translation>
-<translation id="850314194061055138">користи ја камерата повторно</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8507227974644337342">Резолуција на екран</translation>
 <translation id="850875081535031620">Не е најден штетен софтвер</translation>
@@ -7152,6 +7160,7 @@
 <translation id="8847523528195140327">Одјави се кога капакот е затворен</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Сокриен</translation>
+<translation id="8849219423513870962">Откажете го отстранувањето на профилот на eSIM наречен <ph name="PROFILE_NAME" /></translation>
 <translation id="8850251000316748990">Прикажи повеќе…</translation>
 <translation id="885246833287407341">Аргументи за функцијата API</translation>
 <translation id="8853586775156634952">Картичкава ќе се зачува само на овој уред</translation>

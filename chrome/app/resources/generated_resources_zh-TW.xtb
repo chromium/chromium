@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">需要更新 Chrome 作業系統</translation>
 <translation id="1067048845568873861">建立時間</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
+<translation id="1069355737714877171">移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
 <translation id="1070377999570795893">電腦中的其他程式新增了一個擴充功能，可能會使 Chrome 的運作方式發生變更。
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -217,7 +218,7 @@
 <translation id="1225177025209879837">正在處理要求...</translation>
 <translation id="1227507814927581609">驗證在連線至「<ph name="DEVICE_NAME" />」時失敗。</translation>
 <translation id="1230417814058465809">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
-<translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
+<translation id="1231733316453485619">要開啟同步功能嗎？</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1233497634904001272">請再次輕觸安全金鑰，即可完成要求。</translation>
 <translation id="1233721473400465416">語言代碼</translation>
@@ -355,6 +356,7 @@
 <translation id="138784436342154190">要還原預設起始網頁嗎？</translation>
 <translation id="1388253969141979417">可以使用麥克風</translation>
 <translation id="1388728792929436380">「<ph name="DEVICE_TYPE" />」會在更新完成時重新啟動。</translation>
+<translation id="138900021244932468">找不到任何設定檔。如要設定新網路，請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼。</translation>
 <translation id="139013308650923562">可以使用裝置上安裝的字型</translation>
 <translation id="1390548061267426325">在一般分頁中開啟</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
@@ -983,6 +985,7 @@
 你可以在裝置上安裝 Family Link 應用程式，以管理這個帳戶的設定。我們已透過電子郵件將相關操作說明傳送給你。</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
+<translation id="2044023416777079300">數據機尚未註冊</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045117674524495717">鍵盤快速鍵說明</translation>
 <translation id="2045969484888636535">繼續封鎖 Cookie</translation>
@@ -2804,6 +2807,7 @@
 <translation id="398477389655464998">複製醒目顯示文字的連結</translation>
 <translation id="3987544746655539083">繼續禁止這個網站存取你的位置資訊</translation>
 <translation id="3987938432087324095">很抱歉，系統無法辨識你的語音指令。</translation>
+<translation id="3987993985790029246">複製連結</translation>
 <translation id="3988996860813292272">選取時區</translation>
 <translation id="399179161741278232">已匯入</translation>
 <translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
@@ -4080,6 +4084,7 @@
 <translation id="5486261815000869482">確認密碼</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> 正與 <ph name="TAB_NAME" /> 共用你的畫面。</translation>
 <translation id="5486561344817861625">模擬瀏覽器重新啟動</translation>
+<translation id="5487460042548760727">將設定檔重新命名為「<ph name="PROFILE_NAME" />」</translation>
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="5488093641312826914">已複製「<ph name="COPIED_ITEM_NAME" />」</translation>
 <translation id="5488508217173274228">同步資料加密的選項</translation>
@@ -4770,7 +4775,7 @@
 <translation id="625369703868467034">網路健康狀態</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6254892857036829079">完美</translation>
-<translation id="6257602895346497974">開啟同步處理功能...</translation>
+<translation id="6257602895346497974">開啟同步功能...</translation>
 <translation id="625895209797312329">禁止網站使用裝置上安裝的字型</translation>
 <translation id="6259104249628300056">探索您區域網路中的裝置</translation>
 <translation id="6262371516389954471">備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
@@ -4821,6 +4826,7 @@
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
 <translation id="6309443618838462258">系統管理員不允許這個輸入法</translation>
 <translation id="6309510305002439352">麥克風已關閉</translation>
+<translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
 <translation id="6312403991423642364">不明的網路錯誤</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
@@ -5346,7 +5352,7 @@
 <translation id="6902336033320348843">不支援的區段：<ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">將裝置加入網域</translation>
 <translation id="6903590427234129279">開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
-<translation id="6903907808598579934">開啟同步處理功能</translation>
+<translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6904344821472985372">撤銷檔案存取權</translation>
 <translation id="6904655473976120856">按下 [應用程式] 按鈕即可結束</translation>
 <translation id="6909422577741440844">要接收這部裝置所傳送的內容嗎？</translation>
@@ -5755,6 +5761,7 @@
 <translation id="7361297102842600584">以滑鼠右鍵按一下即可執行「<ph name="PLUGIN_NAME" />」</translation>
 <translation id="7362387053578559123">網站可以要求連線至藍牙裝置</translation>
 <translation id="7364591875953874521">已要求存取權</translation>
+<translation id="7364745943115323529">投放...</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="7365076891350562061">顯示器大小</translation>
 <translation id="7366316827772164604">正在尋找附近的裝置...</translation>
@@ -5957,6 +5964,7 @@
 <translation id="7582582252461552277">偏好使用這個網路</translation>
 <translation id="7582844466922312471">行動數據</translation>
 <translation id="7583948862126372804">計數</translation>
+<translation id="7586051298768394542">無法下載即時字幕檔案，語音輸入功能會繼續運作，將你的語音傳送給 Google。</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7593653750169415785">由於你拒絕通知數次而自動遭到封鎖的網站</translation>
@@ -6545,6 +6553,7 @@
 <translation id="8191230140820435481">管理你的應用程式、擴充功能和主題</translation>
 <translation id="8195027750202970175">佔磁碟容量</translation>
 <translation id="8198323535106903877">系統將為你安裝這 <ph name="NUMBER_OF_APPS" /> 個應用程式</translation>
+<translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8199300056570174101">網路 (服務) 與裝置屬性</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8201717382574620700">選取「<ph name="TOPIC_SOURCE" />」的相簿</translation>
@@ -6800,7 +6809,6 @@
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="8502536196501630039">如要使用透過 Google Play 安裝的應用程式，請先還原你的應用程式。這可能導致部分資料遺失。</translation>
-<translation id="850314194061055138">再次使用相機</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8507227974644337342">螢幕解析度</translation>
 <translation id="850875081535031620">未發現有害軟體</translation>
@@ -7129,6 +7137,7 @@
 <translation id="8847523528195140327">蓋上機蓋時登出帳戶</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>
+<translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
 <translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
 <translation id="8853586775156634952">這張卡片只會儲存在這部裝置上</translation>

@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Atualização do Chrome OS necessária</translation>
 <translation id="1067048845568873861">Criado em</translation>
 <translation id="1067922213147265141">Outros serviços do Google</translation>
+<translation id="1069355737714877171">Remover o perfil <ph name="PROFILE_NAME" /> do eSIM</translation>
 <translation id="1070377999570795893">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -358,6 +359,7 @@
 <translation id="138784436342154190">Restaurar página de inicialização padrão?</translation>
 <translation id="1388253969141979417">Permitir o uso do microfone</translation>
 <translation id="1388728792929436380">O <ph name="DEVICE_TYPE" /> será reiniciado quando as atualizações forem concluídas.</translation>
+<translation id="138900021244932468">Nenhum perfil descoberto. Para configurar uma nova rede, leia o código QR usando a câmera do dispositivo ou digite o código de ativação fornecido pela sua operadora.</translation>
 <translation id="139013308650923562">Com autorização para usar as fontes instaladas no dispositivo</translation>
 <translation id="1390548061267426325">Abrir como guia normal</translation>
 <translation id="1393283411312835250">Sol e nuvens</translation>
@@ -996,6 +998,7 @@ Caso contrário, saia agora para que as alterações na conta sejam aplicadas ne
 Para gerenciar as configurações dessa conta, instale o app Family Link no seu dispositivo.  Enviamos instruções para você por e-mail.</translation>
 <translation id="2040460856718599782">Epa! Ocorreu um erro na tentativa de autenticação. Verifique suas credenciais de login e tente novamente.</translation>
 <translation id="2044014337866019681">Você precisa verificar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
+<translation id="2044023416777079300">Modem não registrado</translation>
 <translation id="204497730941176055">Nome do modelo de certificado da Microsoft</translation>
 <translation id="2045117674524495717">Assistente de atalhos do teclado</translation>
 <translation id="2045969484888636535">Continuar bloqueando cookies</translation>
@@ -2823,6 +2826,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="398477389655464998">Copiar link para o conteúdo destacado</translation>
 <translation id="3987544746655539083">Continuar impedindo que este site acesse sua localização</translation>
 <translation id="3987938432087324095">Não entendi.</translation>
+<translation id="3987993985790029246">Copiar link</translation>
 <translation id="3988996860813292272">Selecionar fuso horário</translation>
 <translation id="399179161741278232">Importado</translation>
 <translation id="3994374631886003300">Desbloqueie seu smartphone e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
@@ -4100,6 +4104,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5486261815000869482">Confirmar senha</translation>
 <translation id="5486275809415469523">O <ph name="APP_NAME" /> está compartilhando sua tela com <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simular reinicialização do navegador</translation>
+<translation id="5487460042548760727">Renomear perfil para <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Limpar dados</translation>
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" copiado</translation>
 <translation id="5488508217173274228">Sincronizar opções de criptografia</translation>
@@ -4842,6 +4847,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6308937455967653460">Salvar &amp;link como...</translation>
 <translation id="6309443618838462258">Seu administrador não permite esse método de entrada</translation>
 <translation id="6309510305002439352">Microfone desativado</translation>
+<translation id="6310141306111263820">Não foi possível instalar o perfil do eSIM. Para receber ajuda, entre em contato com a operadora.</translation>
 <translation id="6311220991371174222">Não foi possível iniciar o Chrome porque algo deu errado ao abrir seu perfil. Tente reiniciar o Chrome.</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A confirmação de segurança foi executada há 1 dia}one{A confirmação de segurança foi executada há {NUM_DAYS} dia}other{A confirmação de segurança foi executada há {NUM_DAYS} dias}}</translation>
@@ -5776,6 +5782,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7361297102842600584">Clique com o botão direito do mouse para executar o plug-in <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Os sites podem pedir para se conectar a dispositivos Bluetooth</translation>
 <translation id="7364591875953874521">Acesso solicitado</translation>
+<translation id="7364745943115323529">Transmitir...</translation>
 <translation id="7364796246159120393">Escolher arquivo</translation>
 <translation id="7365076891350562061">Tamanho do monitor</translation>
 <translation id="7366316827772164604">Procurando dispositivos próximos…</translation>
@@ -5978,6 +5985,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7582582252461552277">Preferir esta rede</translation>
 <translation id="7582844466922312471">Dados móveis</translation>
 <translation id="7583948862126372804">Contagem</translation>
+<translation id="7586051298768394542">Não foi possível fazer o download dos arquivos de fala. O ditado continuará a funcionar e enviar sua voz para o Google.</translation>
 <translation id="7586498138629385861">O Google Chrome continuará funcionando enquanto os aplicativos do Chrome estiverem abertos.</translation>
 <translation id="7589461650300748890">Ei, tenha cuidado.</translation>
 <translation id="7593653750169415785">Bloqueado automaticamente porque você recusou as notificações algumas vezes</translation>
@@ -6567,6 +6575,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8191230140820435481">Gerenciar seus aplicativos, extensões e temas</translation>
 <translation id="8195027750202970175">Tamanho em disco</translation>
 <translation id="8198323535106903877">Instalaremos estes <ph name="NUMBER_OF_APPS" /> apps para você</translation>
+<translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8201717382574620700">Selecionar álbuns de <ph name="TOPIC_SOURCE" /></translation>
@@ -6822,7 +6831,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8498395510292172881">Continuar lendo no Chrome</translation>
 <translation id="8499083585497694743">Ativar microfone</translation>
 <translation id="8502536196501630039">Para usar apps do Google Play, primeiro você precisa restaurar seus apps. Alguns dados podem ter sido perdidos.</translation>
-<translation id="850314194061055138">usar a câmera novamente</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8507227974644337342">Resolução da tela</translation>
 <translation id="850875081535031620">Nenhum software perigoso encontrado</translation>
@@ -7152,6 +7160,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8847523528195140327">Sair quando a capa for fechada</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
+<translation id="8849219423513870962">Cancelar a remoção do perfil <ph name="PROFILE_NAME" /> do eSIM</translation>
 <translation id="8850251000316748990">Ver mais…</translation>
 <translation id="885246833287407341">Argumentos de função da API</translation>
 <translation id="8853586775156634952">O cartão será salvo apenas neste dispositivo</translation>

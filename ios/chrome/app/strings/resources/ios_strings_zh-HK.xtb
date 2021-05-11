@@ -33,6 +33,7 @@
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
+<translation id="1242044645101871359">再次登入</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">已加入閣讀清單</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
+<translation id="1894205589103145703">登入時發生問題。</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
+<translation id="2086623437239112659">您已儲存的登入資料可能已過期。</translation>
 <translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
 <translation id="5140288047769711648">Chrome 會為您儲存此密碼，因此您無需記住密碼。</translation>
 <translation id="5150492518600715772">傳送至您的裝置</translation>
+<translation id="5168414296986405587">為 iPadOS 而設</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5186185447130319458">私人</translation>
 <translation id="5188482106078495165">您的 Cookie 設定會套用至所有分頁。如要為已開啟的分頁套用新設定，請重新載入分頁。</translation>
@@ -507,7 +511,6 @@
 <translation id="6255097610484507482">編輯信用卡</translation>
 <translation id="6284652193729350524">為<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6293101329759844770">如要啟用「安全瀏覽」功能，請開啟「<ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />」，並輕按 [安全瀏覽]。</translation>
-<translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6308436439357671616">這樣您便可拍攝並上載相片。</translation>
 <translation id="6321526113093607004">新增至「書籤」</translation>
 <translation id="6324528485781869530">切換同步帳戶</translation>

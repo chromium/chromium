@@ -3343,6 +3343,19 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 
       Politika ayarlanmazsa kart görünürlüğünü kullanıcı kontrol edebilir. Varsayılan ayarda kartlar görünür.
       </translation>
+<translation id="5455888515928026628">Kilit ekranı üzerinden giriş yapılırken <ph name="PRODUCT_OS_NAME" />, bir sunucu (çevrimiçi) veya önbelleğe alınmış bir şifre (çevrimdışı) ile kimlik doğrulaması yapabilir.
+
+      Bu politika, -2 değerine ayarlandığında <ph name="POLICY" /> politikasının giriş ekranı çevrimdışı oturum açma süre sınırının değeriyle eşleşir.
+
+      Politika ayarlanmazsa veya -1 değerine ayarlanırsa kilit ekranında çevrimiçi kimlik doğrulamayı zorunlu kılmayıp kullanıcının çevrimdışı olarak kimlik doğrulama yapmasına izin verir. Bu izin, bu politikadan farklı bir nedenle çevrimiçi kimlik doğrulama zorunlu kılınana kadar geçerli olur.
+
+      Politika, 0 değerine ayarlanırsa çevrimiçi kimlik doğrulama her zaman zorunlu tutulur.
+
+      Bu politika başka herhangi bir değere ayarlandığında, kullanıcının kilit ekranı üzerinden giriş yapmak için çevrimiçi kimlik doğrulamayı tekrar kullanması gereken, en son çevrimiçi kimlik doğrulama işleminden beri geçen gün sayısını belirtir.
+
+      Bu politika SAML kullanarak kimlik doğrulaması yapan kullanıcıları etkiler.
+
+      Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="5457065417344056871">Tarayıcıda misafir modunu etkinleştir</translation>
 <translation id="5457387982448145430">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıda kayıtlı şifreler ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırmada aktarılmaz.
 
@@ -5972,6 +5985,19 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8917070657147922192">Kullanıcıların yüklü CA sertifikalarını yönetmelerine izin ver.</translation>
 <translation id="8919100556245407184"><ph name="PRODUCT_OS_NAME" /> sürümü, belirtilen <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> sürümünden düşükse kullanıcı oturumunun otomatik güncelleme süre sonu yayınından kaç gün sonra kapatılacağı</translation>
 <translation id="8919369436496201075">Cihazın LTS güncellemelerini almasına izin ver</translation>
+<translation id="8930064580550462145">Kilit ekranı üzerinden giriş yapılırken <ph name="PRODUCT_OS_NAME" />, bir sunucu (çevrimiçi) veya önbelleğe alınmış bir şifre (çevrimdışı) ile kimlik doğrulaması yapabilir.
+
+      Bu politika, -2 değerine ayarlandığında <ph name="POLICY" /> politikasının giriş ekranı çevrimdışı oturum açma süre sınırının değeriyle eşleşir.
+
+      Politika ayarlanmazsa veya -1 değerine ayarlanırsa kilit ekranında çevrimiçi kimlik doğrulamayı zorunlu kılmayıp kullanıcının çevrimdışı olarak kimlik doğrulama yapmasına izin verir. Bu izin, bu politikadan farklı bir nedenle çevrimiçi kimlik doğrulama zorunlu kılınana kadar geçerli olur.
+
+      Politika, 0 değerine ayarlanırsa çevrimiçi kimlik doğrulama her zaman zorunlu tutulur.
+
+      Bu politika başka herhangi bir değere ayarlandığında, kullanıcının kilit ekranı üzerinden giriş yapmak için çevrimiçi kimlik doğrulamayı tekrar kullanması gereken, en son çevrimiçi kimlik doğrulama işleminden beri geçen gün sayısını belirtir.
+
+      Bu politika; kimlik doğrulaması, SAML olmadan GAIA kullanılarak yapılan kullanıcıları etkiler.
+
+      Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="8931555638815157255">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar düzenli olarak işletim sistemi ve donanım yazılımı sürümlerini bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar sürüm bilgisi vermez.</translation>

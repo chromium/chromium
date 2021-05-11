@@ -3347,6 +3347,19 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non viene impostato, l'utente può controllare la visibilità delle schede. Nell'impostazione predefinita, le schede sono visibili.
       </translation>
+<translation id="5455888515928026628">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
+
+      Se per questo criterio viene impostato il valore -2, verrà usato lo stesso valore del limite relativo al tempo di accesso offline nella schermata di accesso del criterio <ph name="POLICY" />.
+
+      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
+
+      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
+
+      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
+
+      Questo criterio viene applicato per gli utenti che si sono autenticati tramite SAML.
+
+      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="5457065417344056871">Attiva modalità ospite nel browser</translation>
 <translation id="5457387982448145430">Se il criterio viene impostato su Attivato, le password salvate nel precedente browser predefinito verranno importate alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, nessuna password salvata errà importata alla prima esecuzione.
 
@@ -4436,7 +4449,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
 <translation id="6922498040906800267">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
-      La fuga di dati può verificarsi, ad esempio, tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione dello schermo o l'acquisizione di screenshot.
+      La fuga di dati può verificarsi, ad esempio, tramite le operazioni di copia e incolla di dati, il trasferimento di file, la stampa, la condivisione dello schermo o l'acquisizione di screenshot.
 
       Ogni regola prevede quanto segue:
       - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
@@ -4451,9 +4464,9 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       - Controllare la condivisione schermo di tutte le origini.
 
       Il livello di limitazione può essere impostato su BLOCK, su ALLOW o su REPORT.
-      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su Vero, l'azione bloccata sarà segnalata all'amministratore.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita. Se <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su True, l'azione bloccata sarà segnalata all'amministratore.
       - Se il livello di limitazione è impostato su ALLOW, l'azione sarà consentita.
-      - Se il livello di limitazione è impostato su REPORT e <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su Vero, l'azione sarà segnalata all'amministratore.
+      - Se il livello di limitazione è impostato su REPORT e <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su True, l'azione sarà segnalata all'amministratore.
 
       Note:
       - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la Schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
@@ -5477,9 +5490,9 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8217664958939773083">Se questo criterio viene impostato su <ph name="ENABLED" /> o se non viene configurato, è possibile usare la modalità headless. Se questo criterio viene impostato su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
-<translation id="8234316309673661069">Attenzione: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (circa a ottobre 2021) e questo criterio smetterà di funzionare per allora.
+<translation id="8234316309673661069">Attenzione: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (indicativamente a ottobre 2021); in quel momento, questo criterio smetterà di funzionare.
 
-      Se il criterio è impostato su vero, le suite di crittografia 3DES in TLS saranno attivate. Se è impostato su falso, saranno disattivate. Se il criterio non viene impostato, al momento le suite di crittografia 3DES sono attivate per impostazione predefinita. Saranno disattivate per impostazione predefinita in <ph name="PRODUCT_NAME" /> 93.
+      Se il criterio è impostato su true, le suite di crittografia 3DES in TLS saranno attivate. Se è impostato su false, saranno disattivate. Se il criterio non viene impostato, al momento le suite di crittografia 3DES sono attivate per impostazione predefinita. Saranno disattivate per impostazione predefinita in <ph name="PRODUCT_NAME" /> 93.
 
       In <ph name="PRODUCT_NAME" /> 92, questo criterio potrebbe essere usato per visualizzare in anteprima la modifica e testare le eventuali incompatibilità. In <ph name="PRODUCT_NAME" /> 93 e versioni successive, potrebbe essere usato per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
       </translation>
@@ -5985,6 +5998,19 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8917070657147922192">Consenti agli utenti di gestire i certificati CA installati.</translation>
 <translation id="8919100556245407184">Il periodo di tempo, in giorni, dopo il post di scadenza dell'aggiornamento automatico trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="8919369436496201075">Consenti al dispositivo di ricevere aggiornamenti LTS</translation>
+<translation id="8930064580550462145">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
+
+      Se per questo criterio viene impostato il valore -2, verrà usato lo stesso valore del limite relativo al tempo di accesso offline nella schermata di accesso del criterio <ph name="POLICY" />.
+
+      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
+
+      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
+
+      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
+
+      Questo criterio viene applicato per gli utenti che si sono autenticati tramite GAIA senza SAML.
+
+      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="8931555638815157255">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>

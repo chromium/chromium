@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Потребно је ажурирање Chrome ОС-а</translation>
 <translation id="1067048845568873861">Направљено</translation>
 <translation id="1067922213147265141">Друге Google услуге</translation>
+<translation id="1069355737714877171">Уклоните eSIM профил <ph name="PROFILE_NAME" /></translation>
 <translation id="1070377999570795893">Други програм на рачунару је додао додатак који може да промени начин на који Chrome функционише.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -357,6 +358,7 @@
 <translation id="138784436342154190">Желите да вратите подразумевану полазну страницу?</translation>
 <translation id="1388253969141979417">Дозвољено им је коришћење микрофона</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ће се рестартовати када се ажурирања заврше.</translation>
+<translation id="138900021244932468">Није откривен ниједан профил. Да бисте подесили нову мрежу, скенирајте QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера.</translation>
 <translation id="139013308650923562">Имају дозволу да користе фонтове инсталиране на уређају</translation>
 <translation id="1390548061267426325">Отвори као уобичајену картицу</translation>
 <translation id="1393283411312835250">Сунце и облаци</translation>
@@ -982,6 +984,7 @@
 Можете да управљате подешавањима овог налога ако инсталирате апликацију Family Link на уређају.  Послали смо вам упутства у имејлу.</translation>
 <translation id="2040460856718599782">Упс! Нешто је пошло наопако док смо покушавали да потврдимо вашу аутентичност. Проверите поново акредитиве за пријављивање и покушајте поново.</translation>
 <translation id="2044014337866019681">Уверите се да верификујете <ph name="ACCOUNT" /> да бисте откључали сесију.</translation>
+<translation id="2044023416777079300">Модем није регистрован</translation>
 <translation id="204497730941176055">Назив шаблона Microsoft сертификата</translation>
 <translation id="2045117674524495717">Помоћник за тастерске пречице</translation>
 <translation id="2045969484888636535">Настави са блокирањем колачића</translation>
@@ -2805,6 +2808,7 @@
 <translation id="398477389655464998">Копирај линк до истакнутог текста</translation>
 <translation id="3987544746655539083">Настави да блокираш приступ локацији за овај сајт</translation>
 <translation id="3987938432087324095">Жао нам је, нисмо вас чули.</translation>
+<translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3988996860813292272">Изаберите временску зону</translation>
 <translation id="399179161741278232">Увезени</translation>
 <translation id="3994374631886003300">Откључајте телефон и приближите га да бисте откључали <ph name="DEVICE_TYPE" />.</translation>
@@ -4081,6 +4085,7 @@
 <translation id="5486261815000869482">Потврдите лозинку</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> дели екран са <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Симулирај поновно покретање прегледача</translation>
+<translation id="5487460042548760727">Преименујте профил у <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Обриши податке</translation>
 <translation id="5488093641312826914">Ставка „<ph name="COPIED_ITEM_NAME" />“ је копирана</translation>
 <translation id="5488508217173274228">Опције шифровања синхронизованих података</translation>
@@ -4823,6 +4828,7 @@
 <translation id="6308937455967653460">Сачувај ли&amp;нк као...</translation>
 <translation id="6309443618838462258">Администратор не дозвољава овај метод уноса</translation>
 <translation id="6309510305002439352">Дозвола за микрофон је искључена</translation>
+<translation id="6310141306111263820">Инсталирање eSIM профила није успело. Обратите се мобилном оператеру да бисте потражили помоћ.</translation>
 <translation id="6311220991371174222">Не можемо да покренемо Chrome јер је дошло до проблема при отварању профила. Пробајте поново да покренете Chrome.</translation>
 <translation id="6312403991423642364">Непозната грешка на мрежи</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Безбедносна провера је покренута пре 1 дан}one{Безбедносна провера је покренута пре {NUM_DAYS} дан}few{Безбедносна провера је покренута пре {NUM_DAYS} дана}other{Безбедносна провера је покренута пре {NUM_DAYS} дана}}</translation>
@@ -5754,6 +5760,7 @@
 <translation id="7361297102842600584">Кликните десним тастером да бисте покренули <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сајтови могу да траже да се повезују са Bluetooth уређајима</translation>
 <translation id="7364591875953874521">Затражен је приступ</translation>
+<translation id="7364745943115323529">Пребацуј...</translation>
 <translation id="7364796246159120393">Одабери датотеку</translation>
 <translation id="7365076891350562061">Величина монитора</translation>
 <translation id="7366316827772164604">Траже се уређаји у близини…</translation>
@@ -5956,6 +5963,7 @@
 <translation id="7582582252461552277">Подеси као приоритетну мрежу</translation>
 <translation id="7582844466922312471">податке за мобилне уређаје</translation>
 <translation id="7583948862126372804">Број гласова</translation>
+<translation id="7586051298768394542">Преузимање фајлова говора није успело. Диктирање ће и даље радити слањем вашег гласа Google-у.</translation>
 <translation id="7586498138629385861">Chrome ће наставити да ради док су Chrome апликације отворене.</translation>
 <translation id="7589461650300748890">Полако. Будите опрезни.</translation>
 <translation id="7593653750169415785">Блокирано је аутоматски јер сте одбили обавештења неколико пута</translation>
@@ -6545,6 +6553,7 @@
 <translation id="8191230140820435481">Управљање апликацијама, додацима и темама</translation>
 <translation id="8195027750202970175">Величина на диску</translation>
 <translation id="8198323535106903877">Инсталираћемо вам те апликације (<ph name="NUMBER_OF_APPS" />)</translation>
+<translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8201717382574620700">Изаберите албуме: <ph name="TOPIC_SOURCE" /></translation>
@@ -6800,7 +6809,6 @@
 <translation id="8498395510292172881">Наставите да читате у Chrome-у</translation>
 <translation id="8499083585497694743">Укључи звук микрофона</translation>
 <translation id="8502536196501630039">Да бисте користили апликације са Google Play-а, прво морате да вратите апликације. Неки подаци су можда изгубљени.</translation>
-<translation id="850314194061055138">опет користи камеру</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8507227974644337342">Резолуција екрана</translation>
 <translation id="850875081535031620">Није пронађен никакав штетан софтвер</translation>
@@ -7131,6 +7139,7 @@
 <translation id="8847523528195140327">Одјави ме када се поклопац затвори</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скривено</translation>
+<translation id="8849219423513870962">Откажите уклањање eSIM профила <ph name="PROFILE_NAME" /></translation>
 <translation id="8850251000316748990">Прикажи више...</translation>
 <translation id="885246833287407341">Променљиве за API функцију</translation>
 <translation id="8853586775156634952">Ова картица ће се сачувати само на овом уређају</translation>

@@ -22,6 +22,7 @@
 <translation id="1911763535808217981">இதை முடக்கினால், நீங்கள் Chromiumமில் உள்நுழையாமலேயே Gmail போன்ற Google தளங்களில் உள்நுழையலாம்</translation>
 <translation id="1929939181775079593">Chromium பதிலளிக்கவில்லை. இப்போது மீண்டும் தொடங்கவா?</translation>
 <translation id="1966382378801805537">இயல்புநிலை உலாவியைக் கண்டறியவோ அமைக்கவோ Chromium ஆல் முடியவில்லை</translation>
+<translation id="1981611865800294956">&amp;Chromium OSஸைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>
 <translation id="2008474315282236005">வெளியேறினால், இந்தச் சாதனத்திலிருந்து ஓர் உருப்படி நீக்கப்படும். பின்னர் தரவை மீட்டமைக்க, Chromium இல் <ph name="USER_EMAIL" /> எனும் முகவரியின் மூலம் உள்நுழையவும்.</translation>
 <translation id="2020032459870799438">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் மற்ற கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromiumமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="2174178932569897599">Chromiumமைப் பிரத்தியேகப்படுத்து</translation>
@@ -119,6 +120,7 @@
 <translation id="4788777615168560705">Chromium உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. 24 மணிநேரத்திற்குப் பிறகு மீண்டும் முயலவும் அல்லது <ph name="BEGIN_LINK" />உங்கள் Google கணக்கில் கடவுச்சொற்களைச் சரிபார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">இது Google தேடலில் பயன்படுத்தப்படும் அதே பிழைதிருத்தியைப் பயன்படுத்துகிறது. உலாவியில் நீங்கள் உள்ளிடும் உரை Googleளுக்கு அனுப்பப்படும். இதை அமைப்புகளில் எப்போது வேண்டுமானாலும் மாற்றலாம்.</translation>
 <translation id="4888717733111232871">mDNS ட்ராஃபிக்கை அனுமதிப்பதற்கான, Chromium க்கான உள்வரும் விதி.</translation>
+<translation id="4893347770495441059">&amp;Chromiumமைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>
 <translation id="4943838377383847465">Chromium பின்புல பயன்முறையில் இயங்குகிறது.</translation>
 <translation id="4987820182225656817">எதையும் விட்டுசெல்லாமல் கெஸ்ட் பயனர்கள் Chromium ஐப் பயன்படுத்தலாம்.</translation>
 <translation id="4994636714258228724">உங்களை Chromium இல் சேர்க்கவும்</translation>
@@ -274,6 +276,7 @@
 <translation id="91086099826398415">புதிய Chromium &amp;தாவலில் இணைப்பைத் திற</translation>
 <translation id="911206726377975832">உங்கள் உலாவிய தரவையும் நீக்க வேண்டுமா?</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />ஐ அணுக Chromium அதை மாற்று உலாவியில் திறக்கும்படி உங்கள் சிஸ்டம் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
+<translation id="9185526690718004400">&amp;Chromiumமைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9214764063801632699">Chromium OS சிஸ்டம்</translation>
 <translation id="93478295209880648">Windows XP அல்லது Windows Vista ஆகியவற்றில் Chromium இனி ஆதரிக்கப்படாது என்பதால், அது சரியாகச் செயல்படாது</translation>

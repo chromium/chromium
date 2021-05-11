@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome үйлдлийн системийн шинэчлэлт шаардлагатай</translation>
 <translation id="1067048845568873861">Үүсгэсэн</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> нэртэй eSIM профайлыг хасах</translation>
 <translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -357,6 +358,7 @@
 <translation id="138784436342154190">Өгөгдмөл эхлүүлэх хуудсыг сэргээх үү?</translation>
 <translation id="1388253969141979417">Таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1388728792929436380">Шинэчилж дуусахад <ph name="DEVICE_TYPE" /> дахин эхэлнэ.</translation>
+<translation id="138900021244932468">Ямар ч профайл олдсонгүй. Шинэ сүлжээ тохируулахын тулд төхөөрөмжийн камерыг ашиглан QR кодыг скан хийх эсвэл таны оператор компаниас өгсөн идэвхжүүлэх кодыг оруулна уу.</translation>
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390548061267426325">Энгийн цонх хэлбэрээр нээх</translation>
 <translation id="1393283411312835250">Нар, үүл</translation>
@@ -991,6 +993,7 @@
 Төхөөрөмж дээрээ Family Link аппыг суулгаснаар та энэ бүртгэлийн тохиргоог удирдах боломжтой.  Бид танд имэйлээр зааварчилгааг илгээсэн болно.</translation>
 <translation id="2040460856718599782">Өө! Таныг таниулахыг оролдож байх үед ямар нэг зүйл ажиллахаа больсон байна. Бүртгэлийн мэдээллээ давхар шалгаад дахин оролдож үзнэ үү.</translation>
 <translation id="2044014337866019681">Та харилцан үйлдлийн түгжээг тайлахын тулд <ph name="ACCOUNT" />-г баталгаажуулж байгаа эсэхээ шалгана уу.</translation>
+<translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="204497730941176055">Майкрософт гэрчилгээний загварын нэр</translation>
 <translation id="2045117674524495717">Товчлуурын шууд холбоосын туслагч</translation>
 <translation id="2045969484888636535">Үүсмэл мэдээллийг үргэ</translation>
@@ -2815,6 +2818,7 @@
 <translation id="398477389655464998">Тодруулсан текстийн холбоосыг хуулах</translation>
 <translation id="3987544746655539083">Байршилд тань хандахыг энэ сайтад үргэлжлүүлэн хориглох</translation>
 <translation id="3987938432087324095">Уучлаарай, сонсож чадсангүй.</translation>
+<translation id="3987993985790029246">Холбоосыг хуулах</translation>
 <translation id="3988996860813292272">Цагийн бүс сонгох</translation>
 <translation id="399179161741278232">Импортолж авсан</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утасныхаа түгжээг тайлж, ойртуулна уу.</translation>
@@ -4092,6 +4096,7 @@
 <translation id="5486261815000869482">Нууц үгийг баталгаажуул</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> нь таны дэлгэцийг <ph name="TAB_NAME" />-тай хуваалцаж байна.</translation>
 <translation id="5486561344817861625">Simulate Browser Restart</translation>
+<translation id="5487460042548760727">Профайлын нэрийг <ph name="PROFILE_NAME" /> болгож өөрчлөх</translation>
 <translation id="5487521232677179737">Өгөгдлийг устгах</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />'-г хуулсан</translation>
 <translation id="5488508217173274228">Шифрлэлтийн сонголтуудыг синк хийх</translation>
@@ -4833,6 +4838,7 @@
 <translation id="6308937455967653460">Холбоосыг ... хэлбэрээр хадгалах</translation>
 <translation id="6309443618838462258">Таны администратор энэ оруулах аргыг зөвшөөрдөггүй</translation>
 <translation id="6309510305002439352">Микрофоныг унтраасан байна.</translation>
+<translation id="6310141306111263820">eSIM профайлыг суулгаж чадсангүй. Тусламж авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6311220991371174222">Таны профайлыг нээх явцад алдаа гарсан тул Chrome-г эхлүүлэх боломжгүй байна. Chrome-г дахин эхлүүлээд үзнэ үү.</translation>
 <translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Аюулгүй байдлын шалгалтыг 1 өдрийн өмнө хийсэн}other{Аюулгүй байдлын шалгалтыг {NUM_DAYS} өдрийн өмнө хийсэн}}</translation>
@@ -5767,6 +5773,7 @@
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд барууныг дарна уу</translation>
 <translation id="7362387053578559123">Сайтууд Bluetooth төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="7364591875953874521">Хандах хүсэлт тавьсан</translation>
+<translation id="7364745943115323529">Дамжуулах...</translation>
 <translation id="7364796246159120393">Файлаа сонгоно уу</translation>
 <translation id="7365076891350562061">Мониторын хэмжээ</translation>
 <translation id="7366316827772164604">Ойролцоох төхөөрөмжүүдийг скан хийж байна...</translation>
@@ -5969,6 +5976,7 @@
 <translation id="7582582252461552277">Энэ сүлжээг сонгох</translation>
 <translation id="7582844466922312471">Хөдөлгөөнт мэдээлэл</translation>
 <translation id="7583948862126372804">Тоо</translation>
+<translation id="7586051298768394542">Ярианы файлуудыг татах боломжгүй. Дуу хоолойгоор бичих онцлог нь таны дуу хоолойг Google-д илгээх замаар үргэлжлүүлэн ажиллана.</translation>
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7593653750169415785">Та хэд хэдэн удаа мэдэгдлээс татгалзсан тул автоматаар хориглосон</translation>
@@ -6554,6 +6562,7 @@
 <translation id="8191230140820435481">Програм, өргөтгөл, theme-дээ тохиргоо хийх</translation>
 <translation id="8195027750202970175">Дискийн хэмжээ</translation>
 <translation id="8198323535106903877">Бид эдгээр <ph name="NUMBER_OF_APPS" /> аппыг танд зориулан суулгах болно</translation>
+<translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> цомгуудыг сонгоно уу</translation>
@@ -6809,7 +6818,6 @@
 <translation id="8498395510292172881">Chrome-д үргэлжлүүлэн унших</translation>
 <translation id="8499083585497694743">Микрофоны дууг нээх</translation>
 <translation id="8502536196501630039">Та Google Play-н аппуудыг ашиглахын тулд эхлээд аппуудаа сэргээх шаардлагатай. Зарим өгөгдлөө алдаж болзошгүй.</translation>
-<translation id="850314194061055138">камерыг дахин ашиглах</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8507227974644337342">Дэлгэцийн нягтрал</translation>
 <translation id="850875081535031620">Хортой программ олдсонгүй</translation>
@@ -7136,6 +7144,7 @@
 <translation id="8847523528195140327">Хавтас хаалттай үед гарах</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Нуусан</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> нэртэй eSIM профайлыг хасах үйлдлийг цуцлах</translation>
 <translation id="8850251000316748990">Дэлгэрэнгүй үзэх...</translation>
 <translation id="885246833287407341">API функцийн аргумент</translation>
 <translation id="8853586775156634952">Энэ картыг зөвхөн энэ төхөөрөмжид хадгална</translation>

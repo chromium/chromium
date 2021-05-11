@@ -2443,7 +2443,7 @@
 <translation id="3639220004740062347">退出阅读器模式</translation>
 <translation id="3640214691812501263">要为<ph name="USER_NAME" />添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="3640613767643722554">训练 Google 助理识别您的声音</translation>
-<translation id="3641456520301071208">网站可以请求使用您的位置信息</translation>
+<translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">检测到<ph name="USB_DEVICE_NAME" /></translation>
@@ -2800,6 +2800,7 @@
 <translation id="398477389655464998">复制指向突出显示的内容的链接</translation>
 <translation id="3987544746655539083">继续禁止此网站使用您的位置信息</translation>
 <translation id="3987938432087324095">抱歉，没听清。</translation>
+<translation id="3987993985790029246">复制链接</translation>
 <translation id="3988996860813292272">选择时区</translation>
 <translation id="399179161741278232">已导入</translation>
 <translation id="3994374631886003300">请解锁您的手机并将它靠近您的 <ph name="DEVICE_TYPE" />，以解锁此设备。</translation>
@@ -3031,7 +3032,7 @@
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{显示}other{全部显示}}</translation>
 <translation id="4289372044984810120">您可在此处管理自己的帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">概述</translation>
-<translation id="4290791284969893584">关闭某个网页后，您已在其中启动的任务可能会无法完成</translation>
+<translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="4295072614469448764">应用已可在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="4295839147292213505">您可通过计算机收发短信、共享互联网连接、回复对话通知以及利用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">请重新登录，以确认您的帐号 (<ph name="USER_EMAIL" />) 可用于 Chrome 和 Google Play 中的网站、应用和扩展程序。您还可以移除此帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -3590,7 +3591,7 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4921290200821452703">致家长：学校帐号信息</translation>
 <translation id="4921348630401250116">文字转语音</translation>
-<translation id="4921809350408880559">您的最新文档和建议文档是系统根据您曾在使用 Google 云端硬盘时进行的活动向您显示的。
+<translation id="4921809350408880559">您的最新文档和建议文档是系统根据您之前使用 Google 云端硬盘的活动记录向您显示的。
         <ph name="BREAK" />
         <ph name="BREAK" />
         如需了解 Google 云端硬盘会收集哪些数据及相应原因，请访问<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />。</translation>
@@ -4889,7 +4890,7 @@
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6399774419735315745">间谍</translation>
-<translation id="6400510847800135340">这项内容是系统根据您曾在使用 Google 服务时进行的活动向您显示的。您可在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上查看/删除您的数据以及更改您的设置。
+<translation id="6400510847800135340">这项内容是系统根据您以前使用 Google 服务的活动记录向您显示的。您可在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上查看/删除您的数据以及更改您的设置。
         <ph name="BREAK" />
         <ph name="BREAK" />
         如需了解 Google 会收集哪些数据及相应原因，请访问 <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" />。</translation>
@@ -5751,6 +5752,7 @@
 <translation id="7361297102842600584">右键点击即可运行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">网站可以请求连接到蓝牙设备</translation>
 <translation id="7364591875953874521">已请求访问权限</translation>
+<translation id="7364745943115323529">投射…</translation>
 <translation id="7364796246159120393">选择文件</translation>
 <translation id="7365076891350562061">显示器上的内容大小</translation>
 <translation id="7366316827772164604">正在搜寻附近的设备…</translation>
@@ -6796,7 +6798,6 @@
 <translation id="8498395510292172881">继续在 Chrome 中阅读</translation>
 <translation id="8499083585497694743">将麦克风取消静音</translation>
 <translation id="8502536196501630039">要使用来自 Google Play 的应用，您必须先恢复自己的应用。某些数据可能已丢失。</translation>
-<translation id="850314194061055138">再次使用摄像头</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8507227974644337342">屏幕分辨率</translation>
 <translation id="850875081535031620">未发现任何有害软件</translation>
@@ -7177,7 +7178,7 @@
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8899851313684471736">在新窗口中打开链接(&amp;W)</translation>
 <translation id="8900413463156971200">启用移动网络</translation>
-<translation id="8901994452417867840">已成功添加配置文件。此设备的所有用户都可以使用该连接。</translation>
+<translation id="8901994452417867840">已成功添加配置文件。此设备的所有用户都可以连接此网络。</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您备份自己的数据并在截止日期前退还此 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">打开“随选朗读”设置</translation>
 <translation id="8903263458134414071">请选择要登录的帐号</translation>

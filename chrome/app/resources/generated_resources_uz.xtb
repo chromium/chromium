@@ -2812,6 +2812,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="398477389655464998">Havolani tanlangan matnga nusxalash</translation>
 <translation id="3987544746655539083">Bu sayt uchun joylashuv axborotiga hali ham ruxsat berilmasin</translation>
 <translation id="3987938432087324095">Yaxshi eshitilmadi.</translation>
+<translation id="3987993985790029246">Nusxalash</translation>
 <translation id="3988996860813292272">Vaqt mintaqasini tanlang</translation>
 <translation id="399179161741278232">Import qilindi</translation>
 <translation id="3994374631886003300">Telefoningizni qulfdan chiqaring va uni <ph name="DEVICE_TYPE" /> qurilmasiga yaqinlashtiring.</translation>
@@ -5766,6 +5767,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7361297102842600584">“<ph name="PLUGIN_NAME" />” plaginini faollashtirish uchun sichqonchaning o‘ng tugmasini bosing</translation>
 <translation id="7362387053578559123">Saytlar Bluetooth qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="7364591875953874521">Ruxsat talab qiladigan kengaytmalar</translation>
+<translation id="7364745943115323529">Translatsiya...</translation>
 <translation id="7364796246159120393">Fayl tanlang</translation>
 <translation id="7365076891350562061">Monitor oʻlchami</translation>
 <translation id="7366316827772164604">Atrofdagi qurilmalar qidirilmoqda...</translation>
@@ -6812,7 +6814,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8498395510292172881">Mutolaani Chromeda davom ettirish</translation>
 <translation id="8499083585497694743">Mikrofon ovozini yoqish</translation>
 <translation id="8502536196501630039">Google Play ilovalaridan foydalanish uchun, avvalo, ilovalaringizni tiklashingiz lozim. Ba’zi ma’lumotlar yo‘qolishi mumkin.</translation>
-<translation id="850314194061055138">kamerani qayta ishlatish</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8507227974644337342">Ekrandagi tasvir tiniqligi</translation>
 <translation id="850875081535031620">Birorta ham zararli dastur topilmadi</translation>

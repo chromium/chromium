@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Оновіть ОС Chrome</translation>
 <translation id="1067048845568873861">Створено</translation>
 <translation id="1067922213147265141">Інші сервіси Google</translation>
+<translation id="1069355737714877171">Видалити профіль eSIM-карти під назвою "<ph name="PROFILE_NAME" />"</translation>
 <translation id="1070377999570795893">Інша програма на вашому комп’ютері додала розширення, яке може впливати на роботу Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -360,6 +361,7 @@
 <translation id="138784436342154190">Відновити стартову сторінку за умовчанням?</translation>
 <translation id="1388253969141979417">Дозволено використовувати мікрофон</translation>
 <translation id="1388728792929436380">Пристрій <ph name="DEVICE_TYPE" /> перезапуститься після оновлення.</translation>
+<translation id="138900021244932468">Профілів не знайдено. Щоб налаштувати нову мережу, камерою пристрою зіскануйте QR-код або введіть код активації, який надав оператор.</translation>
 <translation id="139013308650923562">Дозволено використовувати шрифти, установлені на пристрої</translation>
 <translation id="1390548061267426325">Відкрити як звичайну вкладку</translation>
 <translation id="1393283411312835250">Сонце та хмари</translation>
@@ -998,6 +1000,7 @@
 Щоб керувати налаштуваннями облікового запису, можна встановити на пристрої додаток Family Link.  Ми надіслали вказівки в електронному листі.</translation>
 <translation id="2040460856718599782">На жаль, під час спроби автентифікації сталася помилка. Ретельно перевірте свої облікові дані для входу та повторіть спробу.</translation>
 <translation id="2044014337866019681">Переконайтеся, що підтверджуєте обліковий запис <ph name="ACCOUNT" />, щоб розблокувати цей сеанс.</translation>
+<translation id="2044023416777079300">Модем не зареєстровано</translation>
 <translation id="204497730941176055">Ім'я шаблону сертифіката Microsoft</translation>
 <translation id="2045117674524495717">Довідник із комбінацій клавіш</translation>
 <translation id="2045969484888636535">Продовжити блокування файлів cookie</translation>
@@ -2509,7 +2512,7 @@
 <translation id="3688526734140524629">Змінити версію</translation>
 <translation id="3688578402379768763">Оновлено</translation>
 <translation id="3688794912214798596">Змінити мови…</translation>
-<translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
+<translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="3690369331356918524">Попереджає, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="3691231116639905343">Додатки для клавіатури</translation>
 <translation id="3691267899302886494">Сайт <ph name="HOST" /> хоче отримати доступ до вашого екрана</translation>
@@ -2824,6 +2827,7 @@
 <translation id="398477389655464998">Копіювати посилання на виділений текст</translation>
 <translation id="3987544746655539083">Надалі забороняти цьому сайту доступ до ваших геоданих</translation>
 <translation id="3987938432087324095">Незрозуміло.</translation>
+<translation id="3987993985790029246">Копіювати</translation>
 <translation id="3988996860813292272">Вибір часового поясу</translation>
 <translation id="399179161741278232">Імпортовано</translation>
 <translation id="3994374631886003300">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" />, розблокуйте свій телефон і розташуйте його ближче до пристрою.</translation>
@@ -4101,6 +4105,7 @@
 <translation id="5486261815000869482">Підтвердьте пароль</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> показує ваш екран із вкладкою "<ph name="TAB_NAME" />".</translation>
 <translation id="5486561344817861625">Імітувати перезапуск веб-переглядача</translation>
+<translation id="5487460042548760727">Перейменувати профіль на "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
 <translation id="5488093641312826914">Елемент "<ph name="COPIED_ITEM_NAME" />" скопійовано</translation>
 <translation id="5488508217173274228">Варіанти шифрування синхронізації</translation>
@@ -4462,7 +4467,7 @@
 <translation id="5889282057229379085">Максимальна кількість проміжних ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Основні мережі Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
-<translation id="5896749729057314184">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивовано, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
+<translation id="5896749729057314184">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
 <translation id="590036993063074298">Відомості про якість трансляції</translation>
 <translation id="5901069264981746702"><ph name="DEVICE_TYPE" /> надійно зберігатиме дані про відбиток пальця та нікуди не надсилатиме їх. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -4842,6 +4847,7 @@
 <translation id="6308937455967653460">Зберегти посиланн&amp;я як...</translation>
 <translation id="6309443618838462258">Адміністратор не дозволяє використовувати цей метод введення</translation>
 <translation id="6309510305002439352">Мікрофон вимкнено</translation>
+<translation id="6310141306111263820">Не вдалося встановити профіль eSIM-карти. Щоб отримати допомогу, зверніться до оператора.</translation>
 <translation id="6311220991371174222">Не вдається запустити Chrome, оскільки сталася помилка під час відкривання профілю. Спробуйте перезапустити Chrome.</translation>
 <translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Перевірку безпеки виконано 1 день тому}one{Перевірку безпеки виконано {NUM_DAYS} день тому}few{Перевірку безпеки виконано {NUM_DAYS} дні тому}many{Перевірку безпеки виконано {NUM_DAYS} днів тому}other{Перевірку безпеки виконано {NUM_DAYS} дня тому}}</translation>
@@ -5776,6 +5782,7 @@
 <translation id="7361297102842600584">Натисніть праву кнопку миші, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сайти можуть запитувати дозвіл на підключення до пристроїв із Bluetooth</translation>
 <translation id="7364591875953874521">Запит на доступ надіслано</translation>
+<translation id="7364745943115323529">Транслювати…</translation>
 <translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="7365076891350562061">Розмір монітора</translation>
 <translation id="7366316827772164604">Пошук пристроїв поруч…</translation>
@@ -5978,6 +5985,7 @@
 <translation id="7582582252461552277">Віддавати перевагу цій мережі</translation>
 <translation id="7582844466922312471">Мобільні дані</translation>
 <translation id="7583948862126372804">Кількість</translation>
+<translation id="7586051298768394542">Не вдалося завантажити файли живих субтитрів. Функція диктування працюватиме далі – голос надсилатиметься в Google.</translation>
 <translation id="7586498138629385861">Chrome працюватиме, доки будуть відкриті додатки Chrome.</translation>
 <translation id="7589461650300748890">Обережно!</translation>
 <translation id="7593653750169415785">Автоматично заблоковано, оскільки ви кілька разів відхилили сповіщення</translation>
@@ -6567,6 +6575,7 @@
 <translation id="8191230140820435481">Керувати вашими програмами, розширеннями та темами</translation>
 <translation id="8195027750202970175">Розмір на диску</translation>
 <translation id="8198323535106903877">Ми встановимо для вас стільки додатків: <ph name="NUMBER_OF_APPS" /></translation>
+<translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8201717382574620700">Вибрати альбоми для теми "<ph name="TOPIC_SOURCE" />"</translation>
@@ -6822,7 +6831,6 @@
 <translation id="8498395510292172881">Продовжити читати в Chrome</translation>
 <translation id="8499083585497694743">Увімкнути мікрофон</translation>
 <translation id="8502536196501630039">Щоб використовувати додатки з Google Play, спершу потрібно відновити свої додатки. Деякі дані могло бути втрачено.</translation>
-<translation id="850314194061055138">знову відкрити камеру</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8507227974644337342">Роздільна здатність екрана</translation>
 <translation id="850875081535031620">Шкідливих програм не виявлено</translation>
@@ -7154,6 +7162,7 @@
 <translation id="8847523528195140327">Виходити з облікового запису, коли кришка закрита</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Приховано</translation>
+<translation id="8849219423513870962">Скасувати видалення профілю eSIM-карти під назвою "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8850251000316748990">Показати більше…</translation>
 <translation id="885246833287407341">Аргументи функції API</translation>
 <translation id="8853586775156634952">Картку буде збережено лише на цьому пристрої</translation>

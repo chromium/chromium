@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Неабходна абнавіць Chrome OS</translation>
 <translation id="1067048845568873861">Створаны</translation>
 <translation id="1067922213147265141">Іншыя сэрвісы Google</translation>
+<translation id="1069355737714877171">Выдаліць профіль eSIM-карты "<ph name="PROFILE_NAME" />"</translation>
 <translation id="1070377999570795893">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -358,6 +359,7 @@
 <translation id="138784436342154190">Аднавіць стандартную пачатковую старонку?</translation>
 <translation id="1388253969141979417">Дазволена выкарыстоўваць мікрафон</translation>
 <translation id="1388728792929436380">Пасля завяршэння абнаўлення прылада "<ph name="DEVICE_TYPE" />" перазапусціцца.</translation>
+<translation id="138900021244932468">Профіляў не выяўлена. Каб наладзіць новую сетку, адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, атрыманы ад аператара.</translation>
 <translation id="139013308650923562">Сайты, якім дазволена выкарыстоўваць шрыфты, усталяваныя на прыладзе</translation>
 <translation id="1390548061267426325">Адкрыць у звычайнай укладцы</translation>
 <translation id="1393283411312835250">Сонца і аблокі</translation>
@@ -986,6 +988,7 @@
 Для кіравання наладамі ўліковага запісу можна ўсталяваць на прыладу праграму Family Link.  Мы адправілі вам інструкцыі па электроннай пошце.</translation>
 <translation id="2040460856718599782">Памылка!  Падчас аўтэнтыфікацыі нешта пайшло не так.  Праверце ўліковыя даныя і паўтарыце спробу.</translation>
 <translation id="2044014337866019681">Каб разблакіраваць сеанс, вы павінны спраўдзіць уліковы запіс <ph name="ACCOUNT" />.</translation>
+<translation id="2044023416777079300">Мадэм не зарэгістраваны</translation>
 <translation id="204497730941176055">Назва шаблона сертыфіката Microsoft</translation>
 <translation id="2045117674524495717">Памочнік па спалучэннях клавіш</translation>
 <translation id="2045969484888636535">Блакіраваць файлы cookie</translation>
@@ -2808,6 +2811,7 @@
 <translation id="398477389655464998">Скапіраваць спасылку на вылучаны тэкст</translation>
 <translation id="3987544746655539083">Працягваць блакіраваць гэтаму сайту доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="3987938432087324095">Вас не чуваць.</translation>
+<translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="3988996860813292272">Выбар часавага пояса</translation>
 <translation id="399179161741278232">Імпартаваныя</translation>
 <translation id="3994374631886003300">Разблакіруйце тэлефон і паднясіце яго бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
@@ -3098,6 +3102,7 @@
 <translation id="4364830672918311045">Паказ апавяшчэнняў</translation>
 <translation id="4366138410738374926">Пачатак друку</translation>
 <translation id="4370975561335139969">Вы ўвялі няправільны адрас электроннай пошты або пароль</translation>
+<translation id="4373966964907728675">Ідзе трансляцыя працоўнага стала</translation>
 <translation id="4374831787438678295">Усталёўшчык Linux</translation>
 <translation id="4375035964737468845">Адкрыць спампаваныя файлы</translation>
 <translation id="4376226992615520204">Вызначэнне месцазнаходжання выключана</translation>
@@ -4081,6 +4086,7 @@
 <translation id="5486261815000869482">Пацвердзіце пароль</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> абагульвае ваш экран з укладкай <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Імітаваць перазапуск браўзера</translation>
+<translation id="5487460042548760727">Даць профілю назву "<ph name="PROFILE_NAME" />"</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
 <translation id="5488093641312826914">Элемент "<ph name="COPIED_ITEM_NAME" />" скапіраваны</translation>
 <translation id="5488508217173274228">Параметры шыфравання для сінхранізацыі</translation>
@@ -4822,6 +4828,7 @@
 <translation id="6308937455967653460">Захаваць &amp;спасылку як...</translation>
 <translation id="6309443618838462258">Ваш адміністратар не дазваляе выкарыстоўваць гэты метад уводу</translation>
 <translation id="6309510305002439352">Мікрафон выключаны</translation>
+<translation id="6310141306111263820">Не ўдалося ўсталяваць профіль eSIM-карты. Звярніцеся па дапамогу да аператара.</translation>
 <translation id="6311220991371174222">Chrome запусціць не ўдалося: нешта пайшло не так падчас адкрыцця вашага профілю. Паспрабуйце перазапусціць Chrome.</translation>
 <translation id="6312403991423642364">Невядомая памылка сеткі</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Праверка бяспекі выконвалася дзень таму}one{Праверка бяспекі выконвалася {NUM_DAYS} дзень таму}few{Праверка бяспекі выконвалася {NUM_DAYS} дні таму}many{Праверка бяспекі выконвалася {NUM_DAYS} дзён таму}other{Праверка бяспекі выконвалася {NUM_DAYS} дня таму}}</translation>
@@ -5955,6 +5962,7 @@
 <translation id="7582582252461552277">Прыярытэтная сетка</translation>
 <translation id="7582844466922312471">Мабільная перадача даных</translation>
 <translation id="7583948862126372804">Колькасць</translation>
+<translation id="7586051298768394542">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Функцыя дыктавання працягне працаваць, але пры гэтым запісы вашага голасу будуць адпраўляцца ў Google.</translation>
 <translation id="7586498138629385861">Chrome будзе працягваць працаваць, пакуль праграмы Chrome адкрыты.</translation>
 <translation id="7589461650300748890">Гэй! Асцярожней.</translation>
 <translation id="7593653750169415785">Заблакіравана аўтаматычна, бо вы некалькі разоў адхілілі апавяшчэнні</translation>
@@ -6543,6 +6551,7 @@
 <translation id="8191230140820435481">Кіраваць праграмамі, пашырэннямі і тэмамі</translation>
 <translation id="8195027750202970175">Месца на дыску</translation>
 <translation id="8198323535106903877">Будуць усталяваны гэтыя праграмы (<ph name="NUMBER_OF_APPS" /> шт.)</translation>
+<translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8199300056570174101">Уласцівасці прылады і сеткі (сэрвісу)</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8201717382574620700">Выбраць альбомы "<ph name="TOPIC_SOURCE" />"</translation>
@@ -6798,7 +6807,6 @@
 <translation id="8498395510292172881">Бесперапыннае чытанне ў браўзеры Chrome</translation>
 <translation id="8499083585497694743">Уключыць мікрафон</translation>
 <translation id="8502536196501630039">Каб выкарыстоўваць праграмы з Google Play, вам трэба спачатку аднавіць свае праграмы. Некаторыя даныя могуць быць страчаны.</translation>
-<translation id="850314194061055138">выкарыстаць камеру яшчэ раз</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8507227974644337342">Раздзяляльнасць экрана</translation>
 <translation id="850875081535031620">Не знойдзена шкоднага праграмнага забеспячэння</translation>
@@ -7130,6 +7138,7 @@
 <translation id="8847523528195140327">Пры закрыцці вечка выходзіць з сістэмы</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Схавана</translation>
+<translation id="8849219423513870962">Скасаваць выдаленне профілю eSIM-карты "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8850251000316748990">Яшчэ...</translation>
 <translation id="885246833287407341">Аргументы функцыі API</translation>
 <translation id="8853586775156634952">Гэта картка захаваецца толькі на гэту прыладу</translation>

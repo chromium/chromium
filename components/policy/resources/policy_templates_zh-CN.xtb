@@ -2286,7 +2286,7 @@
 
       如果此政策已停用或未设置，系统便不会为相应设备开启 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
-<translation id="3977304360459208438">在 TLS 中使用 3DES 加密套件的默认设置</translation>
+<translation id="3977304360459208438">在传输层安全协议 (TLS) 中使用 3DES 加密套件的默认设置</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3984028218719007910">确定 <ph name="PRODUCT_OS_NAME" />是否要在退出后保留本地帐号数据。如果将此政策设置为 true，<ph name="PRODUCT_OS_NAME" />就不会持续保留帐号，且会在退出后舍弃用户会话中的所有数据。如果未配置此政策或将其设置为 false，设备就会保留（经过加密的）本地用户数据。</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
@@ -2777,7 +2777,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
-<translation id="4768446404233019970">在 TLS 中启用 3DES 加密套件</translation>
+<translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
 
@@ -4405,7 +4405,7 @@
 <translation id="6922498040906800267">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
       复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
-      每条规则均应包含以下内容：
+      每条规则均包含以下内容：
       - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制。
       - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
       - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
@@ -4993,7 +4993,7 @@
 <translation id="7612157962821894603">在 <ph name="PRODUCT_NAME" /> 启动时应用于整个系统的设置</translation>
 <translation id="7613115815080726221">系统应在设备闲置多久（以毫秒为单位）后采取闲置操作</translation>
 <translation id="7614663184588396421">已停用协议架构的列表</translation>
-<translation id="7616631530432070402">TLS 中将启用 3DES 加密套件</translation>
+<translation id="7616631530432070402">传输层安全协议 (TLS) 中将启用 3DES 加密套件</translation>
 <translation id="7620869951155758729">此政策可指定用于生成和验证家长访问码的配置。
 
       |current_config| 始终用于生成访问码，并且只有当无法使用 |future_config| 验证访问码时，才能使用此配置进行验证。
@@ -5443,7 +5443,7 @@
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
 <translation id="8234316309673661069">警告：我们将从 <ph name="PRODUCT_NAME" /> 的 95 版（将于 2021 年 10 月左右推出）中彻底移除 3DES。届时，此政策将不再有效。
 
-      如果此政策设为 true，系统将在 TLS 中启用 3DES 加密套件。如果此政策设为 false，系统将在 TLS 中停用 3DES 加密套件。如果此政策未设置，目前系统会默认启用 3DES 加密套件，但在 <ph name="PRODUCT_NAME" /> 93 版中，系统将默认停用 3DES 加密套件。
+      如果此政策设为 true，系统将在传输层安全协议 (TLS) 中启用 3DES 加密套件。如果此政策设为 false，系统将在 TLS 中停用 3DES 加密套件。如果此政策未设置，目前系统会默认启用 3DES 加密套件，但在 <ph name="PRODUCT_NAME" /> 93 版中，系统将默认停用 3DES 加密套件。
 
       在 <ph name="PRODUCT_NAME" /> 92 版中，此政策可用于预览更改和测试不兼容性。在 <ph name="PRODUCT_NAME" /> 93 版及更高版本中，此政策可用于暂时保持与过时服务器的兼容性。这只是一种权宜之计，正确的做法是重新配置服务器。
       </translation>
@@ -6188,7 +6188,7 @@
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不允许全新安装（以及更新）此类扩展程序。此政策对 <ph name="PRODUCT_NAME" /> 78 及更高版本没有任何影响。
 
       如果此政策未设置，它将在 <ph name="PRODUCT_NAME" /> 73 到 75 中处于启用状态，并将在 <ph name="PRODUCT_NAME" /> 76 和 77 中处于停用状态。</translation>
-<translation id="93985900824506396">TLS 中将停用 3DES 加密套件</translation>
+<translation id="93985900824506396">传输层安全协议 (TLS) 中将停用 3DES 加密套件</translation>
 <translation id="940706688964479124">应在下载完毕后自动打开的文件类型的列表</translation>
 <translation id="943865157632139008">可让您配置安装 <ph name="PRODUCT_FRAME_NAME" />时默认使用的 HTML 渲染程序。
       默认设置是允许托管浏览器执行渲染操作，不过您可以视情况替换此设置，并默认让 <ph name="PRODUCT_FRAME_NAME" />渲染 HTML 网页。</translation>

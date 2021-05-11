@@ -2803,6 +2803,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="398477389655464998">Kopjo lidhjen për te teksti i theksuar</translation>
 <translation id="3987544746655539083">Vazhdo ta bllokosh këtë sajt që të mos ketë qasje në vendndodhjen tënde</translation>
 <translation id="3987938432087324095">Më vjen keq, nuk e kuptova këtë.</translation>
+<translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3988996860813292272">Zgjidh zonën orare</translation>
 <translation id="399179161741278232">Të importuara</translation>
 <translation id="3994374631886003300">Shkyçe telefonin dhe afroje më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
@@ -5754,6 +5755,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7361297102842600584">Kliko me të djathtën për të ekzekutuar <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Sajtet mund të kërkojnë të lidhen me pajisjet me Bluetooth</translation>
 <translation id="7364591875953874521">Kërkohet qasje</translation>
+<translation id="7364745943115323529">Transmeto...</translation>
 <translation id="7364796246159120393">Zgjidh skedarin</translation>
 <translation id="7365076891350562061">Madhësia e monitorit</translation>
 <translation id="7366316827772164604">Po skanon për pajisje në afërsi...</translation>
@@ -6798,7 +6800,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8498395510292172881">Vazhdo leximin në Chrome</translation>
 <translation id="8499083585497694743">Aktivizo mikrofonin</translation>
 <translation id="8502536196501630039">Për të përdorur aplikacione nga Google Play, fillimisht duhet të restaurosh aplikacionet. Disa të dhëna mund të kenë humbur.</translation>
-<translation id="850314194061055138">përdore sërish kamerën</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8507227974644337342">Rezolucioni i ekranit</translation>
 <translation id="850875081535031620">Nuk u gjet asnjë softuer i dëmshëm</translation>

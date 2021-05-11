@@ -2824,6 +2824,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="398477389655464998">Copy Link to Highlight</translation>
 <translation id="3987544746655539083">Continue blocking this site from accessing your location</translation>
 <translation id="3987938432087324095">Sorry, didn't catch that.</translation>
+<translation id="3987993985790029246">Copy link</translation>
 <translation id="3988996860813292272">Select time zone</translation>
 <translation id="399179161741278232">Imported</translation>
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
@@ -5778,6 +5779,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7361297102842600584">Right-click to run <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Sites can ask to connect to Bluetooth devices</translation>
 <translation id="7364591875953874521">Access requested</translation>
+<translation id="7364745943115323529">Cast...</translation>
 <translation id="7364796246159120393">Choose file</translation>
 <translation id="7365076891350562061">Monitor size</translation>
 <translation id="7366316827772164604">Scanning for nearby devices…</translation>
@@ -6826,7 +6828,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8498395510292172881">Continue reading in Chrome</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
 <translation id="8502536196501630039">To use apps from Google Play, you must first restore your apps. Some data may have been lost.</translation>
-<translation id="850314194061055138">use camera again</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8507227974644337342">Screen resolution</translation>
 <translation id="850875081535031620">No harmful software found</translation>
