@@ -21,9 +21,7 @@ namespace {
 WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   DCHECK_NE(nullptr, descriptor);
 
-  auto&& feature_names = descriptor->hasExtensions() ? descriptor->extensions()
-                                                     :  // Deprecated path
-                             descriptor->nonGuaranteedFeatures();
+  auto&& feature_names = descriptor->nonGuaranteedFeatures();
 
   HashSet<String> feature_set;
   for (auto& feature : feature_names)
@@ -87,14 +85,6 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
-Vector<String> GPUAdapter::extensions(ExecutionContext* execution_context) {
-  AddConsoleWarning(
-      execution_context,
-      "The extensions attribute has been deprecated in favor of the features "
-      "attribute, and will soon be removed.");
-  return features_->FeatureNameList();
-}
-
 void GPUAdapter::OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
                                          WGPUDevice dawn_device) {
@@ -138,14 +128,6 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
                                         GPUDeviceDescriptor* descriptor) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
-  if (descriptor->hasExtensions()) {
-    AddConsoleWarning(
-        ExecutionContext::From(script_state),
-        "Specifying extensions when requesting a GPUDevice is deprecated in "
-        "favor of specifying nonGuaranteedFeatures, and will soon be removed.");
-    descriptor->setNonGuaranteedFeatures(descriptor->extensions());
-  }
 
   WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
 

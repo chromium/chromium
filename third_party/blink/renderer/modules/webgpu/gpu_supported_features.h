@@ -27,12 +27,9 @@ class GPUSupportedFeatures : public ScriptWrappable,
   unsigned size() const { return features_.size(); }
 
   const HashSet<String>& FeatureNameSet() const { return features_; }
-  // Used to support the deprecated version of this feature.
-  const Vector<String>& FeatureNameList() const { return feature_name_list_; }
 
  private:
   HashSet<String> features_;
-  Vector<String> feature_name_list_;
 
   class IterationSource final
       : public SetlikeIterable<String>::IterationSource {

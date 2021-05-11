@@ -15,8 +15,6 @@ namespace blink {
 class ExceptionState;
 class GPUBuffer;
 class GPUCommandBuffer;
-class GPUFence;
-class GPUFenceDescriptor;
 class GPUImageCopyImageBitmap;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
@@ -33,8 +31,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
 
   // gpu_queue.idl
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
-  void signal(GPUFence* fence, uint64_t signal_value);
-  GPUFence* createFence(const GPUFenceDescriptor* descriptor);
   ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
   void writeBuffer(GPUBuffer* buffer,
                    uint64_t buffer_offset,

@@ -130,10 +130,10 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
     case WGPUTextureFormat_BGRA8Unorm:
       break;
     case WGPUTextureFormat_RGBA8Unorm:
-      if ((usage & WGPUTextureUsage_OutputAttachment) != usage) {
+      if ((usage & WGPUTextureUsage_RenderAttachment) != usage) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kOperationError,
-            "rgba8unorm can only support OUTPUT_ATTACHMENT usage");
+            "rgba8unorm can only support RENDER_ATTACHMENT usage");
       }
       descriptor->device()->AddConsoleWarning(
           "rgba8unorm swap chain is deprecated (for now); use bgra8unorm");
@@ -159,24 +159,6 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
   Host()->SetNeedsCompositingUpdate();
 
   return swapchain_;
-}
-
-ScriptPromise GPUCanvasContext::getSwapChainPreferredFormat(
-    ScriptState* script_state,
-    GPUDevice* device) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  device->AddConsoleWarning(
-      "Passing a GPUDevice to getSwapChainPreferredFormat is deprecated. "
-      "Pass a GPUAdapter instead, and update the calling code to expect a "
-      "GPUTextureFormat to be retured instead of a Promise.");
-
-  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
-  resolver->Resolve("bgra8unorm");
-
-  return promise;
 }
 
 String GPUCanvasContext::getSwapChainPreferredFormat(

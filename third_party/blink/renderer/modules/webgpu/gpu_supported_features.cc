@@ -16,9 +16,7 @@ GPUSupportedFeatures::GPUSupportedFeatures(
 }
 
 void GPUSupportedFeatures::AddFeatureName(const String& feature_name) {
-  if (features_.insert(feature_name).is_new_entry) {
-    feature_name_list_.push_back(feature_name);
-  }
+  features_.insert(feature_name);
 }
 
 bool GPUSupportedFeatures::hasForBinding(

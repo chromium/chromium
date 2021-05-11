@@ -68,11 +68,9 @@ class GPUDevice final : public EventTargetWithInlineData,
   // gpu_device.idl
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
-  Vector<String> extensions();
   ScriptPromise lost(ScriptState* script_state);
 
   GPUQueue* queue();
-  GPUQueue* defaultQueue();
 
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,

@@ -70,7 +70,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
           ToStringVector(descriptor->nonGuaranteedFeatures()))),
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
-          GetProcs().deviceGetDefaultQueue(GetHandle()))),
+          GetProcs().deviceGetQueue(GetHandle()))),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       error_callback_(BindRepeatingDawnCallback(&GPUDevice::OnUncapturedError,
                                                 WrapWeakPersistent(this))),
@@ -212,25 +212,11 @@ GPUSupportedFeatures* GPUDevice::features() const {
   return features_;
 }
 
-Vector<String> GPUDevice::extensions() {
-  AddConsoleWarning(
-      "The extensions attribute has been deprecated in favor of the features "
-      "attribute, and will soon be removed.");
-  return features_->FeatureNameList();
-}
-
 ScriptPromise GPUDevice::lost(ScriptState* script_state) {
   return lost_property_->Promise(script_state->World());
 }
 
 GPUQueue* GPUDevice::queue() {
-  return queue_;
-}
-
-GPUQueue* GPUDevice::defaultQueue() {
-  AddConsoleWarning(
-      "The defaultQueue attribute has been deprecated in favor of the queue "
-      "attribute, and will soon be removed.");
   return queue_;
 }
 

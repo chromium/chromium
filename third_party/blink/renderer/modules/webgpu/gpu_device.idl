@@ -10,14 +10,10 @@
     [SameObject] readonly attribute GPUAdapter adapter;
 
     readonly attribute GPUSupportedFeatures features;
-    // Deprecated
-    readonly attribute FrozenArray<GPUFeatureName> extensions;
 
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
     [SameObject] readonly attribute GPUQueue queue;
-    // Deprecated
-    [SameObject] readonly attribute GPUQueue defaultQueue;
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);

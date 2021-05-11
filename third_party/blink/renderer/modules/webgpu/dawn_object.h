@@ -23,7 +23,6 @@
   X(ComputePassEncoder, computePassEncoder)   \
   X(ComputePipeline, computePipeline)         \
   X(Device, device)                           \
-  X(Fence, fence)                             \
   X(Instance, instance)                       \
   X(PipelineLayout, pipelineLayout)           \
   X(QuerySet, querySet)                       \

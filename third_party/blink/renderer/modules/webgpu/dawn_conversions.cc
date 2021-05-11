@@ -88,16 +88,8 @@ WGPUExtent3D AsDawnType(
         webgpu_extent->GetAsGPUExtent3DDict();
     dawn_extent.width = webgpu_extent_3d_dict->width();
     dawn_extent.height = webgpu_extent_3d_dict->height();
-
-    if (webgpu_extent_3d_dict->hasDepth()) {
-      device->AddConsoleWarning(
-          "Specifying an extent depth is deprecated. Use depthOrArrayLayers.");
-      dawn_extent.depthOrArrayLayers = webgpu_extent_3d_dict->depth();
-    } else {
-      dawn_extent.depthOrArrayLayers =
-          webgpu_extent_3d_dict->depthOrArrayLayers();
-    }
-
+    dawn_extent.depthOrArrayLayers =
+        webgpu_extent_3d_dict->depthOrArrayLayers();
   } else {
     NOTREACHED();
   }

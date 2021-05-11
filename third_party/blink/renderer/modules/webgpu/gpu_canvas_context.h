@@ -74,8 +74,6 @@ class GPUCanvasContext : public CanvasRenderingContext {
   // gpu_canvas_context.idl
   GPUSwapChain* configureSwapChain(const GPUSwapChainDescriptor* descriptor,
                                    ExceptionState&);
-  ScriptPromise getSwapChainPreferredFormat(ScriptState* script_state,
-                                            GPUDevice* device);
   String getSwapChainPreferredFormat(const GPUAdapter* adapter);
 
  private:

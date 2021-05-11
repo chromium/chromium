@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_2d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_fence_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -23,7 +22,6 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_fence.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
@@ -132,36 +130,6 @@ void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   // need to ensure commands are flushed. Flush immediately so the GPU process
   // eagerly processes commands to maximize throughput.
   FlushNow();
-}
-
-void GPUQueue::signal(GPUFence* fence, uint64_t signal_value) {
-  GetProcs().queueSignal(GetHandle(), fence->GetHandle(), signal_value);
-  // Signaling a fence adds a callback to update the fence value to the
-  // completed value. WebGPU guarantees that the fence completion is
-  // observable in finite time so we need to ensure commands are flushed.
-  EnsureFlush();
-}
-
-GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {
-  DCHECK(descriptor);
-
-  device_->AddConsoleWarning(
-      "Fences have been deprecated in favor of GPUQueue.onSubmittedWorkDone "
-      "and will be removed soon.");
-
-  std::string label;
-  WGPUFenceDescriptor desc = {};
-  desc.nextInChain = nullptr;
-  desc.initialValue = descriptor->initialValue();
-  if (descriptor->hasLabel()) {
-    label = descriptor->label().Utf8();
-    desc.label = label.c_str();
-  }
-
-  GPUFence* fence = MakeGarbageCollected<GPUFence>(
-      device_, GetProcs().queueCreateFence(GetHandle(), &desc));
-  fence->setLabel(descriptor->label());
-  return fence;
 }
 
 void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,

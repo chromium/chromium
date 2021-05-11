@@ -7,7 +7,4 @@
 dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
     sequence<GPUFeatureName> nonGuaranteedFeatures = [];
     GPULimits limits = {};
-
-    // Deprecated
-    sequence<GPUFeatureName> extensions;
 };

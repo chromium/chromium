@@ -66,7 +66,7 @@
         }
 
         parent.removeIframe();
-        device.defaultQueue.submit([device.createCommandEncoder().finish()]);
+        device.queue.submit([device.createCommandEncoder().finish()]);
       });
 
       // Test getting a swapchain texture after the iframe is removed.

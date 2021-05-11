@@ -42,7 +42,7 @@
       const swapChain = context.configureSwapChain({
         device,
         format: swapChainFormat,
-        usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT
+        usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT
       });
 
       async function checkTextureColor(
@@ -66,7 +66,7 @@
           { buffer, bytesPerRow, rowsPerImage },
           mipSize
         );
-        device.defaultQueue.submit([commandEncoder.finish()]);
+        device.queue.submit([commandEncoder.finish()]);
         await buffer.mapAsync(GPUMapMode.READ);
         const actual = new Uint8Array(buffer.getMappedRange());
 
@@ -100,7 +100,7 @@
         const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
         passEncoder.endPass();
 
-        device.defaultQueue.submit([commandEncoder.finish()]);
+        device.queue.submit([commandEncoder.finish()]);
         if (lostJustHappened) {
           // We don't want to check for the texture color until device and adapter have been reinitialized
           // Checking prematurely was causing hangs in buffer.mapAync to never return (crbug.com/dawn/556)

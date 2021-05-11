@@ -201,7 +201,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const swapChain = context.configureSwapChain({
     device,
     format: swapChainFormat,
-    usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
   const pipeline = device.createRenderPipeline({

@@ -9,10 +9,6 @@
 ] interface GPUQueue {
     void submit(sequence<GPUCommandBuffer> buffers);
 
-    // Deprecated
-    GPUFence createFence(optional GPUFenceDescriptor descriptor = {});
-    void signal(GPUFence fence, GPUFenceValue signalValue);
-
     [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
 
     // TODO(crbug.com/1088107): Merge these overloads into one with
