@@ -1,0 +1,17 @@
+{
+  "name": "bidi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bidi-server": "node src/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.1",
+    "rollup": "^2.47.0",
+    "ws": "^7.4.5"
+  }
+}

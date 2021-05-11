@@ -1,0 +1,3 @@
+node_modules/
+src/bidiMapper/.build/
+tests/__pycache__/
