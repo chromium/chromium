@@ -104,7 +104,7 @@ class MetricInfo:
       self.type = 'std::string&'
       self.setter = 'AddStringMetric'
     elif metric.type == 'int':
-      self.type = 'int'
+      self.type = 'int64_t'
       self.setter = 'AddIntMetric'
     else:
       raise ValueError('Invalid metric type.')

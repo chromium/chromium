@@ -417,6 +417,20 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
 }
 
+// Check that a full int64 can be recorded, and is not truncated to an int32.
+TEST_F(StructuredMetricsProviderTest, Int64MetricsNotTruncated) {
+  Init();
+  const int64_t big = 1ll << 60;
+  events::test_project_one::TestEventOne().SetTestMetricTwo(big).Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+  const auto& event = data.events(0);
+  ASSERT_EQ(event.metrics_size(), 1);
+  const auto& metric = event.metrics(0);
+  EXPECT_EQ(metric.value_int64(), big);
+}
+
 TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   WriteTestingKeys();
   Init();

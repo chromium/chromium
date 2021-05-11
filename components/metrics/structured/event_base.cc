@@ -28,7 +28,7 @@ void EventBase::AddStringMetric(uint64_t name_hash, const std::string& value) {
   metrics_.push_back(metric);
 }
 
-void EventBase::AddIntMetric(uint64_t name_hash, int value) {
+void EventBase::AddIntMetric(uint64_t name_hash, int64_t value) {
   Metric metric(name_hash, MetricType::kInt);
   metric.int_value = value;
   metrics_.push_back(metric);
