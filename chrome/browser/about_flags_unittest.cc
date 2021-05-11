@@ -164,7 +164,8 @@ class AboutFlagsHistogramTest : public ::testing::Test {
     if (!status.second) {
       EXPECT_TRUE(status.first->second == switch_histogram_id)
           << "Duplicate switch '" << switch_name
-          << "' found in enum 'LoginCustomFlags' in histograms.xml.";
+          << "' found in enum 'LoginCustomFlags' in "
+             "tools/metrics/histograms/enums.xml.";
     }
   }
 
@@ -181,7 +182,8 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
   base::Optional<base::HistogramEnumEntryMap> login_custom_flags =
       base::ReadEnumFromEnumsXml("LoginCustomFlags");
   ASSERT_TRUE(login_custom_flags)
-      << "Error reading enum 'LoginCustomFlags' from enums.xml.";
+      << "Error reading enum 'LoginCustomFlags' from "
+         "tools/metrics/histograms/enums.xml.";
 
   // Build reverse map {switch_name => id} from login_custom_flags.
   SwitchToIdMap histograms_xml_switches_ids;
@@ -189,7 +191,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
   EXPECT_TRUE(
       login_custom_flags->count(flags_ui::testing::kBadSwitchFormatHistogramId))
       << "Entry for UMA ID of incorrect command-line flag is not found in "
-         "enums.xml enum LoginCustomFlags. "
+         "tools/metrics/histograms/enums.xml enum LoginCustomFlags. "
          "Consider adding entry:\n"
       << "  " << GetHistogramEnumEntryText("BAD_FLAG_FORMAT", 0);
   // Check that all LoginCustomFlags entries have correct values.
@@ -202,7 +204,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
     }
     const Sample uma_id = flags_ui::GetSwitchUMAId(entry.second);
     EXPECT_EQ(uma_id, entry.first)
-        << "enums.xml enum LoginCustomFlags "
+        << "tools/metrics/histograms/enums.xml enum LoginCustomFlags "
            "entry '"
         << entry.second << "' has incorrect value=" << entry.first << ", but "
         << uma_id << " is expected. Consider changing entry to:\n"
@@ -230,8 +232,10 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
     // reported in the previous loop.
     EXPECT_TRUE(enum_entry != histograms_xml_switches_ids.end() &&
                 enum_entry->first == flag)
-        << "enums.xml enum LoginCustomFlags doesn't contain switch '" << flag
-        << "' (value=" << uma_id << " expected). Consider adding entry:\n"
+        << "tools/metrics/histograms/enums.xml enum LoginCustomFlags doesn't "
+           "contain switch '"
+        << flag << "' (value=" << uma_id
+        << " expected). Consider adding entry:\n"
         << "  " << GetHistogramEnumEntryText(flag, uma_id);
   }
 }
