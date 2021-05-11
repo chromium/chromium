@@ -23,11 +23,7 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
   ~PageInfoSecurityContentView() override;
 
   // PageInfoUI implementations.
-  void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
-  void SetPermissionInfo(const PermissionInfoList& permission_info_list,
-                         ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
-  void SetPageFeatureInfo(const PageFeatureInfo& info) override;
 
  private:
   void ResetDecisionsClicked();

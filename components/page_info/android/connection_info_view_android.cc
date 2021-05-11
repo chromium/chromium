@@ -142,19 +142,3 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
           env, l10n_util::GetStringUTF8(IDS_PAGE_INFO_HELP_CENTER_LINK)));
   Java_ConnectionInfoView_onReady(env, popup_jobject_);
 }
-
-void ConnectionInfoViewAndroid::SetCookieInfo(
-    const CookieInfoList& cookie_info_list) {
-  NOTIMPLEMENTED();
-}
-
-void ConnectionInfoViewAndroid::SetPageFeatureInfo(
-    const PageFeatureInfo& info) {
-  NOTIMPLEMENTED();
-}
-
-void ConnectionInfoViewAndroid::SetPermissionInfo(
-    const PermissionInfoList& permission_info_list,
-    ChosenObjectInfoList chosen_object_info_list) {
-  NOTIMPLEMENTED();
-}

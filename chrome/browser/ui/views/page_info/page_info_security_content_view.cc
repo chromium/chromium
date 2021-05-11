@@ -30,16 +30,6 @@ PageInfoSecurityContentView::PageInfoSecurityContentView(
 
 PageInfoSecurityContentView::~PageInfoSecurityContentView() = default;
 
-void PageInfoSecurityContentView::SetCookieInfo(
-    const CookieInfoList& cookie_info_list) {
-  // No cookie UI in this page.
-}
-
-void PageInfoSecurityContentView::SetPageFeatureInfo(
-    const PageFeatureInfo& info) {
-  // No page feature info in this page.
-}
-
 void PageInfoSecurityContentView::SetIdentityInfo(
     const IdentityInfo& identity_info) {
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
@@ -148,12 +138,6 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             },
             this));
   }
-}
-
-void PageInfoSecurityContentView::SetPermissionInfo(
-    const PermissionInfoList& permission_info_list,
-    ChosenObjectInfoList chosen_object_info_list) {
-  // No permission info in this page.
 }
 
 void PageInfoSecurityContentView::ResetDecisionsClicked() {

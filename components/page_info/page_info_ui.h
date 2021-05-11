@@ -238,17 +238,19 @@ class PageInfoUI {
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
   // Sets cookie information.
-  virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) = 0;
+  virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
 
   // Sets permission information.
-  virtual void SetPermissionInfo(
-      const PermissionInfoList& permission_info_list,
-      ChosenObjectInfoList chosen_object_info_list) = 0;
+  virtual void SetPermissionInfo(const PermissionInfoList& permission_info_list,
+                                 ChosenObjectInfoList chosen_object_info_list) {
+  }
 
   // Sets site identity information.
-  virtual void SetIdentityInfo(const IdentityInfo& identity_info) = 0;
+  virtual void SetIdentityInfo(const IdentityInfo& identity_info) {}
 
-  virtual void SetPageFeatureInfo(const PageFeatureInfo& page_feature_info) = 0;
+  // Sets feature related information; for now only if VR content is being
+  // presented in a headset.
+  virtual void SetPageFeatureInfo(const PageFeatureInfo& page_feature_info) {}
 
   // Helper to get security description info to display to the user.
   std::unique_ptr<SecurityDescription> GetSecurityDescription(

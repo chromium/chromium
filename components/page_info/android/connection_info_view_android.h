@@ -39,11 +39,7 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
       const base::android::JavaParamRef<jobject>& java_web_contents);
 
   // PageInfoUI implementations.
-  void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
-  void SetPermissionInfo(const PermissionInfoList& permission_info_list,
-                         ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
-  void SetPageFeatureInfo(const PageFeatureInfo& info) override;
 
  private:
   // The presenter that controls the Page Info UI.
