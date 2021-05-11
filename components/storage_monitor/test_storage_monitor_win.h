@@ -10,6 +10,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/storage_monitor/storage_monitor_win.h"
@@ -22,8 +24,8 @@ class TestVolumeMountWatcherWin;
 class TestStorageMonitorWin: public StorageMonitorWin {
  public:
   TestStorageMonitorWin(
-      TestVolumeMountWatcherWin* volume_mount_watcher,
-      TestPortableDeviceWatcherWin* portable_device_watcher);
+      std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher,
+      std::unique_ptr<TestPortableDeviceWatcherWin> portable_device_watcher);
 
   ~TestStorageMonitorWin() override;
 

@@ -83,12 +83,12 @@ void MTPDeviceDelegateImplWinTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
   TestStorageMonitor::Destroy();
-  TestPortableDeviceWatcherWin* portable_device_watcher =
-      new TestPortableDeviceWatcherWin;
-  TestVolumeMountWatcherWin* mount_watcher = new TestVolumeMountWatcherWin;
+  auto portable_device_watcher =
+      std::make_unique<TestPortableDeviceWatcherWin>();
   portable_device_watcher->set_use_dummy_mtp_storage_info(true);
-  std::unique_ptr<TestStorageMonitorWin> monitor(
-      new TestStorageMonitorWin(mount_watcher, portable_device_watcher));
+  auto monitor = std::make_unique<TestStorageMonitorWin>(
+      std::make_unique<TestVolumeMountWatcherWin>(),
+      std::move(portable_device_watcher));
   TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
   DCHECK(browser_process);
   monitor_ = monitor.get();

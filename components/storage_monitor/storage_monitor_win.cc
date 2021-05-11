@@ -10,6 +10,9 @@
 #include <shlobj.h>
 #include <stddef.h>
 
+#include <utility>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
@@ -25,14 +28,10 @@
 namespace storage_monitor {
 
 StorageMonitorWin::StorageMonitorWin(
-    VolumeMountWatcherWin* volume_mount_watcher,
-    PortableDeviceWatcherWin* portable_device_watcher)
-    : window_class_(0),
-      instance_(nullptr),
-      window_(nullptr),
-      shell_change_notify_id_(0),
-      volume_mount_watcher_(volume_mount_watcher),
-      portable_device_watcher_(portable_device_watcher) {
+    std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher,
+    std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher)
+    : volume_mount_watcher_(std::move(volume_mount_watcher)),
+      portable_device_watcher_(std::move(portable_device_watcher)) {
   DCHECK(volume_mount_watcher_);
   DCHECK(portable_device_watcher_);
   volume_mount_watcher_->SetNotifications(receiver());
@@ -195,8 +194,8 @@ void StorageMonitorWin::OnMediaChange(WPARAM wparam, LPARAM lparam) {
 }
 
 StorageMonitor* StorageMonitor::CreateInternal() {
-  return new StorageMonitorWin(new VolumeMountWatcherWin(),
-                               new PortableDeviceWatcherWin());
+  return new StorageMonitorWin(std::make_unique<VolumeMountWatcherWin>(),
+                               std::make_unique<PortableDeviceWatcherWin>());
 }
 
 }  // namespace storage_monitor
