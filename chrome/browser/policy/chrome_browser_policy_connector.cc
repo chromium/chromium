@@ -53,10 +53,15 @@
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#endif
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 #endif
 
 #if defined(OS_WIN)
@@ -74,10 +79,17 @@ bool command_line_enabled_for_testing = false;
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
     : BrowserPolicyConnector(base::BindRepeating(&BuildHandlerList)) {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ChromeBrowserCloudManagementController::Delegate> delegate =
+#if defined(OS_ANDROID)
+      std::make_unique<ChromeBrowserCloudManagementControllerAndroid>();
+#else
+      std::make_unique<ChromeBrowserCloudManagementControllerDesktop>();
+#endif
+
   chrome_browser_cloud_management_controller_ =
       std::make_unique<ChromeBrowserCloudManagementController>(
-          std::make_unique<ChromeBrowserCloudManagementControllerDesktop>());
+          std::move(delegate));
 #endif
 }
 
@@ -115,17 +127,17 @@ bool ChromeBrowserPolicyConnector::IsEnterpriseManaged() const {
 bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
   if (ProviderHasPolicies(GetPlatformProvider()))
     return true;
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (ProviderHasPolicies(machine_level_user_cloud_policy_manager_))
     return true;
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (ProviderHasPolicies(command_line_provider_))
     return true;
   return false;
 }
 
 void ChromeBrowserPolicyConnector::Shutdown() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Reset the controller before calling base class so that
   // shutdown occurs in correct sequence.
   chrome_browser_cloud_management_controller_.reset();
@@ -186,7 +198,7 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
     providers.insert(providers.begin(), std::move(platform_provider));
   }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MachineLevelUserCloudPolicyManager>
       machine_level_user_cloud_policy_manager =
           chrome_browser_cloud_management_controller_->CreatePolicyManager(

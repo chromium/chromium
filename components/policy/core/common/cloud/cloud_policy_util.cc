@@ -149,6 +149,8 @@ std::string GetMachineName() {
     return result;
   }
   return std::string();
+#elif defined(OS_ANDROID)
+  return std::string();
 #else
   NOTREACHED();
   return std::string();
@@ -164,6 +166,8 @@ std::string GetOSVersion() {
   return base::StringPrintf("%d.%d.%d.%d", version_number.major,
                             version_number.minor, version_number.build,
                             version_number.patch);
+#elif defined(OS_ANDROID)
+  return std::string();
 #else
   NOTREACHED();
   return std::string();
@@ -205,6 +209,8 @@ std::string GetOSUsername() {
   if (!user)
     return std::string();
   return user->GetAccountId().GetUserEmail();
+#elif defined(OS_ANDROID)
+  return std::string();
 #else
   NOTREACHED();
   return std::string();

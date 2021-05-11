@@ -4230,8 +4230,10 @@ test("unit_tests") {
   }
 
   if (is_android) {
-    sources +=
-        [ "../browser/enterprise/util/android_enterprise_info_unittest.cc" ]
+    sources += [
+      "../browser/enterprise/util/android_enterprise_info_unittest.cc",
+      "../browser/policy/browser_dm_token_storage_android_unittest.cc",
+    ]
   }
 
   if (!is_android) {

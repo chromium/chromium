@@ -19,6 +19,7 @@ static_library("enterprise") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
     "//services/network/public/cpp",
@@ -51,7 +52,6 @@ static_library("enterprise") {
 
     deps += [
       "//base/util/timer",
-      "//components/policy/core/browser",
       "//components/policy/proto",
       "//components/reporting/client:report_queue_provider",
       "//components/strings",
@@ -60,7 +60,7 @@ static_library("enterprise") {
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
+  if (!is_chromeos_ash) {
     sources += [
       "browser/controller/chrome_browser_cloud_management_controller.cc",
       "browser/controller/chrome_browser_cloud_management_controller.h",
