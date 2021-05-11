@@ -591,44 +591,39 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (!value)
       return false;
 
-    const base::DictionaryValue* dict = nullptr;
-    if (!value->GetAsDictionary(&dict))
+    if (!value->is_dict())
       return false;
 
     // Max-Age property is missing or malformed.
-    if (!dict->HasKey(kMaxAgeKey))
-      return false;
-    int max_age_sec;
-    if (!dict->GetInteger(kMaxAgeKey, &max_age_sec))
-      return false;
+    int max_age_sec = value->FindIntKey(kMaxAgeKey).value_or(-1);
     if (max_age_sec < 0)
       return false;
 
     // Report-To property is missing or malformed.
     std::string report_to;
     if (max_age_sec > 0) {
-      if (!dict->HasKey(kReportToKey))
+      std::string* maybe_report_to = value->FindStringKey(kReportToKey);
+      if (!maybe_report_to)
         return false;
-      if (!dict->GetString(kReportToKey, &report_to))
-        return false;
+      report_to = *maybe_report_to;
     }
 
-    bool include_subdomains = false;
     // include_subdomains is optional and defaults to false, so it's okay if
     // GetBoolean fails.
-    dict->GetBoolean(kIncludeSubdomainsKey, &include_subdomains);
+    bool include_subdomains =
+        value->FindBoolKey(kIncludeSubdomainsKey).value_or(false);
 
     // TODO(chlily): According to the spec we should restrict these sampling
     // fractions to [0.0, 1.0].
-    double success_fraction = 0.0;
     // success_fraction is optional and defaults to 0.0, so it's okay if
     // GetDouble fails.
-    dict->GetDouble(kSuccessFractionKey, &success_fraction);
+    double success_fraction =
+        value->FindDoubleKey(kSuccessFractionKey).value_or(0.0);
 
-    double failure_fraction = 1.0;
     // failure_fraction is optional and defaults to 1.0, so it's okay if
     // GetDouble fails.
-    dict->GetDouble(kFailureFractionKey, &failure_fraction);
+    double failure_fraction =
+        value->FindDoubleKey(kFailureFractionKey).value_or(1.0);
 
     policy_out->report_to = report_to;
     policy_out->include_subdomains = include_subdomains;

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -308,21 +309,21 @@ bool ParseJSON(base::StringPiece json,
       "bulk-legacy", "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"};
 
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
-  base::DictionaryValue* dict_value = nullptr;
-  if (!value.get() || !value->GetAsDictionary(&dict_value)) {
+  if (!value.get() || !value->is_dict()) {
     LOG(ERROR) << "Could not parse the input JSON file";
     return false;
   }
 
-  const base::ListValue* preload_entries = nullptr;
-  if (!dict_value->GetList("entries", &preload_entries)) {
+  const base::Value* preload_entries = value->FindListKey("entries");
+  if (!preload_entries) {
     LOG(ERROR) << "Could not parse the entries in the input JSON";
     return false;
   }
 
-  for (size_t i = 0; i < preload_entries->GetSize(); ++i) {
-    const base::DictionaryValue* parsed = nullptr;
-    if (!preload_entries->GetDictionary(i, &parsed)) {
+  const auto preload_entries_list = preload_entries->GetList();
+  for (size_t i = 0; i < preload_entries_list.size(); ++i) {
+    const base::Value& parsed = preload_entries_list[i];
+    if (!parsed.is_dict()) {
       LOG(ERROR) << "Could not parse entry " << base::NumberToString(i)
                  << " in the input JSON";
       return false;
@@ -330,12 +331,13 @@ bool ParseJSON(base::StringPiece json,
 
     std::unique_ptr<TransportSecurityStateEntry> entry(
         new TransportSecurityStateEntry());
-
-    if (!parsed->GetString(kNameJSONKey, &entry->hostname)) {
+    const std::string* maybe_hostname = parsed.FindStringKey(kNameJSONKey);
+    if (!maybe_hostname) {
       LOG(ERROR) << "Could not extract the hostname for entry "
                  << base::NumberToString(i) << " from the input JSON";
       return false;
     }
+    entry->hostname = *maybe_hostname;
 
     if (entry->hostname.empty()) {
       LOG(ERROR) << "The hostname for entry " << base::NumberToString(i)
@@ -343,24 +345,23 @@ bool ParseJSON(base::StringPiece json,
       return false;
     }
 
-    for (const auto& entry_value : *parsed) {
-      if (valid_keys.find(entry_value.first) == valid_keys.cend()) {
+    for (const auto& entry_value : parsed.DictItems()) {
+      if (!base::Contains(valid_keys, entry_value.first)) {
         LOG(ERROR) << "The entry for " << entry->hostname
                    << " contains an unknown " << entry_value.first << " field";
         return false;
       }
     }
 
-    std::string policy;
-    parsed->GetString(kPolicyJSONKey, &policy);
-    if (valid_policies.find(policy) == valid_policies.cend()) {
+    const std::string* policy = parsed.FindStringKey(kPolicyJSONKey);
+    if (!policy || !base::Contains(valid_policies, *policy)) {
       LOG(ERROR) << "The entry for " << entry->hostname
                  << " does not have a valid policy";
       return false;
     }
 
-    std::string mode;
-    parsed->GetString(kModeJSONKey, &mode);
+    const std::string* maybe_mode = parsed.FindStringKey(kModeJSONKey);
+    std::string mode = maybe_mode ? *maybe_mode : std::string();
     entry->force_https = false;
     if (mode == "force-https") {
       entry->force_https = true;
@@ -369,58 +370,74 @@ bool ParseJSON(base::StringPiece json,
       return false;
     }
 
-    parsed->GetBoolean(kIncludeSubdomainsJSONKey, &entry->include_subdomains);
-    parsed->GetBoolean(kIncludeSubdomainsForPinningJSONKey,
-                       &entry->hpkp_include_subdomains);
-    parsed->GetString(kPinsJSONKey, &entry->pinset);
-    parsed->GetBoolean(kExpectCTJSONKey, &entry->expect_ct);
-    parsed->GetString(kExpectCTReportURIJSONKey, &entry->expect_ct_report_uri);
+    entry->include_subdomains =
+        parsed.FindBoolKey(kIncludeSubdomainsJSONKey).value_or(false);
+    entry->hpkp_include_subdomains =
+        parsed.FindBoolKey(kIncludeSubdomainsForPinningJSONKey).value_or(false);
+    const std::string* maybe_pinset = parsed.FindStringKey(kPinsJSONKey);
+    if (maybe_pinset)
+      entry->pinset = *maybe_pinset;
+    entry->expect_ct = parsed.FindBoolKey(kExpectCTJSONKey).value_or(false);
+    const std::string* maybe_expect_ct_report_uri =
+        parsed.FindStringKey(kExpectCTReportURIJSONKey);
+    if (maybe_expect_ct_report_uri)
+      entry->expect_ct_report_uri = *maybe_expect_ct_report_uri;
 
     entries->push_back(std::move(entry));
   }
 
-  const base::ListValue* pinsets_list = nullptr;
-  if (!dict_value->GetList("pinsets", &pinsets_list)) {
+  base::Value* pinsets_value = value->FindListKey("pinsets");
+  if (!pinsets_value) {
     LOG(ERROR) << "Could not parse the pinsets in the input JSON";
     return false;
   }
 
-  for (size_t i = 0; i < pinsets_list->GetSize(); ++i) {
-    const base::DictionaryValue* parsed = nullptr;
-    if (!pinsets_list->GetDictionary(i, &parsed)) {
+  const auto pinsets_list = pinsets_value->GetList();
+  for (size_t i = 0; i < pinsets_list.size(); ++i) {
+    const base::Value& parsed = pinsets_list[i];
+    if (!parsed.is_dict()) {
       LOG(ERROR) << "Could not parse pinset " << base::NumberToString(i)
                  << " in the input JSON";
       return false;
     }
 
-    std::string name;
-    if (!parsed->GetString("name", &name)) {
+    const std::string* maybe_name = parsed.FindStringKey("name");
+    if (!maybe_name) {
       LOG(ERROR) << "Could not extract the name for pinset "
                  << base::NumberToString(i) << " from the input JSON";
       return false;
     }
+    std::string name = *maybe_name;
 
-    std::string report_uri;
-    parsed->GetString("report_uri", &report_uri);
+    const std::string* maybe_report_uri = parsed.FindStringKey("report_uri");
+    std::string report_uri =
+        maybe_report_uri ? *maybe_report_uri : std::string();
 
     std::unique_ptr<Pinset> pinset(new Pinset(name, report_uri));
 
-    const base::ListValue* pinset_static_hashes_list = nullptr;
-    if (parsed->GetList("static_spki_hashes", &pinset_static_hashes_list)) {
-      for (size_t i = 0; i < pinset_static_hashes_list->GetSize(); ++i) {
-        std::string hash;
-        pinset_static_hashes_list->GetString(i, &hash);
-        pinset->AddStaticSPKIHash(hash);
+    const base::Value* pinset_static_hashes_list =
+        parsed.FindListKey("static_spki_hashes");
+    if (pinset_static_hashes_list) {
+      for (const auto& hash : pinset_static_hashes_list->GetList()) {
+        if (!hash.is_string()) {
+          LOG(ERROR) << "Could not parse static spki hash "
+                     << hash.DebugString() << " in the input JSON";
+          return false;
+        }
+        pinset->AddStaticSPKIHash(hash.GetString());
       }
     }
 
-    const base::ListValue* pinset_bad_static_hashes_list = nullptr;
-    if (parsed->GetList("bad_static_spki_hashes",
-                        &pinset_bad_static_hashes_list)) {
-      for (size_t i = 0; i < pinset_bad_static_hashes_list->GetSize(); ++i) {
-        std::string hash;
-        pinset_bad_static_hashes_list->GetString(i, &hash);
-        pinset->AddBadStaticSPKIHash(hash);
+    const base::Value* pinset_bad_static_hashes_list =
+        parsed.FindListKey("bad_static_spki_hashes");
+    if (pinset_bad_static_hashes_list) {
+      for (const auto& hash : pinset_bad_static_hashes_list->GetList()) {
+        if (!hash.is_string()) {
+          LOG(ERROR) << "Could not parse bad static spki hash "
+                     << hash.DebugString() << " in the input JSON";
+          return false;
+        }
+        pinset->AddBadStaticSPKIHash(hash.GetString());
       }
     }
 
