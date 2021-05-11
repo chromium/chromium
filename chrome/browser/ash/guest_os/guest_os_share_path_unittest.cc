@@ -88,13 +88,13 @@ class GuestOsSharePathTest : public testing::Test {
       const std::string& failure_reason) {
     const base::DictionaryValue* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
-    EXPECT_TRUE(prefs->HasKey(shared_path_.value()));
+    EXPECT_NE(prefs->FindKey(shared_path_.value()), nullptr);
     EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList().size(), 1U);
     EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList()[0].GetString(),
               crostini::kCrostiniDefaultVmName);
     if (expected_persist == Persist::YES) {
       EXPECT_EQ(prefs->DictSize(), 2U);
-      EXPECT_TRUE(prefs->HasKey(share_path_.value()));
+      EXPECT_NE(prefs->FindKey(share_path_.value()), nullptr);
       EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList().size(), 1U);
       EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList()[0].GetString(),
                 expected_vm_name);
@@ -174,9 +174,9 @@ class GuestOsSharePathTest : public testing::Test {
     const base::DictionaryValue* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     if (expected_persist == Persist::YES) {
-      EXPECT_TRUE(prefs->HasKey(path.value()));
+      EXPECT_NE(prefs->FindKey(path.value()), nullptr);
     } else {
-      EXPECT_FALSE(prefs->HasKey(path.value()));
+      EXPECT_EQ(prefs->FindKey(path.value()), nullptr);
     }
     EXPECT_EQ(fake_seneschal_client_->unshare_path_called(),
               expected_seneschal_client_called == SeneschalClientCalled::YES);
