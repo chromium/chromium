@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_command_line.h"
 #include "net/base/url_util.h"

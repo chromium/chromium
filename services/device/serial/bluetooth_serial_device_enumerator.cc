@@ -5,6 +5,7 @@
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"

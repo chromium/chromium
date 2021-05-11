@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/base/net_errors.h"

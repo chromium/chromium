@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"

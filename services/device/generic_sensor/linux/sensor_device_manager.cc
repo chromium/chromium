@@ -5,6 +5,7 @@
 #include "services/device/generic_sensor/linux/sensor_device_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"

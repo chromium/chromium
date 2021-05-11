@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
