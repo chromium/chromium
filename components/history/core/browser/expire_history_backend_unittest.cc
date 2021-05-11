@@ -287,36 +287,6 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   main_db_->AddVisit(&visit_row4, SOURCE_BROWSED);
 }
 
-void ExpireHistoryTest::AddExampleSourceData(const GURL& url, URLID* id) {
-  if (!main_db_)
-    return;
-
-  base::Time last_visit_time = PretendNow();
-  // Add one URL.
-  URLRow url_row1(url);
-  url_row1.set_last_visit(last_visit_time);
-  url_row1.set_visit_count(4);
-  URLID url_id = main_db_->AddURL(url_row1);
-  *id = url_id;
-
-  // Four times for each visit.
-  VisitRow visit_row1(url_id, last_visit_time - base::TimeDelta::FromDays(4), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row1, SOURCE_SYNCED);
-
-  VisitRow visit_row2(url_id, last_visit_time - base::TimeDelta::FromDays(3), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row2, SOURCE_BROWSED);
-
-  VisitRow visit_row3(url_id, last_visit_time - base::TimeDelta::FromDays(2), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row3, SOURCE_EXTENSION);
-
-  VisitRow visit_row4(url_id, last_visit_time, 0, ui::PAGE_TRANSITION_TYPED, 0,
-                      true, false);
-  main_db_->AddVisit(&visit_row4, SOURCE_FIREFOX_IMPORTED);
-}
-
 bool ExpireHistoryTest::HasFavicon(favicon_base::FaviconID favicon_id) {
   if (!thumb_db_ || favicon_id == 0)
     return false;
@@ -539,6 +509,34 @@ TEST_F(ExpireHistoryTest, DeleteURLWithoutFavicon) {
   // All the normal data except the favicon should be gone.
   EnsureURLInfoGone(last_row, false);
   EXPECT_TRUE(HasFavicon(favicon_id));
+}
+
+// Deletes a URL with context annotations attached to the visits. Verifies the
+// context annotations are also deleted.
+TEST_F(ExpireHistoryTest, DeleteURLAndContextAnnotations) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times);
+
+  // Add some stub context annotations for the last URL row.
+  URLRow last_row;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[2], &last_row));
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[2], &visits);
+  ASSERT_EQ(1U, visits.size());
+  main_db_->AddContextAnnotationsForVisit(visits[0].visit_id, {});
+
+  // Verify that the context annotation is there for that visit.
+  auto annotated_visits = main_db_->GetAllContextAnnotationsForTesting();
+  ASSERT_EQ(1U, annotated_visits.size());
+  EXPECT_EQ(visits[0].visit_id, annotated_visits[0].visit_id);
+
+  // Delete the URL and its dependencies.
+  expirer_.DeleteURL(last_row.url(), base::Time::Max());
+
+  // All the normal data + the favicon should be gone.
+  EnsureURLInfoGone(last_row, false);
+  EXPECT_TRUE(main_db_->GetAllContextAnnotationsForTesting().empty());
 }
 
 // DeleteURL should delete the history of starred urls, but the URL should

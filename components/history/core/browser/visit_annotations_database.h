@@ -57,6 +57,9 @@ class VisitAnnotationsDatabase {
   // Get the `max_results` most recent `AnnotatedVisitRow`s.
   std::vector<AnnotatedVisitRow> GetAnnotatedVisits(int max_results);
 
+  // Gets all the context annotation rows for testing.
+  std::vector<AnnotatedVisitRow> GetAllContextAnnotationsForTesting();
+
   // Deletes the content & context annotations associated with `visit_id`. This
   // will also delete any associated annotations usage data. If no annotations
   // exist for the `VisitId`, this is a no-op.

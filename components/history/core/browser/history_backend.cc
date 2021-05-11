@@ -25,6 +25,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -1436,7 +1437,6 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   TRACE_EVENT0("browser", "HistoryBackend::GetAnnotatedVisits");
   if (!db_)
     return {};
-  bool deleted_any_visits = false;
   std::vector<AnnotatedVisit> annotated_visits;
   for (const auto& row : db_->GetAnnotatedVisits(max_results)) {
     URLRow url_row;
@@ -1446,12 +1446,12 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
       annotated_visits.push_back(
           {url_row, visit_row, row.context_annotations, {}});
     } else {
-      db_->DeleteAnnotationsForVisit(row.visit_id);
-      deleted_any_visits = true;
+      // Ignore corrupt data but do not crash, as user DBs can be in bad states.
+      DVLOG(0) << "HistoryBackend: AnnotatedVisit found with missing associated"
+                  "URL or visit. visit_id = "
+               << row.visit_id;
     }
   }
-  if (deleted_any_visits)
-    ScheduleCommit();
   return annotated_visits;
 }
 

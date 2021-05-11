@@ -312,6 +312,14 @@ std::vector<AnnotatedVisitRow> VisitAnnotationsDatabase::GetAnnotatedVisits(
   return StatementToAnnotatedVisitRowVector(statement);
 }
 
+std::vector<AnnotatedVisitRow>
+VisitAnnotationsDatabase::GetAllContextAnnotationsForTesting() {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
+                     "FROM context_annotations"));
+  return StatementToAnnotatedVisitRowVector(statement);
+}
+
 void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
   sql::Statement delete_content_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM content_annotations WHERE visit_id = ?"));

@@ -3180,11 +3180,11 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   };
 
   // Happy path; annotated visits with associated URL & visits.
-  EXPECT_EQ(add_url_and_visit("http://1.com/"),
+  ASSERT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 1}));
-  EXPECT_EQ(add_url_and_visit("http://2.com/"),
+  ASSERT_EQ(add_url_and_visit("http://2.com/"),
             (std::pair<URLID, VisitID>{2, 2}));
-  EXPECT_EQ(add_url_and_visit("http://1.com/"),
+  ASSERT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 3}));
   backend_->AddContextAnnotationsForVisit(1, {true});
   backend_->AddContextAnnotationsForVisit(3, {false});
@@ -3244,9 +3244,9 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 1);
   EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
-  // `backend_->GetAnnotatedVisits()` should delete visits without associated
-  // URLs and visits.
-  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 1u);
+  // `backend_->GetAnnotatedVisits()` should not delete visits without
+  // associated URLs and visits. Let ExpireHistoryBackend do that.
+  EXPECT_EQ(backend_->db_->GetAnnotatedVisits(10).size(), 2u);
 }
 
 }  // namespace history
