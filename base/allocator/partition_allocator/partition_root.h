@@ -513,6 +513,29 @@ struct BASE_EXPORT PartitionRoot {
     PA_DCHECK(i <= kNumBuckets);
     return buckets[i];
   }
+
+  // Returns whether a |bucket| from |this| root is direct-mapped. This function
+  // does not touch |bucket|, contrary to  PartitionBucket::is_direct_mapped().
+  //
+  // This is meant to be used in hot paths, and particularly *before* going into
+  // the thread cache fast path. Indeed, real-world profiles show that accessing
+  // an allocation's bucket is responsible for a sizable fraction of *total*
+  // deallocation time. This can be understood because
+  // - All deallocations have to access the bucket to know whether it is
+  //   direct-mapped. If not (vast majority of allocations), it can go through
+  //   the fast path, i.e. thread cache.
+  // - The bucket is relatively frequently written to, by *all* threads
+  //   (e.g. every time a slot span becomes full or empty), so accessing it will
+  //   result in some amount of cacheline ping-pong.
+  ALWAYS_INLINE bool IsDirectMappedBucket(Bucket* bucket) const {
+    // All regular allocations are associated with a bucket in the |buckets_|
+    // array. A range check is then sufficient to identify direct-mapped
+    // allocations.
+    bool ret = !(bucket >= this->buckets && bucket <= &this->sentinel_bucket);
+    PA_DCHECK(ret == bucket->is_direct_mapped());
+    return ret;
+  }
+
   // Allocates memory, without initializing extras.
   //
   // - |flags| are as in AllocFlags().
@@ -929,14 +952,18 @@ template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   if (UNLIKELY(!ptr))
     return;
+  // Almost all calls to FreeNoNooks() will end up writing to |*ptr|, the only
+  // cases where we don't would be delayed free() in PCScan, but |*ptr| can be
+  // cold in cache.
+  PA_PREFETCH(ptr);
 
-    // On Android, malloc() interception is more fragile than on other
-    // platforms, as we use wrapped symbols. However, the GigaCage allows us to
-    // quickly tell that a pointer was allocated with PartitionAlloc.
-    //
-    // This is a crash to detect imperfect symbol interception. However, we can
-    // forward allocations we don't own to the system malloc() implementation in
-    // these rare cases, assuming that some remain.
+  // On Android, malloc() interception is more fragile than on other
+  // platforms, as we use wrapped symbols. However, the GigaCage allows us to
+  // quickly tell that a pointer was allocated with PartitionAlloc.
+  //
+  // This is a crash to detect imperfect symbol interception. However, we can
+  // forward allocations we don't own to the system malloc() implementation in
+  // these rare cases, assuming that some remain.
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // GigaCage is always enabled on Android and is needed for PA_CHECK below.
   PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
@@ -946,6 +973,17 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer
   // hasn't been adjusted yet.
   SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
+  // We are going to read from |*slot_span| in all branches. Since
+  // |FromSlotSpan()| below doesn't touch *slot_span, there is some time for the
+  // prefetch to be useful.
+  //
+  // TODO(crbug.com/1207307): It would be much better to avoid touching
+  // |*slot_span| at all on the fast path, or at least to separate its read-only
+  // parts (i.e. bucket pointer) from the rest. Indeed, every thread cache miss
+  // (or batch fill) will *write* to |slot_span->freelist_head|, leading to
+  // cacheline ping-pong.
+  PA_PREFETCH(slot_span);
+
   // TODO(palmer): See if we can afford to make this a CHECK.
   PA_DCHECK(IsValidSlotSpan(slot_span));
   auto* root = FromSlotSpan(slot_span);
@@ -955,7 +993,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   if (UNLIKELY(root->IsQuarantineEnabled())) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
-    if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
+    if (LIKELY(!root->IsDirectMappedBucket(slot_span->bucket))) {
       PCScan::MoveToQuarantine(ptr, slot_span->bucket->slot_size);
       return;
     }
@@ -1015,7 +1053,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
     PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
-    if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
+    if (LIKELY(!IsDirectMappedBucket(slot_span->bucket)) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
       // If there are no more references to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
@@ -1041,7 +1079,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
-      !slot_span->bucket->is_direct_mapped()) {
+      !IsDirectMappedBucket(slot_span->bucket)) {
     internal::SecureMemset(slot_start, 0,
                            utilized_slot_size
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1083,9 +1121,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
   // LIKELY: performance-sensitive thread-safe partitions have a thread cache,
   // direct-mapped allocations are uncommon.
   if (thread_safe &&
-      LIKELY(with_thread_cache && !slot_span->bucket->is_direct_mapped())) {
-    PA_DCHECK(slot_span->bucket >= this->buckets &&
-              slot_span->bucket <= &this->sentinel_bucket);
+      LIKELY(with_thread_cache && !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (LIKELY(internal::ThreadCache::IsValid(thread_cache) &&

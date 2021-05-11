@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
@@ -175,7 +176,18 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext() const {
   if (UNLIKELY(next_ && ~reinterpret_cast<uintptr_t>(next_) != inverted_next_))
     FreelistCorruptionDetected();
 #endif  // defined(PA_HAS_FREELIST_HARDENING)
-  return EncodedPartitionFreelistEntry::Decode(next_);
+  auto* ret = EncodedPartitionFreelistEntry::Decode(next_);
+  // In real-world profiles, the load of |next_| above is responsible for a
+  // large fraction of the allocation cost. However, we cannot anticipate it
+  // enough since it is accessed right after we know its address.
+  //
+  // In the case of repeated allocations, we can prefetch the access that will
+  // be done at the *next* allocation, which will touch *ret, prefetch it. There
+  // is no harm in prefetching nullptr, but on some architectures, it causes a
+  // needless dTLB miss.
+  if (ret)
+    PA_PREFETCH(ret);
+  return ret;
 }
 
 }  // namespace internal

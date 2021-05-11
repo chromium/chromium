@@ -17,6 +17,13 @@
 #include <windows.h>
 #endif
 
+// Prefetch *x into memory.
+#if defined(__clang__) || defined(COMPILER_GCC)
+#define PA_PREFETCH(x) __builtin_prefetch(x)
+#else
+#define PA_PREFETCH(x)
+#endif
+
 namespace base {
 
 namespace internal {
