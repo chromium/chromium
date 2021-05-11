@@ -20,6 +20,8 @@ CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
       origin_(origin),
       plane_list_(plane_list),
       overlays_(std::move(overlays)) {
+  // Verify that at least one overlay plane is a primary plane if we're enabling
+  // a CRTC.
   DCHECK(!should_enable || DrmOverlayPlane::GetPrimaryPlane(overlays_));
 }
 

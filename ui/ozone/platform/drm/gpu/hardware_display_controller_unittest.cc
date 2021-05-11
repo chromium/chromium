@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -249,9 +250,8 @@ bool HardwareDisplayControllerTest::ModesetWithPlanes(
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  controller_->UpdateState(
-      /*enable_requested=*/true,
-      ui::DrmOverlayPlane::GetPrimaryPlane(request_for_update[0].overlays()));
+  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+    controller_->UpdateState(crtc_request);
 
   return status;
 }
@@ -262,7 +262,8 @@ bool HardwareDisplayControllerTest::DisableController() {
   ui::CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
-  controller_->UpdateState(/*enable_requested=*/false, nullptr);
+  for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+    controller_->UpdateState(crtc_request);
 
   return status;
 }
@@ -943,4 +944,21 @@ TEST_F(HardwareDisplayControllerTest, Disable) {
   }
   // No plane should be in use.
   ASSERT_EQ(0, planes_in_use);
+}
+
+TEST_F(HardwareDisplayControllerTest, MultiplePlanesModeset) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+  EXPECT_EQ(drm_->plane_manager()
+                ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                .modeset_framebuffers.size(),
+            2UL);
+  for (const auto& plane : modeset_planes) {
+    EXPECT_TRUE(base::Contains(drm_->plane_manager()
+                                   ->GetCrtcStateForCrtcId(kPrimaryCrtc)
+                                   .modeset_framebuffers,
+                               plane.buffer));
+  }
 }

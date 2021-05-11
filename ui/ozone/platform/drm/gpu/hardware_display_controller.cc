@@ -123,14 +123,13 @@ void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
 }
 
 void HardwareDisplayController::UpdateState(
-    bool enable_requested,
-    const DrmOverlayPlane* primary_plane) {
+    const CrtcCommitRequest& crtc_request) {
   // Verify that the current state matches the requested state.
-  if (enable_requested && IsEnabled()) {
-    DCHECK(primary_plane);
+  if (crtc_request.should_enable() && IsEnabled()) {
+    DCHECK(!crtc_request.overlays().empty());
     // TODO(markyacoub): This should be absorbed in the commit request.
     ResetCursor();
-    OnModesetComplete(*primary_plane);
+    OnModesetComplete(crtc_request.overlays());
   }
 }
 
@@ -411,24 +410,21 @@ void HardwareDisplayController::OnPageFlipComplete(
   time_of_last_flip_ = presentation_feedback.timestamp;
   current_planes_ = std::move(pending_planes);
   for (const auto& controller : crtc_controllers_) {
-    GetDrmDevice()->plane_manager()->ResetModesetBufferOfCrtc(
+    GetDrmDevice()->plane_manager()->ResetModesetStateForCrtc(
         controller->crtc());
   }
   page_flip_request_ = nullptr;
 }
 
 void HardwareDisplayController::OnModesetComplete(
-    const DrmOverlayPlane& primary) {
-  // drmModeSetCrtc has an immediate effect, so we can assume that the current
-  // planes have been updated. However if a page flip is still pending, set the
-  // pending planes to the same values so that the callback keeps the correct
-  // state.
+    const DrmOverlayPlaneList& modeset_planes) {
+  // Modesetting is blocking so it has an immediate effect. We can assume that
+  // the current planes have been updated. However, if a page flip is still
+  // pending, set the pending planes to the same values so that the callback
+  // keeps the correct state.
   page_flip_request_ = nullptr;
   owned_hardware_planes_.legacy_page_flips.clear();
-  current_planes_.clear();
-  // TODO(markyacoub): Once we support modesetting with more than just the
-  // primary plane, save all planes instead of the primary only.
-  current_planes_.push_back(primary.Clone());
+  current_planes_ = DrmOverlayPlane::Clone(modeset_planes);
   time_of_last_flip_ = base::TimeTicks::Now();
 }
 

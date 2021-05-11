@@ -88,9 +88,9 @@ class DrmOverlayValidatorTest : public testing::Test {
     ui::CommitRequest request_for_update = commit_request;
     bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                                 DRM_MODE_ATOMIC_ALLOW_MODESET);
-    controller->UpdateState(
-        /*enable_requested=*/true,
-        ui::DrmOverlayPlane::GetPrimaryPlane(request_for_update[0].overlays()));
+
+    for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+      controller->UpdateState(crtc_request);
 
     return status;
   }
