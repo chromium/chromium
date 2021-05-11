@@ -698,6 +698,13 @@ class VideoTextureBacking : public cc::TextureBacking {
     return raster_context_provider_;
   }
 
+  // Used only for recycling this TextureBacking - where we need to keep the
+  // texture/mailbox alive, but replace the SkImage.
+  void ReplaceAcceleratedSkImage(sk_sp<SkImage> sk_image) {
+    sk_image_ = sk_image;
+    sk_image_info_ = sk_image->imageInfo();
+  }
+
   sk_sp<SkImage> GetSkImageViaReadback() override {
     if (sk_image_)
       return sk_image_->makeNonTextureImage();
@@ -1746,36 +1753,42 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
       cache_->coded_size = video_frame->coded_size();
       cache_->visible_rect = video_frame->visible_rect();
-      if (!cache_->texture_backing) {
-        if (supports_oop_raster) {
-          SkImageInfo sk_image_info =
-              SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
-                                kRGBA_8888_SkColorType, kPremul_SkAlphaType);
-          cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
-              mailbox, sk_image_info, wraps_video_frame_texture,
-              raster_context_provider);
-        } else {
-          cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
 
-          // TODO(nazabris): Handle scoped access correctly. This follows the
-          // current pattern but is most likely bugged. Access should last for
-          // the lifetime of the SkImage.
-          ScopedSharedImageAccess(ri, cache_->source_texture, mailbox);
-          auto source_image =
-              WrapGLTexture(wraps_video_frame_texture
-                                ? video_frame->mailbox_holder(0).texture_target
-                                : GL_TEXTURE_2D,
-                            cache_->source_texture, video_frame->coded_size(),
-                            raster_context_provider);
-          if (!source_image) {
-            // Couldn't create the SkImage.
-            cache_.reset();
-            return false;
-          }
+      // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
+      // we can recycle the mailbox/texture, but have to replace the SkImage.
+      if (!supports_oop_raster) {
+        cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
+
+        // TODO(nazabris): Handle scoped access correctly. This follows the
+        // current pattern but is most likely bugged. Access should last for
+        // the lifetime of the SkImage.
+        ScopedSharedImageAccess(ri, cache_->source_texture, mailbox);
+        auto source_image =
+            WrapGLTexture(wraps_video_frame_texture
+                              ? video_frame->mailbox_holder(0).texture_target
+                              : GL_TEXTURE_2D,
+                          cache_->source_texture, video_frame->coded_size(),
+                          raster_context_provider);
+        if (!source_image) {
+          // Couldn't create the SkImage.
+          cache_.reset();
+          return false;
+        }
+        if (!cache_->texture_backing) {
           cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
               std::move(source_image), mailbox, wraps_video_frame_texture,
               raster_context_provider);
+        } else {
+          cache_->texture_backing->ReplaceAcceleratedSkImage(
+              std::move(source_image));
         }
+      } else if (!cache_->texture_backing) {
+        SkImageInfo sk_image_info =
+            SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
+                              kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+        cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
+            mailbox, sk_image_info, wraps_video_frame_texture,
+            raster_context_provider);
       }
       paint_image_builder.set_texture_backing(
           cache_->texture_backing, cc::PaintImage::GetNextContentId());
