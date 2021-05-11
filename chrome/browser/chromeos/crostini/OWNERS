@@ -1,0 +1,6 @@
+# TODO(https://crbug.com/1164001): Share OWNERS until the migration of
+# //chrome/browser/chromeos/crostini completes.
+file://chrome/browser/ash/crostini/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

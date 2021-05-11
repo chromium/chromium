@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/views/widget/widget.h"
 

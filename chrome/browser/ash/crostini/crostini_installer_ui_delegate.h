@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
+#include "chrome/browser/chromeos/crostini/crostini_types.mojom-forward.h"
 
 namespace crostini {
 

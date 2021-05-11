@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"

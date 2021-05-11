@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
+#include "chrome/browser/chromeos/crostini/crostini_types.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

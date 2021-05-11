@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"

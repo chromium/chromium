@@ -4,7 +4,7 @@
 
 module chromeos.crostini_installer.mojom;
 
-import "chrome/browser/ash/crostini/crostini_types.mojom";
+import "chrome/browser/chromeos/crostini/crostini_types.mojom";
 
 // Lives in the browser process. A renderer uses this to create a page handler
 // for controlling Crostini installation.

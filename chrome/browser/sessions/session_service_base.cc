@@ -42,7 +42,7 @@
 #include "content/public/browser/session_storage_namespace.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #endif
 
 #if defined(OS_MAC)
