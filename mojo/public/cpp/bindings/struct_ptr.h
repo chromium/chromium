@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 namespace internal {
@@ -111,8 +111,8 @@ class StructPtr {
 
   // If T is serialisable into trace, StructPtr<T> is also serialisable.
   template <class U = S>
-  perfetto::check_traced_value_support_t<U> WriteIntoTrace(
-      perfetto::TracedValue context) const {
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
     perfetto::WriteIntoTracedValue(std::move(context), ptr_);
   }
 
@@ -212,13 +212,9 @@ class InlinedStructPtr {
 
   // If T is serialisable into trace, StructPtr<T> is also serialisable.
   template <class U = S>
-  perfetto::check_traced_value_support_t<U> WriteIntoTrace(
-      perfetto::TracedValue context) const {
-    if (is_null()) {
-      std::move(context).WritePointer(nullptr);
-      return;
-    }
-    perfetto::WriteIntoTracedValue(std::move(context), value_);
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), get());
   }
 
  private:
