@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"

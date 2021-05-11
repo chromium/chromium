@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

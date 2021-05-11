@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

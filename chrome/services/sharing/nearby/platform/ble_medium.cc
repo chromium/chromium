@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_medium.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 

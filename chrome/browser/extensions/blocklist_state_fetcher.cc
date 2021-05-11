@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"

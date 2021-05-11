@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
+#include "base/containers/contains.h"
 
 using cast_channel::GetAppAvailabilityResult;
 

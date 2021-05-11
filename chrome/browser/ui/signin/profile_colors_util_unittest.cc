@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

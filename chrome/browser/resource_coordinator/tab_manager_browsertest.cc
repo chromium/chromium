@@ -5,6 +5,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/run_loop.h"

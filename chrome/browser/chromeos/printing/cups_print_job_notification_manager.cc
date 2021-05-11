@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/cups_print_job_notification_manager.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_notification.h"

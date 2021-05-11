@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/run_loop.h"

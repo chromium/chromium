@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/rand_util.h"

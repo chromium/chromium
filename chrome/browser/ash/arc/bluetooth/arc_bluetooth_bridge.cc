@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"

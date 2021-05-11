@@ -4,6 +4,7 @@
 
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 
+#include "base/containers/contains.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"

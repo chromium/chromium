@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"

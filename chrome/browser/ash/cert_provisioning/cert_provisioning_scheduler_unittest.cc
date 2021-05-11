@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"

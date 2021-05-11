@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "base/containers/contains.h"
 
 namespace web_app {
 

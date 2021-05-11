@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"

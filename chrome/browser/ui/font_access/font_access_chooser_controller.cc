@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/font_access/font_access_chooser_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/font_access_chooser.h"

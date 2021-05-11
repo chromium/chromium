@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/condition_variable.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"

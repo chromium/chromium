@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "device/fido/features.h"
 

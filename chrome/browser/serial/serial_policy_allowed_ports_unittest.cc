@@ -4,6 +4,7 @@
 
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"

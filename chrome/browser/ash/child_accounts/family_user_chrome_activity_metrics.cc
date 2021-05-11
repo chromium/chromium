@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_chrome_activity_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"

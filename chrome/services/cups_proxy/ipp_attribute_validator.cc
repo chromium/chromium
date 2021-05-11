@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
 
 namespace cups_proxy {

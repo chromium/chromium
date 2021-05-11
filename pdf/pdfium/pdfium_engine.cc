@@ -18,6 +18,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/location.h"

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/task/post_task.h"

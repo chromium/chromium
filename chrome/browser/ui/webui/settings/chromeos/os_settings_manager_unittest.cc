@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/no_destructor.h"
 #include "base/test/metrics/histogram_enum_reader.h"

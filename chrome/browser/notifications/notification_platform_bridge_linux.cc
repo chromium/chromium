@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"

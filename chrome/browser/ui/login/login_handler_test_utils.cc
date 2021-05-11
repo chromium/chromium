@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

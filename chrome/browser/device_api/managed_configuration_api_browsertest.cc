@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

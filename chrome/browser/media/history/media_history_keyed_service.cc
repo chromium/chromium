@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

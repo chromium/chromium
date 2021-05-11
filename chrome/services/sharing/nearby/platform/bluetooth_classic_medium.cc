@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"

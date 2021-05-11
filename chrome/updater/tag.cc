@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"

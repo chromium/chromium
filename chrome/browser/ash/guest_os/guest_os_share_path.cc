@@ -6,6 +6,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/task/thread_pool.h"

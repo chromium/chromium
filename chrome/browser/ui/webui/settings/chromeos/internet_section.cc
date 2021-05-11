@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"

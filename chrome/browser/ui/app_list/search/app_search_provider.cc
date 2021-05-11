@@ -18,6 +18,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"

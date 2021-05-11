@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"

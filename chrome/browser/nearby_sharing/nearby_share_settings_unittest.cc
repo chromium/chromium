@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

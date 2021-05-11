@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/persisted_app_info.h"
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"

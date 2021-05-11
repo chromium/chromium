@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 
 #include "ash/public/cpp/app_types.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"

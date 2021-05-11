@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

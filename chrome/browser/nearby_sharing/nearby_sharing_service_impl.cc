@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"

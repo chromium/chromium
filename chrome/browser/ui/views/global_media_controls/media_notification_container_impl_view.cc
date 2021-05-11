@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"

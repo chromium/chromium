@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

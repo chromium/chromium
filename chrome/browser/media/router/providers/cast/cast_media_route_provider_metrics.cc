@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"

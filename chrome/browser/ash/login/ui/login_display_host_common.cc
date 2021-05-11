@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"

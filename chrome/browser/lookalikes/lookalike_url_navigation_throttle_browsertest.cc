@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"

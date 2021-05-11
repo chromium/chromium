@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"

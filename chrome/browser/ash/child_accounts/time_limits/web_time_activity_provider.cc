@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_activity_provider.h"
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"

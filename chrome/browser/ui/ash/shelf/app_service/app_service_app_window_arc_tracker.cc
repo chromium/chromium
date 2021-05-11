@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

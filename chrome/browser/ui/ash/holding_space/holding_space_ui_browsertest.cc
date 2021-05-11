@@ -20,6 +20,7 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

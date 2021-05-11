@@ -5,6 +5,7 @@
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/containers/contains.h"
 #include "base/numerics/math_constants.h"
 #include "base/single_thread_task_runner.h"
 

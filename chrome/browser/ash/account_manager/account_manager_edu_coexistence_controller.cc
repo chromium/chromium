@@ -8,6 +8,7 @@
 
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"

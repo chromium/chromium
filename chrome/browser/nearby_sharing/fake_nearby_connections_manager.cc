@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
+#include "base/containers/contains.h"
 
 FakeNearbyConnectionsManager::FakeNearbyConnectionsManager() = default;
 

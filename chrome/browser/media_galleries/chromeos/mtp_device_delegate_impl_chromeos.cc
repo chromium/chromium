@@ -16,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"

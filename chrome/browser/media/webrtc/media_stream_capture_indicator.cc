@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"

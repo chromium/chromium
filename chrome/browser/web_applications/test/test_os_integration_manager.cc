@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 
+#include "base/containers/contains.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 

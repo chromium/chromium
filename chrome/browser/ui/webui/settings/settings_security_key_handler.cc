@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

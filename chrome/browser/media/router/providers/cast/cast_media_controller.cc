@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_media_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

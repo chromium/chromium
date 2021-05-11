@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "third_party/nearby/src/cpp/platform/base/exception.h"
 #include "third_party/nearby/src/cpp/platform/base/input_stream.h"

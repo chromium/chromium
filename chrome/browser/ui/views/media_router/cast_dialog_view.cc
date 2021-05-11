@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
