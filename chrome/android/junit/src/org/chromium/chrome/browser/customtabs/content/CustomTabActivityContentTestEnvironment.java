@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,9 +25,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -107,7 +108,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public final CustomTabActivityTabProvider tabProvider = new CustomTabActivityTabProvider();
 
     @Captor
-    public ArgumentCaptor<Callback<Tab>> activityTabObserverCaptor;
+    public ArgumentCaptor<ActivityTabObserver> activityTabObserverCaptor;
 
     // Captures the WebContents with which tabFromFactory is initialized
     @Captor public ArgumentCaptor<WebContents> webContentsCaptor;
@@ -142,7 +143,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
         when(startupTabPreloader.takeTabIfMatchingOrDestroy(any(), anyInt())).thenReturn(null);
         when(reparentingTaskProvider.get(any())).thenReturn(reparentingTask);
-        when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
+        doNothing()
+                .when(activityTabProvider)
+                .addObserverAndTrigger(activityTabObserverCaptor.capture());
     }
 
     @Override
@@ -197,8 +200,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public void changeTab(Tab newTab) {
         when(activityTabProvider.get()).thenReturn(newTab);
-        for (Callback<Tab> observer : activityTabObserverCaptor.getAllValues()) {
-            observer.onResult(newTab);
+        for (ActivityTabObserver observer : activityTabObserverCaptor.getAllValues()) {
+            observer.onActivityTabChanged(newTab, false);
         }
     }
 

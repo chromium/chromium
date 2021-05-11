@@ -91,8 +91,7 @@ public class NavigationHandlerTest {
     }
 
     private Tab currentTab() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getActivityTabProvider().get());
+        return mActivityTestRule.getActivity().getActivityTabProvider().get();
     }
 
     private void loadNewTabPage() {
