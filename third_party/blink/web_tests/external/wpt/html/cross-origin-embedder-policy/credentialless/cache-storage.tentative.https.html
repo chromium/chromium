@@ -1,4 +1,8 @@
 <meta name="timeout" content="long">
+<meta name="variant" content="?document">
+<meta name="variant" content="?dedicated_worker">
+<meta name="variant" content="?shared_worker">
+<meta name="variant" content="?service_worker">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -50,37 +54,38 @@ const cacheStorageTest = (
 // Execute the same set of tests for every type of execution contexts:
 // Documents, DedicatedWorkers, SharedWorkers, and ServiceWorkers. The results
 // should be independent of the context.
-Object.entries(environments).forEach(([name, constructor]) => {
-  const context_none = constructor(coep_none);
-  const context_credentialless = constructor(coep_credentialless);
-  const context_require_corp = constructor(coep_require_corp);
+const environment = location.search.substr(1);
+const constructor = environments[environment];
 
-  cacheStorageTest(`[${name}] unsafe-none => unsafe-none`,
-    context_none, context_none, "", "retrieved");
-  cacheStorageTest(`[${name}] unsafe-none => credentialless`,
-    context_none, context_credentialless, "", "error");
-  cacheStorageTest(`[${name}] unsafe-none => credentialless + CORP`,
-    context_none, context_credentialless, corp_cross_origin, "retrieved");
-  cacheStorageTest(`[${name}] unsafe-none => require-corp`,
-    context_none, context_require_corp, "", "error");
-  cacheStorageTest(`[${name}] unsafe-none => require-corp + CORP`,
-    context_none, context_require_corp, corp_cross_origin, "retrieved");
+const context_none = constructor(coep_none);
+const context_credentialless = constructor(coep_credentialless);
+const context_require_corp = constructor(coep_require_corp);
 
-  cacheStorageTest(`[${name}] credentialless => unsafe-none`,
-    context_credentialless, context_none, "", "retrieved");
-  cacheStorageTest(`[${name}] credentialless => credentialless`,
-    context_credentialless, context_credentialless, "", "retrieved");
-  cacheStorageTest(`[${name}] credentialless => require-corp`,
-    context_credentialless, context_require_corp, "", "error");
-  cacheStorageTest(`[${name}] credentialless => require-corp + CORP`,
-    context_credentialless, context_require_corp, corp_cross_origin, "retrieved");
+cacheStorageTest(`[${environment}] unsafe-none => unsafe-none`,
+  context_none, context_none, "", "retrieved");
+cacheStorageTest(`[${environment}] unsafe-none => credentialless`,
+  context_none, context_credentialless, "", "error");
+cacheStorageTest(`[${environment}] unsafe-none => credentialless + CORP`,
+  context_none, context_credentialless, corp_cross_origin, "retrieved");
+cacheStorageTest(`[${environment}] unsafe-none => require-corp`,
+  context_none, context_require_corp, "", "error");
+cacheStorageTest(`[${environment}] unsafe-none => require-corp + CORP`,
+  context_none, context_require_corp, corp_cross_origin, "retrieved");
 
-  cacheStorageTest(`[${name}] require_corp => unsafe-none`,
-    context_require_corp, context_none, corp_cross_origin, "retrieved");
-  cacheStorageTest(`[${name}] require_corp => credentialless`,
-    context_require_corp, context_credentialless, corp_cross_origin, "retrieved");
-  cacheStorageTest(`[${name}] require_corp => require-corp`,
-    context_require_corp, context_require_corp, corp_cross_origin, "retrieved");
-})
+cacheStorageTest(`[${environment}] credentialless => unsafe-none`,
+  context_credentialless, context_none, "", "retrieved");
+cacheStorageTest(`[${environment}] credentialless => credentialless`,
+  context_credentialless, context_credentialless, "", "retrieved");
+cacheStorageTest(`[${environment}] credentialless => require-corp`,
+  context_credentialless, context_require_corp, "", "error");
+cacheStorageTest(`[${environment}] credentialless => require-corp + CORP`,
+  context_credentialless, context_require_corp, corp_cross_origin, "retrieved");
+
+cacheStorageTest(`[${environment}] require_corp => unsafe-none`,
+  context_require_corp, context_none, corp_cross_origin, "retrieved");
+cacheStorageTest(`[${environment}] require_corp => credentialless`,
+  context_require_corp, context_credentialless, corp_cross_origin, "retrieved");
+cacheStorageTest(`[${environment}] require_corp => require-corp`,
+  context_require_corp, context_require_corp, corp_cross_origin, "retrieved");
 
 </script>
