@@ -147,7 +147,7 @@ void RenderViewImpl::Initialize(
 
   if (local_main_frame) {
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
-        agent_scheduling_group_, this, compositor_deps, opener_frame,
+        agent_scheduling_group_, this, opener_frame,
         params->type != mojom::ViewWidgetType::kTopLevel,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(params->main_frame->get_local_params()));
@@ -443,11 +443,8 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       std::move(blink_widget_receiver),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
   popup->InitializeCompositing(agent_scheduling_group_.agent_group_scheduler(),
-                               compositor_deps_->GetTaskGraphRunner(),
                                opener_widget->GetOriginalScreenInfos(),
-                               /*settings=*/nullptr,
-                               compositor_deps_->GetMainThreadPipeline(),
-                               compositor_deps_->GetCompositorThreadPipeline());
+                               /*settings=*/nullptr);
   return popup;
 }
 

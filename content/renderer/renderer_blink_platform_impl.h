@@ -125,6 +125,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsLcdTextEnabled() override;
   bool IsElasticOverscrollEnabled() override;
   bool IsScrollAnimatorEnabled() override;
+  cc::TaskGraphRunner* GetTaskGraphRunner() override;
+  gfx::RenderingPipeline* GetMainThreadPipeline() override;
+  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
   double AudioHardwareSampleRate() override;
   size_t AudioHardwareBufferSize() override;
   unsigned AudioHardwareOutputChannels() override;

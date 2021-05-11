@@ -1273,8 +1273,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, MSG_ROUTING_NONE, MSG_ROUTING_NONE,
       base::UnguessableToken::Create(), std::move(replication_state),
-      compositor_deps_.get(), std::move(widget_params),
-      blink::mojom::FrameOwnerProperties::New(),
+      std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
   TestRenderFrame* provisional_frame =
@@ -1333,7 +1332,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, frame()->GetRoutingID(), MSG_ROUTING_NONE,
-      base::UnguessableToken::Create(), std::move(replication_state), nullptr,
+      base::UnguessableToken::Create(), std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
   {

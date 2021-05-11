@@ -210,8 +210,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       std::move(params->interface_broker), params->previous_routing_id,
       params->opener_frame_token, params->parent_routing_id,
       params->previous_sibling_routing_id, params->devtools_frame_token,
-      std::move(params->replication_state), &ToImpl(render_thread_),
-      std::move(params->widget_params),
+      std::move(params->replication_state), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->has_committed_real_load, std::move(params->policy_container));
 }

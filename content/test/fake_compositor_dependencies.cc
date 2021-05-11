@@ -26,19 +26,4 @@ bool FakeCompositorDependencies::IsUseZoomForDSFEnabled() {
   return use_zoom_for_dsf_;
 }
 
-cc::TaskGraphRunner* FakeCompositorDependencies::GetTaskGraphRunner() {
-  return &task_graph_runner_;
-}
-
-gfx::RenderingPipeline* FakeCompositorDependencies::GetMainThreadPipeline() {
-  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
-  return nullptr;
-}
-
-gfx::RenderingPipeline*
-FakeCompositorDependencies::GetCompositorThreadPipeline() {
-  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
-  return nullptr;
-}
-
 }  // namespace content

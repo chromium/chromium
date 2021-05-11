@@ -70,6 +70,7 @@ class TestingPlatformSupport : public Platform {
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
   bool IsUseZoomForDSFEnabled() override;
+  cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);

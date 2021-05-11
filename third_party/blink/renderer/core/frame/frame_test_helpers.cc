@@ -557,11 +557,9 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
   ScreenInfos initial_screen_infos(frame_widget->GetInitialScreenInfo());
-  frame_widget->InitializeCompositing(
-      frame_widget->GetAgentGroupScheduler(), frame_widget->task_graph_runner(),
-      initial_screen_infos, &layer_tree_settings,
-      /*main_thread_pipeline=*/nullptr,
-      /*compositor_thread_pipeline=*/nullptr);
+  frame_widget->InitializeCompositing(frame_widget->GetAgentGroupScheduler(),
+                                      initial_screen_infos,
+                                      &layer_tree_settings);
   frame_widget->SetCompositorVisible(true);
   return frame_widget;
 }

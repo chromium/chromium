@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/frame.mojom.h"
@@ -254,6 +255,13 @@ class RendererBlinkPlatformImplTestOverrideImpl
   // Get rid of the dependency to the sandbox, which is not available in
   // RenderViewTest.
   blink::WebSandboxSupport* GetSandboxSupport() override { return nullptr; }
+
+  cc::TaskGraphRunner* GetTaskGraphRunner() override {
+    return &task_graph_runner_;
+  }
+
+ private:
+  cc::TestTaskGraphRunner task_graph_runner_;
 };
 
 class RenderFrameWasShownWaiter : public RenderFrameObserver {

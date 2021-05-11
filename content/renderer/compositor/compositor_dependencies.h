@@ -15,22 +15,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace cc {
-class TaskGraphRunner;
-}  // namespace cc
-
-namespace gfx {
-class RenderingPipeline;
-}  // namespace gfx
-
 namespace content {
 
 class CONTENT_EXPORT CompositorDependencies {
  public:
   virtual bool IsUseZoomForDSFEnabled() = 0;
-  virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
-  virtual gfx::RenderingPipeline* GetMainThreadPipeline() = 0;
-  virtual gfx::RenderingPipeline* GetCompositorThreadPipeline() = 0;
 
   virtual ~CompositorDependencies() {}
 };

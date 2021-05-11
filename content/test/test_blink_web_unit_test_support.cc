@@ -248,6 +248,10 @@ bool TestBlinkWebUnitTestSupport::IsThreadedAnimationEnabled() {
   return threaded_animation_;
 }
 
+cc::TaskGraphRunner* TestBlinkWebUnitTestSupport::GetTaskGraphRunner() {
+  return &test_task_graph_runner_;
+}
+
 // static
 bool TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(bool enabled) {
   DCHECK(g_test_platform)

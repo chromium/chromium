@@ -336,11 +336,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebWidget overrides.
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_infos,
-      const cc::LayerTreeSettings* settings,
-      gfx::RenderingPipeline* main_thread_pipeline,
-      gfx::RenderingPipeline* compositor_thread_pipeline) override;
+      const cc::LayerTreeSettings* settings) override;
   void SetCompositorVisible(bool visible) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;

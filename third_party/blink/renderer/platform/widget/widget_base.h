@@ -31,12 +31,7 @@ namespace cc {
 class AnimationHost;
 class LayerTreeHost;
 class LayerTreeSettings;
-class TaskGraphRunner;
 }  // namespace cc
-
-namespace gfx {
-class RenderingPipeline;
-}  // namespace gfx
 
 namespace ui {
 class Cursor;
@@ -88,14 +83,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // destroyed/invalidated.
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
       const ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-          frame_widget_input_handler,
-      gfx::RenderingPipeline* main_thread_pipeline,
-      gfx::RenderingPipeline* compositor_thread_pipeline);
+          frame_widget_input_handler);
 
   // Similar to `InitializeCompositing()` but for non-compositing widgets.
   // Exactly one of either `InitializeCompositing()` or this method must

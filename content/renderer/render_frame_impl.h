@@ -146,7 +146,6 @@ namespace content {
 
 class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
-class CompositorDependencies;
 class DocumentState;
 class MediaPermissionDispatcher;
 class NavigationClient;
@@ -170,7 +169,6 @@ class CONTENT_EXPORT RenderFrameImpl
   static RenderFrameImpl* CreateMainFrame(
       AgentSchedulingGroup& agent_scheduling_group,
       RenderViewImpl* render_view,
-      CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
       bool is_for_nested_main_frame,
       blink::mojom::FrameReplicationStatePtr replication_state,
@@ -212,7 +210,6 @@ class CONTENT_EXPORT RenderFrameImpl
       int previous_sibling_routing_id,
       const base::UnguessableToken& devtools_frame_token,
       blink::mojom::FrameReplicationStatePtr replicated_state,
-      CompositorDependencies* compositor_deps,
       mojom::CreateFrameWidgetParamsPtr widget_params,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       bool has_committed_real_load,

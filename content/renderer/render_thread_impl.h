@@ -200,11 +200,11 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // CompositorDependencies implementation.
   bool IsUseZoomForDSFEnabled() override;
-  cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  gfx::RenderingPipeline* GetMainThreadPipeline() override;
-  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
 
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler();
+  cc::TaskGraphRunner* GetTaskGraphRunner();
+  gfx::RenderingPipeline* GetMainThreadPipeline();
+  gfx::RenderingPipeline* GetCompositorThreadPipeline();
   bool IsLcdTextEnabled();
   bool IsElasticOverscrollEnabled();
   bool IsScrollAnimatorEnabled();

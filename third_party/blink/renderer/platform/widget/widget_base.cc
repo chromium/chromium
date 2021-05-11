@@ -174,14 +174,11 @@ WidgetBase::~WidgetBase() {
 
 void WidgetBase::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
     const ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-        frame_widget_input_handler,
-    gfx::RenderingPipeline* main_thread_pipeline,
-    gfx::RenderingPipeline* compositor_thread_pipeline) {
+        frame_widget_input_handler) {
   DCHECK(!initialized_);
   scheduler::WebThreadScheduler* main_thread_scheduler =
       &agent_group_scheduler.GetMainThreadScheduler();
@@ -202,12 +199,14 @@ void WidgetBase::InitializeCompositing(
     settings = &default_settings.value();
   }
   screen_infos_ = screen_infos;
+  Platform* platform = Platform::Current();
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
           ? compositing_thread_scheduler->DefaultTaskRunner()
           : nullptr,
-      task_graph_runner, main_thread_pipeline, compositor_thread_pipeline);
+      platform->GetTaskGraphRunner(), platform->GetMainThreadPipeline(),
+      platform->GetCompositorThreadPipeline());
 
   FrameWidget* frame_widget = client_->FrameWidget();
 

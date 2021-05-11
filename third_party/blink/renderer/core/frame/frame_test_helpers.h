@@ -40,7 +40,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -254,8 +253,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
     return injected_scroll_events_;
   }
 
-  cc::TaskGraphRunner* task_graph_runner() { return &test_task_graph_runner_; }
-
   scheduler::WebThreadScheduler* main_thread_scheduler() {
     return &fake_thread_scheduler_;
   }
@@ -293,7 +290,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   }
 
  private:
-  cc::TestTaskGraphRunner test_task_graph_runner_;
   cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
   blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler_;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>

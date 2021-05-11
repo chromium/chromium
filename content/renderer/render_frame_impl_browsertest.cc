@@ -37,7 +37,6 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_view_impl.h"
-#include "content/test/fake_compositor_dependencies.h"
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -141,8 +140,7 @@ class RenderFrameImplTest : public RenderViewTest {
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), std::move(frame_replication_state),
-        &compositor_deps_, std::move(widget_params),
-        blink::mojom::FrameOwnerProperties::New(),
+        std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true,
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),
@@ -187,7 +185,6 @@ class RenderFrameImplTest : public RenderViewTest {
 
  private:
   TestRenderFrame* frame_;
-  FakeCompositorDependencies compositor_deps_;
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 

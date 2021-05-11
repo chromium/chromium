@@ -59,16 +59,11 @@
 namespace cc {
 class LayerTreeHost;
 class LayerTreeSettings;
-class TaskGraphRunner;
 }
 
 namespace ui {
 class Cursor;
 class LatencyInfo;
-}
-
-namespace gfx {
-class RenderingPipeline;
 }
 
 namespace blink {
@@ -90,11 +85,8 @@ class WebWidget {
   // override the defaults.
   virtual void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_info,
-      const cc::LayerTreeSettings* settings,
-      gfx::RenderingPipeline* main_thread_pipeline,
-      gfx::RenderingPipeline* compositor_thread_pipeline) = 0;
+      const cc::LayerTreeSettings* settings) = 0;
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink and begin producing frames from the

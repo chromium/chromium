@@ -1910,17 +1910,13 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 
 void WebFrameWidgetImpl::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    cc::TaskGraphRunner* task_graph_runner,
     const ScreenInfos& screen_infos,
-    const cc::LayerTreeSettings* settings,
-    gfx::RenderingPipeline* main_thread_pipeline,
-    gfx::RenderingPipeline* compositor_thread_pipeline) {
+    const cc::LayerTreeSettings* settings) {
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
-      agent_group_scheduler, task_graph_runner, is_for_child_local_root_,
-      screen_infos, settings, input_handler_weak_ptr_factory_.GetWeakPtr(),
-      main_thread_pipeline, compositor_thread_pipeline);
+      agent_group_scheduler, is_for_child_local_root_, screen_infos, settings,
+      input_handler_weak_ptr_factory_.GetWeakPtr());
 
   LocalFrameView* frame_view;
   if (is_for_child_local_root_) {

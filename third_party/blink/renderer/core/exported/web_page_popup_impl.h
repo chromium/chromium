@@ -158,11 +158,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_infos,
-      const cc::LayerTreeSettings* settings,
-      gfx::RenderingPipeline* main_thread_pipeline,
-      gfx::RenderingPipeline* compositor_thread_pipeline) override;
+      const cc::LayerTreeSettings* settings) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void SetCursor(const ui::Cursor& cursor) override;

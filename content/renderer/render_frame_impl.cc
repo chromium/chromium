@@ -1404,7 +1404,6 @@ RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
 RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderViewImpl* render_view,
-    CompositorDependencies* compositor_deps,
     blink::WebFrame* opener,
     bool is_for_nested_main_frame,
     blink::mojom::FrameReplicationStatePtr replication_state,
@@ -1444,10 +1443,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       /*hidden=*/true, render_view->widgets_never_composited());
   web_frame_widget->InitializeCompositing(
       agent_scheduling_group.agent_group_scheduler(),
-      compositor_deps->GetTaskGraphRunner(),
       params->widget_params->visual_properties.screen_infos,
-      /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
-      compositor_deps->GetCompositorThreadPipeline());
+      /*settings=*/nullptr);
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
@@ -1505,7 +1502,6 @@ void RenderFrameImpl::CreateFrame(
     int previous_sibling_routing_id,
     const base::UnguessableToken& devtools_frame_token,
     blink::mojom::FrameReplicationStatePtr replicated_state,
-    CompositorDependencies* compositor_deps,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     bool has_committed_real_load,
@@ -1636,10 +1632,8 @@ void RenderFrameImpl::CreateFrame(
         /*hidden=*/true, render_view->widgets_never_composited());
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
-        compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
-        compositor_deps->GetCompositorThreadPipeline());
+        /*settings=*/nullptr);
 
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and
@@ -1680,10 +1674,8 @@ void RenderFrameImpl::CreateFrame(
         /*hidden=*/true, render_view->widgets_never_composited());
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
-        compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_infos,
-        /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
-        compositor_deps->GetCompositorThreadPipeline());
+        /*settings=*/nullptr);
 
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and

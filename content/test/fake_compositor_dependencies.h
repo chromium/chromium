@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
-#include "cc/test/test_task_graph_runner.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,16 +20,12 @@ class FakeCompositorDependencies : public CompositorDependencies {
 
   // CompositorDependencies implementation.
   bool IsUseZoomForDSFEnabled() override;
-  cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  gfx::RenderingPipeline* GetMainThreadPipeline() override;
-  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
 
   void set_use_zoom_for_dsf_enabled(bool enabled) {
     use_zoom_for_dsf_ = enabled;
   }
 
  private:
-  cc::TestTaskGraphRunner task_graph_runner_;
   bool use_zoom_for_dsf_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCompositorDependencies);

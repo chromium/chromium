@@ -60,6 +60,7 @@ struct WebWindowFeatures;
 
 namespace content {
 class AgentSchedulingGroup;
+class CompositorDependencies;
 class RenderViewImplTest;
 class RenderViewTest;
 

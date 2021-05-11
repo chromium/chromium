@@ -490,6 +490,22 @@ bool RendererBlinkPlatformImpl::IsScrollAnimatorEnabled() {
   return thread ? thread->IsScrollAnimatorEnabled() : false;
 }
 
+cc::TaskGraphRunner* RendererBlinkPlatformImpl::GetTaskGraphRunner() {
+  RenderThreadImpl* thread = RenderThreadImpl::current();
+  return thread ? thread->GetTaskGraphRunner() : nullptr;
+}
+
+gfx::RenderingPipeline* RendererBlinkPlatformImpl::GetMainThreadPipeline() {
+  RenderThreadImpl* thread = RenderThreadImpl::current();
+  return thread ? thread->GetMainThreadPipeline() : nullptr;
+}
+
+gfx::RenderingPipeline*
+RendererBlinkPlatformImpl::GetCompositorThreadPipeline() {
+  RenderThreadImpl* thread = RenderThreadImpl::current();
+  return thread ? thread->GetCompositorThreadPipeline() : nullptr;
+}
+
 bool RendererBlinkPlatformImpl::IsThreadedAnimationEnabled() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
   return thread ? thread->IsThreadedAnimationEnabled() : true;
