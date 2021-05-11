@@ -20,6 +20,7 @@ class RasterContextProvider;
 namespace media {
 
 class VideoFrame;
+class VideoFrameYUVMailboxesHolder;
 
 // Converts YUV video frames to RGB format and stores the results in the
 // provided mailbox. The caller of functions in this class maintains ownership
@@ -87,7 +88,6 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       bool use_visible_rect,
       bool use_sk_pixmap);
 
-  class VideoFrameYUVMailboxesHolder;
   std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
 };
 }  // namespace media
