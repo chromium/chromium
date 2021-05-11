@@ -91,9 +91,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3" units="ms"
-    expires_after="2021-12-31">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records the time from frame navigation start to FirstContentfulPaint of each
     ad frame that receives a FirstContentfulPaint. The time could be quite
@@ -102,6 +105,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Recorded for all ad frames with non-zero bytes or cpu usage that receive a
     FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
+
+    Do not modify this metric in any way without contacting
+    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
