@@ -218,9 +218,6 @@ export class ItemScanManager extends ItemNavigatorInterface {
       return;
     }
 
-    // Make sure the menu isn't open.
-    ActionManager.exitAllMenus();
-
     const child = this.group_.firstValidChild();
     if (groupIsValid && child) {
       this.setNode_(child);
@@ -228,6 +225,11 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
 
     this.restoreFromHistory_();
+
+    // Make sure the menu isn't open unless we're still in the menu.
+    if (!this.group_.isEquivalentTo(MenuManager.menuAutomationNode)) {
+      ActionManager.exitAllMenus();
+    }
   }
 
   /** @override */

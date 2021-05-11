@@ -105,6 +105,7 @@ export class ActionManager {
         break;
       case SwitchAccessMenuAction.ITEM_SCAN:
         Navigator.byItem.restart();
+        ActionManager.exitAllMenus();
         break;
       // Point scan actions:
       case SwitchAccessMenuAction.LEFT_CLICK:
@@ -117,7 +118,6 @@ export class ActionManager {
       // Item scan actions:
       default:
         ActionManager.instance.performActionOnCurrentNode_(action);
-        ActionManager.exitCurrentMenu();
     }
   }
 
@@ -287,7 +287,7 @@ export class ActionManager {
 
     const response = this.actionNode_.performAction(action);
     if (response === SAConstants.ActionResponse.CLOSE_MENU) {
-      MenuManager.close();
+      ActionManager.exitAllMenus();
     } else {
       Navigator.byItem.jumpToSwitchAccessMenu();
     }
