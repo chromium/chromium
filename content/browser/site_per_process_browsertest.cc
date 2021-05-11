@@ -16623,11 +16623,46 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
   FrameTreeNode* child_node = root->child_at(0);
   EXPECT_EQ(child_node->current_url(),
             GURL("urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae"));
+  url::Origin last_committed_origin =
+      child_node->current_frame_host()->GetLastCommittedOrigin();
+  EXPECT_TRUE(last_committed_origin.opaque());
+  const url::SchemeHostPort& tuple =
+      last_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
+  EXPECT_EQ("bar.test", tuple.host());
+
+  // An iframe nested in the urn:uuid iframe gets a non-opaque origin.
+  TestNavigationObserver observer(shell()->web_contents());
+
+  // Create the subframe now.
+  GURL c_url = https_server()->GetURL("c.test", "/title1.html");
+  std::string create_frame_script = base::StringPrintf(
+      "var new_iframe = document.createElement('iframe');"
+      "new_iframe.src = '%s';"
+      "document.body.appendChild(new_iframe);",
+      c_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(child_node, create_frame_script));
+
+  observer.WaitForNavigationFinished();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+
+  ASSERT_EQ(1U, child_node->child_count());
+  FrameTreeNode* grandchild_node = child_node->child_at(0);
+  url::Origin grandchild_committed_origin =
+      grandchild_node->current_frame_host()->GetLastCommittedOrigin();
+  EXPECT_FALSE(grandchild_committed_origin.opaque());
+  const url::SchemeHostPort& c_tuple =
+      grandchild_committed_origin.GetTupleOrPrecursorTupleIfOpaque();
+  EXPECT_EQ("c.test", c_tuple.host());
+  EXPECT_FALSE(
+      last_committed_origin.IsSameOriginWith(grandchild_committed_origin));
+
   EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A C\n"
+      "        +--Site C -- proxies for A B\n"
       "Where A = https://foo.test/\n"
-      "      B = https://bar.test/",
+      "      B = https://bar.test/\n"
+      "      C = https://c.test/",
       DepictFrameTree(root));
 }
 
