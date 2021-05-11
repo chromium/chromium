@@ -117,7 +117,7 @@ void RecordRobotsRulesApplyDurationHistogram(base::TimeDelta duration) {
 bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
   const bool kCanonicalResult = IsMatchingRobotsRule(path, pattern_);
   const bool kGlobResult = base::MatchPattern(path, glob_);
-  DCHECK_EQ(kCanonicalResult, kGlobResult);
+  CHECK_EQ(kCanonicalResult, kGlobResult);
   return kGlobResult;
 }
 
