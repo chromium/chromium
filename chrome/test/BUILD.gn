@@ -326,6 +326,7 @@ static_library("test_support") {
       # Add a dummy implementation of RegisterJni to satisfy the linker.
       sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
     }
+    allow_circular_includes_from = [ ":test_support_ui_android" ]
   } else {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
@@ -625,6 +626,7 @@ if (is_android) {
       "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
+      "//chrome/browser/browsing_data:constants",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/metrics:test_support",
@@ -632,13 +634,27 @@ if (is_android) {
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/webaudio:browser_tests",
+      "//components/blocked_content",
       "//components/browser_ui/widget/android:java",
       "//components/crash/android:crashpad_main",
       "//components/externalauth/android:google_delegate_public_impl_java",
+      "//components/infobars/content",
+      "//components/metrics/demographics",
       "//components/metrics/demographics:test_support",
+      "//components/metrics_services_manager",
       "//components/page_load_metrics/browser:test_support",
       "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
+      "//components/safe_browsing/core:features",
+      "//components/safe_browsing/core/db:v4_database",
+      "//components/security_interstitials/core:unsafe_resource",
+      "//components/security_state/content/android",
+      "//components/subresource_filter/core/browser:test_support",
+      "//components/subresource_filter/core/common:test_support",
+      "//components/sync/test/fake_server",
+      "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
+      "//components/ukm/content",
+      "//components/unified_consent",
 
       # TODO(crbug.com/961849): This is needed for ShellManager which is what
       # the ChromeBrowserTestsActivity is using to build the java UI. It's
@@ -737,6 +753,8 @@ if (is_android) {
       "//chrome/android:app_hooks_java",
       "//chrome/browser/lens:delegate_public_impl_java",
       "//components/externalauth/android:google_delegate_public_impl_java",
+      "//components/sync:test_support_nigori",
+      "//components/sync/test/fake_server:fake_server",
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
     ]
@@ -766,6 +784,7 @@ if (is_android) {
     public_deps = [ "//content/test:test_support" ]
     deps = [
       "//chrome/browser",
+      "//chrome/browser/ui",
       "//content/public/browser",
     ]
   }

@@ -63,8 +63,6 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//chrome/test:android_browsertests__library",
-  "//chrome/test:android_sync_integration_tests__library",
   "//chrome/test:accessibility_live_site_tests",
   "//chrome/test:browser_tests",
   "//chrome/test:browser_tests_runner",
@@ -81,7 +79,6 @@ no_check_targets = [
   "//chrome/test:sync_integration_test_support",
   "//chrome/test:sync_performance_tests",
   "//chrome/test:test_support_ui",
-  "//chrome/test:test_support_ui_android",
   "//chrome/test:test_support_unit",
   "//chrome/test:unit_tests",
   "//chrome/test:unit_tests__library",
