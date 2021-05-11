@@ -446,9 +446,9 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
               static_cast<const sessions::TabRestoreService::Tab&>(*entry);
           const sessions::SerializedNavigationEntry& current_navigation =
               tab.navigations.at(tab.current_navigation_index);
-          BuildLocalTabItem(entry->id, current_navigation.title(),
-                            current_navigation.virtual_url(),
-                            ++last_local_model_index_);
+          BuildLocalTabItem(
+              entry->id, tab.group_visual_data, current_navigation.title(),
+              current_navigation.virtual_url(), ++last_local_model_index_);
           break;
         }
         case sessions::TabRestoreService::WINDOW: {
@@ -529,10 +529,12 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   DCHECK_GT(GetItemCount(), 0);
 }
 
-void RecentTabsSubMenuModel::BuildLocalTabItem(SessionID session_id,
-                                               const std::u16string& title,
-                                               const GURL& url,
-                                               int curr_model_index) {
+void RecentTabsSubMenuModel::BuildLocalTabItem(
+    SessionID session_id,
+    base::Optional<tab_groups::TabGroupVisualData> visual_data,
+    const std::u16string& title,
+    const GURL& url,
+    int curr_model_index) {
   TabNavigationItem item(std::string(), session_id, title, url);
   int command_id = TabVectorIndexToCommandId(
       local_tab_navigation_items_.size(), kFirstLocalTabCommandId);
@@ -541,6 +543,17 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(SessionID session_id,
   InsertItemAt(curr_model_index, command_id,
                title.empty() ? base::UTF8ToUTF16(item.url.spec()) : title);
   AddTabFavicon(command_id, item.url);
+  // visual_data should only be populated if the tab was part of a tab group
+  // when closed.
+  if (visual_data.has_value()) {
+    const auto& theme =
+        ThemeService::GetThemeProviderForProfile(browser_->profile());
+    const int color_id =
+        GetTabGroupContextMenuColorId(visual_data.value().color());
+    SetMinorIcon(curr_model_index, ui::ImageModel::FromVectorIcon(
+                                       kTabGroupIcon, theme.GetColor(color_id),
+                                       gfx::kFaviconSize));
+  }
   local_tab_navigation_items_.push_back(item);
 }
 

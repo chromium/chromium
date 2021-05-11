@@ -97,10 +97,12 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Build a recently closed tab item with parameters needed to restore it, and
   // add it to the menumodel at |curr_model_index|.
-  void BuildLocalTabItem(SessionID session_id,
-                         const std::u16string& title,
-                         const GURL& url,
-                         int curr_model_index);
+  void BuildLocalTabItem(
+      SessionID session_id,
+      base::Optional<tab_groups::TabGroupVisualData> visual_data,
+      const std::u16string& title,
+      const GURL& url,
+      int curr_model_index);
 
   // Build the recently closed window item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
