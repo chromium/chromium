@@ -103,6 +103,7 @@ class NativeInputMethodEngineTest : public ::testing::Test {
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
+                              features::kImeMojoDecoder,
                               features::kSystemLatinPhysicalTyping},
         /*disabled_features=*/{});
 
