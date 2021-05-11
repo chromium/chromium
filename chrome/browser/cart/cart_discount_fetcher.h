@@ -16,13 +16,28 @@ namespace network {
 class PendingSharedURLLoaderFactory;
 }  // namespace network
 
+struct MerchantIdAndDiscounts {
+ public:
+  std::string merchant_id;
+  std::vector<cart_db::DiscountInfoProto> discount_list;
+
+  explicit MerchantIdAndDiscounts(
+      std::string merchant_id,
+      std::vector<cart_db::DiscountInfoProto> discount_list);
+  MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other) = delete;
+  MerchantIdAndDiscounts& operator=(const MerchantIdAndDiscounts& other) =
+      delete;
+  MerchantIdAndDiscounts(MerchantIdAndDiscounts&& other);
+  MerchantIdAndDiscounts& operator=(MerchantIdAndDiscounts&& other);
+  ~MerchantIdAndDiscounts();
+};
+
 class CartDiscountFetcher {
  public:
   // base::flat_map is used here for optimization, since the number of carts are
   // expected to be low (< 100) at this stage. Need to use std::map when number
   // gets larger.
-  using CartDiscountMap =
-      base::flat_map<std::string, std::vector<cart_db::DiscountInfoProto>>;
+  using CartDiscountMap = base::flat_map<std::string, MerchantIdAndDiscounts>;
 
   using CartDiscountFetcherCallback = base::OnceCallback<void(CartDiscountMap)>;
 
@@ -33,6 +48,7 @@ class CartDiscountFetcher {
       CartDiscountFetcherCallback callback);
 
  private:
+  friend class CartDiscountFetcherTest;
   // TODO(meiliang): Add param a list of carts to fetch.
   static void fetchForDiscounts(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
@@ -43,6 +59,9 @@ class CartDiscountFetcher {
       std::unique_ptr<EndpointResponse> responses);
   static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory);
+  static std::string generatePostData(
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      base::Time current_timestamp);
 };
 
 class CartDiscountFetcherFactory {

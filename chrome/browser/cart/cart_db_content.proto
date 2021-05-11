@@ -14,7 +14,9 @@ message MoneyProto {
   string currency_code = 1;
   // The whole units of amount.
   // e.g. for "USD", 1 unit is one US dollar.
-  int64 units = 2;
+  // This should be a int64_t, use string because base::Value does not support
+  // int64_t.
+  string units = 2;
   // Number of nano (10^-9) units of amount.
   // The value must be between -999,999,999 and +999,999,999 inclusive.
   // If `units` is positive, `nanos` must be positive or zero.
@@ -26,14 +28,18 @@ message MoneyProto {
 
 // Used storing discount for a specific rule.
 message DiscountInfoProto {
-  int64 rule_id = 1;
+  // This should be a int64_t, use string because base::Value does not support
+  // int64_t.
+  string rule_id = 1;
 
   oneof discount {
     int32 percent_off = 2;
     MoneyProto amount_off = 3;
   }
 
-  string raw_merchant_offer_id = 4;
+  string merchant_rule_id = 4;
+
+  string raw_merchant_offer_id = 5;
 }
 
 // Used for storing the discount information of this cart.
@@ -43,7 +49,11 @@ message ChromeCartDiscountProto {
   // Timestamp on the last time the discount is fetched.
   double last_fetched_timestamp = 2;
 
-  repeated DiscountInfoProto discount_info = 3;
+  // This should be a int64_t, use string because base::Value does not support
+  // int64_t.
+  string merchant_id = 3;
+
+  repeated DiscountInfoProto discount_info = 4;
 }
 
 // Used for storing information of products within the cart.

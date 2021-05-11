@@ -38,7 +38,7 @@ cart_db::ChromeCartProductProto BuildProductProto(
 cart_db::ChromeCartContentProto AddDiscountToProto(
     cart_db::ChromeCartContentProto proto,
     const double timestamp,
-    const int rule_id,
+    const std::string& rule_id,
     const int percent_off,
     const char* offer_id) {
   proto.mutable_discount_info()->set_last_fetched_timestamp(timestamp);
@@ -81,7 +81,7 @@ const ShoppingCarts kExpectedAB = {
 const ShoppingCarts kEmptyExpected = {};
 
 // Value used for discount.
-const int kMockMerchantADiscountRuleId = 1;
+const char kMockMerchantADiscountRuleId[] = "1";
 const int kMockMerchantADiscountsPercentOff = 10;
 const char kMockMerchantADiscountsRawMerchantOfferId[] = "merchantAOfferId";
 
