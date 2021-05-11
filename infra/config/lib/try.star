@@ -219,6 +219,7 @@ def chromium_builder(*, name, **kwargs):
     )
 
 def chromium_android_builder(*, name, **kwargs):
+    kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return try_builder(
         name = name,
         builder_group = "tryserver.chromium.android",
