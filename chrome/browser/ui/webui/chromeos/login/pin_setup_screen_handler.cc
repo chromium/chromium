@@ -85,6 +85,13 @@ void PinSetupScreenHandler::Show(const std::string& token) {
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
+  if (!IsSafeToCallJavascript()) {
+    LOG(ERROR)
+        << "Silently dropping login.PinSetupScreen.setHasLoginSupport request.";
+    return;
+  }
+
   CallJS("login.PinSetupScreen.setHasLoginSupport", available);
 }
 
