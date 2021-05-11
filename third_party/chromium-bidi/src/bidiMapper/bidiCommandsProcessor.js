@@ -31,6 +31,18 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
         });
     };
 
+    const process_DEBUG_Page_close = async function (message) {
+        await cdpClient.sendCdpCommand({
+            method: "Target.closeTarget",
+            params: { targetId: message.params.context }
+        });
+
+        bidiClient.sendBidiMessage({
+            id: message.id,
+            result: {}
+        });
+    };
+
     const process_session_status = async function (messageId) {
         bidiClient.sendBidiMessage({
             id: messageId,
@@ -56,12 +68,12 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
     }
 
     const handle_target_detachedFromTarget = (message) => {
-        delete targets[message.params.targetId];
         bidiClient.sendBidiMessage(
             {
                 method: 'browsingContext.contextDestroyed',
-                params: { context: message.params.targetId }
+                params: targetToContext(targets[message.params.targetId])
             });
+        delete targets[message.params.targetId];
     }
 
     const onCdpMessage = function (message) {
@@ -84,9 +96,15 @@ export async function runBidiCommandsProcessor(cdpClient, bidiClient, getCurrent
             case 'browsingContext.getTree':
                 process_browsingContext_getTree(messageId);
                 return;
+
             case 'PROTO.browsingContext.createContext':
                 process_PROTO_browsingContext_createContext(message);
                 return;
+
+            case 'DEBUG.Page.close':
+                process_DEBUG_Page_close(message);
+                return;
+
             default:
                 process_unknown_command(messageId);
                 return;
