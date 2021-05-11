@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -50,6 +51,11 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
     deltas_.insert(deltas_.end(), std::make_move_iterator(deltas.begin()),
                    std::make_move_iterator(deltas.end()));
     run_loop_->Quit();
+  }
+
+  void RegisterAppController(
+      mojo::PendingRemote<crosapi::mojom::AppController> controller) override {
+    NOTIMPLEMENTED();
   }
 
   std::vector<apps::mojom::AppPtr> deltas_;

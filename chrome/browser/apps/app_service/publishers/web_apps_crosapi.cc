@@ -94,7 +94,21 @@ void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   }
 }
 
+void WebAppsCrosapi::RegisterAppController(
+    mojo::PendingRemote<crosapi::mojom::AppController> controller) {
+  if (controller_.is_bound()) {
+    return;
+  }
+  controller_.Bind(std::move(controller));
+  controller_.set_disconnect_handler(base::BindOnce(
+      &WebAppsCrosapi::OnControllerDisconnected, base::Unretained(this)));
+}
+
 void WebAppsCrosapi::OnCrosapiDisconnected() {
   receiver_.reset();
+}
+
+void WebAppsCrosapi::OnControllerDisconnected() {
+  controller_.reset();
 }
 }  // namespace apps

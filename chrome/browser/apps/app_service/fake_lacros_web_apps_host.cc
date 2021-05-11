@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -62,6 +61,8 @@ void FakeLacrosWebAppsHost::Init() {
     return;
 
   if (service->init_params()->web_apps_enabled) {
+    service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
+        receiver_.BindNewPipeAndPassRemote());
     PushOneApp();
   }
 }

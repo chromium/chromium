@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_FAKE_LACROS_WEB_APPS_HOST_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_FAKE_LACROS_WEB_APPS_HOST_H_
 
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
 namespace apps {
 
 // This class is a fake lacros web app publisher host that lives in
@@ -14,15 +17,18 @@ namespace apps {
 // the app service crosapi in the lacros side.
 // TODO(crbug.com/1144877): Remove after the actual lacros web app host code
 // created.
-class FakeLacrosWebAppsHost {
+class FakeLacrosWebAppsHost : public crosapi::mojom::AppController {
  public:
   FakeLacrosWebAppsHost();
-  ~FakeLacrosWebAppsHost();
+  ~FakeLacrosWebAppsHost() override;
   FakeLacrosWebAppsHost(const FakeLacrosWebAppsHost&) = delete;
   FakeLacrosWebAppsHost& operator=(const FakeLacrosWebAppsHost&) = delete;
 
   // Initialise and publish a fake app from the fake host for testing.
   void Init();
+
+ private:
+  mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 };
 
 }  // namespace apps

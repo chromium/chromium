@@ -56,11 +56,15 @@ class WebAppsCrosapi : public KeyedService,
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
+  void RegisterAppController(
+      mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
 
   void OnCrosapiDisconnected();
+  void OnControllerDisconnected();
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
+  mojo::Remote<crosapi::mojom::AppController> controller_;
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};
 };
 

@@ -13,4 +13,14 @@ interface AppPublisher {
   // |deltas| holds a sparse data structure that includes the update App data
   // from the existing app state in app service.
   OnApps@0(array<App> deltas);
+
+  // Lacros exposes an AppController interface to Ash. This allows Ash to
+  // launch, or otherwise interact with Web Apps that run in Lacros.
+  [MinVersion=1]
+  RegisterAppController@1(pending_remote<AppController> controller);
 };
+
+// Interacts with the app service. Implemented in lacros-chrome and called in
+// ash-chrome.
+[Stable, Uuid="2031a614-3f0b-4111-8977-fd96fd780cb7"]
+interface AppController {};
