@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ASSERT_TRUE(
       profile->GetPrefs()
           ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-          ->empty());
+          ->DictEmpty());
 
   base::HistogramTester histograms;
   // Shows modal dialog on current web_contents.
