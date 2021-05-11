@@ -97,7 +97,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
              content::BrowserThread::UI) ||
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
   // Wait for extensions to be ready before running
   // UpdateShortcutsForAllAppsIfNeeded.
@@ -109,7 +109,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // profile_manager might be NULL in testing environments.
   if (profile_manager) {
-    profile_storage_observer_.Add(
+    profile_storage_observation_.Observe(
         &profile_manager->GetProfileAttributesStorage());
   }
 }
