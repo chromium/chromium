@@ -134,12 +134,11 @@ bool GetOptionalBehaviour(
   // boolean.
   const base::Value* value = nullptr;
   if (invocation_params->Get(behaviour_name, &value)) {
-    bool enable_behaviour = false;
-    if (!value->GetAsBoolean(&enable_behaviour)) {
+    if (!value->is_bool()) {
       ReportConfigurationError(kBadParams);
       return false;
     }
-    if (enable_behaviour)
+    if (value->GetBool())
       *supported_behaviours |= behaviour_flag;
   }
   return true;
@@ -211,13 +210,13 @@ bool ExtractInvocationSequenceFromManifest(
 
     std::vector<std::wstring> argv = {exe_path.value()};
     for (const auto& value : arguments->GetList()) {
-      std::u16string argument;
-      if (!value.GetAsString(&argument)) {
+      if (!value.is_string()) {
         ReportConfigurationError(kBadParams);
         return false;
       }
+      std::string argument = value.GetString();
       if (!argument.empty())
-        argv.push_back(base::UTF16ToWide(argument));
+        argv.push_back(base::UTF8ToWide(argument));
     }
 
     base::CommandLine command_line(argv);
