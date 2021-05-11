@@ -101,7 +101,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // non-virtual instance methods.
   //
   // TODO(https://crbug.com/1179776): Finish converting the methods in this
-  // section into non-virtual instance methods.  (The old, abandoned  practice
+  // section into non-virtual instance methods.  (The old, abandoned practice
   // was to make the methods in this section `static` and have them take
   // `BrowserContext* self` as the first parameter.)
   //
@@ -190,8 +190,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Delivers a push message with |data| to the Service Worker identified by
   // |origin| and |service_worker_registration_id|.
-  static void DeliverPushMessage(
-      BrowserContext* self,
+  void DeliverPushMessage(
       const GURL& origin,
       int64_t service_worker_registration_id,
       const std::string& message_id,
@@ -201,8 +200,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Fires a push subscription change event to the Service Worker identified by
   // |origin| and |service_worker_registration_id| with |new_subscription| and
   // |old_subscription| as event information.
-  static void FirePushSubscriptionChangeEvent(
-      BrowserContext* self,
+  void FirePushSubscriptionChangeEvent(
       const GURL& origin,
       int64_t service_worker_registration_id,
       blink::mojom::PushSubscriptionPtr new_subscription,

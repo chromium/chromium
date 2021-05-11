@@ -351,9 +351,9 @@ Response ServiceWorkerHandler::DeliverPushMessage(
   base::Optional<std::string> payload;
   if (data.size() > 0)
     payload = data;
-  BrowserContext::DeliverPushMessage(browser_context_, GURL(origin), id,
-                                     /* push_message_id= */ std::string(),
-                                     std::move(payload), base::DoNothing());
+  browser_context_->DeliverPushMessage(GURL(origin), id,
+                                       /* message_id= */ std::string(),
+                                       std::move(payload), base::DoNothing());
 
   return Response::Success();
 }

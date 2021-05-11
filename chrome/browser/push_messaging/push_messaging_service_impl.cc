@@ -453,9 +453,8 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
       payload = message.raw_data;
 
     // Dispatch the message to the appropriate Service Worker.
-    content::BrowserContext::DeliverPushMessage(
-        profile_, origin, service_worker_registration_id, message.message_id,
-        payload,
+    profile_->DeliverPushMessage(
+        origin, service_worker_registration_id, message.message_id, payload,
         base::BindOnce(&PushMessagingServiceImpl::DeliverMessageCallback,
                        weak_factory_.GetWeakPtr(), app_id, origin,
                        service_worker_registration_id, message,
@@ -1365,9 +1364,8 @@ void PushMessagingServiceImpl::FirePushSubscriptionChange(
     return;
   }
 
-  content::BrowserContext::FirePushSubscriptionChangeEvent(
-      profile_, app_identifier.origin(),
-      app_identifier.service_worker_registration_id(),
+  profile_->FirePushSubscriptionChangeEvent(
+      app_identifier.origin(), app_identifier.service_worker_registration_id(),
       std::move(new_subscription), std::move(old_subscription),
       base::BindOnce(
           &PushMessagingServiceImpl::FirePushSubscriptionChangeCallback,

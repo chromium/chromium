@@ -226,9 +226,7 @@ mojo::PendingRemote<blink::mojom::Blob> BrowserContext::GetBlobRemote(
   return ChromeBlobStorageContext::GetBlobRemote(this, uuid);
 }
 
-// static
 void BrowserContext::DeliverPushMessage(
-    BrowserContext* self,
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::string& message_id,
@@ -236,13 +234,11 @@ void BrowserContext::DeliverPushMessage(
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::DeliverMessage(
-      self, origin, service_worker_registration_id, message_id,
+      this, origin, service_worker_registration_id, message_id,
       std::move(payload), std::move(callback));
 }
 
-// static
 void BrowserContext::FirePushSubscriptionChangeEvent(
-    BrowserContext* self,
     const GURL& origin,
     int64_t service_worker_registration_id,
     blink::mojom::PushSubscriptionPtr new_subscription,
@@ -250,7 +246,7 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::FireSubscriptionChangeEvent(
-      self, origin, service_worker_registration_id, std::move(new_subscription),
+      this, origin, service_worker_registration_id, std::move(new_subscription),
       std::move(old_subscription), std::move(callback));
 }
 
