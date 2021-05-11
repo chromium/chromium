@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 
+#include <cinttypes>
 #include <limits>
 
 #include "base/numerics/safe_conversions.h"
