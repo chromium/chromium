@@ -76,9 +76,9 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
 }  // namespace
 
 SurveyHttpClient::SurveyHttpClient(
-    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    HttpClientType http_client_type,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : network_traffic_annotation_(network_traffic_annotation),
+    : http_client_type_(http_client_type),
       loader_factory_(url_loader_factory) {}
 
 SurveyHttpClient::~SurveyHttpClient() {
@@ -96,7 +96,7 @@ void SurveyHttpClient::Send(const GURL& gurl,
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       MakeLoader(std::move(gurl), request_type, std::move(request_body),
                  std::move(header_keys), std::move(header_values),
-                 network_traffic_annotation_);
+                 GetTrafficAnnotation(http_client_type_));
 
   // TODO(https://crbug.com/1178921): Use flag to control the max size limit.
   simple_loader->DownloadToString(
@@ -120,6 +120,7 @@ void SurveyHttpClient::OnSimpleLoaderComplete(
   auto* response_info = simple_loader->ResponseInfo();
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();
+    RecordHttpResponseCodeHistogram(http_client_type_, response_code);
 
     size_t iter = 0;
     std::string name, value;

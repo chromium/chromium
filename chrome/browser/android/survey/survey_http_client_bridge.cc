@@ -24,70 +24,7 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace survey {
-namespace {
 
-constexpr net::NetworkTrafficAnnotationTag kHatsTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("chrome_android_hats", R"(
-        semantics {
-          sender: "Chrome HaTS Next Service"
-          description:
-            "Chrome use HaTS to collect user feedback in the form of surveys. "
-            "For eligible users, a survey invitation will be presented and the "
-            "user can choose to take the survey or dismiss it."
-          trigger:
-            "If a signed-in user is eligible and selected for a survey, a "
-            "request will be sent to download the survey; requests will
-           " also be sent when the user chooses to take the survey and "
-            "for responses to each question to record such user actions."
-          data:
-            "Survey questions to present to the user; subsequently, survey "
-            "visibility ack and responses to questions using session context "
-            "from the initial trigger request. All requests have auth token "
-            "tied to signed-in GAIA account."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This feature is only enabled when UMA and crash reporting is "
-            "enabled (configurable in settings)."
-          policy_exception_justification:
-            "UMA and crash reporting is already controllable via Enterprise "
-            "policy."
-        })");
-
-constexpr net::NetworkTrafficAnnotationTag kChimeTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("chime_sdk", R"(
-        semantics {
-          sender: "Chrome Chime notification SDK"
-          description:
-            "The custom network library used in Chime SDK".
-          trigger:
-            "when the user receives notification or interacts with the"
-            "notification, and when Chrome is launched in the foreground."
-          data:
-            "Registration data, Chime application data."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Currently there is no setting control. When all the features"
-            "using Chime are disabled, Chime is disabled."
-          policy_exception_justification:
-            "Not implemented."
-        })");
-
-net::NetworkTrafficAnnotationTag GetTrafficAnnotation(
-    HttpClientType client_type) {
-  switch (client_type) {
-    case HttpClientType::kSurvey:
-      return kHatsTrafficAnnotation;
-    case HttpClientType::kNotification:
-      return kChimeTrafficAnnotation;
-  }
-}
-}  // namespace
 
 // static
 jlong JNI_SurveyHttpClientBridge_Init(JNIEnv* env,
@@ -103,7 +40,7 @@ SurveyHttpClientBridge::SurveyHttpClientBridge(
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
   survey_http_client_ = std::make_unique<SurveyHttpClient>(
-      GetTrafficAnnotation(static_cast<HttpClientType>(j_client_type)),
+      static_cast<HttpClientType>(j_client_type),
       profile->GetURLLoaderFactory());
 }
 

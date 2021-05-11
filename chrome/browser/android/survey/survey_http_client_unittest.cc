@@ -10,12 +10,13 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/android/survey/http_client_type.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -149,7 +150,7 @@ class SurveyHttpClientTest : public testing::Test {
             &test_url_loader_factory_);
 
     survey_http_client_ = std::make_unique<SurveyHttpClient>(
-        TRAFFIC_ANNOTATION_FOR_TESTS, shared_url_loader_factory_);
+        HttpClientType::kSurvey, shared_url_loader_factory_);
   }
 
   void DestroyService() { survey_http_client_.reset(); }
@@ -236,6 +237,8 @@ class SurveyHttpClientTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -243,6 +246,7 @@ class SurveyHttpClientTest : public testing::Test {
   std::unique_ptr<SurveyHttpClient> survey_http_client_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
 
   DISALLOW_COPY_AND_ASSIGN(SurveyHttpClientTest);
 };
@@ -250,6 +254,8 @@ class SurveyHttpClientTest : public testing::Test {
 TEST_F(SurveyHttpClientTest, TestSendEmptyRequest) {
   SendRequestAndValidateResponse(TestHttpRequest("http://foobar.com/survey"),
                                  TestHttpResponse());
+  histogram_tester()->ExpectBucketCount(
+      "Net.HttpResponseCode.CustomHttpClient.Survey", net::HTTP_OK, 1);
 }
 
 TEST_F(SurveyHttpClientTest, TestSendSimpleRequest) {
@@ -260,6 +266,8 @@ TEST_F(SurveyHttpClientTest, TestSendSimpleRequest) {
 }
 
 TEST_F(SurveyHttpClientTest, TestSendDifferentRequestMethod) {
+  int histogram_counts = 0;
+
   std::vector<std::string> request_methods({"POST", "PUT", "PATCH"});
   for (const auto& method : request_methods) {
     MockResponseDoneCallback done_callback;
@@ -286,6 +294,9 @@ TEST_F(SurveyHttpClientTest, TestSendDifferentRequestMethod) {
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_TRUE(done_callback.has_run);
     EXPECT_EQ(done_callback.response.code, net::HTTP_OK);
+    histogram_tester()->ExpectBucketCount(
+        "Net.HttpResponseCode.CustomHttpClient.Survey", net::HTTP_OK,
+        ++histogram_counts);
 
     test_url_loader_factory()->ClearResponses();
   }
@@ -308,6 +319,8 @@ TEST_F(SurveyHttpClientTest, TestSendMultipleRequests) {
   EXPECT_TRUE(done_callback1.has_run);
   EXPECT_TRUE(done_callback2.has_run);
   EXPECT_TRUE(done_callback3.has_run);
+  histogram_tester()->ExpectBucketCount(
+      "Net.HttpResponseCode.CustomHttpClient.Survey", net::HTTP_OK, 3);
 }
 
 TEST_F(SurveyHttpClientTest, TestResponseHeader) {
@@ -343,6 +356,8 @@ TEST_F(SurveyHttpClientTest, TestRequestTimeout) {
 
   EXPECT_TRUE(done_callback.has_run);
   EXPECT_EQ(done_callback.response.net_error_code, net::ERR_TIMED_OUT);
+  histogram_tester()->ExpectBucketCount(
+      "Net.HttpResponseCode.CustomHttpClient.Survey", net::HTTP_OK, 0);
 }
 
 TEST_F(SurveyHttpClientTest, TestHttpError) {
@@ -369,6 +384,8 @@ TEST_F(SurveyHttpClientTest, TestHttpError) {
 
     EXPECT_TRUE(done_callback.has_run);
     EXPECT_EQ(done_callback.response, expected_response);
+    histogram_tester()->ExpectBucketCount(
+        "Net.HttpResponseCode.CustomHttpClient.Survey", code, 1);
 
     test_url_loader_factory()->ClearResponses();
   }
@@ -400,6 +417,10 @@ TEST_F(SurveyHttpClientTest, TestNetworkError) {
 
     test_url_loader_factory()->ClearResponses();
   }
+
+  // Response code should not be recorded when net error occurred.
+  histogram_tester()->ExpectTotalCount(
+      "Net.HttpResponseCode.CustomHttpClient.Survey", 0);
 }
 
 TEST_F(SurveyHttpClientTest, TestNetworkErrorAfterSendHeaders) {

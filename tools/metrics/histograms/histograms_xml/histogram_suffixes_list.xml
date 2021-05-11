@@ -4130,6 +4130,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Tabs.StateTransfer.Time"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="CustomHttpClientType" separator=".">
+  <suffix name="Notification" label="For request sent for notification."/>
+  <suffix name="Survey" label="For request sent for survey."/>
+  <affected-histogram name="Net.HttpResponseCode.CustomHttpClient"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="CustomTabOpenSource" separator=".">
   <suffix name="MediaLauncherActivity"
       label="CustomTab opened by MediaLauncherActivity."/>
