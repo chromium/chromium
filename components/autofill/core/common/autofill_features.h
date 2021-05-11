@@ -132,8 +132,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
     kAutofillAblationStudyEnabledForPaymentsParam;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int> kAutofillAblationStudyTotalWeightParam;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleParam;
 
