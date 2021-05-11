@@ -304,7 +304,7 @@ void PrintPreviewHandlerChromeOS::MaybeAllowJavascript() {
 void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
     const std::string& callback_id,
     const base::DictionaryValue& printer_info) {
-  if (printer_info.empty()) {
+  if (printer_info.DictEmpty()) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }

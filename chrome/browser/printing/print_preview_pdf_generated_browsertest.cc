@@ -207,7 +207,7 @@ class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
       return;
     }
 
-    ASSERT_FALSE(script_argument.empty());
+    ASSERT_FALSE(script_argument.DictEmpty());
     GetUI()->SendManipulateSettingsForTest(script_argument);
   }
 

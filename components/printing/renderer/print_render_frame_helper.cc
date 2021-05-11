@@ -2192,7 +2192,7 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     const base::DictionaryValue& passed_job_settings) {
-  if (passed_job_settings.empty()) {
+  if (passed_job_settings.DictEmpty()) {
     // TODO(thestig): Remove this block in the future, when we are certain this
     // is not reachable.
     NOTREACHED();
