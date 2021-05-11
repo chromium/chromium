@@ -80,8 +80,7 @@ int GetNumSecondaryAccounts(Profile* profile) {
 
 }  // namespace
 
-FamilyUserMetricsProvider::FamilyUserMetricsProvider()
-    : identity_manager_observer_(this) {
+FamilyUserMetricsProvider::FamilyUserMetricsProvider() {
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   // The |session_manager| is nullptr only for unit tests.
@@ -189,8 +188,8 @@ void FamilyUserMetricsProvider::ObserveIdentityManager(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identity_manager);
-  if (!identity_manager_observer_.IsObserving(identity_manager))
-    identity_manager_observer_.Add(identity_manager);
+  if (!identity_manager_observations_.IsObservingSource(identity_manager))
+    identity_manager_observations_.AddObservation(identity_manager);
 }
 
 bool FamilyUserMetricsProvider::IsSupervisedUser(Profile* profile) {

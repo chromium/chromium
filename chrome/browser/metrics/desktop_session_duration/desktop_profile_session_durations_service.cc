@@ -24,9 +24,8 @@ DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
           std::make_unique<
               password_manager::PasswordSessionDurationsMetricsRecorder>(
               pref_service,
-              sync_service)),
-      session_duration_observer_(this) {
-  session_duration_observer_.Add(tracker);
+              sync_service)) {
+  session_duration_observation_.Observe(tracker);
   if (tracker->in_session()) {
     // The session was started before this service was created. Let's start
     // tracking now.

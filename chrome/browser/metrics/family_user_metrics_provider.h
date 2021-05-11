@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
 
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -84,8 +84,9 @@ class FamilyUserMetricsProvider
   base::Optional<FamilyUserLogSegment> family_user_log_segment_;
   int num_secondary_accounts_ = -1;
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedMultiSourceObservation<signin::IdentityManager,
+                                     signin::IdentityManager::Observer>
+      identity_manager_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
