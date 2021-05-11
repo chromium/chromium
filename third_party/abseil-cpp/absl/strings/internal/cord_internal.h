@@ -366,6 +366,16 @@ class InlineData {
     return as_tree_.cordz_info != kNullCordzInfo;
   }
 
+  // Returns true if either of the provided instances hold a cordz_info value.
+  // This method is more efficient than the equivalent `data1.is_profiled() ||
+  // data2.is_profiled()`. Requires both arguments to hold a tree.
+  static bool is_either_profiled(const InlineData& data1,
+                                 const InlineData& data2) {
+    assert(data1.is_tree() && data2.is_tree());
+    return (data1.as_tree_.cordz_info | data2.as_tree_.cordz_info) !=
+           kNullCordzInfo;
+  }
+
   // Returns the cordz_info sampling instance for this instance, or nullptr
   // if the current instance is not sampled and does not have CordzInfo data.
   // Requires the current instance to hold a tree value.

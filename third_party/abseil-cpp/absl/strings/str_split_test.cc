@@ -29,6 +29,8 @@
 #include "gtest/gtest.h"
 #include "absl/base/dynamic_annotations.h"
 #include "absl/base/macros.h"
+#include "absl/container/btree_map.h"
+#include "absl/container/btree_set.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/node_hash_map.h"
 #include "absl/strings/numbers.h"
@@ -405,6 +407,10 @@ TEST(Splitter, ConversionOperator) {
   TestConversionOperator<std::set<std::string>>(splitter);
   TestConversionOperator<std::multiset<absl::string_view>>(splitter);
   TestConversionOperator<std::multiset<std::string>>(splitter);
+  TestConversionOperator<absl::btree_set<absl::string_view>>(splitter);
+  TestConversionOperator<absl::btree_set<std::string>>(splitter);
+  TestConversionOperator<absl::btree_multiset<absl::string_view>>(splitter);
+  TestConversionOperator<absl::btree_multiset<std::string>>(splitter);
   TestConversionOperator<std::unordered_set<std::string>>(splitter);
 
   // Tests conversion to map-like objects.
@@ -421,6 +427,22 @@ TEST(Splitter, ConversionOperator) {
   TestMapConversionOperator<std::multimap<std::string, absl::string_view>>(
       splitter);
   TestMapConversionOperator<std::multimap<std::string, std::string>>(splitter);
+  TestMapConversionOperator<
+      absl::btree_map<absl::string_view, absl::string_view>>(splitter);
+  TestMapConversionOperator<absl::btree_map<absl::string_view, std::string>>(
+      splitter);
+  TestMapConversionOperator<absl::btree_map<std::string, absl::string_view>>(
+      splitter);
+  TestMapConversionOperator<absl::btree_map<std::string, std::string>>(
+      splitter);
+  TestMapConversionOperator<
+      absl::btree_multimap<absl::string_view, absl::string_view>>(splitter);
+  TestMapConversionOperator<
+      absl::btree_multimap<absl::string_view, std::string>>(splitter);
+  TestMapConversionOperator<
+      absl::btree_multimap<std::string, absl::string_view>>(splitter);
+  TestMapConversionOperator<absl::btree_multimap<std::string, std::string>>(
+      splitter);
   TestMapConversionOperator<std::unordered_map<std::string, std::string>>(
       splitter);
   TestMapConversionOperator<

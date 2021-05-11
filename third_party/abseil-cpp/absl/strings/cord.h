@@ -1000,12 +1000,12 @@ constexpr Cord::InlineRep::InlineRep(cord_internal::InlineData data)
     : data_(data) {}
 
 inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src)
-    : data_(src.data_) {
-  if (is_tree()) {
-    data_.clear_cordz_info();
-    absl::cord_internal::CordRep::Ref(as_tree());
-    CordzInfo::MaybeTrackCord(data_, src.data_,
-                              CordzUpdateTracker::kConstructorCord);
+    : data_(InlineData::kDefaultInit) {
+  if (CordRep* tree = src.tree()) {
+    EmplaceTree(CordRep::Ref(tree), src.data_,
+                CordzUpdateTracker::kConstructorCord);
+  } else {
+    data_ = src.data_;
   }
 }
 
@@ -1077,6 +1077,7 @@ inline cord_internal::CordRepFlat* Cord::InlineRep::MakeFlatWithExtraCapacity(
 
 inline void Cord::InlineRep::EmplaceTree(CordRep* rep,
                                          MethodIdentifier method) {
+  assert(rep);
   data_.make_tree(rep);
   CordzInfo::MaybeTrackCord(data_, method);
 }

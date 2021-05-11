@@ -265,6 +265,8 @@ ABSL_NAMESPACE_END
 //
 //   ABSL_FLAG(T, name, default_value, help).OnUpdate(callback);
 //
+// `callback` should be convertible to `void (*)()`.
+//
 // After any setting of the flag value, the callback will be called at least
 // once. A rapid sequence of changes may be merged together into the same
 // callback. No concurrent calls to the callback will be made for the same
@@ -278,7 +280,6 @@ ABSL_NAMESPACE_END
 //
 // Note: ABSL_FLAG.OnUpdate() does not have a public definition. Hence, this
 // comment serves as its API documentation.
-
 
 // -----------------------------------------------------------------------------
 // Implementation details below this section

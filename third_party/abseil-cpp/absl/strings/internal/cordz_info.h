@@ -65,7 +65,9 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // Identical to TrackCord(), except that this function fills the
   // `parent_stack` and `parent_method` properties of the returned CordzInfo
   // instance from the provided `src` instance if `src` is sampled.
-  // This function should be used for sampling 'copy constructed' cords.
+  // This function should be used for sampling 'copy constructed' and 'copy
+  // assigned' cords. This function allows 'cord` to be already sampled, in
+  // which case the CordzInfo will be newly created from `src`.
   static void TrackCord(InlineData& cord, const InlineData& src,
                         MethodIdentifier method);
 
@@ -73,6 +75,15 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // Uses `cordz_should_profile` to randomly pick cords to be sampled, and if
   // so, invokes `TrackCord` to start sampling `cord`.
   static void MaybeTrackCord(InlineData& cord, MethodIdentifier method);
+
+  // Maybe sample the cord identified by 'cord' for method 'method'.
+  // `src` identifies a 'parent' cord which content is copied into the current
+  // cord, typically the input cord for an assign emthod or copy constructor.
+  // Invokes the corresponding `TrackCord` method if either cord is sampled, or
+  // if `cord` is randomly picked for sampling. Possible scenarios:
+  //   * `src` is sampled: `cord` will be set to sampled if not already sampled.
+  //     Parent stack and update stats of `src` are copied into `cord`
+  //   * `src` is not sampled: `cord` may be randomly picked for sampling.
   static void MaybeTrackCord(InlineData& cord, const InlineData& src,
                              MethodIdentifier method);
 
@@ -147,11 +158,6 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // or RemovePrefix.
   CordzStatistics GetCordzStatistics() const;
 
-  // Records size metric for this CordzInfo instance.
-  void RecordMetrics(int64_t size) {
-    size_.store(size, std::memory_order_relaxed);
-  }
-
  private:
   using SpinLock = absl::base_internal::SpinLock;
   using SpinLockHolder = ::absl::base_internal::SpinLockHolder;
@@ -215,9 +221,6 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   const MethodIdentifier parent_method_;
   CordzUpdateTracker update_tracker_;
   const absl::Time create_time_;
-
-  // Last recorded size for the cord.
-  std::atomic<int64_t> size_{0};
 };
 
 inline ABSL_ATTRIBUTE_ALWAYS_INLINE void CordzInfo::MaybeTrackCord(
@@ -229,7 +232,8 @@ inline ABSL_ATTRIBUTE_ALWAYS_INLINE void CordzInfo::MaybeTrackCord(
 
 inline ABSL_ATTRIBUTE_ALWAYS_INLINE void CordzInfo::MaybeTrackCord(
     InlineData& cord, const InlineData& src, MethodIdentifier method) {
-  if (ABSL_PREDICT_FALSE(cordz_should_profile())) {
+  if (ABSL_PREDICT_FALSE(InlineData::is_either_profiled(cord, src)) ||
+      ABSL_PREDICT_FALSE(cordz_should_profile())) {
     TrackCord(cord, src, method);
   }
 }
@@ -250,9 +254,6 @@ inline void CordzInfo::AssertHeld() ABSL_ASSERT_EXCLUSIVE_LOCK(mutex_) {
 inline void CordzInfo::SetCordRep(CordRep* rep) {
   AssertHeld();
   rep_ = rep;
-  if (rep) {
-    size_.store(rep->length);
-  }
 }
 
 inline void CordzInfo::UnsafeSetCordRep(CordRep* rep) { rep_ = rep; }

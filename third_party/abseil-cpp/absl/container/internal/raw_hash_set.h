@@ -1323,8 +1323,8 @@ class raw_hash_set {
   }
 
   void reserve(size_t n) {
-    size_t m = GrowthToLowerboundCapacity(n);
-    if (m > capacity_) {
+    if (n > size() + growth_left()) {
+      size_t m = GrowthToLowerboundCapacity(n);
       resize(NormalizeCapacity(m));
     }
   }

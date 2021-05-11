@@ -531,18 +531,19 @@ void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
   assert(&src != this);
   assert(is_tree() || src.is_tree());
   auto constexpr method = CordzUpdateTracker::kAssignCord;
-  if (CordRep* tree = this->tree()) {
-    CordzUpdateScope scope(data_.cordz_info(), method);
-    CordRep::Unref(tree);
-    if (CordRep* src_tree = src.tree()) {
-      SetTree(CordRep::Ref(src_tree), scope);
-    } else {
-      scope.SetCordRep(nullptr);
-      data_ = src.data_;
-    }
-  } else {
-    EmplaceTree(CordRep::Ref(src.as_tree()), method);
+  if (ABSL_PREDICT_TRUE(!is_tree())) {
+    EmplaceTree(CordRep::Ref(src.as_tree()), src.data_, method);
+    return;
   }
+  CordRep* tree = as_tree();
+  if (CordRep* src_tree = src.tree()) {
+    data_.set_tree(CordRep::Ref(src_tree));
+    CordzInfo::MaybeTrackCord(data_, src.data_, method);
+  } else {
+    CordzInfo::MaybeUntrackCord(data_.cordz_info());
+    data_ = src.data_;
+  }
+  CordRep::Unref(tree);
 }
 
 void Cord::InlineRep::UnrefTree() {

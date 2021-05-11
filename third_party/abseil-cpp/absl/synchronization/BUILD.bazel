@@ -136,6 +136,21 @@ cc_test(
     ],
 )
 
+cc_binary(
+    name = "blocking_counter_benchmark",
+    testonly = 1,
+    srcs = ["blocking_counter_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":synchronization",
+        ":thread_pool",
+        "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
 cc_test(
     name = "graphcycles_test",
     size = "medium",

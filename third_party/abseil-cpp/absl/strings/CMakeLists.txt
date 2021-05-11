@@ -221,9 +221,9 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::strings
-    absl::base
     absl::core_headers
     absl::dynamic_annotations
+    absl::btree
     absl::flat_hash_map
     absl::node_hash_map
     gmock_main
@@ -259,7 +259,7 @@ absl_cc_test(
 absl_cc_test(
   NAME
     str_join_test
-ss  SRCS
+  SRCS
     "str_join_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
@@ -562,7 +562,7 @@ absl_cc_library(
     "internal/cord_internal.cc"
     "internal/cord_rep_ring.cc"
   COPTS
-    ${ABSL_TEST_COPTS}
+    ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::base_internal
     absl::compressed_tuple
@@ -583,7 +583,7 @@ absl_cc_library(
   HDRS
     "internal/cordz_update_tracker.h"
   COPTS
-    ${ABSL_TEST_COPTS}
+    ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
 )
@@ -696,6 +696,7 @@ absl_cc_library(
     absl::cordz_statistics
     absl::cordz_update_tracker
     absl::core_headers
+    absl::inlined_vector
     absl::span
     absl::raw_logging_internal
     absl::stacktrace
@@ -707,6 +708,8 @@ absl_cc_test(
     cordz_info_test
   SRCS
     "internal/cordz_info_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
   DEPS
     absl::config
     absl::cord_internal
@@ -719,6 +722,26 @@ absl_cc_test(
     absl::span
     absl::stacktrace
     absl::symbolize
+    gmock_main
+)
+
+absl_cc_test(
+  NAME
+    cordz_info_statistics_test
+  SRCS
+    "internal/cordz_info_statistics_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::cord
+    absl::cord_internal
+    absl::cordz_info
+    absl::cordz_sample_token
+    absl::cordz_statistics
+    absl::cordz_update_scope
+    absl::cordz_update_tracker
+    absl::thread_pool
     gmock_main
 )
 
@@ -743,7 +766,7 @@ absl_cc_test(
   SRCS
     "internal/cordz_sample_token_test.cc"
   COPTS
-    ${ABSL_DEFAULT_COPTS}
+    ${ABSL_TEST_COPTS}
   DEPS
     absl::config
     absl::cord_internal
@@ -766,7 +789,7 @@ absl_cc_library(
   HDRS
     "internal/cordz_update_scope.h"
   COPTS
-    ${ABSL_TEST_COPTS}
+    ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
     absl::cord_internal

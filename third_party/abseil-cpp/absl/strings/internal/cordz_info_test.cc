@@ -74,6 +74,20 @@ TEST(CordzInfoTest, TrackCord) {
   info->Untrack();
 }
 
+TEST(CordzInfoTest, MaybeTrackCordOnSampledCord) {
+  TestCordData data1;
+  CordzInfo::TrackCord(data1.data, kTrackCordMethod);
+  CordzInfo* info1 = data1.data.cordz_info();
+  TestCordData data2;
+  CordzInfo::MaybeTrackCord(data2.data, data1.data, kTrackCordMethod);
+  CordzInfo* info2 = data2.data.cordz_info();
+  ASSERT_THAT(info2, Ne(nullptr));
+  EXPECT_THAT(info2->GetCordRepForTesting(), Eq(data2.rep.rep));
+  info2->Untrack();
+  info1->Untrack();
+}
+
+
 TEST(CordzInfoTest, UntrackCord) {
   TestCordData data;
   CordzInfo::TrackCord(data.data, kTrackCordMethod);
@@ -289,33 +303,6 @@ TEST(CordzInfoTest, FromParent) {
 
   info_parent->Untrack();
   info_child->Untrack();
-}
-
-TEST(CordzInfoTest, FromParentInlined) {
-  InlineData parent;
-  TestCordData child;
-  CordzInfo* info = TrackChildCord(child.data, parent);
-  EXPECT_TRUE(info->GetParentStack().empty());
-  CordzStatistics statistics = info->GetCordzStatistics();
-  EXPECT_THAT(statistics.size, Eq(child.rep.rep->length));
-  EXPECT_THAT(statistics.method, Eq(kChildMethod));
-  EXPECT_THAT(statistics.parent_method, Eq(kUnknownMethod));
-  EXPECT_THAT(statistics.update_tracker.Value(kChildMethod), Eq(1));
-  info->Untrack();
-}
-
-TEST(CordzInfoTest, RecordMetrics) {
-  TestCordData data;
-  CordzInfo* info = TrackParentCord(data.data);
-
-  CordzStatistics expected;
-  expected.size = 100;
-  info->RecordMetrics(expected.size);
-
-  CordzStatistics actual = info->GetCordzStatistics();
-  EXPECT_EQ(actual.size, expected.size);
-
-  info->Untrack();
 }
 
 }  // namespace

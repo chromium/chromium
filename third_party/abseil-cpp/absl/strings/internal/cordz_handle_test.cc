@@ -191,65 +191,72 @@ TEST(CordzHandleTest, MultiThreaded) {
   // manipulating a CordzHandle that might be operated upon in another thread.
   std::vector<std::atomic<CordzHandle*>> handles(kNumHandles);
 
-  absl::synchronization_internal::ThreadPool pool(kNumThreads);
+  // global bool which is set when any thread did get some 'safe to inspect'
+  // handles. On some platforms and OSS tests, we might risk that some pool
+  // threads are starved, stalled, or just got a few unlikely random 'handle'
+  // coin tosses, so we satisfy this test with simply observing 'some' thread
+  // did something meaningful, which should minimize the potential for flakes.
+  std::atomic<bool> found_safe_to_inspect(false);
 
-  for (int i = 0; i < kNumThreads; ++i) {
-    pool.Schedule([&stop, &handles]() {
-      std::minstd_rand gen;
-      std::uniform_int_distribution<int> dist_type(0, 2);
-      std::uniform_int_distribution<int> dist_handle(0, kNumHandles - 1);
-      size_t max_safe_to_inspect = 0;
-      while (!stop.HasBeenNotified()) {
-        CordzHandle* handle;
-        switch (dist_type(gen)) {
-          case 0:
-            handle = new CordzHandle();
-            break;
-          case 1:
-            handle = new CordzSnapshot();
-            break;
-          default:
-            handle = nullptr;
-            break;
-        }
-        CordzHandle* old_handle = handles[dist_handle(gen)].exchange(handle);
-        if (old_handle != nullptr) {
-          std::vector<const CordzHandle*> safe_to_inspect =
-              old_handle->DiagnosticsGetSafeToInspectDeletedHandles();
-          for (const CordzHandle* handle : safe_to_inspect) {
-            // We're in a tight loop, so don't generate too many error messages.
-            ASSERT_FALSE(handle->is_snapshot());
+  {
+    absl::synchronization_internal::ThreadPool pool(kNumThreads);
+    for (int i = 0; i < kNumThreads; ++i) {
+      pool.Schedule([&stop, &handles, &found_safe_to_inspect]() {
+        std::minstd_rand gen;
+        std::uniform_int_distribution<int> dist_type(0, 2);
+        std::uniform_int_distribution<int> dist_handle(0, kNumHandles - 1);
+
+        while (!stop.HasBeenNotified()) {
+          CordzHandle* handle;
+          switch (dist_type(gen)) {
+            case 0:
+              handle = new CordzHandle();
+              break;
+            case 1:
+              handle = new CordzSnapshot();
+              break;
+            default:
+              handle = nullptr;
+              break;
           }
-          if (safe_to_inspect.size() > max_safe_to_inspect) {
-            max_safe_to_inspect = safe_to_inspect.size();
+          CordzHandle* old_handle = handles[dist_handle(gen)].exchange(handle);
+          if (old_handle != nullptr) {
+            std::vector<const CordzHandle*> safe_to_inspect =
+                old_handle->DiagnosticsGetSafeToInspectDeletedHandles();
+            for (const CordzHandle* handle : safe_to_inspect) {
+              // We're in a tight loop, so don't generate too many error
+              // messages.
+              ASSERT_FALSE(handle->is_snapshot());
+            }
+            if (!safe_to_inspect.empty()) {
+              found_safe_to_inspect.store(true);
+            }
+            CordzHandle::Delete(old_handle);
           }
-          CordzHandle::Delete(old_handle);
         }
-      }
 
-      // Confirm that the test did *something*. This check will be satisfied as
-      // long as this thread has delete a CordzSnapshot object and a
-      // non-snapshot CordzHandle was deleted after the CordzSnapshot was
-      // created. This max_safe_to_inspect count will often reach around 30
-      // (assuming 4 threads and 10 slots for live handles). Don't use a strict
-      // bound to avoid making this test flaky.
-      EXPECT_THAT(max_safe_to_inspect, Gt(0));
-
-      // Have each thread attempt to clean up everything. Some thread will be
-      // the last to reach this cleanup code, and it will be guaranteed to clean
-      // up everything because nothing remains to create new handles.
-      for (auto& h : handles) {
-        if (CordzHandle* handle = h.exchange(nullptr)) {
-          CordzHandle::Delete(handle);
+        // Have each thread attempt to clean up everything. Some thread will be
+        // the last to reach this cleanup code, and it will be guaranteed to
+        // clean up everything because nothing remains to create new handles.
+        for (auto& h : handles) {
+          if (CordzHandle* handle = h.exchange(nullptr)) {
+            CordzHandle::Delete(handle);
+          }
         }
-      }
-  });
+      });
+    }
+
+    // The threads will hammer away.  Give it a little bit of time for tsan to
+    // spot errors.
+    absl::SleepFor(absl::Seconds(3));
+    stop.Notify();
   }
 
-  // The threads will hammer away.  Give it a little bit of time for tsan to
-  // spot errors.
-  absl::SleepFor(absl::Seconds(3));
-  stop.Notify();
+  // Confirm that the test did *something*. This check will be satisfied as
+  // long as any thread has deleted a CordzSnapshot object and a non-snapshot
+  // CordzHandle was deleted after the CordzSnapshot was created.
+  // See also comments on `found_safe_to_inspect`
+  EXPECT_TRUE(found_safe_to_inspect.load());
 }
 
 }  // namespace

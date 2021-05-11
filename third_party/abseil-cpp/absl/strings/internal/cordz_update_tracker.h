@@ -91,6 +91,16 @@ class CordzUpdateTracker {
                 std::memory_order_relaxed);
   }
 
+  // Adds all the values from `src` to this instance
+  void LossyAdd(const CordzUpdateTracker& src) {
+    for (int i = 0; i < kNumMethods; ++i) {
+      MethodIdentifier method = static_cast<MethodIdentifier>(i);
+      if (int64_t value = src.Value(method)) {
+        LossyAdd(method, value);
+      }
+    }
+  }
+
  private:
   // Until C++20 std::atomic is not constexpr default-constructible, so we need
   // a wrapper for this class to be constexpr constructible.
