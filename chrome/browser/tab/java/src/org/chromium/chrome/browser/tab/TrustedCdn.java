@@ -69,9 +69,6 @@ public class TrustedCdn extends TabWebContentsUserData {
         boolean canShowPublisherUrl(Tab tab);
     }
 
-    @Nullable
-    private PublisherUrlVisibility mPublisherUrlVisibility;
-
     /**
      * The publisher URL for pages hosted on a trusted CDN, or null otherwise.
      */
@@ -102,22 +99,6 @@ public class TrustedCdn extends TabWebContentsUserData {
         super(tab);
         mTab = tab;
         mNativeTrustedCdn = TrustedCdnJni.get().init(TrustedCdn.this);
-        updatePublisherUrlVisibility(tab.getWindowAndroid());
-        mTab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                updatePublisherUrlVisibility(window);
-            }
-
-            @Override
-            public void onDestroyed(Tab tab) {
-                tab.removeObserver(this);
-            }
-        });
-    }
-
-    private void updatePublisherUrlVisibility(WindowAndroid window) {
-        mPublisherUrlVisibility = window != null ? PublisherUrlVisibility.from(window) : null;
     }
 
     @Override
@@ -138,7 +119,14 @@ public class TrustedCdn extends TabWebContentsUserData {
 
     @Nullable
     private String getPublisherUrl() {
-        if (mPublisherUrlVisibility == null || !mPublisherUrlVisibility.canShowPublisherUrl(mTab)) {
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) return null;
+
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return null;
+
+        PublisherUrlVisibility publisherUrlVisibility = PublisherUrlVisibility.from(windowAndroid);
+        if (publisherUrlVisibility == null || !publisherUrlVisibility.canShowPublisherUrl(mTab)) {
             return null;
         }
         int level = SecurityStateModel.getSecurityLevelForWebContents(mTab.getWebContents());
