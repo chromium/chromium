@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ANDROID_PROVIDER_FORM_DATA_ANDROID_H_
-#define COMPONENTS_AUTOFILL_ANDROID_PROVIDER_FORM_DATA_ANDROID_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_
+#define COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -71,4 +71,4 @@ class FormDataAndroid {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_ANDROID_PROVIDER_FORM_DATA_ANDROID_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_ANDROID_FORM_DATA_ANDROID_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 
-#include "components/autofill/core/browser/android_autofill_manager.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
 
 namespace autofill {
 namespace {
@@ -20,9 +20,9 @@ void AutofillProvider::set_is_download_manager_disabled_for_testing() {
   g_is_download_manager_disabled_for_testing = true;
 }
 
-AutofillProvider::AutofillProvider() {}
+AutofillProvider::AutofillProvider() = default;
 
-AutofillProvider::~AutofillProvider() {}
+AutofillProvider::~AutofillProvider() = default;
 
 void AutofillProvider::SendFormDataToRenderer(AndroidAutofillManager* manager,
                                               int requestId,

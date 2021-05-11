@@ -199,7 +199,7 @@ source_set("browser") {
     "//android_webview/common:mojom",
     "//android_webview/proto:aw_variations_seed_proto",
     "//base",
-    "//components/autofill/android/provider",
+    "//components/android_autofill/android",
     "//components/autofill/content/browser",
     "//components/cdm/browser",
     "//components/component_updater/android:embedded_component_loader",

@@ -1,6 +1,7 @@
 include_rules = [
   "+cc",
-  "+components/autofill/android",
+  "+components/android_autofill/android",
+  "+components/android_autofill/browser",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",

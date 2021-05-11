@@ -6,7 +6,7 @@
 #define WEBLAYER_TEST_STUB_AUTOFILL_PROVIDER_H_
 
 #include "base/callback_forward.h"
-#include "components/autofill/core/browser/test_autofill_provider.h"
+#include "components/android_autofill/browser/test_autofill_provider.h"
 
 namespace weblayer {
 

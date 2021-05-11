@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/android/provider/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
+#include "components/android_autofill/android/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
 #include <string>
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_provider.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"

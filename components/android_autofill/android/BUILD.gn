@@ -46,7 +46,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-static_library("provider") {
+static_library("android") {
   sources = [
     "autofill_provider_android.cc",
     "autofill_provider_android.h",
@@ -55,9 +55,9 @@ static_library("provider") {
     "form_field_data_android.cc",
     "form_field_data_android.h",
   ]
+  public_deps = [ "//components/android_autofill/browser" ]
   deps = [
     ":jni_headers",
-    "//components/autofill/core/browser:browser",
     "//content/public/browser",
     "//ui/android",
   ]

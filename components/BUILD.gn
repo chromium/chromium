@@ -242,6 +242,7 @@ test("components_unittests") {
     ]
   } else {  # !is_ios
     deps += [
+      "//components/android_autofill/browser:unit_tests",
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/content/renderer:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
@@ -835,7 +836,7 @@ if (!is_ios && !is_fuchsia) {
 if (is_android) {
   junit_binary("components_junit_tests") {
     deps = [
-      "//components/autofill/android/provider/junit:components_autofill_junit_tests",
+      "//components/android_autofill/android/junit:components_autofill_junit_tests",
       "//components/background_task_scheduler:components_background_task_scheduler_junit_tests",
       "//components/browser_ui/bottomsheet/android/internal:junit_tests",
       "//components/browser_ui/client_certificate/android:junit",

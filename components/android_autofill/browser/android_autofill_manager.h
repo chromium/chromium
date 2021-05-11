@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -105,4 +105,4 @@ class AndroidAutofillManager : public AutofillManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_MANAGER_H_

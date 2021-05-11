@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/android_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_provider.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
+#include "components/android_autofill/browser/test_autofill_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

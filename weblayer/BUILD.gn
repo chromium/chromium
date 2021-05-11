@@ -385,6 +385,7 @@ source_set("weblayer_lib_base") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/android_autofill/browser",
     "//components/autofill/content/browser",
     "//components/autofill/content/renderer",
     "//components/autofill/core/browser",
@@ -664,8 +665,8 @@ source_set("weblayer_lib_base") {
     deps += [
       "//android_webview:generate_aw_resources",
       "//android_webview:generate_aw_strings",
+      "//components/android_autofill/android",
       "//components/android_system_error_page",
-      "//components/autofill/android/provider",
       "//components/browser_ui/client_certificate/android",
       "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/photo_picker/android",
@@ -863,7 +864,7 @@ if (is_android) {
     deps = [
       ":weblayer_lib_webview_test",
       "//base",
-      "//components/autofill/android/provider/test_support:component_autofill_provider_native_test_support",
+      "//components/android_autofill/android/test_support:component_autofill_provider_native_test_support",
       "//content/public/app",
       "//weblayer/browser/java:test_weblayer_jni_registration",
     ]

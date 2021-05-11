@@ -106,8 +106,8 @@ test("weblayer_browsertests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/android_autofill/browser:test_support",
     "//components/autofill/core/browser",
-    "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/background_sync",
     "//components/blocked_content",

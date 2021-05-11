@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROVIDER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROVIDER_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -94,4 +95,4 @@ class AutofillProvider {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROVIDER_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_

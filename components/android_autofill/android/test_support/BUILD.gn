@@ -17,8 +17,8 @@ android_library("component_autofill_provider_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//components/autofill/android/provider:autofill_aidl",
-    "//components/autofill/android/provider:java",
+    "//components/android_autofill/android:autofill_aidl",
+    "//components/android_autofill/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -34,7 +34,7 @@ source_set("component_autofill_provider_native_test_support") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/autofill/content/browser",
+    "//components/android_autofill/android",
     "//components/autofill/core/browser:test_support",
     "//content/public/browser",
   ]

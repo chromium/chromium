@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "android_autofill_manager.cc",
+    "android_autofill_manager.h",
+    "autofill_provider.cc",
+    "autofill_provider.h",
+  ]
+  public_deps = [ "//components/autofill/core/browser" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_provider_unittest.cc" ]
+  deps = [
+    ":test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "test_autofill_provider.h" ]
+  public_deps = [ ":browser" ]
+}

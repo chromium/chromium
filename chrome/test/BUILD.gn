@@ -907,6 +907,7 @@ if (!is_android) {
       "//chrome/renderer",
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/data:webui_test_resources",
+      "//components/android_autofill/browser",
       "//components/autofill/content/browser:risk_proto",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer:test_support",

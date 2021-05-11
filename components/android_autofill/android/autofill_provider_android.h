@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ANDROID_PROVIDER_AUTOFILL_PROVIDER_ANDROID_H_
-#define COMPONENTS_AUTOFILL_ANDROID_PROVIDER_AUTOFILL_PROVIDER_ANDROID_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_
+#define COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace content {
@@ -126,4 +126,4 @@ class AutofillProviderAndroid : public AutofillProvider {
 };
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_ANDROID_PROVIDER_AUTOFILL_PROVIDER_ANDROID_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_ANDROID_AUTOFILL_PROVIDER_ANDROID_H_

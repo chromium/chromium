@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_PROVIDER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_PROVIDER_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_TEST_AUTOFILL_PROVIDER_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_TEST_AUTOFILL_PROVIDER_H_
 
-#include "components/autofill/core/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 
 namespace autofill {
 
@@ -57,4 +57,4 @@ class TestAutofillProvider : public AutofillProvider {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_PROVIDER_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_TEST_AUTOFILL_PROVIDER_H_
