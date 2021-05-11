@@ -1842,13 +1842,23 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Skip Ad button is displayed if a media session action handler has been set.
+  // Skip Ad button is not displayed if video is not playing even if media
+  // session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('skipad');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false));
+
+  // Play video and check that Skip Ad button is now displayed when video plays.
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, true));
 
-  // Unset action handler and check that Skip Ad button is not displayed.
+  // Unset action handler and check that Skip Ad button is not displayed when
+  // video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('skipad');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
@@ -1875,6 +1885,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(result);
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
+
+  // Play second video (non-muted) so that Media Session becomes active.
+  ASSERT_TRUE(
+      content::ExecuteScript(active_web_contents, "secondVideo.play();"));
 
   // Set Media Session action "play" handler and check that Play/Pause button
   // is still hidden.
@@ -1926,14 +1940,24 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Next Track button is displayed if a media session action handler has been
-  // set.
+  // Next Track button is not displayed if video is not playing even if media
+  // session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false));
+
+  // Play video and check that Next Track button is now displayed when video
+  // plays.
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->next_track_controls_view_for_testing()}, true));
 
-  // Unset action handler and check that Next Track button is not displayed.
+  // Unset action handler and check that Next Track button is not displayed
+  // when video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('nexttrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
@@ -1954,14 +1978,24 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Previous Track button is displayed if a media session action handler has
-  // been set.
+  // Previous Track button is not displayed if video is not playing even if
+  // media session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
+
+  // Play video and check that Previous Track button is now displayed when
+  // video plays.
+  bool result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "ensureVideoIsPlaying();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->previous_track_controls_view_for_testing()}, true));
 
-  // Unset action handler and check that Previous Track button is not displayed.
+  // Unset action handler and check that Previous Track button is not displayed
+  // when video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('previoustrack');"));
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
