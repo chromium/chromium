@@ -2107,17 +2107,16 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowTotalInActiveDesk) {
   CompleteCycling(cycle_controller);
 }
 
-// Similar to OneWindowInActiveDesk, tests that alt-tab does not show up if
-// there is no window to be shown, but would show "No recent items" if
-// switching from the all-desks mode with multiple windows. Additionally,
-// tests that while the focus is on the tab slider button, pressing the Down
-// arrow key does nothing.
+// For no window in the current-desk mode, if there are other windows in other
+// desk, tests that alt-tab view always shows up, so the user can switch mode
+// and select other windows. Additionally, tests that while the focus is on the
+// tab slider button, pressing the Down arrow key does nothing.
 TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
   ui::test::EventGenerator* generator = GetEventGenerator();
 
-  // Create two desks with all two windows in desk1.
+  // Create two desks with a window in desk1.
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   auto* desks_controller = DesksController::Get();
@@ -2157,6 +2156,39 @@ TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
   EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
 
+  CompleteCycling(cycle_controller);
+
+  // Entering alt-tab in the current-desk mode with zero window should work and
+  // show no-recent-item label.
+  cycle_controller->StartCycling();
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(0u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  EXPECT_EQ(nullptr, GetTargetWindow());
+  EXPECT_TRUE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
+}
+
+// For no window in the current-desk mode, if there is no other window in
+// other desks, tests that alt-tab does not show up.
+TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowTotalInActiveDesk) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two desks with all two windows in desk1.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+
+  // Activate desk2.
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+
+  // Starting alt-tab should show all windows from all desks.
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  EXPECT_FALSE(CycleViewExists());
   CompleteCycling(cycle_controller);
 }
 

@@ -148,6 +148,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows_|.
   int GetIndexOfWindow(aura::Window* window) const;
 
+  // Returns the number of windows in the window cycle list for all desks.
+  int GetNumberOfWindowsAllDesks() const;
+
   // Returns the views for the window cycle list.
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;
 
