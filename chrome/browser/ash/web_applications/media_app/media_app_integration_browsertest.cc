@@ -163,11 +163,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
 
   // Relaunch with a different file. This currently re-uses the existing window,
   // so we don't wait for page load here.
-  {
-    auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-    params.launch_files = {TestFile(kFileJpeg640x480)};
-    LaunchAppWithoutWaiting(std::move(params));
-  }
+  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
+                                  TestFile(kFileJpeg640x480));
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 }
@@ -366,20 +363,15 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
 
   // Launch with a file that has a different name to ensure the rotated version
   // of the file is detected robustly.
-  {
-    auto clearFileParams = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
-    clearFileParams.launch_files = {TestFile(kFileJpeg640x480)};
-    LaunchAppWithoutWaiting(std::move(clearFileParams));
-  }
+  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
+                                  TestFile(kFileJpeg640x480));
+
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
-  {
-    auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
+  // Add the handcrafted RAW file to launch params and launch.
+  LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
+                                  TestFile(kRaw378x272));
 
-    // Add the handcrafted RAW file to launch params and launch.
-    params.launch_files.push_back(TestFile(kRaw378x272));
-    LaunchAppWithoutWaiting(std::move(params));
-  }
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
 }
