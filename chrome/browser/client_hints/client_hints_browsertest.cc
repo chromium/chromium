@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -29,6 +30,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -2254,4 +2256,19 @@ IN_PROC_BROWSER_TEST_F(ClientHintsAcceptCHFrameObserverBrowserTest,
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);
   ui_test_utils::NavigateToURL(browser(), gurl);
+}
+
+IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, UseCounter) {
+  auto web_feature_waiter =
+      std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+          chrome_test_utils::GetActiveWebContents(this));
+
+  web_feature_waiter->AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kClientHintsUAPlatform);
+  const GURL gurl = GetParam() ? http_equiv_accept_ch_with_lifetime()
+                               : accept_ch_with_lifetime_url();
+
+  ui_test_utils::NavigateToURL(browser(), gurl);
+
+  web_feature_waiter->Wait();
 }
