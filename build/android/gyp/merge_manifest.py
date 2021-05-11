@@ -124,6 +124,7 @@ def main(argv):
           root_manifest,
           '--property',
           'PACKAGE=' + package,
+          '--remove-tools-declarations',
       ]
       build_utils.CheckOutput(
           cmd,

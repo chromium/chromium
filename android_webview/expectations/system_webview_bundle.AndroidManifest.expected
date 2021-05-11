@@ -1,12 +1,10 @@
 <?xml version="1.0" ?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.android.webview"
     platformBuildVersionCode="30"
     platformBuildVersionName="11"
-    android:isolatedSplits="true"
-    tools:ignore="MissingLeanbackLauncher">
+    android:isolatedSplits="true">
   <queries>  # DIFF-ANCHOR: 0c3a615d
     <intent>  # DIFF-ANCHOR: 28c960ba
       <action android:name="android.media.browse.MediaBrowserService"/>
@@ -71,8 +69,7 @@
     <provider  # DIFF-ANCHOR: 0e75b297
         android:name="androidx.startup.InitializationProvider"
         android:authorities="$PACKAGE.androidx-startup"
-        android:exported="false"
-        tools:node="merge">
+        android:exported="false">
       <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
     </provider>  # DIFF-ANCHOR: 0e75b297
     <provider  # DIFF-ANCHOR: a5e78e63
@@ -80,16 +77,14 @@
         android:authorities="$PACKAGE.LicenseContentProvider"
         android:exported="true"
         android:grantUriPermissions="true"
-        android:process=":webview_apk"
-        tools:ignore="ExportedContentProvider">
+        android:process=":webview_apk">
     </provider>  # DIFF-ANCHOR: a5e78e63
     <provider  # DIFF-ANCHOR: bfe37944
         android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
         android:authorities="$PACKAGE.DeveloperModeContentProvider"
         android:exported="true"
         android:process=":webview_service"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedContentProvider">
+        android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: bfe37944
     <receiver  # DIFF-ANCHOR: 0a6f8fa5
         android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
@@ -125,33 +120,28 @@
         android:name="org.chromium.android_webview.services.ComponentsProviderService"
         android:exported="true"
         android:process=":webview_service"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: c756cf8d
     <service  # DIFF-ANCHOR: 5cda9608
         android:name="org.chromium.android_webview.services.CrashReceiverService"
         android:exported="true"
-        android:process=":webview_service"
-        tools:ignore="ExportedService">
+        android:process=":webview_service">
     </service>  # DIFF-ANCHOR: 5cda9608
     <service  # DIFF-ANCHOR: adce9ea1
         android:name="org.chromium.android_webview.services.DeveloperUiService"
         android:exported="true"
-        android:process=":webview_service"
-        tools:ignore="ExportedService">
+        android:process=":webview_service">
     </service>  # DIFF-ANCHOR: adce9ea1
     <service  # DIFF-ANCHOR: eecf2fee
         android:name="org.chromium.android_webview.services.MetricsBridgeService"
         android:exported="true"
         android:process=":webview_service"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: eecf2fee
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
         android:exported="true"
-        android:process=":webview_service"
-        tools:ignore="ExportedService">
+        android:process=":webview_service">
     </service>  # DIFF-ANCHOR: dc926e35
     <service  # DIFF-ANCHOR: b1e3e8bd
         android:name="org.chromium.content.app.SandboxedProcessService0"
@@ -159,8 +149,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process0"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: b1e3e8bd
     <service  # DIFF-ANCHOR: 76d1ccf8
         android:name="org.chromium.content.app.SandboxedProcessService1"
@@ -168,8 +157,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process1"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 76d1ccf8
     <service  # DIFF-ANCHOR: 38b95266
         android:name="org.chromium.content.app.SandboxedProcessService10"
@@ -177,8 +165,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process10"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 38b95266
     <service  # DIFF-ANCHOR: e4a2e4a2
         android:name="org.chromium.content.app.SandboxedProcessService11"
@@ -186,8 +173,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process11"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e4a2e4a2
     <service  # DIFF-ANCHOR: d9b2ffba
         android:name="org.chromium.content.app.SandboxedProcessService12"
@@ -195,8 +181,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process12"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: d9b2ffba
     <service  # DIFF-ANCHOR: b41bb17d
         android:name="org.chromium.content.app.SandboxedProcessService13"
@@ -204,8 +189,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process13"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: b41bb17d
     <service  # DIFF-ANCHOR: aec0ea21
         android:name="org.chromium.content.app.SandboxedProcessService14"
@@ -213,8 +197,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process14"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: aec0ea21
     <service  # DIFF-ANCHOR: cf88a5e5
         android:name="org.chromium.content.app.SandboxedProcessService15"
@@ -222,8 +205,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process15"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: cf88a5e5
     <service  # DIFF-ANCHOR: 7d85889d
         android:name="org.chromium.content.app.SandboxedProcessService16"
@@ -231,8 +213,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process16"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 7d85889d
     <service  # DIFF-ANCHOR: dae26ed4
         android:name="org.chromium.content.app.SandboxedProcessService17"
@@ -240,8 +221,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process17"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: dae26ed4
     <service  # DIFF-ANCHOR: 2c6cf029
         android:name="org.chromium.content.app.SandboxedProcessService18"
@@ -249,8 +229,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process18"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 2c6cf029
     <service  # DIFF-ANCHOR: 1d2f0988
         android:name="org.chromium.content.app.SandboxedProcessService19"
@@ -258,8 +237,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process19"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 1d2f0988
     <service  # DIFF-ANCHOR: 4a39041b
         android:name="org.chromium.content.app.SandboxedProcessService2"
@@ -267,8 +245,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process2"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 4a39041b
     <service  # DIFF-ANCHOR: 073533bf
         android:name="org.chromium.content.app.SandboxedProcessService20"
@@ -276,8 +253,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process20"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 073533bf
     <service  # DIFF-ANCHOR: d24da41d
         android:name="org.chromium.content.app.SandboxedProcessService21"
@@ -285,8 +261,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process21"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: d24da41d
     <service  # DIFF-ANCHOR: 594d8b32
         android:name="org.chromium.content.app.SandboxedProcessService22"
@@ -294,8 +269,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process22"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 594d8b32
     <service  # DIFF-ANCHOR: 5528c0c3
         android:name="org.chromium.content.app.SandboxedProcessService23"
@@ -303,8 +277,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process23"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 5528c0c3
     <service  # DIFF-ANCHOR: b7ab2ba3
         android:name="org.chromium.content.app.SandboxedProcessService24"
@@ -312,8 +285,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process24"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: b7ab2ba3
     <service  # DIFF-ANCHOR: cec6cb64
         android:name="org.chromium.content.app.SandboxedProcessService25"
@@ -321,8 +293,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process25"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: cec6cb64
     <service  # DIFF-ANCHOR: 5b4a00fe
         android:name="org.chromium.content.app.SandboxedProcessService26"
@@ -330,8 +301,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process26"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 5b4a00fe
     <service  # DIFF-ANCHOR: ad49d203
         android:name="org.chromium.content.app.SandboxedProcessService27"
@@ -339,8 +309,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process27"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: ad49d203
     <service  # DIFF-ANCHOR: 573298e9
         android:name="org.chromium.content.app.SandboxedProcessService28"
@@ -348,8 +317,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process28"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 573298e9
     <service  # DIFF-ANCHOR: 79897b32
         android:name="org.chromium.content.app.SandboxedProcessService29"
@@ -357,8 +325,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process29"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 79897b32
     <service  # DIFF-ANCHOR: 84335864
         android:name="org.chromium.content.app.SandboxedProcessService3"
@@ -366,8 +333,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process3"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 84335864
     <service  # DIFF-ANCHOR: c4bd371e
         android:name="org.chromium.content.app.SandboxedProcessService30"
@@ -375,8 +341,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process30"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: c4bd371e
     <service  # DIFF-ANCHOR: 394a9fd0
         android:name="org.chromium.content.app.SandboxedProcessService31"
@@ -384,8 +349,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process31"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 394a9fd0
     <service  # DIFF-ANCHOR: b811afb8
         android:name="org.chromium.content.app.SandboxedProcessService32"
@@ -393,8 +357,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process32"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: b811afb8
     <service  # DIFF-ANCHOR: 2811ddd3
         android:name="org.chromium.content.app.SandboxedProcessService33"
@@ -402,8 +365,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process33"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 2811ddd3
     <service  # DIFF-ANCHOR: 73ae1688
         android:name="org.chromium.content.app.SandboxedProcessService34"
@@ -411,8 +373,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process34"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 73ae1688
     <service  # DIFF-ANCHOR: c476f324
         android:name="org.chromium.content.app.SandboxedProcessService35"
@@ -420,8 +381,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process35"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: c476f324
     <service  # DIFF-ANCHOR: 75d5304b
         android:name="org.chromium.content.app.SandboxedProcessService36"
@@ -429,8 +389,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process36"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 75d5304b
     <service  # DIFF-ANCHOR: dc6d0617
         android:name="org.chromium.content.app.SandboxedProcessService37"
@@ -438,8 +397,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process37"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: dc6d0617
     <service  # DIFF-ANCHOR: e31efe49
         android:name="org.chromium.content.app.SandboxedProcessService38"
@@ -447,8 +405,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process38"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e31efe49
     <service  # DIFF-ANCHOR: 5736507e
         android:name="org.chromium.content.app.SandboxedProcessService39"
@@ -456,8 +413,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process39"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 5736507e
     <service  # DIFF-ANCHOR: a161be24
         android:name="org.chromium.content.app.SandboxedProcessService4"
@@ -465,8 +421,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process4"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: a161be24
     <service  # DIFF-ANCHOR: 8e591688
         android:name="org.chromium.content.app.SandboxedProcessService5"
@@ -474,8 +429,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process5"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 8e591688
     <service  # DIFF-ANCHOR: 705141d0
         android:name="org.chromium.content.app.SandboxedProcessService6"
@@ -483,8 +437,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process6"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 705141d0
     <service  # DIFF-ANCHOR: 38ed2189
         android:name="org.chromium.content.app.SandboxedProcessService7"
@@ -492,8 +445,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process7"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 38ed2189
     <service  # DIFF-ANCHOR: aa417956
         android:name="org.chromium.content.app.SandboxedProcessService8"
@@ -501,8 +453,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process8"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: aa417956
     <service  # DIFF-ANCHOR: e2f3bbbd
         android:name="org.chromium.content.app.SandboxedProcessService9"
@@ -510,8 +461,7 @@
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":sandboxed_process9"
-        android:visibleToInstantApps="true"
-        tools:ignore="ExportedService">
+        android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: e2f3bbbd
   </application>
 </manifest>
