@@ -315,13 +315,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
   constexpr char kWaitForImageHandlerUpdate[] = R"(
     (async () => {
       const imageHandler = await getNode('backlight-image-handler');
-      await new Promise(resolve => {
-        const observer = new MutationObserver(() => {
-          resolve();
-          observer.disconnect();
-        });
-        observer.observe(imageHandler.shadowRoot, {childList: true});
-      });
+      await childListUpdate(imageHandler.shadowRoot);
     })();
   )";
   MediaAppUiBrowserTest::EvalJsInAppFrame(app, kWaitForImageHandlerUpdate);

@@ -81,3 +81,19 @@ async function waitForNode(query, opt_path) {
         parentElement, {attributes: true, childList: true, subtree: true});
   });
 }
+
+/**
+ * Returns a promise that resolves when the passed node's child list is updated
+ * (a child is added or removed).
+ * @param {!Node} node
+ * @return {!Promise}
+ */
+function childListUpdate(node) {
+  return new Promise(resolve => {
+    const observer = new MutationObserver(() => {
+      resolve();
+      observer.disconnect();
+    });
+    observer.observe(node, {childList: true});
+  });
+}
