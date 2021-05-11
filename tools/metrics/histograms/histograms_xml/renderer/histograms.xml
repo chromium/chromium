@@ -376,6 +376,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskCountPerFrameType"
     enum="RendererSchedulerFrameType2" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <summary>
     The number of completed renderer tasks split per frame type. Used to monitor
@@ -402,6 +405,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskCountPerQueueType"
     enum="RendererSchedulerTaskQueueType" expires_after="M77">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <summary>
     The number of completed renderer tasks split per task queue type. Used to
@@ -431,6 +437,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskCPUDurationPerThreadType2"
     enum="RendererSchedulerThreadType" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <summary>
     Total cpu time (reported in full seconds) of renderer tasks split by per
@@ -467,6 +476,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskDurationPerFrameType3"
     enum="RendererSchedulerFrameType2" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <summary>
     Total duration (reported in full seconds) of renderer per-frame tasks split
@@ -484,6 +496,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskDurationPerQueueType3"
     enum="RendererSchedulerTaskQueueType" expires_after="M85">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <owner>scheduler-dev@chromium.org</owner>
   <summary>
@@ -554,6 +569,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.TaskDurationPerUseCase2"
     enum="RendererSchedulerTaskUseCase" expires_after="M77">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>altimin@chromium.org</owner>
   <owner>farahcharab@chromium.org</owner>
   <summary>
