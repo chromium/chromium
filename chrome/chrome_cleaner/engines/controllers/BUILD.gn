@@ -152,7 +152,7 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/engines/broker:engine_client_mock",
     "//chrome/chrome_cleaner/engines/common",
     "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
-    "//chrome/chrome_cleaner/ipc:mock_chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_test_util",
     "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging:mock_logging_service",
     "//chrome/chrome_cleaner/logging/proto:removal_status_proto",

@@ -122,12 +122,12 @@ source_set("unittest_sources") {
   ]
 }
 
-source_set("mock_chrome_prompt_ipc") {
+source_set("chrome_prompt_test_util") {
   testonly = true
 
   sources = [
-    "mock_chrome_prompt_ipc.cc",
-    "mock_chrome_prompt_ipc.h",
+    "chrome_prompt_test_util.cc",
+    "chrome_prompt_test_util.h",
   ]
 
   deps = [

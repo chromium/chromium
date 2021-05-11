@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_CHROME_CLEANER_IPC_MOCK_CHROME_PROMPT_IPC_H_
-#define CHROME_CHROME_CLEANER_IPC_MOCK_CHROME_PROMPT_IPC_H_
+#ifndef CHROME_CHROME_CLEANER_IPC_CHROME_PROMPT_TEST_UTIL_H_
+#define CHROME_CHROME_CLEANER_IPC_CHROME_PROMPT_TEST_UTIL_H_
 
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,4 +34,4 @@ class MockChromePromptIPC : public ChromePromptIPC {
 
 }  // namespace chrome_cleaner
 
-#endif  // CHROME_CHROME_CLEANER_IPC_MOCK_CHROME_PROMPT_IPC_H_
+#endif  // CHROME_CHROME_CLEANER_IPC_CHROME_PROMPT_TEST_UTIL_H_

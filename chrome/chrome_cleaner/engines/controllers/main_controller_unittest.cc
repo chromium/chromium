@@ -16,7 +16,7 @@
 #include "chrome/chrome_cleaner/components/component_manager.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
-#include "chrome/chrome_cleaner/ipc/mock_chrome_prompt_ipc.h"
+#include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/registry_logger.h"
 #include "chrome/chrome_cleaner/os/file_remover_api.h"
