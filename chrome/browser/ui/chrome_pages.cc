@@ -227,6 +227,14 @@ void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 }
 
 void ShowHistory(Browser* browser) {
+  // History UI should not be shown in Incognito mode. Also this prevents
+  // history keyboard shortcts open History UI in Incognito.
+  if (browser->profile()->IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(
+          features::kUpdateHistoryEntryPointsInIncognito)) {
+    return;
+  }
+
   base::RecordAction(UserMetricsAction("ShowHistory"));
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIHistoryURL));
 }
