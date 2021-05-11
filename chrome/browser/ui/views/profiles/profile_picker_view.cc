@@ -38,6 +38,7 @@
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -281,9 +282,24 @@ void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
 // -------------------------------------------------------------
 
 // static
+void ProfilePickerForceSigninDialog::ShowReauthDialog(
+    content::BrowserContext* browser_context,
+    const std::string& email,
+    const base::FilePath& profile_path) {
+  DCHECK(signin_util::IsForceSigninEnabled());
+  if (!ProfilePicker::IsActive())
+    return;
+  GURL url = signin::GetEmbeddedReauthURLWithEmail(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::Reason::kReauthentication, email);
+  ProfilePicker::ShowDialog(browser_context, url, profile_path);
+}
+
+// static
 void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
     content::BrowserContext* browser_context,
     const base::FilePath& profile_path) {
+  DCHECK(signin_util::IsForceSigninEnabled());
   if (!ProfilePicker::IsActive())
     return;
 
@@ -296,6 +312,7 @@ void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
 
 void ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
     content::BrowserContext* browser_context) {
+  DCHECK(signin_util::IsForceSigninEnabled());
   if (!ProfilePicker::IsActive())
     return;
 
@@ -306,6 +323,7 @@ void ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
 
 // static
 void ProfilePickerForceSigninDialog::DisplayErrorMessage() {
+  DCHECK(signin_util::IsForceSigninEnabled());
   if (g_profile_picker_view) {
     g_profile_picker_view->DisplayErrorMessage();
   }

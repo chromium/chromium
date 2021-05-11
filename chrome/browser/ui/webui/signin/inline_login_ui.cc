@@ -242,8 +242,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   return source;
 }
 
-// Returns whether |url| can be displayed in a chrome://chrome-signin tab,
-// depending on the signin reason that is encoded in the url.
+// Returns whether |url| can be displayed in a chrome://chrome-signin web
+// contents, depending on the signin reason that is encoded in the url.
 bool IsValidChromeSigninReason(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
@@ -253,7 +253,8 @@ bool IsValidChromeSigninReason(const GURL& url) {
 
   switch (reason) {
     case signin_metrics::Reason::kForcedSigninPrimaryAccount:
-      // Used by the user manager.
+    case signin_metrics::Reason::kReauthentication:
+      // Used by the profile picker.
       return true;
     case signin_metrics::Reason::kFetchLstOnly:
 #if defined(OS_WIN)
@@ -264,7 +265,6 @@ bool IsValidChromeSigninReason(const GURL& url) {
 #endif
     case signin_metrics::Reason::kSigninPrimaryAccount:
     case signin_metrics::Reason::kAddSecondaryAccount:
-    case signin_metrics::Reason::kReauthentication:
     case signin_metrics::Reason::kUnknownReason:
       return false;
   }

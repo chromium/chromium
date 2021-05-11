@@ -47,8 +47,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
   Browser* GetDesktopBrowser();
   void SyncSetupFailed();
-  // Closes the current tab.
-  void CloseTab();
   void HandleLoginError(const SigninUIError& error);
 
   // Calls the javascript function 'sendLSTFetchResults' with the given

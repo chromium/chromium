@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -354,7 +355,12 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 
   if (entry->IsSigninRequired()) {
     DCHECK(signin_util::IsForceSigninEnabled());
-    if (entry->GetActiveTime() != base::Time()) {
+    if (entry->IsAuthenticated() &&
+        base::FeatureList::IsEnabled(features::kForceSignInReauth)) {
+      ProfilePickerForceSigninDialog::ShowReauthDialog(
+          web_ui()->GetWebContents()->GetBrowserContext(),
+          base::UTF16ToUTF8(entry->GetUserName()), *profile_path);
+    } else if (entry->GetActiveTime() != base::Time()) {
       // If force-sign-in is enabled, do not allow users to sign in to a
       // pre-existing locked profile, as this may force unexpected profile data
       // merge. We consider a profile as pre-existing if it has been actived

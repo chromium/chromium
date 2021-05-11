@@ -155,6 +155,12 @@ class ProfilePickerForceSigninDialog {
   static constexpr int kDialogHeight = 512;
   static constexpr int kDialogWidth = 448;
 
+  // Shows a dialog where the user reauthenticates their primary account that
+  // has invalid credentials, when force signin is enabled.
+  static void ShowReauthDialog(content::BrowserContext* browser_context,
+                               const std::string& email,
+                               const base::FilePath& profile_path);
+
   // Shows a dialog where the user logs into their profile for the first time
   // via the profile picker, when force signin is enabled.
   static void ShowForceSigninDialog(content::BrowserContext* browser_context,
