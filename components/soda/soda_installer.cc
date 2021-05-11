@@ -28,9 +28,12 @@ SodaInstaller::~SodaInstaller() = default;
 
 void SodaInstaller::Init(PrefService* profile_prefs,
                          PrefService* global_prefs) {
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
+  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+      soda_installer_initialized_) {
     return;
+  }
 
+  soda_installer_initialized_ = true;
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     speech::SodaInstaller::GetInstance()->InstallSoda(global_prefs);

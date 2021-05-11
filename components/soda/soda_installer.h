@@ -144,6 +144,7 @@ class SodaInstaller {
   base::ObserverList<Observer> observers_;
   bool soda_binary_installed_ = false;
   bool language_installed_ = false;
+  bool soda_installer_initialized_ = false;
 
  private:
   // Any new feature using SODA should add its pref here.
