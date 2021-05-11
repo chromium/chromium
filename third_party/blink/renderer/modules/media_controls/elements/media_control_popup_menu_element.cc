@@ -150,10 +150,10 @@ void MediaControlPopupMenuElement::DefaultEventHandler(Event& event) {
     event.stopPropagation();
     event.SetDefaultHandled();
   } else if (event.type() == event_type_names::kFocus) {
-    // When popup menu gain focus from scrolling, switch focus
-    // back to the last focused item in the menu
-    DCHECK(last_focused_element_);
-    last_focused_element_->focus();
+    // When the popup menu gains focus from scrolling, switch focus
+    // back to the last focused item in the menu.
+    if (last_focused_element_)
+      last_focused_element_->focus();
   }
 
   MediaControlDivElement::DefaultEventHandler(event);
