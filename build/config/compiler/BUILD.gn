@@ -754,8 +754,7 @@ config("compiler") {
     assert(!is_win, "show_includes is not supported on Windows")
     cflags += [
       "-H",
-      "-Xclang",
-      "-show-skipped-includes",
+      "-fshow-skipped-includes",
     ]
   }
 
