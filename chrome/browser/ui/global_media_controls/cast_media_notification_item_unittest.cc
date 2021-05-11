@@ -295,3 +295,67 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
   EXPECT_CALL(view_, UpdateWithMediaArtwork(_));
   bitmap_fetcher_delegate->OnFetchComplete(image_url, &bitmap);
 }
+
+TEST_F(CastMediaNotificationItemTest, MediaPositionUpdate) {
+  SetView();
+  const base::TimeDelta duration = base::TimeDelta::FromSeconds(100);
+  const base::TimeDelta current_time = base::TimeDelta::FromSeconds(70);
+
+  {
+    // Test that media position updated correctly with playing video.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = duration;
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(1.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(current_time.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that media position updated correctly with paused video.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PAUSED;
+    status->duration = duration;
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(0.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(current_time.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that media position should not be updated with 0 duration.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = base::TimeDelta();
+    status->current_time = current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_)).Times(0);
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+
+  {
+    // Test that current time should not exceed duration.
+    auto status = MediaStatus::New();
+    status->play_state = MediaStatus::PlayState::PLAYING;
+    status->duration = duration;
+    status->current_time = duration + current_time;
+    EXPECT_CALL(view_, UpdateWithMediaPosition(_))
+        .WillOnce([&](const media_session::MediaPosition& position) {
+          EXPECT_EQ(1.0, position.playback_rate());
+          EXPECT_EQ(duration, position.duration());
+          EXPECT_NEAR(duration.InSecondsF(),
+                      position.GetPosition().InSecondsF(), 1e-3);
+        });
+    item_->OnMediaStatusUpdated(std::move(status));
+  }
+}

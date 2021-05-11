@@ -33,6 +33,8 @@ class CastMediaSessionController {
   virtual void OnMediaStatusUpdated(
       media_router::mojom::MediaStatusPtr media_status);
 
+  virtual void SeekTo(base::TimeDelta time);
+
   void FlushForTesting();
 
  private:

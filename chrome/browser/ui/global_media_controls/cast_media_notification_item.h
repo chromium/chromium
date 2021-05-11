@@ -51,7 +51,7 @@ class CastMediaNotificationItem
   void SetView(media_message_center::MediaNotificationView* view) override;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
-  void SeekTo(base::TimeDelta time) override {}
+  void SeekTo(base::TimeDelta time) override;
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
 
@@ -136,6 +136,7 @@ class CastMediaNotificationItem
   media_session::MediaMetadata metadata_;
   std::vector<media_session::mojom::MediaSessionAction> actions_;
   media_session::mojom::MediaSessionInfoPtr session_info_;
+  media_session::MediaPosition media_position_;
   mojo::Receiver<media_router::mojom::MediaStatusObserver> observer_receiver_{
       this};
   base::WeakPtrFactory<CastMediaNotificationItem> weak_ptr_factory_{this};

@@ -84,6 +84,12 @@ void CastMediaSessionController::OnMediaStatusUpdated(
     IncrementCurrentTimeAfterOneSecond();
 }
 
+void CastMediaSessionController::SeekTo(base::TimeDelta time) {
+  if (!media_status_)
+    return;
+  route_controller_->Seek(time);
+}
+
 void CastMediaSessionController::FlushForTesting() {
   route_controller_.FlushForTesting();
 }

@@ -196,6 +196,10 @@ void CastMediaNotificationItem::OnMediaSessionActionButtonPressed(
   session_controller_->Send(action);
 }
 
+void CastMediaNotificationItem::SeekTo(base::TimeDelta time) {
+  session_controller_->SeekTo(time);
+}
+
 void CastMediaNotificationItem::Dismiss() {
   notification_controller_->HideNotification(media_route_id_);
   is_active_ = false;
@@ -212,6 +216,16 @@ void CastMediaNotificationItem::OnMediaStatusUpdated(
   actions_ = ToMediaSessionActions(*status);
   session_info_->state = ToSessionState(status->play_state);
   session_info_->playback_state = ToPlaybackState(status->play_state);
+
+  // Make sure |current_time| is always less than or equal to |duration|
+  base::TimeDelta duration = status->duration;
+  base::TimeDelta current_time =
+      status->current_time > duration ? duration : status->current_time;
+  media_position_ = media_session::MediaPosition(
+      status->play_state == media_router::mojom::MediaStatus::PlayState::PLAYING
+          ? 1.0
+          : 0.0 /* playback_rate */,
+      duration, current_time);
 
   if (status->images.empty()) {
     image_downloader_.Reset();
@@ -294,6 +308,9 @@ void CastMediaNotificationItem::UpdateView() {
   view_->UpdateWithMediaSessionInfo(session_info_.Clone());
   view_->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(image_downloader_.bitmap()));
+
+  if (!media_position_.duration().is_zero())
+    view_->UpdateWithMediaPosition(media_position_);
 }
 
 void CastMediaNotificationItem::ImageChanged(const SkBitmap& bitmap) {
