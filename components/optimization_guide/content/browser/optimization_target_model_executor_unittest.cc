@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/model_executor.h"
+#include "components/optimization_guide/content/browser/optimization_target_model_executor.h"
 
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/optimization_guide/content/browser/base_model_executor.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
@@ -20,8 +20,23 @@ namespace optimization_guide {
 class TestModelExecutor
     : public BaseModelExecutor<std::vector<float>, const std::vector<float>&> {
  public:
-  TestModelExecutor() = default;
+  // Feature team specifies their target and the features they support along
+  // with a background task runner that has the appropriate properties for
+  // executing models.
+  TestModelExecutor(OptimizationGuideDecider* decider,
+                    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
+      : BaseModelExecutor<std::vector<float>, const std::vector<float>&>(
+            decider,
+            proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+            /*model_metadata=*/base::nullopt,
+            task_runner) {}
   ~TestModelExecutor() override = default;
+  TestModelExecutor(const TestModelExecutor&) = delete;
+  TestModelExecutor& operator=(const TestModelExecutor&) = delete;
+
+  // There is a method on the base class that exposes the returned supported
+  // features, if provided by the loaded model received from the server.
+  // base::Optional<proto::Any> supported_features_for_loaded_model();
 
  protected:
   void Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
@@ -37,24 +52,6 @@ class TestModelExecutor
   }
 };
 
-class TestModelExecutorHandle
-    : public ModelHandler<std::vector<float>, const std::vector<float>&> {
- public:
-  explicit TestModelExecutorHandle(OptimizationGuideDecider* decider)
-      : ModelHandler<std::vector<float>, const std::vector<float>&>(
-            decider,
-            std::make_unique<TestModelExecutor>(),
-            proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/base::nullopt) {}
-  ~TestModelExecutorHandle() override = default;
-  TestModelExecutorHandle(const TestModelExecutorHandle&) = delete;
-  TestModelExecutorHandle& operator=(const TestModelExecutorHandle&) = delete;
-
-  // There is a method on the base class that exposes the returned supported
-  // features, if provided by the loaded model received from the server.
-  // base::Optional<proto::Any> supported_features_for_loaded_model();
-};
-
 class ModelObserverTracker : public TestOptimizationGuideDecider {
  public:
   void AddObserverForOptimizationTargetModel(
@@ -62,7 +59,7 @@ class ModelObserverTracker : public TestOptimizationGuideDecider {
       const base::Optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
     // Make sure we send what is expected based on
-    // TestModelExecutorHandle ctor.
+    // TestModelExecutor ctor.
     if (target !=
         proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
       return;
@@ -92,10 +89,10 @@ class ModelObserverTracker : public TestOptimizationGuideDecider {
   bool remove_observer_called_ = false;
 };
 
-class BaseModelExecutorTest : public testing::Test {
+class BaseOptimizationTargetModelExecutorTest : public testing::Test {
  public:
-  BaseModelExecutorTest() = default;
-  ~BaseModelExecutorTest() override = default;
+  BaseOptimizationTargetModelExecutorTest() = default;
+  ~BaseOptimizationTargetModelExecutorTest() override = default;
 
   void SetUp() override {
     base::FilePath source_root_dir;
@@ -112,35 +109,30 @@ class BaseModelExecutorTest : public testing::Test {
   void TearDown() override {
     // TODO(crbug/1202253): Remove the run until idle.
     RunUntilIdle();
-    model_executor_handle_.reset();
+    model_executor_.reset();
   }
 
   void CreateModelExecutor() {
-    if (model_executor_handle_)
-      model_executor_handle_.reset();
+    if (model_executor_)
+      model_executor_.reset();
 
-    model_executor_handle_ = std::make_unique<TestModelExecutorHandle>(
-        model_observer_tracker_.get());
+    model_executor_ = std::make_unique<TestModelExecutor>(
+        model_observer_tracker_.get(),
+        task_environment_.GetMainThreadTaskRunner());
   }
 
-  void ResetModelExecutor() {
-    model_executor_handle_.reset();
-    // Allow for the background class to be destroyed.
-    RunUntilIdle();
-  }
+  void ResetModelExecutor() { model_executor_.reset(); }
 
   void PushModelFileToModelExecutor(
       proto::OptimizationTarget optimization_target,
       const base::Optional<proto::Any>& model_metadata) {
-    DCHECK(model_executor_handle_);
-    model_executor_handle_->OnModelFileUpdated(
-        optimization_target, model_metadata, model_file_path_);
+    DCHECK(model_executor_);
+    model_executor_->OnModelFileUpdated(optimization_target, model_metadata,
+                                        model_file_path_);
     RunUntilIdle();
   }
 
-  TestModelExecutorHandle* model_executor_handle() {
-    return model_executor_handle_.get();
-  }
+  TestModelExecutor* model_executor() { return model_executor_.get(); }
 
   ModelObserverTracker* model_observer_tracker() {
     return model_observer_tracker_.get();
@@ -149,27 +141,28 @@ class BaseModelExecutorTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   base::FilePath model_file_path_;
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
 
-  std::unique_ptr<TestModelExecutorHandle> model_executor_handle_;
+  std::unique_ptr<TestModelExecutor> model_executor_;
 };
 
-class ModelExecutorTest : public BaseModelExecutorTest {
+class OptimizationTargetModelExecutorTest
+    : public BaseOptimizationTargetModelExecutorTest {
  public:
-  ModelExecutorTest() {
+  OptimizationTargetModelExecutorTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kLoadModelFileForEachExecution);
   }
-  ~ModelExecutorTest() override = default;
+  ~OptimizationTargetModelExecutorTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ModelExecutorTest, ObserverIsAttachedCorrectly) {
+TEST_F(OptimizationTargetModelExecutorTest, ObserverIsAttachedCorrectly) {
   CreateModelExecutor();
   EXPECT_TRUE(model_observer_tracker()->add_observer_called());
 
@@ -177,17 +170,17 @@ TEST_F(ModelExecutorTest, ObserverIsAttachedCorrectly) {
   EXPECT_TRUE(model_observer_tracker()->remove_observer_called());
 }
 
-TEST_F(ModelExecutorTest, ModelFileUpdatedWrongTarget) {
+TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedWrongTarget) {
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
       /*model_metadata=*/base::nullopt);
 
-  EXPECT_FALSE(model_executor_handle()->ModelAvailable());
+  EXPECT_FALSE(model_executor()->HasLoadedModel());
 }
 
-TEST_F(ModelExecutorTest, ModelFileUpdatedCorrectTarget) {
+TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedCorrectTarget) {
   base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
@@ -195,7 +188,7 @@ TEST_F(ModelExecutorTest, ModelFileUpdatedCorrectTarget) {
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/base::nullopt);
 
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -210,12 +203,13 @@ TEST_F(ModelExecutorTest, ModelFileUpdatedCorrectTarget) {
       1);
 }
 
-TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
+TEST_F(OptimizationTargetModelExecutorTest,
+       ExecuteReturnsImmediatelyIfNoModelLoaded) {
   base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              const base::Optional<std::vector<float>>& output) {
@@ -249,14 +243,14 @@ TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
       false, 1);
 }
 
-TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
+TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
   base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/base::nullopt);
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
 
   std::vector<float> input;
   int expected_dims = 1 * 32 * 32 * 3;
@@ -265,7 +259,7 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
     input.emplace_back(1);
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              const base::Optional<std::vector<float>>& output) {
@@ -306,14 +300,14 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
       1, 1);
 }
 
-TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
+TEST_F(OptimizationTargetModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/base::nullopt);
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
 
   std::vector<float> input;
   int expected_dims = 1 * 32 * 32 * 3;
@@ -323,7 +317,7 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   // First run.
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              const base::Optional<std::vector<float>>& output) {
@@ -342,7 +336,7 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
 
   // Second run.
   run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              const base::Optional<std::vector<float>>& output) {
@@ -383,20 +377,22 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
       2, 1);
 }
 
-TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
+TEST_F(OptimizationTargetModelExecutorTest,
+       ParsedSupportedFeaturesForLoadedModelNoMetadata) {
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/base::nullopt);
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
 
-  EXPECT_FALSE(model_executor_handle()
+  EXPECT_FALSE(model_executor()
                    ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>()
                    .has_value());
 }
 
-TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
+TEST_F(OptimizationTargetModelExecutorTest,
+       ParsedSupportedFeaturesForLoadedModelWithMetadata) {
   CreateModelExecutor();
 
   proto::Any any_metadata;
@@ -407,28 +403,30 @@ TEST_F(ModelExecutorTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       any_metadata);
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
 
   base::Optional<proto::Duration> supported_features_for_loaded_model =
-      model_executor_handle()
+      model_executor()
           ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
-  ASSERT_TRUE(supported_features_for_loaded_model.has_value());
+  EXPECT_TRUE(supported_features_for_loaded_model.has_value());
   EXPECT_EQ(123, supported_features_for_loaded_model->seconds());
 }
 
-class ModelExecutorWithModelLoadingTest : public BaseModelExecutorTest {
+class OptimizationTargetModelExecutorWithModelLoadingTest
+    : public BaseOptimizationTargetModelExecutorTest {
  public:
-  ModelExecutorWithModelLoadingTest() {
+  OptimizationTargetModelExecutorWithModelLoadingTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kLoadModelFileForEachExecution);
   }
-  ~ModelExecutorWithModelLoadingTest() override = default;
+  ~OptimizationTargetModelExecutorWithModelLoadingTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
+TEST_F(OptimizationTargetModelExecutorWithModelLoadingTest,
+       LoadModelFileForEachExecution) {
   base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
@@ -441,11 +439,12 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       any_metadata);
 
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
-
   // While the model isn't actually loaded yet, the supported features are
   // already known and do not change when the model is loaded or unloaded.
-  EXPECT_TRUE(model_executor_handle()->supported_features_for_loaded_model());
+  EXPECT_TRUE(model_executor()->supported_features_for_loaded_model());
+
+  // Model shouldn't be loaded until there is something to execute.
+  EXPECT_FALSE(model_executor()->HasLoadedModel());
 
   std::vector<float> input;
   size_t expected_dims = 1 * 32 * 32 * 3;
@@ -454,24 +453,24 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
     input.emplace_back(1);
   }
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
-          [](base::RunLoop* run_loop,
+          [](base::RunLoop* run_loop, TestModelExecutor* model_executor,
              const base::Optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
+            EXPECT_TRUE(model_executor->HasLoadedModel());
+            EXPECT_TRUE(model_executor->supported_features_for_loaded_model());
             run_loop->Quit();
           },
-          run_loop.get()),
+          run_loop.get(), model_executor()),
       input);
   run_loop->Run();
 
-  RunUntilIdle();
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
-
   // After execution, the model should be unloaded in a PostTask, but the
   // metadata should still be available.
-
-  EXPECT_TRUE(model_executor_handle()->supported_features_for_loaded_model());
+  RunUntilIdle();
+  EXPECT_FALSE(model_executor()->HasLoadedModel());
+  EXPECT_TRUE(model_executor()->supported_features_for_loaded_model());
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
@@ -484,28 +483,21 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       true, 1);
 
-  // After execution, the model should be unloaded in a PostTask, so give it a
-  // change to do so.
-  RunUntilIdle();
-
   // Run again and expect a second model load histogram count.
   run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  model_executor()->ExecuteModelWithInput(
       base::BindOnce(
-          [](base::RunLoop* run_loop,
+          [](base::RunLoop* run_loop, TestModelExecutor* model_executor,
              const base::Optional<std::vector<float>>& output) {
             EXPECT_TRUE(output.has_value());
+            EXPECT_TRUE(model_executor->HasLoadedModel());
+            EXPECT_TRUE(model_executor->supported_features_for_loaded_model());
             run_loop->Quit();
           },
-          run_loop.get()),
+          run_loop.get(), model_executor()),
       input);
   run_loop->Run();
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-      2);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
           optimization_guide::GetStringNameForOptimizationTarget(

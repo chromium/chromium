@@ -9,6 +9,8 @@
 
 namespace optimization_guide {
 
+class OptimizationGuideDecider;
+
 template <class OutputType, class... InputTypes>
 class InferenceDelegate {
  public:

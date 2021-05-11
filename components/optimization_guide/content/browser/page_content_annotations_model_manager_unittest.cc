@@ -63,7 +63,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
             .AppendASCII("data")
             .AppendASCII("optimization_guide")
             .AppendASCII("bert_page_topics_model.tflite");
-    model_manager()->page_topics_model_executor_handle_->OnModelFileUpdated(
+    model_manager()->page_topics_model_executor_->OnModelFileUpdated(
         proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata,
         model_file_path);
     RunUntilIdle();
