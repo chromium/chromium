@@ -1426,7 +1426,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
   EXPECT_FALSE(
       profile->GetPrefs()
           ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->empty());
+          ->DictEmpty());
 
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA,
@@ -1434,7 +1434,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
   EXPECT_TRUE(
       profile->GetPrefs()
           ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->empty());
+          ->DictEmpty());
 }
 
 // Check that clearing browsing data (either history or cookies with other site
@@ -2975,7 +2975,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   // Test we wiped all the elements left.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA, false);
-  EXPECT_TRUE(prefs->GetDictionary(kPermissionActionsPrefPath)->empty());
+  EXPECT_TRUE(prefs->GetDictionary(kPermissionActionsPrefPath)->DictEmpty());
 }
 
 class ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest
