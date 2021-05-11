@@ -6,6 +6,11 @@
 
 namespace storage {
 
+// The base path where StorageBuckets data is persisted on disk, relative to a
+// storage partition's root directory.
+const base::FilePath::CharType kWebStorageDirectory[] =
+    FILE_PATH_LITERAL("WebStorage");
+
 // The path where Local Storage data is persisted on disk, relative to a storage
 // partition's root directory.
 const base::FilePath::CharType kLocalStoragePath[] =

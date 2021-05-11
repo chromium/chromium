@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
@@ -1343,6 +1344,10 @@ void StoragePartitionImpl::OnStorageServiceDisconnected() {
 
 base::FilePath StoragePartitionImpl::GetPath() {
   return partition_path_;
+}
+
+base::FilePath StoragePartitionImpl::GetBucketBasePath() {
+  return partition_path_.Append(storage::kWebStorageDirectory);
 }
 
 std::string StoragePartitionImpl::GetPartitionDomain() {

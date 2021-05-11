@@ -403,6 +403,7 @@ static_library("test_support") {
     ":test_interfaces",
     "//components/download/public/common:test_support",
     "//components/services/filesystem/public/mojom",
+    "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//content/public/app",
     "//content/public/browser",

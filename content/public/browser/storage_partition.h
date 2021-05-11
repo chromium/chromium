@@ -86,6 +86,10 @@ class CONTENT_EXPORT StoragePartition {
  public:
   virtual base::FilePath GetPath() = 0;
 
+  // Retrieves the base path of the file directory where StorageBuckets data is
+  // stored.
+  virtual base::FilePath GetBucketBasePath() = 0;
+
   // Returns a raw mojom::NetworkContext pointer. When network service crashes
   // or restarts, the raw pointer will not be valid or safe to use. Therefore,
   // caller should not hold onto this pointer beyond the same message loop task.

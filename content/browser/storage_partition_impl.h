@@ -134,6 +134,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // StoragePartition interface.
   base::FilePath GetPath() override;
+  base::FilePath GetBucketBasePath() override;
   network::mojom::NetworkContext* GetNetworkContext() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() override;
