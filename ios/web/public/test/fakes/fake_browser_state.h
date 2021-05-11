@@ -10,7 +10,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace web {
-class FakeBrowserState : public BrowserState {
+class FakeBrowserState final : public BrowserState {
  public:
   static const char kCorsExemptTestHeaderName[];
 

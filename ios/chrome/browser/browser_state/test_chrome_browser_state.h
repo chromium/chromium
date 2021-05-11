@@ -25,7 +25,7 @@ class TestingPrefServiceSyncable;
 }
 
 // This class is the implementation of ChromeBrowserState used for testing.
-class TestChromeBrowserState : public ChromeBrowserState {
+class TestChromeBrowserState final : public ChromeBrowserState {
  public:
   typedef std::vector<
       std::pair<BrowserStateKeyedServiceFactory*,

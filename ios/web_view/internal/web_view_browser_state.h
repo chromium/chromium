@@ -28,7 +28,7 @@ class WebViewDownloadManager;
 
 // WebView implementation of BrowserState. Can only be used only on the UI
 // thread.
-class WebViewBrowserState : public web::BrowserState {
+class WebViewBrowserState final : public web::BrowserState {
  public:
   explicit WebViewBrowserState(
       bool off_the_record,

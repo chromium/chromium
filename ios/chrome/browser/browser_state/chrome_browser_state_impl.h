@@ -27,7 +27,7 @@ class PrefProxyConfigTracker;
 
 // This class is the implementation of ChromeBrowserState used for
 // non-incognito browsing.
-class ChromeBrowserStateImpl : public ChromeBrowserState {
+class ChromeBrowserStateImpl final : public ChromeBrowserState {
  public:
   ~ChromeBrowserStateImpl() override;
 

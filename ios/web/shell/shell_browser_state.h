@@ -16,7 +16,7 @@ class ShellURLRequestContextGetter;
 
 // Shell-specific implementation of BrowserState.  Can only be called from the
 // UI thread.
-class ShellBrowserState : public BrowserState {
+class ShellBrowserState final : public BrowserState {
  public:
   ShellBrowserState();
   ~ShellBrowserState() override;

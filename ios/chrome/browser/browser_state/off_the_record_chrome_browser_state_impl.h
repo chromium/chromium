@@ -16,7 +16,7 @@ class PrefServiceSyncable;
 // The implementation of ChromeBrowserState that is used for incognito browsing.
 // Each OffTheRecordChromeBrowserStateImpl instance is associated with and owned
 // by a non-incognito ChromeBrowserState instance.
-class OffTheRecordChromeBrowserStateImpl : public ChromeBrowserState {
+class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
  public:
   ~OffTheRecordChromeBrowserStateImpl() override;
 
