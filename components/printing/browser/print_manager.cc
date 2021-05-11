@@ -39,14 +39,6 @@ void PrintManager::SetAccessibilityTree(
     const ui::AXTreeUpdate& accessibility_tree) {}
 #endif
 
-void PrintManager::UpdatePrintSettings(int32_t cookie,
-                                       base::Value job_settings,
-                                       UpdatePrintSettingsCallback callback) {
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
-  std::move(callback).Run(std::move(params), false);
-}
-
 void PrintManager::DidShowPrintDialog() {}
 
 void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
@@ -68,6 +60,14 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void PrintManager::UpdatePrintSettings(int32_t cookie,
+                                       base::Value job_settings,
+                                       UpdatePrintSettingsCallback callback) {
+  auto params = mojom::PrintPagesParams::New();
+  params->params = mojom::PrintParams::New();
+  std::move(callback).Run(std::move(params), false);
+}
+
 void PrintManager::SetupScriptedPrintPreview(
     SetupScriptedPrintPreviewCallback callback) {
   std::move(callback).Run();

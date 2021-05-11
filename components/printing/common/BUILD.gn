@@ -36,6 +36,7 @@ mojom("mojo_interfaces") {
     enabled_features += [ "enable_print_preview" ]
   }
   if (enable_tagged_pdf) {
+    assert(enable_print_preview)
     public_deps += [ "//ui/accessibility/mojom" ]
     enabled_features += [ "enable_tagged_pdf" ]
   }

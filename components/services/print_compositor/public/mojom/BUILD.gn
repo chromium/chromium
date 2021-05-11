@@ -14,6 +14,7 @@ mojom("mojom") {
   ]
 
   if (enable_tagged_pdf) {
+    assert(enable_print_preview)
     enabled_features = [ "enable_tagged_pdf" ]
 
     # Accessibility dependencies for exporting tagged PDFs on platforms

@@ -311,6 +311,18 @@ class TestPrintManagerHost
         printer_->GetDefaultPrintSettings();
     std::move(callback).Run(std::move(params));
   }
+  void DidShowPrintDialog() override {}
+  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override {
+    auto settings = printing::mojom::PrintPagesParams::New();
+    settings->params = printing::mojom::PrintParams::New();
+    if (print_dialog_user_response_) {
+      printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
+                              params->has_selection, settings.get());
+    }
+    std::move(callback).Run(std::move(settings));
+  }
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
                            base::Value job_settings,
                            UpdatePrintSettingsCallback callback) override {
@@ -397,18 +409,6 @@ class TestPrintManagerHost
     params->params->should_print_backgrounds = should_print_backgrounds.value();
     std::move(callback).Run(std::move(params), canceled);
   }
-  void DidShowPrintDialog() override {}
-  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
-                     ScriptedPrintCallback callback) override {
-    auto settings = printing::mojom::PrintPagesParams::New();
-    settings->params = printing::mojom::PrintParams::New();
-    if (print_dialog_user_response_) {
-      printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
-                              params->has_selection, settings.get());
-    }
-    std::move(callback).Run(std::move(settings));
-  }
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override {
     is_setup_scripted_print_preview_ = true;
@@ -425,7 +425,7 @@ class TestPrintManagerHost
     base::RunLoop().RunUntilIdle();
     std::move(callback).Run(preview_ui_->ShouldCancelRequest());
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   bool IsSetupScriptedPrintPreview() {
     return is_setup_scripted_print_preview_;

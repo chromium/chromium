@@ -204,6 +204,7 @@ void GetDefaultPrintSettingsOnIO(
                      std::move(printer_query), std::move(callback)));
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Runs |callback| with |params| to reply to
 // mojom::PrintManagerHost::UpdatePrintSettings.
 void UpdatePrintSettingsReply(
@@ -219,7 +220,7 @@ void UpdatePrintSettingsReply(
   std::move(callback).Run(std::move(params), canceled);
 }
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if defined(OS_WIN)
 content::WebContents* GetWebContentsForRenderFrame(int render_process_id,
                                                    int render_frame_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -243,7 +244,7 @@ void NotifySystemDialogCancelled(int render_process_id, int routing_id) {
   if (manager)
     manager->SystemDialogCancelled();
 }
-#endif
+#endif  // defined(OS_WIN)
 
 void UpdatePrintSettingsReplyOnIO(
     scoped_refptr<PrintQueriesQueue> queue,
@@ -262,7 +263,7 @@ void UpdatePrintSettingsReplyOnIO(
     params->pages = PageRange::GetPages(printer_query->settings().ranges());
   }
   bool canceled = printer_query->last_status() == PrintingContext::CANCEL;
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if defined(OS_WIN)
   if (canceled) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -301,6 +302,7 @@ void UpdatePrintSettingsOnIO(
                      std::move(printer_query), std::move(callback), process_id,
                      routing_id));
 }
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // Runs |callback| with |params| to reply to
 // mojom::PrintManagerHost::ScriptedPrint.
@@ -657,6 +659,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
                      render_frame_host->GetRoutingID()));
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::UpdatePrintSettings(
     int32_t cookie,
     base::Value job_settings,
@@ -682,6 +685,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
                      render_frame_host->GetProcess()->GetID(),
                      render_frame_host->GetRoutingID()));
 }
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                                          ScriptedPrintCallback callback) {

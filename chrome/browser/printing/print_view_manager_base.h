@@ -86,9 +86,11 @@ class PrintViewManagerBase : public content::NotificationObserver,
 #endif
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
                            base::Value job_settings,
                            UpdatePrintSettingsCallback callback) override;
+#endif
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
