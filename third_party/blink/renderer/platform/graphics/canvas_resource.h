@@ -650,6 +650,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   GLenum TextureTarget() const final { return GL_TEXTURE_2D; }
 
   GLuint GetBackBufferTextureId() const { return back_buffer_texture_id_; }
+  const gpu::Mailbox& GetBackBufferMailbox() { return back_buffer_mailbox_; }
 
   void PresentSwapChain();
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
@@ -675,6 +676,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   gpu::Mailbox back_buffer_mailbox_;
   GLuint back_buffer_texture_id_ = 0u;
   gpu::SyncToken sync_token_;
+  const bool use_oop_rasterization_;
 
   bool is_origin_clean_ = true;
 };

@@ -257,10 +257,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
   bool IsValid() const final {
-    if (use_oop_rasterization_)
-      return !IsGpuContextLost();
-    else
+    if (!use_oop_rasterization_)
       return GetSkSurface() && !IsGpuContextLost();
+    else
+      return !IsGpuContextLost();
   }
 
   bool SupportsSingleBuffering() const override {
@@ -343,17 +343,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       CanvasResourceProvider::RestoreBackBuffer(image);
       return;
     }
-
-    DCHECK_EQ(image.height(), Size().Height());
-    DCHECK_EQ(image.width(), Size().Width());
-
-    auto sk_image = image.GetSwSkImage();
-    DCHECK(sk_image);
-    SkPixmap map;
-    // We know this SkImage is software backed because it's guaranteed by
-    // PaintImage::GetSwSkImage above
-    sk_image->peekPixels(&map);
-    WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
+    RestoreBackBufferOOP(image);
   }
 
  protected:
@@ -512,42 +502,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return;
     }
     WillDrawInternal(true);
-    gpu::raster::RasterInterface* ri = RasterInterface();
-    SkColor background_color =
-        ColorParams().GetSkAlphaType() == kOpaque_SkAlphaType
-            ? SK_ColorBLACK
-            : SK_ColorTRANSPARENT;
-
-    auto list = base::MakeRefCounted<cc::DisplayItemList>(
-        cc::DisplayItemList::kTopLevelDisplayItemList);
-
-    list->StartPaint();
-    list->push<cc::DrawRecordOp>(std::move(last_recording));
-    list->EndPaintOfUnpaired(gfx::Rect(Size().Width(), Size().Height()));
-    list->Finalize();
-
-    gfx::Size size(Size().Width(), Size().Height());
-    size_t max_op_size_hint =
-        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    gfx::Rect full_raster_rect(Size().Width(), Size().Height());
-    gfx::Rect playback_rect(Size().Width(), Size().Height());
-    gfx::Vector2dF post_translate(0.f, 0.f);
-    gfx::Vector2dF post_scale(1.f, 1.f);
-
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
-
-    ri->BeginRasterCHROMIUM(
-        background_color, needs_clear, /*msaa_sample_count=*/0,
-        /*can_use_lcd_text=*/false, ColorParams().GetStorageGfxColorSpace(),
-        resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken).name);
-
-    ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
-                       full_raster_rect, playback_rect, post_translate,
-                       post_scale, false /* requires_clear */,
-                       &max_op_size_hint);
-
-    ri->EndRasterCHROMIUM();
+    RasterRecordOOP(last_recording, needs_clear,
+                    resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken));
   }
 
   bool ShouldReplaceTargetBuffer(
@@ -775,7 +733,11 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                params,
                                true /*is_origin_top_left*/,
                                std::move(context_provider_wrapper),
-                               std::move(resource_dispatcher)) {
+                               std::move(resource_dispatcher)),
+        use_oop_rasterization_(ContextProviderWrapper()
+                                   ->ContextProvider()
+                                   ->GetCapabilities()
+                                   .supports_oop_raster) {
     resource_ = CanvasResourceSwapChain::Create(
         Size(), ColorParams(), ContextProviderWrapper(), CreateWeakPtr(),
         FilterQuality());
@@ -786,7 +748,13 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
-  bool IsValid() const final { return GetSkSurface() && !IsGpuContextLost(); }
+  bool IsValid() const final {
+    if (!use_oop_rasterization_)
+      return GetSkSurface() && !IsGpuContextLost();
+    else
+      return !IsGpuContextLost();
+  }
+
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
   bool SupportsSingleBuffering() const override { return true; }
@@ -849,19 +817,67 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         ColorParams().GetSkColorSpace(), &props);
   }
 
+  void RasterRecord(sk_sp<cc::PaintRecord> last_recording) override {
+    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::RasterRecord");
+    if (!use_oop_rasterization_) {
+      CanvasResourceProvider::RasterRecord(std::move(last_recording));
+      return;
+    }
+    WillDraw();
+    RasterRecordOOP(last_recording, initial_needs_clear_,
+                    resource_->GetBackBufferMailbox());
+    initial_needs_clear_ = false;
+  }
+
+  void RestoreBackBuffer(const cc::PaintImage& image) override {
+    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::RestoreBackBuffer");
+    if (!use_oop_rasterization_) {
+      CanvasResourceProvider::RestoreBackBuffer(image);
+      return;
+    }
+    RestoreBackBufferOOP(image);
+  }
+
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override {
+    if (!use_oop_rasterization_) {
+      return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes,
+                                                 x, y);
+    }
+
+    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::WritePixels");
+    if (IsGpuContextLost())
+      return false;
+
+    WillDraw();
+    RasterInterface()->WritePixels(resource_->GetBackBufferMailbox(), x, y,
+                                   GetBackingTextureTarget(), row_bytes,
+                                   orig_info, pixels);
+    return true;
+  }
+
   void FlushIfNeeded() {
     if (needs_flush_) {
       // This only flushes recorded draw ops.
       FlushCanvas();
       // Call flushAndSubmit() explicitly so that any non-draw-op rendering by
       // Skia is flushed to GL.  This is needed specifically for WritePixels().
-      GetGrContext()->flushAndSubmit();
+      if (!use_oop_rasterization_)
+        GetGrContext()->flushAndSubmit();
+
       needs_flush_ = false;
     }
   }
 
   bool needs_present_ = false;
   bool needs_flush_ = false;
+  const bool use_oop_rasterization_;
+  // This only matters for the initial backbuffer mailbox, since the frontbuffer
+  // will always have the back texture copied to it prior to any new commands.
+  bool initial_needs_clear_ = true;
   scoped_refptr<CanvasResourceSwapChain> resource_;
 };
 
@@ -1353,6 +1369,43 @@ void CanvasResourceProvider::RasterRecord(
   GetSkSurface()->flushAndSubmit();
 }
 
+void CanvasResourceProvider::RasterRecordOOP(
+    sk_sp<cc::PaintRecord> last_recording,
+    bool needs_clear,
+    gpu::Mailbox mailbox) {
+  gpu::raster::RasterInterface* ri = RasterInterface();
+  SkColor background_color =
+      ColorParams().GetSkAlphaType() == kOpaque_SkAlphaType
+          ? SK_ColorBLACK
+          : SK_ColorTRANSPARENT;
+
+  auto list = base::MakeRefCounted<cc::DisplayItemList>(
+      cc::DisplayItemList::kTopLevelDisplayItemList);
+
+  list->StartPaint();
+  list->push<cc::DrawRecordOp>(std::move(last_recording));
+  list->EndPaintOfUnpaired(gfx::Rect(Size().Width(), Size().Height()));
+  list->Finalize();
+
+  gfx::Size size(Size().Width(), Size().Height());
+  size_t max_op_size_hint = gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
+  gfx::Rect full_raster_rect(Size().Width(), Size().Height());
+  gfx::Rect playback_rect(Size().Width(), Size().Height());
+  gfx::Vector2dF post_translate(0.f, 0.f);
+  gfx::Vector2dF post_scale(1.f, 1.f);
+
+  ri->BeginRasterCHROMIUM(
+      background_color, needs_clear, /*msaa_sample_count=*/0,
+      /*can_use_lcd_text=*/false, ColorParams().GetStorageGfxColorSpace(),
+      mailbox.name);
+
+  ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
+                     full_raster_rect, playback_rect, post_translate,
+                     post_scale, false /* requires_clear */, &max_op_size_hint);
+
+  ri->EndRasterCHROMIUM();
+}
+
 bool CanvasResourceProvider::IsGpuContextLost() const {
   if (type_ == kSkiaDawnSharedImage) {
     return false;
@@ -1527,6 +1580,19 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   cc::PaintFlags copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   skia_canvas_->drawImage(image, 0, 0, SkSamplingOptions(), &copy_paint);
+}
+
+void CanvasResourceProvider::RestoreBackBufferOOP(const cc::PaintImage& image) {
+  DCHECK_EQ(image.height(), Size().Height());
+  DCHECK_EQ(image.width(), Size().Width());
+
+  auto sk_image = image.GetSwSkImage();
+  DCHECK(sk_image);
+  SkPixmap map;
+  // We know this SkImage is software backed because it's guaranteed by
+  // PaintImage::GetSwSkImage above
+  sk_image->peekPixels(&map);
+  WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
 }
 
 bool CanvasResourceProvider::HasRecordedDrawOps() const {

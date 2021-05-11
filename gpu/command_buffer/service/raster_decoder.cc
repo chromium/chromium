@@ -82,7 +82,11 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+#if defined(OS_WIN)
+#include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
+#endif  // OS_WIN
 
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
@@ -1162,6 +1166,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.texture_half_float_linear =
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
+#if defined(OS_WIN)
+  caps.shared_image_swap_chain =
+      SharedImageBackingFactoryD3D::IsSwapChainSupported();
+#endif  // OS_WIN
   return caps;
 }
 

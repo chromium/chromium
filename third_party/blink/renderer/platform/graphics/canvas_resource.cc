@@ -1219,11 +1219,15 @@ void CanvasResourceSwapChain::TearDown() {
   if (!context_provider_wrapper_)
     return;
 
-  auto* raster_interface =
-      context_provider_wrapper_->ContextProvider()->RasterInterface();
-  DCHECK(raster_interface);
-  raster_interface->EndSharedImageAccessDirectCHROMIUM(back_buffer_texture_id_);
-  raster_interface->DeleteGpuRasterTexture(back_buffer_texture_id_);
+  if (!use_oop_rasterization_) {
+    auto* raster_interface =
+        context_provider_wrapper_->ContextProvider()->RasterInterface();
+    DCHECK(raster_interface);
+    raster_interface->EndSharedImageAccessDirectCHROMIUM(
+        back_buffer_texture_id_);
+    raster_interface->DeleteGpuRasterTexture(back_buffer_texture_id_);
+  }
+
   // No synchronization is needed here because the GL SharedImageRepresentation
   // will keep the backing alive on the service until the textures are deleted.
   auto* sii =
@@ -1294,7 +1298,10 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     SkFilterQuality filter_quality)
     : CanvasResource(std::move(provider), filter_quality, params),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(size) {
+      size_(size),
+      use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
+                                 ->GetCapabilities()
+                                 .supports_oop_raster) {
   if (!context_provider_wrapper_)
     return;
 
@@ -1302,6 +1309,11 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  if (use_oop_rasterization_) {
+    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER |
+            gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  }
 
   auto* sii =
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
@@ -1320,6 +1332,11 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       context_provider_wrapper_->ContextProvider()->RasterInterface();
   DCHECK(raster_interface);
   raster_interface->WaitSyncTokenCHROMIUM(sync_token_.GetData());
+
+  // In OOPR mode we use mailboxes directly. We early out here because
+  // we don't need a texture id, as access is managed in the gpu process.
+  if (use_oop_rasterization_)
+    return;
 
   back_buffer_texture_id_ =
       raster_interface->CreateAndConsumeForGpuRaster(back_buffer_mailbox_);

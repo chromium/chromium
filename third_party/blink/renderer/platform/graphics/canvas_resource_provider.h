@@ -272,6 +272,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // change.
   cc::PaintImage MakeImageSnapshot();
   virtual void RasterRecord(sk_sp<cc::PaintRecord>);
+  void RasterRecordOOP(sk_sp<cc::PaintRecord> last_recording,
+                       bool needs_clear,
+                       gpu::Mailbox mailbox);
+  void RestoreBackBufferOOP(const cc::PaintImage&);
+
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void TearDownSkSurface();
 
