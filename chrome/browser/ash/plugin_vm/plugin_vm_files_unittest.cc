@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
@@ -95,13 +96,18 @@ class PluginVmFilesTest : public testing::Test {
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
+      chromeos::ConciergeClient::InitializeFake(
+          reinterpret_cast<chromeos::FakeCiceroneClient*>(
+              chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
       chromeos::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
       chromeos::SeneschalClient::Shutdown();
+      chromeos::ConciergeClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }
   } dbus_thread_manager_;
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   FakePluginVmFeatures fake_plugin_vm_features_;

@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,15 +31,15 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
   ~EolNotificationTest() override = default;
 
   void SetUp() override {
+    fake_update_engine_client_ = new FakeUpdateEngineClient();
+    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
+        base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
     tester_ = std::make_unique<NotificationDisplayServiceTester>(profile());
-
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
 
     eol_notification_ = std::make_unique<EolNotification>(profile());
     clock_ = std::make_unique<base::SimpleTestClock>();
@@ -57,6 +58,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     eol_notification_.reset();
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
+    chromeos::ConciergeClient::Shutdown();
   }
 
   void DismissNotification() {

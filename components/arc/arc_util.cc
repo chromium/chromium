@@ -75,7 +75,7 @@ void OnSetArcVmCpuRestriction(
 }
 
 void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  auto* client = chromeos::DBusThreadManager::Get()->GetConciergeClient();
+  auto* client = chromeos::ConciergeClient::Get();
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
     return;

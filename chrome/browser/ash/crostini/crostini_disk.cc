@@ -25,7 +25,7 @@
 
 namespace {
 chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::DBusThreadManager::Get()->GetConciergeClient();
+  return chromeos::ConciergeClient::Get();
 }
 
 std::string FormatBytes(const int64_t value) {

@@ -37,6 +37,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
@@ -147,6 +148,7 @@ class UserCloudPolicyManagerChromeOSTest
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     scoped_feature_list_.InitWithFeatures(
         GetParam() /* enabled_features */,
@@ -229,6 +231,7 @@ class UserCloudPolicyManagerChromeOSTest
     test_system_shared_loader_factory_->Detach();
     test_signin_shared_loader_factory_->Detach();
 
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

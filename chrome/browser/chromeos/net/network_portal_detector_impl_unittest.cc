@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -88,6 +89,7 @@ class NetworkPortalDetectorImplTest
         base::WrapUnique(user_manager));
 
     DBusThreadManager::Initialize();
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SetupNetworkHandler();
 
     ASSERT_TRUE(test_profile_manager_.SetUp());
@@ -123,6 +125,7 @@ class NetworkPortalDetectorImplTest
     network_portal_detector_.reset();
     profile_ = nullptr;
     network_handler_test_helper_.reset();
+    ConciergeClient::Shutdown();
     DBusThreadManager::Shutdown();
     PortalDetectorStrategy::reset_fields_for_testing();
   }

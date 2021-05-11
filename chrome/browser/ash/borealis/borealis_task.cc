@@ -75,7 +75,7 @@ void CreateDiskImage::RunInternal(BorealisContext* context) {
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
 
-  chromeos::DBusThreadManager::Get()->GetConciergeClient()->CreateDiskImage(
+  chromeos::ConciergeClient::Get()->CreateDiskImage(
       std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
                                          weak_factory_.GetWeakPtr(), context));
 }
@@ -130,7 +130,7 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
                        chromeos::features::kExoPointerLock)
                        ? "enabled"
                        : "disabled");
-  chromeos::DBusThreadManager::Get()->GetConciergeClient()->StartTerminaVm(
+  chromeos::ConciergeClient::Get()->StartTerminaVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                                          weak_factory_.GetWeakPtr(), context));
 }

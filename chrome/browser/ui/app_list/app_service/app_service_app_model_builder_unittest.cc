@@ -53,6 +53,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -666,6 +667,9 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
     AppServiceAppModelBuilderTest::SetUp();
     test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
@@ -684,6 +688,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     // clients are destroyed.
     profile_.reset();
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -915,10 +920,14 @@ class PluginVmAppTest : public testing::Test {
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
+      chromeos::ConciergeClient::InitializeFake(
+          reinterpret_cast<chromeos::FakeCiceroneClient*>(
+              chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
       chromeos::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
       chromeos::SeneschalClient::Shutdown();
+      chromeos::ConciergeClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }
   } dbus_thread_manager_;

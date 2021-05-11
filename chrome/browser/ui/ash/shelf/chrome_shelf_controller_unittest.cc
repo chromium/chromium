@@ -105,6 +105,7 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
@@ -352,6 +353,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     command_line->AppendSwitch(switches::kDisablePreinstalledApps);
 
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
@@ -533,6 +535,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     arc_test_.TearDown();
     shelf_controller_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }

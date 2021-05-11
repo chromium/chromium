@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -97,6 +98,9 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
 
     ChromeAshTestBase::SetUp();
@@ -196,6 +200,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ChromeAshTestBase::TearDown();
 
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

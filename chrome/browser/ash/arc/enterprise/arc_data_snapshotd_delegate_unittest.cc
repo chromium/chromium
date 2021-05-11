@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
@@ -68,6 +69,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
     ArcSessionManager::EnableCheckAndroidManagementForTesting(false);
 
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SessionManagerClient::InitializeFakeInMemory();
 
     TestingProfile::Builder profile_builder;
@@ -86,6 +88,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
 
   ~ArcDataSnapshotdDelegateTest() override {
     chromeos::SessionManagerClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

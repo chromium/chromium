@@ -86,7 +86,7 @@ chromeos::CiceroneClient* GetCiceroneClient() {
 }
 
 chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::DBusThreadManager::Get()->GetConciergeClient();
+  return chromeos::ConciergeClient::Get();
 }
 
 chromeos::AnomalyDetectorClient* GetAnomalyDetectorClient() {

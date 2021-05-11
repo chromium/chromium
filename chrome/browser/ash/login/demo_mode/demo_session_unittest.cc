@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/session_manager/core/session_manager.h"
@@ -69,6 +70,7 @@ class DemoSessionTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_->SetUp());
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
     InitializeCrosComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
@@ -82,6 +84,7 @@ class DemoSessionTest : public testing::Test {
     DemoSession::ResetDemoConfigForTesting();
 
     wallpaper_controller_client_.reset();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
 
     cros_component_manager_ = nullptr;

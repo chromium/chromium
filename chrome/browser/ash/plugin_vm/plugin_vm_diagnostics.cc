@@ -174,7 +174,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
 
-    chromeos::DBusThreadManager::Get()->GetConciergeClient()->ListVmDisks(
+    chromeos::ConciergeClient::Get()->ListVmDisks(
         std::move(request),
         base::BindOnce(&PluginVmDiagnostics::OnListVmDisks, this,
                        /*plugin_vm_is_allowed=*/true));
