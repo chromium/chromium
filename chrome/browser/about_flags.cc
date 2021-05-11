@@ -6844,11 +6844,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "SCTAuditingVariations")},
 #endif  // !defined(OS_ANDROID)
 
-    {"insert-key-toggle-mode", flag_descriptions::kInsertKeyToggleModeName,
-     flag_descriptions::kInsertKeyToggleModeDescription,
-     kOsWin | kOsLinux | kOsCrOS,
-     FEATURE_VALUE_TYPE(blink::features::kInsertKeyToggleMode)},
-
 #if defined(OS_ANDROID)
     {"enable-autofill-password-account-indicator-footer",
      flag_descriptions::

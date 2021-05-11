@@ -850,9 +850,6 @@ extern const char kInheritNativeThemeFromParentWidgetDescription[];
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
 
-extern const char kInsertKeyToggleModeName[];
-extern const char kInsertKeyToggleModeDescription[];
-
 extern const char kInstalledAppsInCbdName[];
 extern const char kInstalledAppsInCbdDescription[];
 
