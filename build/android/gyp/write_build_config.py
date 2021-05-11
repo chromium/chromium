@@ -154,17 +154,16 @@ It uses the following keys:
 
 * `deps_info['res_sources_path']`:
 Path to file containing a list of resource source files used by the
-android_resources target. This replaces `deps_info['resource_dirs']` which is
-now no longer used.
+android_resources target.
 
 * `deps_info['resources_zip']`:
 *Required*. Path to the `.resources.zip` file that contains all raw/uncompiled
 resource files for this target (and also no `R.txt`, `R.java` or `R.class`).
 
-    If `deps_info['resource_dirs']` is missing, this must point to a prebuilt
-    `.aar` archive containing resources. Otherwise, this will point to a
-    zip archive generated at build time, wrapping the content of
-    `deps_info['resource_dirs']` into a single zip file.
+    If `deps_info['res_sources_path']` is missing, this must point to a prebuilt
+    `.aar` archive containing resources. Otherwise, this will point to a zip
+    archive generated at build time, wrapping the sources listed in
+    `deps_info['res_sources_path']` into a single zip file.
 
 * `deps_info['package_name']`:
 Java package name that the R class for this target belongs to.

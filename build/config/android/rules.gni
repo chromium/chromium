@@ -991,10 +991,6 @@ if (enable_java_templates) {
       not_needed(invoker, [ "v14_skip" ])
     }
 
-    assert(!defined(invoker.resource_dirs) || defined(invoker.sources),
-           "resource_dirs in android_resources is deprecated. Please use " +
-               "sources=[] and list resource files instead. Details: " +
-               "https://crbug.com/1026378")
     _res_sources_path = "$target_gen_dir/${invoker.target_name}.res.sources"
 
     _resources_zip = "$target_out_dir/$target_name.resources.zip"
