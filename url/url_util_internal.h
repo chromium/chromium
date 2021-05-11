@@ -5,8 +5,6 @@
 #ifndef URL_URL_UTIL_INTERNAL_H_
 #define URL_URL_UTIL_INTERNAL_H_
 
-#include <string>
-
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace url {

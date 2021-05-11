@@ -7,10 +7,6 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
-#include <list>
-#include <memory>
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/audio/audio_playback_sink.h"

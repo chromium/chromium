@@ -5,8 +5,6 @@
 #ifndef REMOTING_BASE_QUEUED_TASK_POSTER_H_
 #define REMOTING_BASE_QUEUED_TASK_POSTER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"

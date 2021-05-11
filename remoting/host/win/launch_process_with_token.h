@@ -8,9 +8,6 @@
 #include <windows.h>
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"

@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 #define REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/time/tick_clock.h"
 #include "remoting/client/ui/fling_tracker.h"

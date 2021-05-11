@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_CLIENT_CONTEXT_H_
 #define REMOTING_CLIENT_CLIENT_CONTEXT_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/threading/thread.h"
 

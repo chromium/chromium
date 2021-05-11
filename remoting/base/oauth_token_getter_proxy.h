@@ -5,8 +5,6 @@
 #ifndef REMOTING_BASE_OAUTH_TOKEN_GETTER_PROXY_H_
 #define REMOTING_BASE_OAUTH_TOKEN_GETTER_PROXY_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

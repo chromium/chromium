@@ -5,8 +5,6 @@
 #ifndef URL_URL_CANON_IP_H_
 #define URL_URL_CANON_IP_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "url/third_party/mozilla/url_parse.h"

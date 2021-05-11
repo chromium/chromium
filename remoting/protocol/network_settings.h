@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/time/time.h"
 #include "remoting/protocol/port_range.h"
 

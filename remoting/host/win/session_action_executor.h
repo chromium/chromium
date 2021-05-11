@@ -5,8 +5,6 @@
 #ifndef REMOTING_HOST_WIN_SESSION_ACTION_EXECUTOR_H_
 #define REMOTING_HOST_WIN_SESSION_ACTION_EXECUTOR_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

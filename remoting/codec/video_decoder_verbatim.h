@@ -5,8 +5,6 @@
 #ifndef REMOTING_CODEC_VIDEO_DECODER_VERBATIM_H_
 #define REMOTING_CODEC_VIDEO_DECODER_VERBATIM_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "remoting/codec/video_decoder.h"
