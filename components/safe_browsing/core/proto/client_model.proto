@@ -102,6 +102,24 @@ message ClientSideModel {
 
   // The vision model.
   optional VisionModel vision_model = 12;
+
+  // The version number of the visual TFLite model.
+  optional int32 tflite_model_version = 13;
+
+  message Threshold {
+    // The label for the category
+    optional string label = 1;
+
+    // The threshold value
+    optional float threshold = 2;
+  }
+
+  // The list of threshold values for each category in the TFLite model. Pages
+  // where the model score exceeds one of these thresholds will be sent to
+  // Safe Browsing for a more definitive classification.
+  repeated Threshold tflite_thresholds = 14;
+
+  // next available tag number: 15
 }
 
 // Wrapper of the vision model for the similarity check target images.

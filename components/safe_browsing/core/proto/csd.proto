@@ -160,7 +160,20 @@ message ClientPhishingRequest {
   // events to this list. The type of these entries will be RECENT_NAVIGATION.
   repeated ReferrerChainEntry referrer_chain = 22;
 
-  // next available tag number: 23.
+  // The version of the TFLite model used for classification
+  optional int32 tflite_model_version = 23;
+
+  message CategoryScore {
+    optional string label = 1;
+    optional float value = 2;
+  }
+  // The resulting score from the TFLite model
+  repeated CategoryScore tflite_model_scores = 24;
+
+  // Whether the TFLite model believed the page was phishy.
+  optional bool is_tflite_match = 25;
+
+  // next available tag number: 26.
 }
 
 // Vision match result for one target image.
