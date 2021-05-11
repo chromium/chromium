@@ -140,7 +140,7 @@ Status ParseMobileEmulation(const base::Value& option,
   if (!option.GetAsDictionary(&mobile_emulation))
     return Status(kInvalidArgument, "'mobileEmulation' must be a dictionary");
 
-  if (mobile_emulation->HasKey("deviceName")) {
+  if (mobile_emulation->FindKey("deviceName")) {
     // Cannot use any other options with deviceName.
     if (mobile_emulation->DictSize() > 1)
       return Status(kInvalidArgument, "'deviceName' must be used alone");
@@ -152,7 +152,7 @@ Status ParseMobileEmulation(const base::Value& option,
     return ParseDeviceName(device_name, capabilities);
   }
 
-  if (mobile_emulation->HasKey("deviceMetrics")) {
+  if (mobile_emulation->FindKey("deviceMetrics")) {
     const base::DictionaryValue* metrics;
     if (!mobile_emulation->GetDictionary("deviceMetrics", &metrics))
       return Status(kInvalidArgument, "'deviceMetrics' must be a dictionary");
@@ -163,20 +163,20 @@ Status ParseMobileEmulation(const base::Value& option,
     bool touch = true;
     bool mobile = true;
 
-    if (metrics->HasKey("width") && !metrics->GetInteger("width", &width))
+    if (metrics->FindKey("width") && !metrics->GetInteger("width", &width))
       return Status(kInvalidArgument, "'width' must be an integer");
 
-    if (metrics->HasKey("height") && !metrics->GetInteger("height", &height))
+    if (metrics->FindKey("height") && !metrics->GetInteger("height", &height))
       return Status(kInvalidArgument, "'height' must be an integer");
 
-    if (metrics->HasKey("pixelRatio") &&
+    if (metrics->FindKey("pixelRatio") &&
         !metrics->GetDouble("pixelRatio", &device_scale_factor))
       return Status(kInvalidArgument, "'pixelRatio' must be a double");
 
-    if (metrics->HasKey("touch") && !metrics->GetBoolean("touch", &touch))
+    if (metrics->FindKey("touch") && !metrics->GetBoolean("touch", &touch))
       return Status(kInvalidArgument, "'touch' must be a boolean");
 
-    if (metrics->HasKey("mobile") && !metrics->GetBoolean("mobile", &mobile))
+    if (metrics->FindKey("mobile") && !metrics->GetBoolean("mobile", &mobile))
       return Status(kInvalidArgument, "'mobile' must be a boolean");
 
     DeviceMetrics* device_metrics =
@@ -185,7 +185,7 @@ Status ParseMobileEmulation(const base::Value& option,
         std::unique_ptr<DeviceMetrics>(device_metrics);
   }
 
-  if (mobile_emulation->HasKey("userAgent")) {
+  if (mobile_emulation->FindKey("userAgent")) {
     std::string user_agent;
     if (!mobile_emulation->GetString("userAgent", &user_agent))
       return Status(kInvalidArgument, "'userAgent' must be a string");
@@ -556,8 +556,8 @@ Status ParseChromeOptions(
   if (!capability.GetAsDictionary(&chrome_options))
     return Status(kInvalidArgument, "must be a dictionary");
 
-  bool is_android = chrome_options->HasKey("androidPackage");
-  bool is_remote = chrome_options->HasKey("debuggerAddress");
+  bool is_android = chrome_options->FindKey("androidPackage") != nullptr;
+  bool is_remote = chrome_options->FindKey("debuggerAddress") != nullptr;
 
   std::map<std::string, Parser> parser_map;
   // Ignore 'args', 'binary' and 'extensions' capabilities by default, since the
@@ -887,7 +887,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
     const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
-        chrome_options->HasKey("perfLoggingPrefs")) {
+        chrome_options->FindKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
                     "perfLoggingPrefs specified, "
                     "but performance logging was not enabled");
@@ -899,7 +899,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       || dt_events_logging_iter->second == Log::kOff) {
     const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
-        chrome_options->HasKey("devToolsEventsToLog")) {
+        chrome_options->FindKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,
                     "devToolsEventsToLog specified, "
                     "but devtools events logging was not enabled");

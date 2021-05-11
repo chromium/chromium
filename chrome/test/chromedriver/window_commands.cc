@@ -1420,7 +1420,7 @@ Status ProcessInputActionSequence(
         action->SetInteger("y", y);
 
         std::string origin;
-        if (action_item->HasKey("origin")) {
+        if (action_item->FindKey("origin")) {
           if (!action_item->GetString("origin", &origin)) {
             const base::DictionaryValue* origin_dict;
             if (!action_item->GetDictionary("origin", &origin_dict))
@@ -1466,21 +1466,21 @@ Status ProcessInputActionSequence(
 
       // Process Pointer Event's properties.
       double width = 1;
-      if (action_item->HasKey("width") &&
+      if (action_item->FindKey("width") &&
           (!action_item->GetDouble("width", &width) || width < 0)) {
         return Status(kInvalidArgument,
                       "'width' must be a non-negative number");
       }
       action->SetDouble("width", width);
       double height = 1;
-      if (action_item->HasKey("height") &&
+      if (action_item->FindKey("height") &&
           (!action_item->GetDouble("height", &height) || height < 0)) {
         return Status(kInvalidArgument,
                       "'height' must be a non-negative number");
       }
       action->SetDouble("height", height);
       double pressure = 0.5;
-      if (action_item->HasKey("pressure") &&
+      if (action_item->FindKey("pressure") &&
           (!action_item->GetDouble("pressure", &pressure) || pressure < 0 ||
            pressure > 1)) {
         return Status(
@@ -1489,7 +1489,7 @@ Status ProcessInputActionSequence(
       }
       action->SetDouble("pressure", pressure);
       double tangentialPressure = 0;
-      if (action_item->HasKey("tangentialPressure") &&
+      if (action_item->FindKey("tangentialPressure") &&
           (!action_item->GetDouble("tangentialPressure", &tangentialPressure) ||
            tangentialPressure < -1 || tangentialPressure > 1)) {
         return Status(
@@ -1498,7 +1498,7 @@ Status ProcessInputActionSequence(
       }
       action->SetDouble("tangentialPressure", tangentialPressure);
       int tiltX = 0;
-      if (action_item->HasKey("tiltX") &&
+      if (action_item->FindKey("tiltX") &&
           (!action_item->GetInteger("tiltX", &tiltX) || tiltX < -90 ||
            tiltX > 90)) {
         return Status(kInvalidArgument,
@@ -1506,7 +1506,7 @@ Status ProcessInputActionSequence(
       }
       action->SetInteger("tiltX", tiltX);
       int tiltY = 0;
-      if (action_item->HasKey("tiltY") &&
+      if (action_item->FindKey("tiltY") &&
           (!action_item->GetInteger("tiltY", &tiltY) || tiltY < -90 ||
            tiltY > 90)) {
         return Status(kInvalidArgument,
@@ -1514,7 +1514,7 @@ Status ProcessInputActionSequence(
       }
       action->SetInteger("tiltY", tiltY);
       int twist = 0;
-      if (action_item->HasKey("twist") &&
+      if (action_item->FindKey("twist") &&
           (!action_item->GetInteger("twist", &twist) || twist < 0 ||
            twist > 359)) {
         return Status(kInvalidArgument,
@@ -1688,7 +1688,7 @@ Status ExecutePerformActions(Session* session,
               action->GetDouble("x", &x);
               action->GetDouble("y", &y);
               const base::DictionaryValue* origin_dict;
-              if (action->HasKey("origin")) {
+              if (action->FindKey("origin")) {
                 if (action->GetDictionary("origin", &origin_dict)) {
                   origin = kElement;
                   origin_dict->GetString(GetElementKey(), &element_id);
@@ -1887,7 +1887,7 @@ Status ExecuteReleaseActions(Session* session,
     if (it->key_event) {
       base::DictionaryValue* pressed;
       it->input_state->GetDictionary("pressed", &pressed);
-      if (!pressed->HasKey(it->key_event->key))
+      if (!pressed->FindKey(it->key_event->key))
         continue;
       web_view->DispatchKeyEvents({*it->key_event}, false);
       pressed->Remove(it->key_event->key, nullptr);
@@ -2457,7 +2457,7 @@ Status ExecuteSetLocation(Session* session,
       !location->GetDouble("latitude", &geoposition.latitude) ||
       !location->GetDouble("longitude", &geoposition.longitude))
     return Status(kInvalidArgument, "missing or invalid 'location'");
-  if (location->HasKey("accuracy") &&
+  if (location->FindKey("accuracy") &&
       !location->GetDouble("accuracy", &geoposition.accuracy)) {
     return Status(kInvalidArgument, "invalid 'accuracy'");
   } else {
@@ -2496,14 +2496,14 @@ Status ExecuteSetNetworkConditions(Session* session,
 
     // Either |throughput| or the pair |download_throughput| and
     // |upload_throughput| is required.
-    if (conditions->HasKey("throughput")) {
+    if (conditions->FindKey("throughput")) {
       if (!conditions->GetDouble("throughput",
                                  &network_conditions->download_throughput))
         return Status(kInvalidArgument, "invalid 'throughput'");
       conditions->GetDouble("throughput",
                             &network_conditions->upload_throughput);
-    } else if (conditions->HasKey("download_throughput") &&
-               conditions->HasKey("upload_throughput")) {
+    } else if (conditions->FindKey("download_throughput") &&
+               conditions->FindKey("upload_throughput")) {
       if (!conditions->GetDouble("download_throughput",
                                  &network_conditions->download_throughput) ||
           !conditions->GetDouble("upload_throughput",
@@ -2517,7 +2517,7 @@ Status ExecuteSetNetworkConditions(Session* session,
     }
 
     // |offline| is optional.
-    if (conditions->HasKey("offline")) {
+    if (conditions->FindKey("offline")) {
       if (!conditions->GetBoolean("offline", &network_conditions->offline))
         return Status(kInvalidArgument, "invalid 'offline'");
     } else {
