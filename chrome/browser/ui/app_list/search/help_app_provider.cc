@@ -153,7 +153,6 @@ HelpAppResult::HelpAppResult(
   SetMetricsType(ash::HELP_APP);
   SetIcon(icon);
   SetDetails(result->main_category);
-  SetDetailsTags(CalculateTags(query, result->main_category));
 }
 
 HelpAppResult::~HelpAppResult() = default;
