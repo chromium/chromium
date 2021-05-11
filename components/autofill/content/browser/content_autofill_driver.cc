@@ -39,6 +39,8 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
 
+namespace autofill {
+
 namespace {
 
 bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
@@ -55,9 +57,16 @@ bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
   return false;
 }
 
-}  // namespace
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
 
-namespace autofill {
+}  // namespace
 
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
@@ -277,13 +286,19 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetPendingIsolationInfoForSubresources();
 }
 
-void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& forms) {
-  autofill_manager_->OnFormsSeen(forms);
+void ContentAutofillDriver::SetFormToBeProbablySubmitted(
+    const base::Optional<FormData>& raw_form) {
+  potentially_submitted_form_ =
+      raw_form ? base::make_optional<FormData>(
+                     GetFormWithFrameAndFormMetaData(*raw_form))
+               : base::nullopt;
 }
 
-void ContentAutofillDriver::SetFormToBeProbablySubmitted(
-    const base::Optional<FormData>& form) {
-  potentially_submitted_form_ = form;
+void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& raw_forms) {
+  std::vector<FormData> forms = raw_forms;
+  for (auto& form : forms)
+    SetFrameAndFormMetaData(form);
+  autofill_manager_->OnFormsSeen(forms);
 }
 
 void ContentAutofillDriver::ProbablyFormSubmitted() {
@@ -293,7 +308,7 @@ void ContentAutofillDriver::ProbablyFormSubmitted() {
   }
 }
 
-void ContentAutofillDriver::FormSubmitted(const FormData& form,
+void ContentAutofillDriver::FormSubmitted(const FormData& raw_form,
                                           bool known_success,
                                           mojom::SubmissionSource source) {
   // Omit duplicate form submissions. It may be reasonable to take |source|
@@ -303,41 +318,50 @@ void ContentAutofillDriver::FormSubmitted(const FormData& form,
           features::kAutofillProbableFormSubmissionInBrowser) &&
       !base::FeatureList::IsEnabled(
           features::kAutofillAllowDuplicateFormSubmissions) &&
-      !submitted_forms_.insert(form.unique_renderer_id).second) {
+      !submitted_forms_.insert(raw_form.unique_renderer_id).second) {
     return;
   }
 
-  autofill_manager_->OnFormSubmitted(form, known_success, source);
+  autofill_manager_->OnFormSubmitted(GetFormWithFrameAndFormMetaData(raw_form),
+                                     known_success, source);
 }
 
-void ContentAutofillDriver::TextFieldDidChange(const FormData& form,
-                                               const FormFieldData& field,
+void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
+                                               const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box,
                                                base::TimeTicks timestamp) {
-  autofill_manager_->OnTextFieldDidChange(form, field, bounding_box, timestamp);
+  autofill_manager_->OnTextFieldDidChange(
+      GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box, timestamp);
 }
 
-void ContentAutofillDriver::TextFieldDidScroll(const FormData& form,
-                                               const FormFieldData& field,
+void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
+                                               const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box) {
-  autofill_manager_->OnTextFieldDidScroll(form, field, bounding_box);
+  autofill_manager_->OnTextFieldDidScroll(
+      GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
 }
 
 void ContentAutofillDriver::SelectControlDidChange(
-    const FormData& form,
-    const FormFieldData& field,
+    const FormData& raw_form,
+    const FormFieldData& raw_field,
     const gfx::RectF& bounding_box) {
-  autofill_manager_->OnSelectControlDidChange(form, field, bounding_box);
+  autofill_manager_->OnSelectControlDidChange(
+      GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
 }
 
 void ContentAutofillDriver::QueryFormFieldAutofill(
     int32_t id,
-    const FormData& form,
-    const FormFieldData& field,
+    const FormData& raw_form,
+    const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion) {
-  autofill_manager_->OnQueryFormFieldAutofill(id, form, field, bounding_box,
-                                              autoselect_first_suggestion);
+  autofill_manager_->OnQueryFormFieldAutofill(
+      id, GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box,
+      autoselect_first_suggestion);
 }
 
 void ContentAutofillDriver::HidePopup() {
@@ -348,15 +372,18 @@ void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
   autofill_manager_->OnFocusNoLongerOnForm(had_interacted_form);
 }
 
-void ContentAutofillDriver::FocusOnFormField(const FormData& form,
-                                             const FormFieldData& field,
+void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
+                                             const FormFieldData& raw_field,
                                              const gfx::RectF& bounding_box) {
-  autofill_manager_->OnFocusOnFormField(form, field, bounding_box);
+  autofill_manager_->OnFocusOnFormField(
+      GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_field), bounding_box);
 }
 
-void ContentAutofillDriver::DidFillAutofillFormData(const FormData& form,
+void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
                                                     base::TimeTicks timestamp) {
-  autofill_manager_->OnDidFillAutofillFormData(form, timestamp);
+  autofill_manager_->OnDidFillAutofillFormData(
+      GetFormWithFrameAndFormMetaData(raw_form), timestamp);
 }
 
 void ContentAutofillDriver::DidPreviewAutofillFormData() {
@@ -367,8 +394,10 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
   autofill_manager_->OnDidEndTextFieldEditing();
 }
 
-void ContentAutofillDriver::SelectFieldOptionsDidChange(const FormData& form) {
-  autofill_manager_->SelectFieldOptionsDidChange(form);
+void ContentAutofillDriver::SelectFieldOptionsDidChange(
+    const FormData& raw_form) {
+  autofill_manager_->SelectFieldOptionsDidChange(
+      GetFormWithFrameAndFormMetaData(raw_form));
 }
 
 void ContentAutofillDriver::DidNavigateFrame(
@@ -442,6 +471,40 @@ void ContentAutofillDriver::RemoveHandler(
   if (!view)
     return;
   view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(handler);
+}
+
+void ContentAutofillDriver::SetFrameAndFormMetaData(
+    FormFieldData& field) const {
+  field.host_frame =
+      LocalFrameToken(render_frame_host_->GetFrameToken().value());
+}
+
+void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
+  form.host_frame =
+      LocalFrameToken(render_frame_host_->GetFrameToken().value());
+
+  form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
+  form.full_url = render_frame_host_->GetLastCommittedURL();
+
+  if (auto* main_rfh = render_frame_host_->GetMainFrame())
+    form.main_frame_origin = main_rfh->GetLastCommittedOrigin();
+  else
+    form.main_frame_origin = url::Origin();
+
+  for (FormFieldData& field : form.fields)
+    SetFrameAndFormMetaData(field);
+}
+
+FormFieldData ContentAutofillDriver::GetFieldWithFrameAndFormMetaData(
+    FormFieldData field) const {
+  SetFrameAndFormMetaData(field);
+  return field;
+}
+
+FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
+    FormData form) const {
+  SetFrameAndFormMetaData(form);
+  return form;
 }
 
 bool ContentAutofillDriver::DocumentUsedWebOTP() const {

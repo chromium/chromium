@@ -1755,8 +1755,10 @@ void WebFormControlElementToFormField(
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = element.GetAttribute(*kName).Utf16();
-  field->host_frame = LocalFrameToken(
-      element.GetDocument().GetFrame()->GetLocalFrameToken().value());
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer)) {
+    field->host_frame = LocalFrameToken(
+        element.GetDocument().GetFrame()->GetLocalFrameToken().value());
+  }
   field->unique_renderer_id =
       FieldRendererId(element.UniqueRendererFormControlId());
   field->form_control_ax_id = element.GetAxId();
@@ -1893,15 +1895,20 @@ bool WebFormElementToFormData(
     return false;
 
   form->name = GetFormIdentifier(form_element);
-  form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
+    form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   form->unique_renderer_id =
       FormRendererId(form_element.UniqueRendererFormId());
-  form->url = GetCanonicalOriginForDocument(frame->GetDocument());
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
+    form->url = GetCanonicalOriginForDocument(frame->GetDocument());
   form->action = GetCanonicalActionForForm(form_element);
   form->is_action_empty =
       form_element.Action().IsNull() || form_element.Action().IsEmpty();
   if (frame->Top()) {
-    form->main_frame_origin = frame->Top()->GetSecurityOrigin();
+    if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
+      form->main_frame_origin = frame->Top()->GetSecurityOrigin();
+    else
+      form->main_frame_origin = url::Origin();
   } else {
     form->main_frame_origin = url::Origin();
     NOTREACHED();
@@ -1959,10 +1966,13 @@ bool UnownedFormElementsAndFieldSetsToFormData(
   if (!frame)
     return false;
 
-  form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
+    form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   form->unique_renderer_id = FormRendererId();
-  form->url = GetCanonicalOriginForDocument(document);
-  if (frame->Top()) {
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
+    form->url = GetCanonicalOriginForDocument(document);
+  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer) &&
+      frame->Top()) {
     form->main_frame_origin = frame->Top()->GetSecurityOrigin();
   } else {
     form->main_frame_origin = url::Origin();

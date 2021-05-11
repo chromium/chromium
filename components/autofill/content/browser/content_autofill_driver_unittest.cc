@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/ssl_status.h"
@@ -269,6 +270,31 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
 }  // namespace
 
+class ContentAutofillDriverTestApi {
+ public:
+  explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
+      : driver_(driver) {}
+
+  void SetFrameAndFormMetaData(FormFieldData& field) const {
+    driver_->SetFrameAndFormMetaData(field);
+  }
+
+  void SetFrameAndFormMetaData(FormData& form) const {
+    driver_->SetFrameAndFormMetaData(form);
+  }
+
+  FormFieldData GetFieldWithFrameAndFormMetaData(FormFieldData field) const {
+    return driver_->GetFieldWithFrameAndFormMetaData(field);
+  }
+
+  FormData GetFormWithFrameAndFormMetaData(FormData form) const {
+    return driver_->GetFormWithFrameAndFormMetaData(form);
+  }
+
+ private:
+  ContentAutofillDriver* driver_;
+};
+
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
@@ -361,6 +387,51 @@ TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(/*same_document=*/false, /*from_bfcache=*/true);
+}
+
+TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
+  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  FormData form;
+  form.fields.push_back(FormFieldData());
+  FormData form2 = ContentAutofillDriverTestApi(driver_.get())
+                       .GetFormWithFrameAndFormMetaData(form);
+  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(form);
+
+  EXPECT_EQ(
+      form.host_frame,
+      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+  EXPECT_EQ(form.url, GURL("https://hostname/path"));
+  EXPECT_EQ(form.full_url,
+            GURL("https://username:password@hostname/path?query#hash"));
+  EXPECT_EQ(form.main_frame_origin,
+            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(form.main_frame_origin,
+            url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
+  ASSERT_EQ(form.fields.size(), 1u);
+  EXPECT_EQ(
+      form.fields.front().host_frame,
+      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+
+  EXPECT_EQ(form2.host_frame, form.host_frame);
+  EXPECT_EQ(form2.url, form.url);
+  EXPECT_EQ(form2.full_url, form.full_url);
+  EXPECT_EQ(form2.main_frame_origin, form.main_frame_origin);
+  ASSERT_EQ(form2.fields.size(), 1u);
+  EXPECT_EQ(form2.fields.front().host_frame, form2.fields.front().host_frame);
+}
+
+TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
+  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  FormFieldData field;
+  FormFieldData field2 = ContentAutofillDriverTestApi(driver_.get())
+                             .GetFieldWithFrameAndFormMetaData(field);
+  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(field);
+
+  EXPECT_EQ(
+      field.host_frame,
+      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+
+  EXPECT_EQ(field2.host_frame, field.host_frame);
 }
 
 TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {

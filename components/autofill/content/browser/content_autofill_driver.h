@@ -177,15 +177,29 @@ class ContentAutofillDriver : public AutofillDriver,
   void ReportAutofillWebOTPMetrics(bool document_used_webotp);
 
  protected:
-  // Constructor for tests.
+  // Constructor for TestAutofillDriver.
   ContentAutofillDriver();
 
  private:
+  friend class ContentAutofillDriverTestApi;
+
   // KeyPressHandlerManager::Delegate:
   void AddHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
   void RemoveHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
+
+  // Sets parameters of |form| and |field| that can be extracted from
+  // |render_frame_host_|.
+  //
+  // These functions must be called for every FormData and FormFieldData
+  // received from the renderer.
+  void SetFrameAndFormMetaData(FormFieldData& field) const;
+  void SetFrameAndFormMetaData(FormData& form) const;
+  FormFieldData GetFieldWithFrameAndFormMetaData(FormFieldData field) const
+      WARN_UNUSED_RESULT;
+  FormData GetFormWithFrameAndFormMetaData(FormData form) const
+      WARN_UNUSED_RESULT;
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.
