@@ -305,6 +305,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   bool IsSameOriginNavigation() const { return is_same_origin_navigation_; }
 
+  void UpdateUrlForDocumentOpen(const KURL& url) { url_ = url; }
+
   enum class HistoryNavigationType {
     kDifferentDocument,
     kFragment,

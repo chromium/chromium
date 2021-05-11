@@ -3327,7 +3327,7 @@ void Document::open(LocalDOMWindow* entered_window,
   if (ignore_opens_and_writes_for_abort_)
     return;
 
-  // If this document is fully active, then run the URL and history update steps
+  // If this document is fully active, then update the URL
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
@@ -3336,11 +3336,8 @@ void Document::open(LocalDOMWindow* entered_window,
     if (dom_window_ != entered_window)
       new_url.SetFragmentIdentifier(String());
     SetURL(new_url);
-
-    auto* state_object = Loader()->GetHistoryItem()
-                             ? Loader()->GetHistoryItem()->StateObject()
-                             : nullptr;
-    Loader()->RunURLAndHistoryUpdateSteps(new_url, state_object);
+    if (Loader())
+      Loader()->UpdateUrlForDocumentOpen(new_url);
 
     if (dom_window_ != entered_window) {
       // We inherit the sandbox flags of the entered document, so mask on
