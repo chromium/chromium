@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -403,7 +404,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
   EXPECT_TRUE(manager->IsPrintingRestricted(web_contents));
   EXPECT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0],
-              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kBlock)));
 
   // Start printing, check for notification about printing restriction, and
   // another event emitted.
@@ -415,7 +418,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingRestricted) {
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
   EXPECT_EQ(events.size(), 2u);
   EXPECT_THAT(events[1],
-              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kBlock)));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {

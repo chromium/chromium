@@ -23,6 +23,10 @@ using ::testing::Mock;
 
 namespace policy {
 
+namespace {
+const char kCompanyPattern[] = "company.com";
+}  // namespace
+
 class DlpReportingManagerTest : public testing::Test {
  protected:
   DlpReportingManagerTest() = default;
@@ -47,14 +51,40 @@ class DlpReportingManagerTest : public testing::Test {
   std::vector<DlpPolicyEvent> events_;
 };
 
-TEST_F(DlpReportingManagerTest, IsPrintingRestricted) {
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  auto src_pattern = web_contents->GetLastCommittedURL().spec();
-  manager_.ReportEvent(src_pattern, DlpRulesManager::Restriction::kPrinting,
+TEST_F(DlpReportingManagerTest, ReportEvent) {
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
 
   EXPECT_EQ(events_.size(), 1);
   EXPECT_THAT(events_[0],
-              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kBlock)));
 }
+
+TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
+  const std::string dst_pattern = "*";
+  manager_.ReportEvent(kCompanyPattern, dst_pattern,
+                       DlpRulesManager::Restriction::kClipboard,
+                       DlpRulesManager::Level::kBlock);
+
+  EXPECT_EQ(events_.size(), 1);
+  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kCompanyPattern, dst_pattern,
+                              DlpRulesManager::Restriction::kClipboard,
+                              DlpRulesManager::Level::kBlock)));
+}
+
+TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Component::kArc,
+                       DlpRulesManager::Restriction::kClipboard,
+                       DlpRulesManager::Level::kBlock);
+
+  EXPECT_EQ(events_.size(), 1);
+  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              kCompanyPattern, DlpRulesManager::Component::kArc,
+                              DlpRulesManager::Restriction::kClipboard,
+                              DlpRulesManager::Level::kBlock)));
+}
+
 }  // namespace policy

@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -337,7 +338,9 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
 
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
-              IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(src_pattern)));
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  src_pattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kBlock)));
 
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),

@@ -9,7 +9,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/reporting/client/report_queue.h"
-#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/status.h"
 
 class DlpPolicyEvent;
 

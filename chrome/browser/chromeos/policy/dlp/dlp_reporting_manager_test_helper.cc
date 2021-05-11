@@ -17,6 +17,8 @@ using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 using ::testing::Mock;
 
+namespace policy {
+
 class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
  public:
   explicit DlpPolicyEventMatcher(const DlpPolicyEvent& event)
@@ -43,13 +45,6 @@ Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
   return Matcher<const DlpPolicyEvent&>(new DlpPolicyEventMatcher(event));
 }
 
-DlpPolicyEvent CreatePrintingRestrictedDlpEvent(
-    const std::string& src_pattern) {
-  return policy::CreateDlpPolicyEvent(
-      src_pattern, policy::DlpRulesManager::Restriction::kPrinting,
-      policy::DlpRulesManager::Level::kBlock);
-}
-
 void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
                                        std::vector<DlpPolicyEvent>& events) {
   auto report_queue = std::make_unique<reporting::MockReportQueue>();
@@ -65,3 +60,5 @@ void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
           });
   manager->GetReportQueueSetter().Run(std::move(report_queue));
 }
+
+}  // namespace policy
