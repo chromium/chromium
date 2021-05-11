@@ -38,16 +38,28 @@ namespace {
 
 // Encapsulates logic to determine if enterprise policies should be honored.
 bool ShouldHonorPolicies() {
+  // Only honor sensitive policies if the Mac is managed externally.
   base::DeviceUserDomainJoinState join_state =
       base::AreDeviceAndUserJoinedToDomain();
+  if (join_state.device_joined)
+    return true;
+
   // IsDeviceRegisteredWithManagementNew is only available after 10.13.4.
   // Eventually switch to it when that is the minimum OS required by Chromium.
-  base::MacDeviceManagementStateOld mdm_state =
-      base::IsDeviceRegisteredWithManagementOld();
+  if (@available(macOS 10.13.4, *)) {
+    base::MacDeviceManagementStateNew mdm_state =
+        base::IsDeviceRegisteredWithManagementNew();
+    return mdm_state ==
+               base::MacDeviceManagementStateNew::kLimitedMDMEnrollment ||
+           mdm_state == base::MacDeviceManagementStateNew::kFullMDMEnrollment ||
+           mdm_state == base::MacDeviceManagementStateNew::kDEPMDMEnrollment;
+  } else {
+    base::MacDeviceManagementStateOld mdm_state =
+        base::IsDeviceRegisteredWithManagementOld();
+    return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
+  }
 
-  // Only honor sensitive policies if the Mac is managed externally.
-  return join_state.device_joined ||
-         mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
+  return false;
 }
 
 }  // namespace

@@ -14,6 +14,7 @@
 #include "base/process/launch.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace base {
@@ -94,20 +95,25 @@ MacDeviceManagementStateNew IsDeviceRegisteredWithManagementNew() {
       return MacDeviceManagementStateNew::kFailureAPIUnavailable;
     }
 
-    std::vector<StringPiece> lines = SplitStringPiece(
-        profiles_stdout, "\n", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    // Sample output of `profiles` with full MDM enrollment:
+    // Enrolled via DEP: Yes
+    // MDM enrollment: Yes (User Approved)
+    // MDM server: https://applemdm.example.com/some/path?foo=bar
+    StringPairs property_states;
+    if (!SplitStringIntoKeyValuePairs(profiles_stdout, ':', '\n',
+                                      &property_states)) {
+      return MacDeviceManagementStateNew::kFailureUnableToParseResult;
+    }
 
     bool enrolled_via_dep = false;
     bool mdm_enrollment_not_approved = false;
     bool mdm_enrollment_user_approved = false;
 
-    for (const auto& line : lines) {
-      std::vector<StringPiece> halves =
-          SplitStringPiece(line, ":", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
-      if (halves.size() != 2)
-        return MacDeviceManagementStateNew::kFailureUnableToParseResult;
-      StringPiece property = halves[0];
-      StringPiece state = halves[1];
+    for (const auto& property_state : property_states) {
+      StringPiece property =
+          TrimString(property_state.first, kWhitespaceASCII, TRIM_ALL);
+      StringPiece state =
+          TrimString(property_state.second, kWhitespaceASCII, TRIM_ALL);
 
       if (property == "Enrolled via DEP") {
         if (state == "Yes")
