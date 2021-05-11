@@ -25029,17 +25029,20 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'example_value': "lacros_primary",
       'default': "user_choice",
       'id': 855,
+      'default_for_enterprise_users': "lacros_disallowed",
       'caption': '''Make the <ph name="LACROS_NAME">Lacros</ph> browser available''',
       'tags': [],
       'desc': '''This setting provides several availability options for the <ph name="LACROS_NAME">Lacros</ph> browser.
 
-      If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> or unset, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary. <ph name="LACROS_NAME">Lacros</ph> can still be disallowed with <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy.
+      If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph>, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary. <ph name="LACROS_NAME">Lacros</ph> can still be disallowed with <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy.
 
       If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph>, the user cannot use <ph name="LACROS_NAME">Lacros</ph>. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
 
       If the policy is set to <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE">side_by_side</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled but is not the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
 
       If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE">lacros_primary</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled and is the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+
+      If the policy is unset, the default is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph> for enterprise-managed users and <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> for non-managed users.
 
       In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.''',
     },
