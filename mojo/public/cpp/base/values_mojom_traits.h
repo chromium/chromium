@@ -24,7 +24,7 @@ struct MapTraits<base::Value> {
 
   static size_t GetSize(const base::Value& input) {
     DCHECK(input.is_dict());
-    return static_cast<const base::DictionaryValue&>(input).size();
+    return static_cast<const base::DictionaryValue&>(input).DictSize();
   }
 
   static Iterator GetBegin(const base::Value& input) {
