@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
 
 namespace bluez {
 
@@ -42,7 +43,7 @@ operator=(const BluetoothServiceAttributeValueBlueZ& attribute) {
       value_ = nullptr;
       sequence_ = std::make_unique<Sequence>(*attribute.sequence_);
     } else {
-      value_ = attribute.value_->CreateDeepCopy();
+      value_ = base::Value::ToUniquePtrValue(attribute.value_->Clone());
       sequence_ = nullptr;
     }
   }
