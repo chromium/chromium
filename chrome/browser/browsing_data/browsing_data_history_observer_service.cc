@@ -155,7 +155,7 @@ BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service)
-    history_observer_.Add(history_service);
+    history_observation_.Observe(history_service);
 }
 
 BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() {}

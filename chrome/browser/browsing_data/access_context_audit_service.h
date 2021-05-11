@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,8 +65,8 @@ class AccessContextAuditService
     AccessContextAuditService* service_;
     canonical_cookie::CookieHashSet accessed_cookies_;
     url::Origin last_seen_top_frame_origin_;
-    ScopedObserver<AccessContextAuditService, CookieAccessHelper>
-        deletion_observer_{this};
+    base::ScopedObservation<AccessContextAuditService, CookieAccessHelper>
+        deletion_observation_{this};
   };
 
   explicit AccessContextAuditService(Profile* profile);
@@ -173,11 +173,12 @@ class AccessContextAuditService
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
-  ScopedObserver<content::StoragePartition,
-                 content::StoragePartition::DataRemovalObserver>
-      storage_partition_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
+  base::ScopedObservation<content::StoragePartition,
+                          content::StoragePartition::DataRemovalObserver>
+      storage_partition_observation_{this};
 
   base::WeakPtrFactory<AccessContextAuditService> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AccessContextAuditService);

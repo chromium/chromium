@@ -21,7 +21,7 @@ AccessContextAuditService::CookieAccessHelper::CookieAccessHelper(
     AccessContextAuditService* service)
     : service_(service) {
   DCHECK(service);
-  deletion_observer_.Add(service);
+  deletion_observation_.Observe(service);
 }
 
 AccessContextAuditService::CookieAccessHelper::~CookieAccessHelper() {
@@ -88,8 +88,8 @@ bool AccessContextAuditService::Init(
 
   cookie_manager->AddGlobalChangeListener(
       cookie_listener_receiver_.BindNewPipeAndPassRemote());
-  history_observer_.Add(history_service);
-  storage_partition_observer_.Add(storage_partition);
+  history_observation_.Observe(history_service);
+  storage_partition_observation_.Observe(storage_partition);
   return true;
 }
 
