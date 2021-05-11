@@ -46,6 +46,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
 std::u16string
 AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress() const {
   return ::autofill::GetEnvelopeStyleAddress(profile_, locale_,
+                                             /*include_recipient=*/true,
                                              /*include_country=*/true);
 }
 

@@ -116,6 +116,7 @@ void GetAddressComponents(
 
 std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                                        const std::string& ui_language_code,
+                                       bool include_recipient,
                                        bool include_country) {
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
   const std::u16string& country_code =
@@ -128,13 +129,18 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
   DCHECK(!components.empty());
   std::string address;
   for (const AddressUiComponent& component : components) {
-    // Each component is either a literal, or a field (i.e. has empty literal).
-    address +=
-        component.literal.empty()
-            ? base::UTF16ToUTF8(profile.GetInfo(
-                  autofill::AddressFieldToServerFieldType(component.field),
-                  ui_language_code))
-            : component.literal;
+    // Add string literals directly.
+    if (!component.literal.empty()) {
+      address += component.literal;
+      continue;
+    }
+    if (!include_recipient &&
+        component.field == ::i18n::addressinput::RECIPIENT) {
+      continue;
+    }
+    address += base::UTF16ToUTF8(profile.GetInfo(
+        autofill::AddressFieldToServerFieldType(component.field),
+        ui_language_code));
   }
   if (include_country) {
     address += "\n";

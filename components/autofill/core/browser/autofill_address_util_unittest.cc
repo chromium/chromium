@@ -35,7 +35,8 @@ class GetEnvelopeStyleAddressTest : public ::testing::Test {
 TEST_F(GetEnvelopeStyleAddressTest, Sanity) {
   AutofillProfile profile = test::GetFullProfile();
   std::u16string address =
-      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_country=*/true);
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/true);
 
   // The exact format of the address depends on the format in the
   // libaddressinput library. Let's avoid testing the exact format, but test
@@ -61,8 +62,16 @@ TEST_F(GetEnvelopeStyleAddressTest, Sanity) {
 
   // The country shouldn't be returned when include_country=false.
   EXPECT_EQ(
-      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_country=*/false)
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/false)
           .find(u"United States"),
+      std::string::npos);
+
+  // The recipient shouldn't be returned when include_recipient=false.
+  EXPECT_EQ(
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/false,
+                              /*include_country=*/true)
+          .find(u"John H. Doe"),
       std::string::npos);
 }
 
@@ -74,7 +83,8 @@ TEST_F(GetEnvelopeStyleAddressTest, EmptyFullname) {
                        "US", "16502111111");
 
   std::u16string address =
-      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_country=*/true);
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/true);
   // The US envelope style address should *not* start with a new line.
   EXPECT_NE(address.front(), '\n');
 }
@@ -88,7 +98,8 @@ TEST_F(GetEnvelopeStyleAddressTest, EmptyCompanyShouldHaveNoEmptyLines) {
                        "Apt 8", "Elysium", "CA", "91111", "US", "16502111111");
 
   std::u16string address =
-      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_country=*/true);
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/true);
   // There should be no consecutive new lines.
   EXPECT_EQ(address.find(u"\n\n"), std::string::npos);
 }
@@ -104,7 +115,8 @@ TEST_F(GetEnvelopeStyleAddressTest,
                        "16502111111");
 
   std::u16string address =
-      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_country=*/true);
+      GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
+                              /*include_country=*/true);
   // There should be no consecutive white spaces.
   EXPECT_EQ(address.find(u"  "), std::string::npos);
 }

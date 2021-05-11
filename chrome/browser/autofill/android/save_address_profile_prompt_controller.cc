@@ -67,6 +67,7 @@ std::u16string SaveAddressProfilePromptController::GetPositiveButtonText() {
 std::u16string SaveAddressProfilePromptController::GetAddress() {
   return GetEnvelopeStyleAddress(profile_,
                                  g_browser_process->GetApplicationLocale(),
+                                 /*include_recipient=*/true,
                                  /*include_country=*/true);
 }
 
