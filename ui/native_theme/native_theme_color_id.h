@@ -107,6 +107,12 @@
   OP(kColorId_SliderTroughMinimal),                                            \
   /* Separator */                                                              \
   OP(kColorId_SeparatorColor),                                                 \
+  /* Shadow */                                                                 \
+  OP(kColorId_ShadowBase),                                                     \
+  OP(kColorId_ShadowValueAmbientShadowElevationThree),                         \
+  OP(kColorId_ShadowValueKeyShadowElevationThree),                             \
+  OP(kColorId_ShadowValueAmbientShadowElevationSixteen),                       \
+  OP(kColorId_ShadowValueKeyShadowElevationSixteen),                           \
   /* Sync info container */                                                    \
   OP(kColorId_SyncInfoContainerPaused),                                        \
   OP(kColorId_SyncInfoContainerError),                                         \
@@ -156,7 +162,6 @@
   OP(kColorId_ThrobberWaitingColor),                                           \
   /* Colors for Bubble Border */                                               \
   OP(kColorId_BubbleBorder),                                                   \
-  OP(kColorId_BubbleBorderShadowBase),                                         \
   OP(kColorId_BubbleBorderShadowLarge),                                        \
   OP(kColorId_BubbleBorderShadowSmall),                                        \
   OP(kColorId_BubbleBorderWhenShadowPresent),                                  \

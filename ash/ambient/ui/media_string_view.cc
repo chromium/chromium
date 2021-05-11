@@ -125,6 +125,10 @@ MediaStringView::MediaStringView() {
 
 MediaStringView::~MediaStringView() = default;
 
+void MediaStringView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  media_text_->SetShadows(ambient::util::GetTextShadowValues(GetNativeTheme()));
+}
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
 }
@@ -241,10 +245,8 @@ void MediaStringView::InitLayout() {
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
           .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   media_text_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-
-  auto shadow_values = ambient::util::GetTextShadowValues();
-  media_text_->SetShadows(shadow_values);
-  gfx::Insets shadow_insets = gfx::ShadowValue::GetMargin(shadow_values);
+  gfx::Insets shadow_insets =
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
   // Compensate the shadow insets to put the text middle align with the icon.
   media_text_->SetBorder(views::CreateEmptyBorder(
       /*top=*/-shadow_insets.bottom(),
@@ -321,7 +323,7 @@ void MediaStringView::StartScrolling(bool is_initial) {
     // Desired speed is 10 seconds for kMediaStringMaxWidthDip.
     const int text_width = media_text_->GetPreferredSize().width();
     const int shadow_width =
-        gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues())
+        gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr))
             .width();
     const int start_x = text_layer->GetTargetTransform().To2dTranslation().x();
     const int end_x = -(text_width + shadow_width) / 2;

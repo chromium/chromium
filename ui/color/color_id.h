@@ -38,8 +38,6 @@
   E(kColorAvatarIconIncognito, NativeTheme::kColorId_AvatarIconIncognito) \
   E(kColorBubbleBackground, NativeTheme::kColorId_BubbleBackground) \
   E(kColorBubbleBorder, NativeTheme::kColorId_BubbleBorder) \
-  E(kColorBubbleBorderShadowBase, \
-    NativeTheme::kColorId_BubbleBorderShadowBase) \
   E(kColorBubbleBorderShadowLarge, \
     NativeTheme::kColorId_BubbleBorderShadowLarge) \
   E(kColorBubbleBorderShadowSmall, \
@@ -160,6 +158,15 @@
   E(kColorPwaToolbarForeground, \
     NativeTheme::kColorId_CustomTabBarForegroundColor) \
   E(kColorSeparator, NativeTheme::kColorId_SeparatorColor) \
+  E(kColorShadowBase, NativeTheme::kColorId_ShadowBase) \
+  E(kColorShadowValueAmbientShadowElevationThree, \
+    NativeTheme::kColorId_ShadowValueAmbientShadowElevationThree) \
+  E(kColorShadowValueKeyShadowElevationThree, \
+    NativeTheme::kColorId_ShadowValueKeyShadowElevationThree) \
+  E(kColorShadowValueAmbientShadowElevationSixteen, \
+    NativeTheme::kColorId_ShadowValueAmbientShadowElevationSixteen) \
+  E(kColorShadowValueKeyShadowElevationSixteen, \
+    NativeTheme::kColorId_ShadowValueKeyShadowElevationSixteen) \
   E(kColorSliderThumb, NativeTheme::kColorId_SliderThumbDefault) \
   E(kColorSliderThumbMinimal, NativeTheme::kColorId_SliderThumbMinimal) \
   E(kColorSliderTrack, NativeTheme::kColorId_SliderTroughDefault) \

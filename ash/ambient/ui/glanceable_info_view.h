@@ -34,6 +34,9 @@ class GlanceableInfoView : public views::View,
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // AmbientBackendModelObserver:
   void OnWeatherInfoUpdated() override;
 

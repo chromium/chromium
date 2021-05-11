@@ -31,6 +31,9 @@ class ASH_EXPORT AmbientInfoView : public views::View {
   AmbientInfoView& operator=(AmbientInfoView&) = delete;
   ~AmbientInfoView() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
   void UpdateImageDetails(const std::u16string& details);
 
   void SetTextTransform(const gfx::Transform& transform);

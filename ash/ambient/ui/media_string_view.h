@@ -41,6 +41,9 @@ class MediaStringView : public views::View,
   MediaStringView& operator=(const MediaStringView&) = delete;
   ~MediaStringView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 

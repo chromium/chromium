@@ -181,7 +181,7 @@ void AmbientBackgroundImageView::InitLayout() {
       AddChildView(std::make_unique<AmbientInfoView>(delegate_));
 
   gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues());
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
 
   // Inits the media string view. The media string view is positioned on the
   // right-top corner of the container.

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/color_palette.h"
@@ -71,7 +72,9 @@ Insets ShadowValue::GetBlurRegion(const ShadowValues& shadows) {
 }
 
 // static
-ShadowValues ShadowValue::MakeShadowValues(int elevation, SkColor color) {
+ShadowValues ShadowValue::MakeShadowValues(int elevation,
+                                           SkColor key_shadow_color,
+                                           SkColor ambient_shadow_color) {
   // Refresh uses hand-tweaked shadows corresponding to a small set of
   // elevations. Use the Refresh spec and designer input to add missing shadow
   // values.
@@ -83,21 +86,22 @@ ShadowValues ShadowValue::MakeShadowValues(int elevation, SkColor color) {
 
   switch (elevation) {
     case 3: {
-      ShadowValue key = {Vector2d(0, 1), 12, SkColorSetA(color, 0x66)};
-      ShadowValue ambient = {Vector2d(0, 4), 64, SkColorSetA(color, 0x40)};
+      ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color};
+      ShadowValue ambient = {Vector2d(0, 4), 64, ambient_shadow_color};
       return {key, ambient};
     }
     case 16: {
       ShadowValue key = {Vector2d(0, 0), kBlurCorrection * 16,
-                         SkColorSetA(color, 0x1a)};
+                         key_shadow_color};
       ShadowValue ambient = {Vector2d(0, 12), kBlurCorrection * 16,
-                             SkColorSetA(color, 0x3d)};
+                             ambient_shadow_color};
       return {key, ambient};
     }
     default:
       // This surface has not been updated for Refresh. Fall back to the
       // deprecated style.
-      return MakeMdShadowValues(elevation, color);
+      DCHECK_EQ(key_shadow_color, ambient_shadow_color);
+      return MakeMdShadowValues(elevation, key_shadow_color);
   }
 }
 

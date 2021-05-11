@@ -55,6 +55,40 @@ gfx::Point RightCenter(const gfx::Rect& rect) {
   return gfx::Point(rect.right(), rect.CenterPoint().y());
 }
 
+SkColor GetKeyShadowColor(int elevation, const ui::NativeTheme* theme) {
+  switch (elevation) {
+    case 3: {
+      return theme->GetSystemColor(
+          ui::NativeTheme::kColorId_ShadowValueKeyShadowElevationThree);
+    }
+    case 16: {
+      return theme->GetSystemColor(
+          ui::NativeTheme::kColorId_ShadowValueKeyShadowElevationSixteen);
+    }
+    default:
+      // This surface has not been updated for Refresh. Fall back to the
+      // deprecated style.
+      return theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase);
+  }
+}
+
+SkColor GetAmbientShadowColor(int elevation, const ui::NativeTheme* theme) {
+  switch (elevation) {
+    case 3: {
+      return theme->GetSystemColor(
+          ui::NativeTheme::kColorId_ShadowValueAmbientShadowElevationThree);
+    }
+    case 16: {
+      return theme->GetSystemColor(
+          ui::NativeTheme::kColorId_ShadowValueAmbientShadowElevationSixteen);
+    }
+    default:
+      // This surface has not been updated for Refresh. Fall back to the
+      // deprecated style.
+      return theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase);
+  }
+}
+
 }  // namespace
 
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, SkColor color)
@@ -240,11 +274,12 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
     const ui::NativeTheme* theme,
     base::Optional<int> elevation) {
   // If the theme does not exist the shadow values are being created in
-  // order to calculate Insets. In that case the color plays no role so set it
-  // to gfx::kPlaceholderColor.
-  SkColor color = theme ? theme->GetSystemColor(
-                              ui::NativeTheme::kColorId_BubbleBorderShadowBase)
-                        : gfx::kPlaceholderColor;
+  // order to calculate Insets. In that case the color plays no role so always
+  // set those colors to gfx::kPlaceholderColor.
+
+  SkColor color =
+      theme ? theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase)
+            : gfx::kPlaceholderColor;
 
   // The shadows are always the same for any elevation and color combination, so
   // construct them once and cache.
@@ -258,7 +293,14 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
   gfx::ShadowValues shadows;
   if (elevation.has_value()) {
     DCHECK_GE(elevation.value(), 0);
-    shadows = gfx::ShadowValue::MakeShadowValues(elevation.value(), color);
+    SkColor key_shadow_color = theme
+                                   ? GetKeyShadowColor(elevation.value(), theme)
+                                   : gfx::kPlaceholderColor;
+    SkColor ambient_shadow_color =
+        theme ? GetAmbientShadowColor(elevation.value(), theme)
+              : gfx::kPlaceholderColor;
+    shadows = gfx::ShadowValue::MakeShadowValues(
+        elevation.value(), key_shadow_color, ambient_shadow_color);
   } else {
     constexpr int kSmallShadowVerticalOffset = 2;
     constexpr int kSmallShadowBlur = 4;
@@ -294,7 +336,7 @@ const cc::PaintFlags& BubbleBorder::GetBorderAndShadowFlags(
   static base::NoDestructor<std::map<ShadowCacheKey, cc::PaintFlags>> flag_map;
   ShadowCacheKey key(
       elevation.value_or(-1),
-      theme->GetSystemColor(ui::NativeTheme::kColorId_BubbleBorderShadowBase));
+      theme->GetSystemColor(ui::NativeTheme::kColorId_ShadowBase));
 
   if (flag_map->find(key) != flag_map->end())
     return flag_map->find(key)->second;

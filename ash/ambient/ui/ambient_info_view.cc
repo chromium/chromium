@@ -40,6 +40,12 @@ AmbientInfoView::AmbientInfoView(AmbientViewDelegate* delegate)
 
 AmbientInfoView::~AmbientInfoView() = default;
 
+void AmbientInfoView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  details_label_->SetShadows(
+      ambient::util::GetTextShadowValues(GetNativeTheme()));
+}
+
 void AmbientInfoView::UpdateImageDetails(const std::u16string& details) {
   details_label_->SetText(details);
 }
@@ -51,7 +57,7 @@ void AmbientInfoView::SetTextTransform(const gfx::Transform& transform) {
 
 void AmbientInfoView::InitLayout() {
   gfx::Insets shadow_insets =
-      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues());
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
 
   // Full screen view with the glanceable info view and details label in the
   // lower left.
@@ -79,7 +85,6 @@ void AmbientInfoView::InitLayout() {
   details_label_->SetFontList(
       ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
           kDetailsFontSizeDip - kDefaultFontSizeDip));
-  details_label_->SetShadows(ambient::util::GetTextShadowValues());
   details_label_->SetPaintToLayer();
   details_label_->layer()->SetFillsBoundsOpaquely(false);
 }

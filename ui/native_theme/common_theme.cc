@@ -68,10 +68,6 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_FocusedBorderColor:
       return gfx::kGoogleBlue400;
 
-    // Bubble
-    case NativeTheme::kColorId_BubbleBorderShadowBase:
-      return SK_ColorBLACK;
-
     // Button
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue300;
@@ -87,6 +83,10 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
       return gfx::kGoogleGrey500;
     case NativeTheme::kColorId_LabelEnabledColor:
       return gfx::kGoogleGrey200;
+
+    // Shadow
+    case NativeTheme::kColorId_ShadowBase:
+      return SK_ColorBLACK;
 
     // Separator
     case NativeTheme::kColorId_SeparatorColor:
@@ -168,18 +168,14 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_BubbleBorder:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_SeparatorColor, color_scheme);
-    case NativeTheme::kColorId_BubbleBorderShadowBase:
-      return gfx::kGoogleGrey800;
     case NativeTheme::kColorId_BubbleBorderShadowLarge:
-      return SkColorSetA(
-          base_theme->GetUnprocessedSystemColor(
-              NativeTheme::kColorId_BubbleBorderShadowBase, color_scheme),
-          0x1A);
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x1A);
     case NativeTheme::kColorId_BubbleBorderShadowSmall:
-      return SkColorSetA(
-          base_theme->GetUnprocessedSystemColor(
-              NativeTheme::kColorId_BubbleBorderShadowBase, color_scheme),
-          0x33);
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x33);
     case NativeTheme::kColorId_BubbleBorderWhenShadowPresent:
       return SkColorSetA(SK_ColorBLACK, 0x26);
     // Button
@@ -405,6 +401,27 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     // Separator
     case NativeTheme::kColorId_SeparatorColor:
       return gfx::kGoogleGrey300;
+
+    // Shadow
+    case NativeTheme::kColorId_ShadowBase:
+      return gfx::kGoogleGrey800;
+
+    case NativeTheme::kColorId_ShadowValueAmbientShadowElevationThree:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x40);
+    case NativeTheme::kColorId_ShadowValueKeyShadowElevationThree:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x66);
+    case NativeTheme::kColorId_ShadowValueAmbientShadowElevationSixteen:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x3d);
+    case NativeTheme::kColorId_ShadowValueKeyShadowElevationSixteen:
+      return SkColorSetA(base_theme->GetUnprocessedSystemColor(
+                             NativeTheme::kColorId_ShadowBase, color_scheme),
+                         0x1a);
 
     // Slider
     case NativeTheme::kColorId_SliderThumbMinimal:

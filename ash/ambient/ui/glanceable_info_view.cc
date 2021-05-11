@@ -91,6 +91,14 @@ void GlanceableInfoView::OnWeatherInfoUpdated() {
   Show();
 }
 
+void GlanceableInfoView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  gfx::ShadowValues text_shadow_values =
+      ambient::util::GetTextShadowValues(GetNativeTheme());
+  time_view_->SetTextShadowValues(text_shadow_values);
+  temperature_->SetShadows(text_shadow_values);
+}
+
 void GlanceableInfoView::Show() {
   AmbientBackendModel* ambient_backend_model =
       delegate_->GetAmbientBackendModel();
@@ -133,8 +141,8 @@ void GlanceableInfoView::InitLayout() {
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  gfx::ShadowValues text_shadow_values = ambient::util::GetTextShadowValues();
-  gfx::Insets shadow_insets = gfx::ShadowValue::GetMargin(text_shadow_values);
+  gfx::Insets shadow_insets =
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
 
   // Inits the time view.
   time_view_ = AddChildView(std::make_unique<tray::TimeView>(
@@ -145,7 +153,6 @@ void GlanceableInfoView::InitLayout() {
       ambient::util::GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary),
       /*auto_color_readability_enabled=*/false);
-  time_view_->SetTextShadowValues(text_shadow_values);
   // Remove the internal spacing in `time_view_` and adjust spacing for shadows.
   time_view_->SetBorder(views::CreateEmptyBorder(
       -kUnifiedTrayTextTopPadding, -kUnifiedTrayTimeLeftPadding, 0,
@@ -168,7 +175,6 @@ void GlanceableInfoView::InitLayout() {
   temperature_->SetEnabledColor(ambient::util::GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   temperature_->SetFontList(GetWeatherTemperatureFontList());
-  temperature_->SetShadows(text_shadow_values);
   temperature_->SetBorder(views::CreateEmptyBorder(
       0, 0, GetTimeFontDescent() - GetTemperatureFontDescent(), 0));
 }
