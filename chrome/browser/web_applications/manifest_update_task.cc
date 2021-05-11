@@ -21,6 +21,8 @@
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
@@ -60,6 +62,22 @@ bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
                                  downloaded_icon_bitmaps.any) ||
          HaveIconContentsChanged(disk_icon_bitmaps.maskable,
                                  downloaded_icon_bitmaps.maskable);
+}
+
+// Some apps, such as pre-installed apps, have been vetted and are therefore
+// considered safe and permitted to update their names.
+bool AllowNameUpdating(const AppId& app_id, const AppRegistrar& registrar) {
+  return registrar.AsWebAppRegistrar()->GetAppById(app_id)->IsPreinstalledApp();
+}
+
+// Some apps, such as pre-installed apps, have been vetted and are therefore
+// considered safe and permitted to update their icon. For others, the feature
+// flag needs to be on.
+bool AllowIconUpdating(const AppId& app_id, const AppRegistrar& registrar) {
+  return registrar.AsWebAppRegistrar()
+             ->GetAppById(app_id)
+             ->IsPreinstalledApp() ||
+         base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating);
 }
 
 }  // namespace
@@ -243,9 +261,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  // Allow app icon updating if the existing icons are empty - this means the
-  // app icon download during install failed.
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating) &&
+  // Allow app icon updating for certain apps, or if the existing icons are
+  // empty - this means the app icon download during install failed.
+  if (AllowIconUpdating(app_id_, registrar_) &&
       web_application_info_->icon_infos !=
           registrar_.GetAppIconInfos(app_id_)) {
     return true;
@@ -293,6 +311,12 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
 
   if (web_application_info_->manifest_url !=
       registrar_.GetAppManifestUrl(app_id_)) {
+    return true;
+  }
+
+  if (AllowNameUpdating(app_id_, registrar_) &&
+      web_application_info_->title !=
+          base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_))) {
     return true;
   }
 
@@ -352,9 +376,9 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   }
   DCHECK(web_application_info_.has_value());
 
-  // Allow app icon updating if the existing icons are empty - this means the
-  // app icon download during install failed.
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
+  // Allow app icon updating for certain apps, or if the existing icons are
+  // empty - this means the app icon download during install failed.
+  if (AllowIconUpdating(app_id_, registrar_)) {
     // This call populates the |web_application_info_| with all icon bitmap
     // data.
     // If this data does not match what we already have on disk, then an update
@@ -468,10 +492,14 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
 
   DCHECK(web_application_info_.has_value());
 
-  // The app's name must not change due to an automatic update.
-  // TODO(crbug.com/1088338): Provide a safe way for apps to update their name.
-  web_application_info_->title =
-      base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
+  if (!AllowNameUpdating(app_id_, registrar_)) {
+    // The app's name must not change due to an automatic update, except for
+    // default installed apps (that have been vetted).
+    // TODO(crbug.com/1088338): Provide a safe way for apps to update their
+    // name.
+    web_application_info_->title =
+        base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
+  }
 
   // Preserve the user's choice of opening in browser tab or standalone window.
   switch (registrar_.GetAppUserDisplayMode(app_id_)) {
@@ -492,7 +520,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
   stage_ = Stage::kPendingMaybeReadExistingIcons;
   // Allow app icon updating if the existing icons are empty - this means the
   // app icon download during install failed.
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
+  if (AllowIconUpdating(app_id_, registrar_)) {
     OnExistingIconsRead(IconBitmaps());
     return;
   }
