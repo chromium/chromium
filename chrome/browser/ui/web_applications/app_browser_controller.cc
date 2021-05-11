@@ -453,9 +453,9 @@ std::u16string AppBrowserController::GetTitle() const {
     return raw_title;
 
   std::u16string app_name =
-      base::ASCIIToUTF16(WebAppProvider::Get(browser()->profile())
-                             ->registrar()
-                             .GetAppShortName(GetAppId()));
+      base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())
+                            ->registrar()
+                            .GetAppShortName(GetAppId()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   } else if (raw_title.empty()) {
