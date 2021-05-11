@@ -178,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       {ImpressionBuilder(base::Time::Now()).SetData("100").Build(),
        ImpressionBuilder(base::Time::Now())
            .SetSourceType(StorableImpression::SourceType::kEvent)
+           .SetPriority(10)
            .Build()});
   OverrideWebUIConversionManager(&manager);
 
@@ -187,7 +188,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       if (table.children.length === 2 &&
           table.children[0].children[0].innerText === "100" &&
           table.children[0].children[6].innerText === "Navigation" &&
-          table.children[1].children[6].innerText === "Event") {
+          table.children[1].children[6].innerText === "Event" &&
+          table.children[0].children[7].innerText === "0" &&
+          table.children[1].children[7].innerText === "10") {
         document.title = $1;
       }
     });

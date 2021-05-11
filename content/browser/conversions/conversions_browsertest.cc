@@ -410,9 +410,9 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ConversionsBrowserTest,
-    MultipleImpressionsPerConversion_ReportsSentWithAttribution) {
-  std::vector<ExpectedReportWaiter> expected_reports;
-  expected_reports.emplace_back(
+    MultipleImpressionsPerConversion_ReportSentWithAttribution) {
+  // Report will be sent for the most recent impression.
+  ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/"
            "register-conversion?impression-data=2&conversion-data=7"),
       https_server());
@@ -461,11 +461,68 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(shell2, JsReplace("registerConversionForOrigin(7, $1)",
                                        reporting_origin)));
 
-  for (auto& report : expected_reports) {
-    if (!report.response->http_request())
-      report.response->WaitForRequest();
-    EXPECT_EQ(report.expected_url, report.WaitForRequestUrl());
-  }
+  if (!expected_report.response->http_request())
+    expected_report.response->WaitForRequest();
+  EXPECT_EQ(expected_report.expected_url, expected_report.WaitForRequestUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ConversionsBrowserTest,
+    MultipleImpressionsPerConversion_ReportSentWithHighestPriority) {
+  // Report will be sent for the impression with highest priority.
+  ExpectedReportWaiter expected_report(
+      GURL("https://d.test/.well-known/"
+           "register-conversion?impression-data=1&conversion-data=7"),
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL first_impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), first_impression_url));
+
+  GURL second_impression_url = https_server()->GetURL(
+      "c.test", "/conversions/page_with_impression_creator.html");
+  Shell* shell2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size(100, 100));
+  EXPECT_TRUE(NavigateToURL(shell2->web_contents(), second_impression_url));
+
+  // Register impressions from both windows.
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+  url::Origin reporting_origin =
+      url::Origin::Create(https_server()->GetURL("d.test", "/"));
+  std::string impression_js = R"(
+    createImpressionTagWithReportingAndPriority("link" /* id */,
+                        $1 /* url */,
+                        $2 /* impression data */,
+                        $3 /* conversion_destination */,
+                        $4 /* reporting_origin */,
+                        $5 /* priority */);)";
+
+  TestNavigationObserver first_nav_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(impression_js, conversion_url,
+                                        "1" /* impression_data */,
+                                        url::Origin::Create(conversion_url),
+                                        reporting_origin, 10 /* priority */)));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  first_nav_observer.Wait();
+
+  TestNavigationObserver second_nav_observer(shell2->web_contents());
+  EXPECT_TRUE(ExecJs(shell2, JsReplace(impression_js, conversion_url,
+                                       "2" /* impression_data */,
+                                       url::Origin::Create(conversion_url),
+                                       reporting_origin, 5 /* priority */)));
+  EXPECT_TRUE(ExecJs(shell2, "simulateClick('link');"));
+  second_nav_observer.Wait();
+
+  // Register a conversion after both impressions have been registered.
+  EXPECT_TRUE(ExecJs(shell2, JsReplace("registerConversionForOrigin(7, $1)",
+                                       reporting_origin)));
+
+  if (!expected_report.response->http_request())
+    expected_report.response->WaitForRequest();
+  EXPECT_EQ(expected_report.expected_url, expected_report.WaitForRequestUrl());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,

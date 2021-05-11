@@ -32,6 +32,7 @@ struct WebUIImpression {
   double impression_time;
   double expiry_time;
   SourceType source_type;
+  string priority;
 };
 
 // Mojo interface used for communication between a WebUI and the storage layer

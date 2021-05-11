@@ -90,6 +90,7 @@ function createImpressionRow(impression) {
   td[4].textContent = new Date(impression.impressionTime).toLocaleString();
   td[5].textContent = new Date(impression.expiryTime).toLocaleString();
   td[6].textContent = SourceTypeToText(impression.sourceType);
+  td[7].textContent = impression.priority;
   return document.importNode(template.content, true);
 }
 
