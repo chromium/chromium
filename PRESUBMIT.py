@@ -4731,30 +4731,6 @@ def CheckChangeOnUpload(input_api, output_api):
   return results
 
 
-def GetTryServerMasterForBot(bot):
-  """Returns the Try Server master for the given bot.
-
-  It tries to guess the master from the bot name, but may still fail
-  and return None.  There is no longer a default master.
-  """
-  # Potentially ambiguous bot names are listed explicitly.
-  master_map = {
-      'chromium_presubmit': 'master.tryserver.chromium.linux',
-      'tools_build_presubmit': 'master.tryserver.chromium.linux',
-  }
-  master = master_map.get(bot)
-  if not master:
-    if 'android' in bot:
-      master = 'master.tryserver.chromium.android'
-    elif 'linux' in bot or 'presubmit' in bot:
-      master = 'master.tryserver.chromium.linux'
-    elif 'win' in bot:
-      master = 'master.tryserver.chromium.win'
-    elif 'mac' in bot or 'ios' in bot:
-      master = 'master.tryserver.chromium.mac'
-  return master
-
-
 def CheckChangeOnCommit(input_api, output_api):
   if input_api.version < [2, 0, 0]:
     return [output_api.PresubmitError("Your depot_tools is out of date. "
