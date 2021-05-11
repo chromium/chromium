@@ -679,6 +679,13 @@ TEST_F(UDPSocketTest, MAYBE_SharedMulticastAddress) {
 
   NetworkInterfaceList interfaces;
   ASSERT_TRUE(GetNetworkList(&interfaces, 0));
+  // The test fails with the Hyper-V switch interface (on the host side).
+  interfaces.erase(std::remove_if(interfaces.begin(), interfaces.end(),
+                                  [](const auto& iface) {
+                                    return iface.friendly_name.rfind(
+                                               "vEthernet", 0) == 0;
+                                  }),
+                   interfaces.end());
   ASSERT_FALSE(interfaces.empty());
 
   // Setup first receiving socket.
