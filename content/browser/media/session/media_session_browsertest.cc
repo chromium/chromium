@@ -408,4 +408,17 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
   EXPECT_FALSE(WasURLVisited(image.src));
 }
 
+// Regression test of crbug.com/1195769.
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, ChangeMediaElementDocument) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/session", "change_document.html")));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "moveAudioToSubframe();"));
+
+  ASSERT_EQ(true, EvalJs(shell(), "play();"));
+  MediaSession* const media_session =
+      MediaSession::Get(shell()->web_contents());
+  media_session->Suspend(MediaSession::SuspendType::kUI);
+  WaitForStop(shell());
+}
+
 }  // namespace content

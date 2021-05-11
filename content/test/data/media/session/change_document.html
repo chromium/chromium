@@ -1,0 +1,20 @@
+<html>
+  <body>
+    <audio src='foo'></audio>
+    <audio id='moved' src='audio-6seconds.ogg'></audio>
+    <iframe></iframe>
+  </body>
+  <script>
+    const audio = document.getElementById('moved');
+
+    function moveAudioToSubframe() {
+      const frame_document = window.frames[0].document;
+      frame_document.body.appendChild(frame_document.adoptNode(audio));
+    }
+
+    async function play() {
+      await audio.play();
+      return true;
+    }
+  </script>
+</html>

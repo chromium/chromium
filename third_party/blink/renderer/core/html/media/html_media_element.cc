@@ -625,9 +625,11 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   media_player_host_remote_ = MakeGarbageCollected<DisallowNewWrapper<
       HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>(
       GetExecutionContext());
+  media_player_observer_remote_set_->Value().Clear();
   media_player_observer_remote_set_ = MakeGarbageCollected<DisallowNewWrapper<
       HeapMojoAssociatedRemoteSet<media::mojom::blink::MediaPlayerObserver>>>(
       GetExecutionContext());
+  media_player_receiver_set_->Value().Clear();
   media_player_receiver_set_ =
       MakeGarbageCollected<DisallowNewWrapper<HeapMojoAssociatedReceiverSet<
           media::mojom::blink::MediaPlayer, HTMLMediaElement>>>(
