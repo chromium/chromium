@@ -23,6 +23,7 @@ class BrowserServiceHostAsh;
 class CertDatabaseAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
+class ContentProtectionAsh;
 class DeviceAttributesAsh;
 class FeedbackAsh;
 class FileManagerAsh;
@@ -67,6 +68,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindClipboard(mojo::PendingReceiver<mojom::Clipboard> receiver) override;
   void BindClipboardHistory(
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
+  void BindContentProtection(
+      mojo::PendingReceiver<mojom::ContentProtection> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindFileManager(
@@ -137,6 +140,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
+  std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;

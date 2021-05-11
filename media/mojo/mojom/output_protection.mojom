@@ -8,14 +8,16 @@ module media.mojom;
 // on links that support it.
 
 interface OutputProtection {
+  [Stable, Extensible]
   enum ProtectionType {
-    NONE = 0,
+    [Default] NONE = 0,
     HDCP = 1,
   };
 
   // Video output link types.
+  [Stable, Extensible]
   enum LinkType {
-    NONE = 0,
+    [Default] NONE = 0,
     UNKNOWN = 1,
     INTERNAL = 2,
     VGA = 4,

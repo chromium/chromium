@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/crosapi/mojom/content_protection.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -192,6 +193,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<
       crosapi::mojom::ClipboardHistory, &Crosapi::BindClipboardHistory,
       Crosapi::MethodMinVersions::kBindClipboardHistoryMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::ContentProtection, &Crosapi::BindContentProtection,
+      Crosapi::MethodMinVersions::kBindContentProtectionMinVersion>();
   ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();

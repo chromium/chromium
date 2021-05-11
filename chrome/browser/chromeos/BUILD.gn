@@ -1090,6 +1090,8 @@ source_set("chromeos") {
     "../ash/crosapi/clipboard_ash.h",
     "../ash/crosapi/clipboard_history_ash.cc",
     "../ash/crosapi/clipboard_history_ash.h",
+    "../ash/crosapi/content_protection_ash.cc",
+    "../ash/crosapi/content_protection_ash.h",
     "../ash/crosapi/crosapi_ash.cc",
     "../ash/crosapi/crosapi_ash.h",
     "../ash/crosapi/crosapi_id.h",

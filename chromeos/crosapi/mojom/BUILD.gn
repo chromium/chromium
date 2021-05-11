@@ -14,6 +14,7 @@ mojom("mojom") {
     "cert_database.mojom",
     "clipboard.mojom",
     "clipboard_history.mojom",
+    "content_protection.mojom",
     "crosapi.mojom",
     "device_attributes.mojom",
     "feedback.mojom",
