@@ -33,6 +33,11 @@
         width: 20px;
       }
 
+      :host-context([dir='rtl']) #technology {
+        left: auto;
+        right: 4px;
+      }
+
       /* Lower-right corner */
       #secure {
         --iron-icon-fill-color: #5a5a5a;
@@ -41,6 +46,11 @@
         position: absolute;
         top: 16px;
         width: 8px;
+      }
+
+      :host-context([dir='rtl']) #secure {
+        left: auto;
+        right: 0;
       }
 
       /* Images */
