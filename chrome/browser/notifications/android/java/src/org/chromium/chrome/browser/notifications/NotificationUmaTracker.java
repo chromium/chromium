@@ -108,7 +108,8 @@ public class NotificationUmaTracker {
             ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE,
             ActionType.WEB_APP_ACTION_OPEN_IN_CHROME,
             ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN,
-            ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN})
+            ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN,
+            ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
         int UNKNOWN = -1;
@@ -156,7 +157,11 @@ public class NotificationUmaTracker {
         int MEDIA_ACTION_SEEK_FORWARD = 22;
         int MEDIA_ACTION_SEEK_BACKWARD = 23;
 
-        int NUM_ENTRIES = 24;
+        // Price drop notification buttons.
+        int PRICE_DROP_VISIT_SITE = 24;
+        int PRICE_DROP_TURN_OFF_ALERT = 25;
+
+        int NUM_ENTRIES = 26;
     }
 
     private static class LazyHolder {

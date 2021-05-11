@@ -53,8 +53,8 @@ public class CommerceSubscription {
     @NonNull
     private final @TrackingIdType String mTrackingIdType;
 
-    CommerceSubscription(@NonNull @CommerceSubscriptionType String type, @NonNull String trackingId,
-            @NonNull @SubscriptionManagementType String managementType,
+    public CommerceSubscription(@NonNull @CommerceSubscriptionType String type,
+            @NonNull String trackingId, @NonNull @SubscriptionManagementType String managementType,
             @NonNull @TrackingIdType String trackingIdType) {
         this(type, trackingId, managementType, trackingIdType, UNSAVED_SUBSCRIPTION);
     }
