@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/download_shelf_resources.h"
 #include "chrome/grit/download_shelf_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,6 +38,9 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui))) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIDownloadShelfHost);
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"discardButtonText", IDS_DISCARD_DOWNLOAD}};
+  source->AddLocalizedStrings(kStrings);
 
   webui::SetupWebUIDataSource(
       source,

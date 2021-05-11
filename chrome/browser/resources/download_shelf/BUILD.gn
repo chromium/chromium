@@ -55,6 +55,7 @@ preprocess_if_expr("preprocess_web_components") {
   out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
   in_files = [
     "app.js",
+    "download_button.js",
     "download_item.js",
     "download_list.js",
   ]
@@ -86,10 +87,15 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":app",
+    ":download_button",
     ":download_item",
     ":download_list",
     ":download_shelf_api_proxy",
   ]
+}
+
+js_library("download_button") {
+  deps = [ "//ui/webui/resources/js:custom_element" ]
 }
 
 js_library("download_shelf_api_proxy") {
@@ -102,8 +108,10 @@ js_library("download_shelf_api_proxy") {
 
 js_library("download_item") {
   deps = [
+    ":download_button",
     ":download_shelf_api_proxy",
     "//ui/webui/resources/js:custom_element",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -118,7 +126,6 @@ js_library("download_list") {
 
 js_library("app") {
   deps = [
-    ":download_item",
     ":download_list",
     "//ui/webui/resources/js:custom_element",
   ]
@@ -127,6 +134,7 @@ js_library("app") {
 html_to_js("web_components") {
   js_files = [
     "app.js",
+    "download_button.js",
     "download_item.js",
     "download_list.js",
   ]

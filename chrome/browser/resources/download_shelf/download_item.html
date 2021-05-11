@@ -10,12 +10,15 @@
   --google-grey-refresh-700: rgb(var(--google-grey-refresh-700-rgb));
   --google-grey-900-rgb: 32, 33, 36;  /* #202124 */
   --google-grey-900: rgb(var(--google-grey-900-rgb));
+  --google-red-600-rgb: 217, 49, 37 ; /* #d93025 */
+  --google-red-600: rgb(var(--google-red-600-rgb));
 
   --button-hover-color: rgba(var(--google-grey-900-rgb), .1);
   --button-icon-stroke-color: var(--google-grey-refresh-700);
   --pi: 3.14159265358979;
   --spinner-color: var(--google-grey-900-rgb);
   --text-width: 140px;
+  --warn-text-width: 245px;
   --transparent-button-color: rgba(0, 0, 0, 0);
 }
 
@@ -26,13 +29,9 @@
   flex-direction: row;
   height: 100%;
   overflow: hidden;
-  padding: 6px 0 6px 12px;
+  padding: 6px 0 6px 8px;
   position: relative;
   user-select: none;
-}
-
-.download-item:hover {
-  background-color: var(--button-hover-color);
 }
 
 .progress {
@@ -96,7 +95,7 @@
   flex-direction: column;
   height: 100%;
   justify-content: center;
-  padding-inline-start: 8px;
+  padding-inline-start: 10px;
   width: var(--text-width);
 }
 
@@ -116,12 +115,29 @@
 #dropdown-button {
   background-color: var(--transparent-button-color);
   border: none;
+  border-radius: 4px;
   height: 32px;
   margin: 8px;
+  transition: background-color 300ms;
   width: 32px;
+  z-index: 2;
 }
 
 #dropdown-button:hover {
+  background-color: var(--button-hover-color);
+}
+
+#shadow-mask {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: background-color 300ms;
+  width: 100%;
+  z-index: 1;
+}
+
+#shadow-mask:hover {
   background-color: var(--button-hover-color)
 }
 
@@ -129,32 +145,87 @@
   fill: transparent;
   stroke: var(--button-icon-stroke-color);
   stroke-width: 1.2;
+  z-index: 2;
+}
+
+#icon {
+  display: flex;
+  z-index: 1;
 }
 
 #file-icon {
   height: 16px;
-  position: absolute;
+}
+
+#error-icon {
+  display: none;
+  fill: var(--google-red-600);
+  height: 26px;
+  width: 26px;
 }
 
 #separator {
-  background-color: rgba(255, 255, 255, .1);
+  background-color: rgba(0, 0, 0, .1);
   height: 90%;
   width: 1px;
 }
 
+#warning-text {
+  display: none;
+  line-height: 150%;
+}
+
+#discard-button {
+  display: none;
+  z-index: 2;
+}
+
+[data-display-mode='warn'] #text-container {
+  width: var(--warn-text-width);
+}
+
+[data-display-mode='warn'] .progress {
+  padding: 0 0 0 3px;
+}
+
+[data-display-mode='warn'] #discard-button,
+[data-display-mode='warn'] #error-icon,
+[data-display-mode='warn'] #warning-text {
+  display: block;
+}
+
+[data-display-mode='warn'] #shadow-mask,
+[data-display-mode='warn'] #file-icon,
+[data-display-mode='warn'] #filename,
+[data-display-mode='warn'] #status-text,
+[data-display-mode='warn'] .progress-indicator {
+  display: none;
+}
+
 </style>
 <div class="download-item">
+  <div id="shadow-mask"></div>
   <div class="progress">
     <svg class="progress-indicator">
       <circle class="progress-circle"></circle>
       <circle class="progress-spinner"></circle>
     </svg>
-    <img id="file-icon">
+    <div id="icon">
+      <img id="file-icon">
+      <svg id='error-icon' viewBox="0 0 26 26">
+        <g>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z">
+          </path>
+        </g>
+      </svg>
+    </div>
   </div>
   <div id="text-container">
     <div id="filename"></div>
     <div id="status-text"></div>
+    <div id="warning-text"></div>
   </div>
+  <download-button id="discard-button"></download-button>
   <button id="dropdown-button">
     <svg id="dropdown-icon" viewBox="0 0 16 16">
       <g>

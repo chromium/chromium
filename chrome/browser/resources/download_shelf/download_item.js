@@ -6,10 +6,20 @@
  * @fileoverview UI element of a download item.
  */
 
-import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import './download_button.js';
+import './strings.m.js';
 
-import {DownloadItem, DownloadState} from './download_shelf.mojom-webui.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {DangerType, DownloadItem, DownloadMode, DownloadState, MixedContentStatus} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
+
+/** @enum {string} */
+const DisplayMode = {
+  kNormal: 'normal',
+  kWarn: 'warn'
+};
 
 export class DownloadItemElement extends CustomElement {
   static get template() {
@@ -27,7 +37,12 @@ export class DownloadItemElement extends CustomElement {
 
     this.$('#dropdown-button')
         .addEventListener('click', e => this.onDropdownButtonClick_(e));
+    this.$('#discard-button')
+        .addEventListener('click', e => this.onDiscardButtonClick_(e));
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+
+    this.$('#discard-button').innerText =
+        loadTimeData.getString('discardButtonText');
   }
 
   /** @param {DownloadItem} value */
@@ -87,6 +102,12 @@ export class DownloadItemElement extends CustomElement {
     this.apiProxy_.getFileIcon(item.id).then(icon => {
       this.$('#file-icon').src = icon;
     });
+
+    downloadElement.dataset.displayMode =
+        this.item_.mode === DownloadMode.kNormal ? DisplayMode.kNormal :
+                                                   DisplayMode.kWarn;
+    this.$('#warning-text').innerText =
+        item.warningText ? item.warningText : '';
   }
 
   /** @param {number} value */
@@ -106,6 +127,12 @@ export class DownloadItemElement extends CustomElement {
     // open.
     const rect = e.target.getBoundingClientRect();
     this.apiProxy_.showContextMenu(this.item.id, rect.left, rect.top);
+  }
+
+  /** @param {!Event} e */
+  onDiscardButtonClick_(e) {
+    // TODO(crbug.com/1182529): Notify C++ through mojo. Remove this item
+    // from download_list.
   }
 }
 
