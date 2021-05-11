@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
+#include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
@@ -1636,8 +1637,12 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       login::SaveSyncPasswordDataToProfile(user_context_, profile);
     }
 
-    if (!user_context_.GetChallengeResponseKeys().empty())
+    if (!user_context_.GetChallengeResponseKeys().empty()) {
       PersistChallengeResponseKeys(user_context_);
+      login::SecurityTokenSessionControllerFactory::GetForBrowserContext(
+          profile)
+          ->OnChallengeResponseKeysUpdated();
+    }
 
     if (user_context_.GetSyncTrustedVaultKeys().has_value()) {
       SaveSyncTrustedVaultKeysToProfile(

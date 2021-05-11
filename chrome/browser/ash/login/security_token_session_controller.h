@@ -65,6 +65,12 @@ class SecurityTokenSessionController
   // happens for a user on a device.
   static void MaybeDisplayLoginScreenNotification();
 
+  // Informs the controller that there are new challenge response keys stored
+  // in known_user. This will not immediately check that all required
+  // certificates are present, since this happens during login when extensions
+  // providing certificates are not yet initialized.
+  void OnChallengeResponseKeysUpdated();
+
   // CertificateProviderService::Observer
   void OnCertificatesUpdated(
       const std::string& extension_id,

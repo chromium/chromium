@@ -199,6 +199,13 @@ void SecurityTokenSessionController::Shutdown() {
   pref_change_registrar_.RemoveAll();
 }
 
+void SecurityTokenSessionController::OnChallengeResponseKeysUpdated() {
+  extension_to_spkis_.clear();
+  observed_extensions_.clear();
+  LoadStoredChallengeResponseSpkiKeysForUser(
+      user_->GetAccountId(), &extension_to_spkis_, &observed_extensions_);
+}
+
 void SecurityTokenSessionController::OnCertificatesUpdated(
     const std::string& extension_id,
     const std::vector<certificate_provider::CertificateInfo>&

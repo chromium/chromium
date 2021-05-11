@@ -55,16 +55,8 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // The service is only relevant for users who authenticate with a security
-  // token used for a challenge-response flow.
-  // TODO(crbug.com/1164373): This check produces false negatives for ephemeral
-  // users.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(context));
-  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
-          user->GetAccountId()))
-    return nullptr;
-
   CertificateProviderService* certificate_provider_service =
       CertificateProviderServiceFactory::GetForBrowserContext(context);
   return new SecurityTokenSessionController(local_state, profile->GetPrefs(),
@@ -79,7 +71,12 @@ SecurityTokenSessionControllerFactory::GetBrowserContextToUse(
 
 bool SecurityTokenSessionControllerFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  // The controller is only useful for users using authentication via security
+  // tokens. However, we can not reliably check if the user uses a security
+  // token when the browser context is created.
+  // Instead, we instantiate the controller only once we know that a user did
+  // use a security token.
+  return false;
 }
 
 }  // namespace login
