@@ -178,6 +178,8 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
     return;
   }
 
+  auto origin = url::Origin::Create(web_app->start_url());
+
   DCHECK(provider());
   DCHECK(provider()->install_finalizer().CanUserUninstallWebApp(app_id));
   webapps::WebappUninstallSource webapp_uninstall_source =
@@ -198,7 +200,6 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
   constexpr bool kClearCache = true;
   constexpr bool kAvoidClosingConnections = false;
 
-  auto origin = url::Origin::Create(web_app->start_url());
   content::ClearSiteData(base::BindRepeating(
                              [](content::BrowserContext* browser_context) {
                                return browser_context;
