@@ -2632,9 +2632,6 @@ extern const char kFrameThrottleFps20[];
 extern const char kFrameThrottleFps25[];
 extern const char kFrameThrottleFps30[];
 
-extern const char kFsNosymfollowName[];
-extern const char kFsNosymfollowDescription[];
-
 extern const char kFullRestoreName[];
 extern const char kFullRestoreDescription[];
 

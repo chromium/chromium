@@ -4530,13 +4530,6 @@ const char kFrameThrottleFps20[] = "20 fps";
 const char kFrameThrottleFps25[] = "25 fps";
 const char kFrameThrottleFps30[] = "30 fps";
 
-const char kFsNosymfollowName[] =
-    "Prevent symlink traversal on user-supplied filesystems.";
-const char kFsNosymfollowDescription[] =
-    "Causes user-supplied filesystems to be mounted with the 'nosymfollow'"
-    " option, so the chromuimos LSM denies symlink traversal on the"
-    " filesystem.";
-
 const char kFullRestoreName[] = "Full restore";
 const char kFullRestoreDescription[] = "Chrome OS full restore";
 

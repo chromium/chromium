@@ -107,11 +107,8 @@ class DiskMountManagerImpl : public DiskMountManager,
         return;
       }
     }
-    std::vector<std::string> options = mount_options;
-    if (base::FeatureList::IsEnabled(chromeos::features::kFsNosymfollow))
-      options.push_back("nosymfollow");
     cros_disks_client_->Mount(
-        source_path, source_format, mount_label, options, access_mode,
+        source_path, source_format, mount_label, mount_options, access_mode,
         REMOUNT_OPTION_MOUNT_NEW_DEVICE,
         base::BindOnce(&DiskMountManagerImpl::OnMount,
                        weak_ptr_factory_.GetWeakPtr(), source_path, type));

@@ -421,10 +421,6 @@ const base::Feature kClipboardHistoryScreenshotNudge{
 const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable restriction of symlink traversal on user-supplied filesystems.
-const base::Feature kFsNosymfollow{"FsNosymfollow",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable a D-Bus service for accessing gesture properties.
 const base::Feature kGesturePropertiesDBusService{
     "GesturePropertiesDBusService", base::FEATURE_DISABLED_BY_DEFAULT};

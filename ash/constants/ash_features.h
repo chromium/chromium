@@ -183,7 +183,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryScreenshotNudge;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableFilesAppCopyImage;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFsNosymfollow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingGestureEditing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
