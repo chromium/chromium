@@ -36,6 +36,7 @@ blink::Impression CreateValidImpression() {
   result.conversion_destination = url::Origin::Create(GURL(kConversionUrl));
   result.reporting_origin = url::Origin::Create(GURL("https://c.com"));
   result.impression_data = 1UL;
+  result.priority = 10;
   return result;
 }
 
@@ -679,6 +680,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   EXPECT_EQ(1u, test_manager_.num_impressions());
   EXPECT_EQ(StorableImpression::SourceType::kEvent,
             test_manager_.last_impression_source_type());
+  EXPECT_EQ(10, test_manager_.last_attribution_source_priority());
 }
 
 }  // namespace content

@@ -8,4 +8,5 @@ dictionary ImpressionParams {
   required USVString conversionDestination;
   USVString reportingOrigin;
   unsigned long long impressionExpiry;
+  long long attributionSourcePriority;
 };

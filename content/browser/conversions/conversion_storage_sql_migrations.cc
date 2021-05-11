@@ -51,10 +51,11 @@ std::vector<StorableImpression> GetImpressions(sql::Database* db,
 
     // All impressions prior to the addition of the |source_type| column are
     // |kNavigation|.
-    StorableImpression impression(
-        impression_data, impression_origin, conversion_destination,
-        reporting_origin, impression_time, expiry_time,
-        StorableImpression::SourceType::kNavigation, impression_id);
+    StorableImpression impression(impression_data, impression_origin,
+                                  conversion_destination, reporting_origin,
+                                  impression_time, expiry_time,
+                                  StorableImpression::SourceType::kNavigation,
+                                  /*priority=*/0, impression_id);
     impressions.push_back(std::move(impression));
   }
   if (!statement.Succeeded())

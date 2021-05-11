@@ -18,6 +18,7 @@ bool StructTraits<blink::mojom::ImpressionDataView, blink::Impression>::Read(
     return false;
 
   out->impression_data = data.impression_data();
+  out->priority = data.priority();
   return true;
 }
 

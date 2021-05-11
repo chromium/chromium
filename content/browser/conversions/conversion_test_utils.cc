@@ -135,6 +135,7 @@ void TestConversionManager::HandleImpression(
   num_impressions_++;
   last_impression_source_type_ = impression.source_type();
   last_impression_origin_ = impression.impression_origin();
+  last_attribution_source_priority_ = impression.priority();
 }
 
 void TestConversionManager::HandleConversion(
@@ -198,7 +199,8 @@ ImpressionBuilder::ImpressionBuilder(base::Time time)
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
-      source_type_(StorableImpression::SourceType::kNavigation) {}
+      source_type_(StorableImpression::SourceType::kNavigation),
+      priority_(0) {}
 
 ImpressionBuilder::~ImpressionBuilder() = default;
 
@@ -236,6 +238,11 @@ ImpressionBuilder& ImpressionBuilder::SetSourceType(
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
+  priority_ = priority;
+  return *this;
+}
+
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
     base::Optional<int64_t> impression_id) {
   impression_id_ = impression_id;
@@ -247,7 +254,7 @@ StorableImpression ImpressionBuilder::Build() const {
                             conversion_origin_, reporting_origin_,
                             impression_time_,
                             impression_time_ + expiry_ /* expiry_time */,
-                            source_type_, impression_id_);
+                            source_type_, priority_, impression_id_);
 }
 
 StorableConversion DefaultConversion() {
@@ -267,7 +274,8 @@ testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
     return std::make_tuple(
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
-        impression.impression_time(), impression.expiry_time());
+        impression.impression_time(), impression.expiry_time(),
+        impression.priority());
   };
 
   if (tie(expected) != tie(actual)) {
@@ -289,6 +297,7 @@ testing::AssertionResult ReportsEqual(
                            conversion.impression.reporting_origin(),
                            conversion.impression.impression_time(),
                            conversion.impression.expiry_time(),
+                           conversion.impression.priority(),
                            conversion.conversion_data, conversion.report_time);
   };
 

@@ -31,12 +31,20 @@ base::Optional<uint64_t> ParseExpiry(const String& expiry) {
   return expiry_is_valid ? base::make_optional(parsed_expiry) : base::nullopt;
 }
 
+base::Optional<int64_t> ParsePriority(const String& priority) {
+  bool priority_is_valid = false;
+  int64_t parsed_priority = priority.ToInt64Strict(&priority_is_valid);
+  return priority_is_valid ? base::make_optional(parsed_priority)
+                           : base::nullopt;
+}
+
 base::Optional<WebImpression> GetImpression(
     ExecutionContext* execution_context,
     const String& impression_data_string,
     const String& conversion_destination_string,
     const base::Optional<String>& reporting_origin_string,
     base::Optional<uint64_t> impression_expiry_milliseconds,
+    base::Optional<int64_t> attribution_source_priority,
     HTMLAnchorElement* element) {
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(execution_context))
     return base::nullopt;
@@ -145,8 +153,11 @@ base::Optional<WebImpression> GetImpression(
   UseCounter::Count(execution_context,
                     mojom::blink::WebFeature::kImpressionRegistration);
 
+  int64_t priority =
+      attribution_source_priority ? *attribution_source_priority : 0;
+
   return WebImpression{conversion_destination, reporting_origin,
-                       impression_data, expiry};
+                       impression_data, expiry, priority};
 }
 
 }  // namespace
@@ -158,6 +169,13 @@ base::Optional<WebImpression> GetImpressionForAnchor(
     expiry =
         ParseExpiry(element->FastGetAttribute(html_names::kImpressionexpiryAttr)
                         .GetString());
+  }
+
+  base::Optional<int64_t> priority;
+  if (element->hasAttribute(html_names::kAttributionsourcepriorityAttr)) {
+    priority = ParsePriority(
+        element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
+            .GetString());
   }
 
   DCHECK(element->hasAttribute(html_names::kConversiondestinationAttr));
@@ -173,7 +191,7 @@ base::Optional<WebImpression> GetImpressionForAnchor(
                 element->FastGetAttribute(html_names::kReportingoriginAttr)
                     .GetString())
           : base::nullopt,
-      expiry, element);
+      expiry, priority, element);
 }
 
 base::Optional<WebImpression> GetImpressionFromWindowFeatures(
@@ -190,21 +208,27 @@ base::Optional<WebImpression> GetImpressionFromWindowFeatures(
           ? base::make_optional(features.reporting_origin)
           : base::nullopt,
       !features.expiry.IsNull() ? ParseExpiry(features.expiry) : base::nullopt,
+      !features.priority.IsNull() ? ParsePriority(features.priority)
+                                  : base::nullopt,
       nullptr);
 }
 
 base::Optional<WebImpression> GetImpressionForParams(
     ExecutionContext* execution_context,
     const ImpressionParams* params) {
-  return GetImpression(execution_context, params->impressionData(),
-                       params->conversionDestination(),
-                       params->hasReportingOrigin()
-                           ? base::make_optional(params->reportingOrigin())
-                           : base::nullopt,
-                       params->hasImpressionExpiry()
-                           ? base::make_optional(params->impressionExpiry())
-                           : base::nullopt,
-                       nullptr);
+  return GetImpression(
+      execution_context, params->impressionData(),
+      params->conversionDestination(),
+      params->hasReportingOrigin()
+          ? base::make_optional(params->reportingOrigin())
+          : base::nullopt,
+      params->hasImpressionExpiry()
+          ? base::make_optional(params->impressionExpiry())
+          : base::nullopt,
+      params->hasAttributionSourcePriority()
+          ? base::make_optional(params->attributionSourcePriority())
+          : base::nullopt,
+      nullptr);
 }
 
 }  // namespace blink

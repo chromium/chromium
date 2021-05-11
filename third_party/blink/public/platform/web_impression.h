@@ -32,6 +32,10 @@ struct WebImpression {
   // Optional expiry specifying the amount of time this impression can convert.
   // Declared by the impression tag.
   base::Optional<base::TimeDelta> expiry;
+
+  // Priority for the attribution source. Declared by the impression tag.
+  // This is 64 bits to allow timestamps to be used as a prioirty.
+  int64_t priority;
 };
 
 }  // namespace blink

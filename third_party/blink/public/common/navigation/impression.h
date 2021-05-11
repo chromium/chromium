@@ -44,6 +44,9 @@ struct BLINK_COMMON_EXPORT Impression {
   // Optional expiry specifying the amount of time this impression can convert.
   // Declared by the impression tag.
   base::Optional<base::TimeDelta> expiry;
+
+  // Priority for the attribution source. Declared by the impression tag.
+  int64_t priority = 0;
 };
 
 }  // namespace blink

@@ -38,6 +38,9 @@ struct Impression {
   // Optional expiry specifying the amount of time this impression can convert.
   // Declared by the impression tag.
   mojo_base.mojom.TimeDelta? expiry;
+
+  // Priority for the attribution source. 0 is used as a default if none is provided.
+  int64 priority = 0;
 };
 
 // Sent from renderer to browser process when a resource request matching the

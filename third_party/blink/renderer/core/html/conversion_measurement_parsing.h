@@ -24,6 +24,7 @@ struct ImpressionFeatures {
   String conversion_destination;
   String reporting_origin;
   String expiry;
+  String priority;
 };
 
 // Returns the WebImpression struct with all data declared by impression

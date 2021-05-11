@@ -243,9 +243,13 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
     base::Time impression_time = statement.ColumnTime(4);
     base::Time expiry_time = statement.ColumnTime(5);
 
-    StorableImpression impression(
-        impression_data, impression_origin, conversion_origin, reporting_origin,
-        impression_time, expiry_time, kSourceType, impression_id);
+    // TODO(1200448): Replace with the attribution_source_priority in database.
+    int64_t attribution_source_priority = 0;
+
+    StorableImpression impression(impression_data, impression_origin,
+                                  conversion_origin, reporting_origin,
+                                  impression_time, expiry_time, kSourceType,
+                                  attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
   }
 
@@ -378,6 +382,9 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(11));
 
+    // TODO(1200448): Replace with the attribution_source_priority in database.
+    int64_t attribution_source_priority = 0;
+
     // Ensure origins are valid before continuing. This could happen if there is
     // database corruption.
     // TODO(csharrison): This should be an extremely rare occurrence but it
@@ -389,9 +396,10 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
 
     // Create the impression and ConversionReport objects from the retrieved
     // columns.
-    StorableImpression impression(
-        impression_data, impression_origin, conversion_origin, reporting_origin,
-        impression_time, expiry_time, source_type, impression_id);
+    StorableImpression impression(impression_data, impression_origin,
+                                  conversion_origin, reporting_origin,
+                                  impression_time, expiry_time, source_type,
+                                  attribution_source_priority, impression_id);
 
     ConversionReport report(std::move(impression), conversion_data,
                             conversion_time, report_time, conversion_id);
@@ -768,10 +776,13 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(7));
 
+    // TODO(1200448): Replace with the attribution_source_priority in database.
+    int64_t attribution_source_priority = 0;
+
     StorableImpression impression(impression_data, impression_origin,
                                   conversion_destination, reporting_origin,
                                   impression_time, expiry_time, source_type,
-                                  impression_id);
+                                  attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
   }
   if (!statement.Succeeded())

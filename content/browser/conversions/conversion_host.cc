@@ -215,7 +215,7 @@ void ConversionHost::VerifyAndStoreImpression(
       impression_origin, impression.conversion_destination, reporting_origin,
       impression_time,
       policy.GetExpiryTimeForImpression(impression.expiry, impression_time),
-      source_type,
+      source_type, impression.priority,
       /*impression_id=*/base::nullopt);
 
   conversion_manager.HandleImpression(storable_impression);

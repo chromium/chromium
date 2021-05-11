@@ -233,6 +233,9 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
             last_impression.reporting_origin);
   EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
+
+  // Verify default attribution source priority.
+  EXPECT_EQ(0, last_impression.priority);
 }
 
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
@@ -818,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     window.open("https://a.com", "_top",
     "attributionsourceeventid=1,attributiondestination=https://a.com,\
-    attributionreportto=https://report.com,attributionexpiry=1000");)"));
+    attributionreportto=https://report.com,attributionexpiry=1000,\
+    attributionsourcepriority=10");)"));
 
   // Wait for the impression to be seen by the observer.
   blink::Impression last_impression = impression_observer.Wait();
@@ -830,6 +834,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
             last_impression.reporting_origin);
   EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000), *last_impression.expiry);
+  EXPECT_EQ(10, last_impression.priority);
 }
 
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
@@ -842,11 +847,15 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
       {"attributionsourceeventid=1", false},
       {"attributiondestination=1", false},
       {"attributionexpiry=1", false},
+      {"attributionsourcepriority=10", false},
       {"attributionsourceeventid=1,attributiondestination=1234", false},
       {"attributionsourceeventid=1,attributiondestination=abcdefg", false},
       {"attributionsourceeventid=1,attributiondestination=http://a.com", false},
       {"attributionsourceeventid=1,attributiondestination=https://a.com", true},
       {"attributionsourceeventid=bb,attributiondestination=https://a.com",
+       true},
+      {"attributionsourceeventid=bb,attributiondestination=https://"
+       "a.com,attributionsourcepriority=10",
        true},
   };
 
@@ -884,6 +893,36 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
+}
+
+IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
+                       ImpressionTagWithPriorityClicked_ImpressionReceived) {
+  ImpressionObserver impression_observer(web_contents());
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTagWithReportingAndPriority("link" /* id */,
+                        "page_with_conversion_redirect.html" /* url */,
+                        "1" /* impression data */,
+                        "https://a.com" /* conversion_destination */,
+                        "https://report.com" /* report_origin */,
+                        1000 /* attribution_source_priority */);)"));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link\');"));
+
+  // Wait for the impression to be seen by the observer.
+  blink::Impression last_impression = impression_observer.Wait();
+
+  // Verify the attributes of the impression are set as expected.
+  EXPECT_EQ(1UL, last_impression.impression_data);
+  EXPECT_EQ(url::Origin::Create(GURL("https://a.com")),
+            last_impression.conversion_destination);
+  EXPECT_EQ(url::Origin::Create(GURL("https://report.com")),
+            last_impression.reporting_origin);
+  EXPECT_EQ(1000, last_impression.priority);
 }
 
 }  // namespace content

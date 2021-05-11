@@ -205,6 +205,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
         impression_features.reporting_origin = value_string.ToString();
       } else if (key_string == "attributionexpiry") {
         impression_features.expiry = value_string.ToString();
+      } else if (key_string == "attributionsourcepriority") {
+        impression_features.priority = value_string.ToString();
       }
     }
   }

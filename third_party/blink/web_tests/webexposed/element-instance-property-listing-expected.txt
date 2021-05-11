@@ -327,6 +327,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitRequestFullScreen
     property webkitRequestFullscreen
 html element a
+    property attributionSourcePriority
     property charset
     property conversionDestination
     property coords

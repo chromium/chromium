@@ -41,6 +41,7 @@ class CONTENT_EXPORT StorableImpression {
                      base::Time impression_time,
                      base::Time expiry_time,
                      SourceType source_type,
+                     int64_t priority,
                      const base::Optional<int64_t>& impression_id);
   StorableImpression(const StorableImpression& other);
   StorableImpression& operator=(const StorableImpression& other) = delete;
@@ -62,6 +63,8 @@ class CONTENT_EXPORT StorableImpression {
 
   SourceType source_type() const { return source_type_; }
 
+  int64_t priority() const { return priority_; }
+
   // Returns the schemeful site of |conversion_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
@@ -77,6 +80,7 @@ class CONTENT_EXPORT StorableImpression {
   base::Time impression_time_;
   base::Time expiry_time_;
   SourceType source_type_;
+  int64_t priority_;
 
   // If null, an ID has not been assigned yet.
   base::Optional<int64_t> impression_id_;

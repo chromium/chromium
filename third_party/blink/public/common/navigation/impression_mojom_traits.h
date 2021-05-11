@@ -36,6 +36,8 @@ struct BLINK_COMMON_EXPORT
     return r.expiry;
   }
 
+  static int64_t priority(const blink::Impression& r) { return r.priority; }
+
   static bool Read(blink::mojom::ImpressionDataView r, blink::Impression* out);
 };
 

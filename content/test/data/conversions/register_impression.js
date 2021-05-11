@@ -50,6 +50,14 @@ function createImpressionTagWithRegisterAttributionSource(
   anchor.setAttribute("registerattributionsource", "");
 }
 
+function createImpressionTagWithReportingAndPriority(
+  id, url, data, destination, report_origin, priority) {
+  let anchor = createImpressionTagWithTarget(
+      id, url, data, destination, "_top");
+  anchor.setAttribute("reportingorigin", report_origin);
+  anchor.setAttribute("attributionsourcepriority", priority);
+}
+
 function createImpressionTagWithTarget(id, url, data, destination, target) {
   let anchor = document.createElement("a");
   anchor.href = url;

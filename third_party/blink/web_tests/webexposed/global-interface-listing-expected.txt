@@ -2806,6 +2806,7 @@ interface HTMLAllCollection
     method namedItem
 interface HTMLAnchorElement : HTMLElement
     attribute @@toStringTag
+    getter attributionSourcePriority
     getter charset
     getter conversionDestination
     getter coords
@@ -2839,6 +2840,7 @@ interface HTMLAnchorElement : HTMLElement
     getter username
     method constructor
     method toString
+    setter attributionSourcePriority
     setter charset
     setter conversionDestination
     setter coords

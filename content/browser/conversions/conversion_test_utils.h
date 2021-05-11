@@ -177,11 +177,16 @@ class TestConversionManager : public ConversionManager {
     return last_impression_origin_;
   }
 
+  const base::Optional<int64_t> last_attribution_source_priority() {
+    return last_attribution_source_priority_;
+  }
+
  private:
   ConversionPolicy policy_;
   net::SchemefulSite last_conversion_destination_;
   base::Optional<StorableImpression::SourceType> last_impression_source_type_;
   base::Optional<url::Origin> last_impression_origin_;
+  base::Optional<int64_t> last_attribution_source_priority_;
   size_t num_impressions_ = 0;
   size_t num_conversions_ = 0;
 
@@ -209,6 +214,8 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetSourceType(StorableImpression::SourceType source_type);
 
+  ImpressionBuilder& SetPriority(int64_t priority);
+
   ImpressionBuilder& SetImpressionId(base::Optional<int64_t> impression_id);
 
   StorableImpression Build() const;
@@ -221,6 +228,7 @@ class ImpressionBuilder {
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
   StorableImpression::SourceType source_type_;
+  int64_t priority_;
   base::Optional<int64_t> impression_id_;
 };
 
