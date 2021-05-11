@@ -531,6 +531,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
+<translation id="4615382002648696011">പിന്തുടരുന്ന ഫീഡിൽ, വായിക്കാത്ത സ്റ്റോറികൾ തയ്യാറാണ്</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
@@ -1177,6 +1178,7 @@
 <translation id="8659579665266920523">Chrome ഉപയോഗിച്ച് എങ്ങനെ തിരയാം</translation>
 <translation id="8662811608048051533">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും.</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
+<translation id="8676789164135894283">സൈൻ ഇൻ പരിശോധിച്ചുറപ്പിക്കലുകൾ</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാർ}other{സിഗ്‌നൽ സ്‌ട്രെംഗ്‌ത്ത് ലെവൽ # ബാറുകൾ}}</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>

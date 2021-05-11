@@ -24,6 +24,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1148499908455722006">Apri la finestra di dialogo delle informazioni per <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1165712434476988950">È necessario riavviare il dispositivo per applicare l'aggiornamento.</translation>
+<translation id="1170240434488307589">Il pulsante del microfono del dispositivo non è attivo.</translation>
 <translation id="1175572348579024023">Scorri</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -100,6 +101,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1746730358044914197">I metodi di immissione vengono configurati dall'amministratore.</translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
 <translation id="1761222317188459878">Attiva/disattiva connessione di rete. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1771761307086386028">Scorri a destra</translation>
 <translation id="1782199038061388045">traduzione</translation>
 <translation id="1787955149152357925">Off</translation>

@@ -517,6 +517,7 @@
 <translation id="1545775234664667895">थीम "<ph name="THEME_NAME" />" स्थापित की गई</translation>
 <translation id="1546280085599573572">इस एक्सटेंशन ने यह बदल दिया है कि जब आप 'होम बटन' पर क्लिक करते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> एक <ph name="EXTENSION_TYPE" /> इंस्टॉल करना चाहता है जो ये काम कर सकता है:</translation>
+<translation id="1547808936554660006">मैं जानता हूं कि पावरवॉश, इंस्टॉल की गई ई-सिम प्रोफ़ाइलों को नहीं हटाएगा</translation>
 <translation id="1549275686094429035">एआरसी चालू है</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ऐक्‍सेस करना चाहता है <ph name="VOLUME_NAME" />. वह आपकी फ़ाइलों में बदलाव कर सकता है या उन्‍हें मिटा सकता है.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने <ph name="SEARCH_PROVIDER_DOMAIN" /> का इस्तेमाल करने के लिए सर्च इंजन बदला है</translation>
@@ -553,6 +554,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="158849752021629804">होम नेटवर्क की आवश्यकता है</translation>
 <translation id="1588870296199743671">इनके साथ लिंक खोलें...</translation>
+<translation id="1588919647604819635">कार्ड पर दायां क्लिक करें</translation>
 <translation id="1589055389569595240">वर्तनी और व्याकरण दिखाएं</translation>
 <translation id="1591679663873027990">Parallels Desktop को यूएसबी डिवाइस ऐक्सेस करने की मंज़ूरी दें. हटाए जाने के बाद, Parallels Desktop किसी यूएसबी डिवाइस को याद नहीं रखेगा.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" /> रीसेट हो जाएगा. डिवाइस को रीस्टार्ट करने से पहले अपनी फ़ाइलों का बैक अप लें.</translation>
@@ -997,6 +999,7 @@
 
 आप अपने डिवाइस पर Family Link ऐप्लिकेशन इंस्टॉल करके इस खाते की सेटिंग प्रबंधित कर सकते हैं.  हमने आपको ईमेल से निर्देश भेज दिए हैं.</translation>
 <translation id="2040460856718599782">ओह!  आपको प्रमाणित करने की कोशिश करते समय कुछ गड़बड़ी हो गई. कृपया अपने साइन इन क्रेडेंशियल दोबारा जाँचें और फिर से कोशिश करें.</translation>
+<translation id="2042279886444479655">चालू प्रोफ़ाइलें</translation>
 <translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
 <translation id="2044023416777079300">मॉडम रजिस्टर नहीं किया गया है</translation>
 <translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेम्पलेट नाम</translation>
@@ -1338,6 +1341,7 @@
 <translation id="2395616325548404795">आपका <ph name="DEVICE_TYPE" /> डिवाइस एंटरप्राइज़ प्रबंधन के लिए सफलतापूर्वक नामांकित हो गया है, लेकिन वह अपनी एसेट और स्‍थान की जानकारी भेजने में विफल रहा है. कृपया इस डिवाइस के लिए अपने Admin console से यह जानकारी मैन्‍युअल रूप से डालें.</translation>
 <translation id="2396387085693598316">आपके एडमिन ने "<ph name="EXTENSION_NAME" />" को ब्लॉक किया है</translation>
 <translation id="2396783860772170191">चार अंकों वाला पिन (0000-9999) डालें</translation>
+<translation id="2398546389094871088">अपने डिवाइस को पावरवॉश करने से, आपकी ई-सिम प्रोफ़ाइलें नहीं हटेंगी. इन प्रोफ़ाइलों को मैन्युअल तरीके से हटाने के लिए, <ph name="LINK_BEGIN" />मोबाइल सेटिंग<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="2399699884460174994">सूचनाएं चालू की गईं</translation>
 <translation id="2399939490305346086">सुरक्षा कुंजी पर साइन इन का डेटा</translation>
 <translation id="2400664245143453337">तुरंत अपडेट करने की ज़रूरत है</translation>
@@ -1754,6 +1758,7 @@
 <translation id="2844809857160214557">प्रिंट जॉब देखें और प्रबंधित करें</translation>
 <translation id="2845382757467349449">बुकमार्क बार हमेशा दिखाएं</translation>
 <translation id="284805635805850872">नुकसान पहुंचाने वाला सॉफ़्टवेयर निकालें?</translation>
+<translation id="2849035674501872372">ऊपर देखें</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">क्लीन अप नहीं किया जा सका</translation>
 <translation id="2849936225196189499">महत्वपूर्ण</translation>
@@ -2065,6 +2070,7 @@
 <translation id="3189187154924005138">बड़ा कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
+<translation id="3197453258332670132">दायां क्लिक करने या दबाकर रखने पर, आपके चुने गए टेक्स्ट से जुड़ी जानकारी दिखती है</translation>
 <translation id="3199127022143353223">सर्वर</translation>
 <translation id="3201422919974259695">उपलब्ध यूएसबी डिवाइस यहां दिखाई देंगे.</translation>
 <translation id="3202131003361292969">पाथ</translation>
@@ -2086,6 +2092,7 @@
 <translation id="3223531857777746191">'रीसेट करें' बटन</translation>
 <translation id="3225084153129302039">डिफ़ॉल्ट बैंगनी अवतार</translation>
 <translation id="3225319735946384299">कोड हस्ताक्षर</translation>
+<translation id="3226487301970807183">बाईं ओर अलाइन साइड पैनल को टॉगल करें</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
 <translation id="3233271424239923319">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप लें</translation>
 <translation id="3238192140106069382">डिवाइस कनेक्ट कर रहा है और पुष्टि हो रही है</translation>
@@ -2355,6 +2362,7 @@
 <translation id="3515983984924808886">रीसेट की पुष्टि करने के लिए, अपनी सुरक्षा कुंजी फिर से छुएं. ऐसा करने से सुरक्षा कुंजी का पिन और उस पर मौजूद पूरी जानकारी मिट जाएगी.</translation>
 <translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
 <translation id="3519564332031442870">प्रिंट बैकएंड सर्विस</translation>
+<translation id="3519938335881974273">पेज को इस रूप में सेव करें...</translation>
 <translation id="3521606918211282604">डिस्क का साइज़ बदलें</translation>
 <translation id="3522088408596898827">डिस्क में बहुत कम जगह बची है. डिस्क में जगह खाली करके दोबारा कोशिश करें.</translation>
 <translation id="3524965460886318643">गतिविधियां एक्सपोर्ट करें</translation>
@@ -2378,6 +2386,7 @@
 <translation id="3550593477037018652">सेल्युलर नेटवर्क को डिसकनेक्ट करें</translation>
 <translation id="3550915441744863158">Chrome अपने आप अपडेट हो जाता है इसलिए आपके पास हमेशा नवीनतम वर्शन रहता है</translation>
 <translation id="3551320343578183772">टैब बंद करें</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">बाहर निकलने पर साफ़ की गई</translation>
 <translation id="3554493885489666172">आपके डिवाइस को <ph name="PROFILE_NAME" /> मैनेज करता है. एडमिन इस डिवाइस पर मौजूद किसी भी प्रोफ़ाइल का डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="3555812735919707620">एक्सटेंशन निकालें</translation>
@@ -2430,6 +2439,7 @@
 <translation id="3604713164406837697">वॉलपेपर बदलें</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
 <translation id="3608576286259426129">उपयोगकर्ता के इमेज की झलक</translation>
+<translation id="3609277884604412258">तेज़ी से खोजने की सुविधा</translation>
 <translation id="3610369246614755442">डॉक के पंखे को मरम्मत की ज़रूरत है</translation>
 <translation id="361106536627977100">फ़्लैश डेटा</translation>
 <translation id="3611655097742243705">ज़्यादा ऐप्लिकेशन पाने के लिए, 'Play स्टोर' पर जाएं</translation>
@@ -3373,6 +3383,7 @@
 <translation id="4636682061478263818">Drive फ़ाइलें</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4637083375689622795">ज़्यादा कार्रवाइयां, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">कैमरे का फिर से इस्तेमाल करें</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{टेक्स्ट}one{# टेक्स्ट}other{# टेक्स्ट}}</translation>
 <translation id="4638930039313743000">ADB डीबग करने की सुविधा चालू करें</translation>
 <translation id="4641539339823703554">Chrome, सिस्टम का समय सेट नहीं कर सका. कृपया नीचे दिया गया समय देखें और ज़रुरत होने पर उसे सही करें.</translation>
@@ -4123,6 +4134,7 @@
 <translation id="5499313591153584299">यह फ़ाइल आपके कंप्‍यूटर के लिए हानिकारक हो सकती है.</translation>
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
+<translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
 <translation id="5502500733115278303">Firefox से आयात किया गया</translation>
 <translation id="5502915260472117187">बच्चा</translation>
@@ -5334,6 +5346,7 @@
 <translation id="6856348640027512653">वर्चुअल रियलिटी वाले डिवाइसों या डेटा का इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="6856623341093082836">अपनी टचस्क्रीन को सटीक सेट करें और एडजस्ट करें</translation>
+<translation id="6857145580237920905">पावरवॉश से पहले ई-सिम प्रोफ़ाइलों को हटाएं</translation>
 <translation id="6857699260879628349">कॉन्फ़िगरेशन की जानकारी पाएं</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंड</translation>
 <translation id="6860097299815761905">प्रॉक्‍सी सेटिंग...</translation>

@@ -173,6 +173,7 @@
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
 <translation id="153384715582417236">ამ დროისთვის სულ ეს არის</translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
+<translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
 <translation id="154408704832528245">მიწოდების მისამართის არჩევა</translation>
 <translation id="1549470594296187301">ამ ფუნქციის გამოსაყენებლად, JavaScript ჩართული უნდა იყოს.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@
 <translation id="1682696192498422849">ჯერ მოკლე კიდე</translation>
 <translation id="168693727862418163">წესების ამ მნიშვნელობის სქემის დადასტურება ვერ მოხერხდა, ამიტომ ის უგულებელყოფილი იქნება.</translation>
 <translation id="168841957122794586">სერვერის სერთიფიკატი შეიცავს სუსტ კრიპტოგრაფიულ გასაღებს.</translation>
+<translation id="1696290444144917273">ვირტუალური ბარათის დეტალების ნახვა</translation>
 <translation id="1697532407822776718">ყველაფერი დაყენებულია!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი, სავარაუდოდ, ხვალინდელია. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}other{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატის ვადა, სავარაუდოდ, # დღის შემდეგ იწყება. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}}</translation>
@@ -226,6 +228,7 @@
 <translation id="1717494416764505390">საფოსტო ყუთი 3</translation>
 <translation id="1718029547804390981">დოკუმენტი ანოტირებისთვის მეტისმეტად დიდია</translation>
 <translation id="1721424275792716183">* ველი აუცილებელია</translation>
+<translation id="1727613060316725209">სერთიფიკატი ძალაშია</translation>
 <translation id="1727741090716970331">მიუთითეთ ბარათის სწორი ნომერი</translation>
 <translation id="1728677426644403582">თქვენ ათვალიერებთ ვებგვერდის წყაროს</translation>
 <translation id="173080396488393970">ამ ტიპის ბარათი მხარდაუჭერელია</translation>
@@ -694,6 +697,7 @@
 <translation id="3586931643579894722">დეტალების დამალვა</translation>
 <translation id="3587738293690942763">შუა</translation>
 <translation id="3590643883886679995">ინკოგნიტო რეჟიმიდან გასვლის შემდეგ სისტემაში შესვლის მონაცემები ამ მოწყობილობაზე შეინახება.</translation>
+<translation id="359126217934908072">თვე/წელი:</translation>
 <translation id="3592413004129370115">Italian (კონვერტი)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">აპლიკაცია დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
@@ -749,6 +753,7 @@
 <translation id="3781428340399460090">მკვეთრი ვარდისფერი</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth მოწყობილობები</translation>
+<translation id="3787675388804467730">ვირტუალური ბარათის ნომერი</translation>
 <translation id="3787705759683870569">ვადის გასვლის თარიღი: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">ზომა 16</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
@@ -1409,6 +1414,7 @@
 <translation id="6289939620939689042">გვერდის ფერი</translation>
 <translation id="6290238015253830360">აქ გამოჩნდება თქვენთვის შემოთავაზებული სტატიები</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">ბარათის დადასტურების კოდი (CVC):</translation>
 <translation id="6302269476990306341">Google ასისტენტი Chrome-ში წყვეტს მუშაობას</translation>
 <translation id="6305205051461490394"><ph name="URL" /> მიუწვდომელია.</translation>
 <translation id="6312113039770857350">ვებგვერდი მიუწვდომელია</translation>
@@ -1541,6 +1547,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome-მა გაამარტივა ეს გვერდი მისი წაკითხვის გასაიოლებლად. Chrome-მა თავდაპირველი გვერდი ჩატვირთა დაუცველი კავშირის მეშვეობით.</translation>
 <translation id="6891596781022320156">წესის დონე არ არის მხარდაჭერილი.</translation>
+<translation id="6895143722905299846">ვირტუალური ნომერი:</translation>
 <translation id="6895330447102777224">თქვენი ბარათი დადასტურდა</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
@@ -1579,6 +1586,7 @@
 <translation id="7014741021609395734">მასშტაბის დონე</translation>
 <translation id="7016992613359344582">აღნიშნული გადახდები შეიძლება განხორციელდეს ერთჯერადად ან პერიოდულად და არ იყოს ადვილად შესამჩნევი.</translation>
 <translation id="7029809446516969842">პაროლები</translation>
+<translation id="7030436163253143341">სერთიფიკატი არ არის მოქმედი</translation>
 <translation id="7031646650991750659">თქვენ მიერ დაინსტალირებული Google Play აპები</translation>
 <translation id="7050187094878475250">თქვენ ცდილობდით <ph name="DOMAIN" />-თან დაკავშირებას, მაგრამ სერვერის მიერ წარმოდგენილი სერთიფიკატის მოქმედების პერიოდი ზედმეტად ხანგრძლივია, იმისათვის რომ სანდო იყოს.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ამ ბარათის შენახვა ამჟამად ვერ მოხერხდება}other{ამ ბარათების შენახვა ამჟამად ვერ მოხერხდება}}</translation>

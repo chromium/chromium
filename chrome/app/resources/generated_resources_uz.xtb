@@ -512,6 +512,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1545775234664667895">“<ph name="THEME_NAME" />” mavzusi o‘rnatildi</translation>
 <translation id="1546280085599573572">Bu kengaytma “Boshi” tugmasi bosilganda ochiladigan sahifani o‘zgartirdi.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> kengaytmasini oʻrnatmoqchi, bunga kerakli ruxsatlar:</translation>
+<translation id="1547808936554660006">Zavod sozlamalariga qaytarilganda oʻrnatilgan eSIM profillari olib tashlanmasligini tushunaman</translation>
 <translation id="1549275686094429035">ARC yoniq</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ilovasi <ph name="VOLUME_NAME" /> bo‘limiga ruxsat so‘rayapti. Bu fayllarni tahrirlash va o‘chirib yuborishi mumkin.</translation>
 <translation id="1552301827267621511">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="SEARCH_PROVIDER_DOMAIN" /> saytini qidiruv tizimi sifatida belgiladi</translation>
@@ -548,6 +549,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Uy tarmog‘i bo‘lishi lozim</translation>
 <translation id="1588870296199743671">Havolani bu ilovada ochish...</translation>
+<translation id="1588919647604819635">Kartani oʻng klik bilan bosing</translation>
 <translation id="1589055389569595240">Imlo va grammatika tekshiruvini ko‘rsatish</translation>
 <translation id="1591679663873027990">Parallels Desktopga USB qurilmalardagi fayllarni ochishga ruxsat bering. USB qurilma olinganidan keyin Parallels Desktop uni eslab qolmaydi.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB tuzatish vositasini faolsizlantirdi, <ph name="DEVICE_TYPE" /> sozlamalari asliga qaytariladi. Qayta yoqishdan avval fayllaringiz zaxiralanmoqda.</translation>
@@ -984,6 +986,7 @@ Aks holda, hoziroq hisobdan chiqing va qurilmadagi sozlamalar oʻzgarmaydi.
 
 Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshqarishingiz mumkin.  Koʻrsatmalar email manzilingizga yuborildi.</translation>
 <translation id="2040460856718599782">Haqiqiylik tekshiruvini amalga oshirib bo‘lmadi. Hisob ma’lumotlarini tekshirib, qaytadan urinib ko‘ring.</translation>
+<translation id="2042279886444479655">Faol profillar</translation>
 <translation id="2044014337866019681">Bu seansni qulfdan chiqarish uchun <ph name="ACCOUNT" /> hisobidan kiring.</translation>
 <translation id="2044023416777079300">Modem registratsiya qilinmagan</translation>
 <translation id="204497730941176055">Microsoft sertifikati andozasi nomi</translation>
@@ -1325,6 +1328,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> qurilmangiz korporativ domen ro‘yxatidan o‘tkazildi, lekin obyekt va uning joylashuvi ma’lumotlarini uzatishda xatolik yuz berdi. Bu ma’lumotni administrator paneli orqali o‘zingiz kiriting.</translation>
 <translation id="2396387085693598316">“<ph name="EXTENSION_NAME" />” administrator tomonidan bloklandi</translation>
 <translation id="2396783860772170191">4 ta raqami PIN kod kiriting (0000-9999)</translation>
+<translation id="2398546389094871088">Qurilmangiz zavod sozlamalariga qaytarilganda eSIM profillari oʻchib ketmaydi. Bu profillarni oddiy usulda <ph name="LINK_BEGIN" />Mobil sozlamalar<ph name="LINK_END" /> orqali olib tashlash mumkin.</translation>
 <translation id="2399699884460174994">Bildirishnomalar yoqildi</translation>
 <translation id="2399939490305346086">Elektron kalitdagi kirish maʼlumotlari</translation>
 <translation id="2400664245143453337">Hoziroq yangilanishi zarur</translation>
@@ -1742,6 +1746,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2844809857160214557">Chop etish vazifalarini koʻrish va boshqarish</translation>
 <translation id="2845382757467349449">Xatcho‘plar panelini har doim ko‘rsatish</translation>
 <translation id="284805635805850872">Zararli dastur o‘chirilsinmi?</translation>
+<translation id="2849035674501872372">Tepaga qarang</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Tozalanmadi</translation>
 <translation id="2849936225196189499">Jiddiy</translation>
@@ -2053,6 +2058,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3189187154924005138">Katta kursor</translation>
 <translation id="3190558889382726167">Parol saqlandi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
+<translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
 <translation id="3199127022143353223">Serverlar</translation>
 <translation id="3201422919974259695">Mavjud USB qurilmalar bu yerda chiqadi.</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
@@ -2074,6 +2080,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3223531857777746191">Asliga qaytarish tugmasi</translation>
 <translation id="3225084153129302039">Standart siyohrang avatar</translation>
 <translation id="3225319735946384299">Kodni imzolash</translation>
+<translation id="3226487301970807183">Chapga tekislangan yon panelni almashtirish</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Linux ilova va fayllarini zaxiralash</translation>
 <translation id="3238192140106069382">Ulanmoqda va tekshirmoqda</translation>
@@ -2343,6 +2350,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3515983984924808886">Sozlamalarni asliga qaytarishni tasdiqlash uchun elektron kalit tugmasini qayta bosing. Bunda elektron kalitdagi barcha maʼlumotlar, jumladan, PIN kodlar ham tozalab tashlanadi.</translation>
 <translation id="3518985090088779359">Davom etish</translation>
 <translation id="3519564332031442870">Chop etish serveri</translation>
+<translation id="3519938335881974273">Sahifani saqlab olish...</translation>
 <translation id="3521606918211282604">Disk hajmini oʻzgartirish</translation>
 <translation id="3522088408596898827">Diskda boʻsh joy deyarli qolmadi. Joy ochib, qaytadan urining.</translation>
 <translation id="3524965460886318643">Eksport qilishlar jurnali</translation>
@@ -2366,6 +2374,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3550593477037018652">Mobil tarmoqni uzish</translation>
 <translation id="3550915441744863158">Chrome avtomatik ravishda yangilanadi, shuning uchun har doim so‘nggi versiyasi o‘rnatilinadi.</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Chiqish vaqtida tozalanadi</translation>
 <translation id="3554493885489666172">Qurilmangiz <ph name="PROFILE_NAME" /> domenida boshqariladi. Administratorlar bu qurilmadagi har qaysi profil maʼlumotlarini ochishi mumkin.</translation>
 <translation id="3555812735919707620">Kengaytmani o‘chirish</translation>
@@ -2418,6 +2427,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="3605780360466892872">Ishbilarmon</translation>
 <translation id="3608576286259426129">Foydalanuvchi rasmini oldingdan ko‘rish</translation>
+<translation id="3609277884604412258">Tezkor qidiruv</translation>
 <translation id="3610369246614755442">Dok ventilyatori ishlamayapti</translation>
 <translation id="361106536627977100">Flash ma‘lumotlari</translation>
 <translation id="3611655097742243705">Boshqa ilovalarni topish uchun Play doʻkoniga kiring.</translation>
@@ -3362,6 +3372,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4636682061478263818">Drive fayllari</translation>
 <translation id="4636930964841734540">Ma’lumot</translation>
 <translation id="4637083375689622795">Boshqa amallar, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Kamerani qayta ishlatish</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Matn}other{# ta matn}}</translation>
 <translation id="4638930039313743000">ADB tuzatish vositasini yoqish</translation>
 <translation id="4641539339823703554">Brauzer tizim vaqtini o‘rnata olmadi. Vaqtni tekshiring va kerak bo‘lsa to‘g‘irlab qo‘ying.</translation>
@@ -4112,6 +4123,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5499313591153584299">Bu fayl kompyuteringiz uchun zararli bo‘lishi mumkin.</translation>
 <translation id="5499453227627332024">Linux konteyneringiz uchun yangilanish chiqqan. Uni keyinroq Sozlamalar ilovasi orqali ham yangilash mumkin.</translation>
 <translation id="5500709606820808700">Xavfsizlik tekshiruvi bugun bajarilgan</translation>
+<translation id="5501322521654567960">Chapga tekislangan yon panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}other{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}}</translation>
 <translation id="5502500733115278303">Firefox brauzeridan import qilinganlar</translation>
 <translation id="5502915260472117187">Bola</translation>
@@ -5323,6 +5335,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6856348640027512653">Virtual reallik qurilmalari yoki axborotidan foydalanish taqiqlangan</translation>
 <translation id="6856459657722366306">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="NETWORK_PROVIDER_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="6856623341093082836">Sensorli ekran aniqligini moslash</translation>
+<translation id="6857145580237920905">Zavod sozlamalariga qaytarishdan oldin eSIM profillarini olib tashlash</translation>
 <translation id="6857699260879628349">Konfiguratsiya haqida axborot olish</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
 <translation id="6860097299815761905">Proksi-server sozlamalari...</translation>

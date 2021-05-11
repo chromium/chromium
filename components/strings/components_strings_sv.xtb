@@ -173,6 +173,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1532118530259321453">På den här sidan står det</translation>
 <translation id="153384715582417236">Det var allt för den här gången</translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
+<translation id="1539840569003678498">Rapporten skickades:</translation>
 <translation id="154408704832528245">Välj leveransadress</translation>
 <translation id="1549470594296187301">JavaScript måste aktiveras för att du ska kunna använda den här funktionen.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1682696192498422849">Kortsidan först</translation>
 <translation id="168693727862418163">Principen ignoreras eftersom den inte gick att validera mot schemat.</translation>
 <translation id="168841957122794586">Servercertifikatet innehåller en svag kryptografisk nyckel.</translation>
+<translation id="1696290444144917273">Visa kortuppgifter</translation>
 <translation id="1697532407822776718">Färdigt!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla i morgon. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}other{Det gick inte att bevisa att serverns identitet är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat uppges börja gälla om # dagar. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.}}</translation>
@@ -226,6 +228,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1717494416764505390">Postfack 3</translation>
 <translation id="1718029547804390981">Det går inte att annotera det här dokumentet eftersom det är för stort</translation>
 <translation id="1721424275792716183">* Fältet är obligatoriskt</translation>
+<translation id="1727613060316725209">Certifikatet är giltigt</translation>
 <translation id="1727741090716970331">Lägg till ett giltigt kortnummer</translation>
 <translation id="1728677426644403582">Du visar källkoden till en webbsida</translation>
 <translation id="173080396488393970">Denna korttyp stöds inte</translation>
@@ -700,6 +703,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3586931643579894722">Dölj detaljerad information</translation>
 <translation id="3587738293690942763">Mellan</translation>
 <translation id="3590643883886679995">Inloggningsuppgifterna sparas på enheten när du har avslutat inkognitoläget.</translation>
+<translation id="359126217934908072">Månad/år:</translation>
 <translation id="3592413004129370115">Italian (kuvert)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Appen blockeras av administratören</translation>
@@ -755,6 +759,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3781428340399460090">Cerise</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
+<translation id="3787675388804467730">Virtuellt kort</translation>
 <translation id="3787705759683870569">Utgångsdatum: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Storlek 16</translation>
 <translation id="3789841737615482174">Installera</translation>
@@ -1553,6 +1558,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome har förenklat sidan så att den ska bli lättare att läsa. Chrome hämtade den ursprungliga sidan via en osäker anslutning.</translation>
 <translation id="6891596781022320156">Policynivån stöds inte.</translation>
+<translation id="6895143722905299846">Kortnummer:</translation>
 <translation id="6895330447102777224">Kortet har bekräftats</translation>
 <translation id="6897140037006041989">Användaragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -1591,6 +1597,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
+<translation id="7030436163253143341">Certifikatet är ogiltigt</translation>
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
 <translation id="7050187094878475250">Du försökte nå <ph name="DOMAIN" />, men servern svarade med ett certifikat vars giltighetstid är för lång för att det ska vara trovärdigt.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Det går inte att lägga till det här kortet just nu}other{Det går inte att lägga till de här korten just nu}}</translation>

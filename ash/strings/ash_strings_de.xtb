@@ -140,6 +140,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2079504693865562705">Apps in Ablage ausblenden</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
+<translation id="2108303511227308752">Die Tastenkombination Alt + Rücktaste hat sich geändert. Wenn Sie jetzt die Löschen-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + Rücktaste.</translation>
 <translation id="2126242104232412123">Neuer Desktop</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="2132302418721800944">Ganzen Bildschirm aufzeichnen</translation>
@@ -367,6 +368,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4021716437419160885">Nach unten scrollen</translation>
 <translation id="4028481283645788203">Für mehr Sicherheit ist ein Passwort erforderlich</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Die Tastenkombination <ph name="LAUNCHER_KEY_NAME" /> + Ziffer hat sich geändert. Wenn Sie jetzt eine F-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + eine Taste in der oberen Reihe.</translation>
 <translation id="4042660782729322247">Sie geben Ihren Bildschirm frei</translation>
 <translation id="4057003836560082631">Browser-Tab <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>
@@ -392,6 +394,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="425364040945105958">Keine SIM-Karte</translation>
 <translation id="4261870227682513959">Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind deaktiviert.</translation>
 <translation id="4269883910223712419">Der Administrator dieses Geräts kann Folgendes tun:</translation>
+<translation id="4274537685965975248">Die Tastenkombination Strg + Alt + Abwärtspfeil hat sich geändert. Wenn Sie jetzt die Ende-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + Rechtspfeil.</translation>
 <translation id="4279490309300973883">Spiegelung</translation>
 <translation id="4285498937028063278">Loslösen</translation>
 <translation id="4294319844246081198">Guten Morgen <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +403,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4303223480529385476">Statusbereich maximieren</translation>
 <translation id="4321179778687042513">Strg</translation>
 <translation id="4321776623976362024">Sie haben die Tastenkombination für den Modus "Hoher Kontrast" gedrückt. Möchten Sie ihn aktivieren?</translation>
+<translation id="4322742403972824594">Die Tastenkombination Strg + Alt + Aufwärtspfeil hat sich geändert. Wenn Sie jetzt die Pos1-Taste benötigen, drücken Sie <ph name="LAUNCHER_KEY_NAME" />-Taste + Linkspfeil.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros wird nicht unterstützt, wenn viele Nutzer angemeldet sind.</translation>
 <translation id="4338109981321384717">Lupe</translation>
@@ -417,6 +421,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4445159312344259901">Zum Entsperren anmelden</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 wichtige Benachrichtigung}other{# wichtige Benachrichtigungen}}</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
+<translation id="4451374464530248585">Die Tastenkombination Alt + Abwärtspfeil hat sich geändert. Wenn Sie jetzt die Seite-nach-unten-Taste benötigen, drücken Sie die <ph name="LAUNCHER_KEY_NAME" />-Taste + Abwärtspfeil.</translation>
 <translation id="445864333228800152">Guten Abend,</translation>
 <translation id="4458688154122353284">Bildschirmaufzeichnung beenden</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
@@ -708,6 +713,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6919251195245069855">Ihre Smartcard wurde nicht erkannt. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6961121602502368900">„Smartphone stummschalten“ ist im Arbeitsprofil nicht verfügbar</translation>
+<translation id="6961840794482373852">Die Tastenkombination Alt + Aufwärtspfeil hat sich geändert. Wenn Sie jetzt die Seite-nach-oben-Taste benötigen, drücken Sie <ph name="LAUNCHER_KEY_NAME" />-Taste + Aufwärtspfeil.</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6972754398087986839">Erste Schritte</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>

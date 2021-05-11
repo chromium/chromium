@@ -531,6 +531,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4583164079174244168">{MINUTES,plural, =1{Il y a # minute}one{Il y a # minute}other{Il y a # minutes}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Cette page hors connexion date du <ph name="CREATION_TIME" /> et peut différer de la version en ligne.</translation>
+<translation id="4615382002648696011">Suivi, articles non lus prêts</translation>
 <translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -1177,6 +1178,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8659579665266920523">Comment effectuer une recherche avec Chrome</translation>
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
+<translation id="8676789164135894283">Validations de connexion</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Intensité du signal : # barre}one{Intensité du signal : # barre}other{Intensité du signal : # barres}}</translation>
 <translation id="869891660844655955">Date d'expiration</translation>

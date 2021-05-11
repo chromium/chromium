@@ -173,6 +173,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1532118530259321453">Aquesta pàgina diu</translation>
 <translation id="153384715582417236">De moment, això és tot</translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
+<translation id="1539840569003678498">S'ha enviat l'informe:</translation>
 <translation id="154408704832528245">Tria l'adreça d'entrega</translation>
 <translation id="1549470594296187301">Heu d'activar el JavaScript per utilitzar aquesta funció.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1682696192498422849">La vora curta primer</translation>
 <translation id="168693727862418163">No s'ha pogut validar el valor d'aquesta política comparant-lo amb l'esquema i, per tant, s'ignorarà.</translation>
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
+<translation id="1696290444144917273">Mostra les dades de la targeta virtual</translation>
 <translation id="1697532407822776718">Ja estàs a punt!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" /> perquè, suposadament, el seu certificat de seguretat té la data de demà. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.}other{Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" />; perquè, suposadament, el seu certificat de seguretat té una data que és d'aquí a # dies. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.}}</translation>
@@ -226,6 +228,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1717494416764505390">Bústia de correu 3</translation>
 <translation id="1718029547804390981">No es poden afegir anotacions a aquest fitxer perquè és massa gran</translation>
 <translation id="1721424275792716183">* El camp és obligatori</translation>
+<translation id="1727613060316725209">El certificat és vàlid</translation>
 <translation id="1727741090716970331">Afegeix un número de targeta vàlid</translation>
 <translation id="1728677426644403582">Estàs consultant el codi font d'una pàgina web</translation>
 <translation id="173080396488393970">Aquest tipus de targeta no s'admet</translation>
@@ -694,6 +697,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587738293690942763">Mitjà</translation>
 <translation id="3590643883886679995">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit.</translation>
+<translation id="359126217934908072">Mes/Any:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicació bloquejada per l'administrador</translation>
@@ -749,6 +753,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3781428340399460090">Rosa fúcsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositius Bluetooth</translation>
+<translation id="3787675388804467730">Número de targeta virtual</translation>
 <translation id="3787705759683870569">Data de caducitat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mida 16</translation>
 <translation id="3789841737615482174">Instal·la</translation>
@@ -1542,6 +1547,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> (<ph name="SHORT_URL" />)</translation>
 <translation id="6888584790432772780">Chrome ha simplificat aquesta pàgina perquè sigui més fàcil de llegir. A més, ha recuperat la pàgina original amb una connexió no segura.</translation>
 <translation id="6891596781022320156">No s'admet el nivell de la política.</translation>
+<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">La teva targeta s'ha confirmat</translation>
 <translation id="6897140037006041989">Agent d'usuari</translation>
 <translation id="6898699227549475383">Organització (O)</translation>
@@ -1580,6 +1586,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7014741021609395734">Nivell de zoom</translation>
 <translation id="7016992613359344582">Aquests càrrecs poden ser únics o periòdics i és possible que no s'indiquin d'una manera evident.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
+<translation id="7030436163253143341">El certificat no és vàlid</translation>
 <translation id="7031646650991750659">Quines aplicacions de Google Play has instal·lat</translation>
 <translation id="7050187094878475250">Has provat de connectar-te a <ph name="DOMAIN" />, però el servidor ha presentat un certificat amb un període de validesa massa llarg per poder confiar-hi.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{En aquest moment no es pot desar la targeta}other{En aquest moment no es poden desar les targetes}}</translation>

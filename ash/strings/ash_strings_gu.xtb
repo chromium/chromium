@@ -140,6 +140,7 @@
 <translation id="2079504693865562705">શેલ્ફમાં ઍપ છુપાવો</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
+<translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
 <translation id="2127372758936585790">નિમ્ન-પાવર ચાર્જર</translation>
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
@@ -367,6 +368,7 @@
 <translation id="4021716437419160885">નીચે સ્ક્રોલ કરો</translation>
 <translation id="4028481283645788203">વધુ સુરક્ષા માટે પાસવર્ડ જરૂરી છે</translation>
 <translation id="4032485810211612751"><ph name="HOURS" /> : <ph name="MINUTES" /> : <ph name="SECONDS" /></translation>
+<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + Number કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. F-કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની પંક્તિ પરની કોઈ એક કી દબાવો.</translation>
 <translation id="4042660782729322247">તમે તમારી સ્ક્રીન શેર કરી રહ્યા છો</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />માંથી <ph name="INDEX" /> ટૅબ બ્રાઉઝ કરો. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{એક ઍપ માટે બંધ}one{# ઍપ માટે બંધ}other{# ઍપ માટે બંધ}}</translation>
@@ -392,6 +394,7 @@
 <translation id="425364040945105958">કોઈ સિમ કાર્ડ નથી</translation>
 <translation id="4261870227682513959">નોટિફિકેશન સેટિંગ બતાવો. નોટિફિકેશન બંધ છે</translation>
 <translation id="4269883910223712419">આ ઉપકરણના વ્યવસ્થાપકની ક્ષમતા:</translation>
+<translation id="4274537685965975248">Ctrl કી + Alt કી + નીચેની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. End કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + જમણી ઍરો કી દબાવો.</translation>
 <translation id="4279490309300973883">પ્રતિબિંબત થઈ રહ્યું છે</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="4294319844246081198">ગુડ મોર્નિંગ <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +403,7 @@
 <translation id="4303223480529385476">સ્ટેટસ એરિયા વધારો</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">તમે હાઇ કૉન્ટ્રાસ્ટ માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
+<translation id="4322742403972824594">Ctrl કી + Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Home કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ડાબી ઍરો કી દબાવો.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">એકથી વધુ વપરાશકર્તાઓએ સાઇન ઇન કર્યું હોય, ત્યારે Lacros કામ કરતું નથી.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
@@ -417,6 +421,7 @@
 <translation id="4445159312344259901">અનલૉક કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 મહત્ત્વપૂર્ણ નોટિફિકેશન}one{# મહત્ત્વપૂર્ણ નોટિફિકેશન}other{# મહત્ત્વપૂર્ણ નોટિફિકેશન}}</translation>
 <translation id="4450893287417543264">ફરી બતાવશો નહીં</translation>
+<translation id="4451374464530248585">Alt કી + નીચેની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Page Down કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + નીચેની ઍરો કી દબાવો.</translation>
 <translation id="445864333228800152">ગુડ ઇવનિંગ,</translation>
 <translation id="4458688154122353284">સ્ક્રીન રેકોર્ડિંગ બંધ કરો</translation>
 <translation id="4472575034687746823">શરૂ કરો</translation>
@@ -708,6 +713,7 @@
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6961121602502368900">ઑફિસની પ્રોફાઇલમાં ફોન સાઇલન્ટ રાખવાની સુવિધા ઉપલબ્ધ નથી</translation>
+<translation id="6961840794482373852">Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Page Up કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની ઍરો કી દબાવો.</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6972754398087986839">પ્રારંભ કરો</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>

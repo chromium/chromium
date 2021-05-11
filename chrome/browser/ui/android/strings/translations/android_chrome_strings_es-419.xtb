@@ -531,6 +531,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hace # minuto}other{Hace # minutos}}</translation>
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta página sin conexión se creó el <ph name="CREATION_TIME" /> y es posible que sea diferente con respecto a la versión en línea.</translation>
+<translation id="4615382002648696011">Historias sin leer disponibles del feed que sigues</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
@@ -1177,6 +1178,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="8659579665266920523">Cómo realizar búsquedas en Chrome</translation>
 <translation id="8662811608048051533">Esta acción te hace salir de la mayoría de los sitios.</translation>
 <translation id="8664979001105139458">Ya existe el nombre del archivo</translation>
+<translation id="8676789164135894283">Verificaciones para acceder</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de potencia de la señal: # barra}other{Nivel de potencia de la señal: # barras}}</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>

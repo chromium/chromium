@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">Installerat tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Det här tillägget har ändrat vilken sida som visas när du klickar på hemknappen.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vill installera ett <ph name="EXTENSION_TYPE" /> som kan göra följande:</translation>
+<translation id="1547808936554660006">Jag är medveten om att installerade eSIM-profiler inte tas bort vid en powerwash</translation>
 <translation id="1549275686094429035">ARC aktiverat</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vill ha åtkomst till <ph name="VOLUME_NAME" />. Den kan ändra eller ta bort dina filer.</translation>
 <translation id="1552301827267621511">Tillägget <ph name="EXTENSION_NAME" /> ändrade sökleverantören till <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Behöver hemnätverk</translation>
 <translation id="1588870296199743671">Öppna länk med ...</translation>
+<translation id="1588919647604819635">Högerklickskort</translation>
 <translation id="1589055389569595240">Visa stavning och grammatik</translation>
 <translation id="1591679663873027990">Ge Parallels Desktop behörighet att komma åt USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Parallels Desktop.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Din <ph name="DEVICE_TYPE" /> återställs. Säkerhetskopiera dina filer innan du startar om enheten.</translation>
@@ -996,6 +998,7 @@ Annars loggar du ut nu så att ändringarna i det här kontot reflekteras på en
 
 Du kan hantera inställningarna för det här kontot genom att installera Family Link-appen på din enhet.  Vi har skickat ett e-postmeddelanden med anvisningar till dig.</translation>
 <translation id="2040460856718599782">Hoppsan! Något gick fel när du försökte verifiera dig. Dubbelkolla dina inloggningsuppgifter och försök igen.</translation>
+<translation id="2042279886444479655">Aktiva profiler</translation>
 <translation id="2044014337866019681">Kontrollera att du verifierar <ph name="ACCOUNT" /> om du vill låsa upp sessionen.</translation>
 <translation id="2044023416777079300">Modemet har inte registrerats</translation>
 <translation id="204497730941176055">Namn på Microsoft-certifikatmall</translation>
@@ -1337,6 +1340,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> har registrerats för företagshantering, men har inte skickat tillgångs- och platsinformation. Ange informationen manuellt i administratörskonsolen för enheten.</translation>
 <translation id="2396387085693598316">Administratören blockerar <ph name="EXTENSION_NAME" /></translation>
 <translation id="2396783860772170191">Ange den fyrsiffriga pinkoden (0000–9999)</translation>
+<translation id="2398546389094871088">eSIM-profilerna tas inte bort vid en powerwash. Öppna <ph name="LINK_BEGIN" />Inställningar för mobil enhet<ph name="LINK_END" /> och ta bort profilerna manuellt.</translation>
 <translation id="2399699884460174994">Aviseringar har aktiverats</translation>
 <translation id="2399939490305346086">Säkerhetsnyckelns inloggningsdata</translation>
 <translation id="2400664245143453337">Omedelbar uppdatering krävs</translation>
@@ -1754,6 +1758,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2844809857160214557">Visa och hantera utskriftsjobb</translation>
 <translation id="2845382757467349449">Visa alltid bokmärkesfältet</translation>
 <translation id="284805635805850872">Vill du ta bort den skadliga programvaran?</translation>
+<translation id="2849035674501872372">Slå upp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Rensningen misslyckades</translation>
 <translation id="2849936225196189499">Kritiskt</translation>
@@ -2065,6 +2070,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3189187154924005138">Stor markör</translation>
 <translation id="3190558889382726167">Lösenordet sparades</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
+<translation id="3197453258332670132">Visa information om den markerade texten när du högerklickar eller trycker länge</translation>
 <translation id="3199127022143353223">Servrar</translation>
 <translation id="3201422919974259695">Tillgängliga USB-enheter visas här.</translation>
 <translation id="3202131003361292969">Sökväg</translation>
@@ -2086,6 +2092,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3223531857777746191">Återställningsknapp</translation>
 <translation id="3225084153129302039">Lila standardavatar</translation>
 <translation id="3225319735946384299">Kodsignering</translation>
+<translation id="3226487301970807183">Aktivera/inaktivera vänsterställd sidopanel</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Säkerhetskopiera Linux-appar och Linux-filer</translation>
 <translation id="3238192140106069382">Ansluter och verifierar</translation>
@@ -2355,6 +2362,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
 <translation id="3518985090088779359">Godkänn och fortsätt</translation>
 <translation id="3519564332031442870">Servertjänst för utskrift</translation>
+<translation id="3519938335881974273">Spara sida som …</translation>
 <translation id="3521606918211282604">Ändra diskstorlek</translation>
 <translation id="3522088408596898827">Mycket ont om diskutrymme. Frigör diskutrymme och försök igen.</translation>
 <translation id="3524965460886318643">Exportera aktivitet</translation>
@@ -2378,6 +2386,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3550593477037018652">Koppla från mobilnätverk</translation>
 <translation id="3550915441744863158">Chrome uppdateras automatiskt så att du alltid har den senaste versionen</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Rensas vis avslutning</translation>
 <translation id="3554493885489666172">Enheten hanteras av <ph name="PROFILE_NAME" />. Administratörer kan få åtkomst till data i alla profiler på enheten.</translation>
 <translation id="3555812735919707620">Ta bort tillägg</translation>
@@ -2430,6 +2439,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="3605780360466892872">Proper</translation>
 <translation id="3608576286259426129">Förhandsgranskning av användarens bild</translation>
+<translation id="3609277884604412258">Snabbsökning</translation>
 <translation id="3610369246614755442">Dockningsstationens fläkt behöver repareras</translation>
 <translation id="361106536627977100">Flash-data</translation>
 <translation id="3611655097742243705">Hitta fler appar i Play Butik</translation>
@@ -3374,6 +3384,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4636682061478263818">Drive-filer</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Fler åtgärder, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Använd kameran igen</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# texter}}</translation>
 <translation id="4638930039313743000">Aktivera felsökning med ADB</translation>
 <translation id="4641539339823703554">Systemtiden kunde inte anges i Chrome. Kontrollera tiden nedan och korrigera den om det behövs.</translation>
@@ -4124,6 +4135,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5499313591153584299">Filen kan vara skadlig för datorn.</translation>
 <translation id="5499453227627332024">Det finns en uppgradering för Linux-behållaren. Du kan även uppgradera senare via appen Inställningar.</translation>
 <translation id="5500709606820808700">Säkerhetskontrollen kördes i dag</translation>
+<translation id="5501322521654567960">Vänsterställd sidopanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}other{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}}</translation>
 <translation id="5502500733115278303">Importerat från Firefox</translation>
 <translation id="5502915260472117187">Ett barn</translation>
@@ -5335,6 +5347,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6856348640027512653">Får inte använda VR-enheter eller VR-data</translation>
 <translation id="6856459657722366306">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="6856623341093082836">Konfigurera pekskärmen och ställ in hur känslig den ska vara</translation>
+<translation id="6857145580237920905">Ta bort eSIM-profiler före powerwash</translation>
 <translation id="6857699260879628349">Få konfigurationsinformation</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Proxyinställningar...</translation>

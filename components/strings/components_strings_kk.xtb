@@ -1173,6 +1173,7 @@
 <translation id="5314967030527622926">Буклет жасағыш</translation>
 <translation id="5316812925700871227">Сағат тілінің бағытына қарсы бұру</translation>
 <translation id="5317780077021120954">Сақтау</translation>
+<translation id="5321288445143113935">Жайылған терезе</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Байланыс ақпаратын таңдау</translation>
 <translation id="5327248766486351172">Аты</translation>
@@ -1398,6 +1399,7 @@
 <translation id="6218753634732582820">Мекенжайды Chromium жүйесінен алып тастау керек пе?</translation>
 <translation id="622039917539443112">Параллель бүктеу</translation>
 <translation id="6221345481584921695"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады. Зиянды мазмұн белгілі зиянды бағдарлама үлестірушісі болып табылатын <ph name="SUBRESOURCE_HOST" /> хостынан келеді.</translation>
+<translation id="6232619828520900263">Ағымдағы уақытта идентификатор жарамсыз.</translation>
 <translation id="6234122620015464377">Әр құжаттан кейін кесу</translation>
 <translation id="6240447795304464094">Google Pay логотипі</translation>
 <translation id="6241121617266208201">Ұсыныстарды жасыру</translation>

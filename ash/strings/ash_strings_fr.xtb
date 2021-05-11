@@ -140,6 +140,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2079504693865562705">Masquer les applis sur l'étagère</translation>
 <translation id="2083190527011054446">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
+<translation id="2108303511227308752">Le raccourci clavier Alt+Retour arrière a été modifié. Pour utiliser la touche Supprimer, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
@@ -367,6 +368,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4021716437419160885">Faire défiler vers le bas</translation>
 <translation id="4028481283645788203">Veuillez saisir le mot de passe pour renforcer la sécurité</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches F, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" /> et sur une touche de la rangée supérieure du clavier.</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="4057003836560082631">Onglet <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" /> du navigateur. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}other{Notif. désactivées pour # applis}}</translation>
@@ -392,6 +394,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
+<translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +403,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4303223480529385476">Développer la zone d'état</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Vous avez appuyé sur le raccourci clavier du contraste élevé. Voulez-vous l'activer ?</translation>
+<translation id="4322742403972824594">Le raccourci clavier Ctrl+Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Accueil, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
@@ -417,6 +421,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4445159312344259901">Connectez-vous pour débloquer</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
+<translation id="4451374464530248585">Le raccourci clavier Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Page suivante, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le bas.</translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
@@ -708,6 +713,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>
+<translation id="6961840794482373852">Le raccourci clavier Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Page précédente, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6981982820502123353">Accessibilité</translation>

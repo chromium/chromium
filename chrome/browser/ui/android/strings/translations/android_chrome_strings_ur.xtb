@@ -531,6 +531,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
 <translation id="4594952190837476234">یہ آف لائن صفحہ <ph name="CREATION_TIME" /> کا ہے اور آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
+<translation id="4615382002648696011">مندرجہ ذیل فیڈ میں بغیر پڑھی ہوئی کہانیاں تیار ہیں</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> کو کھولیں</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4634124774493850572">پاس ورڈ استعمال کریں</translation>
@@ -1177,6 +1178,7 @@
 <translation id="8659579665266920523">‏Chrome سے تلاش کرنے کا طریقہ</translation>
 <translation id="8662811608048051533">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
+<translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
 <translation id="8683039184091909753">تصویر</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{سگنل کی مضبوطی کی سطح: # بار}other{سگنل کی مضبوطی کی سطح: # بارز}}</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>

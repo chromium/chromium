@@ -531,6 +531,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
 <translation id="4594952190837476234">આ ઑફલાઇન પેજ <ph name="CREATION_TIME" /> ના રોજનું છે અને તે ઑનલાઇન વર્ઝનથી અલગ હોઈ શકે છે.</translation>
+<translation id="4615382002648696011">આગળની, વાંચ્યા વગરની સ્ટોરી તૈયાર છે</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -1177,6 +1178,7 @@
 <translation id="8659579665266920523">Chrome વડે કેવી રીતે શોધવું</translation>
 <translation id="8662811608048051533">તમને મોટાભાગની સાઇટોમાંથી સાઇન આઉટ કરે છે.</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
+<translation id="8676789164135894283">સાઇન ઇન માટેની ચકાસણીઓ</translation>
 <translation id="8683039184091909753">છબી</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}one{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}other{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}}</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>

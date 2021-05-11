@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">ස්ථාපිත තේමාව "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">ඔබ මුල් පිටු බොත්තම ක්ලික් කළ විට විට කුමන පිටුව පෙන්වන්නේද යන්න මෙම දිගුව විසින් වෙනස් කර තිබේ.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> හට මේවා කළ හැකි <ph name="EXTENSION_TYPE" /> එකක් ස්ථාපන කිරීමට අවශ්‍යයි:</translation>
+<translation id="1547808936554660006">ස්ථාපනය කරන ලද eSIM පැතිකඩවල් Powerwash මගින් ඉවත් නොකරන බව මට වැටහෙයි</translation>
 <translation id="1549275686094429035">ARC සබලයි</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />හට <ph name="VOLUME_NAME" /> වෙත ප්‍රවේශ වීමට අවශ්‍යය. එය ඔබේ ගොනු විකරණය කිරීමට හෝ මැකීමට හැකිය.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" දිගුව <ph name="SEARCH_PROVIDER_DOMAIN" /> භාවිතයට ඇති සෙවීම වෙනස් කළා</translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">සාමාන්‍ය</translation>
 <translation id="158849752021629804">නිවෙස් ජාලයක් අවශ්‍යයි</translation>
 <translation id="1588870296199743671">සමග ලින්ක් එක විවෘත කරන්න...</translation>
+<translation id="1588919647604819635">කාඩ්පත දකුණ ක්ලික් කරන්න</translation>
 <translation id="1589055389569595240">අක්ෂර වින්‍යාස පෙන්වන්න</translation>
 <translation id="1591679663873027990">Parallels Desktop හට USB උපාංග වෙත ප්‍රවේශ වීමට අවසර දෙන්න. Parallels Desktop USB උපාංගයක් ඉවත් කිරීමෙන් පසුව මතක තබා නොගනු ඇත.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ඔබගේ <ph name="DEVICE_TYPE" /> යළි සකසනු ඇති ADB නිදොස් කිරීම අබල කර ඇත. යළි ඇරඹීමට පෙර ඔබේ ගොනු උපස්ථ කරන්න</translation>
@@ -985,6 +987,7 @@
 
 ඔබට ඔබේ උපාංගය මත Family Link යෙදුම ස්ථාපන කිරීමෙන්, මෙම ගිණුමේ සැකසීම් කළමනා කළ හැක.  අපි ඔබට ඉ-තැපෑලකින් උපදෙස් යැවුවෙමු.</translation>
 <translation id="2040460856718599782">අහෝ! ඔබට අවසරදීමේදී ගැටළුවක් ඇති විය. ඔබේ පිවිසුම් තොරතුරු දෙවරක් පිරික්සා නැවත උත්සහ කරන්න.</translation>
+<translation id="2042279886444479655">සක්‍රිය පැතිකඩවල්</translation>
 <translation id="2044014337866019681">සැසිය අගුලු හැරීමට ඔබ <ph name="ACCOUNT" /> සත්‍යාපනය කරන බවට සහතික කර ගන්න.</translation>
 <translation id="2044023416777079300">මොඩමය ලියාපදිංචි කර නැත</translation>
 <translation id="204497730941176055">Microsoft සහතික ආකෘති නාමය</translation>
@@ -1326,6 +1329,7 @@
 <translation id="2395616325548404795">ඔබේ <ph name="DEVICE_TYPE" /> ව්‍යවසායකත්ව කළමනාකරණය සඳහා සාර්ථකව ඇතුළත් කරගෙන ඇති නමුත්, එහි වත්කම් සහ පිහිටීම් තොරතුරු යැවීමට අසමත් විය. මෙම උපාංගය සඳහා ඔබේ පරිපාලක කොන්සෝලයෙන් මෙම තොරතුරු හස්තීයව ඇතුළු කරන්න.</translation>
 <translation id="2396387085693598316">ඔබේ පරිපාලකයා "<ph name="EXTENSION_NAME" />" අවහිර කර ඇත</translation>
 <translation id="2396783860772170191">ඉලක්කම් 4ක රහස් අංකය ඇතුළත් කරන්න (0000-9999)</translation>
+<translation id="2398546389094871088">ඔබගේ උපාංගය Powerwash කිරීම ඔබගේ eSIM පැතිකඩවල් ඉවත් නොකරනු ඇත. මෙම පැතිකඩවල් හස්තීයව ඉවත් කිරීම‍ට <ph name="LINK_BEGIN" />ජංගම සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
 <translation id="2399699884460174994">දැනුම්දීම් ක්‍රියාත්මක කරන ලදී</translation>
 <translation id="2399939490305346086">ආරක්‍ෂක යතුරු පුරන දත්ත</translation>
 <translation id="2400664245143453337">වහා යාවත්කාලීන කිරීම අවශ්‍යයි</translation>
@@ -1742,6 +1746,7 @@
 <translation id="2844809857160214557">මුද්‍රණ වැඩ බලන්න සහ කළමනා කරන්න</translation>
 <translation id="2845382757467349449">හැමවිට පිටුසලකුණු බාර් එක පෙන්වන්න</translation>
 <translation id="284805635805850872">හානිකර මෘදුකාංග ඉවත් කරන්න ද?</translation>
+<translation id="2849035674501872372">සොයන්න</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">හිස් කිරීම අසාර්ථක විය</translation>
 <translation id="2849936225196189499">තීරණාත්මක</translation>
@@ -2053,6 +2058,7 @@
 <translation id="3189187154924005138">විශාල කර්සරය</translation>
 <translation id="3190558889382726167">මුරපදය සුරැකිණි</translation>
 <translation id="3192947282887913208">ශ්‍රව්‍ය ගොනුව</translation>
+<translation id="3197453258332670132">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින්, ඔබගේ පෙළ තේරීම සඳහා අදාළ තතු පෙන්වන්න</translation>
 <translation id="3199127022143353223">සේවාදායක</translation>
 <translation id="3201422919974259695">ලද හැකි USB උපාංග මෙහි දිස් වෙති.</translation>
 <translation id="3202131003361292969">පෙත</translation>
@@ -2074,6 +2080,7 @@
 <translation id="3223531857777746191">යළි සැකසුම් බොත්තම</translation>
 <translation id="3225084153129302039">පෙරනිමි දම් නියුරුව</translation>
 <translation id="3225319735946384299">කේත අත්සන් කිරීම</translation>
+<translation id="3226487301970807183">වමට පෙළගැස්වූ පැති පැනලය ටොගල කරන්න</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
 <translation id="3233271424239923319">ලිනක්ස් යෙදුම් සහ ගොනු උපස්ථ කරන්න</translation>
 <translation id="3238192140106069382">සම්බන්ධ කරමින් සහ සත්‍යාපනය කරමින්</translation>
@@ -2343,6 +2350,7 @@
 <translation id="3515983984924808886">යළි සැකසීම තහවුරු කිරීමට ඔබේ ආරක්‍ෂක යතුර නැවත ස්පර්ශ කරන්න. එහි රහස් අංකය ඇතුළුව ආරක්‍ෂක යතුරේ ගබඩා කර ඇති ඔබේ තොරතුරු සියල්ල මකනු ලැබේ.</translation>
 <translation id="3518985090088779359">පිළිගෙන කරගෙන යන්න</translation>
 <translation id="3519564332031442870">මුද්‍රණ පසුඅන්ත සේවාව</translation>
+<translation id="3519938335881974273">ලෙස පිටුව සුරකින්න...</translation>
 <translation id="3521606918211282604">තැටි ප්‍රමාණය වෙනස් කරන්න</translation>
 <translation id="3522088408596898827">තැටියේ ඉඩ බරපතළ ලෙස අඩුය. තැටියේ ඉඩ නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3524965460886318643">නිර්යාත ක්‍රියාකාරකම්</translation>
@@ -2366,6 +2374,7 @@
 <translation id="3550593477037018652">සෙලියුලර් ජාලය විසන්ධි කරන්න</translation>
 <translation id="3550915441744863158">Chrome ස්වයංක්‍රීයව යාවත්කාල වන බැවින් ඔබට හැමවිටම නවතම අනුවාදය තිබේ</translation>
 <translation id="3551320343578183772">ටැබය වසන්න</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">පිට වීමේදී හිස් කෙරිණි</translation>
 <translation id="3554493885489666172">ඔබගේ උපාංගය <ph name="PROFILE_NAME" /> විසින් කළමනාකරණය කෙරේ. පරිපාලකයින්ට මෙම උපාංගයේ ඕනෑම පැතිකඩක ඇති දත්තවලට ප්‍රවේශ විය හැකිය.</translation>
 <translation id="3555812735919707620">දිගුව ඉවත් කරන්න</translation>
@@ -2418,6 +2427,7 @@
 <translation id="3604713164406837697">බිතුපත මාරු කරන්න</translation>
 <translation id="3605780360466892872">බොත්තමපහළට</translation>
 <translation id="3608576286259426129">පරිශීලක රූප පෙරදසුන</translation>
+<translation id="3609277884604412258">ඉක්මන් සෙවීම</translation>
 <translation id="3610369246614755442">ඩොක් විදුලි පංකාව පිළිවෙළ කිරීම අවශ්‍යයි</translation>
 <translation id="361106536627977100">ෆ්ලෑෂ් දත්ත</translation>
 <translation id="3611655097742243705">තවත් යෙදුම් සොයා ගැනීමට Play Store වෙත පිවිසෙන්න</translation>
@@ -3362,6 +3372,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4636682061478263818">Drive ගොනු</translation>
 <translation id="4636930964841734540">තතු</translation>
 <translation id="4637083375689622795">තවත් ක්‍රියා, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">නැවත කැමරාව භාවිත කරන්න</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{පෙළ}one{පෙළ #}other{පෙළ #}}</translation>
 <translation id="4638930039313743000">ADB නිදොස් කිරීම සබල කරන්න</translation>
 <translation id="4641539339823703554">Chrome ට පද්ධති වේලාව සැකසිය නොහැකි විය. කරුණාර පහත වේලාව පරීක්ෂා කර අවශ්‍ය නම් එය නිවැරදි කරන්න.</translation>
@@ -4112,6 +4123,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5499313591153584299">මෙම ගොනුව ඔබගේ පරිගණකයට හානිකර විය හැකියි.</translation>
 <translation id="5499453227627332024">ඔබගේ Linux බහාලුම සඳහා නවීකරණයක් ලබා ගත හැකිය. ඔබට පසුව සැකසීම් යෙදුමෙන්ද යාවත්කාලීන කළ හැකිය.</translation>
 <translation id="5500709606820808700">ආරක්‍ෂක පරීක්‍ෂාව අද ධාවන විය</translation>
+<translation id="5501322521654567960">වමට පෙළගැස්වූ පැති පැනලය</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙතින් ලබා ගැනීමට අසමත් විය}one{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙතින් ලබා ගැනීමට අසමත් විය}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙතින් ලබා ගැනීමට අසමත් විය}}</translation>
 <translation id="5502500733115278303">Firefox වෙතින් ආයාත කෙරිණි</translation>
 <translation id="5502915260472117187">ළමයකු</translation>
@@ -5322,6 +5334,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6856348640027512653">අතථ්‍ය යථාර්ථ උපාංග හෝ දත්ත භාවිත කිරීමට ඉඩ නොදේ</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="6856623341093082836">ඔබේ ස්පර්ශ තිරයේ නිරවද්‍යතාවය පිහිටුවන්න සහ සීරුමාරු කරන්න</translation>
+<translation id="6857145580237920905">Powerwash කිරීමට පෙර eSIM පැතිකඩ ඉවත් කරන්න</translation>
 <translation id="6857699260879628349">වින්‍යාස තොරතුරු ලබා ගන්න</translation>
 <translation id="6857725247182211756">තත් <ph name="SECONDS" /></translation>
 <translation id="6860097299815761905">ප්‍රොක්සි සැකසුම්...</translation>

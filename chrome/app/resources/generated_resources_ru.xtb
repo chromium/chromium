@@ -515,6 +515,7 @@
 <translation id="1545775234664667895">Установлена тема "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Расширение изменило страницу, которая открывается при нажатии кнопки "Главная страница".</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> хочет установить <ph name="EXTENSION_TYPE" /> со следующими разрешениями:</translation>
+<translation id="1547808936554660006">Я понимаю, что функция Powerwash не удаляет профили eSIM</translation>
 <translation id="1549275686094429035">ARC включен</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> запрашивает доступ к тому "<ph name="VOLUME_NAME" />". Это может привести к изменению или удалению файлов.</translation>
 <translation id="1552301827267621511">Расширение "<ph name="EXTENSION_NAME" />" установило поисковую систему "<ph name="SEARCH_PROVIDER_DOMAIN" />" в качестве основной.</translation>
@@ -551,6 +552,7 @@
 <translation id="1588438908519853928">Обычный</translation>
 <translation id="158849752021629804">Необходима домашняя сеть</translation>
 <translation id="1588870296199743671">Открыть ссылку с помощью...</translation>
+<translation id="1588919647604819635">Карточка по нажатию правой кнопки мыши</translation>
 <translation id="1589055389569595240">Показать правописание и грамматику</translation>
 <translation id="1591679663873027990">Предоставьте Parallels Desktop доступ к USB-устройствам. Когда устройство будет отключено, вся информация о нем будет удалена из Parallels Desktop.</translation>
 <translation id="1592074621872221573">Администратор (<ph name="MANAGER" />) отключил отладку с помощью ADB, поэтому настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены. Прежде чем перезапускать его, выполните резервное копирование файлов.</translation>
@@ -986,6 +988,7 @@
 
 Вы можете управлять настройками этого аккаунта, установив приложение Family Link на своем устройстве.  Мы отправили вам инструкции по электронной почте.</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
+<translation id="2042279886444479655">Активные профили</translation>
 <translation id="2044014337866019681">Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
 <translation id="2044023416777079300">Модем не зарегистрирован.</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
@@ -1324,6 +1327,7 @@
 <translation id="2395616325548404795">Устройство <ph name="DEVICE_TYPE" /> зарегистрировано в организации, но при передаче данных об объекте и местоположении произошла ошибка. Введите эту информацию вручную в консоли администратора.</translation>
 <translation id="2396387085693598316">Администратор заблокировал приложение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Введите четырехзначный PIN-код (0000–9999)</translation>
+<translation id="2398546389094871088">При использовании функции Powerwash профили eSIM не удаляются. Это можно сделать вручную в разделе <ph name="LINK_BEGIN" />настроек для мобильных устройств<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Уведомления включены</translation>
 <translation id="2399939490305346086">Учетные данные электронного ключа</translation>
 <translation id="2400664245143453337">Требуется немедленно обновить ОС</translation>
@@ -1739,6 +1743,7 @@
 <translation id="2844809857160214557">Просмотр заданий печати и управление ими</translation>
 <translation id="2845382757467349449">Всегда показывать панель закладок</translation>
 <translation id="284805635805850872">Удалить вредоносное ПО?</translation>
+<translation id="2849035674501872372">Найти</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Ошибка очистки</translation>
 <translation id="2849936225196189499">Критическое</translation>
@@ -2050,6 +2055,7 @@
 <translation id="3189187154924005138">Большой курсор</translation>
 <translation id="3190558889382726167">Пароль сохранен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
+<translation id="3197453258332670132">При нажатии правой кнопкой мыши или долгом нажатии будет показываться информация о выбранном тексте</translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3201422919974259695">Здесь появятся доступные USB-устройства.</translation>
 <translation id="3202131003361292969">Путь</translation>
@@ -2071,6 +2077,7 @@
 <translation id="3223531857777746191">Кнопка сброса</translation>
 <translation id="3225084153129302039">Аватар по умолчанию (фиолетовый)</translation>
 <translation id="3225319735946384299">Подписывание кода</translation>
+<translation id="3226487301970807183">Показать или скрыть боковую панель слева</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Выполнить резервное копирование приложений и файлов Linux</translation>
 <translation id="3238192140106069382">Подключение и проверка…</translation>
@@ -2340,6 +2347,7 @@
 <translation id="3515983984924808886">Чтобы подтвердить сброс, нажмите кнопку на электронном ключе ещё раз. Все данные, сохраненные на нем, включая PIN-код, будут удалены.</translation>
 <translation id="3518985090088779359">Продолжить</translation>
 <translation id="3519564332031442870">Серверная служба печати</translation>
+<translation id="3519938335881974273">Сохранить страницу как…</translation>
 <translation id="3521606918211282604">Изменить размер диска</translation>
 <translation id="3522088408596898827">На диске почти нет места. Освободите пространство и повторите попытку.</translation>
 <translation id="3524965460886318643">Экспортировать журнал активности</translation>
@@ -2363,6 +2371,7 @@
 <translation id="3550593477037018652">Отключиться от мобильной сети</translation>
 <translation id="3550915441744863158">Chrome обновляется автоматически, поэтому у вас всегда будет установлена последняя версия.</translation>
 <translation id="3551320343578183772">Закрыть вкладку</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Удаляется при выходе</translation>
 <translation id="3554493885489666172">Ваше устройство находится под управлением домена <ph name="PROFILE_NAME" />. Администраторы имеют доступ к данным всех профилей на этом устройстве.</translation>
 <translation id="3555812735919707620">Удалить расширение</translation>
@@ -2415,6 +2424,7 @@
 <translation id="3604713164406837697">Изменить обои</translation>
 <translation id="3605780360466892872">Бизнесмен</translation>
 <translation id="3608576286259426129">Предварительный просмотр фото</translation>
+<translation id="3609277884604412258">Быстрый поиск</translation>
 <translation id="3610369246614755442">Вентилятору док-станции необходимо техническое обслуживание</translation>
 <translation id="361106536627977100">Данные Flash</translation>
 <translation id="3611655097742243705">Найдите приложения в Google Play.</translation>
@@ -3358,6 +3368,7 @@
 <translation id="4636682061478263818">Файлы на Диске</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Другие действия в аккаунте <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Использовать камеру ещё раз</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{SMS}one{# SMS}few{# SMS}many{# SMS}other{# SMS}}</translation>
 <translation id="4638930039313743000">Включить отладку с ADB</translation>
 <translation id="4641539339823703554">Браузеру не удалось установить системное время. Проверьте, правильно ли оно указано, и исправьте при необходимости.</translation>
@@ -4108,6 +4119,7 @@
 <translation id="5499313591153584299">Этот файл может быть опасен для вашего компьютера.</translation>
 <translation id="5499453227627332024">Доступно обновление для контейнера Linux. Его также можно обновить позже из приложения "Настройки".</translation>
 <translation id="5500709606820808700">Проверка безопасности выполнена сегодня.</translation>
+<translation id="5501322521654567960">Боковая панель слева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="5502500733115278303">Импортированные из Firefox</translation>
 <translation id="5502915260472117187">Ребенок</translation>
@@ -5319,6 +5331,7 @@
 <translation id="6856348640027512653">Сайты, которым запрещено использовать устройства и данные виртуальной реальности:</translation>
 <translation id="6856459657722366306">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="6856623341093082836">Настроить точность сенсорного экрана</translation>
+<translation id="6857145580237920905">Удалите профили eSIM, прежде чем использовать Powerwash</translation>
 <translation id="6857699260879628349">Получите сведения о конфигурации</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Настройки прокси-сервера...</translation>

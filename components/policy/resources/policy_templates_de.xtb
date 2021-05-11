@@ -820,7 +820,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2131902621292742709">Verzögerung für die Bildschirmabdunkelung im Akkubetrieb</translation>
 <translation id="2131915994539959070">Aktiviert die Fenster-Okklusion in <ph name="PRODUCT_NAME" />.
 
-      Wenn Sie diese Einstellung aktivieren, erkennt <ph name="PRODUCT_NAME" />, wenn Fenster von anderen Fenstern überdeckt sind, und unterbricht das Färben von Pixeln, um CPU und Stromverbrauch zu reduzieren.
+      Wenn Sie diese Einstellung aktivieren, erkennt <ph name="PRODUCT_NAME" />, wenn Fenster von anderen Fenstern überdeckt sind, und unterbricht das Zeichnen von Pixeln, um CPU und Stromverbrauch zu reduzieren.
 
       Wenn Sie diese Einstellung deaktivieren, erkennt <ph name="PRODUCT_NAME" /> nicht, wenn Fenster von anderen Fenstern überdeckt sind.
 
@@ -1110,7 +1110,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Mithilfe dieser Richtlinie wird die native Fenster-Okklusion in <ph name="PRODUCT_NAME" /> aktiviert.
 
-      Wenn Sie diese Einstellung aktivieren, erkennt <ph name="PRODUCT_NAME" />, wenn Fenster von anderen Fenstern überdeckt sind, und unterbricht das Färben von Pixeln, um CPU und Stromverbrauch zu reduzieren.
+      Wenn Sie diese Einstellung aktivieren, erkennt <ph name="PRODUCT_NAME" />, wenn Fenster von anderen Fenstern überdeckt sind, und unterbricht das Zeichnen von Pixeln, um CPU und Stromverbrauch zu reduzieren.
 
       Wenn Sie diese Einstellung deaktivieren, erkennt <ph name="PRODUCT_NAME" /> nicht, wenn Fenster von anderen Fenstern überdeckt sind.
 
@@ -3340,6 +3340,19 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Sichtbarkeit von Karten steuern. Standardmäßig sind Karten sichtbar.
       </translation>
+<translation id="5455888515928026628">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
+
+      Wenn diese Richtlinie auf -2 gesetzt wird, übernimmt sie den Wert des Zeitlimits für die Offlineanmeldung auf dem Anmeldebildschirm von der Richtlinie <ph name="POLICY" />.
+
+      Wenn die Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
+
+      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
+
+      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
+
+      Diese Richtlinie betrifft Nutzer, die sich über SAML authentifizieren.
+
+      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="5457065417344056871">Gastmodus im Browser aktivieren</translation>
 <translation id="5457387982448145430">Wenn die Richtlinie aktiviert ist, werden gespeicherte Passwörter bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine gespeicherten Passwörter importiert.
 
@@ -5986,6 +5999,19 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8917070657147922192">Nutzern erlauben, installierte CA-Zertifikate zu verwalten.</translation>
 <translation id="8919100556245407184">Zeitraum in Tagen nach dem Ende des AUE-Zeitraums (Auto Update Expiration), nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als die angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="8919369436496201075">Gerät erlauben, LTS-Updates zu erhalten</translation>
+<translation id="8930064580550462145">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
+
+      Wenn diese Richtlinie auf -2 gesetzt wird, übernimmt sie den Wert des Zeitlimits für die Offlineanmeldung auf dem Anmeldebildschirm von der Richtlinie <ph name="POLICY" />.
+
+      Wenn die Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
+
+      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
+
+      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
+
+      Diese Richtlinie betrifft Nutzer, die sich über GAIA ohne SAML authentifizieren.
+
+      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="8931555638815157255">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte von Zeit zu Zeit die Version ihres Betriebssystems und ihrer Firmware gemeldet.
 
       Ist die Richtlinie deaktiviert, melden registrierte Geräte keine Informationen zu der Version.</translation>
@@ -6121,7 +6147,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Wenn diese Richtlinie nicht konfiguriert ist, ist die Einstellung für vom Unternehmen verwaltete Nutzer und für nicht verwaltete Nutzer standardmäßig nicht aktiviert.</translation>
 <translation id="9096086085182305205">Zulassungsliste für Authentifizierungsserver</translation>
-<translation id="9098409326885953506">Überdeckte Fenster erkennen und das Färben von Pixeln unterbrechen</translation>
+<translation id="9098409326885953506">Überdeckte Fenster erkennen und das Zeichnen von Pixeln unterbrechen</translation>
 <translation id="9105265795073104888">Android-Apps wird nur ein Teil der Proxykonfigurationsoptionen zur Verfügung gestellt. Der Proxy kann in Android-Apps auf freiwilliger Basis verwendet werden. Es ist nicht möglich, die Verwendung eines Proxys zu erzwingen.</translation>
 <translation id="9106865192244721694">WebUSB auf diesen Websites zulassen</translation>
 <translation id="9111850884577810507">Dieses Feld muss mit einem der Strings übereinstimmen, die einen von <ph name="PRODUCT_NAME" /> unterstützten Drucker angeben. Der String wird zur Ermittlung und Installation der korrekten PPD für den Drucker verwendet. Weitere Informationen finden Sie unter https://support.google.com/chrome?p=noncloudprint.</translation>

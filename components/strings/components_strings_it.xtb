@@ -173,6 +173,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1532118530259321453">Questa pagina dice</translation>
 <translation id="153384715582417236">Per il momento è tutto</translation>
 <translation id="1536390784834419204">Traduci pagina</translation>
+<translation id="1539840569003678498">Data invio ultimo rapporto:</translation>
 <translation id="154408704832528245">Scegli l'indirizzo di consegna</translation>
 <translation id="1549470594296187301">JavaScript deve essere attivato per utilizzare questa funzione.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1682696192498422849">Prima il lato corto</translation>
 <translation id="168693727862418163">Impossibile convalidare il valore del criterio in base al relativo schema. Il valore verrà ignorato.</translation>
 <translation id="168841957122794586">Il certificato del server contiene una chiave crittografica debole.</translation>
+<translation id="1696290444144917273">Visualizza i dettagli della carta virtuale</translation>
 <translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Questo server non è riuscito a verificare che si tratti di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere attivo da domani. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.}other{Questo server non è riuscito a verificare che si tratti di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere attivo tra # giorni. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.}}</translation>
@@ -226,6 +228,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1718029547804390981">Il documento è troppo voluminoso per potervi inserire annotazioni</translation>
 <translation id="1721424275792716183">* Campo obbligatorio</translation>
+<translation id="1727613060316725209">Il certificato è valido</translation>
 <translation id="1727741090716970331">Aggiungi un numero di carta valido</translation>
 <translation id="1728677426644403582">È visualizzata l'origine di una pagina web</translation>
 <translation id="173080396488393970">Questo tipo di carta non è supportato</translation>
@@ -697,6 +700,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3590643883886679995">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità di navigazione in incognito.</translation>
+<translation id="359126217934908072">Mese/anno:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
@@ -752,6 +756,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivi Bluetooth</translation>
+<translation id="3787675388804467730">Numero carta virtuale</translation>
 <translation id="3787705759683870569">Data di scadenza: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Dimensione 16</translation>
 <translation id="3789841737615482174">Installa</translation>
@@ -1549,6 +1554,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ha semplificato questa pagina per facilitarne la lettura. Chrome ha recuperato la pagina originale tramite una connessione non sicura.</translation>
 <translation id="6891596781022320156">Il livello della norma non è supportato.</translation>
+<translation id="6895143722905299846">Numero carta virtuale:</translation>
 <translation id="6895330447102777224">La carta è stata confermata</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organizzazione (O)</translation>
@@ -1587,6 +1593,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7014741021609395734">Livello di zoom</translation>
 <translation id="7016992613359344582">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente.</translation>
 <translation id="7029809446516969842">Password</translation>
+<translation id="7030436163253143341">ll certificato non è valido</translation>
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
 <translation id="7050187094878475250">Hai tentato di visitare il sito <ph name="DOMAIN" />, ma il server ha presentato un certificato con periodo di validità troppo lungo per poter essere ritenuto attendibile.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Al momento questa carta non può essere salvata}other{Al momento queste carte non possono essere salvate}}</translation>

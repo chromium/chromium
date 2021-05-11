@@ -140,6 +140,7 @@
 <translation id="2079504693865562705">شیلف میں ایپس چھپائیں</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
+<translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
@@ -367,6 +368,7 @@
 <translation id="4021716437419160885">نیچے اسکرول کریں</translation>
 <translation id="4028481283645788203">مزید سیکیورٹی کیلئے پاس ورڈ درکار ہے</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">‏Number + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ F کلیدوں کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + سب سے اوپر کی قطار پر ایک کلید کو دبائیں۔</translation>
 <translation id="4042660782729322247">آپ اپنی اسکرین کا اشتراک کر رہے ہیں</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> میں سے <ph name="INDEX" /> براؤزر ٹیب۔ <ph name="SITE_TITLE" />، <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>
@@ -392,6 +394,7 @@
 <translation id="425364040945105958">‏کوئی SIM نہیں ہے</translation>
 <translation id="4261870227682513959">اطلاع کی ترتیبات دکھائیں۔ اطلاعات آف ہیں</translation>
 <translation id="4269883910223712419">اس آلہ کا منتظم یہ کام کر سکتا ہے:</translation>
+<translation id="4274537685965975248">‏Ctrl + Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ End کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'دائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4279490309300973883">مررنگ</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
@@ -400,6 +403,7 @@
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">آپ نے اعلی تناسب امتزاج کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
+<translation id="4322742403972824594">‏Ctrl + Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Home کلید کا استعمال کرنے کیلئے، <ph name="LAUNCHER_KEY_NAME" /> کلید + 'بائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">‏متعدد صارفین کے سائن ان کرنے پر Lacros تعاون یافتہ نہیں ہے۔</translation>
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
@@ -417,6 +421,7 @@
 <translation id="4445159312344259901">غیر مقفل کیلئے سائن ان کریں</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
+<translation id="4451374464530248585">‏Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Page Down کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'نیچے تیر کا نشان' کو دبائیں۔</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
 <translation id="4472575034687746823">شروع کریں</translation>
@@ -708,6 +713,7 @@
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6961121602502368900">دفتری پروفائل پر فون کو خاموش کرنے کی خصوصیت دستیاب نہیں ہے</translation>
+<translation id="6961840794482373852">‏Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Page Up کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'اوپر تیر کا نشان' کو دبائیں۔</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6972754398087986839">شروع کریں</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>

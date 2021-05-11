@@ -24,6 +24,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1148499908455722006">Buka dialog info untuk <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
 <translation id="1165712434476988950">Perlu memulai ulang perangkat untuk menerapkan update.</translation>
+<translation id="1170240434488307589">Tombol mikrofon perangkat dibisukan.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -100,6 +101,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1746730358044914197">Metode masukan dikonfigurasi oleh administrator.</translation>
 <translation id="1747827819627189109">Keyboard di layar diaktifkan</translation>
 <translation id="1761222317188459878">Alihkan koneksi jaringan. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Titik telah diubah. Untuk menggunakan tombol Insert, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1782199038061388045">terjemahan</translation>
 <translation id="1787955149152357925">Nonaktif</translation>

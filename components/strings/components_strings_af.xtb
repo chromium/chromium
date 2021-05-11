@@ -173,6 +173,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1532118530259321453">Hierdie bladsy sê</translation>
 <translation id="153384715582417236">Dis al vir nou</translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
+<translation id="1539840569003678498">Verslag is gestuur:</translation>
 <translation id="154408704832528245">Kies afleweringadres</translation>
 <translation id="1549470594296187301">JavaScript moet geaktiveer wees om hierdie kenmerk te gebruik.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1682696192498422849">Kort kant eerste</translation>
 <translation id="168693727862418163">Hierdie beleidwaarde kon nie teen die skema bekragtig word nie en sal geïgnoreer word.</translation>
 <translation id="168841957122794586">Die bedienersertifikaat bevat 'n swak kriptografiese sleutel.</translation>
+<translation id="1696290444144917273">Bekyk virtuele kaart se besonderhede</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Hierdie bediener kon nie bewys dat hy <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat geld kwansuis van môre af. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.}other{Hierdie bediener kon nie bewys dat hy <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat geld kwansuis van # dae in die toekoms af. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.}}</translation>
@@ -226,6 +228,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1717494416764505390">Posbus 3</translation>
 <translation id="1718029547804390981">Dokument is te groot om aantekeninge by te maak</translation>
 <translation id="1721424275792716183">* Veld word vereis</translation>
+<translation id="1727613060316725209">Sertifikaat is geldig</translation>
 <translation id="1727741090716970331">Voeg geldige kaartnommer by</translation>
 <translation id="1728677426644403582">Jy bekyk tans die bron van 'n webbladsy</translation>
 <translation id="173080396488393970">Hierdie tipe kaart word nie gesteun nie</translation>
@@ -700,6 +703,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3586931643579894722">Versteek besonderhede</translation>
 <translation id="3587738293690942763">Middel</translation>
 <translation id="3590643883886679995">Aanmelddata sal op hierdie toestel geberg word nadat jy Incognitomodus verlaat het.</translation>
+<translation id="359126217934908072">Maand/jaar:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Jou administrateur blokkeer die program</translation>
@@ -755,6 +759,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3781428340399460090">Helderpienk</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-toestelle</translation>
+<translation id="3787675388804467730">Virtuele kaart se nommer</translation>
 <translation id="3787705759683870569">Verval <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
 <translation id="3789841737615482174">Installeer</translation>
@@ -1420,6 +1425,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6289939620939689042">Bladsykleur</translation>
 <translation id="6290238015253830360">Jou voorgestelde artikels verskyn hier</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Google Assistent in Chrome stop tans</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is onbereikbaar.</translation>
 <translation id="6312113039770857350">Webbladsy is nie beskikbaar nie</translation>
@@ -1552,6 +1558,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome het hierdie bladsy vereenvoudig om dit makliker te maak om te lees. Chrome het die oorspronklike bladsy oor 'n onveilige verbinding gaan haal.</translation>
 <translation id="6891596781022320156">Beleidvlak word nie gesteun nie.</translation>
+<translation id="6895143722905299846">Virtuele nommer:</translation>
 <translation id="6895330447102777224">Jou kaart is bevestig</translation>
 <translation id="6897140037006041989">Gebruikeragent</translation>
 <translation id="6898699227549475383">Organisasie (O)</translation>
@@ -1590,6 +1597,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7014741021609395734">Zoemvlak</translation>
 <translation id="7016992613359344582">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
+<translation id="7030436163253143341">Sertifikaat is nie geldig nie</translation>
 <translation id="7031646650991750659">Watter Google Play-programme jy geïnstalleer het</translation>
 <translation id="7050187094878475250">Jy het <ph name="DOMAIN" /> probeer bereik, maar die bediener het 'n sertifikaat aangebied waarvan die geldigheidtydperk te lank is om betroubaar te wees.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Hierdie kaart kan nie op die oomblik gestoor word nie}other{Hierdie kaarte kan nie op die oomblik gestoor word nie}}</translation>

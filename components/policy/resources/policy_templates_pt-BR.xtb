@@ -386,6 +386,13 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1516486219683984217">Não permitir o uso de notificações do sistema</translation>
 <translation id="1522425503138261032">Permitir que os sites rastreiem a localização física dos usuários</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
+<translation id="1524243669991877602">Se a política for ativada, as políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ser mescladas com outras no nível da máquina.
+
+      Apenas políticas originárias de usuários seguros podem ser mescladas. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas no nível do usuário sempre serão ignoradas.
+
+      As políticas que precisam ser mescladas também precisam ser definidas na <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> ou <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Esta política será ignorada se nenhuma das duas mencionadas acima for configurada.
+
+      Se esta for desativada ou deixada sem definição, as políticas de nuvem no nível do usuário não poderão ser mescladas com políticas de outras origens.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
 <translation id="1527298988676981599">Definir a política permite criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados na tela de login. Cada item na lista precisa ter um campo "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão de "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão de "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
 
@@ -1187,6 +1194,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="2509748672176727116">O usuário poderá capturar pacotes de rede</translation>
 <translation id="2509919237512982967">Usar controles de formulários legados até a M84.</translation>
+<translation id="2512972020817284317">Ativar a mesclagem de políticas da nuvem no nível do usuário.</translation>
 <translation id="2515699738406900920">Disponibilidade do seletor de perfil na inicialização</translation>
 <translation id="2517466659416174529">Permitir congelamento das guias em segundo plano</translation>
 <translation id="2518231489509538392">Permitir a reprodução de áudio</translation>
@@ -2737,6 +2745,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Observação: esta configuração substituirá <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, caso presente.</translation>
 <translation id="4661889655253181651">As configurações de conteúdo permitem que você especifique como o conteúdo de um tipo específico (por exemplo, cookies, imagens ou JavaScript) é tratado.</translation>
+<translation id="4663509616441994711">Desativar a mesclagem de políticas da nuvem em nível de usuário.</translation>
 <translation id="4665897631924472251">Configurações de gerenciamento de extensão</translation>
 <translation id="4666930704271463612">Especifica o subconjunto de servidores de impressão que serão consultados para impressoras de servidor.
 
@@ -5254,6 +5263,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
           Se esta política não for definida, o alto contraste ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="7869986671709030417">Modo de impressão de gráficos em segundo plano padrão</translation>
+<translation id="7877924399554599110">Ativa a mesclagem de políticas de nuvem de usuários com políticas no nível da máquina</translation>
 <translation id="7881421274383404138">A definição desta política configura impressoras corporativas. O formato dela corresponde ao dicionário <ph name="PRINTERS_POLICY_NAME" />, com campos extras <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> e <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Esta política não afeta a possibilidade de os usuários configurarem impressoras em dispositivos individuais. Ela tem o objetivo de complementar a configuração de impressoras por usuários individuais.

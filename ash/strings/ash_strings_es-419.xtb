@@ -140,6 +140,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2079504693865562705">Ocultar las apps de la barra</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" />:</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
+<translation id="2108303511227308752">Se modificó la combinación de teclas Alt + retroceso. Para usar la tecla de retroceso, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + retroceso.</translation>
 <translation id="2126242104232412123">Nuevo escritorio</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="2132302418721800944">Grabar pantalla completa</translation>
@@ -368,6 +369,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4021716437419160885">Desplazar hacia abajo</translation>
 <translation id="4028481283645788203">Se requiere la contraseña por razones de seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + un número. Para usar las teclas de función, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
 <translation id="4042660782729322247">Estás compartiendo tu pantalla</translation>
 <translation id="4057003836560082631">Pestaña del navegador <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No para 1 app}other{No para # apps}}</translation>
@@ -393,6 +395,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="425364040945105958">No hay ninguna tarjeta SIM</translation>
 <translation id="4261870227682513959">Mostrar la configuración de las notificaciones: Están desactivadas</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
+<translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" />:</translation>
@@ -401,6 +404,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4303223480529385476">Expandir el área de estado</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Presionaste la combinación de teclas para activar el modo de contraste alto. ¿Quieres activarlo?</translation>
+<translation id="4322742403972824594">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia arriba. Para usar la tecla Inicio, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la izquierda.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Lacros no es compatible si acceden varios usuarios.</translation>
 <translation id="4338109981321384717">Lupa</translation>
@@ -418,6 +422,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4445159312344259901">Accede para desbloquear.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificaciones importantes}}</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
+<translation id="4451374464530248585">Se modificó la combinación de teclas Alt + flecha hacia abajo. Para usar la tecla Av Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo.</translation>
 <translation id="445864333228800152">Buenas noches:</translation>
 <translation id="4458688154122353284">Detener la grabación de pantalla</translation>
 <translation id="4472575034687746823">Comenzar</translation>
@@ -709,6 +714,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6961121602502368900">La opción Silenciar teléfono no está disponible en los perfiles de trabajo</translation>
+<translation id="6961840794482373852">Se modificó la combinación de teclas Alt + flecha hacia arriba. Para usar la tecla Re Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia arriba.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>

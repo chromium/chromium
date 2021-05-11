@@ -531,6 +531,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="4583164079174244168">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бұл офлайн бет <ph name="CREATION_TIME" /> күні жасалған, сондықтан онлайн нұсқасынан өзгеше болуы мүмкін.</translation>
+<translation id="4615382002648696011">Жазылғансыз, оқылмаған сюжеттер бар.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> қолданбасын ашу</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4634124774493850572">Құпия сөзді пайдалану</translation>
@@ -1177,6 +1178,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8659579665266920523">Chrome браузерімен қалай іздеуге болады?</translation>
 <translation id="8662811608048051533">Көп сайттардан шығарады.</translation>
 <translation id="8664979001105139458">Мұндай атаулы файл бұрыннан бар</translation>
+<translation id="8676789164135894283">Кіруді растау</translation>
 <translation id="8683039184091909753">сурет</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигнал деңгейі: # сызықша}other{Сигнал деңгейі: # сызықша}}</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>

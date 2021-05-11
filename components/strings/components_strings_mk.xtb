@@ -173,6 +173,7 @@
 <translation id="1532118530259321453">Оваа страница вели</translation>
 <translation id="153384715582417236">Тоа е сѐ засега</translation>
 <translation id="1536390784834419204">Преведи ја страницата</translation>
+<translation id="1539840569003678498">Извештајот е испратен на:</translation>
 <translation id="154408704832528245">Изберете адреса за достава</translation>
 <translation id="1549470594296187301">За да се користи функцијава, мора да биде овозможено JavaScript.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@
 <translation id="1682696192498422849">Прво краткиот раб</translation>
 <translation id="168693727862418163">Вредноста на правилото не може да се потврди според неговата шема и ќе биде игнорирана.</translation>
 <translation id="168841957122794586">Сертификатот на серверот содржи слаб криптографски клуч.</translation>
+<translation id="1696290444144917273">Прегледајте ги деталите од виртуелната картичка</translation>
 <translation id="1697532407822776718">Подготвени сте.</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е утрешен. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}one{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е после # ден во иднината. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}other{Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат наводно е после # дена во иднината. Тоа можеби се должи на погрешна конфигурација или на напаѓач што ја пресретнува вашата врска.}}</translation>
@@ -226,6 +228,7 @@
 <translation id="1717494416764505390">Поштенско сандаче 3</translation>
 <translation id="1718029547804390981">Документот е премногу голем за да се стави прибелешка</translation>
 <translation id="1721424275792716183">* Полето е задолжително</translation>
+<translation id="1727613060316725209">Сертификатот е важечки</translation>
 <translation id="1727741090716970331">Додајте важечки број на картичка</translation>
 <translation id="1728677426644403582">Го гледате кодот на веб-страницата</translation>
 <translation id="173080396488393970">Овој тип картичка не е поддржан</translation>
@@ -700,6 +703,7 @@
 <translation id="3586931643579894722">Сокриј детали</translation>
 <translation id="3587738293690942763">Средна</translation>
 <translation id="3590643883886679995">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“.</translation>
+<translation id="359126217934908072">Месец/година:</translation>
 <translation id="3592413004129370115">Italian (плик)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Администраторот ја блокирал апликацијата</translation>
@@ -755,6 +759,7 @@
 <translation id="3781428340399460090">Впечатливо розова</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Уреди со Bluetooth</translation>
+<translation id="3787675388804467730">Број на виртуелна картичка</translation>
 <translation id="3787705759683870569">Истекува на <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Големина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
@@ -1420,6 +1425,7 @@
 <translation id="6289939620939689042">Боја на страницата</translation>
 <translation id="6290238015253830360">Предложените статии ќе се појавуваат тука</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Се запира „Помошникот на Google“ во Chrome</translation>
 <translation id="6305205051461490394"><ph name="URL" /> е недостапна.</translation>
 <translation id="6312113039770857350">Веб-страницата не е достапна</translation>
@@ -1552,6 +1558,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ја поедностави страницава за да биде полесна за читање. Chrome ја презеде оригиналната страница преку небезбедна врска.</translation>
 <translation id="6891596781022320156">Нивото на политика не е поддржано.</translation>
+<translation id="6895143722905299846">Виртуелен број:</translation>
 <translation id="6895330447102777224">Вашата картичка е потврдена</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
@@ -1590,6 +1597,7 @@
 <translation id="7014741021609395734">Ниво на зумирање</translation>
 <translation id="7016992613359344582">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
+<translation id="7030436163253143341">Сертификатот е неважечки</translation>
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
 <translation id="7050187094878475250">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат со период на важност што е премногу долг за да му се верува.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Картичкава не може да се зачува во моментов}one{Картичкиве не може да се зачуваат во моментов}other{Картичкиве не може да се зачуваат во моментов}}</translation>

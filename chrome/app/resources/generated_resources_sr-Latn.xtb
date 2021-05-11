@@ -512,6 +512,7 @@
 <translation id="1545775234664667895">Instalirana je tema „<ph name="THEME_NAME" />“</translation>
 <translation id="1546280085599573572">Ovaj dodatak je promenio stranicu koja se prikazuje kada kliknete na dugme Početak.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> želi da instalira <ph name="EXTENSION_TYPE" /> koji može:</translation>
+<translation id="1547808936554660006">Razumem da se instalirani eSIM profili neće ukloniti ako se obavi Powerwash</translation>
 <translation id="1549275686094429035">Vreme izvršavanja aplikacije za Chrome je omogućeno</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> želi da pristupa <ph name="VOLUME_NAME" />. Možda će da menja ili briše datoteke.</translation>
 <translation id="1552301827267621511">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio pretragu tako da koristi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -548,6 +549,7 @@
 <translation id="1588438908519853928">Normalan</translation>
 <translation id="158849752021629804">Potrebna je matična mreža</translation>
 <translation id="1588870296199743671">Otvori link koristeći...</translation>
+<translation id="1588919647604819635">Kliknite desnim tasterom na karticu</translation>
 <translation id="1589055389569595240">Prikaži pravopis i gramatiku</translation>
 <translation id="1591679663873027990">Dozvolite da Parallels Desktop pristupa USB uređajima. Parallels Desktop neće zapamtiti USB uređaj kada ga uklonite.</translation>
 <translation id="1592074621872221573">Sajt <ph name="MANAGER" /> je onemogućio ADB otklanjanje grešaka, zbog čega će se <ph name="DEVICE_TYPE" /> resetovati. Napravite rezervne kopije datoteka pre restartovanja.</translation>
@@ -983,6 +985,7 @@ U suprotnom, odjavite se odmah da bi promene na ovom nalogu mogle da se vide na 
 
 Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Family Link na uređaju.  Poslali smo vam uputstva u imejlu.</translation>
 <translation id="2040460856718599782">Ups! Nešto je pošlo naopako dok smo pokušavali da potvrdimo vašu autentičnost. Proverite ponovo akreditive za prijavljivanje i pokušajte ponovo.</translation>
+<translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Uverite se da verifikujete <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
 <translation id="2044023416777079300">Modem nije registrovan</translation>
 <translation id="204497730941176055">Naziv šablona Microsoft sertifikata</translation>
@@ -1321,6 +1324,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> je registrovan za upravljanje preduzećem, ali nije poslao informacije o elementu i lokaciji. Unesite te informacije ručno na Admin console-u za ovaj uređaj.</translation>
 <translation id="2396387085693598316">Administrator je blokirao dodatak „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="2396783860772170191">Unesite 4-cifreni PIN (0000–9999)</translation>
+<translation id="2398546389094871088">Ako obavite Powerwash na uređaju, nećete ukloniti eSIM profile. Idite u <ph name="LINK_BEGIN" />podešavanja za mobilne uređaja<ph name="LINK_END" /> da biste ručno uklonili te profile.</translation>
 <translation id="2399699884460174994">Obaveštenja su uključena</translation>
 <translation id="2399939490305346086">Podaci za prijavljivanje sa bezbednosnog ključa</translation>
 <translation id="2400664245143453337">Treba odmah da ažurirate</translation>
@@ -1738,6 +1742,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2844809857160214557">Pregledajte zadatke štampanja i upravljajte njima</translation>
 <translation id="2845382757467349449">Uvek prikazuj traku sa obeleživačima</translation>
 <translation id="284805635805850872">Želite li da uklonite štetan softver?</translation>
+<translation id="2849035674501872372">Potražite</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Čišćenje nije uspelo</translation>
 <translation id="2849936225196189499">Od presudne važnosti</translation>
@@ -2049,6 +2054,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
+<translation id="3197453258332670132">Kada kliknete desnim tasterom na neku stavku ili je dugo pritisnete, prikazuju se relevantne informacije za izabrani tekst</translation>
 <translation id="3199127022143353223">Serveri</translation>
 <translation id="3201422919974259695">Dostupni USB uređaji će se prikazivati ovde.</translation>
 <translation id="3202131003361292969">Putanja</translation>
@@ -2070,6 +2076,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3223531857777746191">Dugme Resetuj</translation>
 <translation id="3225084153129302039">Podrazumevani ljubičasti avatar</translation>
 <translation id="3225319735946384299">Potpisivanje koda</translation>
+<translation id="3226487301970807183">Uključite/isključite bočnu tablu sa leve strane</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Napravite rezervne kopije Linux aplikacija i datoteka</translation>
 <translation id="3238192140106069382">Povezuje se i verifikuje</translation>
@@ -2339,6 +2346,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3515983984924808886">Dodirnite ponovo bezbednosni ključ da biste potvrdili resetovanje. Sve informacije sačuvane na bezbednosnom ključu, uključujući njegov PIN, biće obrisane.</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3519564332031442870">Pozadinska usluga štampanja</translation>
+<translation id="3519938335881974273">Sačuvaj stranicu kao...</translation>
 <translation id="3521606918211282604">Promenite veličinu diska</translation>
 <translation id="3522088408596898827">Prostor na disku je izuzetno mali. Oslobodite prostor na disku i probajte ponovo.</translation>
 <translation id="3524965460886318643">Izvezi aktivnosti</translation>
@@ -2362,6 +2370,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3550593477037018652">Prekini vezu sa mobilnom mrežom</translation>
 <translation id="3550915441744863158">Chrome se automatski ažurira, pa uvek imate najnoviju verziju</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Briše se na izlazu</translation>
 <translation id="3554493885489666172">Uređajem upravlja <ph name="PROFILE_NAME" />. Administratori mogu da pristupaju podacima svih profila na ovom uređaju.</translation>
 <translation id="3555812735919707620">Ukloni dodatak</translation>
@@ -2414,6 +2423,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3604713164406837697">Promenite pozadinu</translation>
 <translation id="3605780360466892872">Japi</translation>
 <translation id="3608576286259426129">Pregled slike korisnika</translation>
+<translation id="3609277884604412258">Brza pretraga</translation>
 <translation id="3610369246614755442">Ventilatoru bazne stanice je potreban servis</translation>
 <translation id="361106536627977100">Podaci Flash-a</translation>
 <translation id="3611655097742243705">Idite u Play prodavnicu da biste pronašli još aplikacija</translation>
@@ -3357,6 +3367,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4636682061478263818">Fajlovi na Disku</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4637083375689622795">Još radnji, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Opet koristi kameru</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekstualna poruka}one{# tekstualna poruka}few{# tekstualne poruke}other{# tekstualnih poruka}}</translation>
 <translation id="4638930039313743000">Omogući ADB otklanjanje grešaka</translation>
 <translation id="4641539339823703554">Chrome nije mogao da podesi sistemsko vreme. Proverite vreme u nastavku i ispravite ga ako je potrebno.</translation>
@@ -4107,6 +4118,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5499313591153584299">Ova datoteka može biti štetna po računar.</translation>
 <translation id="5499453227627332024">Dostupna je nadogradnja za Linux kontejner. Možete i da nadogradite kasnije u aplikaciji Podešavanja.</translation>
 <translation id="5500709606820808700">Bezbednosna provera je pokrenuta danas</translation>
+<translation id="5501322521654567960">Bočna tabla sa leve strane</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Prijem (<ph name="ATTACHMENTS" />) sa uređaja <ph name="DEVICE_NAME" /> nije uspeo}one{Prijem (<ph name="ATTACHMENTS" />) sa uređaja <ph name="DEVICE_NAME" /> nije uspeo}few{Prijem <ph name="ATTACHMENTS" /> sa uređaja <ph name="DEVICE_NAME" /> nije uspeo}other{Prijem <ph name="ATTACHMENTS" /> sa uređaja <ph name="DEVICE_NAME" /> nije uspeo}}</translation>
 <translation id="5502500733115278303">Uvezeno iz Firefox pregledača</translation>
 <translation id="5502915260472117187">Dete</translation>
@@ -5316,6 +5328,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6856348640027512653">Nije im dozvoljeno da koriste uređaje ili podatke virtuelne realnosti</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="6856623341093082836">Podesite i prilagodite preciznost dodirnog ekrana</translation>
+<translation id="6857145580237920905">Uklonite eSIM profile pre nego što obavite Powerwash</translation>
 <translation id="6857699260879628349">Dobijte informacije o konfiguraciji</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Podešavanja proksija...</translation>

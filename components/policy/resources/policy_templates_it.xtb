@@ -390,6 +390,13 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
+<translation id="1524243669991877602">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ai criteri a livello di macchina.
+
+      È possibile unire soltanto i criteri derivanti da utenti sicuri. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente verranno sempre ignorati.
+
+      I criteri da unire devono essere impostati anche nel criterio <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> o <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Questo criterio viene ignorato se non viene configurato nessuno dei due criteri sopra indicati.
+
+      Se il criterio non viene configurato o se viene impostato su Disattivato, non è possibile unire i criteri relativi al cloud a livello di utente ai criteri di altre fonti.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1527298988676981599">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
 
@@ -1186,6 +1193,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore di testo è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="2509748672176727116">L'utente potrà eseguire acquisizioni di pacchetti di rete</translation>
 <translation id="2509919237512982967">Usa i controlli modulo legacy fino alla versione M84.</translation>
+<translation id="2512972020817284317">Viene attivata l'unione dei criteri relativi al cloud a livello di utente.</translation>
 <translation id="2515699738406900920">Disponibilità del selettore profilo all'avvio</translation>
 <translation id="2517466659416174529">Consenti il blocco delle schede in secondo piano</translation>
 <translation id="2518231489509538392">Consenti riproduzione audio</translation>
@@ -2730,6 +2738,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Nota: questa impostazione sostituisce <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se presente.</translation>
 <translation id="4661889655253181651">Le impostazioni contenuti consentono di specificare la modalità di gestione di determinati tipi di contenuto (ad esempio Cookie, Immagini o JavaScript).</translation>
+<translation id="4663509616441994711">Viene disattivata l'unione dei criteri relativi al cloud a livello di utente.</translation>
 <translation id="4665897631924472251">Impostazioni di gestione delle estensioni</translation>
 <translation id="4666930704271463612">Consente di specificare il sottoinsieme di server di stampa a cui verranno inviate query sulle stampanti.
 
@@ -5238,6 +5247,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, inizialmente l'alto contrasto è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="7869986671709030417">Modalità di stampa predefinita delle immagini di sfondo</translation>
+<translation id="7877924399554599110">Attiva l'unione dei criteri relativi al cloud a livello di utente ai criteri a livello di macchina</translation>
 <translation id="7881421274383404138">L'impostazione di questo criterio consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> e <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È inteso come integrativo alla configurazione delle stampanti da parte dei singoli utenti.

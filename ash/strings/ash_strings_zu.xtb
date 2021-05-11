@@ -24,6 +24,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1148499908455722006">Vula ibhokisi lolwazi lwe-<ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Amadivaysi abhanqene</translation>
 <translation id="1165712434476988950">Ukuqala kabusha idivayisi kudingekile ukuze usebenzise isibuyekezo.</translation>
+<translation id="1170240434488307589">Inkinobho yemakrofoni yedivayisi ithulisiwe.</translation>
 <translation id="1175572348579024023">Skrola</translation>
 <translation id="1178581264944972037">Misa isikhashana</translation>
 <translation id="1181037720776840403">Susa</translation>
@@ -100,6 +101,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1746730358044914197">Izindlela zokufaka zilungiselwe ngomlawuli.</translation>
 <translation id="1747827819627189109">Ikhibhodi ekuskrini inikwe amandla</translation>
 <translation id="1761222317188459878">Shintsha uxhumo lwenethiwekhi. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Isifinyezo sekhibhodi sika-<ph name="LAUNCHER_KEY_NAME" /> + Ungci sishintshile. Ukuze usebenzise ukhiye we-Insert, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Skrolela ngakwesokudla</translation>
 <translation id="1782199038061388045">ukuhumusha</translation>
 <translation id="1787955149152357925">Valiwe</translation>
@@ -140,6 +142,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2079504693865562705">Fihla izinhlelo zokusebenza kushelufu</translation>
 <translation id="2083190527011054446">Ulale kahle <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Akuxhumekile kunethiwekhi</translation>
+<translation id="2108303511227308752">Isifinyezo sekhibhodi sika-Alt + Backspace sishintshile. Ukuze usebenzise ukhiye Wokusula, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Ideski elisha</translation>
 <translation id="2127372758936585790">Ishaja yamandla aphansi</translation>
 <translation id="2132302418721800944">Rekhoda isikrini esigcwele</translation>
@@ -367,6 +370,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4021716437419160885">Skrolela phansi</translation>
 <translation id="4028481283645788203">Kudingeka iphasiwedi mayelana nokuphepha okwengeziwe</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023">Isifunyezo sekhibhodi se-<ph name="LAUNCHER_KEY_NAME" /> + Inombolo sishintshile. Ukuze usebenzise Okhiye be-F, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + ukhiye ophezulu emugqeni.</translation>
 <translation id="4042660782729322247">Wabelana ngesikrini sakho</translation>
 <translation id="4057003836560082631">Ithebhu yesiphequluli sokungu-<ph name="INDEX" /> kokungu-<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kuvaliwe kwi-app}one{Kuvaliwe ama-app angu-#}other{Kuvalwe ama-app angu-#}}</translation>
@@ -392,6 +396,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="425364040945105958">Ayikho i-SIM</translation>
 <translation id="4261870227682513959">Bonisa izilungiselelo zesaziso. Izaziso zivaliwe</translation>
 <translation id="4269883910223712419">Umphathi wale divayisi unekhono lokwazi ukuthi:</translation>
+<translation id="4274537685965975248">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphansi sishintshile. Ukuze usebenzise ukhiye we-End, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesokudla.</translation>
 <translation id="4279490309300973883">Yenza isibuko</translation>
 <translation id="4285498937028063278">Susa ukuphina</translation>
 <translation id="4294319844246081198">Sawubona <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +405,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4303223480529385476">Nweba indawo yesimo</translation>
 <translation id="4321179778687042513">i-ctrl</translation>
 <translation id="4321776623976362024">Ucindezele isinqamuleli sekhibhodi sokugqamisa okuphezulu. Uyafuna ukusivula?</translation>
+<translation id="4322742403972824594">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphezulu sishintshile. Ukuze usebenzise ukhiye we-Home, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesobunxele.</translation>
 <translation id="4331809312908958774">I-Chrome OS</translation>
 <translation id="4333628967105022692">I-Lacros ayisekelwa ngenkathi abasebenzisi abaningi bangene ngemvume.</translation>
 <translation id="4338109981321384717">Ingilazi yokusondeza</translation>
@@ -417,6 +423,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4445159312344259901">Ngena ngemvume ukuze uvule</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{isaziso esi-1 esibalulekile}one{izaziso ezingu-# ezibalulekile}other{izaziso ezingu-# ezibalulekile}}</translation>
 <translation id="4450893287417543264">Ungabonisi futhi</translation>
+<translation id="4451374464530248585">Isifinyezo sekhibhodi sika-Alt + Umcibisholo Waphansi sishintshile. Ukuze usebenzise ukhiye we-Page Down, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Waphansi.</translation>
 <translation id="445864333228800152">Sawubona,</translation>
 <translation id="4458688154122353284">Misa ukuqopha isikrini</translation>
 <translation id="4472575034687746823">Qalisa</translation>
@@ -708,6 +715,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6919251195245069855">Ayikwazanga ukubona ikhadi lakho elisebenza ngobuchwepheshe besimanje. Zama futhi.</translation>
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6961121602502368900">Ukuthulisa ifoni akutholakali kwiphrofayela yomsebenzi</translation>
+<translation id="6961840794482373852">Isifinyezo sekhibhodi sika-Alt + Umcibisholo Waphezulu sishintshile. Ukuze usebenzise ukhiye we-Page Up, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Waphezulu.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Qala</translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>

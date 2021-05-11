@@ -531,6 +531,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4583164079174244168">{MINUTES,plural, =1{vor # Minute}other{vor # Minuten}}</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
+<translation id="4615382002648696011">Folge ich, ungelesene Inhalte verfügbar</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
@@ -1177,6 +1178,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8659579665266920523">Mit Chrome suchen</translation>
 <translation id="8662811608048051533">Sie werden von den meisten Websites abgemeldet.</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
+<translation id="8676789164135894283">Anmeldebestätigungen</translation>
 <translation id="8683039184091909753">Bild</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstärke: # Balken}other{Signalstärke: # Balken}}</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>

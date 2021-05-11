@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" telah terinstal</translation>
 <translation id="1546280085599573572">Ekstensi ini telah mengubah halaman apa yang ditampilkan saat Anda mengeklik tombol Beranda.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ingin menginstal <ph name="EXTENSION_TYPE" /> yang dapat:</translation>
+<translation id="1547808936554660006">Saya memahami bahwa profil eSIM yang diinstal tidak akan dihapus dengan Powerwash</translation>
 <translation id="1549275686094429035">ARC Aktif</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Ini dapat mengubah atau menghapus file Anda.</translation>
 <translation id="1552301827267621511">Ekstensi "<ph name="EXTENSION_NAME" />" mengubah penyedia penelusuran menjadi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Memerlukan jaringan rumah</translation>
 <translation id="1588870296199743671">Buka Tautan Dengan...</translation>
+<translation id="1588919647604819635">Kartu klik kanan</translation>
 <translation id="1589055389569595240">Tampilkan Ejaan dan Grammar</translation>
 <translation id="1591679663873027990">Beri Parallels Desktop izin untuk mengakses perangkat USB. Parallels Desktop tidak akan mengingat perangkat USB setelah perangkat tersebut dilepas.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> telah menonaktifkan proses debug ADB yang akan mereset <ph name="DEVICE_TYPE" /> Anda. Cadangkan file sebelum memulai ulang.</translation>
@@ -996,6 +998,7 @@ Atau, logout sekarang dan semua perubahan akun akan muncul di perangkat ini.
 
 Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di perangkat Anda.  Kami telah mengirim petunjuk kepada Anda melalui email.</translation>
 <translation id="2040460856718599782">Ups!  Terjadi masalah saat mencoba mengautentikasi Anda.  Periksa lagi kredensial login Anda dan coba lagi.</translation>
+<translation id="2042279886444479655">Profil aktif</translation>
 <translation id="2044014337866019681">Pastikan Anda memverifikasi <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
 <translation id="2044023416777079300">Modem tidak terdaftar</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1337,6 +1340,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> berhasil didaftarkan untuk pengelolaan perusahaan, namun gagal mengirimkan informasi lokasi dan asetnya. Masukkan informasi ini secara manual dari Konsol Admin untuk perangkat ini.</translation>
 <translation id="2396387085693598316">Admin Anda telah memblokir "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Masukkan PIN 4 digit (0000-9999)</translation>
+<translation id="2398546389094871088">Melakukan powerwash pada perangkat tidak akan menghapus profil eSIM Anda. Buka <ph name="LINK_BEGIN" />Setelan Seluler<ph name="LINK_END" /> untuk menghapus profil ini secara manual.</translation>
 <translation id="2399699884460174994">Notifikasi diaktifkan</translation>
 <translation id="2399939490305346086">Data login kunci keamanan</translation>
 <translation id="2400664245143453337">Perlu update segera</translation>
@@ -1754,6 +1758,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="2844809857160214557">Lihat dan kelola pekerjaan cetak</translation>
 <translation id="2845382757467349449">Selalu Tampilkan Bilah Bookmark</translation>
 <translation id="284805635805850872">Hapus software berbahaya?</translation>
+<translation id="2849035674501872372">Cari</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Pembersihan gagal</translation>
 <translation id="2849936225196189499">Kritis</translation>
@@ -2065,6 +2070,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3190558889382726167">Sandi tersimpan</translation>
 <translation id="3192947282887913208">File Audio</translation>
+<translation id="3197453258332670132">Dengan klik kanan atau tekan lama, tampilkan info terkait untuk teks yang Anda pilih</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3201422919974259695">Perangkat USB yang tersedia akan ditampilkan di sini.</translation>
 <translation id="3202131003361292969">Jalur</translation>
@@ -2086,6 +2092,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3223531857777746191">Tombol Reset</translation>
 <translation id="3225084153129302039">Avatar ungu default</translation>
 <translation id="3225319735946384299">Penandaan Kode</translation>
+<translation id="3226487301970807183">Aktifkan panel samping rata kiri</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Cadangkan file dan aplikasi Linux</translation>
 <translation id="3238192140106069382">Menghubungkan dan memverifikasi</translation>
@@ -2355,6 +2362,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3515983984924808886">Sentuh kunci keamanan Anda sekali lagi untuk mengonfirmasi peresetan. Semua informasi yang tersimpan di kunci keamanan, termasuk PIN-nya, akan dihapus.</translation>
 <translation id="3518985090088779359">Terima &amp; lanjutkan</translation>
 <translation id="3519564332031442870">Layanan Backend Pencetakan</translation>
+<translation id="3519938335881974273">Simpan halaman sebagai...</translation>
 <translation id="3521606918211282604">Ubah ukuran disk</translation>
 <translation id="3522088408596898827">Ruang disk hampir habis. Kosongkan ruang disk, lalu coba lagi.</translation>
 <translation id="3524965460886318643">Ekspor Aktivitas</translation>
@@ -2378,6 +2386,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3550593477037018652">Putuskan koneksi jaringan Seluler</translation>
 <translation id="3550915441744863158">Chrome memperbarui secara otomatis jadi Anda selalu memiliki versi terbaru</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Dihapus saat Keluar</translation>
 <translation id="3554493885489666172">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" />. Administrator dapat mengakses data di profil mana pun di perangkat ini.</translation>
 <translation id="3555812735919707620">Buang ekstensi</translation>
@@ -2430,6 +2439,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="3605780360466892872">Pria Berdasi</translation>
 <translation id="3608576286259426129">Pratinjau gambar pengguna</translation>
+<translation id="3609277884604412258">Penelusuran cepat</translation>
 <translation id="3610369246614755442">Kipas dok perlu diperbaiki</translation>
 <translation id="361106536627977100">Data Flash</translation>
 <translation id="3611655097742243705">Buka Play Store untuk menemukan aplikasi lainnya</translation>
@@ -3374,6 +3384,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4636682061478263818">File Drive</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Tindakan lainnya, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Gunakan kamera lagi</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Teks}other{# teks}}</translation>
 <translation id="4638930039313743000">Aktifkan proses debug ADB</translation>
 <translation id="4641539339823703554">Chrome tidak dapat menyetel waktu sistem. Periksa waktu di bawah dan perbaiki jika perlu.</translation>
@@ -4124,6 +4135,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5499313591153584299">File ini mungkin berbahaya untuk komputer Anda.</translation>
 <translation id="5499453227627332024">Upgrade tersedia untuk Container Linux Anda. Anda juga dapat mengupgrade nanti di aplikasi Setelan.</translation>
 <translation id="5500709606820808700">Pemeriksaan keselamatan berjalan hari ini</translation>
+<translation id="5501322521654567960">Panel samping rata kiri</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Gagal menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}other{Gagal menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Diimpor dari Firefox</translation>
 <translation id="5502915260472117187">Anak</translation>
@@ -5335,6 +5347,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6856348640027512653">Tidak diizinkan menggunakan perangkat atau data virtual reality</translation>
 <translation id="6856459657722366306">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="6856623341093082836">Siapkan dan sesuaikan akurasi layar sentuh</translation>
+<translation id="6857145580237920905">Hapus profil eSIM sebelum melakukan Powerwash</translation>
 <translation id="6857699260879628349">Dapatkan info konfigurasi</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> detik</translation>
 <translation id="6860097299815761905">Setelan proxy...</translation>

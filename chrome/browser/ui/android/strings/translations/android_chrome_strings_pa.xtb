@@ -531,6 +531,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
 <translation id="4594952190837476234">ਇਹ ਆਫ਼ਲਾਈਨ ਪੰਨਾ <ph name="CREATION_TIME" /> ਦਾ ਹੈ ਅਤੇ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
+<translation id="4615382002648696011">ਅੱਗੇ ਦਿੱਤੀ ਫ਼ੀਡ ਲਈ ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="4619564267100705184">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>
@@ -1177,6 +1178,7 @@
 <translation id="8659579665266920523">Chrome ਨਾਲ ਖੋਜਣ ਦਾ ਤਰੀਕਾ</translation>
 <translation id="8662811608048051533">ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
+<translation id="8676789164135894283">ਸਾਈਨ-ਇਨ ਲਈ ਪੁਸ਼ਟੀਕਰਨ</translation>
 <translation id="8683039184091909753">ਚਿੱਤਰ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}one{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀ}other{ਸਿਗਨਲ ਮਜ਼ਬੂਤੀ ਦਾ ਪੱਧਰ: # ਡੰਡੀਆਂ}}</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>

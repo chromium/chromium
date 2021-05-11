@@ -33,6 +33,7 @@
 <translation id="122699739164161391">എല്ലാ ടാബുകളും അവസാനിപ്പിക്കുക</translation>
 <translation id="1229222343402087523">Chrome-ൽ ${searchPhrase} തിരയുക</translation>
 <translation id="1231733316453485619">സമന്വയിപ്പിക്കൽ ഓണാക്കണോ?</translation>
+<translation id="1242044645101871359">വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1254117744268754948">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1265739287306757398">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
+<translation id="1894205589103145703">സൈൻ ഇൻ ചെയ്യുമ്പോൾ എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="1911619930368729126">Google ഡ്രൈവിലേക്ക് അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1923342640370224680">കഴിഞ്ഞ മണിക്കൂർ</translation>
 <translation id="1941314575388338491">പകർത്താൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="2074131957428911366">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
+<translation id="2086623437239112659">സംഭരിച്ചിരിക്കുന്ന സൈൻ ഇൻ വിവരങ്ങൾ കാലഹരണപ്പെട്ടതാകാം.</translation>
 <translation id="209018056901015185">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="2103075008456228677">history.google.com തുറക്കുക</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ഇനങ്ങൾ നീക്കി</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="5140288047769711648">നിങ്ങൾക്കായി Chrome ഈ പാസ്‌വേഡ് ഓർത്തുവെയ്ക്കും. നിങ്ങളത് ഓർക്കേണ്ടതില്ല.</translation>
 <translation id="5150492518600715772">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് അയയ്‌ക്കുക</translation>
+<translation id="5168414296986405587">iPadOS-നായി സൃഷ്‌ടിച്ചിരിക്കുന്നത്</translation>
 <translation id="5181140330217080051">ഡൗൺലോഡുചെയ്യുന്നു</translation>
 <translation id="5186185447130319458">സ്വകാര്യം</translation>
 <translation id="5188482106078495165">നിങ്ങളുടെ കുക്കികളുടെ ക്രമീകരണം എല്ലാ ടാബുകൾക്കും ബാധകമാണ്. തുറന്നിരിക്കുന്ന ടാബിൽ ഒരു പുതിയ ക്രമീകരണം ബാധകമാക്കാൻ, ടാബ് റീലോഡ് ചെയ്യുക.</translation>

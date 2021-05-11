@@ -140,6 +140,7 @@
 <translation id="2079504693865562705">ਐਪਾਂ ਨੂੰ ਸ਼ੈਲਫ ਵਿੱਚ ਲੁਕਾਓ</translation>
 <translation id="2083190527011054446">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ</translation>
+<translation id="2108303511227308752">Alt + ਬੈਕਸਪੇਸ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Delete ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਬੈਕਸਪੇਸ ਦਬਾਓ।</translation>
 <translation id="2126242104232412123">ਨਵਾਂ ਡੈਸਕ</translation>
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
 <translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
@@ -367,6 +368,7 @@
 <translation id="4021716437419160885">ਹੇਠਾਂ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="4028481283645788203">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + ਨੰਬਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। F-ਕੁੰਜੀਆਂ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰਲੀ ਕਤਾਰ 'ਤੇ ਦਿੱਤੀ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="4042660782729322247">ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਬ੍ਰਾਊਜ਼ਰ ਟੈਬ। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ਇੱਕ ਐਪ ਲਈ ਬੰਦ}one{# ਐਪ ਲਈ ਬੰਦ}other{# ਐਪਾਂ ਲਈ ਬੰਦ}}</translation>
@@ -392,6 +394,7 @@
 <translation id="425364040945105958">ਸਿਮ ਨਹੀਂ ਹੈ</translation>
 <translation id="4261870227682513959">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ</translation>
 <translation id="4269883910223712419">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਕੋਲ ਇਹ ਕਰਨ ਦੀ ਸਮਰੱਥਾ ਹੈ:</translation>
+<translation id="4274537685965975248">Ctrl + Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। End ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਸੱਜਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4279490309300973883">ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="4294319844246081198">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
@@ -400,6 +403,7 @@
 <translation id="4303223480529385476">ਸਥਿਤੀ ਖੇਤਰ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ਤੁਸੀਂ ਉੱਚ ਕੰਟ੍ਰਾਸਟ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="4322742403972824594">Ctrl + Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Home ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਖੱਬਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">ਕਈ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਣ ਦੌਰਾਨ Lacros ਸਮਰਥਿਤ ਨਹੀਂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="4338109981321384717">ਸੂਖਮਦਰਸ਼ੀ ਕੱਚ</translation>
@@ -417,6 +421,7 @@
 <translation id="4445159312344259901">ਅਣਲਾਕ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾ}one{# ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾ}other{# ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
+<translation id="4451374464530248585">Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Down ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਹੇਠਾਂ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="445864333228800152">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="4458688154122353284">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
@@ -708,6 +713,7 @@
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6961121602502368900">ਫ਼ੋਨ ਨੂੰ ਖਮੋਸ਼ ਕਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="6961840794482373852">Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Up ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>

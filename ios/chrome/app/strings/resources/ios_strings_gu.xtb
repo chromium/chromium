@@ -33,6 +33,7 @@
 <translation id="122699739164161391">બધાં ટૅબ બંધ કરો</translation>
 <translation id="1229222343402087523">Chromeમાં ${searchPhrase} શોધો</translation>
 <translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
+<translation id="1242044645101871359">ફરીથી સાઇન ઇન કરો</translation>
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
+<translation id="1894205589103145703">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું.</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
 <translation id="1923342640370224680">છેલ્લી કલાક</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="2074131957428911366">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં પસંદ કરી શકો છો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="2086623437239112659">તમારી સ્ટોર કરેલી સાઇન ઇનની માહિતી જૂની હોઈ શકે છે.</translation>
 <translation id="209018056901015185">ડેસ્કટોપ સાઇટની વિનંતી કરો</translation>
 <translation id="2103075008456228677">history.google.com ખોલો</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> આઇટમ ખસેડી</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="5140288047769711648">Chrome તમારા માટે આ પાસવર્ડ યાદ રાખશે. તમારે તેને યાદ રાખવાની જરૂર નથી.</translation>
 <translation id="5150492518600715772">તમારા ડિવાઇસ પર મોકલો</translation>
+<translation id="5168414296986405587">iPadOS માટે બનાવવામાં આવેલું</translation>
 <translation id="5181140330217080051">ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="5186185447130319458">ખાનગી</translation>
 <translation id="5188482106078495165">તમારી કુકીનાં સેટિંગ બધી ટૅબ પર લાગુ થાય છે. કોઈ ખુલ્લી ટૅબ પર નવું સેટિંગ લાગુ કરવા માટે, ટૅબ ફરીથી લોડ કરો.</translation>

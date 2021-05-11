@@ -33,6 +33,7 @@
 <translation id="122699739164161391">ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="1229222343402087523">${searchPhrase} ਨੂੰ Chrome ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="1231733316453485619">ਕੀ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1242044645101871359">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1254117744268754948">ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="1265739287306757398">ਤਰੀਕਾ ਜਾਣੋ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ</translation>
 <translation id="1870148520156231997">ਪਾਸਵਰਡ ਦਿਖਾਓ</translation>
 <translation id="1872096359983322073">ਟਾਰਚ</translation>
+<translation id="1894205589103145703">ਸਾਈਨ-ਇਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="1911619930368729126">Google ਡ੍ਰਾਈਵ ਤੇ ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1923342640370224680">ਪਿਛਲਾ ਘੰਟਾ</translation>
 <translation id="1941314575388338491">ਕਾਪੀ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="2074131957428911366">ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਇਹ ਚੁਣ ਸਕਦੇ ਹੋ ਕਿ ਕਿਸਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰਨਾ ਹੈ।</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="2086623437239112659">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੀ ਸਾਈਨ-ਇਨ ਜਾਣਕਾਰੀ ਸ਼ਾਇਦ ਪੁਰਾਣੀ ਹੋਵੇ।</translation>
 <translation id="209018056901015185">ਡੈਸਕਟਾਪ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="2103075008456228677">history.google.com ਖੋਲ੍ਹੋ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ਆਈਟਮਾਂ ਮੂਵ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
@@ -398,6 +401,7 @@
 <translation id="5132942445612118989">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
 <translation id="5140288047769711648">Chrome ਤੁਹਾਡੇ ਲਈ ਇਹ ਪਾਸਵਰਡ ਯਾਦ ਰੱਖੇਗਾ। ਤੁਹਾਨੂੰ ਇਸ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5150492518600715772">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੇਜੋ</translation>
+<translation id="5168414296986405587">iPadOS ਲਈ ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="5181140330217080051">ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5186185447130319458">ਨਿੱਜੀ</translation>
 <translation id="5188482106078495165">ਤੁਹਾਡੀ ਕੁਕੀਜ਼ ਸੈਟਿੰਗ ਸਾਰੀਆਂ ਟੈਬਾਂ 'ਤੇ ਲਾਗੂ ਹੁੰਦੀ ਹੈ। ਖੁਲ੍ਹੀ ਹੋਈ ਟੈਬ 'ਤੇ ਨਵੀਂ ਸੈਟਿੰਗ ਲਾਗੂ ਕਰਨ ਲਈ, ਟੈਬ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
@@ -427,6 +431,7 @@
 <translation id="5508435575041083207">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ ਅਤੇ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ਘੰਟੇ ਪਹਿਲਾਂ</translation>
 <translation id="5525269841082836315">ਪਾਸਫਰੇਜ਼ ਬਣਾਓ</translation>
+<translation id="5532698011560297095">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5548760955356983418">Handoff ਤੁਹਾਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਵੈੱਬਸਾਈਟ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਅਤੇ ਫਿਰ ਆਸਾਨੀ ਨਾਲ ਤੁਹਾਡੇ Mac 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਦਿੰਦਾ ਹੈ। ਮੌਜੂਦਾ ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਤੁਹਾਡੇ Mac ਦੇ 'ਡੌਕ' ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗੀ।
 
 Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼ਨ ਵਿੱਚ ਚਾਲੂ ਕੀਤਾ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਓਹੀ iCloud ਖਾਤਾ ਵਰਤਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>

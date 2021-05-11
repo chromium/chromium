@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">Temaet <ph name="THEME_NAME" /> er installert</translation>
 <translation id="1546280085599573572">Denne utvidelsen har endret hvilken side som vises når du klikker på Startside-knappen.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vil installere en <ph name="EXTENSION_TYPE" /> som kan:</translation>
+<translation id="1547808936554660006">Jeg forstår at installerte e-SIM-profiler ikke blir fjernet av Powerwash</translation>
 <translation id="1549275686094429035">ARC er påslått</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vil ha tilgang til <ph name="VOLUME_NAME" />. Det kan føre til at filene dine endres eller slettes.</translation>
 <translation id="1552301827267621511">Utvidelsen «<ph name="EXTENSION_NAME" />» endret søkemotoren til <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Trenger hjemmenettverk</translation>
 <translation id="1588870296199743671">Åpne link med</translation>
+<translation id="1588919647604819635">Høyreklikk på kort</translation>
 <translation id="1589055389569595240">Vis stavekontroll og grammatikk</translation>
 <translation id="1591679663873027990">Gi Parallels Desktop tilgang til USB-enheter. Parallels Desktop husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> har slått av ADB-feilsøking. Dette medfører at <ph name="DEVICE_TYPE" /> blir tilbakestilt. Sikkerhetskopiér filene dine før du starter på nytt.</translation>
@@ -990,6 +992,7 @@ Alternativt kan du logge av nå slik at endringene på kontoen gjenspeiles på d
 
 Du kan administrere innstillingene for denne kontoen ved å installere Family Link-appen på enheten din.  Vi har sendt deg en e-post med veiledning.</translation>
 <translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontrollér påloggingslegitimasjonen, og prøv på nytt.</translation>
+<translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Du må verifisere <ph name="ACCOUNT" /> for å låse opp økten.</translation>
 <translation id="2044023416777079300">Modemet er ikke registrert</translation>
 <translation id="204497730941176055">Navn på Microsoft sertifikatmal</translation>
@@ -1331,6 +1334,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" />-enheten din er nå registrert for bedriftsadministrering. Den sendte imidlertid ikke ressurs- og plasseringsinformasjon. Denne informasjonen må legges inn manuelt i administrasjonskonsollen for denne enheten.</translation>
 <translation id="2396387085693598316">Administratoren din har blokkert «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="2396783860772170191">Skriv inn firesifret PIN-kode (0000–9999)</translation>
+<translation id="2398546389094871088">Når du utfører en Powerwash på enheten din, fjernes ikke e-SIM-profilene dine. Gå til <ph name="LINK_BEGIN" />Mobilinnstillinger<ph name="LINK_END" /> for å fjerne disse profilene manuelt.</translation>
 <translation id="2399699884460174994">Varsler er slått på</translation>
 <translation id="2399939490305346086">Påloggingsdata på sikkerhetsnøkkelen</translation>
 <translation id="2400664245143453337">Umiddelbar oppdatering kreves</translation>
@@ -1748,6 +1752,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2844809857160214557">Se og administrer utskriftsjobber</translation>
 <translation id="2845382757467349449">Vis alltid bokmerkerad</translation>
 <translation id="284805635805850872">Vil du fjerne den skadelige programvaren?</translation>
+<translation id="2849035674501872372">Slå opp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Opprydningen mislyktes</translation>
 <translation id="2849936225196189499">Kritisk</translation>
@@ -2059,6 +2064,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3189187154924005138">Stor markør</translation>
 <translation id="3190558889382726167">Passordet er lagret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
+<translation id="3197453258332670132">Med et høyreklikk eller langt trykk kan du se informasjon relatert til teksten du har merket</translation>
 <translation id="3199127022143353223">Tjenere</translation>
 <translation id="3201422919974259695">Tilgjengelige USB-enheter vises her.</translation>
 <translation id="3202131003361292969">Bane</translation>
@@ -2080,6 +2086,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3223531857777746191">Tilbakestillingsknapp</translation>
 <translation id="3225084153129302039">Fiolett standardbrukerbilde</translation>
 <translation id="3225319735946384299">Signering med kode</translation>
+<translation id="3226487301970807183">Slå av/på venstrejustert sidepanel</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Sikkerhetskopiér Linux-apper og -filer</translation>
 <translation id="3238192140106069382">Kobler til og verifiserer</translation>
@@ -2349,6 +2356,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
 <translation id="3518985090088779359">Godta og fortsett</translation>
 <translation id="3519564332031442870">Tjenerdeltjeneste for utskrift</translation>
+<translation id="3519938335881974273">Lagre side som…</translation>
 <translation id="3521606918211282604">Endre diskstørrelsen</translation>
 <translation id="3522088408596898827">Det er kritisk lite diskplass. Frigjør diskplass, og prøv igjen.</translation>
 <translation id="3524965460886318643">Eksportér aktivitet</translation>
@@ -2372,6 +2380,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3550593477037018652">Koble fra mobilnettverket</translation>
 <translation id="3550915441744863158">Chrome oppdateres automatisk slik at du alltid har den nyeste versjonen</translation>
 <translation id="3551320343578183772">Lukk fanen</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Fjernes ved avslutning</translation>
 <translation id="3554493885489666172">Enheten administreres av <ph name="PROFILE_NAME" />. Administratorene har tilgang til dataene i alle profiler på denne enheten.</translation>
 <translation id="3555812735919707620">Fjern utvidelsen</translation>
@@ -2424,6 +2433,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="3605780360466892872">Businessmann</translation>
 <translation id="3608576286259426129">Forhåndsvisning av brukerbilde</translation>
+<translation id="3609277884604412258">Hurtigsøk</translation>
 <translation id="3610369246614755442">Dokkviften må på service</translation>
 <translation id="361106536627977100">Flash-data</translation>
 <translation id="3611655097742243705">Gå til Play-butikken for å finne flere apper</translation>
@@ -3365,6 +3375,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4636682061478263818">Disk-filer</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Flere handlinger, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Bruk kameraet igjen</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekst}other{# tekster}}</translation>
 <translation id="4638930039313743000">Slå på ADB-feilsøking</translation>
 <translation id="4641539339823703554">Chrome kunne ikke angi systemtiden. Sjekk tiden nedenfor, og korriger den om nødvendig.</translation>
@@ -4115,6 +4126,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5499313591153584299">Denne filen kan være skadelig for datamaskinen din.</translation>
 <translation id="5499453227627332024">En oppgradering er tilgjengelig for Linux-beholderen din. Du kan også oppgradere senere i Innstillinger-appen.</translation>
 <translation id="5500709606820808700">Sikkerhetssjekken ble kjørt i dag</translation>
+<translation id="5501322521654567960">Venstrejustert sidepanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}other{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importert fra Firefox</translation>
 <translation id="5502915260472117187">Et barn</translation>
@@ -5326,6 +5338,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6856348640027512653">Nettsteder som ikke har lov til å bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="6856459657722366306">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="6856623341093082836">Konfigurer og juster nøyaktigheten til berøringsskjermen din</translation>
+<translation id="6857145580237920905">Fjern e-SIM-profiler før Powerwash</translation>
 <translation id="6857699260879628349">Få informasjon om oppsett</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Innstillinger for proxy-tjener</translation>

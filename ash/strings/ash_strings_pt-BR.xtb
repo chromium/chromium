@@ -24,6 +24,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações da conta <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
 <translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
+<translation id="1170240434488307589">O botão do microfone do dispositivo foi silenciado.</translation>
 <translation id="1175572348579024023">Rolar</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -100,6 +101,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1746730358044914197">Os métodos de entrada são configurados pelo administrador.</translation>
 <translation id="1747827819627189109">Teclado na tela ativado</translation>
 <translation id="1761222317188459878">Alternar conexão de rede. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final mudou. Para usar a tecla Insert, pressione <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Rolar para a direita</translation>
 <translation id="1782199038061388045">tradução</translation>
 <translation id="1787955149152357925">Desativado</translation>

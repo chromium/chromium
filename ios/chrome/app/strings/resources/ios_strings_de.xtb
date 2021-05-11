@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Alle Tabs schließen</translation>
 <translation id="1229222343402087523">In Chrome nach ${searchPhrase} suchen</translation>
 <translation id="1231733316453485619">Synchronisierung aktivieren?</translation>
+<translation id="1242044645101871359">Noch einmal anmelden</translation>
 <translation id="1254117744268754948">Ordner wählen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1272079795634619415">Stoppen</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
+<translation id="1894205589103145703">Bei der Anmeldung ist ein Fehler aufgetreten.</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippen Sie zum Kopieren hier doppelt.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
+<translation id="2086623437239112659">Ihre gespeicherten Anmeldeinformationen sind möglicherweise verwaltet.</translation>
 <translation id="209018056901015185">Desktop-Version</translation>
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen verschoben</translation>
@@ -400,6 +403,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5140288047769711648">Chrome speichert dieses Passwort für Sie. Sie müssen es sich nicht merken.</translation>
 <translation id="5150492518600715772">An mein Gerät senden</translation>
+<translation id="5168414296986405587">Entwickelt für iPadOS</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Ihre Cookie-Einstellung gilt für alle Tabs. Wenn Sie eine neue Einstellung auf einen geöffneten Tab anwenden möchten, aktualisieren Sie den Tab.</translation>

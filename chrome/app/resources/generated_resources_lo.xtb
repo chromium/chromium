@@ -514,6 +514,7 @@
 <translation id="1545775234664667895">ຕິດຕັ້ງສີສັນໜ້າຕາ "<ph name="THEME_NAME" />" ແລ້ວ</translation>
 <translation id="1546280085599573572">ສ່ວນຂະຫຍາຍໄດ້ປ່ຽນວ່າຈະໃຫ້ໜ້າໃດສະແດງຂຶ້ນ ເມື່ອທ່ານຄລິກປຸ່ມໜ້າຫຼັກ.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ຕ້ອງການຕິດຕັ້ງ <ph name="EXTENSION_TYPE" /> ທີ່ສາມາດ:</translation>
+<translation id="1547808936554660006">ຂ້ອຍເຂົ້າໃຈວ່າໂປຣໄຟລ໌ eSIM ທີ່ຕິດຕັ້ງໄວ້ຈະບໍ່ຖືກລຶບອອກໂດຍ Powerwash</translation>
 <translation id="1549275686094429035">ເປີດການນຳໃຊ້ ARC ແລ້ວ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ຕ້ອງ​ການ​ເຂົ້າ​ຫາ <ph name="VOLUME_NAME" />. ມັນ​ອາດ​ຈະ​ດັດ​ແປງ ຫຼື​ລຶບ​ໄຟ​ລ໌​ຂອງ​ທ່ານ.</translation>
 <translation id="1552301827267621511">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນການຊອກຫາໄປໃຊ້ <ph name="SEARCH_PROVIDER_DOMAIN" /> ແລ້ວ</translation>
@@ -550,6 +551,7 @@
 <translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
 <translation id="158849752021629804">ຕ້ອງມີເຄືອຂ່າຍພາຍໃນ</translation>
 <translation id="1588870296199743671">ເປີດລິ້ງກັບ...</translation>
+<translation id="1588919647604819635">ບັດຄລິກຂວາ</translation>
 <translation id="1589055389569595240">ສະແດງການສະກົດຄໍາ ແລະໄວຍາກອນ</translation>
 <translation id="1591679663873027990">ອະນຸຍາດໃຫ້ Parallels Desktop ເຂົ້າເຖິງອຸປະກອນ USB. Parallels Desktop ຈະບໍ່ຈື່ອຸປະກອນ USB ຫຼັງຈາກນຳມັນອອກແລ້ວ.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ໄດ້ປິດການນຳໃຊ້ການດີບັກ ADB ແລ້ວ, ເຊິ່ງຈະຣີເຊັດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ສຳຮອງໄຟລ໌ຂອງທ່ານກ່ອນທີ່ຈະຣີສະຕາດ.</translation>
@@ -993,6 +995,7 @@
 
 ທ່ານສາມາດຈັດການການຕັ້ງຄ່າບັນຊີນີ້ໄດ້ໂດຍການຕິດຕັ້ງແອັບ Family Link ໃນອຸປະກອນຂອງທ່ານ.  ພວກເຮົາໄດ້ສົ່ງຄຳແນະນຳໃຫ້ທ່ານໃນອີເມວ.</translation>
 <translation id="2040460856718599782">ອຸ້ຍ! ມີບາງອັນຜິດພາດ ເມື່ອພະຍາຍາມຮັບຮອງ. ກະລຸນາກວດເບິ່ງໃບຢັ້ງຢືນການລົງຊື່ເຂົ້າໃຊ້ໃຫ້ດີ ແລະລອງໃໝ່ອີກ.</translation>
+<translation id="2042279886444479655">ໂປຣໄຟລ໌ທີ່ໃຊ້ຢູ່</translation>
 <translation id="2044014337866019681">ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານກຳລັງຢັ້ງຢືນ <ph name="ACCOUNT" /> ເພື່ອປົດລັອກເຊດຊັນ.</translation>
 <translation id="2044023416777079300">ບໍ່ໄດ້ລົງທະບຽນໂມເດັມ</translation>
 <translation id="204497730941176055">ຊື່​ແມ່​ແບບໃບຢັ້ງຢືນ Microsoft</translation>
@@ -1334,6 +1337,7 @@
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້ຖືກຈົດທະບຽນສຳລັບການຈັດການວິສາຫະກິດສຳເລັດແລ້ວ, ແຕ່ສົ່ງຂໍ້ມູນຊັບສິນ ແລະ ສະຖານທີ່ຂອງມັນບໍ່ສຳເລັດ. ກະລຸນາປ້ອນຂໍ້ມູນນີ້ຈາກຄອນໂຊນຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານດ້ວຍຕົນເອງສຳລັບອຸປະກອນນີ້.</translation>
 <translation id="2396387085693598316">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກ "<ph name="EXTENSION_NAME" />" ໄວ້ແລ້ວ</translation>
 <translation id="2396783860772170191">ປ້ອນ PIN 4 ຕົວເລກ (0000-9999)</translation>
+<translation id="2398546389094871088">ການໃຊ້ Powerwash ໃນອຸປະກອນຂອງທ່ານຈະບໍ່ລຶບໂປຣໄຟລ໌ eSIM ຂອງທ່ານອອກ. ເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າມືຖື<ph name="LINK_END" /> ເພື່ອລຶບໂປຣໄຟລ໌ເຫຼົ່ານີ້ອອກດ້ວຍຕົວເອງ.</translation>
 <translation id="2399699884460174994">ເປິດການແຈ້ງເຕືອນແລ້ວ</translation>
 <translation id="2399939490305346086">ຂໍ້ມູນການເຂົ້າສູ່ລະບົບໃນກະແຈຄວາມປອດໄພ</translation>
 <translation id="2400664245143453337">ຈໍາເປັນຕ້ອງອັບເດດໃນທັນທີ</translation>
@@ -1751,6 +1755,7 @@
 <translation id="2844809857160214557">ເບິ່ງ ແລະ ຈັດການວຽກການພິມ</translation>
 <translation id="2845382757467349449">ສະແດງແຖບບຸກມາກສ໌ທຸກຄັ້ງ</translation>
 <translation id="284805635805850872">ລຶບຊອບແວອັນຕະລາຍອອກບໍ?</translation>
+<translation id="2849035674501872372">ຊອກຫາຂໍ້ມູນ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">ການອະນາໄມບໍ່ສຳເລັດ</translation>
 <translation id="2849936225196189499">ສໍາຄັນ</translation>
@@ -2062,6 +2067,7 @@
 <translation id="3189187154924005138">ເຄີເຊີຂະໜາດໃຫຍ່</translation>
 <translation id="3190558889382726167">ບັນທຶກລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
+<translation id="3197453258332670132">ດ້ວຍການຄລິກຂວາ ຫຼື ການກົດຄ້າງໄວ້, ໃຫ້ສະແດງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງສຳລັບການເລືອກຂໍ້ຄວາມຂອງທ່ານ</translation>
 <translation id="3199127022143353223">ເຊີບເວີ</translation>
 <translation id="3201422919974259695">ອຸປະກອນ USB ທີ່ສາມາດໃຊ້ໄດ້ຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
 <translation id="3202131003361292969">ເສັ້ນທາງ</translation>
@@ -2083,6 +2089,7 @@
 <translation id="3223531857777746191">ປຸ່ມຣີເຊັດ</translation>
 <translation id="3225084153129302039">ຮູບແທນຕົວສີມ່ວງຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="3225319735946384299">ການເຊັນລະຫັດ</translation>
+<translation id="3226487301970807183">ສະຫຼັບແຜງຄວບຄຸມດ້ານຂ້າງຈັດຕຳແໜ່ງໄວ້ຊ້າຍ</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3233271424239923319">ສຳຮອງແອັບ ແລະ ໄຟລ໌ Linux</translation>
 <translation id="3238192140106069382">ກຳລັງເຊື່ອມຕໍ່ ແລະ ຢັ້ງຢືນ</translation>
@@ -2352,6 +2359,7 @@
 <translation id="3515983984924808886">ສຳຜັດກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງເພື່ອຢືນຢັນການຣີເຊັດ. ລະບົບຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນກະແຈຄວາມປອດໄພ, ຮວມທັງ PIN ຂອງມັນ.</translation>
 <translation id="3518985090088779359">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
 <translation id="3519564332031442870">ການບໍລິການ Print Backend</translation>
+<translation id="3519938335881974273">ບັນທຶກໜ້າເປັນ...</translation>
 <translation id="3521606918211282604">ປ່ຽນຂະໜາດດິສ</translation>
 <translation id="3522088408596898827">ພື້ນທີ່ດິສກ໌ເຫຼືອໜ້ອຍຫຼາຍ. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງໃນດິສກ໌ແລ້ວລອງໃໝ່.</translation>
 <translation id="3524965460886318643">ສົ່ງອອກກິດຈະກຳ</translation>
@@ -2375,6 +2383,7 @@
 <translation id="3550593477037018652">ຕັດການເຊື່ອມຕໍ່ເຄືອຂ່າຍມືຖື</translation>
 <translation id="3550915441744863158">Chrome ອັບເດດອັດຕະໂນມັດ ດັ່ງນັ້ນທ່ານມີລຸ້ນທີ່ສົດທີ່ສຸດຢູ່ສະເໝີ</translation>
 <translation id="3551320343578183772">ປິດແຖບ</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">ລຶບລ້າງເມື່ອອອກ</translation>
 <translation id="3554493885489666172">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_NAME" />. ຜູ້ເບິ່ງແຍງລະບົບສາມາດເຂົ້າເຖິງຂໍ້ມູນໃນໂປຣໄຟລ໌ໃດກໍໄດ້ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="3555812735919707620">ເອົາສ່ວນຂະ​ຫຍາຍ​ອອກ</translation>
@@ -2427,6 +2436,7 @@
 <translation id="3604713164406837697">ປ່ຽນພາບພື້ນຫຼັງ</translation>
 <translation id="3605780360466892872">ປຸ່ມລົງລຸ່ມ</translation>
 <translation id="3608576286259426129">ຕົວຢ່າງຮູບຂອງຜູ້ໃຊ້</translation>
+<translation id="3609277884604412258">ຊອກຫາດ່ວນ</translation>
 <translation id="3610369246614755442">ພັດລົມຂອງແທ່ນສາກຕ້ອງການສ້ອມແປງ</translation>
 <translation id="361106536627977100">ຂໍ້​ມູນແຝຼດ</translation>
 <translation id="3611655097742243705">ເຂົ້າໄປ Play Store ເພື່ອຊອກຫາແອັບເພີ່ມເຕີມ</translation>
@@ -3371,6 +3381,7 @@
 <translation id="4636682061478263818">ໄຟລ໌ Drive</translation>
 <translation id="4636930964841734540">ຂໍ້​ມູນ</translation>
 <translation id="4637083375689622795">ການດຳເນີນການເພີ່ມເຕີມ, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">ໃຊ້ກ້ອງຖ່າຍຮູບອີກເທື່ອໜຶ່ງ</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ຂໍ້ຄວາມ}other{ຂໍ້ຄວາມ # ລາຍການ}}</translation>
 <translation id="4638930039313743000">ເປີດນຳໃຊ້ການດີບັກ ADB</translation>
 <translation id="4641539339823703554">Chrome ບໍ່ສາມາດຕັ້ງເວລາຂອງລະບົບໄດ້. ກະລຸນາກວດເບິ່ງເວລາຢູ່ລຸ່ມນີ້ ແລະແກ້ໄຂໃຫ້ຖືກຕ້ອງ ຖ້າຈໍາເປັນ.</translation>
@@ -4121,6 +4132,7 @@
 <translation id="5499313591153584299">ໄຟ​ລ໌​ນີ້​ອາດ​ຈະ​ເປັນ​ອັນ​ຕະ​ລາຍ​ຕໍ່​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ.</translation>
 <translation id="5499453227627332024">ມີການອັບເກຣດສຳລັບກ່ອງບັນຈຸ Linux ຂອງທ່ານ. ນອກນັ້ນທ່ານຍັງສາມາດອັບເກຣດໄດ້ໃນພາຍຫຼັງຈາກແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="5500709606820808700">ດຳເນີນການກວດສອບຄວາມປອດໄພໃນມື້ນີ້</translation>
+<translation id="5501322521654567960">ແຜງຄວບຄຸມດ້ານຂ້າງຈັດຕຳແໜ່ງໄວ້ຊ້າຍ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{ຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" /> ບໍ່ສຳເລັດ}other{ຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" /> ບໍ່ສຳເລັດ}}</translation>
 <translation id="5502500733115278303">ນໍາ​ເຂົ້າ​ມາຈາກ Firefox ແລ້ວ</translation>
 <translation id="5502915260472117187">ເດັກ</translation>
@@ -5332,6 +5344,7 @@
 <translation id="6856348640027512653">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ຫຼື ຂໍ້ມູນ</translation>
 <translation id="6856459657722366306">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="6856623341093082836">ຕັ້ງຄ່າ ແລະ ປັບຄວາມຖືກຕ້ອງຂອງໜ້າຈໍສຳຜັດຂອງທ່ານ</translation>
+<translation id="6857145580237920905">ລຶບໂປຣໄຟລ໌ eSIM ອອກກ່ອນ Powerwash</translation>
 <translation id="6857699260879628349">ຮັບຂໍ້ມູນການກຳນົດຄ່າ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="6860097299815761905">ການຕັ້ງຄ່າພຣັອກຊີ...</translation>

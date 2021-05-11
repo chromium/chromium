@@ -140,6 +140,7 @@
 <translation id="2079504693865562705">Сөредегі қолданбаларды жасыру</translation>
 <translation id="2083190527011054446">Қайырлы түн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
+<translation id="2108303511227308752">Alt + Backspace пернелер тіркесімінің функциясы өзгерді. Delete пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + Backspace пернесі тіркесімін басыңыз.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
 <translation id="2127372758936585790">Төмен қуатты зарядтағыш</translation>
 <translation id="2132302418721800944">Толық экранды жазу</translation>
@@ -367,6 +368,7 @@
 <translation id="4021716437419160885">Төменге айналдыру</translation>
 <translation id="4028481283645788203">Қауіпсіздікті күшейту үшін құпия сөзді енгізу қажет.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
+<translation id="403337028234783023"><ph name="LAUNCHER_KEY_NAME" /> + сан пернелер тіркесімінің функциясы өзгерді. Функциялық пернелердің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарғы қатар пернесі тіркесімін басыңыз.</translation>
 <translation id="4042660782729322247">Экранды бөлісудесіз</translation>
 <translation id="4057003836560082631">Браузер қойындысы: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Өшірулі}other{# үшін өшірулі}}</translation>
@@ -392,6 +394,7 @@
 <translation id="425364040945105958">SIM картасы жоқ.</translation>
 <translation id="4261870227682513959">Хабарландыру параметрлерін көрсету. Хабарландырулар өшірулі</translation>
 <translation id="4269883910223712419">Құрылғының әкімшісі мына әрекеттерді орындай алады:</translation>
+<translation id="4274537685965975248">Ctrl + Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. End пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + оң жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
 <translation id="4285498937028063278">Босату</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
@@ -400,6 +403,7 @@
 <translation id="4303223480529385476">Күй аумағын жаю</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Жоғары контрасқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
+<translation id="4322742403972824594">Ctrl + Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Home пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + сол жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4333628967105022692">Бірнеше пайдаланушы кірген жағдайда, Lacros браузеріне қолдау көрсетілмейді.</translation>
 <translation id="4338109981321384717">Ұлғайтқыш шыны</translation>
@@ -417,6 +421,7 @@
 <translation id="4445159312344259901">Құлыпты ашу үшін кіріңіз</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 маңызды хабарландыру}other{# маңызды хабарландыру}}</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
+<translation id="4451374464530248585">Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. Page Down пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
 <translation id="4472575034687746823">Іске кірісу</translation>
@@ -708,6 +713,7 @@
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
+<translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>

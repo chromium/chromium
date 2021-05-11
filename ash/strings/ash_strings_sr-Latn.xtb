@@ -24,6 +24,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1148499908455722006">Otvara dijalog sa informacijama za korisnika <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Restartujte uređaj da biste primenili ažuriranje.</translation>
+<translation id="1170240434488307589">Dugme za mikrofon uređaja je isključeno.</translation>
 <translation id="1175572348579024023">Pomeraj</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -100,6 +101,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1746730358044914197">Metode unosa konfiguriše administrator.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1761222317188459878">Uključite/isključite mrežnu vezu. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Tasterska prečica <ph name="LAUNCHER_KEY_NAME" /> + tačka je promenjena. Da biste koristili taster za umetanje, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Pomeri nadesno</translation>
 <translation id="1782199038061388045">prevod</translation>
 <translation id="1787955149152357925">Isključeno</translation>

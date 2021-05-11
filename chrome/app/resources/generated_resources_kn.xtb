@@ -518,6 +518,7 @@
 <translation id="1545775234664667895">ಸ್ಥಾಪಿಸಲಾಗಿರುವ ಥೀಮ್ "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">ನೀವು ಹೋಮ್‌ನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಈ ವಿಸ್ತರಣೆಯು ಬದಲಾಯಿಸಿದೆ.</translation>
 <translation id="1546452108651444655">ಈ ಕೆಳಗಿನವುಗಳನ್ನು ಮಾಡಬಹುದಾದ <ph name="EXTENSION_TYPE" /> ಅನ್ನು <ph name="CHILD_NAME" /> ಅವರು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತಾರೆ:</translation>
+<translation id="1547808936554660006">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಪವರ್‌ವಾಷ್‌‌ ತೆಗೆದುಹಾಕಲಾಗುವುದಿಲ್ಲ ಎಂಬುದನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> ಅನ್ನು ಬಳಸಲು, <ph name="EXTENSION_NAME" /> ವಿಸ್ತರಣೆಯು ಹುಡುಕಾಟವನ್ನು ಬದಲಿಸಿದೆ</translation>
@@ -554,6 +555,7 @@
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="158849752021629804">ಹೋಮ್ ನೆಟ್‌ವರ್ಕ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1588870296199743671">ಇದರೊಂದಿಗೆ Open Link...</translation>
+<translation id="1588919647604819635">ರೈಟ್ ಕ್ಲಿಕ್ ಕಾರ್ಡ್</translation>
 <translation id="1589055389569595240">ಕಾಗುಣಿತ ಮತ್ತು ವ್ಯಾಕರಣ ತೋರಿಸು</translation>
 <translation id="1591679663873027990">USB ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಲು, Parallels Desktop ಗೆ ಅನುಮತಿ ನೀಡಿ. USB ಸಾಧನವನ್ನು ತೆಗೆದುಹಾಕಿದ ಬಳಿಕ, Parallels Desktop ಗೆ ಅದರ ಮಾಹಿತಿ ನೆನಪಿನಲ್ಲಿ ಇರುವುದಿಲ್ಲ.</translation>
 <translation id="1592074621872221573">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು <ph name="MANAGER" /> ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದೆ, ಇದು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಹೊಂದಿಸುತ್ತದೆ. ಮರುಪ್ರಾರಂಭಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
@@ -989,6 +991,7 @@
 
 ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ Family Link ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಮೂಲಕ ಈ ಖಾತೆಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು.  ನಾವು ನಿಮಗೆ ಇಮೇಲ್ ಮೂಲಕ ಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ್ದೇವೆ.</translation>
 <translation id="2040460856718599782">ಓಹ್! ನೀವು ದೃಢೀಕರಿಸುವ ಪ್ರಯತ್ನದಲ್ಲಿರುವಾಗ ಏನೋ ತಪ್ಪು ನಡೆದಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸೈನ್‌-ಇನ್‌ ರುಜುವಾತುಗಳನ್ನು ಎರಡು ಬಾರಿ ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="2042279886444479655">ಸಕ್ರಿಯ ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="2044014337866019681">ಸೆಶನ್ ಅನ್‌ಲಾಕ್ ಮಾಡಲು ನೀವು <ph name="ACCOUNT" /> ಅನ್ನು ದೃಢೀಕರಿಸುತ್ತಿರುವಿರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="2044023416777079300">ಮೋಡೆಮ್ ಅನ್ನು ನೋಂದಾಯಿಸಿಲ್ಲ</translation>
 <translation id="204497730941176055">Microsoft ಪ್ರಮಾಣಪತ್ರ ಟೆಂಪ್ಲೇಟ್ ಹೆಸರು</translation>
@@ -1330,6 +1333,7 @@
 <translation id="2395616325548404795">ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆಗಾಗಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ, ಆದರೆ ಅದರ ಸ್ವತ್ತು ಹಾಗೂ ಸ್ಥಳ ಮಾಹಿತಿಯನ್ನು ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಈ ಸಾಧನಕ್ಕಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್‌ನಿಂದ ಈ ಮಾಹಿತಿಯನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ.</translation>
 <translation id="2396387085693598316">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="2396783860772170191">4 ಅಂಕಿಯ ಪಿನ್ (0000-9999) ಅನ್ನು ನಮೂದಿಸಿ</translation>
+<translation id="2398546389094871088">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ವಾಷ್‌‌ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುವುದಿಲ್ಲ. ಈ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಕೈಯಾರೆ ತೆಗೆದುಹಾಕಲು <ph name="LINK_BEGIN" />ಮೊಬೈಲ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="2399699884460174994">ಅಧಿಸೂಚನೆಗಳನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2399939490305346086">ಭದ್ರತೆ ಕೀ ಸೈನ್-ಇನ್ ಡೇಟಾ</translation>
 <translation id="2400664245143453337">ಕೂಡಲೇ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕಿದೆ</translation>
@@ -1745,6 +1749,7 @@
 <translation id="2844809857160214557">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2845382757467349449">ಯಾವಾಗಲೂ ಬುಕ್‌ಮಾರ್ಕ್‌ ಪಟ್ಟಿ ತೋರಿಸು</translation>
 <translation id="284805635805850872">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ತೆಗೆದುಹಾಕುವಿರಾ?</translation>
+<translation id="2849035674501872372">ಲುಕ್ ಅಪ್</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">ಕ್ಲೀನಪ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2849936225196189499">ಗಂಭೀರ</translation>
@@ -2056,6 +2061,7 @@
 <translation id="3189187154924005138">ದೊಡ್ಡ ಕರ್ಸರ್</translation>
 <translation id="3190558889382726167">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3192947282887913208">ಆಡಿಯೋ ಫೈಲ್‌ಗಳು</translation>
+<translation id="3197453258332670132">ಬಲ-ಕ್ಲಿಕ್ ಅಥವಾ ದೀರ್ಘಕಾಲ ಒತ್ತಿಹಿಡಿಯಿರಿ, ನೀವು ಆಯ್ಕೆಮಾಡಿದ ಪಠ್ಯಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3199127022143353223">ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="3201422919974259695">ಲಭ್ಯವಿರುವ USB ಸಾಧನಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="3202131003361292969">ಪಾಥ್</translation>
@@ -2077,6 +2083,7 @@
 <translation id="3223531857777746191">’ಮರುಹೊಂದಿಸಿ’ ಬಟನ್</translation>
 <translation id="3225084153129302039">ಡಿಫಾಲ್ಟ್ ನೇರಳೆ ಅವತಾರ್</translation>
 <translation id="3225319735946384299">ಕೋಡ್ ಸೈನ್ ಮಾಡುವಿಕೆ</translation>
+<translation id="3226487301970807183">ಎಡಕ್ಕೆ ಜೋಡಿಸಲಾದ ಪಾರ್ಶ್ವ ಫಲಕವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="3227137524299004712">ಮೈಕ್ರೋಫೋನ್</translation>
 <translation id="3233271424239923319">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
 <translation id="3238192140106069382">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ ಮತ್ತು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -2346,6 +2353,7 @@
 <translation id="3515983984924808886">ಮರುಹೊಂದಿಸುವಿಕೆಯನ್ನು ಖಚಿತಪಡಿಸಲು, ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಯನ್ನು ಮತ್ತೊಮ್ಮೆ ಸ್ಪರ್ಶಿಸಿ. ಭದ್ರತೆ ಕೀಯಲ್ಲಿ ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಎಲ್ಲಾ ಮಾಹಿತಿಯನ್ನು ಮತ್ತು ಅದರ ಪಿನ್ ಅನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="3518985090088779359">ಸಮ್ಮತಿಸು &amp; ಮುಂದುವರಿಸು</translation>
 <translation id="3519564332031442870">ಬ್ಯಾಕೆಂಡ್ ಸೇವೆಯನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
+<translation id="3519938335881974273">ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
 <translation id="3521606918211282604">ಡಿಸ್ಕ್ ಗಾತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="3522088408596898827">ಡಿಸ್ಕ್‌ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆಯಿದೆ. ಡಿಸ್ಕ್‌ನ ಸ್ಥಳವನ್ನು ಖಾಲಿ ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3524965460886318643">ಚಟುವಟಿಕೆಗಳನ್ನು ರಫ್ತು ಮಾಡಿ</translation>
@@ -2369,6 +2377,7 @@
 <translation id="3550593477037018652">ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್‌ನ ಕನೆಕ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="3550915441744863158">Chrome ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನವೀಕರಣಗೊಳ್ಳುತ್ತದೆ. ಹೀಗಾಗಿ ನೀವು ಯಾವಾಗಲೂ ತಾಜಾ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರುತ್ತೀರಿ.</translation>
 <translation id="3551320343578183772">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">ನಿರ್ಗಮನದಲ್ಲಿ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3554493885489666172">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="PROFILE_NAME" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. ನಿರ್ವಾಹಕರು ಈ ಸಾಧನದಲ್ಲಿನ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
 <translation id="3555812735919707620">ವಿಸ್ತರಣೆ ತೆಗೆದುಹಾಕು</translation>
@@ -2421,6 +2430,7 @@
 <translation id="3604713164406837697">ವಾಲ್‌ಪೇಪರ್ ಬದಲಿಸಿ</translation>
 <translation id="3605780360466892872">ಬಟನ್‌ಡೌನ್</translation>
 <translation id="3608576286259426129">ಬಳಕೆದಾರರ ಚಿತ್ರದ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
+<translation id="3609277884604412258">ತ್ವರಿತ ಹುಡುಕಾಟ</translation>
 <translation id="3610369246614755442">ಡಾಕ್ ಫ್ಯಾನ್‌ಗೆ ದುರಸ್ತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="361106536627977100">ಫ್ಲ್ಯಾಶ್ ಡೇಟಾ</translation>
 <translation id="3611655097742243705">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳನ್ನು ಹುಡುಕಲು Play ಸ್ಟೋರ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
@@ -3365,6 +3375,7 @@
 <translation id="4636682061478263818">ಡ್ರೈವ್ ಫೈಲ್‌ಗಳು</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
 <translation id="4637083375689622795">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">ಮತ್ತೊಮ್ಮೆ ಕ್ಯಾಮರಾ ಬಳಸಿ</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ಪಠ್ಯ}one{# ಪಠ್ಯಗಳು}other{# ಪಠ್ಯಗಳು}}</translation>
 <translation id="4638930039313743000">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4641539339823703554">Chrome ಗೆ ಸಿಸ್ಟಂ ಸಮಯವನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಕೆಳಗಿನ ಸಮಯವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಅಗತ್ಯವಿದ್ದರೆ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
@@ -4116,6 +4127,7 @@
 <translation id="5499313591153584299">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿ ಆಗಿರಬಹುದು.</translation>
 <translation id="5499453227627332024">ನಿಮ್ಮ Linux ಕಂಟೇನರ್‌ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಆ್ಯಪ್ ಸಹಾಯದಿಂದಲೂ ನೀವು ನಂತರದಲ್ಲಿ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="5500709606820808700">ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆಯನ್ನು ಈ ದಿನ ನಡೆಸಲಾಗಿದೆ</translation>
+<translation id="5501322521654567960">ಎಡಕ್ಕೆ ಜೋಡಿಸಲಾದ ಪಾರ್ಶ್ವ ಫಲಕ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ}}</translation>
 <translation id="5502500733115278303">Firefox ಇಂದ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="5502915260472117187">ಮಗು</translation>
@@ -5328,6 +5340,7 @@
 <translation id="6856348640027512653">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಅಥವಾ ಡೇಟಾವನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="6856623341093082836">ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್‌ ನಿಖರತೆಯನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಮತ್ತು ಹೊಂದಿಸಿ</translation>
+<translation id="6857145580237920905">ಪವರ್‌ವಾಷ್‌‌‌ನ ಮೊದಲೇ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6857699260879628349">ಕಾನ್ಫಿಗರೇಶನ್ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ಸೆ</translation>
 <translation id="6860097299815761905">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು...</translation>

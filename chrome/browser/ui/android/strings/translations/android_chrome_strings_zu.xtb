@@ -531,6 +531,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4583164079174244168">{MINUTES,plural, =1{# iminithi eledlule}one{# amaminithi adlule}other{# amaminithi adlule}}</translation>
 <translation id="4587589328781138893">Amasayithi</translation>
 <translation id="4594952190837476234">Leli khasi elingaxhunyiwe kwi-inthanethi livele ngo-<ph name="CREATION_TIME" /> futhi lingahluka kusukela kunguqulo eku-inthanethi.</translation>
+<translation id="4615382002648696011">Okulandelayo, izindaba ezingafundwanga zilungile</translation>
 <translation id="4616150815774728855">Vula i-<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Qinisekisa ukuthi nguwe</translation>
 <translation id="4634124774493850572">Sebenzisa iphasiwedi</translation>
@@ -1132,6 +1133,7 @@ Idatha evela kuseshini yakho ye-Incognito izosulwa kusukela ku-Chrome uma <ph na
 <translation id="8364299278605033898">Bona amawebhusayithi adumile</translation>
 <translation id="8368027906805972958">Idivayisi engaziwa noma engasekelwe (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">I-<ph name="LANG" /> ilungile.</translation>
+<translation id="8387617938027387193">Qinisekisa ukuthi nguwe</translation>
 <translation id="8393700583063109961">Thumela umlayezo</translation>
 <translation id="8410695015584479363">Landelela izintengo</translation>
 <translation id="8413126021676339697">Bonisa umlando ophelele</translation>
@@ -1177,6 +1179,7 @@ Idatha evela kuseshini yakho ye-Incognito izosulwa kusukela ku-Chrome uma <ph na
 <translation id="8659579665266920523">Indlela yokusesha nge-Chrome</translation>
 <translation id="8662811608048051533">Ikukhipha kumasayithi amaningi.</translation>
 <translation id="8664979001105139458">Igama lefayela selivele likhona</translation>
+<translation id="8676789164135894283">Iziqinisekiso zokungena ngemvume</translation>
 <translation id="8683039184091909753">isithombe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ileveli yamandla esignali: # ibha}one{Ileveli yamandla esignali: # amabha}other{Ileveli yamandla esignali: # amabha}}</translation>
 <translation id="869891660844655955">Idethi yokuphelelwa yisikhathi</translation>

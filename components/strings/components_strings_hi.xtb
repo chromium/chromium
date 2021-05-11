@@ -173,6 +173,7 @@
 <translation id="1532118530259321453">इस पेज का कहना है कि</translation>
 <translation id="153384715582417236">फिलहाल बस इतना ही</translation>
 <translation id="1536390784834419204">पेज का अनुवाद करें</translation>
+<translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
 <translation id="154408704832528245">डिलीवरी पता चुनें</translation>
 <translation id="1549470594296187301">इस सुविधा का उपयोग करने के लिए JavaScript को सक्षम किया जाना चाहिए.</translation>
 <translation id="155039086686388498">इंजीनियरिंग-डी</translation>
@@ -215,6 +216,7 @@
 <translation id="1682696192498422849">शॉर्ट एज फ़र्स्ट</translation>
 <translation id="168693727862418163">इस नीति का मान अपनी स्कीमा के हिसाब से काम नहीं कर सका और इसे अनदेखा किया जाएगा.</translation>
 <translation id="168841957122794586">सर्वर प्रमाणपत्र में कमज़ोर क्रिप्टोग्राफ़िक कुंजी है.</translation>
+<translation id="1696290444144917273">वर्चुअल कार्ड की जानकारी देखें</translation>
 <translation id="1697532407822776718">आप बिल्कुल तैयार हैं!</translation>
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706954506755087368">{1,plural, =1{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र कल से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}one{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}other{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}}</translation>
@@ -227,6 +229,7 @@
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1718029547804390981">एनोटेट करने के लिए दस्तावेज़ बहुत बड़ा है</translation>
 <translation id="1721424275792716183">* फ़ील्ड ज़रूरी है</translation>
+<translation id="1727613060316725209">प्रमाणपत्र मान्य है</translation>
 <translation id="1727741090716970331">मान्य कार्ड नंबर जोड़ें</translation>
 <translation id="1728677426644403582">आप एक वेब पेज का स्रोत देख रहे हैं</translation>
 <translation id="173080396488393970">इस तरह का कार्ड काम नहीं करता</translation>
@@ -698,6 +701,7 @@
 <translation id="3586931643579894722">विवरण छुपाएं</translation>
 <translation id="3587738293690942763">मिडल</translation>
 <translation id="3590643883886679995">जब आप गुप्त मोड से बाहर निकल जाएंगे, तब साइन इन करने का डेटा इस डिवाइस में सेव किया जाएगा.</translation>
+<translation id="359126217934908072">महीना/साल:</translation>
 <translation id="3592413004129370115">इटैलियन (एन्वेलप)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">आपके एडमिन ने ऐप्लिकेशन को ब्लॉक कर दिया है</translation>
@@ -753,6 +757,7 @@
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">ब्लूटूथ डिवाइस</translation>
+<translation id="3787675388804467730">वर्चुअल कार्ड नंबर</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> में खत्म होगा</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
@@ -1551,6 +1556,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome इस पेज को रीडर मोड में दिखा रहा है, ताकि इसे आसानी से पढ़ा जा सके. Chrome ने एक असुरक्षित कनेक्शन पर मूल पेज काे फिर से पा लिया है.</translation>
 <translation id="6891596781022320156">नीति स्तर समर्थित नहीं है.</translation>
+<translation id="6895143722905299846">वर्चुअल नंबर:</translation>
 <translation id="6895330447102777224">आपके कार्ड की पुष्टि हो गई है</translation>
 <translation id="6897140037006041989">उपयोगकर्ता एजेंट</translation>
 <translation id="6898699227549475383">संगठन (O)</translation>
@@ -1589,6 +1595,7 @@
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7030436163253143341">प्रमाणपत्र मान्य नहीं है</translation>
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>
 <translation id="7050187094878475250">आपने <ph name="DOMAIN" /> तक पहुंचने का प्रयास किया था, लेकिन सर्वर ने ऐसा प्रमाणपत्र प्रस्‍तुत किया जिसकी मान्‍यता अवधि विश्‍वसनीय होने के लिए बहुत लंबी है.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यह कार्ड इस समय सेव नहीं किया जा सकता}one{ये कार्ड इस समय सेव नहीं किए जा सकते}other{ये कार्ड इस समय सेव नहीं किए जा सकते}}</translation>

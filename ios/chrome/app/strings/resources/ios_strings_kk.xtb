@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Барлық қойындыларды жабу</translation>
 <translation id="1229222343402087523">Chrome браузерінен ${searchPhrase} іздеу</translation>
 <translation id="1231733316453485619">Синхрондау қосылсын ба?</translation>
+<translation id="1242044645101871359">Қайта кіріңіз</translation>
 <translation id="1254117744268754948">Қалтаны таңдау</translation>
 <translation id="1265739287306757398">Әдісін білу</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Оқу тізіміне енгізілді</translation>
 <translation id="1870148520156231997">Құпия сөзді көрсету</translation>
 <translation id="1872096359983322073">Шам</translation>
+<translation id="1894205589103145703">Кіру кезінде бірдеңе дұрыс болмады.</translation>
 <translation id="1911619930368729126">Google Drive ішіне жүктеу</translation>
 <translation id="1923342640370224680">Соңғы сағат</translation>
 <translation id="1941314575388338491">Көшіру үшін екі рет түртіңіз.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> күн бұрын қосылған.</translation>
 <translation id="2074131957428911366">Синхрондалатын мазмұнды кез келген уақытта <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде таңдай аласыз.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
+<translation id="2086623437239112659">Сақталған кіру ақпараты ескірген болуы мүмкін.</translation>
 <translation id="209018056901015185">Жұмыс үстелі сайтын сұрау</translation>
 <translation id="2103075008456228677">history.google.com сайтын ашу</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> элементтің орны ауыстырылды</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">Құпия сөздеріңізді, әрекеттеріңіздің тарихын және басқа деректерді барлық құрылғыда синхрондау</translation>
 <translation id="5140288047769711648">Бұл құпия сөз Chrome браузерінде сақталады. Оны есте сақтаудың қажеті жоқ.</translation>
 <translation id="5150492518600715772">Құрылғыңызға жіберу</translation>
+<translation id="5168414296986405587">iPadOS үшін әзірленген</translation>
 <translation id="5181140330217080051">Жүктеу</translation>
 <translation id="5186185447130319458">Жеке</translation>
 <translation id="5188482106078495165">Cookie параметрі барлық қойындыларға қолданылады. Жаңа параметрді ашық қойындыға қолдану үшін қойындыны қайта жүктеңіз.</translation>
@@ -429,6 +433,7 @@
 <translation id="5508435575041083207">Есептік жазбадан шығу және деректерді осы құрылғыдан жою</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> сағ бұрын</translation>
 <translation id="5525269841082836315">Құпия фраза жасау</translation>
+<translation id="5532698011560297095">Кіру мүмкін болмады</translation>
 <translation id="5548760955356983418">Handoff функциясы веб-сайтты осы құрылғыда ашып, шолуды Mac жүйесінде жеңіл жалғастыруға мүмкіндік береді. Ағымдағы ашылған веб-сайт Мac жүйеңіздегі Dock тақтасында пайда болады.
 
 Handoff функциясы параметрлердің жалпы бөлімінде қосылуы қажет және құрылғыңыз бірдей iCloud есептік жазбасын қолдануы керек.</translation>

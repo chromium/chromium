@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Συσκευές σε σύζευξη</translation>
 <translation id="1165712434476988950">Απαιτείται επανεκκίνηση της συσκευής για την εφαρμογή της ενημέρωσης.</translation>
+<translation id="1170240434488307589">Έχει γίνει σίγαση του μικροφώνου της συσκευής.</translation>
 <translation id="1175572348579024023">Κύλιση</translation>
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">Οι μέθοδοι εισαγωγής έχουν διαμορφωθεί από τον διαχειριστή σας.</translation>
 <translation id="1747827819627189109">Το πληκτρολόγιο οθόνης είναι ενεργοποιημένο</translation>
 <translation id="1761222317188459878">Εναλλαγή σύνδεσης δικτύου. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + τελεία έχει αλλάξει. Για να χρησιμοποιήσετε το κουμπί Insert, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
 <translation id="1782199038061388045">μετάφραση</translation>
 <translation id="1787955149152357925">Ανενεργό</translation>

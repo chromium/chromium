@@ -519,6 +519,7 @@
 <translation id="1545775234664667895">Įdiegta „<ph name="THEME_NAME" />“ tema</translation>
 <translation id="1546280085599573572">Šis plėtinys pakeitė puslapį, kuris rodomas spustelėjus pagrindinio puslapio mygtuką.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> nori įdiegti <ph name="EXTENSION_TYPE" />, kuris gali atlikti nurodytus veiksmus.</translation>
+<translation id="1547808936554660006">Suprantu, kad įdiegti „eSIM“ kortelės profiliai nebus pašalinti naudojant funkciją „Powerwash“</translation>
 <translation id="1549275686094429035">Įgalinta ARC</translation>
 <translation id="1549788673239553762">„<ph name="APP_NAME" />“ nori pasiekti „<ph name="VOLUME_NAME" />“. Programa galės keisti arba ištrinti failus.</translation>
 <translation id="1552301827267621511">Pritaikius plėtinį „<ph name="EXTENSION_NAME" />“, paieškos svetainė buvo pakeista į <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -555,6 +556,7 @@
 <translation id="1588438908519853928">Įprastas</translation>
 <translation id="158849752021629804">Reikalingas namų tinklas</translation>
 <translation id="1588870296199743671">Atidaryti nuorodą naudojant...</translation>
+<translation id="1588919647604819635">Spustelėkite kortelę dešiniuoju pelės klavišu</translation>
 <translation id="1589055389569595240">Rodyti rašybos ir gramatikos tikrinimą</translation>
 <translation id="1591679663873027990">Suteikite „Parallels Desktop“ leidimą pasiekti USB įrenginius. „Parallels Desktop“ neprisimins USB įrenginio, kai jis bus pašalintas.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> išjungė ADB derinimą, todėl „<ph name="DEVICE_TYPE" />“ bus nustatytas iš naujo. Prieš paleisdami iš naujo, sukurkite atsarginę failų kopiją.</translation>
@@ -999,6 +1001,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 
 Šios paskyros nustatymus galite tvarkyti įdiegę „Family Link“ programą savo įrenginyje.  Instrukcijas išsiuntėme el. paštu.</translation>
 <translation id="2040460856718599782">Oi! Kažkas atsitiko bandant nustatyti jūsų tapatybę. Dar kartą patikrinkite prisijungimo duomenis ir bandykite iš naujo.</translation>
+<translation id="2042279886444479655">Aktyvūs profiliai</translation>
 <translation id="2044014337866019681">Būtinai patvirtinkite <ph name="ACCOUNT" />, kad atrakintumėte sesiją.</translation>
 <translation id="2044023416777079300">Modemas neužregistruotas</translation>
 <translation id="204497730941176055">„Microsoft“ sertifikato šablono pavadinimas</translation>
@@ -1340,6 +1343,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2395616325548404795">„<ph name="DEVICE_TYPE" />“ sėkmingai užregistruotas kaip tvarkomas įmonėje, bet nepavyko išsiųsti jo išteklių ir vietovės informacijos. Įveskite šią informaciją neautomatiškai įrenginio skiltyje „Admin console“.</translation>
 <translation id="2396387085693598316">Administratorius užblokavo „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="2396783860772170191">Įveskite 4 skaitmenų PIN kodą (0000–9999)</translation>
+<translation id="2398546389094871088">Naudojant funkciją „Powerwash“ įrenginyje „eSIM“ kortelės profiliai nebus pašalinti. Eikite į skiltį <ph name="LINK_BEGIN" />„Mobiliojo įrenginio nustatymai“<ph name="LINK_END" /> ir patys pašalinkite šiuos profilius.</translation>
 <translation id="2399699884460174994">Pranešimai įjungti</translation>
 <translation id="2399939490305346086">Saugos rakto prisijungimo duomenys</translation>
 <translation id="2400664245143453337">Reikia nedelsiant atnaujinti</translation>
@@ -1757,6 +1761,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2844809857160214557">Peržiūrėti ir tvarkyti spausdinimo užduotis</translation>
 <translation id="2845382757467349449">Visada rodyti žymių juostą</translation>
 <translation id="284805635805850872">Pašalinti žalingą programinę įrangą?</translation>
+<translation id="2849035674501872372">Pakelkite galvą</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Nepavyko išvalyti</translation>
 <translation id="2849936225196189499">Kritinis</translation>
@@ -2068,6 +2073,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3189187154924005138">Didelis žymeklis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
+<translation id="3197453258332670132">Spustelėjus dešiniuoju pelės klavišu arba ilgai paspaudus rodoma su jūsų teksto pasirinkimu susijusi informacija</translation>
 <translation id="3199127022143353223">Serveriai</translation>
 <translation id="3201422919974259695">Čia bus rodomi pasiekiami USB įrenginiai.</translation>
 <translation id="3202131003361292969">Kelias</translation>
@@ -2089,6 +2095,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3223531857777746191">Nustatymo iš naujo mygtukas</translation>
 <translation id="3225084153129302039">Numatytasis violetinis pseudoportretas</translation>
 <translation id="3225319735946384299">Kodo pasirašymas</translation>
+<translation id="3226487301970807183">Perjunkite kairėje lygiuojamą šoninį skydelį</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3233271424239923319">Kurti atsarginę „Linux“ programų ir failų kopiją</translation>
 <translation id="3238192140106069382">Prisijungiama ir patvirtinama</translation>
@@ -2358,6 +2365,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3515983984924808886">Palieskite saugos raktą dar kartą patvirtindami nustatymą iš naujo. Visa saugos rakte saugoma informacija, įskaitant jo PIN kodą, bus ištrinta.</translation>
 <translation id="3518985090088779359">Sutikti ir tęsti</translation>
 <translation id="3519564332031442870">Spausdinimo vidinės sistemos paslauga</translation>
+<translation id="3519938335881974273">Išsaugoti puslapį kaip...</translation>
 <translation id="3521606918211282604">Keisti disko dydį</translation>
 <translation id="3522088408596898827">Labai mažai vietos diske. Atlaisvinkite vietos diske ir bandykite dar kartą.</translation>
 <translation id="3524965460886318643">Eksportuoti veiklos duomenis</translation>
@@ -2381,6 +2389,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3550593477037018652">Atsijungti nuo mobiliojo ryšio tinklo</translation>
 <translation id="3550915441744863158">„Chrome“ atnaujinama automatiškai, todėl visada turite naujausią versiją</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
+<translation id="3552097563855472344">„<ph name="NETWORK_NAME" />“ – <ph name="SPAN_START" />„<ph name="CARRIER_NAME" />“<ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Išvalyti išeinant</translation>
 <translation id="3554493885489666172">Įrenginį tvarko <ph name="PROFILE_NAME" />. Administratoriai gali pasiekti duomenis bet kuriame profilyje šiame įrenginyje.</translation>
 <translation id="3555812735919707620">Pašalinti plėtinį</translation>
@@ -2433,6 +2442,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="3605780360466892872">Konservatyvusis</translation>
 <translation id="3608576286259426129">Naudotojo vaizdo peržiūra</translation>
+<translation id="3609277884604412258">Sparčioji paieška</translation>
 <translation id="3610369246614755442">Reikia taisyti doko ventiliatorių</translation>
 <translation id="361106536627977100">„Flash“ duomenys</translation>
 <translation id="3611655097742243705">Apsilankykite „Play“ parduotuvėje, kad rastumėte daugiau programų</translation>
@@ -3377,6 +3387,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4636682061478263818">Disko failai</translation>
 <translation id="4636930964841734540">Informacija</translation>
 <translation id="4637083375689622795">Daugiau veiksmų, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Vėl naudoti fotoaparatą</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Teksto pranešimas}one{# teksto pranešimas}few{# teksto pranešimai}many{# teksto pranešimo}other{# teksto pranešimų}}</translation>
 <translation id="4638930039313743000">Įgalinti ADB derinimą</translation>
 <translation id="4641539339823703554">„Chrome“ nepavyko nustatyti sistemos laiko. Toliau patikrinkite laiką ir ištaisykite jį, jei reikia.</translation>
@@ -4127,6 +4138,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5499313591153584299">Šis failas gali pažeisti jūsų kompiuterį.</translation>
 <translation id="5499453227627332024">Yra „Linux“ sudėtiniam rodiniui skirtas naujovinimas. Taip pat galite naujovinti galite ir vėliau iš Nustatymų programos.</translation>
 <translation id="5500709606820808700">Saugos patikra atlikta šiandien</translation>
+<translation id="5501322521654567960">Kairėje lygiuojamas šoninis skydelis</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nepavyko gauti turinio (<ph name="ATTACHMENTS" />) iš „<ph name="DEVICE_NAME" />“ įrenginio}one{Nepavyko gauti turinio (<ph name="ATTACHMENTS" />) iš „<ph name="DEVICE_NAME" />“ įrenginio}few{Nepavyko gauti turinio (<ph name="ATTACHMENTS" />) iš „<ph name="DEVICE_NAME" />“ įrenginio}many{Nepavyko gauti turinio (<ph name="ATTACHMENTS" />) iš „<ph name="DEVICE_NAME" />“ įrenginio}other{Nepavyko gauti turinio (<ph name="ATTACHMENTS" />) iš „<ph name="DEVICE_NAME" />“ įrenginio}}</translation>
 <translation id="5502500733115278303">Importuota iš „Firefox“</translation>
 <translation id="5502915260472117187">Vaikas</translation>
@@ -5339,6 +5351,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6856348640027512653">Neleidžiama naudoti virtualiosios realybės įrenginių ar duomenų</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="6856623341093082836">Nustatyti ir koreguoti jutiklinio ekrano tikslumą</translation>
+<translation id="6857145580237920905">„eSIM“ kortelės profilių pašalinimas prieš naudojant funkciją „Powerwash“</translation>
 <translation id="6857699260879628349">Gauti konfigūravimo informacijos</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Įgaliotojo serverio nustatymai...</translation>

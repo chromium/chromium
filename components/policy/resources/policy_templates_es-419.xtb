@@ -3356,6 +3356,19 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si no la estableces, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas son visibles de forma predeterminada.
       </translation>
+<translation id="5455888515928026628">Durante el acceso mediante la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o de una contraseña almacenada en caché (sin conexión).
+
+      Si estableces esta política en -2, coincidirá con el valor del límite de tiempo de acceso sin conexión de la pantalla de acceso especificado en la política <ph name="POLICY" />.
+
+      Si no estableces la política o la estableces con un valor de -1, no se aplicará la autenticación en línea en la pantalla de bloqueo y se permitirá que el usuario utilice la autenticación sin conexión, a menos que se aplique la autenticación en línea por otra razón.
+
+      Si estableces la política con un valor de 0, siempre se requerirá la autenticación en línea.
+
+      Si la estableces con cualquier otro valor, esta política especificará la cantidad de días que debe transcurrir desde la última autenticación en línea para que el usuario tenga que volver a utilizar la autenticación en línea la siguiente vez que acceda mediante la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios autenticados mediante SAML.
+
+      El valor de la política deberá especificarse en días.</translation>
 <translation id="5457065417344056871">Habilitar modo de invitado en el navegador</translation>
 <translation id="5457387982448145430">Si habilitas la política, se importarán las contraseñas guardadas del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importarán las contraseñas guardadas en la primera ejecución.
 
@@ -6035,6 +6048,19 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8917070657147922192">Permite que los usuarios administren los Certificados de CA instalados</translation>
 <translation id="8919100556245407184">El tiempo restante (en días) después del aviso de vencimiento de la actualización automática para que se haga salir al usuario de la cuenta si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la versión <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>
+<translation id="8930064580550462145">Durante el acceso mediante la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o de una contraseña almacenada en caché (sin conexión).
+
+      Si estableces esta política en -2, coincidirá con el valor del límite de tiempo de acceso sin conexión de la pantalla de acceso especificado en la política <ph name="POLICY" />.
+
+      Si no estableces la política o la estableces con un valor de -1, no se aplicará la autenticación en línea en la pantalla de bloqueo y se permitirá que el usuario utilice la autenticación sin conexión, a menos que se aplique la autenticación en línea por otra razón.
+
+      Si estableces la política con un valor de 0, siempre se requerirá la autenticación en línea.
+
+      Si la estableces con cualquier otro valor, esta política especificará la cantidad de días que debe transcurrir desde la última autenticación en línea para que el usuario tenga que volver a utilizar la autenticación en línea la siguiente vez que acceda mediante la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios autenticados mediante GAIA sin SAML.
+
+      El valor de la política deberá especificarse en días.</translation>
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>

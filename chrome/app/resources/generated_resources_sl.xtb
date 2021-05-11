@@ -519,6 +519,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1545775234664667895">Nameščena tema »<ph name="THEME_NAME" />«</translation>
 <translation id="1546280085599573572">Zaradi te razširitve se je spremenila stran, ki je prikazana, ko kliknete gumb za začetno stran.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> želi namestiti <ph name="EXTENSION_TYPE" />, ki zahteva ta dovoljenja:</translation>
+<translation id="1547808936554660006">Razumem, da s postopkom Powerwash nameščeni profili za eSIM ne bodo odstranjeni.</translation>
 <translation id="1549275686094429035">ARC je omogočen</translation>
 <translation id="1549788673239553762">Aplikacija <ph name="APP_NAME" /> želi dostopati do <ph name="VOLUME_NAME" />. Morda bo spreminjala ali izbrisala vaše datoteke.</translation>
 <translation id="1552301827267621511">Razširitev »<ph name="EXTENSION_NAME" />« je spremenila ponudnika iskanja; poslej se uporablja <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -555,6 +556,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="158849752021629804">Potrebno je domače omrežje</translation>
 <translation id="1588870296199743671">Odpri povezavo z ...</translation>
+<translation id="1588919647604819635">Desni klik kartice</translation>
 <translation id="1589055389569595240">Pokaži črkovanje in slovnico</translation>
 <translation id="1591679663873027990">Programu Parallels Desktop dovolite dostop do naprav USB. Program Parallels Desktop si po odstranitvi naprave USB ne zapomni.</translation>
 <translation id="1592074621872221573">Domena <ph name="MANAGER" /> je onemogočila odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB), zaradi česar bo naprava <ph name="DEVICE_TYPE" /> ponastavljena. Pred vnovičnim zagonom varnostno kopirajte datoteke.</translation>
@@ -999,6 +1001,7 @@ V nasprotnem primeru se odjavite, da bodo spremembe tega računa vidne v tej nap
 
 Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family Link v napravi.  Po e-pošti smo vam poslali navodila.</translation>
 <translation id="2040460856718599782">Pri preverjanju pristnosti je prišlo do težav. Še enkrat preverite poverilnice za prijavo in poskusite znova.</translation>
+<translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Prepričajte se, da zaradi odklepanja seje preverjate račun <ph name="ACCOUNT" />.</translation>
 <translation id="2044023416777079300">Modem ni registriran</translation>
 <translation id="204497730941176055">Microsoftovo ime predloge potrdila</translation>
@@ -1340,6 +1343,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2395616325548404795">Naprava <ph name="DEVICE_TYPE" /> je bila uspešno prijavljena v upravljanje v podjetju, vendar ni poslala svojih podatkov o sredstvih in lokaciji. Te podatke ročno vnesite iz konzole Admin console za to napravo.</translation>
 <translation id="2396387085693598316">Skrbnik je blokiral razširitev »<ph name="EXTENSION_NAME" />«</translation>
 <translation id="2396783860772170191">Vnesite 4-mestno kodo PIN (0000-9999)</translation>
+<translation id="2398546389094871088">Če v napravi izvedete postopek Powerwash, profili za eSIM v napravi ne bodo odstranjeni. Odprite <ph name="LINK_BEGIN" />nastavitve za mobilna omrežja<ph name="LINK_END" />, če želite ročno odstraniti te profile.</translation>
 <translation id="2399699884460174994">Obvestila so vklopljena</translation>
 <translation id="2399939490305346086">Podatki za prijavo na varnostnem ključu</translation>
 <translation id="2400664245143453337">Potrebna je takojšnja posodobitev</translation>
@@ -1757,6 +1761,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2844809857160214557">Ogled in upravljanje tiskalnih opravil</translation>
 <translation id="2845382757467349449">Vedno pokaži vrstico z zaznamki</translation>
 <translation id="284805635805850872">Želite odstraniti škodljivo programsko opremo?</translation>
+<translation id="2849035674501872372">Iskanje</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Brisanje ni uspelo</translation>
 <translation id="2849936225196189499">Kritično</translation>
@@ -2068,6 +2073,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3189187154924005138">Velik kazalec</translation>
 <translation id="3190558889382726167">Geslo je shranjeno</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
+<translation id="3197453258332670132">Z desnim klikom ali dolgim pritiskom prikažete informacije, povezane z izbranim besedilom.</translation>
 <translation id="3199127022143353223">Strežniki</translation>
 <translation id="3201422919974259695">Razpoložljive naprave USB bodo prikazane tukaj.</translation>
 <translation id="3202131003361292969">Pot</translation>
@@ -2089,6 +2095,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3223531857777746191">Gumb za ponastavitev</translation>
 <translation id="3225084153129302039">Privzeti vijoličasti avatar</translation>
 <translation id="3225319735946384299">Podpisovanje kode</translation>
+<translation id="3226487301970807183">Preklop levo poravnanega stranskega podokna</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Varnostno kopiranje aplikacij in datotek za Linux</translation>
 <translation id="3238192140106069382">Vzpostavljanje povezave in preverjanje</translation>
@@ -2358,6 +2365,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3515983984924808886">Znova se dotaknite varnostnega ključa, da potrdite ponastavitev. Vsi podatki, shranjeni na varnostnem ključu, vključno s kodo PIN, bodo izbrisani.</translation>
 <translation id="3518985090088779359">Sprejmi in nadaljuj</translation>
 <translation id="3519564332031442870">Zaledna storitev za tiskanje</translation>
+<translation id="3519938335881974273">Shrani stran kot …</translation>
 <translation id="3521606918211282604">Spremeni velikost diska</translation>
 <translation id="3522088408596898827">Na disku kritično primanjkuje prostora. Sprostite prostor na disku in poskusite znova.</translation>
 <translation id="3524965460886318643">Izvoz dejavnosti</translation>
@@ -2381,6 +2389,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3550593477037018652">Prekinitev povezave z mobilnim omrežjem</translation>
 <translation id="3550915441744863158">Chrome se posodablja samodejno, zato boste vedno imeli najnovejšo različico</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Izbris ob izhodu</translation>
 <translation id="3554493885489666172">Napravo upravlja domena <ph name="PROFILE_NAME" />. Skrbniki lahko dostopajo do podatkov v katerem koli profilu v tej napravi.</translation>
 <translation id="3555812735919707620">Odstrani razširitev</translation>
@@ -2433,6 +2442,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3604713164406837697">Sprememba ozadja</translation>
 <translation id="3605780360466892872">Srajca</translation>
 <translation id="3608576286259426129">Predogled slike uporabnika</translation>
+<translation id="3609277884604412258">Hitro iskanje</translation>
 <translation id="3610369246614755442">Ventilator priklopne postaje je potreben servisnega posega</translation>
 <translation id="361106536627977100">Podatki Flash</translation>
 <translation id="3611655097742243705">Obiščite Trgovino Play in poiščite več aplikacij.</translation>
@@ -3377,6 +3387,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4636682061478263818">Datoteke v Googlu Drive</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4637083375689622795">Več dejanj, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Znova uporabite fotoaparat</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Besedilo}one{# besedilo}two{# besedili}few{# besedila}other{# besedil}}</translation>
 <translation id="4638930039313743000">Omogočanje mostu za odpravljanje težav s sistemom Android (ADB)</translation>
 <translation id="4641539339823703554">Chrome ni mogel nastaviti sistemskega časa. Preverite spodaj navedeni čas in ga po potrebi popravite.</translation>
@@ -4127,6 +4138,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5499313591153584299">Ta datoteka lahko škoduje vašemu računalniku.</translation>
 <translation id="5499453227627332024">Na voljo je nadgradnja za vsebnik za Linux. Nadgradite ga lahko tudi pozneje v aplikaciji Nastavitve.</translation>
 <translation id="5500709606820808700">Varnostno preverjanje je bilo izvedeno danes</translation>
+<translation id="5501322521654567960">Levo poravnano stransko podokno</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}one{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}two{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}few{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}other{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}}</translation>
 <translation id="5502500733115278303">Uvoženo iz brskalnika Firefox</translation>
 <translation id="5502915260472117187">Otrok</translation>
@@ -5340,6 +5352,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6856348640027512653">Ni dovoljena uporaba naprav ali podatkov za navidezno resničnost.</translation>
 <translation id="6856459657722366306">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6856623341093082836">Nastavitev in prilagajanje natančnosti zaslona na dotik</translation>
+<translation id="6857145580237920905">Pred postopkom Powerwash odstranite profile za eSIM</translation>
 <translation id="6857699260879628349">Pridobitev podatkov o konfiguraciji</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Nastavitve proxyja ...</translation>

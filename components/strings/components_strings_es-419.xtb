@@ -1164,6 +1164,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5314967030527622926">Creador de cuadernillos</translation>
 <translation id="5316812925700871227">Girar a la izquierda</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5321288445143113935">Maximizado</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Seleccionar información de contacto</translation>
 <translation id="5327248766486351172">Nombre</translation>
@@ -1389,6 +1390,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6218753634732582820">¿Confirmas que quieres quitar la dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
 <translation id="6221345481584921695">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso. El contenido malicioso proviene de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de software malicioso.</translation>
+<translation id="6232619828520900263">La ID actualmente no es válida</translation>
 <translation id="6234122620015464377">Cortar después de cada documento</translation>
 <translation id="6240447795304464094">Logotipo de Google Pay</translation>
 <translation id="6241121617266208201">Ocultar sugerencias</translation>

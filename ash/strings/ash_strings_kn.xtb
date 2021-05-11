@@ -24,6 +24,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1153356358378277386">ಜೋಡಿ ಮಾಡಲಾದ ಸಾಧನಗಳು</translation>
 <translation id="1165712434476988950">ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಅನ್ವಯಿಸಲು ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
+<translation id="1170240434488307589">ಸಾಧನದ ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಮ್ಯೂಟ್ ಆಗಿದೆ.</translation>
 <translation id="1175572348579024023">ಸ್ಕ್ರಾಲ್</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಾಹಕರ ಸಹಾಯದಿಂದ ಕಾನ್ಫಿಗರ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1747827819627189109">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1761222317188459878">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ಪಿರಿಯಡ್ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. ಇನ್‌ಸರ್ಟ್ ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಶಿಫ್ಟ್ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್.</translation>
 <translation id="1771761307086386028">ಬಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1782199038061388045">ಅನುವಾದ</translation>
 <translation id="1787955149152357925">ಆಫ್ ಮಾಡಿ</translation>

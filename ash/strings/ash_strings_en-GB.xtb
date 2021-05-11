@@ -24,6 +24,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Paired devices</translation>
 <translation id="1165712434476988950">Device restart is required to apply the update.</translation>
+<translation id="1170240434488307589">Device microphone button is muted.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -100,6 +101,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
 <translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1782199038061388045">translation</translation>
 <translation id="1787955149152357925">Off</translation>

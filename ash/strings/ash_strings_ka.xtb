@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">საინფორმაციო დიალოგის გახსნა <ph name="USER_NAME" />-ისთვის</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
 <translation id="1165712434476988950">განახლების გასააქტიურებლად საჭიროა მოწყობილობის გადატვირთვა.</translation>
+<translation id="1170240434488307589">მოწყობილობის მიკროფონის ღილაკი დადუმებულია.</translation>
 <translation id="1175572348579024023">გადაადგილება</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">შეყვანის მეთოდები კონფიგურირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
 <translation id="1761222317188459878">ქსელის კავშირის გადართვა. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + წერტილის კლავიატურის მალსახმობი შეიცვალა. Insert კლავიშის გამოსაყენებლად დააჭირეთ <ph name="LAUNCHER_KEY_NAME" /> კლავიშს + Shift + Backspace.</translation>
 <translation id="1771761307086386028">გადაადგილება მარჯვნივ</translation>
 <translation id="1782199038061388045">თარგმანი</translation>
 <translation id="1787955149152357925">გამორთვა</translation>

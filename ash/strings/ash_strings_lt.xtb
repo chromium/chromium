@@ -24,6 +24,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1148499908455722006">Atidaryti <ph name="USER_NAME" /> informacijos dialogo langą</translation>
 <translation id="1153356358378277386">Susieti įrenginiai</translation>
 <translation id="1165712434476988950">Norint pritaikyti naujinį, reikia paleisti įrenginį iš naujo.</translation>
+<translation id="1170240434488307589">Įrenginio mikrofono mygtukas nutildytas.</translation>
 <translation id="1175572348579024023">Slinkti</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -100,6 +101,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1746730358044914197">Įvesties metodus konfigūruoja jūsų administratorius.</translation>
 <translation id="1747827819627189109">Ekrano klaviatūra įgalinta</translation>
 <translation id="1761222317188459878">Perjungti tinklo ryšį. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + taškas. Jei norite naudoti klavišą „Insert“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + antrojo lygio klavišą + naikinimo klavišą.</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
 <translation id="1782199038061388045">vertimas</translation>
 <translation id="1787955149152357925">Išjungta</translation>

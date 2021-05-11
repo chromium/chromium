@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Vala wonke amathebhu</translation>
 <translation id="1229222343402087523">Sesha i-${searchPhrase} ku-Chrome</translation>
 <translation id="1231733316453485619">vula ukuvumelanisa?</translation>
+<translation id="1242044645101871359">Phinda Ungene Ngemvume</translation>
 <translation id="1254117744268754948">Khetha ifolda</translation>
 <translation id="1265739287306757398">Funda ukuthi kanjani</translation>
 <translation id="1272079795634619415">Misa</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Kungezwe kuhlu lokufunda</translation>
 <translation id="1870148520156231997">Bonisa iphasiwedi</translation>
 <translation id="1872096359983322073">Ithoshi</translation>
+<translation id="1894205589103145703">Okuthile akhuhambanga kahle phakathi nokungena ngemvume.</translation>
 <translation id="1911619930368729126">Layisha ku-Google Drayivu</translation>
 <translation id="1923342640370224680">Ihora lokugcina</translation>
 <translation id="1941314575388338491">Thepha kabili ukuze ukopishe.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">Isebenze ezinsukwini ezingu-<ph name="DAYS" /> ezedlule</translation>
 <translation id="2074131957428911366">Ungahlala ukhetha ukuthi yini ezovunyelaniswa <ph name="BEGIN_LINK" />kuzilungiselelo<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
+<translation id="2086623437239112659">Ulwazi lwakho olugciniwe lokungena ngemvume lungahle lube oluphelelwe yisikhathi.</translation>
 <translation id="209018056901015185">Cela isayithi ledeskithophu</translation>
 <translation id="2103075008456228677">Vula ku-history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> izinto zihanjisiwe</translation>
@@ -400,6 +403,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5132942445612118989">Vumelanisa amaphasiwedi akho, umlando nokuningi kuwo wonke amadivayisi</translation>
 <translation id="5140288047769711648">I-Chrome izokukhumbulela le phasiwedi. Awudingi ukuyikhumbula.</translation>
 <translation id="5150492518600715772">Thumela kudivayisi yakho</translation>
+<translation id="5168414296986405587">Yakhelwe i-iPadOS</translation>
 <translation id="5181140330217080051">Iyalanda</translation>
 <translation id="5186185447130319458">Okuyimfihlo</translation>
 <translation id="5188482106078495165">Isethingi lamakhukhi wakho lisebenza kuwo wonke amathebhu. Ukuze usebenzise isethingi entsha ukuvula ithebhu, layisha kabusha ithebhu.</translation>
@@ -429,6 +433,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5508435575041083207">Phuma Ngemvume futhi Usule Idatha kusukela kule Divayisi</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ihora eledlule</translation>
 <translation id="5525269841082836315">Dala umushwana wokungena</translation>
+<translation id="5532698011560297095">Ayikwazi Ukungena Ngemvume</translation>
 <translation id="5548760955356983418">I-Handoff ikuvumela ukuthi uqale ukuphequlula iwebhusayithi kule divayisi bese uqhubeke kalula ku-Mac yakho. Iwebhusayithi evulekile yamanje izobonakala kudokhu ye-Mac yakho.
 
 I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, futhi amadivayisi wakho kufanele asebenzise i-akhawunti yamafu efanayo-iCloud.</translation>
@@ -609,6 +614,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7029809446516969842">Amaphasiwedi</translation>
 <translation id="7053983685419859001">Vimba</translation>
 <translation id="7062545763355031412">Yamukela uphinde ushintshe ama-akhawunti</translation>
+<translation id="708844789167408367">Phuma Ngemvume uphinde Uvale Ukuvumelanisa...</translation>
 <translation id="7099761977003084116">Amathebhu akamuva</translation>
 <translation id="7102005569666697658">Iyalanda… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Fihla</translation>

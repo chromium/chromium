@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS güncəllənməsi tələb olunur</translation>
 <translation id="1067048845568873861">Yaradılıb</translation>
 <translation id="1067922213147265141">Digər Google xidmətləri</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> adlı eSIM profilini silin</translation>
 <translation id="1070377999570795893">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən artırma əlavə etdi. <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382">Alternativ brauzerdə <ph name="COUNTDOWN_SECONDS" /> saniyəyə açılacaq</translation>
 <translation id="1071917609930274619">Data Şifrələnməsi</translation>
@@ -353,6 +354,7 @@
 <translation id="138784436342154190">Defolt başlanğıc səhifə bərpa edilsin?</translation>
 <translation id="1388253969141979417">Mikrofonunuzdan istifadə etməyə icazə verilib</translation>
 <translation id="1388728792929436380">Güncəlləmələr tamamlanan kimi <ph name="DEVICE_TYPE" /> cihazı yenidən başladılacaq.</translation>
+<translation id="138900021244932468">Profil tapılmadı. Yeni bir şəbəkə ayarlamaq üçün cihazın kamerasını istifadə edərək QR kodunu skanlayın və ya operatorunuz tərəfindən verilən aktivasiya kodunu daxil edin.</translation>
 <translation id="139013308650923562">Cihazınızda quraşdırılmış şriftləri istifadə etmək icazəsi verilir</translation>
 <translation id="1390548061267426325">Adi panel kimi açın</translation>
 <translation id="1393283411312835250">Günəş və buludlar</translation>
@@ -979,6 +981,7 @@
 Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə edə bilərsiniz.  Təlimatları e-məktubla göndərdik.</translation>
 <translation id="2040460856718599782">Sizi doğrulayan zaman xəta oldu. Giriş kredensiallarınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="2044014337866019681">Seansı blokdan çıxarmaq üçün <ph name="ACCOUNT" /> hesabını doğruladığınıza əmin olun.</translation>
+<translation id="2044023416777079300">Modem qeydiyyatdan keçirilməyib</translation>
 <translation id="204497730941176055">Microsoft Sertifikat Şablon adı</translation>
 <translation id="2045117674524495717">Klaviatura Qısayol Yardımı</translation>
 <translation id="2045969484888636535">Kukiləri blok etməyə davam edin</translation>
@@ -4078,6 +4081,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5486261815000869482">Şifrəni tesdiq edin:</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> ekranınızı <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="5486561344817861625">Yenidən Brauzer Başladılmasını Modelləşdirmək</translation>
+<translation id="5487460042548760727">Profilin adını <ph name="PROFILE_NAME" /> olaraq dəyişin</translation>
 <translation id="5487521232677179737">Datanı silin</translation>
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" kopyalandı</translation>
 <translation id="5488508217173274228">Sinxronizasiyanın şifrələnməsi seçimləri</translation>
@@ -4817,6 +4821,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6308937455967653460">Linkin saxlanma formatı:</translation>
 <translation id="6309443618838462258">Administratorunuz bu daxiletmə metoduna icazə vermir</translation>
 <translation id="6309510305002439352">Mikrofon deaktiv edildi</translation>
+<translation id="6310141306111263820">eSIM profilini quraşdırmaq mümkün olmadı. Kömək üçün operatorunuz ilə əlaqə saxlayın.</translation>
 <translation id="6311220991371174222">Profilinizi açarkən xəta baş verdiyi üçün Chrome'u işə salmaq olmadı. Chrome'u yenidən başlatmağa çalışın.</translation>
 <translation id="6312403991423642364">Naməlum şəbəkə xətası</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Təhlükəsizlik yoxlanışı 1 gün əvvəl icra olunub}other{Təhlükəsizlik yoxlanışı {NUM_DAYS} gün əvvəl icra olunub}}</translation>
@@ -5954,6 +5959,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7582582252461552277">Bu şəbəkəyə üstünlük verin</translation>
 <translation id="7582844466922312471">Mobil data</translation>
 <translation id="7583948862126372804">Say</translation>
+<translation id="7586051298768394542">Nitq fayllarını endirmək olmur. Diktə səsinizi Google'a göndərərək işləməyə davam edəcəkdir.</translation>
 <translation id="7586498138629385861">Chrome Tətbiqlər açıq olan zaman Chrome işləməyə davam edəcək.</translation>
 <translation id="7589461650300748890">Ehtiyatlı olun.</translation>
 <translation id="7593653750169415785">Bir neçə dəfə bildirişləri kənarlaşdırdığınıza görə avtomatik blok edildi</translation>
@@ -6541,6 +6547,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8191230140820435481">Tətbiqlər, artırmalar və temalarınızı idarə edin</translation>
 <translation id="8195027750202970175">Disk ölçüsü</translation>
 <translation id="8198323535106903877">Həmin <ph name="NUMBER_OF_APPS" /> tətbiqi sizin üçün quraşdıracağıq</translation>
+<translation id="8198456017687137612">Yayım tabı</translation>
 <translation id="8199300056570174101">Şəbəkə (Xidmət) və Cihaz xüsusiyyətləri</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> albomlarını seçin</translation>
@@ -7122,6 +7129,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="8847523528195140327">Qapaq bağlandıqda hesabdan çıxsın</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Gizli</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> adlı eSIM profilinin silinməsini ləğv edin</translation>
 <translation id="8850251000316748990">Daha çoxuna baxın...</translation>
 <translation id="885246833287407341">API funksiya arqumentləri</translation>
 <translation id="8853586775156634952">Bu kart yalnız bu cihazda yadda saxlanılacaq</translation>

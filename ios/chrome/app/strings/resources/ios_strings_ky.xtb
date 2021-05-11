@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Бардык өтмөктөрдү жабуу</translation>
 <translation id="1229222343402087523">${searchPhrase} Chrome'до издөө</translation>
 <translation id="1231733316453485619">Шайкештирүү күйгүзүлсүнбү?</translation>
+<translation id="1242044645101871359">Кайра кириңиз</translation>
 <translation id="1254117744268754948">Куржун тандоо</translation>
 <translation id="1265739287306757398">Үйрөнүп алыңыз</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">Окуу тизмесине кошулду</translation>
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
+<translation id="1894205589103145703">Кирүү учурунда бир жерде ката кетти.</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
+<translation id="2086623437239112659">Сакталган кирүү маалыматынын мөөнөтү өтүп кеткен окшойт.</translation>
 <translation id="209018056901015185">Толк верс талп кылнт</translation>
 <translation id="2103075008456228677">history.google.com сайтын ачуу</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> нерсе жылдырылды</translation>
@@ -400,6 +403,7 @@
 <translation id="5132942445612118989">Бардык түзмөктөрдөгү сырсөздөрдү, таржымалды жана башкаларды шайкештирүү</translation>
 <translation id="5140288047769711648">Chrome бул сырсөздү сиз үчүн сактап коёт. Аны эстеп калуунун кажети жок.</translation>
 <translation id="5150492518600715772">Түзмөгүңүзгө жөнөтүү</translation>
+<translation id="5168414296986405587">iPadOS үчүн куралган</translation>
 <translation id="5181140330217080051">Жүктөлүп алынууда</translation>
 <translation id="5186185447130319458">Купуя</translation>
 <translation id="5188482106078495165">Cookie файлдарыңыздын жөндөөсү бардык өтмөктөргө карата колдонулат. Жаңы жөндөөнү ачык өтмөккө карата колдонуу үчүн өтмөктү кайрадан жүктөңүз.</translation>
@@ -429,6 +433,7 @@
 <translation id="5508435575041083207">Аккаунттан чыгып, бул түзмөктөгү маалыматты тазалоо</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> саат мурун</translation>
 <translation id="5525269841082836315">Купя сөз айкшын тзүү</translation>
+<translation id="5532698011560297095">Аккаунтка кирбей жатат</translation>
 <translation id="5548760955356983418">Handoff аркылуу вебсайтты ушул түзмөктөн серептеп баштап, Mac компьютериңизде улантып кете аласыз. Учурда ачылып турган вебсайт Мас компьютериңиздин Dock тактасында көрүнөт.
 
 Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштетилип, түзмөктөрүңүз бирдей iCloud каттоо эсебин колдонушу керек.</translation>

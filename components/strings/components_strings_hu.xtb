@@ -173,6 +173,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1532118530259321453">Az oldal közlendője</translation>
 <translation id="153384715582417236">Egyelőre ennyi</translation>
 <translation id="1536390784834419204">Oldal fordítása</translation>
+<translation id="1539840569003678498">Bejelentés elküldve:</translation>
 <translation id="154408704832528245">Kézbesítési cím kiválasztása</translation>
 <translation id="1549470594296187301">A funkció használatához engedélyezni kell a JavaScriptet.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1682696192498422849">Rövid él először</translation>
 <translation id="168693727862418163">A házirend értéke nem egyezik a sémájával, ezért a rendszer figyelmen kívül hagyja.</translation>
 <translation id="168841957122794586">A szervertanúsítvány gyenge titkosítási kulcsot tartalmaz.</translation>
+<translation id="1696290444144917273">Virtuális kártya adatainak megtekintése</translation>
 <translation id="1697532407822776718">Máris elkészült!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg holnaptól érvényes. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}other{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg # nap múlva lép érvénybe. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}}</translation>
@@ -226,6 +228,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1717494416764505390">3. postaláda</translation>
 <translation id="1718029547804390981">A dokumentum túl nagy a jegyzeteléshez</translation>
 <translation id="1721424275792716183">* A mező kitöltése kötelező</translation>
+<translation id="1727613060316725209">A tanúsítvány érvényes</translation>
 <translation id="1727741090716970331">Érvényes kártyaszámot adjon meg</translation>
 <translation id="1728677426644403582">Jelenleg weboldal forrását tekinti meg</translation>
 <translation id="173080396488393970">Ez a kártyatípus nem támogatott</translation>
@@ -696,6 +699,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3586931643579894722">Részletek elrejtése</translation>
 <translation id="3587738293690942763">Közép</translation>
 <translation id="3590643883886679995">Az inkognitó mód elhagyása után ez az eszköz tárolja a bejelentkezési adatokat.</translation>
+<translation id="359126217934908072">Hónap/év:</translation>
 <translation id="3592413004129370115">Italian (boríték)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">A rendszergazda letiltotta az alkalmazást</translation>
@@ -751,6 +755,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
+<translation id="3787675388804467730">Virtuális kártya száma</translation>
 <translation id="3787705759683870569">Lejárat dátuma: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Méret: 16</translation>
 <translation id="3789841737615482174">Telepítés</translation>
@@ -1549,6 +1554,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">A Chrome egyszerűsítette ezt az oldalt, hogy könnyebben olvasható legyen. Az eredeti oldalt nem biztonságos kapcsolaton keresztül kérte le.</translation>
 <translation id="6891596781022320156">Ezt a házirendszintet a rendszer nem támogatja.</translation>
+<translation id="6895143722905299846">Virtuális szám:</translation>
 <translation id="6895330447102777224">Kártyáját ellenőriztük</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Szervezet (O)</translation>
@@ -1587,6 +1593,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7014741021609395734">Nagyítás/kicsinyítés szintje</translation>
 <translation id="7016992613359344582">Ezek egyszeri vagy ismétlődő díjak lehetnek, és nem feltétlenül nyilvánvalóak.</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
+<translation id="7030436163253143341">A tanúsítvány nem érvényes</translation>
 <translation id="7031646650991750659">Ön milyen Google Play-alkalmazásokat telepített.</translation>
 <translation id="7050187094878475250">Ön megpróbálta elérni a(z) <ph name="DOMAIN" /> domaint, de a szerver olyan tanúsítványt küldött, amelynek érvényességi ideje túl hosszú ahhoz, hogy megbízható legyen.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ez a kártya jelenleg nem menthető}other{Ezeket a kártyákat jelenleg nem lehet menteni}}</translation>

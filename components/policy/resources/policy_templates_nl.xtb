@@ -390,6 +390,13 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1516486219683984217">Systeemmeldingen niet toestaan</translation>
 <translation id="1522425503138261032">Sites toestaan de fysieke locatie van gebruikers bij te houden</translation>
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
+<translation id="1524243669991877602">Als je dit beleid toepast, kunnen beleidsregels die aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account zijn gekoppeld, worden samengevoegd in beleidsregels op machineniveau.
+
+      Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen worden samengevoegd. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Alle andere beleidsregels op gebruikersniveau worden altijd genegeerd.
+
+      Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> of <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Dit beleid wordt genegeerd als geen van de twee eerder genoemde beleidsregels is ingesteld.
+
+      Als je het beleid niet instelt of toepast, kunnen cloudbeleidsregels op gebruikersniveau niet worden samengevoegd met beleidsregels van andere bronnen.</translation>
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
 <translation id="1527298988676981599">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die op het inlogscherm automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="DEVICES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat. Elk item in het veld <ph name="DEVICES_FIELD_NAME" /> kan een veld <ph name="VENDOR_ID_FIELD_NAME" /> en een veld <ph name="PRODUCT_ID_FIELD_NAME" /> hebben. Als je het veld <ph name="VENDOR_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een beleid dat het veld <ph name="PRODUCT_ID_FIELD_NAME" /> heeft zonder het veld <ph name="VENDOR_ID_FIELD_NAME" /> is ongeldig.
 
@@ -1172,6 +1179,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
           Als dit beleid niet is ingesteld, staat de functie voor markering van het caret-teken in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="2509748672176727116">De gebruiker kan opnamen van netwerkpakketten uitvoeren</translation>
 <translation id="2509919237512982967">Verouderde formulierbesturingselementen gebruiken tot M84.</translation>
+<translation id="2512972020817284317">Samenvoegen van cloudbeleidsregels op gebruikersniveau aanzetten.</translation>
 <translation id="2515699738406900920">Beschikbaarheid van profielkiezer bij opstarten</translation>
 <translation id="2517466659416174529">Toestaan dat tabbladen op de achtergrond worden vastgezet</translation>
 <translation id="2518231489509538392">Het afspelen van audio toestaan</translation>
@@ -2714,6 +2722,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
+<translation id="4663509616441994711">Samenvoegen van cloudbeleidsregels op gebruikersniveau uitzetten.</translation>
 <translation id="4665897631924472251">Instellingen voor extensiebeheer</translation>
 <translation id="4666930704271463612">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters.
 
@@ -5205,6 +5214,7 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 
           Als dit beleid niet is ingesteld, staat hoog contrast in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="7869986671709030417">Standaardmodus voor afdrukken met achtergrondbeelden</translation>
+<translation id="7877924399554599110">Hiermee kun je aanzetten dat cloudbeleidsregels voor gebruikers worden samengevoegd in beleidsregels op machineniveau</translation>
 <translation id="7881421274383404138">Met dit beleid worden bedrijfsprinters ingesteld. De indeling komt overeen met de dictionary <ph name="PRINTERS_POLICY_NAME" />, waarbij voor elke printer ook een veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> verplicht is voor de toelatingslijst of weigeringslijst. Bestanden moeten een json-indeling hebben en mogen maximaal 5 MB zijn. In een bestand van 5 MB kunnen ongeveer 21.000 printers staan. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt gedownload, opgeslagen in het cachegeheugen en opnieuw gedownload als de URL of de hash wordt gewijzigd. <ph name="PRODUCT_OS_NAME" /> downloadt het bestand voor printerconfiguraties en maakt printers beschikbaar in overeenstemming met <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> en <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen. Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.

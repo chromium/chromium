@@ -515,6 +515,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1545775234664667895">Zainstalowano motyw „<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">To rozszerzenie ustawiło inną stronę wyświetlaną po kliknięciu przycisku strony głównej.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> chce zainstalować <ph name="EXTENSION_TYPE" /> z następującymi uprawnieniami:</translation>
+<translation id="1547808936554660006">Rozumiem, że Powerwash nie spowoduje usunięcia zainstalowanych profili eSIM</translation>
 <translation id="1549275686094429035">Włączono ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> chce uzyskać dostęp do dysku <ph name="VOLUME_NAME" />. Będzie mogła tam zmieniać i usuwać pliki.</translation>
 <translation id="1552301827267621511">Rozszerzenie „<ph name="EXTENSION_NAME" />” zmieniło domenę wyszukiwania na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -551,6 +552,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1588438908519853928">Normalny</translation>
 <translation id="158849752021629804">Wymagana sieć macierzysta</translation>
 <translation id="1588870296199743671">Otwórz link przy użyciu...</translation>
+<translation id="1588919647604819635">Kliknij kartę prawym przyciskiem</translation>
 <translation id="1589055389569595240">Pokaż pisownię i gramatykę</translation>
 <translation id="1591679663873027990">Przyznaj Parallels Desktop uprawnienia dostępu do urządzeń USB. Parallels Desktop nie pamięta usuniętych urządzeń USB.</translation>
 <translation id="1592074621872221573">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB, co spowoduje zresetowanie urządzenia <ph name="DEVICE_TYPE" />. Przed ponownym uruchomieniem utwórz kopie zapasowe plików.</translation>
@@ -982,6 +984,7 @@ W przeciwnym razie wyloguj się, by zmiany wprowadzone na koncie były widoczne
 
 Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na swoim urządzeniu.  Wysłaliśmy do Ciebie e-maila z instrukcjami.</translation>
 <translation id="2040460856718599782">Ups, wystąpił błąd podczas próby uwierzytelnienia. Sprawdź poprawność danych logowania i spróbuj ponownie.</translation>
+<translation id="2042279886444479655">Aktywne profile</translation>
 <translation id="2044014337866019681">Aby odblokować sesję, upewnij się, że potwierdzasz własność konta <ph name="ACCOUNT" />.</translation>
 <translation id="2044023416777079300">Niezarejestrowany modem</translation>
 <translation id="204497730941176055">Nazwa szablonu certyfikatu firmy Microsoft</translation>
@@ -1320,6 +1323,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2395616325548404795">Urządzenie <ph name="DEVICE_TYPE" /> zostało zarejestrowane do zarządzania w firmie, ale nie wysłało informacji o zasobie ani lokalizacji. Wpisz te informacje ręcznie przy urządzeniu w konsoli administracyjnej.</translation>
 <translation id="2396387085693598316">Administrator zablokował rozszerzenie „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="2396783860772170191">Wpisz 4-cyfrowy kod PIN (0000–9999)</translation>
+<translation id="2398546389094871088">Powerwash urządzenia nie spowoduje usunięcia profili eSIM. Aby usunąć je ręcznie, otwórz <ph name="LINK_BEGIN" />Ustawienia urządzenia mobilnego<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Powiadomienia włączone</translation>
 <translation id="2399939490305346086">Dane logowania na kluczu bezpieczeństwa</translation>
 <translation id="2400664245143453337">Wymagana natychmiastowa aktualizacja</translation>
@@ -1736,6 +1740,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2844809857160214557">Przeglądaj zadania drukowania i zarządzaj nimi</translation>
 <translation id="2845382757467349449">Zawsze pokazuj pasek zakładek</translation>
 <translation id="284805635805850872">Usunąć szkodliwe oprogramowanie?</translation>
+<translation id="2849035674501872372">Znajdź</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Błąd czyszczenia</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
@@ -2047,6 +2052,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3189187154924005138">Duży kursor</translation>
 <translation id="3190558889382726167">Hasło zostało zapisane</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
+<translation id="3197453258332670132">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, zobaczysz związane z nim informacje</translation>
 <translation id="3199127022143353223">Serwery</translation>
 <translation id="3201422919974259695">Tutaj będą widoczne dostępne urządzenia USB.</translation>
 <translation id="3202131003361292969">Ścieżka</translation>
@@ -2068,6 +2074,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3223531857777746191">Przycisk resetowania</translation>
 <translation id="3225084153129302039">Domyślny fioletowy awatar</translation>
 <translation id="3225319735946384299">Podpisywanie kodu</translation>
+<translation id="3226487301970807183">Przełącz lewy panel boczny</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Utwórz kopię zapasową aplikacji i plików Linuksa</translation>
 <translation id="3238192140106069382">Łączę i weryfikuję</translation>
@@ -2337,6 +2344,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3515983984924808886">Jeszcze raz dotknij klucza bezpieczeństwa, by potwierdzić resetowanie. Wszystkie informacje zapisane w kluczu, w tym jego kod PIN, zostaną usunięte.</translation>
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
 <translation id="3519564332031442870">Usługa backendu drukowania</translation>
+<translation id="3519938335881974273">Zapisz stronę jako...</translation>
 <translation id="3521606918211282604">Zmień rozmiar dysku</translation>
 <translation id="3522088408596898827">Na dysku jest bardzo mało miejsca. Zwolnij je i spróbuj ponownie.</translation>
 <translation id="3524965460886318643">Eksportuj aktywność</translation>
@@ -2360,6 +2368,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3550593477037018652">Rozłącz sieć komórkową</translation>
 <translation id="3550915441744863158">Chrome aktualizuje się automatycznie, więc zawsze masz najnowszą wersję</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Usuń po zamknięciu</translation>
 <translation id="3554493885489666172">Twoim urządzeniem zarządza <ph name="PROFILE_NAME" />. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
 <translation id="3555812735919707620">Usuń rozszerzenie</translation>
@@ -2412,6 +2421,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="3605780360466892872">Garnitur</translation>
 <translation id="3608576286259426129">Podgląd obrazu użytkownika</translation>
+<translation id="3609277884604412258">Szybkie wyszukiwanie</translation>
 <translation id="3610369246614755442">Wentylator stacji dokującej wymaga naprawy</translation>
 <translation id="361106536627977100">Dane Flash</translation>
 <translation id="3611655097742243705">Aby znaleźć więcej aplikacji, odwiedź Sklep Play</translation>
@@ -3355,6 +3365,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4636682061478263818">Pliki na Dysku</translation>
 <translation id="4636930964841734540">Informacje</translation>
 <translation id="4637083375689622795">Więcej czynności, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Użyj ponownie aparatu</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekst}few{# teksty}many{# tekstów}other{# tekstu}}</translation>
 <translation id="4638930039313743000">Włącz debugowanie ADB</translation>
 <translation id="4641539339823703554">Chrome nie może ustawić czasu systemowego. Sprawdź i w razie potrzeby popraw godzinę poniżej.</translation>
@@ -4105,6 +4116,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5499313591153584299">Ten plik może wyrządzić szkody na Twoim komputerze.</translation>
 <translation id="5499453227627332024">Dostępna jest nowa wersja kontenera Linuksa. Aktualizację możesz też przeprowadzić później w aplikacji Ustawienia.</translation>
 <translation id="5500709606820808700">Kontrola zabezpieczeń została wykonana dzisiaj</translation>
+<translation id="5501322521654567960">Lewy panel boczny</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}few{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}many{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}other{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Zaimportowane z Firefoxa</translation>
 <translation id="5502915260472117187">Dziecko</translation>
@@ -5313,6 +5325,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6856348640027512653">Nie zezwolono na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
 <translation id="6856459657722366306">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="6856623341093082836">Skonfiguruj i dostosuj precyzję ekranu dotykowego</translation>
+<translation id="6857145580237920905">Usuń profile eSIM, zanim wykonasz Powerwash</translation>
 <translation id="6857699260879628349">Uzyskaj dane do konfiguracji</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Ustawienia serwera proxy...</translation>

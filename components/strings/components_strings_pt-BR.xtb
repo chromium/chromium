@@ -173,6 +173,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1532118530259321453">Essa página diz</translation>
 <translation id="153384715582417236">Isso é tudo por enquanto</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
+<translation id="1539840569003678498">Relatório enviado:</translation>
 <translation id="154408704832528245">Escolher endereço de entrega</translation>
 <translation id="1549470594296187301">O JavaScript deve ser ativado para usar este recurso.</translation>
 <translation id="155039086686388498">Engineering D</translation>
@@ -215,6 +216,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1682696192498422849">Borda menor primeiro</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
+<translation id="1696290444144917273">Ver detalhes do cartão virtual</translation>
 <translation id="1697532407822776718">Pronto.</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele está com a data de amanhã. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.}one{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele está com uma data de # dias depois de hoje. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele está com uma data de # dias depois de hoje. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.}}</translation>
@@ -226,6 +228,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1717494416764505390">Caixa de e-mails 3</translation>
 <translation id="1718029547804390981">O documento é grande demais para receber anotações</translation>
 <translation id="1721424275792716183">* Campo obrigatório</translation>
+<translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1727741090716970331">Adicione um Número de Cartão Válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
@@ -694,6 +697,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Meio</translation>
 <translation id="3590643883886679995">Depois que você sair do modo de navegação anônima, os dados de login serão armazenados no dispositivo.</translation>
+<translation id="359126217934908072">Mês/ano:</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
@@ -749,6 +753,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3781428340399460090">Rosa-escuro</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
+<translation id="3787675388804467730">Número do cartão virtual</translation>
 <translation id="3787705759683870569">Validade: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -1542,6 +1547,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão não segura.</translation>
 <translation id="6891596781022320156">O nível da política não é suportado.</translation>
+<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Seu cartão foi confirmado</translation>
 <translation id="6897140037006041989">Agente do usuário</translation>
 <translation id="6898699227549475383">O (Organização)</translation>
@@ -1580,6 +1586,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias.</translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7030436163253143341">O certificado não é válido</translation>
 <translation id="7031646650991750659">quais apps do Google Play estão instalados.</translation>
 <translation id="7050187094878475250">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado cujo período de validade é extremamente longo, o que não é confiável.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Não é possível salvar esse cartão no momento}one{Não é possível salvar esse cartão no momento}other{Não é possível salvar esses cartões no momento}}</translation>

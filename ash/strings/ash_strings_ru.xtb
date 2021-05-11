@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1165712434476988950">Чтобы применить обновление, необходимо перезапустить устройство.</translation>
+<translation id="1170240434488307589">Микрофон устройства отключен.</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">Способы ввода настраиваются администратором</translation>
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
 <translation id="1761222317188459878">Изменить настройки сетевого подключения. <ph name="STATE_TEXT" />.</translation>
+<translation id="1768366657309696705">Функция сочетания клавиш <ph name="LAUNCHER_KEY_NAME" /> + . (точка) изменилась. Чтобы использовать клавишу Insert, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Вправо</translation>
 <translation id="1782199038061388045">перевести</translation>
 <translation id="1787955149152357925">Отключено</translation>

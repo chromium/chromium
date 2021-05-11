@@ -24,6 +24,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1148499908455722006">Otvaranje informativnog dijaloškog okvira za korisnika <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Potrebno je ponovo pokrenuti uređaj kako bi se primijenilo ažuriranje.</translation>
+<translation id="1170240434488307589">Dugme mikrofona uređaja je isključeno.</translation>
 <translation id="1175572348579024023">Klizanje</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -100,6 +101,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1746730358044914197">Načine unosa konfigurira vaš administrator.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1761222317188459878">Aktiviraj/deaktiviraj mrežnu vezu. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + tačka je promijenjena. Da koristite tipku Insert, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Listaj udesno</translation>
 <translation id="1782199038061388045">prijevod</translation>
 <translation id="1787955149152357925">Isključeno</translation>

@@ -1173,6 +1173,7 @@
 <translation id="5314967030527622926">Буклет жасагыч</translation>
 <translation id="5316812925700871227">Сааттын жебесине каршы айландыруу</translation>
 <translation id="5317780077021120954">Сактоо</translation>
+<translation id="5321288445143113935">Максималдаштырылган</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> ичинен <ph name="MATCH_POSITION" /> дал келүү</translation>
 <translation id="5324080437450482387">Байланыш маалыматын тандоо</translation>
 <translation id="5327248766486351172">Аты:</translation>
@@ -1398,6 +1399,7 @@
 <translation id="6218753634732582820">Дарек Chromium'дан алынып салынсынбы?</translation>
 <translation id="622039917539443112">Параллелдүү бүктөө</translation>
 <translation id="6221345481584921695">Google Коопсуз Серепчиси жакында <ph name="BEGIN_LINK" /> сайтынан <ph name="END_LINK" /> кесепеттүү программаны тапты<ph name="SITE" />. Кээде коопсуз вебсайттар кесепеттүү программалардан жабыркашат. Зыянкеч мазмун <ph name="SUBRESOURCE_HOST" /> белгилүү кесепеттүү программаны жайылтуучу тарабынан жөнөтүлөт.</translation>
+<translation id="6232619828520900263">Идентификатор учурда жараксыз</translation>
 <translation id="6234122620015464377">Ар бир документтен кийин кыркуу</translation>
 <translation id="6240447795304464094">Google Pay логотиби</translation>
 <translation id="6241121617266208201">Сунуштарды жашыруу</translation>

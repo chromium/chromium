@@ -24,6 +24,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1165712434476988950">Aby zastosować aktualizację, musisz ponownie uruchomić urządzenie.</translation>
+<translation id="1170240434488307589">Mikrofon jest wyciszony za pomocą przycisku.</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -100,6 +101,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1746730358044914197">Metody wprowadzania zostały skonfigurowane przez administratora.</translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
 <translation id="1761222317188459878">Włącz lub wyłącz połączenie sieciowe. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + kropka został zmieniony. Aby użyć klawisza Insert, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1782199038061388045">tłumaczenie</translation>
 <translation id="1787955149152357925">Wyłączono</translation>

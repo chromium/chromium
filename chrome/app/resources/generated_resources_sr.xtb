@@ -512,6 +512,7 @@
 <translation id="1545775234664667895">Инсталирана је тема „<ph name="THEME_NAME" />“</translation>
 <translation id="1546280085599573572">Овај додатак је променио страницу која се приказује када кликнете на дугме Почетак.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> жели да инсталира <ph name="EXTENSION_TYPE" /> који може:</translation>
+<translation id="1547808936554660006">Разумем да се инсталирани eSIM профили неће уклонити ако се обави Powerwash</translation>
 <translation id="1549275686094429035">Време извршавања апликације за Chrome је омогућено</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> жели да приступа <ph name="VOLUME_NAME" />. Можда ће да мења или брише датотеке.</translation>
 <translation id="1552301827267621511">Додатак „<ph name="EXTENSION_NAME" />“ је променио претрагу тако да користи <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -548,6 +549,7 @@
 <translation id="1588438908519853928">Нормалан</translation>
 <translation id="158849752021629804">Потребна је матична мрежа</translation>
 <translation id="1588870296199743671">Отвори линк користећи...</translation>
+<translation id="1588919647604819635">Кликните десним тастером на картицу</translation>
 <translation id="1589055389569595240">Прикажи правопис и граматику</translation>
 <translation id="1591679663873027990">Дозволите да Parallels Desktop приступа USB уређајима. Parallels Desktop неће запамтити USB уређај када га уклоните.</translation>
 <translation id="1592074621872221573">Сајт <ph name="MANAGER" /> је онемогућио ADB отклањање грешака, због чега ће се <ph name="DEVICE_TYPE" /> ресетовати. Направите резервне копије датотека пре рестартовања.</translation>
@@ -983,6 +985,7 @@
 
 Можете да управљате подешавањима овог налога ако инсталирате апликацију Family Link на уређају.  Послали смо вам упутства у имејлу.</translation>
 <translation id="2040460856718599782">Упс! Нешто је пошло наопако док смо покушавали да потврдимо вашу аутентичност. Проверите поново акредитиве за пријављивање и покушајте поново.</translation>
+<translation id="2042279886444479655">Активни профили</translation>
 <translation id="2044014337866019681">Уверите се да верификујете <ph name="ACCOUNT" /> да бисте откључали сесију.</translation>
 <translation id="2044023416777079300">Модем није регистрован</translation>
 <translation id="204497730941176055">Назив шаблона Microsoft сертификата</translation>
@@ -1321,6 +1324,7 @@
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> је регистрован за управљање предузећем, али није послао информације о елементу и локацији. Унесите те информације ручно на Admin console-у за овај уређај.</translation>
 <translation id="2396387085693598316">Администратор је блокирао додатак „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="2396783860772170191">Унесите 4-цифрени PIN (0000–9999)</translation>
+<translation id="2398546389094871088">Ако обавите Powerwash на уређају, нећете уклонити eSIM профиле. Идите у <ph name="LINK_BEGIN" />подешавања за мобилне уређаја<ph name="LINK_END" /> да бисте ручно уклонили те профиле.</translation>
 <translation id="2399699884460174994">Обавештења су укључена</translation>
 <translation id="2399939490305346086">Подаци за пријављивање са безбедносног кључа</translation>
 <translation id="2400664245143453337">Треба одмах да ажурирате</translation>
@@ -1738,6 +1742,7 @@
 <translation id="2844809857160214557">Прегледајте задатке штампања и управљајте њима</translation>
 <translation id="2845382757467349449">Увек приказуј траку са обележивачима</translation>
 <translation id="284805635805850872">Желите ли да уклоните штетан софтвер?</translation>
+<translation id="2849035674501872372">Потражите</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Чишћење није успело</translation>
 <translation id="2849936225196189499">Од пресудне важности</translation>
@@ -2049,6 +2054,7 @@
 <translation id="3189187154924005138">Велики курсор</translation>
 <translation id="3190558889382726167">Лозинка је сачувана</translation>
 <translation id="3192947282887913208">Аудио датотеке</translation>
+<translation id="3197453258332670132">Када кликнете десним тастером на неку ставку или је дуго притиснете, приказују се релевантне информације за изабрани текст</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3201422919974259695">Доступни USB уређаји ће се приказивати овде.</translation>
 <translation id="3202131003361292969">Путања</translation>
@@ -2070,6 +2076,7 @@
 <translation id="3223531857777746191">Дугме Ресетуј</translation>
 <translation id="3225084153129302039">Подразумевани љубичасти аватар</translation>
 <translation id="3225319735946384299">Потписивање кода</translation>
+<translation id="3226487301970807183">Укључите/искључите бочну таблу са леве стране</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Направите резервне копије Linux апликација и датотека</translation>
 <translation id="3238192140106069382">Повезује се и верификује</translation>
@@ -2339,6 +2346,7 @@
 <translation id="3515983984924808886">Додирните поново безбедносни кључ да бисте потврдили ресетовање. Све информације сачуване на безбедносном кључу, укључујући његов PIN, биће обрисане.</translation>
 <translation id="3518985090088779359">Прихвати и настави</translation>
 <translation id="3519564332031442870">Позадинска услуга штампања</translation>
+<translation id="3519938335881974273">Сачувај страницу као...</translation>
 <translation id="3521606918211282604">Промените величину диска</translation>
 <translation id="3522088408596898827">Простор на диску је изузетно мали. Ослободите простор на диску и пробајте поново.</translation>
 <translation id="3524965460886318643">Извези активности</translation>
@@ -2362,6 +2370,7 @@
 <translation id="3550593477037018652">Прекини везу са мобилном мрежом</translation>
 <translation id="3550915441744863158">Chrome се аутоматски ажурира, па увек имате најновију верзију</translation>
 <translation id="3551320343578183772">Затвори картицу</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Брише се на излазу</translation>
 <translation id="3554493885489666172">Уређајем управља <ph name="PROFILE_NAME" />. Администратори могу да приступају подацима свих профила на овом уређају.</translation>
 <translation id="3555812735919707620">Уклони додатак</translation>
@@ -2414,6 +2423,7 @@
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="3605780360466892872">Јапи</translation>
 <translation id="3608576286259426129">Преглед слике корисника</translation>
+<translation id="3609277884604412258">Брза претрага</translation>
 <translation id="3610369246614755442">Вентилатору базне станице је потребан сервис</translation>
 <translation id="361106536627977100">Подаци Flash-а</translation>
 <translation id="3611655097742243705">Идите у Play продавницу да бисте пронашли још апликација</translation>
@@ -3357,6 +3367,7 @@
 <translation id="4636682061478263818">Фајлови на Диску</translation>
 <translation id="4636930964841734540">Информације</translation>
 <translation id="4637083375689622795">Још радњи, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Опет користи камеру</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текстуална порука}one{# текстуална порука}few{# текстуалне поруке}other{# текстуалних порука}}</translation>
 <translation id="4638930039313743000">Омогући ADB отклањање грешака</translation>
 <translation id="4641539339823703554">Chrome није могао да подеси системско време. Проверите време у наставку и исправите га ако је потребно.</translation>
@@ -4107,6 +4118,7 @@
 <translation id="5499313591153584299">Ова датотека може бити штетна по рачунар.</translation>
 <translation id="5499453227627332024">Доступна је надоградња за Linux контејнер. Можете и да надоградите касније у апликацији Подешавања.</translation>
 <translation id="5500709606820808700">Безбедносна провера је покренута данас</translation>
+<translation id="5501322521654567960">Бочна табла са леве стране</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Пријем (<ph name="ATTACHMENTS" />) са уређаја <ph name="DEVICE_NAME" /> није успео}one{Пријем (<ph name="ATTACHMENTS" />) са уређаја <ph name="DEVICE_NAME" /> није успео}few{Пријем <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" /> није успео}other{Пријем <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" /> није успео}}</translation>
 <translation id="5502500733115278303">Увезено из Firefox прегледача</translation>
 <translation id="5502915260472117187">Дете</translation>
@@ -5316,6 +5328,7 @@
 <translation id="6856348640027512653">Није им дозвољено да користе уређаје или податке виртуелне реалности</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="6856623341093082836">Подесите и прилагодите прецизност додирног екрана</translation>
+<translation id="6857145580237920905">Уклоните eSIM профиле пре него што обавите Powerwash</translation>
 <translation id="6857699260879628349">Добијте информације о конфигурацији</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Подешавања проксија...</translation>

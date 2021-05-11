@@ -173,6 +173,7 @@
 <translation id="1532118530259321453">ይህ ገጽ እንዲህ ይላል፦</translation>
 <translation id="153384715582417236">ለአሁን ያለው ይኸው ነው</translation>
 <translation id="1536390784834419204">ገጽ ተርጉም</translation>
+<translation id="1539840569003678498">ሪፖርት ተልኳል፦</translation>
 <translation id="154408704832528245">የማድረሻ አድራሻ ይምረጡ</translation>
 <translation id="1549470594296187301">ይህን ባህሪ ለመጠቀም ጃቫስክሪፕት መንቃት አለበት።</translation>
 <translation id="155039086686388498">ምሕንድስና-D</translation>
@@ -215,6 +216,7 @@
 <translation id="1682696192498422849">አጭር ጠርዝ መጀመሪያ</translation>
 <translation id="168693727862418163">ይህ የመመሪያ እሴት ከዕቅዱ ጋር ሲተያይ ማረጋገጥ አልቻለም፣ እና ችላ ይባላል።</translation>
 <translation id="168841957122794586">የአገልጋይ እውቅና ማረጋገጫው ደካማ የሆነ ባለስውር መረጃ ቁልፍ ነው ያለው።</translation>
+<translation id="1696290444144917273">ምናባዊ የካርድ ዝርዝሮችን ይመልከቱ</translation>
 <translation id="1697532407822776718">በቃ ጨርሰዋል!</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706954506755087368">{1,plural, =1{ይህ አገልጋይ <ph name="DOMAIN" /> እንደሆነ ማረጋገጥ አልቻለም፤ የደህንነት ማረጋገጫ እውቅና ማረጋገጫው ከነገ የመጣ ነው ይላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።}one{ይህ አገልጋይ <ph name="DOMAIN" /> እንደሆነ ማረጋገጥ አልቻለም፤ የደህንነት ማረጋገጫ እውቅና ማረጋገጫው የወደፊት # ቀንኖች የመጣ ነው ይላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።}other{ይህ አገልጋይ <ph name="DOMAIN" /> እንደሆነ ማረጋገጥ አልቻለም፤ የደህንነት ማረጋገጫ እውቅና ማረጋገጫው የወደፊት # ቀንኖች የመጣ ነው ይላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።}}</translation>
@@ -226,6 +228,7 @@
 <translation id="1717494416764505390">የመልዕክት ሳጥን 3</translation>
 <translation id="1718029547804390981">ሰነድ ለመብራራት ከልክ በላይ ትልቅ ነው</translation>
 <translation id="1721424275792716183">* መስክ ያስፈልጋል</translation>
+<translation id="1727613060316725209">የዕውቅና ማረጋገጫ ልክ የሆነ ነው</translation>
 <translation id="1727741090716970331">የሚሰራ የካርድ ቁጥር ያክሉ</translation>
 <translation id="1728677426644403582">የአንድ ድረ-ገጽ ምንጭ እየተመለከቱ ነው</translation>
 <translation id="173080396488393970">የዚህ ዓይነቱ ካርድ አይደገፍም</translation>
@@ -693,6 +696,7 @@
 <translation id="3586931643579894722">ዝርዝር ደብቅ</translation>
 <translation id="3587738293690942763">መሃል</translation>
 <translation id="3590643883886679995">ከማንነትን የማያሳውቅ ሁነታ ከወጡ በኋላ በዚህ መሣሪያ ውስጥ የመለያ መግቢያ ውሂብ ይከማቻል።</translation>
+<translation id="359126217934908072">ወር/ዓመት፦</translation>
 <translation id="3592413004129370115">ጣልያንኛ (የደብዳቤ ፖስታ)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
 <translation id="3603507503523709">መተግበሪያ በእርስዎ አስተዳዳሪ ታግዷል</translation>
@@ -748,6 +752,7 @@
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">የብሉቱዝ መሣሪያዎች</translation>
+<translation id="3787675388804467730">ምናባዊ የካርድ ቁጥር</translation>
 <translation id="3787705759683870569">በ<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> ላይ የአገልግሎት ጊዜው ያበቃል</translation>
 <translation id="3789155188480882154">መጠን 16</translation>
 <translation id="3789841737615482174">ጫን  </translation>
@@ -1410,6 +1415,7 @@
 <translation id="6289939620939689042">ገጽ ቀለም</translation>
 <translation id="6290238015253830360">የእርስዎ የተጠቆሙ ዘገባዎች እዚህ ይመጣሉ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">ካርድ ማረጋገጫ ኮድ፦</translation>
 <translation id="6302269476990306341">በChrome ውስጥ Google ረዳት እያቆመ ነው</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ሊደረስበት አይችልም።</translation>
 <translation id="6312113039770857350">ድረ-ገጽ አይገኝም</translation>
@@ -1542,6 +1548,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ለማንበብ እንዲቀልል ይህን ገጽ አቃልሎታል። Chrome የመጀመሪያውን ገጽ ደህንነቱ ባልተጠበቀ ግንኙነት ላይ ሰርስሮ አውጥቶታል።</translation>
 <translation id="6891596781022320156">የመመሪያ ደረጃ አይደገፍም።</translation>
+<translation id="6895143722905299846">ምናባዊ ቁጥር፦</translation>
 <translation id="6895330447102777224">የእርስዎ ካርድ ተረጋግጧል</translation>
 <translation id="6897140037006041989">የተጠቀሚ ተወካይ</translation>
 <translation id="6898699227549475383">ድርጅት (O)</translation>
@@ -1580,6 +1587,7 @@
 <translation id="7014741021609395734">የማጉላት ደረጃ</translation>
 <translation id="7016992613359344582">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
+<translation id="7030436163253143341">የዕውቅና ማረጋገጫው ልክ ያልሆነ ነው</translation>
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> ጋር ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ አስተማማኝ ለመሆን የሚያስቸግር በጣም ረጅም የሆነ የማረጋገጫ ጊዜ ነው ያለው።</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ይህ ካርድ አሁን ሊቀመጥ አይችልም}one{እነዚህ ካርዶች አሁን ሊቀመጡ አይችሉም}other{እነዚህ ካርዶች አሁን ሊቀመጡ አይችሉም}}</translation>

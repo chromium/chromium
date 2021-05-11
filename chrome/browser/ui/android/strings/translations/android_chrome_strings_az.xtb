@@ -531,6 +531,7 @@ Təhlükəsiz Sandbox hələ də aktiv inkişaf etdirilir və seçilmiş bölgə
 <translation id="4583164079174244168">{MINUTES,plural, =1{# dəqiqə öncə}other{# dəqiqə öncə}}</translation>
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4594952190837476234">Bu səhifə <ph name="CREATION_TIME" /> tarixində yaradılıb və onlayn versiyadan fərqli ola bilər.</translation>
+<translation id="4615382002648696011">İzlənilir, oxunmamış hekayələr hazırdır</translation>
 <translation id="4616150815774728855">Açın: <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>
@@ -1175,6 +1176,7 @@ Anomim sessiyadan data yalnız <ph name="BEGIN_BOLD2" />bütün Anonim tabları 
 <translation id="8659579665266920523">Chrome ilə necə axtarış etməli</translation>
 <translation id="8662811608048051533">Bununla əksər saytlardan çıxacaqsınız.</translation>
 <translation id="8664979001105139458">Fayl adı artıq mövcuddur</translation>
+<translation id="8676789164135894283">Giriş doğrulamaları</translation>
 <translation id="8683039184091909753">şəkil</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Siqnal Gücü Səviyyəsi: # panel}other{Siqnal Gücü Səviyyəsi: # panel}}</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>

@@ -3343,6 +3343,19 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, l'utilisateur peut contrôler l'affichage des fiches. Par défaut, les fiches sont affichées.
       </translation>
+<translation id="5455888515928026628">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
+
+      Si cette règle est définie sur -2, elle correspondra à la valeur limite du délai de connexion hors connexion de l'écran de connexion, qui provient de <ph name="POLICY" />.
+
+      Si la règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra recourir à l'authentification hors connexion, sauf si, pour une autre raison, il doit s'authentifier en ligne.
+
+      Si cette règle est définie sur 0, une authentification en ligne sera toujours demandée.
+
+      Toute autre valeur définie pour cette règle indique le délai (en jours) écoulé depuis la dernière authentification en ligne au terme duquel l'utilisateur devra à nouveau s'identifier en ligne lors de sa prochaine connexion via l'écran de verrouillage.
+
+      Cette règle concerne les utilisateurs qui se sont authentifiés via SAML.
+
+      La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="5457065417344056871">Activer le mode Invité dans le navigateur</translation>
 <translation id="5457387982448145430">Si cette règle est activée, les mots de passe enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les mots de passe enregistrés ne sont pas importés lors de la première exécution.
 
@@ -6009,6 +6022,19 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8917070657147922192">Autoriser les utilisateurs à gérer les certificats CA installés.</translation>
 <translation id="8919100556245407184">Durée en jours, après l'expiration de la mise à jour automatique, au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée.</translation>
 <translation id="8919369436496201075">Autoriser l'appareil à recevoir des mises à jour LTS</translation>
+<translation id="8930064580550462145">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
+
+      Si cette règle est définie sur -2, elle correspondra à la valeur limite du délai de connexion hors connexion de l'écran de connexion, qui provient de <ph name="POLICY" />.
+
+      Si la règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra recourir à l'authentification hors connexion, sauf si, pour une autre raison, il doit s'authentifier en ligne.
+
+      Si cette règle est définie sur 0, une authentification en ligne sera toujours demandée.
+
+      Toute autre valeur définie pour cette règle indique le délai (en jours) écoulé depuis la dernière authentification en ligne au terme duquel l'utilisateur devra à nouveau s'identifier en ligne lors de sa prochaine connexion via l'écran de verrouillage.
+
+      Cette règle concerne les utilisateurs authentifiés via GAIA sans SAML.
+
+      La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="8931555638815157255">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent régulièrement la version de leur système d'exploitation et celle du micrologiciel.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas d'informations sur les versions.</translation>

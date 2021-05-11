@@ -24,6 +24,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
 <translation id="1165712434476988950">Start het apparaat opnieuw op om de update toe te passen.</translation>
+<translation id="1170240434488307589">Het geluid van de apparaatmicrofoon staat uit.</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -100,6 +101,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1746730358044914197">Invoermethoden worden ingesteld door je beheerder.</translation>
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
 <translation id="1761222317188459878">Netwerkverbinding aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1787955149152357925">Uit</translation>

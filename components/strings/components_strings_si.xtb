@@ -173,6 +173,7 @@
 <translation id="1532118530259321453">මෙම පිටුව කියයි</translation>
 <translation id="153384715582417236">දැනට එපමණයි</translation>
 <translation id="1536390784834419204">පිටුව පරිවර්තනය කරන්න</translation>
+<translation id="1539840569003678498">වාර්තාව යවන ලදි:</translation>
 <translation id="154408704832528245">බෙදා හැරීමේ ලිපිනය තෝරාගන්න</translation>
 <translation id="1549470594296187301">මෙම විශේෂාංගය භාවිත කිරීමට ජාවාස්ක්‍රිප්ට් සබල කළ යුතුය.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@
 <translation id="1682696192498422849">පළමුව කෙටි දාරය</translation>
 <translation id="168693727862418163">මෙම ප්‍රතිපත්ති අගය එහි නිරූපණයට අනුව වලංගු කිරීමට අසමත් වූ බැවින් නොසලකා හරිනු ලැබේ.</translation>
 <translation id="168841957122794586">සේවාදායක සහතිකයේ දුර්වල ගුප්තලේඛන යතුරක් අඩංගුය!</translation>
+<translation id="1696290444144917273">අතථ්‍ය කාඩ්පත් විස්තර බලන්න</translation>
 <translation id="1697532407822776718">ඔබ මුළුමනින් සුදානම්ය!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය හෙට සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}one{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}other{මෙම සේවාදායකයට එය <ph name="DOMAIN" />බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}}</translation>
@@ -226,6 +228,7 @@
 <translation id="1717494416764505390">තැපැල් පෙට්ටිය 3</translation>
 <translation id="1718029547804390981">ලේඛනය අනුසටහන් කිරීමට විශාල වැඩියි</translation>
 <translation id="1721424275792716183">* ක්ෂේත්‍රය අවශ්‍යයි</translation>
+<translation id="1727613060316725209">සහතිකය වලංගුය</translation>
 <translation id="1727741090716970331">වලංගු කාඩ්පත් අංකයක් එක් කරන්න</translation>
 <translation id="1728677426644403582">ඔබ වෙබ් පිටුවක මූලාශ්‍රය බලමින් සිටී</translation>
 <translation id="173080396488393970">මෙම කාඩ්පත් වර්ගය සහාය නොදක්වයි</translation>
@@ -698,6 +701,7 @@
 <translation id="3586931643579894722">විස්තර සඟවන්න</translation>
 <translation id="3587738293690942763">මැද</translation>
 <translation id="3590643883886679995">ඔබ අප්‍රසිද්ධ ප්‍රකාරයෙන් පිට වූ පසු පුරන දත්ත මෙම උපාංගය තුළ ගබඩා කරනු ඇත.</translation>
+<translation id="359126217934908072">මාසය/වසර:</translation>
 <translation id="3592413004129370115">Italian (ලියුම් කවරය)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ඔබේ පරිපාලකයා යෙදුම අවහිර කර ඇත</translation>
@@ -753,6 +757,7 @@
 <translation id="3781428340399460090">උණුසුම් රෝස</translation>
 <translation id="3783418713923659662">මාස්ටර්කාඩ්</translation>
 <translation id="3784372983762739446">බ්ලූටූත් උපාංග</translation>
+<translation id="3787675388804467730">අතථ්‍ය කාඩ්පත් අංකය</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> කල් ඉකුත් වේ</translation>
 <translation id="3789155188480882154">ප්‍රමාණය 16</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
@@ -1415,6 +1420,7 @@
 <translation id="6289939620939689042">පිටුවේ වර්ණය</translation>
 <translation id="6290238015253830360">ඔබේ යෝජිත ලිපි මෙහි දිස්වනු ඇත</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Chrome හි Google සහායක නැවතෙයි</translation>
 <translation id="6305205051461490394"><ph name="URL" /> වෙත ළඟා විය නොහැකිය.</translation>
 <translation id="6312113039770857350">වෙබ් පිටුව ලබා ගත නොහැකිය</translation>
@@ -1547,6 +1553,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">මෙය කියවීමට පහසු කිරීමට Chrome මෙම පිටුව සරල කළා. Chrome අනාරක්‍ෂිත සම්බන්ධතාවක් ඔස්සේ මූලික පිටුව ලබා ගත්තා.</translation>
 <translation id="6891596781022320156">ප්‍රතිපත්ති මට්ටම උපකාර නොකරයි.</translation>
+<translation id="6895143722905299846">අතථ්‍ය අංකය:</translation>
 <translation id="6895330447102777224">ඔබේ කාඩ්පත තහවුරු කර ඇත</translation>
 <translation id="6897140037006041989">භාවිත නියෝජිත</translation>
 <translation id="6898699227549475383">සංවිධානය (O)</translation>
@@ -1585,6 +1592,7 @@
 <translation id="7014741021609395734">විශාලන මට්ටම</translation>
 <translation id="7016992613359344582">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක.</translation>
 <translation id="7029809446516969842">මුරපද</translation>
+<translation id="7030436163253143341">සහතිකය වලංගු නැත</translation>
 <translation id="7031646650991750659">ඔබ ස්ථාපන කර ඇති Google Play යෙදුම් මොනවාද</translation>
 <translation id="7050187094878475250">ඔබ <ph name="DOMAIN" /> වෙත ළඟා කිරීමට උත්සාහ නමුත්, සේවාදායකයා වලංගු කාලය විශ්වාසවන්ත වීමට දිග වැඩි සහතිකයක් ඉදිරිපත් කළා.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{මෙම කාඩ්පත දැනට සුරැකිය නොහැක}one{මෙම කාඩ්පත් දැනට සුරැකිය නොහැක}other{මෙම කාඩ්පත් දැනට සුරැකිය නොහැක}}</translation>

@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">Installed theme "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">This extension has changed the page that is shown when you click the Home button.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wants to install an <ph name="EXTENSION_TYPE" /> that can:</translation>
+<translation id="1547808936554660006">I understand that installed eSIM profiles will not be removed by Powerwash</translation>
 <translation id="1549275686094429035">ARC enabled</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wants to access <ph name="VOLUME_NAME" />. It may modify or delete your files.</translation>
 <translation id="1552301827267621511">The '<ph name="EXTENSION_NAME" />' extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Need home network</translation>
 <translation id="1588870296199743671">Open link with...</translation>
+<translation id="1588919647604819635">Right-click card</translation>
 <translation id="1589055389569595240">Show spelling and grammar</translation>
 <translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> has disabled ADB debugging, which will reset your <ph name="DEVICE_TYPE" />. Back up your files before restarting.</translation>
@@ -996,6 +998,7 @@ Otherwise, sign out now so that the changes to this account will be reflected on
 
 You can manage this account’s settings by installing the Family Link app on your device.  We sent you instructions in an email.</translation>
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
+<translation id="2042279886444479655">Active profiles</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
 <translation id="2044023416777079300">Modem not registered</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
@@ -1337,6 +1340,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2395616325548404795">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.</translation>
 <translation id="2396387085693598316">Your admin has blocked '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="2396783860772170191">Enter 4-digit pin (0000-9999)</translation>
+<translation id="2398546389094871088">Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN" />Mobile settings<ph name="LINK_END" /> to manually remove these profiles.</translation>
 <translation id="2399699884460174994">Notifications turned on</translation>
 <translation id="2399939490305346086">Security key sign-in data</translation>
 <translation id="2400664245143453337">Immediate update required</translation>
@@ -1754,6 +1758,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2844809857160214557">View and manage print jobs</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="284805635805850872">Remove harmful software?</translation>
+<translation id="2849035674501872372">Look up</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Cleanup failed</translation>
 <translation id="2849936225196189499">Critical</translation>
@@ -2065,6 +2070,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192947282887913208">Audio Files</translation>
+<translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
@@ -2086,6 +2092,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3223531857777746191">Reset button</translation>
 <translation id="3225084153129302039">Default purple avatar</translation>
 <translation id="3225319735946384299">Code Signing</translation>
+<translation id="3226487301970807183">Toggle left-aligned side panel</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233271424239923319">Backup Linux apps and files</translation>
 <translation id="3238192140106069382">Connecting and verifying</translation>
@@ -2355,6 +2362,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3515983984924808886">Touch your security key again to confirm reset. All information stored on the security key, including its PIN, will be deleted.</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3519564332031442870">Print backend service</translation>
+<translation id="3519938335881974273">Save page as…</translation>
 <translation id="3521606918211282604">Change disk size</translation>
 <translation id="3522088408596898827">Disk space is critically low. Free up disk space and try again.</translation>
 <translation id="3524965460886318643">Export activities</translation>
@@ -2378,6 +2386,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3550593477037018652">Disconnect mobile network</translation>
 <translation id="3550915441744863158">Chrome updates automatically so you always have the freshest version</translation>
 <translation id="3551320343578183772">Close Tab</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cleared on exit</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
@@ -2430,6 +2439,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3608576286259426129">User image preview</translation>
+<translation id="3609277884604412258">Quick search</translation>
 <translation id="3610369246614755442">Dock fan needs service</translation>
 <translation id="361106536627977100">Flash data</translation>
 <translation id="3611655097742243705">Visit the Play Store to find more apps</translation>
@@ -3374,6 +3384,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4636682061478263818">Drive files</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">More actions, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Use camera again</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# texts}}</translation>
 <translation id="4638930039313743000">Enable ADB debugging</translation>
 <translation id="4641539339823703554">Chrome was unable to set the system time. Please check the time below and correct it if needed.</translation>
@@ -4124,6 +4135,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5499313591153584299">This file may be harmful for your computer.</translation>
 <translation id="5499453227627332024">An upgrade is available for your Linux container. You can also upgrade later from the Settings app.</translation>
 <translation id="5500709606820808700">Safety check ran today</translation>
+<translation id="5501322521654567960">Left-aligned side panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Imported From Firefox</translation>
 <translation id="5502915260472117187">A child</translation>
@@ -5335,6 +5347,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6856348640027512653">Not allowed to use virtual reality devices or data</translation>
 <translation id="6856459657722366306">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="6856623341093082836">Set up and adjust the accuracy of your touchscreen</translation>
+<translation id="6857145580237920905">Remove eSIM profiles before Powerwash</translation>
 <translation id="6857699260879628349">Get configuration info</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Proxy settings...</translation>

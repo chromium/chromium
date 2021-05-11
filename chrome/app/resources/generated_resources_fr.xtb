@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Mise à jour Chrome OS requise</translation>
 <translation id="1067048845568873861">Date de création</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
+<translation id="1069355737714877171">Supprimer le profil eSIM <ph name="PROFILE_NAME" /></translation>
 <translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -356,6 +357,7 @@
 <translation id="138784436342154190">Restaurer la page de démarrage par défaut ?</translation>
 <translation id="1388253969141979417">Autorisé à utiliser votre micro</translation>
 <translation id="1388728792929436380">Ce <ph name="DEVICE_TYPE" /> va redémarrer lorsque les mises à jour seront installées.</translation>
+<translation id="138900021244932468">Aucun profil n'a été trouvé. Pour configurer un nouveau réseau, scannez le code QR à l'aide de l'appareil photo ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="139013308650923562">Autorisés à utiliser les polices installées sur votre appareil</translation>
 <translation id="1390548061267426325">Ouvrir dans un onglet standard</translation>
 <translation id="1393283411312835250">Soleil et nuages</translation>
@@ -984,6 +986,7 @@ Sinon, déconnectez-vous maintenant pour que les modifications apportées à ce 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions par e-mail.</translation>
 <translation id="2040460856718599782">Petit problème… Une erreur s'est produite lors de la tentative d'authentification. Veuillez vérifier vos identifiants de connexion, puis réessayer.</translation>
 <translation id="2044014337866019681">Pour déverrouiller la session, vérifiez que vous êtes bien en train de valider <ph name="ACCOUNT" />.</translation>
+<translation id="2044023416777079300">Modem non enregistré</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045117674524495717">Aide relative aux raccourcis clavier</translation>
 <translation id="2045969484888636535">Continuer à bloquer les cookies</translation>
@@ -4084,6 +4087,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5486261815000869482">Confirmer le mot de passe</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> partage votre écran avec <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simuler le redémarrage du navigateur</translation>
+<translation id="5487460042548760727">Renommer le profil en <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Effacer les données</translation>
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" copié</translation>
 <translation id="5488508217173274228">Options de chiffrement des données synchronisées</translation>
@@ -4826,6 +4830,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6308937455967653460">Enregistrer le lie&amp;n sous...</translation>
 <translation id="6309443618838462258">Votre administrateur n'autorise pas ce mode de saisie</translation>
 <translation id="6309510305002439352">Micro désactivé</translation>
+<translation id="6310141306111263820">Impossible d'installer le profil eSIM. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="6311220991371174222">Impossible de démarrer Chrome, car une erreur s'est produite lors de l'ouverture de votre profil. Essayez de relancer Chrome.</translation>
 <translation id="6312403991423642364">Erreur de réseau inconnue.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Contrôle de sécurité effectué il y a 1 jour}one{Contrôle de sécurité effectué il y a {NUM_DAYS} jour}other{Contrôle de sécurité effectué il y a {NUM_DAYS} jours}}</translation>
@@ -5963,6 +5968,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7582582252461552277">Préférer ce réseau</translation>
 <translation id="7582844466922312471">Internet mobile</translation>
 <translation id="7583948862126372804">Nombre</translation>
+<translation id="7586051298768394542">Impossible de télécharger les fichiers vocaux. La dictée continuera de fonctionner en envoyant votre voix à Google.</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome sont ouvertes.</translation>
 <translation id="7589461650300748890">Attention !</translation>
 <translation id="7593653750169415785">Notifications automatiquement bloquées, car vous avez refusé d'autoriser les notifications à plusieurs reprises</translation>
@@ -6552,6 +6558,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8191230140820435481">Gérer vos applications, vos extensions et vos thèmes</translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
+<translation id="8198456017687137612">Diffusion de l'onglet</translation>
 <translation id="8199300056570174101">Propriétés du réseau (service) et de l'appareil</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8201717382574620700">Sélectionner des albums dans <ph name="TOPIC_SOURCE" /></translation>
@@ -7136,6 +7143,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8847523528195140327">Se déconnecter lorsque l'appareil est refermé</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Masqué</translation>
+<translation id="8849219423513870962">Annuler la suppression du profil eSIM <ph name="PROFILE_NAME" /></translation>
 <translation id="8850251000316748990">Voir plus…</translation>
 <translation id="885246833287407341">Arguments de fonction API</translation>
 <translation id="8853586775156634952">Cette carte sera enregistrée sur cet appareil uniquement</translation>

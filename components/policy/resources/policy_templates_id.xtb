@@ -389,6 +389,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1516486219683984217">Jangan izinkan penggunaan notifikasi sistem</translation>
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
+<translation id="1524243669991877602">Jika kebijakan disetel ke Aktif, kebijakan yang terkait dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diizinkan untuk digabungkan ke kebijakan tingkat mesin.
+
+      Hanya kebijakan yang berasal dari pengguna aman yang dapat digabungkan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Semua kebijakan tingkat pengguna lain akan selalu diabaikan.
+
+      Kebijakan yang perlu digabungkan juga perlu disetel di <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> atau <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Kebijakan ini akan diabaikan jika tidak satu pun kebijakan yang disebutkan sebelumnya dikonfigurasi.
+
+      Jika kebijakan tidak disetel atau disetel ke Nonaktif, kebijakan cloud tingkat pengguna tidak akan digabungkan dengan kebijakan dari sumber lain.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
 <translation id="1527298988676981599">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk ditetapkan di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor yang ditetapkan. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
 
@@ -1194,6 +1201,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           Jika kebijakan ini tidak ditetapkan, sorotan tanda sisipan mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="2509748672176727116">Pengguna akan dapat melakukan rekaman paket jaringan</translation>
 <translation id="2509919237512982967">Menggunakan Kontrol Formulir Lama hingga M84.</translation>
+<translation id="2512972020817284317">Aktifkan penggabungan kebijakan cloud tingkat pengguna.</translation>
 <translation id="2515699738406900920">Ketersediaan alat pilih profil saat browser dimulai</translation>
 <translation id="2517466659416174529">Izinkan pembekuan tab di latar belakang</translation>
 <translation id="2518231489509538392">Mengizinkan pemutaran audio</translation>
@@ -2753,6 +2761,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Catatan: Setelan ini menggantikan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, jika ada.</translation>
 <translation id="4661889655253181651">Setelan konten memungkinkan Anda menentukan bagaimana konten jenis tertentu (misalnya, Cookie, Gambar, atau JavaScript) ditangani.</translation>
+<translation id="4663509616441994711">Nonaktifkan penggabungan kebijakan cloud tingkat pengguna.</translation>
 <translation id="4665897631924472251">Setelan pengelolaan ekstensi</translation>
 <translation id="4666930704271463612">Menentukan subset server cetak yang akan dikueri untuk server printer.
 
@@ -5283,6 +5292,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
           Jika kebijakan ini tidak ditetapkan, kontras tinggi mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="7869986671709030417">Mode pencetakan grafis latar belakang default</translation>
+<translation id="7877924399554599110">Memungkinkan penggabungan kebijakan cloud tingkat pengguna ke kebijakan tingkat mesin</translation>
 <translation id="7881421274383404138">Menyetel kebijakan ini akan mengonfigurasi printer perusahaan. Formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom <ph name="ID_FIELD" /> dan <ph name="GUID_FIELD" /> yang diperlukan agar setiap printer mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, dan <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat. Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh setiap pengguna.

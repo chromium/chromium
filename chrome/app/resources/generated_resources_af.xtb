@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" is geïnstalleer</translation>
 <translation id="1546280085599573572">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy die Tuis-knoppie klik.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wil 'n <ph name="EXTENSION_TYPE" /> installeer wat kan:</translation>
+<translation id="1547808936554660006">Ek verstaan dat Powerwash nie geïnstalleerde e-SIM-profiele sal verwyder nie</translation>
 <translation id="1549275686094429035">ARC-geaktiveer</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" /> hê. Dit sal dalk jou lêers wysig of uitvee.</translation>
 <translation id="1552301827267621511">Die "<ph name="EXTENSION_NAME" />"-uitbreiding het soektog verander om <ph name="SEARCH_PROVIDER_DOMAIN" /> te gebruik</translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="158849752021629804">Benodig tuisnetwerk</translation>
 <translation id="1588870296199743671">Maak skakel oop met …</translation>
+<translation id="1588919647604819635">Regsklik kaart</translation>
 <translation id="1589055389569595240">Wys spelling en grammatika</translation>
 <translation id="1591679663873027990">Gee Parallels Desktop toegang tot USB-toestelle. Parallels Desktop sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer, wat jou <ph name="DEVICE_TYPE" /> sal terugstel. Rugsteun jou lêers voordat jy herbegin.</translation>
@@ -996,6 +998,7 @@ Andersins, meld nou af sodat die veranderinge aan hierdie rekening op hierdie to
 
 Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op jou toestel te installeer.  Ons het vir jou instruksies in 'n e-pos gestuur.</translation>
 <translation id="2040460856718599782">Oeps! Kon jou nie staaf nie. Gaan asseblief jou aanmeldingeiebewyse weer na en probeer weer.</translation>
+<translation id="2042279886444479655">Aktiewe profiele</translation>
 <translation id="2044014337866019681">Maak asseblief seker dat jy <ph name="ACCOUNT" /> verifieer om die sessie te ontsluit.</translation>
 <translation id="2044023416777079300">Modem is nie geregistreer nie</translation>
 <translation id="204497730941176055">Microsoft-sertifikaattemplaatnaam</translation>
@@ -1337,6 +1340,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2395616325548404795">Jou <ph name="DEVICE_TYPE" /> is suksesvol vir ondernemingbestuur ingeskryf, maar kon nie sy bate- en ligginginligting te stuur nie. Voer hierdie inligting asseblief self in jou administrasiekonsole vir hierdie toestel in.</translation>
 <translation id="2396387085693598316">Jou administrateur het "<ph name="EXTENSION_NAME" />" geblokkeer</translation>
 <translation id="2396783860772170191">Voer 4-syfer-PIN (0000-9999) in</translation>
+<translation id="2398546389094871088">Jou e-SIM-profiele sal nie verwyder word as jy Powerwash met jou toestel gebruik nie. Gaan na <ph name="LINK_BEGIN" />Mobiele instellings<ph name="LINK_END" /> om hierdie profiele self te verwyder.</translation>
 <translation id="2399699884460174994">Kennisgewings is aangeskakel</translation>
 <translation id="2399939490305346086">Sekuriteitsleutel se aanmelddata</translation>
 <translation id="2400664245143453337">Onmiddellike opdatering word vereis</translation>
@@ -1754,6 +1758,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2844809857160214557">Bekyk en bestuur druktake</translation>
 <translation id="2845382757467349449">Wys altyd die boekmerkebalk</translation>
 <translation id="284805635805850872">Verwyder skadelike sagteware?</translation>
+<translation id="2849035674501872372">Kyk op</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Kon nie skoonmaak nie</translation>
 <translation id="2849936225196189499">Kritiek</translation>
@@ -2065,6 +2070,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3189187154924005138">Groot skermpyltjie</translation>
 <translation id="3190558889382726167">Wagwoord is gestoor</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
+<translation id="3197453258332670132">Wys verwante inligting vir jou tekskeuse met 'n regsklik of langdruk</translation>
 <translation id="3199127022143353223">Bedieners</translation>
 <translation id="3201422919974259695">Beskikbare USB-toestelle sal hier verskyn.</translation>
 <translation id="3202131003361292969">Pad</translation>
@@ -2086,6 +2092,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3223531857777746191">Stel knoppie terug</translation>
 <translation id="3225084153129302039">Verstek- pers avatar</translation>
 <translation id="3225319735946384299">Kode-ondertekening</translation>
+<translation id="3226487301970807183">Wissel linksbelynde kantpaneel</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3233271424239923319">Rugsteun- Linux-programme en lêers</translation>
 <translation id="3238192140106069382">Koppel en verifieer tans</translation>
@@ -2355,6 +2362,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3515983984924808886">Raak weer jou sekuriteitsleutel om terugstelling te bevestig. Alle inligting wat op die sekuriteitsleutel geberg is, insluitend sy PIN, sal uitgevee word.</translation>
 <translation id="3518985090088779359">Aanvaar, gaan voort</translation>
 <translation id="3519564332031442870">Drukbedienerkantdiens</translation>
+<translation id="3519938335881974273">Stoor bladsy as …</translation>
 <translation id="3521606918211282604">Verander skyfgrootte</translation>
 <translation id="3522088408596898827">Skyfspasie is gevaarlik min. Maak skyfspasie beskikbaar en probeer weer.</translation>
 <translation id="3524965460886318643">Voer aktiwiteite uit</translation>
@@ -2378,6 +2386,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3550593477037018652">Ontkoppel sellulêre netwerk</translation>
 <translation id="3550915441744863158">Chrome dateer outomaties op sodat jy altyd die varsste weergawe het</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Word uitgevee wanneer jy uitgaan</translation>
 <translation id="3554493885489666172">Jou toestel word bestuur deur <ph name="PROFILE_NAME" />. Administrateurs het toegang tot die data in enige profiel op hierdie toestel.</translation>
 <translation id="3555812735919707620">Verwyder uitbreiding</translation>
@@ -2430,6 +2439,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3604713164406837697">Verander muurpapier</translation>
 <translation id="3605780360466892872">Toegeknoop</translation>
 <translation id="3608576286259426129">Gebruikerprentvoorskou</translation>
+<translation id="3609277884604412258">Kitssoektog</translation>
 <translation id="3610369246614755442">Dokwaaier moet gediens word</translation>
 <translation id="361106536627977100">Flitsdata</translation>
 <translation id="3611655097742243705">Besoek die Play Winkel om meer programme te kry</translation>
@@ -3374,6 +3384,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4636682061478263818">Drive-lêers</translation>
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4637083375689622795">Nog handelinge, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Gebruik kamera weer</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Teks}other{# tekste}}</translation>
 <translation id="4638930039313743000">Aktiveer ADB-ontfouting.</translation>
 <translation id="4641539339823703554">Chrome kon nie die stelsel se tyd stel nie. Gaan asseblief die tyd hieronder na en stel dit reg indien nodig.</translation>
@@ -4124,6 +4135,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5499313591153584299">Hierdie lêer kan skadelik vir jou rekenaar wees.</translation>
 <translation id="5499453227627332024">'n Opgradering is beskikbaar vir jou Linux-houer. Jy kan ook later deur die Instellings-program opgradeer.</translation>
 <translation id="5500709606820808700">Veiligheidskontrole het vandag plaasgevind</translation>
+<translation id="5501322521654567960">Linksbelynde kantpaneel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}other{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}}</translation>
 <translation id="5502500733115278303">Van Firefox af ingevoer</translation>
 <translation id="5502915260472117187">'n Kind</translation>
@@ -5336,6 +5348,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6856348640027512653">Mag nie virtuelerealititeittoestelle of -data gebruik nie</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="6856623341093082836">Stel jou raakskerm op en verstel die akkuraatheid daarvan</translation>
+<translation id="6857145580237920905">Verwyder e-SIM-profiele voor Powerwash</translation>
 <translation id="6857699260879628349">Kry opstellinginligting</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Instaanbedienerinstellings …</translation>

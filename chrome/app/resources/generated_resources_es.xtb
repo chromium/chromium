@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">El tema <ph name="THEME_NAME" /> se ha instalado.</translation>
 <translation id="1546280085599573572">Esta extensión ha cambiado la página que se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> quiere instalar una <ph name="EXTENSION_TYPE" /> que puede:</translation>
+<translation id="1547808936554660006">Entiendo que los perfiles eSIM instalados no se eliminarán al hacer un Powerwash</translation>
 <translation id="1549275686094429035">ARC habilitado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Puede modificar o eliminar tus archivos.</translation>
 <translation id="1552301827267621511">La extensión <ph name="EXTENSION_NAME" /> ha cambiado el proveedor de búsquedas a <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">Modo normal</translation>
 <translation id="158849752021629804">Es necesaria una red doméstica.</translation>
 <translation id="1588870296199743671">Abrir enlace con...</translation>
+<translation id="1588919647604819635">Haz clic en la tarjeta con el botón derecho</translation>
 <translation id="1589055389569595240">Mostrar ortografía y gramática</translation>
 <translation id="1591679663873027990">Permite que Parallels Desktop acceda a los dispositivos USB. Parallels Desktop no recordará un dispositivo USB una vez quitado.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ha inhabilitado la depuración ADB, por lo que se restablecerá tu <ph name="DEVICE_TYPE" />. Haz una copia de seguridad de tus archivos antes de reiniciar.</translation>
@@ -984,6 +986,7 @@ De lo contrario, cierra la sesión para que los cambios realizados en esta cuent
 
 Puedes gestionar la configuración de esta cuenta instalando la aplicación Family Link en el dispositivo.  Te hemos enviado instrucciones por correo electrónico.</translation>
 <translation id="2040460856718599782">¡Vaya! Parece que algo ha fallado al intentar identificarte. Vuelve a comprobar tus credenciales de inicio de sesión e inténtalo de nuevo.</translation>
+<translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Asegúrate de que estás verificando <ph name="ACCOUNT" /> para desbloquear la sesión.</translation>
 <translation id="2044023416777079300">Modem no registrado</translation>
 <translation id="204497730941176055">Nombre de plantilla de certificado de Microsoft</translation>
@@ -1323,6 +1326,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2395616325548404795">El dispositivo <ph name="DEVICE_TYPE" /> se ha registrado correctamente para ser administrado por la empresa, pero no ha podido enviar la información de la ubicación ni del recurso. Introduce manualmente esta información en la consola de administración de este dispositivo.</translation>
 <translation id="2396387085693598316">Tu administrador ha bloqueado "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Introduce el PIN de 4 dígitos (0000-9999)</translation>
+<translation id="2398546389094871088">Hacer un Powerwash a tu dispositivo no eliminará los perfiles eSIM. Ve a <ph name="LINK_BEGIN" />Configuración del móvil<ph name="LINK_END" /> para eliminarlos manualmente.</translation>
 <translation id="2399699884460174994">Notificaciones activadas</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión de la llave de seguridad</translation>
 <translation id="2400664245143453337">Es necesario actualizar de inmediato</translation>
@@ -1739,6 +1743,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2844809857160214557">Visualiza y gestiona trabajos de impresión</translation>
 <translation id="2845382757467349449">Mostrar siempre la barra de marcadores</translation>
 <translation id="284805635805850872">¿Eliminar software dañino?</translation>
+<translation id="2849035674501872372">Buscar</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">No se ha podido eliminar software malicioso</translation>
 <translation id="2849936225196189499">Crítica</translation>
@@ -2050,6 +2055,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Contraseña guardada</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
+<translation id="3197453258332670132">Si haces clic con el botón derecho en el texto seleccionado o lo mantienes pulsado se te mostrará información sobre él</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3201422919974259695">Los dispositivos USB disponibles se mostrarán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
@@ -2071,6 +2077,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3223531857777746191">Botón de reinicio</translation>
 <translation id="3225084153129302039">Avatar morado predeterminado</translation>
 <translation id="3225319735946384299">Code Signing</translation>
+<translation id="3226487301970807183">Activa el panel lateral alineado a la izquierda</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233271424239923319">Copia de seguridad de las aplicaciones y archivos de Linux</translation>
 <translation id="3238192140106069382">Conectando y verificando</translation>
@@ -2340,6 +2347,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519564332031442870">Servicio de backend de impresión</translation>
+<translation id="3519938335881974273">Guardar página como...</translation>
 <translation id="3521606918211282604">Cambiar tamaño de disco</translation>
 <translation id="3522088408596898827">Queda muy poco espacio en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
@@ -2363,6 +2371,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3550593477037018652">Desconectar red móvil</translation>
 <translation id="3550915441744863158">Chrome se actualiza automáticamente para que siempre tengas la versión más reciente</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" />: <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Borrar al salir</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" /> gestiona tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil de este dispositivo.</translation>
 <translation id="3555812735919707620">Eliminar extensión</translation>
@@ -2415,6 +2424,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="3605780360466892872">Amancio</translation>
 <translation id="3608576286259426129">Vista previa de imagen de usuario</translation>
+<translation id="3609277884604412258">Búsqueda rápida</translation>
 <translation id="3610369246614755442">El ventilador de la base necesita reparación</translation>
 <translation id="361106536627977100">Datos de Flash</translation>
 <translation id="3611655097742243705">Visita Play Store para buscar más aplicaciones.</translation>
@@ -3357,6 +3367,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4636682061478263818">Archivos de Drive</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Más acciones, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Usar cámara de nuevo</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
 <translation id="4638930039313743000">Habilitar depuración ADB</translation>
 <translation id="4641539339823703554">Chrome no ha podido establecer la hora del sistema. Comprueba la hora a continuación y corrígela si es necesario.</translation>
@@ -4107,6 +4118,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5499313591153584299">Este archivo puede ser dañino para tu ordenador.</translation>
 <translation id="5499453227627332024">Hay una actualización disponible para tu contenedor de Linux. También puedes actualizarlo más tarde en la aplicación Ajustes.</translation>
 <translation id="5500709606820808700">La comprobación de seguridad se ha ejecutado hoy</translation>
+<translation id="5501322521654567960">Panel lateral alineado a la izquierda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado desde Firefox</translation>
 <translation id="5502915260472117187">Un niño/a</translation>
@@ -5318,6 +5330,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6856348640027512653">No pueden usar datos ni dispositivos de realidad virtual</translation>
 <translation id="6856459657722366306">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="6856623341093082836">Configurar y ajustar la precisión de la pantalla táctil</translation>
+<translation id="6857145580237920905">Elimina los perfiles eSIM antes de hacer un Powerwash</translation>
 <translation id="6857699260879628349">Obtener información de configuración</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Configuración de proxy...</translation>

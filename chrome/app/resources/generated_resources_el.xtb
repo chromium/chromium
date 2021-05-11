@@ -516,6 +516,7 @@
 <translation id="1545775234664667895">Εγκατεστημένο θέμα "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Αυτή η επέκταση άλλαξε τη σελίδα που εμφανίζεται όταν κάνετε κλικ στο κουμπί αρχικής σελίδας.</translation>
 <translation id="1546452108651444655">Ο χρήστης <ph name="CHILD_NAME" /> θέλει να εγκαταστήσει μια επέκταση <ph name="EXTENSION_TYPE" /> η οποία μπορεί να:</translation>
+<translation id="1547808936554660006">Κατανοώ ότι τα εγκατεστημένα προφίλ eSIM δεν θα καταργηθούν από το powerwash</translation>
 <translation id="1549275686094429035">Το ARC ενεργοποιήθηκε</translation>
 <translation id="1549788673239553762">Η εφαρμογή <ph name="APP_NAME" /> θέλει να αποκτήσει πρόσβαση σε <ph name="VOLUME_NAME" />. Ενδέχεται να τροποποιήσει ή να διαγράψει τα αρχεία σας.</translation>
 <translation id="1552301827267621511">Η επέκταση "<ph name="EXTENSION_NAME" />" άλλαξε τον πάροχο αναζήτησης που χρησιμοποιείται <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
@@ -552,6 +553,7 @@
 <translation id="1588438908519853928">Κανονική λειτουργία</translation>
 <translation id="158849752021629804">Απαιτείται εγχώριο δίκτυο</translation>
 <translation id="1588870296199743671">Άνοιγμα συνδέσμου με...</translation>
+<translation id="1588919647604819635">Δεξί κλικ κάρτας</translation>
 <translation id="1589055389569595240">Εμφάνιση Ορθογραφικού και Γραμματικού Ελέγχου</translation>
 <translation id="1591679663873027990">Δώστε στο Parallels Desktop άδεια πρόσβασης στις συσκευές USB. Το Parallels Desktop δεν θα απομνημονεύσει μια συσκευή USB μετά την κατάργησή της.</translation>
 <translation id="1592074621872221573">Ο τομέας <ph name="MANAGER" /> απενεργοποίησε τον εντοπισμό και τη διόρθωση σφαλμάτων adb, το οποίο θα έχει ως αποτέλεσμα την επαναφορά της συσκευής <ph name="DEVICE_TYPE" />. Δημιουργήστε αντίγραφα ασφαλείας των αρχείων σας πριν από την επανεκκίνηση.</translation>
@@ -996,6 +998,7 @@
 
 Μπορείτε να διαχειριστείτε τις ρυθμίσεις αυτού του λογαριασμού εγκαθιστώντας την εφαρμογή Family Link στη συσκευή σας.  Σας στείλαμε οδηγίες σε ένα μήνυμα ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="2040460856718599782">Ωχ! Κάτι πήγε στραβά κατά την προσπάθειά μας να ελέγξουμε την ταυτότητά σας. Ελέγξτε πάλι τα διαπιστευτήρια σύνδεσής σας και δοκιμάστε ξανά.</translation>
+<translation id="2042279886444479655">Ενεργά προφίλ</translation>
 <translation id="2044014337866019681">Βεβαιωθείτε ότι επαληθεύετε τον λογαριασμό <ph name="ACCOUNT" /> για να ξεκλειδώσετε την περίοδο λειτουργίας.</translation>
 <translation id="2044023416777079300">Το μόντεμ δεν έχει καταχωριστεί</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1337,6 +1340,7 @@
 <translation id="2395616325548404795">Η συσκευή <ph name="DEVICE_TYPE" /> εγγράφηκε επιτυχώς για διαχείριση επιχειρήσεων, αλλά απέτυχε η αποστολή των πληροφοριών στοιχείων και τοποθεσίας. Εισαγάγετε μη αυτόματα αυτές τις πληροφορίες από την Κονσόλα διαχειριστή γι' αυτήν τη συσκευή.</translation>
 <translation id="2396387085693598316">Ο διαχειριστής σας απέκλεισε την εφαρμογή "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Εισαγάγετε έναν 4ψήφιο PIN (0000-9999).</translation>
+<translation id="2398546389094871088">Τα προφίλ eSIM δεν θα καταργηθούν μετά το powerwash στη συσκευή σας. Μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις κινητού<ph name="LINK_END" /> για να καταργήσετε χειροκίνητα αυτά τα προφίλ.</translation>
 <translation id="2399699884460174994">Οι ειδοποιήσεις ενεργοποιήθηκαν</translation>
 <translation id="2399939490305346086">Δεδομένα σύνδεσης κλειδιού ασφαλείας</translation>
 <translation id="2400664245143453337">Απαιτείται άμεση ενημέρωση</translation>
@@ -1754,6 +1758,7 @@
 <translation id="2844809857160214557">Προβολή και διαχείριση εργασιών εκτύπωσης</translation>
 <translation id="2845382757467349449">Διαρκής εμφάνιση γραμμής σελιδοδεικτών</translation>
 <translation id="284805635805850872">Κατάργηση επιβλαβούς λογισμικού;</translation>
+<translation id="2849035674501872372">Αναζήτηση</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Αποτυχία καθαρισμού</translation>
 <translation id="2849936225196189499">Κρίσιμη</translation>
@@ -2065,6 +2070,7 @@
 <translation id="3189187154924005138">Μεγάλος δείκτης ποντικιού</translation>
 <translation id="3190558889382726167">Ο κωδικός πρόσβασης αποθηκεύτηκε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
+<translation id="3197453258332670132">Με δεξί κλικ ή παρατεταμένο πάτημα, εμφανίζονται πληροφορίες που σχετίζονται με την επιλογή κειμένου σας</translation>
 <translation id="3199127022143353223">Διακομιστές</translation>
 <translation id="3201422919974259695">Εδώ θα εμφανίζονται οι διαθέσιμες συσκευές USB.</translation>
 <translation id="3202131003361292969">Διαδρομή</translation>
@@ -2086,6 +2092,7 @@
 <translation id="3223531857777746191">Κουμπί Επαναφορά</translation>
 <translation id="3225084153129302039">Προεπιλεγμένο μοβ avatar</translation>
 <translation id="3225319735946384299">Υπογραφή κώδικα</translation>
+<translation id="3226487301970807183">Εναλλαγή πλαϊνού πλαισίου με στοίχιση στα αριστερά</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3233271424239923319">Δημιουργία αντιγράφων ασφαλείας για εφαρμογές και αρχεία Linux</translation>
 <translation id="3238192140106069382">Σύνδεση και επαλήθευση</translation>
@@ -2355,6 +2362,7 @@
 <translation id="3515983984924808886">Αγγίξτε ξανά το κλειδί ασφαλείας, για να επιβεβαιώσετε την επαναφορά. Όλες οι πληροφορίες που είναι αποθηκευμένες στο κλειδί ασφαλείας, συμπεριλαμβανομένου του PIN του, θα διαγραφούν.</translation>
 <translation id="3518985090088779359">Αποδοχή και συνέχεια</translation>
 <translation id="3519564332031442870">Υπηρεσία συστήματος υποστήριξης εκτύπωσης</translation>
+<translation id="3519938335881974273">Αποθήκευση σελίδας ως…</translation>
 <translation id="3521606918211282604">Αλλαγή μεγέθους δίσκου</translation>
 <translation id="3522088408596898827">Ο χώρος στον δίσκο εξαντλείται. Ελευθερώστε χώρο στον δίσκο και δοκιμάστε ξανά.</translation>
 <translation id="3524965460886318643">Εξαγωγή δραστηριοτήτων</translation>
@@ -2378,6 +2386,7 @@
 <translation id="3550593477037018652">Αποσύνδεση δικτύου κινητής τηλεφωνίας</translation>
 <translation id="3550915441744863158">Το Chrome ενημερώνεται αυτόματα έτσι ώστε να έχετε πάντα στη διάθεσή σας τη νεότερη έκδοση.</translation>
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Διαγραφή κατά την έξοδο</translation>
 <translation id="3554493885489666172">Η διαχείριση της συσκευής σας γίνεται από τον διαχειριστή <ph name="PROFILE_NAME" />. Οι διαχειριστές μπορούν να αποκτήσουν πρόσβαση στα δεδομένα οποιουδήποτε προφίλ σε αυτήν τη συσκευή.</translation>
 <translation id="3555812735919707620">Κατάργηση επέκτασης</translation>
@@ -2430,6 +2439,7 @@
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="3605780360466892872">Άνετος</translation>
 <translation id="3608576286259426129">Προεπισκόπηση εικόνας χρήστη</translation>
+<translation id="3609277884604412258">Γρήγορη αναζήτηση</translation>
 <translation id="3610369246614755442">Ο ανεμιστήρας της βάσης σύνδεσης χρειάζεται επισκευή</translation>
 <translation id="361106536627977100">Δεδομένα Flash</translation>
 <translation id="3611655097742243705">Επισκεφτείτε το Play Store για να βρείτε περισσότερες εφαρμογές</translation>
@@ -3374,6 +3384,7 @@
 <translation id="4636682061478263818">Αρχεία Drive</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
 <translation id="4637083375689622795">Περισσότερες ενέργειες, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Εκ νέου χρήση της κάμερας</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Κείμενο}other{# κείμενα}}</translation>
 <translation id="4638930039313743000">Ενεργοποίηση του εντοπισμού και της διόρθωσης σφαλμάτων ADB</translation>
 <translation id="4641539339823703554">Δεν ήταν δυνατός ο ορισμός της ώρας συστήματος από το Chrome. Ελέγξτε την ώρα που εμφανίζεται παρακάτω και διορθώστε την εάν είναι απαραίτητο.</translation>
@@ -4124,6 +4135,7 @@
 <translation id="5499313591153584299">Αυτό το αρχείο ενδέχεται να είναι επιβλαβές για τον υπολογιστή σας.</translation>
 <translation id="5499453227627332024">Υπάρχει διαθέσιμη αναβάθμιση για το κοντέινερ Linux. Μπορείτε επίσης να το αναβαθμίσετε αργότερα από την εφαρμογή Ρυθμίσεις.</translation>
 <translation id="5500709606820808700">Ο έλεγχος ασφαλείας εκτελέστηκε σήμερα</translation>
+<translation id="5501322521654567960">Πλαϊνό πλαίσιο με στοίχιση στα αριστερά</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Απέτυχε η λήψη (<ph name="ATTACHMENTS" />) από τη συσκευή <ph name="DEVICE_NAME" />}other{Απέτυχε η λήψη (<ph name="ATTACHMENTS" />) από τη συσκευή <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Εισαγωγή από το Firefox</translation>
 <translation id="5502915260472117187">Παιδί</translation>
@@ -5336,6 +5348,7 @@
 <translation id="6856348640027512653">Δεν επιτρέπεται να χρησιμοποιούν συσκευές ή δεδομένα εικονικής πραγματικότητας</translation>
 <translation id="6856459657722366306">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="6856623341093082836">Ρύθμιση και προσαρμογή ακρίβειας οθόνης αφής</translation>
+<translation id="6857145580237920905">Καταργήστε τα προφίλ eSIM πριν τη χρήση του powerwash</translation>
 <translation id="6857699260879628349">Λήψη πληροφοριών διαμόρφωσης</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> δ.</translation>
 <translation id="6860097299815761905">Ρυθμίσεις διακομιστή μεσολάβησης...</translation>

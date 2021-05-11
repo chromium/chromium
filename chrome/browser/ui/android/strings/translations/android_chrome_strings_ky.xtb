@@ -531,6 +531,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4583164079174244168">{MINUTES,plural, =1{# мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4594952190837476234">Бул оффлайн режиминдеги баракча <ph name="CREATION_TIME" /> сакталган жана онлайн версиясынан айырмаланышы мүмкүн.</translation>
+<translation id="4615382002648696011">Жазылгансыз, окулбаган окуялар даяр</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> колдонмосун ачуу</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
@@ -1177,6 +1178,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8659579665266920523">Chrome менен кантип издөө керек</translation>
 <translation id="8662811608048051533">Көпчүлүк сайттардагы каттоо эсептериңизден чыгарыласыз.</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
+<translation id="8676789164135894283">Кирүүнү ырастоо</translation>
 <translation id="8683039184091909753">сүрөт</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигналдын күчү: # тилке}other{Сигналдын күчү: # тилке}}</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>

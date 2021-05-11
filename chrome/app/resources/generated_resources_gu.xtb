@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS અપડેટ કરવાની જરૂર છે</translation>
 <translation id="1067048845568873861">બનાવ્યું</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> નામની ઇ-સિમ પ્રોફાઇલ કાઢી નાખો</translation>
 <translation id="1070377999570795893">તમારા કોમ્પ્યુટર પરના અન્ય પ્રોગ્રામે કોઇ એક્સ્ટેન્શન ઉમેર્યું છે જેનાથી Chromeની કાર્યપદ્ધતિમાં ફેરફાર થઇ શકે છે.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -356,6 +357,7 @@
 <translation id="138784436342154190">ડિફૉલ્ટ સ્ટાર્ટઅપ પૃષ્ઠને પુનઃસ્થાપિત કરીએ?</translation>
 <translation id="1388253969141979417">તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="1388728792929436380">અપડેટ પૂર્ણ થશે ત્યારે તમારું <ph name="DEVICE_TYPE" /> ફરી શરૂ થશે.</translation>
+<translation id="138900021244932468">કોઈ પ્રોફાઇલ મળી નથી. નવા નેટવર્કનું સેટઅપ કરવા માટે, ડિવાઇસના કૅમેરાનો ઉપયોગ કરીને QR કોડ સ્કૅન કરો અથવા તમારા મોબાઇલ ઑપરેટરે પ્રદાન કરેલો સક્રિયકરણનો કોડ દાખલ કરો.</translation>
 <translation id="139013308650923562">તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="1390548061267426325">નિયમિત ટૅબ તરીકે ખોલો</translation>
 <translation id="1393283411312835250">સૂર્ય અને વાદળો</translation>
@@ -980,6 +982,7 @@
 તમે તમારા ડિવાઇસમાં Family Link ઍપ ઇન્સ્ટૉલ કરીને આ એકાઉન્ટનાં સેટિંગને મેનેજ કરી શકો છો.  અમે તમને ઇમેઇલમાં સૂચનાઓ મોકલી છે.</translation>
 <translation id="2040460856718599782">અરેરે! તમને પ્રમાણિત કરવાનો પ્રયાસ કરતી વખતે કંઈક ખોટું થયું. કૃપા કરીને તમારા સાઇન-ઇન ઓળખપત્રોને બીજીવાર તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2044014337866019681">કૃપા કરીને ખાતરી કરો કે સત્રને અનલૉક કરવા માટે તમે <ph name="ACCOUNT" />ની ચકાસણી કરી રહ્યાં છો.</translation>
+<translation id="2044023416777079300">મૉડેમ રજિસ્ટર કરેલું નથી</translation>
 <translation id="204497730941176055">Microsoft પ્રમાણપત્ર નમૂના નામ</translation>
 <translation id="2045117674524495717">કીબોર્ડ શૉર્ટકટ સહાયક</translation>
 <translation id="2045969484888636535">કૂકીઝ અવરોધિત કરવાનું ચાલુ રાખો</translation>
@@ -4081,6 +4084,7 @@
 <translation id="5486261815000869482">પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> તમારી સ્ક્રીનને <ph name="TAB_NAME" /> સાથે શેર કરી રહ્યું છે.</translation>
 <translation id="5486561344817861625">બ્રાઉઝર પુનઃપ્રારંભનું અનુકરણ કરો</translation>
+<translation id="5487460042548760727">પ્રોફાઇલનું નામ બદલીને <ph name="PROFILE_NAME" /> કરો</translation>
 <translation id="5487521232677179737">ડેટા સાફ કરો</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' કૉપિ કરી</translation>
 <translation id="5488508217173274228">સિંક એન્ક્રિપ્શનના વિકલ્પો</translation>
@@ -4824,6 +4828,7 @@ USB ડિવાઇસ</translation>
 <translation id="6308937455967653460">લિં&amp;કને આ રીતે સાચવો...</translation>
 <translation id="6309443618838462258">તમારા વ્યવસ્થાપક આ ઇનપુટ પદ્ધતિની મંજૂરી આપતા નથી</translation>
 <translation id="6309510305002439352">માઇક્રોફોન બંધ છે</translation>
+<translation id="6310141306111263820">ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શક્યાં નહીં. સહાય માટે, કૃપા કરીને તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="6311220991371174222">તમારી પ્રોફાઇલ ખોલતી વખતે કોઈ ભૂલ આવાને કારણે Chrome પ્રારંભ કરી શકતાં નથી. Chrome પુનઃપ્રારંભ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6312403991423642364">અજ્ઞાત નેટવર્ક ભૂલ</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{સલામતી માટે તપાસ 1 દિવસ અગાઉ કરવામાં આવી હતી}one{સલામતી માટે તપાસ {NUM_DAYS} દિવસ અગાઉ કરવામાં આવી હતી}other{સલામતી માટે તપાસ {NUM_DAYS} દિવસ અગાઉ કરવામાં આવી હતી}}</translation>
@@ -5961,6 +5966,7 @@ USB ડિવાઇસ</translation>
 <translation id="7582582252461552277">આ નેટવર્કને પસંદ કરો</translation>
 <translation id="7582844466922312471">મોબાઈલ ડેટા</translation>
 <translation id="7583948862126372804">મતની સંખ્યા</translation>
+<translation id="7586051298768394542">સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાતી નથી. ડિક્ટેશન તમારા વૉઇસને Googleને મોકલીને કામ કરવાનું ચાલુ રાખશે.</translation>
 <translation id="7586498138629385861">Chrome Apps ખુલ્લી હોય ત્યારે Chrome શરૂ થવાનું ચાલુ રાખશે.</translation>
 <translation id="7589461650300748890">અરે, ત્યાં છો. સાવધ રહો.</translation>
 <translation id="7593653750169415785">ઑટોમૅટિક રીતે બ્લૉક કર્યું કારણ કે તમે કેટલીક વખત નોટિફિકેશન નકાર્યાં છે</translation>
@@ -6544,6 +6550,7 @@ USB ડિવાઇસ</translation>
 <translation id="8191230140820435481">તમારી ઍપ્લિકેશનો, એક્સ્ટેન્શન અને થીમ્સ મેનેજ કરો</translation>
 <translation id="8195027750202970175">ડિસ્ક પર કદ</translation>
 <translation id="8198323535106903877">અમે તમારા માટે તે <ph name="NUMBER_OF_APPS" /> ઍપ ઇન્સ્ટૉલ કરીશું</translation>
+<translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />ના આલ્બમ પસંદ કરો</translation>
@@ -7128,6 +7135,7 @@ USB ડિવાઇસ</translation>
 <translation id="8847523528195140327">કવર બંધ કરવામાં આવે ત્યારે સાઇન આઉટ કરો</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> નામની ઇ-સિમ પ્રોફાઇલને કાઢી નાખવાનું રદ કરો</translation>
 <translation id="8850251000316748990">વધુ જુઓ...</translation>
 <translation id="885246833287407341">API કાર્યના તર્ક</translation>
 <translation id="8853586775156634952">આ કાર્ડ માત્ર આ ડિવાઇસમાં સચવાશે</translation>

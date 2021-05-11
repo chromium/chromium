@@ -173,6 +173,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1532118530259321453">Esta páxina di</translation>
 <translation id="153384715582417236">Isto é todo polo momento</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
+<translation id="1539840569003678498">Envío do informe:</translation>
 <translation id="154408704832528245">Escoller enderezo de entrega</translation>
 <translation id="1549470594296187301">JavaScript debe estar activado para usar esta función.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +216,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
+<translation id="1696290444144917273">Ver detalles da tarxeta virtual</translation>
 <translation id="1697532407822776718">Listo!</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido a partir de mañá. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido dentro de # días. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}}</translation>
@@ -226,6 +228,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1717494416764505390">Caixa de correo 3</translation>
 <translation id="1718029547804390981">O documento é demasiado grande para anotalo</translation>
 <translation id="1721424275792716183">* O campo é obrigatorio</translation>
+<translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1727741090716970331">Engade un número de tarxeta válido</translation>
 <translation id="1728677426644403582">Estas vendo a fonte dunha páxina web</translation>
 <translation id="173080396488393970">Este tipo de tarxeta non é compatible</translation>
@@ -697,6 +700,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3590643883886679995">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
+<translation id="359126217934908072">Mes/Ano:</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">O administrador bloqueou a aplicación</translation>
@@ -752,6 +756,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3781428340399460090">Rosa fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
+<translation id="3787675388804467730">Número da tarxeta virtual</translation>
 <translation id="3787705759683870569">Caduca o <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
@@ -1417,6 +1422,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6290238015253830360">Os teus artigos suxeridos aparecerán aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Detendo o Asistente de Google en Chrome</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
 <translation id="6312113039770857350">A páxina web non está dispoñible</translation>
@@ -1549,6 +1555,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplificou esta páxina para que sexa máis fácil de ler. Chrome recuperou a páxina orixinal a través dunha conexión insegura.</translation>
 <translation id="6891596781022320156">O nivel da política non é compatible.</translation>
+<translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Confirmouse a túa tarxeta</translation>
 <translation id="6897140037006041989">Axente de usuario</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
@@ -1587,6 +1594,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Ten en conta que estes cargos poden ser únicos ou periódicos e que quizais non se indiquen de forma evidente.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
+<translation id="7030436163253143341">O certificado non é válido</translation>
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7050187094878475250">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado cun período de validez demasiado longo para ser fiable.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Esta tarxeta non se pode gardar neste momento}other{Estas tarxetas non se poden gardar neste momento}}</translation>

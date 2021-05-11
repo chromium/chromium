@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">የ<ph name="USER_NAME" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="1153356358378277386">የተጣመሩ መሣሪያዎች</translation>
 <translation id="1165712434476988950">ዝማኔውን ለመተግበር የመሣሪያ ዳግም ማስጀመር ያስፈልጋል።</translation>
+<translation id="1170240434488307589">የመሣሪያ ማይክሮፎን አዝራር ድምጸ-ከል ተደርጓል።</translation>
 <translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">የግቤት ስልቶች በእርስዎ አስተዳዳሪ ይዋቀራሉ።</translation>
 <translation id="1747827819627189109">በማያ ገጽ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
 <translation id="1761222317188459878">የአውታረ መረብ ግንኙነትን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + የጊዜ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። አስገባ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + ቀያይር + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1782199038061388045">ትርጉም</translation>
 <translation id="1787955149152357925">አጥፋ</translation>

@@ -173,6 +173,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1532118530259321453">Þessi síða segir</translation>
 <translation id="153384715582417236">Það er allt og sumt í bili</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
+<translation id="1539840569003678498">Skýrsla send:</translation>
 <translation id="154408704832528245">Velja heimilisfang til afhendingar</translation>
 <translation id="1549470594296187301">JavaScript verður að vera virkt til að hægt sé að nota þennan eiginleika.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -216,6 +217,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="1682696192498422849">Skammhlið fyrst</translation>
 <translation id="168693727862418163">Ekki tókst að staðfesta gildi þessarar reglu gagnvart skema hennar og hún verður hunsuð.</translation>
 <translation id="168841957122794586">Vottorð netþjónsins inniheldur ótraustan dulmálslykil.</translation>
+<translation id="1696290444144917273">Skoða frekari upplýsingar um sýndarkort</translation>
 <translation id="1697532407822776718">Nú er allt tilbúið!</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706954506755087368">{1,plural, =1{Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er að sögn gefið út á morgun. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.}one{Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er að sögn gefið út eftir # dag. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.}other{Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er að sögn gefið út eftir # daga. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.}}</translation>
@@ -227,6 +229,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="1717494416764505390">Pósthólf 3</translation>
 <translation id="1718029547804390981">Þetta skjal er of stórt til að hægt sé að skrifa skýringar í það</translation>
 <translation id="1721424275792716183">* Reiturinn má ekki vera auður</translation>
+<translation id="1727613060316725209">Vottorðið er gilt</translation>
 <translation id="1727741090716970331">Bæta við gildu kortanúmeri</translation>
 <translation id="1728677426644403582">Þú ert að skoða uppruna vefsíðu</translation>
 <translation id="173080396488393970">Þessi kortategund er ekki studd</translation>
@@ -701,6 +704,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="3586931643579894722">Fela upplýsingar</translation>
 <translation id="3587738293690942763">Miðja</translation>
 <translation id="3590643883886679995">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu.</translation>
+<translation id="359126217934908072">Mánuður/ár:</translation>
 <translation id="3592413004129370115">Italian (umslag)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Kerfisstjóri hefur lokað á þetta forrit</translation>
@@ -756,6 +760,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="3781428340399460090">Dökkbleikur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth-tæki</translation>
+<translation id="3787675388804467730">Númer sýndarkorts</translation>
 <translation id="3787705759683870569">Rennur út <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Stærð 16</translation>
 <translation id="3789841737615482174">Setja upp</translation>
@@ -1421,6 +1426,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6289939620939689042">Síðulitur</translation>
 <translation id="6290238015253830360">Tillögur að greinum birtast hér</translation>
 <translation id="6293309776179964942">JIS B5</translation>
+<translation id="6295618774959045776">CVC:</translation>
 <translation id="6302269476990306341">Google hjálpari í Chrome stoppar</translation>
 <translation id="6305205051461490394">Ekki næst í <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Vefsíðan er ekki tiltæk</translation>
@@ -1553,6 +1559,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome einfaldaði þessa síðu svo það yrði auðveldara að lesa hana. Chrome sótti upprunalegu síðuna um ótrausta tengingu.</translation>
 <translation id="6891596781022320156">Stig stefnunnar er óstutt.</translation>
+<translation id="6895143722905299846">Sýndarnúmer:</translation>
 <translation id="6895330447102777224">Kortið er staðfest</translation>
 <translation id="6897140037006041989">Vafraupplýsingar</translation>
 <translation id="6898699227549475383">Notendaskipan (O)</translation>
@@ -1591,6 +1598,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="7014741021609395734">Aðdráttarstig</translation>
 <translation id="7016992613359344582">Greiðslur gætu verið stakar eða endurteknar og hugsanlega er ekki greinilegt að borga þurfi.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
+<translation id="7030436163253143341">Vottorðið er ekki gilt</translation>
 <translation id="7031646650991750659">Hvaða Google Play forrit þú hefur sett upp</translation>
 <translation id="7050187094878475250">Þú reyndir að ná sambandi við <ph name="DOMAIN" /> en þjónninn framvísaði vottorði sem er með of langan gildistíma til að hægt sé að treysta því.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ekki er hægt að vista þetta kort núna}one{Ekki er hægt að vista þessi kort núna}other{Ekki er hægt að vista þessi kort núna}}</translation>

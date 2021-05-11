@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">Tema instalado "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Esta extensão alterou a página apresentada quando clica no botão Página inicial.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> pretende instalar um tipo de extensão <ph name="EXTENSION_TYPE" /> que pode:</translation>
+<translation id="1547808936554660006">Compreendo que os perfis de eSIM instalados não serão removidos pela função Powerwash</translation>
 <translation id="1549275686094429035">ARC ativado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> pretende aceder a <ph name="VOLUME_NAME" />. Pode modificar ou eliminar os seus ficheiros.</translation>
 <translation id="1552301827267621511">A extensão "<ph name="EXTENSION_NAME" />" alterou a pesquisa para utilizar <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Requer rede doméstica</translation>
 <translation id="1588870296199743671">Abrir Link Com...</translation>
+<translation id="1588919647604819635">Clique com o botão direito do rato no cartão</translation>
 <translation id="1589055389569595240">Mostrar ortografia e gramática</translation>
 <translation id="1591679663873027990">Conceda autorização ao Parallels Desktop para aceder a dispositivos USB. O Parallels Desktop não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do ADB, o que irá repor o seu dispositivo <ph name="DEVICE_TYPE" />. Faça uma cópia de segurança dos ficheiros antes de reiniciar.</translation>
@@ -984,6 +986,7 @@ Caso contrário, termine sessão agora para que as alterações efetuadas nesta 
 
 Pode gerir as definições desta conta ao instalar a aplicação Family Link no seu dispositivo.  Enviámos-lhe instruções por email.</translation>
 <translation id="2040460856718599782">Ups! Ocorreu um erro ao tentar autenticá-lo. Verifique bem as suas credenciais de início de sessão e tente novamente.</translation>
+<translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Certifique-se de que está a validar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
 <translation id="2044023416777079300">Modem não registado</translation>
 <translation id="204497730941176055">Nome do modelo de certificado Microsoft</translation>
@@ -1322,6 +1325,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2395616325548404795">O seu <ph name="DEVICE_TYPE" /> foi inscrito com êxito para gestão empresarial, mas não enviou as respetivas informações de recurso e de localização. Introduza essas informações para este dispositivo manualmente a partir da Consola do gestor.</translation>
 <translation id="2396387085693598316">O seu administrador bloqueou "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Introduza o PIN de 4 dígitos (0000-9999)</translation>
+<translation id="2398546389094871088">A função Powerwash do dispositivo não remove os seus perfis de eSIM. Aceda a <ph name="LINK_BEGIN" />Definições para dispositivos móveis<ph name="LINK_END" /> para remover manualmente estes perfis.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
 <translation id="2399939490305346086">Dados de início de sessão da chave de segurança</translation>
 <translation id="2400664245143453337">É necessária uma atualização imediata</translation>
@@ -1738,6 +1742,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2844809857160214557">Veja e faça a gestão de tarefas de impressão.</translation>
 <translation id="2845382757467349449">Mostrar Sempre a Barra de Marcadores</translation>
 <translation id="284805635805850872">Remover software prejudicial?</translation>
+<translation id="2849035674501872372">Olhe para cima</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Falha ao limpar.</translation>
 <translation id="2849936225196189499">Crítica</translation>
@@ -2050,6 +2055,7 @@ Pretende pará-lo?</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
+<translation id="3197453258332670132">Ao clicar com o botão direito do rato ou ao manter o botão premido, apresenta informações para a sua seleção de texto</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3201422919974259695">Os dispositivos USB disponíveis são apresentados aqui.</translation>
 <translation id="3202131003361292969">Caminho</translation>
@@ -2071,6 +2077,7 @@ Pretende pará-lo?</translation>
 <translation id="3223531857777746191">Botão Repor</translation>
 <translation id="3225084153129302039">Avatar roxo predefinido</translation>
 <translation id="3225319735946384299">Assinatura de código</translation>
+<translation id="3226487301970807183">Ative/desative o painel lateral alinhado à esquerda</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3233271424239923319">Fazer uma cópia de segurança de aplicações e ficheiros do Linux</translation>
 <translation id="3238192140106069382">A ligar e a validar…</translation>
@@ -2340,6 +2347,7 @@ Pretende pará-lo?</translation>
 <translation id="3515983984924808886">Toque novamente na chave de segurança para confirmar a reposição. Todas as informações armazenadas na chave de segurança, incluindo o respetivo PIN, serão eliminadas.</translation>
 <translation id="3518985090088779359">Aceitar e continuar</translation>
 <translation id="3519564332031442870">Imprimir o serviço de back-end</translation>
+<translation id="3519938335881974273">Guardar página como…</translation>
 <translation id="3521606918211282604">Alterar tamanho do disco</translation>
 <translation id="3522088408596898827">O espaço em disco é criticamente baixo. Liberte espaço no disco e tente novamente.</translation>
 <translation id="3524965460886318643">Exportar atividades</translation>
@@ -2363,6 +2371,7 @@ Pretende pará-lo?</translation>
 <translation id="3550593477037018652">Desligar rede móvel</translation>
 <translation id="3550915441744863158">O Chrome é atualizado automaticamente para que tenha sempre a versão mais recente</translation>
 <translation id="3551320343578183772">Fechar Separador</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Apagar à saída</translation>
 <translation id="3554493885489666172">O seu dispositivo é gerido por <ph name="PROFILE_NAME" />. Os administradores conseguem aceder aos dados em qualquer perfil neste dispositivo.</translation>
 <translation id="3555812735919707620">Remover extensão</translation>
@@ -2415,6 +2424,7 @@ Pretende pará-lo?</translation>
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3608576286259426129">Pré-visualização da imagem do utilizador</translation>
+<translation id="3609277884604412258">Pesquisa rápida</translation>
 <translation id="3610369246614755442">A ventoinha da estação de ancoragem necessita de manutenção</translation>
 <translation id="361106536627977100">Dados do Flash</translation>
 <translation id="3611655097742243705">Visite a Play Store para encontrar mais apps</translation>
@@ -3358,6 +3368,7 @@ Pretende pará-lo?</translation>
 <translation id="4636682061478263818">Ficheiros do Drive</translation>
 <translation id="4636930964841734540">Informações</translation>
 <translation id="4637083375689622795">Mais ações, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Utilizar novamente a câmara</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
 <translation id="4638930039313743000">Ativar a depuração do adb</translation>
 <translation id="4641539339823703554">Não foi possível ao Chrome definir a hora do sistema. Verifique as horas abaixo e corrija se necessário.</translation>
@@ -4108,6 +4119,7 @@ Pretende pará-lo?</translation>
 <translation id="5499313591153584299">Este ficheiro pode ser prejudicial para o seu computador.</translation>
 <translation id="5499453227627332024">Está disponível uma atualização para o seu contentor do Linux. Também pode atualizar mais tarde na app Definições.</translation>
 <translation id="5500709606820808700">A verificação de segurança foi efetuada hoje.</translation>
+<translation id="5501322521654567960">Painel lateral alinhado à esquerda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Falha ao receber <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Falha ao receber <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado do Firefox</translation>
 <translation id="5502915260472117187">Uma criança</translation>
@@ -5320,6 +5332,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6856348640027512653">Sem autorização para utilizar dados ou dispositivos de realidade virtual</translation>
 <translation id="6856459657722366306">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="6856623341093082836">Configurar e ajustar a precisão do ecrã tátil</translation>
+<translation id="6857145580237920905">Remova os perfis de eSIM antes de executar a função Powerwash</translation>
 <translation id="6857699260879628349">Obter informações de configuração</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Definições de proxy...</translation>
