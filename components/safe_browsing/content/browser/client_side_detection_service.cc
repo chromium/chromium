@@ -412,7 +412,9 @@ void ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
 
   phishing_report_times_.clear();
   for (const base::Value& timestamp :
-       *delegate_->GetPrefs()->GetList(prefs::kSafeBrowsingCsdPingTimestamps)) {
+       delegate_->GetPrefs()
+           ->GetList(prefs::kSafeBrowsingCsdPingTimestamps)
+           ->GetList()) {
     phishing_report_times_.push_back(
         base::Time::FromDoubleT(timestamp.GetDouble()));
   }
