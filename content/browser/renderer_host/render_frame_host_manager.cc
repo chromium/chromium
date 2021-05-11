@@ -2832,15 +2832,10 @@ WebExposedIsolationInfo RenderFrameHostManager::GetWebExposedIsolationInfo(
     NavigationRequest* navigation_request) {
   if (base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated)) {
     if (frame_tree_node_->IsMainFrame()) {
-      // We consider navigations to be cross-origin isolated if the response
-      // asserts proper COOP and COEP headers, or if the user has opted-out
-      // of security via the `--disable-web-security` switch.
       bool is_cross_origin_isolated =
           navigation_request->coop_status().current_coop().value ==
-              network::mojom::CrossOriginOpenerPolicyValue::
-                  kSameOriginPlusCoep ||
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kDisableWebSecurity);
+          network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+
       if (is_cross_origin_isolated) {
         url::Origin origin =
             url::Origin::Create(navigation_request->common_params().url);

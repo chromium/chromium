@@ -676,10 +676,9 @@ IN_PROC_BROWSER_TEST_F(SameProcessNoWebSecurityOriginIsolationOptInHeaderTest,
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
 
-  // Web security is disabled so web-facing APIs that require isolation should
-  // be supported, but the implications of that isolation on resource loading
-  // should not be enforced.
-  EXPECT_EQ(true, EvalJs(child_frame_node, "window.originAgentCluster"));
+  // Web security is disabled so everything should be same-origin and
+  // accessible across browsing contexts.
+  EXPECT_EQ(false, EvalJs(child_frame_node, "window.originAgentCluster"));
 
   std::string parent_body_content =
       EvalJs(root, "document.body.textContent").ExtractString();
