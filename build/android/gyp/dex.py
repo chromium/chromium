@@ -42,8 +42,6 @@ _IGNORE_WARNINGS = (
     # desugar doesn't preserve interfaces in the same way. This should be
     # removed when D8 is used for desugaring.
     r'Warning: Cannot emulate interface ',
-    # Only relevant for R8 when optimizing an app that doesn't use proto.
-    r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
 )
 
 
