@@ -6771,3 +6771,6 @@ crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast
 # Browser Infra 2021-05-04
 # Re-enable once all Linux CI/CQ builders migrated to Bionic
 crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Pass Failure ]
+
+# Appears to be timing out even when marked as Slow.
+crbug.com/1205184 [ Mac11.0 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]

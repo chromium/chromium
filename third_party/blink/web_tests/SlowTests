@@ -748,6 +748,7 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-f
 crbug.com/1195814 [ Mac11.0 ] external/wpt/clear-site-data/storage.https.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] external/wpt/file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html [ Slow ]
+crbug.com/1195814 [ Mac11.0 ] external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] external/wpt/IndexedDB/fire-error-event-exception.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] external/wpt/IndexedDB/get-databases.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11.0 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
