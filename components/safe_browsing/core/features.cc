@@ -124,7 +124,7 @@ const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
 
 const base::Feature kVisualFeaturesInPasswordProtectionAndroid{
     "VisualFeaturesInPasswordProtectionAndroid",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should be
