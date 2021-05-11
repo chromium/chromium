@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "chromecast/base/path_utils.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/crash/linux/dump_info.h"
 
 #define RCHECK(cond, retval, err) \
@@ -44,17 +46,25 @@ std::unique_ptr<base::ListValue> ParseLockFile(const std::string& path) {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    std::unique_ptr<base::Value> dump_info = DeserializeFromJson(line);
-    DumpInfo info(dump_info.get());
+    base::Optional<base::Value> dump_info = base::JSONReader::Read(line);
+    RCHECK(dump_info.has_value(), nullptr, "Invalid DumpInfo");
+    DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), nullptr, "Invalid DumpInfo");
-    dumps->Append(std::move(dump_info));
+    dumps->Append(std::move(dump_info.value()));
   }
 
   return dumps;
 }
 
 std::unique_ptr<base::Value> ParseMetadataFile(const std::string& path) {
-  return DeserializeJsonFromFile(base::FilePath(path));
+  base::FilePath file_path(path);
+  JSONFileValueDeserializer deserializer(file_path);
+  int error_code = -1;
+  std::string error_msg;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(&error_code, &error_msg);
+  DLOG_IF(ERROR, !value) << "JSON error " << error_code << ":" << error_msg;
+  return value;
 }
 
 int WriteLockFile(const std::string& path, base::ListValue* contents) {
@@ -62,9 +72,10 @@ int WriteLockFile(const std::string& path, base::ListValue* contents) {
   std::string lockfile;
 
   for (const auto& elem : *contents) {
-    base::Optional<std::string> dump_info = SerializeToJson(elem);
-    RCHECK(dump_info, -1, "Failed to serialize DumpInfo");
-    lockfile += *dump_info;
+    std::string dump_info;
+    bool ret = base::JSONWriter::Write(elem, &dump_info);
+    RCHECK(ret, -1, "Failed to serialize DumpInfo");
+    lockfile += dump_info;
     lockfile += "\n";  // Add line seperatators
   }
 
@@ -75,14 +86,17 @@ int WriteLockFile(const std::string& path, base::ListValue* contents) {
 
 bool WriteMetadataFile(const std::string& path, const base::Value* metadata) {
   DCHECK(metadata);
-  return SerializeJsonToFile(base::FilePath(path), *metadata);
+  base::FilePath file_path(path);
+  JSONFileValueSerializer serializer(file_path);
+  return serializer.Serialize(*metadata);
 }
 
 }  // namespace
 
 std::unique_ptr<DumpInfo> CreateDumpInfo(const std::string& json_string) {
-  std::unique_ptr<base::Value> value(DeserializeFromJson(json_string));
-  return std::make_unique<DumpInfo>(value.get());
+  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  return value.has_value() ? std::make_unique<DumpInfo>(&value.value())
+                           : std::make_unique<DumpInfo>(nullptr);
 }
 
 bool FetchDumps(const std::string& lockfile_path,

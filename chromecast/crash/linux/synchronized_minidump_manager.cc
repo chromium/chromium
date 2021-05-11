@@ -17,12 +17,14 @@
 
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chromecast/base/path_utils.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/crash/linux/dump_info.h"
 
 // if |cond| is false, returns |retval|.
@@ -279,14 +281,20 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    std::unique_ptr<base::Value> dump_info = DeserializeFromJson(line);
-    DumpInfo info(dump_info.get());
+    base::Optional<base::Value> dump_info = base::JSONReader::Read(line);
+    RCHECK(dump_info.has_value(), false);
+    DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);
-    dumps->Append(std::move(dump_info));
+    dumps->Append(std::move(dump_info.value()));
   }
 
+  JSONFileValueDeserializer deserializer(metadata_path_);
+  int error_code = -1;
+  std::string error_msg;
   std::unique_ptr<base::Value> metadata =
-      DeserializeJsonFromFile(metadata_path_);
+      deserializer.Deserialize(&error_code, &error_msg);
+  DLOG_IF(ERROR, !metadata) << "JSON error " << error_code << ":" << error_msg;
+  RCHECK(metadata, false);
   RCHECK(ValidateMetadata(metadata.get()), false);
 
   dumps_ = std::move(dumps);
@@ -301,9 +309,10 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
   std::string lockfile;
 
   for (const auto& elem : *dumps) {
-    base::Optional<std::string> dump_info = SerializeToJson(elem);
-    RCHECK(dump_info, false);
-    lockfile += *dump_info;
+    std::string dump_info;
+    bool ret = base::JSONWriter::Write(elem, &dump_info);
+    RCHECK(ret, false);
+    lockfile += dump_info;
     lockfile += "\n";  // Add line seperatators
   }
 
@@ -311,7 +320,8 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
     return false;
   }
 
-  return SerializeJsonToFile(metadata_path_, *metadata);
+  JSONFileValueSerializer serializer(metadata_path_);
+  return serializer.Serialize(*metadata);
 }
 
 bool SynchronizedMinidumpManager::InitializeFiles() {
