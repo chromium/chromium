@@ -385,4 +385,18 @@ TEST_F(UserModelTest, SetSelectedAutofillProfile) {
   EXPECT_THAT(user_data.selected_address("contact"), IsNull());
 }
 
+TEST_F(UserModelTest, SetSelectedCreditCard) {
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  UserData user_data;
+  model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data);
+  EXPECT_THAT(model_.GetSelectedCreditCard()->Compare(credit_card), Eq(0));
+  EXPECT_THAT(user_data.selected_card()->Compare(credit_card), Eq(0));
+  model_.SetSelectedCreditCard(nullptr, &user_data);
+  EXPECT_THAT(model_.GetSelectedCreditCard(), IsNull());
+  EXPECT_THAT(user_data.selected_card(), IsNull());
+}
+
 }  // namespace autofill_assistant

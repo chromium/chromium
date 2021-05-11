@@ -2088,7 +2088,7 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
   controller_->SetCreditCard(
       std::make_unique<autofill::CreditCard>(*credit_card),
       std::make_unique<autofill::AutofillProfile>(*billing_address));
-  EXPECT_THAT(GetUserData()->selected_card_->Compare(*credit_card), Eq(0));
+  EXPECT_THAT(GetUserData()->selected_card()->Compare(*credit_card), Eq(0));
   EXPECT_THAT(GetUserData()
                   ->selected_address("billing_address")
                   ->Compare(*billing_address),

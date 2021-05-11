@@ -112,7 +112,6 @@ class UserData {
     AVAILABLE_PAYMENT_INSTRUMENTS,
   };
 
-  std::unique_ptr<autofill::CreditCard> selected_card_;
   std::string login_choice_identifier_;
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
   base::Optional<DateProto> date_time_range_start_date_;
@@ -142,6 +141,9 @@ class UserData {
   const autofill::AutofillProfile* selected_address(
       const std::string& name) const;
 
+  // The selected card.
+  const autofill::CreditCard* selected_card() const;
+
   // The additional value for |key|, or nullptr if it does not exist.
   const ValueProto* additional_value(const std::string& key) const;
 
@@ -156,9 +158,13 @@ class UserData {
  private:
   friend class UserModel;
   // The address key requested by the autofill action.
-  // Written by |UserModel| to ensure that it stays in sync
+  // Written by |UserModel| to ensure that it stays in sync.
   std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_addresses_;
+
+  // The selected credit card.
+  // Written by |UserModel| to ensure that it stays in sync.
+  std::unique_ptr<autofill::CreditCard> selected_card_;
 };
 
 // Struct for holding the payment request options.

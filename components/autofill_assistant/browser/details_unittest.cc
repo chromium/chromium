@@ -236,7 +236,7 @@ TEST_F(DetailsTest, UpdateFromSelectedCreditCardEmptyMemory) {
 TEST_F(DetailsTest, UpdateFromSelectedCreditCardNotRequested) {
   ShowDetailsProto proto;
   proto.set_credit_card(false);
-  user_data_.selected_card_ = MakeCreditCard();
+  user_model_.SetSelectedCreditCard(MakeCreditCard(), &user_data_);
   EXPECT_FALSE(Details::UpdateFromSelectedCreditCard(ShowDetailsProto(),
                                                      &user_data_, nullptr));
 }
@@ -244,7 +244,7 @@ TEST_F(DetailsTest, UpdateFromSelectedCreditCardNotRequested) {
 TEST_F(DetailsTest, UpdateFromCreditCard) {
   ShowDetailsProto proto;
   proto.set_credit_card(true);
-  user_data_.selected_card_ = MakeCreditCard();
+  user_model_.SetSelectedCreditCard(MakeCreditCard(), &user_data_);
 
   Details details;
   EXPECT_TRUE(

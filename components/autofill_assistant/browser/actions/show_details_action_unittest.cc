@@ -110,7 +110,7 @@ TEST_F(ShowDetailsActionTest, ShippingAddressCase) {
 
 TEST_F(ShowDetailsActionTest, CreditCardCase) {
   proto_.set_credit_card(true);
-  user_data_.selected_card_ = MakeCreditCard();
+  user_model_.SetSelectedCreditCard(MakeCreditCard(), &user_data_);
 
   EXPECT_CALL(mock_action_delegate_, SetDetails(_, _));
   EXPECT_CALL(

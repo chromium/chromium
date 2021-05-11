@@ -82,7 +82,7 @@ void UseCreditCardAction::InternalProcessAction(
     }
     credit_card_ = std::make_unique<autofill::CreditCard>(*credit_card);
   } else {
-    auto* credit_card = delegate_->GetUserData()->selected_card_.get();
+    const auto* credit_card = delegate_->GetUserData()->selected_card();
     if (credit_card == nullptr) {
       VLOG(1) << "UseCreditCard failed: card not found in user_data";
       EndAction(ClientStatus(PRECONDITION_FAILED));

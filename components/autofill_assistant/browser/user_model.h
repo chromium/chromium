@@ -82,6 +82,12 @@ class UserModel {
       std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
           credit_cards);
 
+  // Sets the selected credit card. A nullptr |card| will clear the selected
+  // card. This also sets it to |user_data|.
+  // TODO(b/187286050) complete the migration to UserModel and remove UserData.
+  void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
+                             UserData* user_data);
+
   // Replaces the set of available autofill profiles.
   void SetAutofillProfiles(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
@@ -99,6 +105,9 @@ class UserModel {
 
   // Returns the credit card with |guid| or nullptr if there is no such card.
   const autofill::CreditCard* GetCreditCard(const std::string& guid) const;
+
+  // Returns the selected credit card or nullptr if no card has been selected.
+  const autofill::CreditCard* GetSelectedCreditCard() const;
 
   // Returns the profile with |guid| or nullptr if there is no such profile.
   const autofill::AutofillProfile* GetProfile(const std::string& guid) const;
@@ -129,11 +138,14 @@ class UserModel {
   std::map<std::string, ValueProto> values_;
   // Guid to credit card map.
   std::map<std::string, std::unique_ptr<autofill::CreditCard>> credit_cards_;
+  // The selected credit card.
+  std::unique_ptr<autofill::CreditCard> selected_card_;
   // Guid to profile map.
   std::map<std::string, std::unique_ptr<autofill::AutofillProfile>> profiles_;
   // Profile name to profile map.
   std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_profiles_;
+
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};

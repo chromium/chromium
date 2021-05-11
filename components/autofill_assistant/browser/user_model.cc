@@ -154,6 +154,17 @@ void UserModel::SetAutofillCreditCards(
     credit_cards_[credit_card->guid()] = std::move(credit_card);
   }
 }
+void UserModel::SetSelectedCreditCard(
+    std::unique_ptr<autofill::CreditCard> card,
+    UserData* user_data) {
+  if (card == nullptr) {
+    selected_card_.reset();
+    user_data->selected_card_.reset();
+    return;
+  }
+  selected_card_ = std::make_unique<autofill::CreditCard>(*card);
+  user_data->selected_card_ = std::move(card);
+}
 
 void UserModel::SetAutofillProfiles(
     std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
@@ -201,6 +212,10 @@ const autofill::CreditCard* UserModel::GetCreditCard(
     return nullptr;
   }
   return it->second.get();
+}
+
+const autofill::CreditCard* UserModel::GetSelectedCreditCard() const {
+  return selected_card_.get();
 }
 
 const autofill::AutofillProfile* UserModel::GetProfile(

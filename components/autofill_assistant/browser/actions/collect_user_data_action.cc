@@ -599,7 +599,8 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
 
   // Clear previously selected info, if requested.
   if (proto_.collect_user_data().clear_previous_credit_card_selection()) {
-    user_data->selected_card_.reset();
+    delegate_->GetUserModel()->SetSelectedCreditCard(/* card= */ nullptr,
+                                                     user_data);
   }
   if (proto_.collect_user_data().clear_previous_login_selection()) {
     user_data->selected_login_.reset();
@@ -1024,7 +1025,7 @@ bool CollectUserDataAction::IsUserDataComplete(
       user_data.selected_address(options.shipping_address_name);
   return IsCompleteContact(selected_profile, options) &&
          IsCompleteShippingAddress(shipping_address, options) &&
-         IsCompleteCreditCard(user_data.selected_card_.get(), billing_address,
+         IsCompleteCreditCard(user_data.selected_card(), billing_address,
                               options) &&
          IsValidLoginChoice(user_data.login_choice_identifier_, options) &&
          IsValidTermsChoice(user_data.terms_and_conditions_, options) &&
@@ -1124,10 +1125,10 @@ bool CollectUserDataAction::SanitizeDateTimeRange(
 void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
                                                  const UserModel* user_model) {
   if (proto().collect_user_data().request_payment_method() &&
-      user_data->selected_card_) {
+      user_data->selected_card()) {
     std::string card_issuer_network =
         autofill::data_util::GetPaymentRequestData(
-            user_data->selected_card_->network())
+            user_data->selected_card()->network())
             .basic_card_issuer_network;
     processed_action_proto_->mutable_collect_user_data_result()
         ->set_card_issuer_network(card_issuer_network);
@@ -1357,28 +1358,31 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
       user_data->available_payment_instruments_.emplace_back(
           std::move(payment_instrument));
 
-      if (user_data->selected_card_ != nullptr &&
-          card->Compare(*user_data->selected_card_) == 0) {
+      if (user_data->selected_card() != nullptr &&
+          card->Compare(*user_data->selected_card()) == 0) {
         found_card = true;
       }
     }
   }
 
   if (!found_card) {
-    user_data->selected_card_.reset();
+    delegate_->GetUserModel()->SetSelectedCreditCard(/* card= */ nullptr,
+                                                     user_data);
     delegate_->GetUserModel()->SetSelectedAutofillProfile(
         collect_user_data_options_->billing_address_name,
         /* profile= */ nullptr, user_data);
   }
-  if (user_data->selected_card_ == nullptr &&
+  if (user_data->selected_card() == nullptr &&
       collect_user_data_options_->request_payment_method) {
     int default_selection = GetDefaultPaymentInstrument(
         *collect_user_data_options_, user_data->available_payment_instruments_);
     if (default_selection != -1) {
       const auto& default_payment_instrument =
           user_data->available_payment_instruments_[default_selection];
-      user_data->selected_card_ = std::make_unique<autofill::CreditCard>(
-          *(default_payment_instrument->card));
+      delegate_->GetUserModel()->SetSelectedCreditCard(
+          std::make_unique<autofill::CreditCard>(
+              *(default_payment_instrument->card)),
+          user_data);
       if (default_payment_instrument->billing_address != nullptr) {
         delegate_->GetUserModel()->SetSelectedAutofillProfile(
             collect_user_data_options_->billing_address_name,

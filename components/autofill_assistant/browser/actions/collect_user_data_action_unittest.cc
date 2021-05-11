@@ -111,6 +111,17 @@ class CollectUserDataActionTest : public testing::Test {
         0);
   }
 
+  void ExpectSelectedCardMatches(const autofill::CreditCard* card) {
+    if (card == nullptr) {
+      EXPECT_EQ(user_data_.selected_card(), nullptr);
+      EXPECT_EQ(user_model_.GetSelectedCreditCard(), nullptr);
+      return;
+    }
+
+    EXPECT_EQ(user_data_.selected_card()->Compare(*card), 0);
+    EXPECT_EQ(user_model_.GetSelectedCreditCard()->Compare(*card), 0);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -763,8 +774,9 @@ TEST_F(CollectUserDataActionTest, SelectPaymentMethod) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.selected_card_ =
-                std::make_unique<autofill::CreditCard>(credit_card);
+            user_model_.SetSelectedCreditCard(
+                std::make_unique<autofill::CreditCard>(credit_card),
+                &user_data_);
             user_model_.SetSelectedAutofillProfile(
                 "billing_address",
                 std::make_unique<autofill::AutofillProfile>(billing_profile),
@@ -795,8 +807,7 @@ TEST_F(CollectUserDataActionTest, SelectPaymentMethod) {
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
-  EXPECT_EQ(user_data_.selected_card_.get() != nullptr, true);
-  EXPECT_THAT(user_data_.selected_card_->Compare(credit_card), Eq(0));
+  ExpectSelectedCardMatches(&credit_card);
 }
 
 TEST_F(CollectUserDataActionTest, SelectShippingAddress) {
@@ -969,12 +980,12 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
                                                          options));
 
   // Valid credit card, but no billing address.
-  user_data.selected_card_ =
-      std::make_unique<autofill::CreditCard>(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetCreditCardInfo(user_data.selected_card_.get(),
-                                    "Marion Mitchell", "4111 1111 1111 1111",
-                                    "01", "2050",
+  autofill::CreditCard card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050",
                                     /* billing_address_id = */ "");
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(card), &user_data);
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -992,8 +1003,10 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
   user_model_.SetSelectedAutofillProfile(
       "billing_address", std::make_unique<autofill::AutofillProfile>(profile),
       &user_data);
-  user_data.selected_card_->set_billing_address_id(
+  card.set_billing_address_id(
       user_data.selected_address("billing_address")->guid());
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(card), &user_data);
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -1025,8 +1038,9 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
                                                         options));
 
   // Expired credit card.
-  user_data.selected_card_->SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
-                                       u"2019");
+  card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2019");
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(card), &user_data);
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 }
@@ -1533,13 +1547,12 @@ TEST_F(CollectUserDataActionTest, AllowedBasicCardNetworks) {
                 "billing_address",
                 std::make_unique<autofill::AutofillProfile>(profile),
                 &user_data_);
-
-            user_data_.selected_card_ = std::make_unique<autofill::CreditCard>(
-                base::GenerateGUID(), kFakeUrl);
+            autofill::CreditCard card(base::GenerateGUID(), kFakeUrl);
             autofill::test::SetCreditCardInfo(
-                user_data_.selected_card_.get(), "Marion Mitchell",
-                "4111 1111 1111 1111", "01", "2050",
+                &card, "Marion Mitchell", "4111 1111 1111 1111", "01", "2050",
                 user_data_.selected_address("billing_address")->guid());
+            user_model_.SetSelectedCreditCard(
+                std::make_unique<autofill::CreditCard>(card), &user_data_);
 
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, &user_model_);
@@ -2077,7 +2090,7 @@ TEST_F(CollectUserDataActionTest, InitialSelectsCardAndAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            EXPECT_EQ(user_data_.selected_card_->Compare(card_with_address), 0);
+            ExpectSelectedCardMatches(&card_with_address);
             ExpectSelectedProfileMatches("billing_address", &billing_address);
 
             std::move(collect_user_data_options->confirm_callback)
@@ -2124,7 +2137,7 @@ TEST_F(CollectUserDataActionTest, KeepsSelectedCardAndAddress) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            EXPECT_EQ(user_data_.selected_card_->Compare(card_with_address), 0);
+            ExpectSelectedCardMatches(&card_with_address);
             ExpectSelectedProfileMatches("billing_address", &billing_address);
 
             std::move(collect_user_data_options->confirm_callback)
@@ -2138,8 +2151,8 @@ TEST_F(CollectUserDataActionTest, KeepsSelectedCardAndAddress) {
   collect_user_data->set_billing_address_name("billing_address");
 
   // Set previous user data.
-  user_data_.selected_card_ =
-      std::make_unique<autofill::CreditCard>(card_with_address);
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(card_with_address), &user_data_);
 
   user_model_.SetSelectedAutofillProfile(
       "billing_address",
@@ -2179,7 +2192,7 @@ TEST_F(CollectUserDataActionTest, ResetsCardAndAddressIfNoLongerInList) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            EXPECT_EQ(user_data_.selected_card_, nullptr);
+            ExpectSelectedCardMatches(nullptr);
             ExpectSelectedProfileMatches("billing_address", nullptr);
 
             // Do not call the callback. We're only interested in the state.
@@ -2201,8 +2214,8 @@ TEST_F(CollectUserDataActionTest, ResetsCardAndAddressIfNoLongerInList) {
       &selected_address, "Berta", "", "West", "berta.west@gmail.com", "",
       "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "+44");
 
-  user_data_.selected_card_ =
-      std::make_unique<autofill::CreditCard>(selected_card);
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(selected_card), &user_data_);
   user_model_.SetSelectedAutofillProfile(
       "billing_address",
       std::make_unique<autofill::AutofillProfile>(selected_address),
@@ -2324,7 +2337,7 @@ TEST_F(CollectUserDataActionTest, ClearUserDataIfRequested) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            EXPECT_EQ(user_data_.selected_card_->Compare(card_a), 0);
+            ExpectSelectedCardMatches(&card_a);
             ExpectSelectedProfileMatches("billing", &address_a);
             ExpectSelectedProfileMatches("contact", &address_a);
             ExpectSelectedProfileMatches("shipping", &address_a);
@@ -2351,7 +2364,8 @@ TEST_F(CollectUserDataActionTest, ClearUserDataIfRequested) {
 
   // Set previous user data to the second card/profile. If clear works
   // correctly, the action should default to the first card/profile.
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>(card_b);
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(card_b), &user_data_);
   user_model_.SetSelectedAutofillProfile(
       "billing", std::make_unique<autofill::AutofillProfile>(address_b),
       &user_data_);

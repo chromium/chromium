@@ -160,12 +160,12 @@ bool Details::UpdateFromShippingAddress(const ShowDetailsProto& proto,
 bool Details::UpdateFromSelectedCreditCard(const ShowDetailsProto& proto,
                                            const UserData* user_data,
                                            Details* details) {
-  if (user_data->selected_card_.get() == nullptr || !proto.credit_card()) {
+  if (!user_data->selected_card() || !proto.credit_card()) {
     return false;
   }
 
   ShowDetailsProto updated_proto = proto;
-  auto* card = user_data->selected_card_.get();
+  const auto* card = user_data->selected_card();
   auto* details_proto = updated_proto.mutable_details();
   details_proto->set_title(
       l10n_util::GetStringUTF8(IDS_PAYMENTS_METHOD_OF_PAYMENT_LABEL));

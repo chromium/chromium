@@ -1572,7 +1572,7 @@ void Controller::SetCreditCard(
 
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
 
-  user_data_->selected_card_ = std::move(card);
+  user_model_.SetSelectedCreditCard(std::move(card), user_data_.get());
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_.get(), UserData::FieldChange::CARD);
   }

@@ -1540,7 +1540,7 @@ void UiControllerAndroid::OnUserDataChanged(
 
     // Ignore changes to FieldChange::CARD, this is already coming from the
     // view.
-    autofill::CreditCard* card = state->selected_card_.get();
+    const autofill::CreditCard* card = state->selected_card();
     const autofill::AutofillProfile* billing_address = state->selected_address(
         collect_user_data_options->billing_address_name);
     Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(

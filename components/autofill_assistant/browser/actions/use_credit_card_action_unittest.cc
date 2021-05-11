@@ -49,8 +49,8 @@ class UseCreditCardActionTest : public testing::Test {
                                       /* billing_address_id= */ "");
 
     // Store copies of |credit_card_| in |user_data_| and |user_model_|.
-    user_data_.selected_card_ =
-        std::make_unique<autofill::CreditCard>(credit_card_);
+    user_model_.SetSelectedCreditCard(
+        std::make_unique<autofill::CreditCard>(credit_card_), &user_data_);
     auto cards =
         std::make_unique<std::vector<std::unique_ptr<autofill::CreditCard>>>();
     cards->emplace_back(std::make_unique<autofill::CreditCard>(credit_card_));
@@ -152,7 +152,7 @@ TEST_F(UseCreditCardActionTest, PreconditionFailedNoCreditCardInUserData) {
   ActionProto action;
   auto* use_card = action.mutable_use_card();
   *use_card->mutable_form_field_element() = ToSelectorProto(kFakeSelector);
-  user_data_.selected_card_.reset();
+  user_model_.SetSelectedCreditCard(nullptr, &user_data_);
   EXPECT_EQ(ProcessedActionStatusProto::PRECONDITION_FAILED,
             ProcessAction(action));
 }
@@ -213,7 +213,8 @@ TEST_F(UseCreditCardActionTest, CreditCardInUserModelSucceeds) {
 TEST_F(UseCreditCardActionTest, FillCreditCard) {
   ActionProto action = CreateUseCreditCardAction();
 
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
+  user_model_.SetSelectedCreditCard(std::make_unique<autofill::CreditCard>(),
+                                    &user_data_);
   EXPECT_CALL(mock_action_delegate_,
               FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
                            Selector({kFakeSelector}), _))
@@ -237,7 +238,8 @@ TEST_F(UseCreditCardActionTest, FillCreditCardRequiredFieldsFilled) {
       static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH),
       "#expmonth");
 
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
+  user_model_.SetSelectedCreditCard(std::make_unique<autofill::CreditCard>(),
+                                    &user_data_);
   EXPECT_CALL(mock_action_delegate_,
               FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
                            Selector({kFakeSelector}), _))
@@ -369,7 +371,8 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   cvc_required->set_fill_strategy(SIMULATE_KEY_PRESSES);
   cvc_required->set_delay_in_millisecond(1000);
 
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
+  user_model_.SetSelectedCreditCard(std::make_unique<autofill::CreditCard>(),
+                                    &user_data_);
   EXPECT_CALL(mock_action_delegate_,
               FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
                            Selector({kFakeSelector}), _))
@@ -459,7 +462,8 @@ TEST_F(UseCreditCardActionTest, SkippingAutofill) {
 TEST_F(UseCreditCardActionTest, AutofillFailureWithoutRequiredFieldsIsFatal) {
   ActionProto action_proto = CreateUseCreditCardAction();
 
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
+  user_model_.SetSelectedCreditCard(std::make_unique<autofill::CreditCard>(),
+                                    &user_data_);
   EXPECT_CALL(mock_action_delegate_,
               FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
                            Selector({kFakeSelector}), _))
@@ -491,7 +495,8 @@ TEST_F(UseCreditCardActionTest,
 
   Selector cvc_selector({"#cvc"});
 
-  user_data_.selected_card_ = std::make_unique<autofill::CreditCard>();
+  user_model_.SetSelectedCreditCard(std::make_unique<autofill::CreditCard>(),
+                                    &user_data_);
   EXPECT_CALL(mock_action_delegate_,
               FillCardForm(_, base::UTF8ToUTF16(kFakeCvc),
                            Selector({kFakeSelector}), _))

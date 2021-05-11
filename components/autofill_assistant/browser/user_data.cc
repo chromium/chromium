@@ -58,6 +58,10 @@ const autofill::AutofillProfile* UserData::selected_address(
   return it->second.get();
 }
 
+const autofill::CreditCard* UserData::selected_card() const {
+  return selected_card_.get();
+}
+
 const ValueProto* UserData::additional_value(const std::string& key) const {
   auto it = additional_values_.find(key);
   if (it == additional_values_.end()) {
