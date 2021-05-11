@@ -30,6 +30,10 @@
 // clang-format on
 #endif
 
+#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#include <arm_neon.h>
+#endif
+
 namespace base {
 namespace internal {
 
@@ -57,6 +61,9 @@ class ScanLoop {
   __attribute__((target("avx2"))) void RunAVX2(uintptr_t*, uintptr_t*);
   __attribute__((target("sse4.1"))) void RunSSE4(uintptr_t*, uintptr_t*);
 #endif
+#if defined(PA_STARSCAN_NEON_SUPPORTED)
+  void RunNEON(uintptr_t*, uintptr_t*);
+#endif
 
   void RunUnvectorized(uintptr_t*, uintptr_t*);
   void RunUnvectorizedNoCage(uintptr_t*, uintptr_t*);
@@ -75,7 +82,10 @@ void ScanLoop<Derived>::Run(uintptr_t* begin, uintptr_t* end) {
     return RunAVX2(begin, end);
   if (simd_type_ == SimdSupport::kSSE41)
     return RunSSE4(begin, end);
-#endif
+#elif defined(PA_STARSCAN_NEON_SUPPORTED)
+  if (simd_type_ == SimdSupport::kNEON)
+    return RunNEON(begin, end);
+#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
   return RunUnvectorized(begin, end);
 }
 
@@ -184,6 +194,35 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
   RunUnvectorized(payload, end);
 }
 #endif  // defined(ARCH_CPU_X86_64)
+
+#if defined(PA_STARSCAN_NEON_SUPPORTED)
+template <typename Derived>
+void ScanLoop<Derived>::RunNEON(uintptr_t* begin, uintptr_t* end) {
+  static constexpr size_t kAlignmentRequirement = 16;
+  static constexpr size_t kWordsInVector = 2;
+  PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  const uint64x2_t vbase = vdupq_n_u64(derived().CageBase());
+  const uint64x2_t cage_mask = vdupq_n_u64(derived().CageMask());
+
+  uintptr_t* payload = begin;
+  for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
+    const uint64x2_t maybe_ptrs =
+        vld1q_u64(reinterpret_cast<uint64_t*>(payload));
+    const uint64x2_t vand = vandq_u64(maybe_ptrs, cage_mask);
+    const uint64x2_t vcmp = vceqq_u64(vand, vbase);
+    const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));
+    if (LIKELY(!max))
+      continue;
+    // It's important to extract pointers from the already loaded vector.
+    // Otherwise, new loads can break in-cage assumption checked above.
+    if (vgetq_lane_u64(vcmp, 0))
+      derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 0));
+    if (vgetq_lane_u64(vcmp, 1))
+      derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 1));
+  }
+  RunUnvectorized(payload, end);
+}
+#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
 
 }  // namespace internal
 }  // namespace base

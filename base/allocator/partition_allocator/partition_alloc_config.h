@@ -29,6 +29,11 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_ALLOW_PCSCAN 0
 #endif
 
+#if defined(PA_HAS_64_BITS_POINTERS) && \
+    (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(__ARM_FP)
+#define PA_STARSCAN_NEON_SUPPORTED
+#endif
+
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

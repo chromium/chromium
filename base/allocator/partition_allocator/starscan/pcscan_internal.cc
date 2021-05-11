@@ -197,12 +197,16 @@ bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
 #endif
 
 SimdSupport DetectSimdSupport() {
+#if defined(PA_STARSCAN_NEON_SUPPORTED)
+  return SimdSupport::kNEON;
+#else
   base::CPU cpu;
   if (cpu.has_avx2())
     return SimdSupport::kAVX2;
   if (cpu.has_sse41())
     return SimdSupport::kSSE41;
   return SimdSupport::kUnvectorized;
+#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
 }
 
 void CommitCardTable() {

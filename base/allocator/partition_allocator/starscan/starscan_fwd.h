@@ -23,6 +23,7 @@ enum class SimdSupport : uint8_t {
   kUnvectorized,
   kSSE41,
   kAVX2,
+  kNEON,
 };
 
 }  // namespace internal
