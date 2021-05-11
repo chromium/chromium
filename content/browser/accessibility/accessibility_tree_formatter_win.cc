@@ -857,10 +857,9 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         value->GetAsList(&list_value);
         std::unique_ptr<base::ListValue> filtered_list(new base::ListValue());
 
-        for (base::ListValue::const_iterator it = list_value->begin();
-             it != list_value->end(); ++it) {
+        for (const auto& entry : list_value->GetList()) {
           std::string string_value;
-          if (it->GetAsString(&string_value))
+          if (entry.GetAsString(&string_value))
             if (WriteAttribute(false, string_value, &line))
               filtered_list->AppendString(string_value);
         }
