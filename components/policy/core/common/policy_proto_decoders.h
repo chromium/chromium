@@ -27,22 +27,12 @@ enum class PolicyPerProfileFilter {
   kAny
 };
 
-// Decode all of the fields in |policy| which are recognized (see the metadata
-// in policy_constants.cc) and store them in the given |map|, with the given
-// |source| and |scope|. Deprecated: Use DecodeProtoFieldsPerProfile instead.
-POLICY_EXPORT void DecodeProtoFields(
-    const enterprise_management::CloudPolicySettings& policy,
-    base::WeakPtr<CloudExternalDataManager> external_data_manager,
-    PolicySource source,
-    PolicyScope scope,
-    PolicyMap* map);
-
 // Decode all the fields in |policy| that match the needed |per_profile| flag
 // which are recognized (see the metadata in policy_constants.cc) and store them
-// in the given |map|, with the given |source| and |scope|. In case
-// |per_profile| is nullopt, the flag is ignored and all the policies are
-// included.
-POLICY_EXPORT void DecodeProtoFieldsPerProfile(
+// in the given |map|, with the given |source| and |scope|. The value of
+// |per_profile| parameter specifies which fields have to be included based on
+// per_profile flag.
+POLICY_EXPORT void DecodeProtoFields(
     const enterprise_management::CloudPolicySettings& policy,
     base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,

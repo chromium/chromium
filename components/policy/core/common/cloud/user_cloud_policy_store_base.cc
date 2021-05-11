@@ -60,8 +60,8 @@ void UserCloudPolicyStoreBase::InstallPolicy(
 #else
   PolicyPerProfileFilter filter = PolicyPerProfileFilter::kAny;
 #endif
-  DecodeProtoFieldsPerProfile(*payload, external_data_manager(), policy_source_,
-                              policy_scope_, &policy_map_, filter);
+  DecodeProtoFields(*payload, external_data_manager(), policy_source_,
+                    policy_scope_, &policy_map_, filter);
 
   if (policy_data->user_affiliation_ids_size() > 0) {
     policy_map_.SetUserAffiliationIds(

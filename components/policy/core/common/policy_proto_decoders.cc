@@ -124,16 +124,6 @@ void DecodeProtoFields(
     base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,
     PolicyScope scope,
-    PolicyMap* map) {
-  DecodeProtoFieldsPerProfile(policy, external_data_manager, source, scope, map,
-                              PolicyPerProfileFilter::kAny);
-}
-
-void DecodeProtoFieldsPerProfile(
-    const em::CloudPolicySettings& policy,
-    base::WeakPtr<CloudExternalDataManager> external_data_manager,
-    PolicySource source,
-    PolicyScope scope,
     PolicyMap* map,
     PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
