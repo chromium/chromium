@@ -108,6 +108,11 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     // Test chip delegate that always returns valid chip render params.
     private static final ChipDelegate FAKE_CHIP_DELEGATE = new ChipDelegate() {
         @Override
+        public boolean isChipSupported() {
+            return true;
+        }
+
+        @Override
         public void getChipRenderParams(Callback<ChipRenderParams> callback) {
             // Do nothing.
         }

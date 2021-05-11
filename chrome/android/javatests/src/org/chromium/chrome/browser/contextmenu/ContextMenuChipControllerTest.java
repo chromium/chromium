@@ -9,6 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
@@ -17,6 +20,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.R;
@@ -46,9 +50,11 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     // 8 (text start padding)
     private static final int EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP = 290;
 
-    private final Runnable mEmptyChipClickCallbackForTesting = () -> {
-        return;
-    };
+    @Mock
+    private Runnable mMockChipClickRunnable;
+
+    @Mock
+    private Runnable mMockDismissRunnable;
 
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
@@ -71,30 +77,10 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testChipShownWhenCallbackReturnsChipRenderParams() {
-        ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChipRenderParams chipRenderParams = new ChipRenderParams();
-            chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
-            chipRenderParams.iconResourceId = R.drawable.lens_icon;
-            chipRenderParams.onClickCallback = mEmptyChipClickCallbackForTesting;
-            chipController.showChip(chipRenderParams);
-        });
-
-        assertNotNull("Anchor view was not initialized.", mAnchorView);
-        assertNotNull("Popup window was not initialized.",
-                chipController.getCurrentPopupWindowForTesting());
-        assertTrue("Popup window not showing.",
-                chipController.getCurrentPopupWindowForTesting().isShowing());
-    }
-
-    @Test
-    @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissLensChipIfShowing(); });
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissChipIfShowing(); });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNull("Popup window was initialized unexpectedly.",
@@ -105,18 +91,20 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     @SmallTest
     public void testDismissChipWhenShown() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChipRenderParams chipRenderParams = new ChipRenderParams();
             chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
             chipRenderParams.iconResourceId = R.drawable.lens_icon;
-            chipRenderParams.onClickCallback = mEmptyChipClickCallbackForTesting;
+            chipRenderParams.onClickCallback = mMockChipClickRunnable;
             chipController.showChip(chipRenderParams);
-            chipController.dismissLensChipIfShowing();
+            chipController.dismissChipIfShowing();
         });
 
+        verify(mMockDismissRunnable, never()).run();
+        verify(mMockChipClickRunnable, never()).run();
         assertNotNull("Anchor view was not initialized.", mAnchorView);
-        assertNotNull("Popup window was initialized unexpectedly.",
+        assertNotNull("Popup window was not initialized.",
                 chipController.getCurrentPopupWindowForTesting());
         assertFalse("Popup window showing unexpectedly.",
                 chipController.getCurrentPopupWindowForTesting().isShowing());
@@ -124,9 +112,32 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
+    public void testClickChipWhenShown() {
+        ContextMenuChipController chipController =
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChipRenderParams chipRenderParams = new ChipRenderParams();
+            chipRenderParams.titleResourceId = R.string.contextmenu_shop_image_with_google_lens;
+            chipRenderParams.iconResourceId = R.drawable.lens_icon;
+            chipRenderParams.onClickCallback = mMockChipClickRunnable;
+            chipController.showChip(chipRenderParams);
+            chipController.clickChipForTesting();
+        });
+
+        verify(mMockDismissRunnable, times(1)).run();
+        verify(mMockChipClickRunnable, times(1)).run();
+        assertNotNull("Anchor view was not initialized.", mAnchorView);
+        assertNotNull("Popup window was not initialized.",
+                chipController.getCurrentPopupWindowForTesting());
+        assertTrue("Dismiss was mocked so the popup window should still be showing.",
+                chipController.getCurrentPopupWindowForTesting().isShowing());
+    }
+
+    @Test
+    @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
@@ -136,7 +147,7 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(false));
@@ -146,7 +157,7 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     @SmallTest
     public void testExpectedChipTextMaxWidthPx_EndButtonHidden() {
         ContextMenuChipController chipController =
-                new ContextMenuChipController(getActivity(), mAnchorView);
+                new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
         assertEquals("Chip width px is not matching the expectation",
                 (int) (EXPECTED_CHIP_NO_END_BUTTON_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx(true));
