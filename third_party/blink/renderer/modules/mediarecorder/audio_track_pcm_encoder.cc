@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_pcm_encoder.h"
 
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"

@@ -8,9 +8,11 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
-#include "base/feature_list.h"
+#include "base/compiler_specific.h"
 
 namespace base {
+
+struct Feature;
 
 namespace features {
 
