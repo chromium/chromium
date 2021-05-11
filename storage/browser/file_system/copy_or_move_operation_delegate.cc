@@ -292,9 +292,7 @@ class SnapshotCopyOrMoveImpl
     DCHECK(validator_factory_);
     validator_.reset(validator_factory_->CreateCopyOrMoveFileValidator(
         src_url_, platform_path));
-    // TODO(mek): Update CopyOrMoveFileValidator to use OnceCallback.
-    validator_->StartPreWriteValidation(
-        base::AdaptCallbackForRepeating(std::move(callback)));
+    validator_->StartPreWriteValidation(std::move(callback));
   }
 
   // Runs post-write validation.
@@ -324,12 +322,11 @@ class SnapshotCopyOrMoveImpl
     DCHECK(validator_);
     // Note: file_ref passed here to keep the file alive until after
     // the StartPostWriteValidation operation finishes.
-    // TODO(mek): Update CopyOrMoveFileValidator to use OnceCallback.
     validator_->StartPostWriteValidation(
-        platform_path, base::AdaptCallbackForRepeating(base::BindOnce(
-                           &SnapshotCopyOrMoveImpl::DidPostWriteValidation,
-                           weak_factory_.GetWeakPtr(), std::move(file_ref),
-                           std::move(callback))));
+        platform_path,
+        base::BindOnce(&SnapshotCopyOrMoveImpl::DidPostWriteValidation,
+                       weak_factory_.GetWeakPtr(), std::move(file_ref),
+                       std::move(callback)));
   }
 
   // |file_ref| is unused; it is passed here to make sure the reference is

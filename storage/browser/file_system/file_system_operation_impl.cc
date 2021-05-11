@@ -68,14 +68,14 @@ void FileSystemOperationImpl::CreateFile(const FileSystemURL& url,
                                          StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationCreateFile));
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoCreateFile,
-                     weak_factory_.GetWeakPtr(), url, repeatable_callback,
-                     exclusive),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     weak_factory_.GetWeakPtr(), url,
+                     std::move(split_callback.first), exclusive),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 void FileSystemOperationImpl::CreateDirectory(const FileSystemURL& url,
@@ -84,14 +84,14 @@ void FileSystemOperationImpl::CreateDirectory(const FileSystemURL& url,
                                               StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationCreateDirectory));
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoCreateDirectory,
-                     weak_factory_.GetWeakPtr(), url, repeatable_callback,
-                     exclusive, recursive),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     weak_factory_.GetWeakPtr(), url,
+                     std::move(split_callback.first), exclusive, recursive),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 void FileSystemOperationImpl::Copy(
@@ -216,14 +216,14 @@ void FileSystemOperationImpl::Truncate(const FileSystemURL& url,
                                        StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationTruncate));
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoTruncate,
-                     weak_factory_.GetWeakPtr(), url, repeatable_callback,
-                     length),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     weak_factory_.GetWeakPtr(), url,
+                     std::move(split_callback.first), length),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 void FileSystemOperationImpl::TouchFile(const FileSystemURL& url,
@@ -249,14 +249,13 @@ void FileSystemOperationImpl::OpenFile(const FileSystemURL& url,
     return;
   }
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoOpenFile,
-                     weak_factory_.GetWeakPtr(), url, repeatable_callback,
-                     file_flags),
-      base::BindOnce(repeatable_callback,
+                     weak_factory_.GetWeakPtr(), url,
+                     std::move(split_callback.first), file_flags),
+      base::BindOnce(std::move(split_callback.second),
                      base::File(base::File::FILE_ERROR_FAILED),
                      base::OnceClosure()));
 }
@@ -295,14 +294,14 @@ void FileSystemOperationImpl::CopyInForeignFile(
     StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationCopyInForeignFile));
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoCopyInForeignFile,
                      weak_factory_.GetWeakPtr(), src_local_disk_file_path,
-                     dest_url, repeatable_callback),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     dest_url, std::move(split_callback.first)),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 void FileSystemOperationImpl::RemoveFile(const FileSystemURL& url,
@@ -337,14 +336,14 @@ void FileSystemOperationImpl::CopyFileLocal(
   DCHECK_EQ(src_url.origin(), dest_url.origin());
   DCHECK_EQ(src_url.type(), dest_url.type());
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoCopyFileLocal,
                      weak_factory_.GetWeakPtr(), src_url, dest_url, option,
-                     progress_callback, repeatable_callback),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     progress_callback, std::move(split_callback.first)),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
@@ -359,14 +358,14 @@ void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
   DCHECK_EQ(src_url.origin(), dest_url.origin());
   DCHECK_EQ(src_url.type(), dest_url.type());
 
-  auto repeatable_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetUsageAndQuotaThenRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoMoveFileLocal,
                      weak_factory_.GetWeakPtr(), src_url, dest_url, option,
-                     repeatable_callback),
-      base::BindOnce(repeatable_callback, base::File::FILE_ERROR_FAILED));
+                     std::move(split_callback.first)),
+      base::BindOnce(std::move(split_callback.second),
+                     base::File::FILE_ERROR_FAILED));
 }
 
 base::File::Error FileSystemOperationImpl::SyncGetPlatformPath(
