@@ -53,7 +53,9 @@ constexpr char kRenameSendDownloadToCloudPref[] = R"([
   }
 ])";
 
-class RenameHandlerTestBase : public testing::Test {
+using RenameHandler = FileSystemRenameHandler;
+
+class RenameHandlerCreateTestBase : public testing::Test {
  protected:
   Profile* profile() { return profile_; }
 
@@ -80,37 +82,107 @@ class RenameHandlerTestBase : public testing::Test {
   TestingProfile* profile_;
 };
 
-class FileSystemRenameHandlerCreateTest
-    : public RenameHandlerTestBase,
-      public testing::WithParamInterface<bool> {
+class RenameHandlerCreateTest : public RenameHandlerCreateTestBase,
+                                public testing::WithParamInterface<bool> {
  public:
-  FileSystemRenameHandlerCreateTest() {
+  RenameHandlerCreateTest() {
     Init(enable_feature_flag(), kWildcardSendDownloadToCloudPref);
   }
 
   bool enable_feature_flag() const { return GetParam(); }
 };
 
-TEST_P(FileSystemRenameHandlerCreateTest, Test) {
+TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
   content::FakeDownloadItem item;
   item.SetURL(GURL("https://renameme.com"));
   item.SetMimeType("text/plain");
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
 
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  auto handler = RenameHandler::CreateIfNeeded(&item);
   ASSERT_EQ(enable_feature_flag(), handler.get() != nullptr);
 }
 
-INSTANTIATE_TEST_CASE_P(, FileSystemRenameHandlerCreateTest, testing::Bool());
+INSTANTIATE_TEST_CASE_P(, RenameHandlerCreateTest, testing::Bool());
 
-const char ATokenBySignIn[] = "ATokenBySignIn";
-const char RTokenBySignIn[] = "RTokenBySignIn";
-const char ATokenByFetcher[] = "ATokenByFetcher";
-const char RTokenForFetcher[] = "RTokenForFetcher";
+class RenameHandlerCreateTest_ByUrl : public RenameHandlerCreateTestBase {
+ public:
+  RenameHandlerCreateTest_ByUrl() {
+    Init(true, kRenameSendDownloadToCloudPref);
+  }
+};
 
-class FileSystemRenameHandlerForTest : public FileSystemRenameHandler {
+TEST_F(RenameHandlerCreateTest_ByUrl, NoUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = RenameHandler::CreateIfNeeded(&item);
+  ASSERT_EQ(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerCreateTest_ByUrl, FileUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://renameme.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = RenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerCreateTest_ByUrl, TabUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://renameme.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = RenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerCreateTest_ByUrl, DisallowByMimeType) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://renameme.com/file.json"));
+  item.SetTabUrl(GURL("https://renameme.com"));
+  item.SetMimeType("application/json");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = RenameHandler::CreateIfNeeded(&item);
+  ASSERT_EQ(nullptr, handler.get());
+}
+
+class RenameHandlerCreateTest_Wildcard : public RenameHandlerCreateTestBase {
+ public:
+  RenameHandlerCreateTest_Wildcard() {
+    Init(true, kWildcardSendDownloadToCloudPref);
+  }
+};
+
+TEST_F(RenameHandlerCreateTest_Wildcard, AllowedByWildcard) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = RenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
+constexpr char ATokenBySignIn[] = "ATokenBySignIn";
+constexpr char RTokenBySignIn[] = "RTokenBySignIn";
+constexpr char ATokenByFetcher[] = "ATokenByFetcher";
+constexpr char RTokenForFetcher[] = "RTokenForFetcher";
+
+class RenameHandlerForTest : public FileSystemRenameHandler {
  public:
   using FileSystemRenameHandler::FileSystemRenameHandler;
+  using FileSystemRenameHandler::SetUploaderForTesting;
+
   MOCK_METHOD(void,
               PromptUserSignInForAuthorization,
               (content::WebContents * contents),
@@ -152,46 +224,49 @@ class FileSystemRenameHandlerForTest : public FileSystemRenameHandler {
                 CREDENTIALS_REJECTED_BY_SERVER),
         std::string(), std::string());
   }
-
-  MOCK_METHOD(void,
-              TryUploaderTask,
-              (content::BrowserContext * context,
-               const std::string& access_token),
-              (override));
-
-  void ReturnFlowSuccees() {
-    GetUploaderForTesting()->NotifyResultForTesting(true);
-  }
-
-  void ReturnFlowFailure() {
-    GetUploaderForTesting()->NotifyResultForTesting(false);
-  }
-
-  void ReturnFlowOAuth2Error() {
-    GetUploaderForTesting()->NotifyAuthenFailureForTesting();
-  }
 };
 
-class FileSystemRenameHandlerTest : public testing::Test {
+class MockUploader : public BoxUploader {
  public:
-  FileSystemRenameHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures({kFileSystemConnectorEnabled}, {});
+  explicit MockUploader(download::DownloadItem* download_item)
+      : BoxUploader(download_item) {}
 
-    EXPECT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
+  MOCK_METHOD(
+      void,
+      TryTask,
+      (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+       const std::string& access_token),
+      (override));
+
+  MOCK_METHOD(std::unique_ptr<OAuth2ApiCallFlow>,
+              MakeFileUploadApiCall,
+              (),
+              (override));
+
+  void NotifySuccess() { NotifyResultForTesting(true); }
+
+  void NotifyFailure() { NotifyResultForTesting(false); }
+};
+
+class RenameHandlerTestBase {
+ protected:
+  RenameHandlerForTest* handler() { return handler_.get(); }
+  MockUploader* uploader() { return uploader_; }
+
+  void SetUp(TestingProfile* profile) {
+    feature_list_.InitWithFeatures({kFileSystemConnectorEnabled}, {});
 
     // Make sure that from the connectors manager point of view the file system
     // connector should be enabled.  So that the only thing that controls
     // whether the rename handler is used or not is the feature flag.
-    profile_->GetPrefs()->Set(
+    profile->GetPrefs()->Set(
         ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
         *base::JSONReader::Read(kWildcardSendDownloadToCloudPref));
     web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+        content::WebContentsTester::CreateTestWebContents(profile, nullptr);
 
     item_.SetURL(GURL("https://any.com"));
-    content::DownloadItemUtils::AttachInfo(&item_, profile_,
+    content::DownloadItemUtils::AttachInfo(&item_, profile,
                                            web_contents_.get());
 
     item_.SetTargetFilePath(base::FilePath::FromUTF8Unsafe("somefile.png"));
@@ -201,16 +276,48 @@ class FileSystemRenameHandlerTest : public testing::Test {
     auto settings = service->GetFileSystemSettings(
         item_.GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
     settings->service_provider = "box";
-    handler_ = std::make_unique<FileSystemRenameHandlerForTest>(
+    handler_ = std::make_unique<RenameHandlerForTest>(
         &item_, std::move(settings.value()));
+
+    auto uploader = std::make_unique<MockUploader>(&item_);
+    uploader_ = uploader.get();
+    handler_->SetUploaderForTesting(std::move(uploader));
+
+    EXPECT_CALL(*uploader_, MakeFileUploadApiCall()).Times(0);
+  }
+
+  void TearDown() {
+    handler_.reset();
+    web_contents_.reset();
+  }
+
+  content::FakeDownloadItem item_;
+
+ private:
+  std::unique_ptr<RenameHandlerForTest> handler_;
+  MockUploader* uploader_;
+
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::WebContents> web_contents_;
+};
+
+class RenameHandlerOAuth2Test : public testing::Test,
+                                public RenameHandlerTestBase {
+ public:
+  RenameHandlerOAuth2Test()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    EXPECT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("test-user");
   }
 
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
+    RenameHandlerTestBase::SetUp(profile_);
   }
 
   void TearDown() override {
+    RenameHandlerTestBase::TearDown();
     OSCryptMocker::TearDown();
     testing::Test::TearDown();
   }
@@ -263,17 +370,11 @@ class FileSystemRenameHandlerTest : public testing::Test {
 
   PrefService* prefs() { return profile_->GetPrefs(); }
 
-  FileSystemRenameHandlerForTest* handler() { return handler_.get(); }
-
  private:
-  std::unique_ptr<FileSystemRenameHandlerForTest> handler_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile* profile_;
-  std::unique_ptr<content::WebContents> web_contents_;
-  content::FakeDownloadItem item_;
 };
 
 // Test cases are written according to The OAuth2 "Dance" in rename_handler.cc;
@@ -284,16 +385,14 @@ class FileSystemRenameHandlerTest : public testing::Test {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Case 1a->2a: Both tokens will be set; callback returned with success.
-TEST_F(FileSystemRenameHandlerTest, SignInSuccessThenUploaderSucess) {
+TEST_F(RenameHandlerOAuth2Test, SignInSuccessThenUploaderSuccess) {
   ::testing::InSequence seq;
   // 1a: PromptUserSignInForAuthorization() succeeds.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnSignInSuccess));
+      .WillOnce(Invoke(handler(), &RenameHandlerForTest::ReturnSignInSuccess));
   // ->2a: TryUploaderTask() should be called after and succeed.
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifySuccess));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
 
@@ -308,16 +407,15 @@ TEST_F(FileSystemRenameHandlerTest, SignInSuccessThenUploaderSucess) {
 }
 
 // Case 1b: Both tokens will be clear; callback returned with failure.
-TEST_F(FileSystemRenameHandlerTest, SignInCancellationSoAbort) {
+TEST_F(RenameHandlerOAuth2Test, SignInCancellationSoAbort) {
   ::testing::InSequence seq;
   // 1b: PromptUserSignInForAuthorization() fails with Cancellation so abort.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
       .WillOnce(
-          Invoke(handler(),
-                 &FileSystemRenameHandlerForTest::ReturnSignInCancellation));
+          Invoke(handler(), &RenameHandlerForTest::ReturnSignInCancellation));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
+  EXPECT_CALL(*uploader(), TryTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -331,7 +429,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInCancellationSoAbort) {
 
 // Case 1c->1a: Retry sign in, but terminate there without going through the
 // uploader since 1a->2 is already covered in another test case.
-TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
+TEST_F(RenameHandlerOAuth2Test, SignInFailureSoRetry) {
   ::testing::InSequence seq;
   // 1c->1a: PromptUserSignInForAuthorization() fails with other reasons than
   // Cancellation so should be called again.
@@ -344,7 +442,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
               handler()->ReturnSignInFailure();
             } else if (authen_callback == 2) {
               VerifyBothTokensClear();
-              handler()->ReturnFlowSuccees();
+              uploader()->NotifySuccess();
               // Terminate here since 1a->2 is already covered.
             } else {
               FAIL() << "Should've already successfully obtained tokens above";
@@ -352,7 +450,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
           }));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
+  EXPECT_CALL(*uploader(), TryTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -371,17 +469,15 @@ TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
 
 // Case 3a->2a: Fetch access token with refresh token succeeds, so should
 // TryUploaderTask();
-TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenSuccess) {
+TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenSuccess) {
   ::testing::InSequence seq;
   // 3a: Set a refresh token before starting, so should fetch access token.
   SetFileSystemOAuth2Tokens(prefs(), "box", std::string(), RTokenForFetcher);
   EXPECT_CALL(*handler(), FetchAccessToken(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFetchSuccess));
+      .WillOnce(Invoke(handler(), &RenameHandlerForTest::ReturnFetchSuccess));
   // ->2a.
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifySuccess));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
 
@@ -397,20 +493,18 @@ TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenSuccess) {
 
 // Case 3b->1: Fetch access token with refresh token fails, so should clear
 // tokens and PromptUserSignInForAuthorization().
-TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenFailureSoPromptForSignIn) {
+TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenFailureSoPromptForSignIn) {
   ::testing::InSequence seq;
   // 3a: Set a refresh token before starting, so should fetch access token.
   SetFileSystemOAuth2Tokens(prefs(), "box", std::string(), RTokenForFetcher);
   EXPECT_CALL(*handler(), FetchAccessToken(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFetchFailure));
+      .WillOnce(Invoke(handler(), &RenameHandlerForTest::ReturnFetchFailure));
   // ->1: Prompt user to sign in, but terminate because Case 1 is already
   // covered.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifySuccess));
   // These OAuth2 branches should not be called.
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
+  EXPECT_CALL(*uploader(), TryTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -428,14 +522,13 @@ TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenFailureSoPromptForSignIn) {
 
 // Case 2a(failure): TryUploaderTask() with existing access token and fails,
 // but both tokens stay.
-TEST_F(FileSystemRenameHandlerTest, UploaderFailure) {
+TEST_F(RenameHandlerOAuth2Test, UploaderFailure) {
   ::testing::InSequence seq;
   // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2a:
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowFailure));
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifyFailure));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
@@ -453,14 +546,13 @@ TEST_F(FileSystemRenameHandlerTest, UploaderFailure) {
 
 // Case 2a(success): TryUploaderTask() with existing access token and
 // succeeds.
-TEST_F(FileSystemRenameHandlerTest, StartWithAccessTokenThenUploaderSuccess) {
+TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenThenUploaderSuccess) {
   ::testing::InSequence seq;
   // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2a:
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifySuccess));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
@@ -477,21 +569,18 @@ TEST_F(FileSystemRenameHandlerTest, StartWithAccessTokenThenUploaderSuccess) {
 
 // Case 2b->3: TryUploaderTask() with existing access token but fails with
 // authentication error so FetchAccessToken().
-TEST_F(FileSystemRenameHandlerTest,
-       StartWithAccessTokenButUploaderAuthenticationError) {
+TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
   ::testing::InSequence seq;
   // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2b:
-  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowOAuth2Error));
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifyOAuth2ErrorForTesting));
   // 3: Authentication error should lead to clearing access token stored, and
   // FetchAccessToken(). Just terminate here though because Case 3 is already
   // covered.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _))
-      .WillOnce(Invoke(handler(),
-                       &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
+      .WillOnce(Invoke(uploader(), &MockUploader::NotifySuccess));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
 
@@ -507,71 +596,6 @@ TEST_F(FileSystemRenameHandlerTest,
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), "box", &atoken, &rtoken));
   ASSERT_TRUE(atoken.empty());
   ASSERT_EQ(rtoken, RTokenForFetcher);
-}
-
-class RenameHandlerUrlTest : public RenameHandlerTestBase {
- public:
-  RenameHandlerUrlTest() { Init(true, kRenameSendDownloadToCloudPref); }
-};
-
-TEST_F(RenameHandlerUrlTest, NoUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerUrlTest, FileUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerUrlTest, TabUrlMatchesPattern) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
-}
-
-TEST_F(RenameHandlerUrlTest, DisallowByMimeType) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://renameme.com/file.json"));
-  item.SetTabUrl(GURL("https://renameme.com"));
-  item.SetMimeType("application/json");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
-  ASSERT_EQ(nullptr, handler.get());
-}
-
-class RenameHandlerWildcardTest : public RenameHandlerTestBase {
- public:
-  RenameHandlerWildcardTest() { Init(true, kWildcardSendDownloadToCloudPref); }
-};
-
-TEST_F(RenameHandlerWildcardTest, AllowedByWildcard) {
-  content::FakeDownloadItem item;
-  item.SetURL(GURL("https://one.com/file.txt"));
-  item.SetTabUrl(GURL("https://two.com"));
-  item.SetMimeType("text/plain");
-  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
-  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
-  ASSERT_NE(nullptr, handler.get());
 }
 
 }  // namespace enterprise_connectors

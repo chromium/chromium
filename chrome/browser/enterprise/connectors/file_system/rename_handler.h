@@ -50,7 +50,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
                                 const std::string& refresh_token);
 
   // These methods are declared protected so that they can be used in tests.
-  BoxUploader* GetUploaderForTesting() const;
+  void SetUploaderForTesting(std::unique_ptr<BoxUploader> fake_uploader);
   // Callback for PromptUserSignInForAuthorization().
   void OnAuthorization(const GoogleServiceAuthError& status,
                        const std::string& access_token,

@@ -34,13 +34,13 @@ class BoxUploader {
   // Kick off the workflow from the step stored in current_api_call_. Will
   // re-attempt the last step from where it left off if it called callback with
   // an API call failure earlier.
-  void TryTask(
+  virtual void TryTask(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token);
 
   // Helper methods for unit tests.
   std::string GetFolderIdForTesting() const;
-  void NotifyAuthenFailureForTesting();
+  void NotifyOAuth2ErrorForTesting();
   void NotifyResultForTesting(bool success);
 
   class FileChunksHandler;  // To be moved into BoxChunkedFileUploader.

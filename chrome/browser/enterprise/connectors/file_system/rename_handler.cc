@@ -140,8 +140,10 @@ void FileSystemRenameHandler::FetchAccessToken(
                         settings_.scopes);
 }
 
-BoxUploader* FileSystemRenameHandler::GetUploaderForTesting() const {
-  return uploader_.get();
+void FileSystemRenameHandler::SetUploaderForTesting(
+    std::unique_ptr<BoxUploader> fake_uploader) {
+  CHECK(fake_uploader);
+  uploader_ = std::move(fake_uploader);
 }
 
 void FileSystemRenameHandler::OpenDownload() {}

@@ -253,7 +253,7 @@ std::string BoxUploader::GetFolderIdForTesting() const {
   return folder_id_;
 }
 
-void BoxUploader::NotifyAuthenFailureForTesting() {
+void BoxUploader::NotifyOAuth2ErrorForTesting() {
   authentication_retry_callback_.Run();
 }
 
