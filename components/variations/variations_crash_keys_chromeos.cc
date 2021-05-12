@@ -17,15 +17,12 @@ namespace variations {
 namespace {
 
 // Path where we put variations in cryptohome.
-constexpr char kCrashVariantFileName[] = ".variant-list.txt";
+constexpr char kCrashVariationsFileName[] = ".variations-list.txt";
 
 void WriteVariationsToFile(ExperimentListInfo info) {
-  std::string combined_string =
-      base::StrCat({"upload_var_", kNumExperimentsKey, "=",
-                    base::NumberToString(info.num_experiments),
-                    "\n"
-                    "upload_var_",
-                    kExperimentListKey, "=", info.experiment_list, "\n"});
+  std::string combined_string = base::StrCat(
+      {kNumExperimentsKey, "=", base::NumberToString(info.num_experiments),
+       "\n", kExperimentListKey, "=", info.experiment_list, "\n"});
 
   base::FilePath path = base::PathService::CheckedGet(base::DIR_HOME);
   if (path == base::FilePath("/")) {
@@ -34,7 +31,7 @@ void WriteVariationsToFile(ExperimentListInfo info) {
     path = base::FilePath("/home/chronos");
   }
 
-  path = path.Append(kCrashVariantFileName);
+  path = path.Append(kCrashVariationsFileName);
 
   if (!base::WriteFile(path, combined_string)) {
     VLOG(1) << "Failed to write " << path.value();

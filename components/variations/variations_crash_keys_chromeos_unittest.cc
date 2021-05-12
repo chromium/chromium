@@ -39,14 +39,15 @@ class VariationsCrashKeysChromeOsTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysChromeOsTest);
 };
 
-TEST_F(VariationsCrashKeysChromeOsTest, WritesVariantList) {
+TEST_F(VariationsCrashKeysChromeOsTest, WritesVariationsList) {
   // Override the homedir so that the class writes to a known location we can
   // check.
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
   const base::FilePath& home_path = dir.GetPath();
   base::ScopedPathOverride home_override(base::DIR_HOME, home_path);
-  base::FilePath variant_list_path = home_path.Append(".variant-list.txt");
+  base::FilePath variations_list_path =
+      home_path.Append(".variations-list.txt");
 
   // Start with 2 trials, one active and one not
   base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->group();
@@ -62,10 +63,10 @@ TEST_F(VariationsCrashKeysChromeOsTest, WritesVariantList) {
   EXPECT_EQ("8e7abfb0-c16397b7,", info.experiment_list);
 
   std::string contents;
-  ASSERT_TRUE(base::ReadFileToString(variant_list_path, &contents));
+  ASSERT_TRUE(base::ReadFileToString(variations_list_path, &contents));
   EXPECT_EQ(contents,
-            "upload_var_num-experiments=1\n"
-            "upload_var_variations=8e7abfb0-c16397b7,\n");
+            "num-experiments=1\n"
+            "variations=8e7abfb0-c16397b7,\n");
 
   // Now, activate Trial2.
   EXPECT_EQ("Group2", base::FieldTrialList::FindFullName("Trial2"));
@@ -76,10 +77,10 @@ TEST_F(VariationsCrashKeysChromeOsTest, WritesVariantList) {
   EXPECT_EQ(2, info.num_experiments);
   EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,", info.experiment_list);
 
-  ASSERT_TRUE(base::ReadFileToString(variant_list_path, &contents));
+  ASSERT_TRUE(base::ReadFileToString(variations_list_path, &contents));
   EXPECT_EQ(contents,
-            "upload_var_num-experiments=2\n"
-            "upload_var_variations=8e7abfb0-c16397b7,277f2a3d-d77354d0,\n");
+            "num-experiments=2\n"
+            "variations=8e7abfb0-c16397b7,277f2a3d-d77354d0,\n");
 }
 
 }  // namespace
