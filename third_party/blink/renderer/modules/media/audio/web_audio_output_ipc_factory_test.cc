@@ -41,7 +41,7 @@ blink::LocalFrameToken TokenFromInt(int i) {
 std::unique_ptr<base::Thread> MakeIOThread() {
   auto io_thread = std::make_unique<base::Thread>("test IO thread");
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-  CHECK(io_thread->StartWithOptions(thread_options));
+  CHECK(io_thread->StartWithOptions(std::move(thread_options)));
   return io_thread;
 }
 
