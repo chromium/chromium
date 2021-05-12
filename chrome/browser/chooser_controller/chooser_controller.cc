@@ -7,60 +7,9 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/elide_url.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
-#endif
-
-namespace {
-
-std::u16string CreateTitle(content::RenderFrameHost* render_frame_host,
-                           int title_string_id_origin,
-                           int title_string_id_extension) {
-  url::Origin origin = render_frame_host->GetLastCommittedOrigin();
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (origin.scheme() == extensions::kExtensionScheme) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    content::BrowserContext* browser_context =
-        web_contents->GetBrowserContext();
-    extensions::ExtensionRegistry* extension_registry =
-        extensions::ExtensionRegistry::Get(browser_context);
-    if (extension_registry) {
-      const extensions::Extension* extension =
-          extension_registry->enabled_extensions().GetByID(origin.host());
-      if (extension) {
-        return l10n_util::GetStringFUTF16(title_string_id_extension,
-                                          base::UTF8ToUTF16(extension->name()));
-      }
-    }
-  }
-#endif
-
-  return l10n_util::GetStringFUTF16(
-      title_string_id_origin,
-      url_formatter::FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-}
-
-}  // namespace
-
-ChooserController::ChooserController(content::RenderFrameHost* owner,
-                                     int title_string_id_origin,
-                                     int title_string_id_extension) {
-  if (owner) {
-    title_ =
-        CreateTitle(owner, title_string_id_origin, title_string_id_extension);
-  }
-}
+ChooserController::ChooserController(std::u16string title) : title_(title) {}
 
 ChooserController::~ChooserController() {}
 

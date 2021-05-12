@@ -18,6 +18,10 @@
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 // BluetoothScanningPromptController is a prompt that presents a list of
 // Bluetooth device names. It can be used by Bluetooth Scanning API to
 // show example nearby Bluetooth devices to user.

@@ -12,6 +12,10 @@
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 class DevicePermissionsDialogController
     : public ChooserController,
       public extensions::DevicePermissionsPrompt::Prompt::Observer {

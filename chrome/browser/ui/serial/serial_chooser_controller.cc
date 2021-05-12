@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -24,9 +25,10 @@ SerialChooserController::SerialChooserController(
     content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
     content::SerialChooser::Callback callback)
-    : ChooserController(render_frame_host,
-                        IDS_SERIAL_PORT_CHOOSER_PROMPT_ORIGIN,
-                        IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME),
+    : ChooserController(
+          CreateChooserTitle(render_frame_host,
+                             IDS_SERIAL_PORT_CHOOSER_PROMPT_ORIGIN,
+                             IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
       frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {

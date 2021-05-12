@@ -10,10 +10,6 @@
 
 #include "base/macros.h"
 
-namespace content {
-class RenderFrameHost;
-}
-
 // Subclass ChooserController to implement a chooser, which has some
 // introductory text and a list of options that users can pick one of.
 // Your subclass must define the set of options users can pick from;
@@ -23,9 +19,7 @@ class RenderFrameHost;
 // calls back into it are not allowed.
 class ChooserController {
  public:
-  ChooserController(content::RenderFrameHost* owner,
-                    int title_string_id_origin,
-                    int title_string_id_extension);
+  explicit ChooserController(std::u16string title);
   virtual ~ChooserController();
 
   // Since the set of options can change while the UI is visible an

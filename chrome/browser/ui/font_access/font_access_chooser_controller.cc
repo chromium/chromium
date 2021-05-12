@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/font_access_chooser.h"
 #include "content/public/browser/font_access_context.h"
@@ -27,10 +28,11 @@ FontAccessChooserController::FontAccessChooserController(
     content::RenderFrameHost* frame,
     const std::vector<std::string>& selection,
     content::FontAccessChooser::Callback callback)
-    : ChooserController(frame,
-                        IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN,
-                        // Extensions are not supported. This is stub text.
-                        IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN),
+    : ChooserController(
+          CreateChooserTitle(frame,
+                             IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN,
+                             // Extensions are not supported. This is stub text.
+                             IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN)),
       callback_(std::move(callback)) {
   DCHECK(frame);
 

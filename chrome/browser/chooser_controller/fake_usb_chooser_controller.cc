@@ -10,7 +10,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 FakeUsbChooserController::FakeUsbChooserController(int device_count)
-    : ChooserController(nullptr, 0, 0), device_count_(device_count) {
+    : ChooserController(u""), device_count_(device_count) {
   set_title_for_testing(l10n_util::GetStringFUTF16(
       IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN, u"example.com"));
 }

@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
@@ -88,9 +89,10 @@ UsbChooserController::UsbChooserController(
     RenderFrameHost* render_frame_host,
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback)
-    : ChooserController(render_frame_host,
-                        IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN,
-                        IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME),
+    : ChooserController(
+          CreateChooserTitle(render_frame_host,
+                             IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN,
+                             IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(device_filters)),
       callback_(std::move(callback)),
       web_contents_(WebContents::FromRenderFrameHost(render_frame_host)) {

@@ -17,6 +17,10 @@
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 // BluetoothChooserController is a chooser that presents a list of
 // Bluetooth device names, which come from |bluetooth_chooser_desktop_|.
 // It can be used by WebBluetooth API to get the user's permission to

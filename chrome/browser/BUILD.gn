@@ -281,6 +281,8 @@ static_library("browser") {
     "cache_stats_recorder.h",
     "chooser_controller/chooser_controller.cc",
     "chooser_controller/chooser_controller.h",
+    "chooser_controller/title_util.cc",
+    "chooser_controller/title_util.h",
     "chrome_browser_field_trials.cc",
     "chrome_browser_field_trials.h",
     "chrome_browser_interface_binders.cc",

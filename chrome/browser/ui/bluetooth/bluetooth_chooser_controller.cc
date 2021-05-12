@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
@@ -57,9 +58,10 @@ void RecordInteractionWithChooser(bool has_null_handler) {
 BluetoothChooserController::BluetoothChooserController(
     content::RenderFrameHost* owner,
     const content::BluetoothChooser::EventHandler& event_handler)
-    : ChooserController(owner,
-                        IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
-                        IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME),
+    : ChooserController(CreateChooserTitle(
+          owner,
+          IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
+          IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)),
       event_handler_(event_handler) {
   if (owner) {
     frame_tree_node_id_ = owner->GetFrameTreeNodeId();
