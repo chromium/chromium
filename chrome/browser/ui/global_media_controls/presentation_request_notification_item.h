@@ -43,6 +43,9 @@ class PresentationRequestNotificationItem final
   media_router::StartPresentationContext* context() const {
     return context_.get();
   }
+  std::unique_ptr<media_router::StartPresentationContext> PassContext() {
+    return std::move(context_);
+  }
   const content::PresentationRequest request() const { return request_; }
 
  private:
@@ -55,8 +58,10 @@ class PresentationRequestNotificationItem final
 
   const std::string id_;
   MediaNotificationService* const notification_service_;
-  // It is possible that |context_| is nullptr when it is created for a default
-  // presentation request.
+  // |context_| is nullptr if:
+  // (1) It is created for a default presentation request;
+  // (2) MediaNotificationService has passed |context_| to initialize a
+  // CastDialogController
   std::unique_ptr<media_router::StartPresentationContext> context_;
   const content::PresentationRequest request_;
 

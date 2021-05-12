@@ -316,7 +316,14 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
     return nullptr;
 
   auto ui = std::make_unique<media_router::MediaRouterUI>(web_contents);
-  ui->InitWithDefaultMediaSource();
+  if (presentation_request_notification_producer_->GetNotificationItem()
+          ->context()) {
+    ui->InitWithStartPresentationContext(
+        presentation_request_notification_producer_->GetNotificationItem()
+            ->PassContext());
+  } else {
+    ui->InitWithDefaultMediaSource();
+  }
   return ui;
 }
 
