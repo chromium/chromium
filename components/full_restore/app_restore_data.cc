@@ -31,6 +31,16 @@ constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
 constexpr char kRestoreBoundsKey[] = "restore_bounds";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
+constexpr char kMinimumSizeKey[] = "min_size";
+constexpr char kMaximumSizeKey[] = "max_size";
+
+// Converts |size| to base::Value, e.g. { 100, 300 }.
+base::Value ConvertSizeToValue(const gfx::Size& size) {
+  base::Value size_list(base::Value::Type::LIST);
+  size_list.Append(base::Value(size.width()));
+  size_list.Append(base::Value(size.height()));
+  return size_list;
+}
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
 base::Value ConvertRectToValue(const gfx::Rect& rect) {
@@ -95,6 +105,26 @@ base::Optional<std::vector<base::FilePath>> GetFilePathsFromDict(
   return file_paths;
 }
 
+// Gets gfx::Size from base::Value, e.g. { 100, 300 } returns
+// gfx::Size(100, 300).
+base::Optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
+                                          const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const base::Value* size_value = dict.FindListKey(key_name);
+  if (!size_value || !size_value->is_list() ||
+      size_value->GetList().size() != 2) {
+    return base::nullopt;
+  }
+
+  std::vector<int> size;
+  for (const auto& item : size_value->GetList())
+    size.push_back(item.GetInt());
+
+  return gfx::Size(size[0], size[1]);
+}
+
 // Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
 // gfx::Rect(0, 100, 200, 300).
 base::Optional<gfx::Rect> GetBoundsRectFromDict(
@@ -152,6 +182,8 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   restore_bounds = GetBoundsRectFromDict(*data_dict, kRestoreBoundsKey);
   current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
+  maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
+  minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
 
   if (data_dict->HasKey(kIntentKey)) {
     intent = apps_util::ConvertValueToIntent(
@@ -216,6 +248,12 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (window_state_type.has_value())
     data->window_state_type = window_state_type.value();
 
+  if (maximum_size.has_value())
+    data->maximum_size = maximum_size.value();
+
+  if (minimum_size.has_value())
+    data->minimum_size = minimum_size.value();
+
   return data;
 }
 
@@ -277,6 +315,16 @@ base::Value AppRestoreData::ConvertToValue() const {
                                static_cast<int>(window_state_type.value()));
   }
 
+  if (maximum_size.has_value()) {
+    launch_info_dict.SetKey(kMaximumSizeKey,
+                            ConvertSizeToValue(maximum_size.value()));
+  }
+
+  if (minimum_size.has_value()) {
+    launch_info_dict.SetKey(kMinimumSizeKey,
+                            ConvertSizeToValue(minimum_size.value()));
+  }
+
   return launch_info_dict;
 }
 
@@ -301,6 +349,11 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
 
   if (window_info.display_id.has_value())
     display_id = window_info.display_id.value();
+
+  if (window_info.arc_extra_info.has_value()) {
+    minimum_size = window_info.arc_extra_info->minimum_size;
+    maximum_size = window_info.arc_extra_info->maximum_size;
+  }
 }
 
 void AppRestoreData::ClearWindowInfo() {
@@ -310,6 +363,8 @@ void AppRestoreData::ClearWindowInfo() {
   restore_bounds.reset();
   current_bounds.reset();
   window_state_type.reset();
+  minimum_size.reset();
+  maximum_size.reset();
 }
 
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
@@ -332,6 +387,12 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (window_state_type.has_value())
     window_info->window_state_type = window_state_type.value();
+
+  if (maximum_size.has_value() || minimum_size.has_value()) {
+    window_info->arc_extra_info = WindowInfo::ArcExtraInfo();
+    window_info->arc_extra_info->maximum_size = maximum_size;
+    window_info->arc_extra_info->minimum_size = minimum_size;
+  }
 
   // Display id is set as the app launch parameter, so we don't need to return
   // the display id to restore the display id.

@@ -85,6 +85,10 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   base::Optional<gfx::Rect> restore_bounds;
   base::Optional<gfx::Rect> current_bounds;
   base::Optional<chromeos::WindowStateType> window_state_type;
+
+  // Extra ARC window's information.
+  base::Optional<gfx::Size> minimum_size;
+  base::Optional<gfx::Size> maximum_size;
 };
 
 }  // namespace full_restore

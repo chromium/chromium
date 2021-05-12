@@ -16,6 +16,17 @@ namespace full_restore {
 // window information.
 struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
  public:
+  // This struct is the ARC specific window info.
+  struct ArcExtraInfo {
+    ArcExtraInfo();
+    ArcExtraInfo(const WindowInfo::ArcExtraInfo&);
+    ArcExtraInfo& operator=(const WindowInfo::ArcExtraInfo&);
+    ~ArcExtraInfo();
+
+    base::Optional<gfx::Size> maximum_size;
+    base::Optional<gfx::Size> minimum_size;
+  };
+
   WindowInfo();
   WindowInfo(const WindowInfo&) = delete;
   WindowInfo& operator=(const WindowInfo&) = delete;
@@ -51,6 +62,9 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
   // Display id to launch an app.
   base::Optional<int64_t> display_id;
+
+  // Extra window info of ARC app window.
+  base::Optional<ArcExtraInfo> arc_extra_info;
 
   std::string ToString() const;
 };

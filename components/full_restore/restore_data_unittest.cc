@@ -70,6 +70,10 @@ constexpr chromeos::WindowStateType kWindowStateType2 =
 constexpr chromeos::WindowStateType kWindowStateType3 =
     chromeos::WindowStateType::kFullscreen;
 
+constexpr gfx::Size kMaxSize1(600, 800);
+constexpr gfx::Size kMinSize1(100, 50);
+constexpr gfx::Size kMinSize2(88, 128);
+
 }  // namespace
 
 // Unit tests for restore data.
@@ -130,6 +134,9 @@ class RestoreDataTest : public testing::Test {
     window_info1.current_bounds = kCurrentBounds1;
     window_info1.window_state_type = kWindowStateType1;
     window_info1.display_id = kDisplayId2;
+    window_info1.arc_extra_info = WindowInfo::ArcExtraInfo();
+    window_info1.arc_extra_info->maximum_size = kMaxSize1;
+    window_info1.arc_extra_info->minimum_size = kMinSize1;
 
     WindowInfo window_info2;
     window_info2.activation_index = kActivationIndex2;
@@ -138,6 +145,8 @@ class RestoreDataTest : public testing::Test {
     window_info2.current_bounds = kCurrentBounds2;
     window_info2.window_state_type = kWindowStateType2;
     window_info2.display_id = kDisplayId1;
+    window_info2.arc_extra_info = WindowInfo::ArcExtraInfo();
+    window_info2.arc_extra_info->minimum_size = kMinSize2;
 
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
@@ -164,7 +173,9 @@ class RestoreDataTest : public testing::Test {
                             bool visible_on_all_workspaces,
                             const gfx::Rect& restore_bounds,
                             const gfx::Rect& current_bounds,
-                            chromeos::WindowStateType window_state_type) {
+                            chromeos::WindowStateType window_state_type,
+                            base::Optional<gfx::Size> max_size,
+                            base::Optional<gfx::Size> min_size) {
     EXPECT_TRUE(data->container.has_value());
     EXPECT_EQ(static_cast<int>(container), data->container.value());
 
@@ -207,6 +218,20 @@ class RestoreDataTest : public testing::Test {
 
     EXPECT_TRUE(data->window_state_type.has_value());
     EXPECT_EQ(window_state_type, data->window_state_type.value());
+
+    if (max_size.has_value()) {
+      EXPECT_TRUE(data->maximum_size.has_value());
+      EXPECT_EQ(max_size.value(), data->maximum_size.value());
+    } else {
+      EXPECT_FALSE(data->maximum_size.has_value());
+    }
+
+    if (min_size.has_value()) {
+      EXPECT_TRUE(data->minimum_size.has_value());
+      EXPECT_EQ(min_size.value(), data->minimum_size.value());
+    } else {
+      EXPECT_FALSE(data->minimum_size.has_value());
+    }
   }
 
   void VerifyRestoreData(const RestoreData& restore_data) {
@@ -229,7 +254,7 @@ class RestoreDataTest : public testing::Test {
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
         kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1, kRestoreBounds1,
-        kCurrentBounds1, kWindowStateType1);
+        kCurrentBounds1, kWindowStateType1, kMaxSize1, kMinSize1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -240,7 +265,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kRestoreBounds2,
-        kCurrentBounds2, kWindowStateType2);
+        kCurrentBounds2, kWindowStateType2, base::nullopt, kMinSize2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -256,7 +281,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kRestoreBounds3,
-        kCurrentBounds3, kWindowStateType3);
+        kCurrentBounds3, kWindowStateType3, base::nullopt, base::nullopt);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -359,6 +384,7 @@ TEST_F(RestoreDataTest, RemoveWindowInfo) {
   EXPECT_FALSE(window_info->restore_bounds.has_value());
   EXPECT_FALSE(window_info->current_bounds.has_value());
   EXPECT_FALSE(window_info->window_state_type.has_value());
+  EXPECT_FALSE(window_info->arc_extra_info.has_value());
 }
 
 TEST_F(RestoreDataTest, RemoveApp) {

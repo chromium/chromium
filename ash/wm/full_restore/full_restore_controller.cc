@@ -365,6 +365,18 @@ void FullRestoreController::SaveWindowImpl(
 
   window_info.display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+
+  // Save window size restriction of ARC app window.
+  if (IsArcWindow(window)) {
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+    if (widget) {
+      auto extra = full_restore::WindowInfo::ArcExtraInfo();
+      extra.maximum_size = widget->GetMaximumSize();
+      extra.minimum_size = widget->GetMinimumSize();
+      window_info.arc_extra_info = extra;
+    }
+  }
+
   full_restore::SaveWindowInfo(window_info);
 
   if (g_save_window_callback_for_testing)
