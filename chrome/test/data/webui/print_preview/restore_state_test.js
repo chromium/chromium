@@ -4,12 +4,12 @@
 
 import {getInstance, MarginsType, NativeLayer, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {getCddTemplate, getCddTemplateWithAdvancedSettings, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -32,7 +32,7 @@ suite(restore_state_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     document.body.innerHTML = '';
@@ -136,7 +136,7 @@ suite(restore_state_test.suiteName, function() {
           isLandscapeEnabled: true,
           isColorEnabled: true,
         };
-        if (isChromeOS) {
+        if (isChromeOS || isLacros) {
           stickySettings.pin = true;
           stickySettings.pinValue = '0000';
         }
@@ -178,7 +178,7 @@ suite(restore_state_test.suiteName, function() {
           isLandscapeEnabled: false,
           isColorEnabled: false,
         };
-        if (isChromeOS) {
+        if (isChromeOS || isLacros) {
           stickySettings.pin = false;
           stickySettings.pinValue = '';
         }
@@ -292,7 +292,7 @@ suite(restore_state_test.suiteName, function() {
         },
       }
     ];
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       testData.push(
           {
             section: 'print-preview-pin-settings',

@@ -4,7 +4,7 @@
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -637,7 +637,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.pagesPerSheet.available);
   });
 
-  if (isChromeOS) {
+  if (isChromeOS || isLacros) {
     test('pin', function() {
       // Make device unmanaged.
       loadTimeData.overrideValues({isEnterpriseManaged: false});

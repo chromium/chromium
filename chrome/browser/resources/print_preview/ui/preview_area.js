@@ -807,7 +807,7 @@ Polymer({
           substitutions: [],
           tags: ['BR'],
         });
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       case Error.NO_DESTINATIONS:
         return this.i18n('noDestinationsMessage');
       // </if>

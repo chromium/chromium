@@ -5,7 +5,7 @@
 import 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise, fakeDataBind} from '../test_util.m.js';
@@ -60,7 +60,7 @@ suite('ColorSettingsTest', function() {
     assertTrue(colorSection.getSetting('color').setFromUi);
   });
 
-  if (isChromeOS) {
+  if (isChromeOS || isLacros) {
     // Tests that if the setting is enforced by enterprise policy it is
     // disabled.
     test('disabled by policy', function() {

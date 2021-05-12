@@ -9,7 +9,7 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {fakeDataBind} from 'chrome://test/test_util.m.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -40,7 +40,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
     // Stub out the native layer and cloud print interface
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));

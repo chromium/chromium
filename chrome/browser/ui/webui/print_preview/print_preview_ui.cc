@@ -76,7 +76,7 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
 #endif
 
@@ -92,7 +92,7 @@ namespace {
 
 #if defined(OS_MAC)
 const char16_t kBasicPrintShortcut[] = u"\u0028\u21e7\u2318\u0050\u0029";
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !defined(OS_CHROMEOS)
 const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 #endif
 
@@ -311,7 +311,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
     {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
     {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
 #endif
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
@@ -336,14 +336,14 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
     {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
     {"seeMoreDestinationsLabel", IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     {"serverSearchBoxPlaceholder",
      IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
 #endif
     {"title", IDS_PRINT_PREVIEW_TITLE},
     {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
     {"unsupportedCloudPrinter", IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     {"configuringFailedText", IDS_PRINT_CONFIGURING_FAILED_TEXT},
     {"configuringInProgressText", IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT},
     {"optionPin", IDS_PRINT_PREVIEW_OPTION_PIN},
@@ -378,7 +378,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   source->AddString("gcpCertificateErrorLearnMoreURL",
                     chrome::kCloudPrintCertificateErrorLearnMoreURL);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   const std::u16string shortcut_text(kBasicPrintShortcut);
   source->AddString("systemDialogOption",
                     l10n_util::GetStringFUTF16(
@@ -395,7 +395,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 }
 
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   source->AddBoolean("useSystemDefaultPrinter", false);
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
@@ -421,6 +421,10 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean(
       "printServerScaling",
       base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddBoolean("showPrinterStatus", true);
+  source->AddBoolean("showPrinterStatusInDialog", true);
+  source->AddBoolean("printServerScaling", true);
 #endif
 }
 
@@ -450,7 +454,7 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
 PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
   auto handler = std::make_unique<PrintPreviewHandler>();
   PrintPreviewHandler* handler_ptr = handler.get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   web_ui->AddMessageHandler(std::make_unique<PrintPreviewHandlerChromeOS>());
 #endif
   web_ui->AddMessageHandler(std::move(handler));
@@ -462,7 +466,7 @@ PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
       "printPreviewPageSummaryLabel", IDS_PRINT_PREVIEW_PAGE_SUMMARY_LABEL);
   plural_string_handler->AddLocalizedString(
       "printPreviewSheetSummaryLabel", IDS_PRINT_PREVIEW_SHEET_SUMMARY_LABEL);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   plural_string_handler->AddLocalizedString(
       "sheetsLimitErrorMessage", IDS_PRINT_PREVIEW_SHEETS_LIMIT_ERROR_MESSAGE);
 #endif

@@ -29,7 +29,7 @@ js_type_check("closure_compile_module") {
     ":user_manager",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ ":print_server_store" ]
   }
 }
@@ -58,7 +58,7 @@ js_library("destination_store") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   js_library("print_server_store") {
     deps = [
       ":destination_store",
@@ -99,7 +99,7 @@ js_library("destination") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       ":destination_policies",
       "..:native_layer_cros",

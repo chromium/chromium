@@ -23,7 +23,7 @@
     margin-inline-end: 0;
   }
 
-<if expr="chromeos">
+<if expr="chromeos or lacros">
   .error-message {
     color: red;
     margin: 16px 16px 0;
@@ -31,7 +31,7 @@
   }
 </if>
 </style>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
 <div class="error-message"
     hidden="[[!showSheetsError_(destination.id, maxSheets, sheetCount)]]">
   [[errorMessage_]]

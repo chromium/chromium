@@ -20,13 +20,13 @@ import './more_settings.js';
 import './other_options_settings.js';
 import './pages_per_sheet_settings.js';
 import './pages_settings.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import './pin_settings.js';
 // </if>
 import './print_preview_vars_css.js';
 import './scaling_settings.js';
 import '../strings.m.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './link_container.js';
 // </if>
 

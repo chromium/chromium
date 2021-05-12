@@ -8,7 +8,7 @@ import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js'
 import {getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -41,7 +41,7 @@ suite(print_button_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     document.body.innerHTML = '';

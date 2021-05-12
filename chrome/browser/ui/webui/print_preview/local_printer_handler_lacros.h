@@ -39,6 +39,11 @@ class LocalPrinterHandlerLacros : public PrinterHandler {
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
+  void StartGetEulaUrl(const std::string& destination_id,
+                       GetEulaUrlCallback callback) override;
+  void StartPrinterStatusRequest(
+      const std::string& printer_id,
+      PrinterStatusRequestCallback callback) override;
 
  private:
   explicit LocalPrinterHandlerLacros(

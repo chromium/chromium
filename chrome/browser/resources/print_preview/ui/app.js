@@ -27,7 +27,7 @@ import {PrintableArea} from '../data/printable_area.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
 // </if>
 
@@ -125,7 +125,7 @@ Polymer({
   /** @private {?NativeLayer} */
   nativeLayer_: null,
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /** @private {?NativeLayerCros} */
   nativeLayerCros_: null,
   // </if>
@@ -177,7 +177,7 @@ Polymer({
   attached() {
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
     // </if>
     this.addWebUIListener('print-failed', this.onPrintFailed_.bind(this));
@@ -229,7 +229,7 @@ Polymer({
         e.preventDefault();
       }
 
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       if (this.destination_ &&
           this.destination_.origin === DestinationOrigin.CROS) {
         this.nativeLayerCros_.recordPrinterStatusHistogram(
@@ -405,7 +405,7 @@ Polymer({
         break;
       case DestinationState.ERROR:
         let newState = State.ERROR;
-        // <if expr="chromeos">
+        // <if expr="chromeos or lacros">
         if (this.error_ === Error.NO_DESTINATIONS) {
           newState = State.FATAL_ERROR;
         }
@@ -485,7 +485,7 @@ Polymer({
       this.printRequested_ = true;
       return;
     }
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
       this.nativeLayerCros_.recordPrinterStatusHistogram(
@@ -498,7 +498,7 @@ Polymer({
 
   /** @private */
   onCancelRequested_() {
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
       this.nativeLayerCros_.recordPrinterStatusHistogram(
@@ -543,7 +543,7 @@ Polymer({
         this.documentSettings_.title, data);
   },
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos and not lacros">
   /** @private */
   onPrintWithSystemDialog_() {
     // <if expr="is_win">

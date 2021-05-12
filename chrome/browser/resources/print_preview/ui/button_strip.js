@@ -48,7 +48,7 @@ Polymer({
       },
     },
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /** @private */
     errorMessage_: {
       type: String,
@@ -60,7 +60,7 @@ Polymer({
   observers: [
     'updatePrintButtonLabel_(destination.id)',
     'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
     // </if>
   ],
@@ -102,10 +102,10 @@ Polymer({
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="chromeos">
+        // <if expr="chromeos or lacros">
         this.printButtonEnabled_ = !this.printButtonDisabled_();
         // </if>
-        // <if expr="not chromeos">
+        // <if expr="not chromeos and not lacros">
         this.printButtonEnabled_ = true;
         // </if>
         if (this.firstLoad) {
@@ -120,7 +120,7 @@ Polymer({
     this.lastState_ = this.state;
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * @return {boolean} Whether to disable "Print" button because of sheets limit
    *     policy.

@@ -38,7 +38,7 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
   return printer::DuplexType::NO_DUPLEX;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 printer::TypedValueVendorCapability::ValueType ToCloudValueType(
     printing::AdvancedCapability::Type type) {
   switch (type) {
@@ -55,7 +55,7 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
   }
   return printer::TypedValueVendorCapability::ValueType::STRING;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 printer::Media ConvertPaperToMedia(
     const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
@@ -134,7 +134,7 @@ printer::DpiCapability GetDpiCapabilities(
   return dpi_capabilities;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 printer::VendorCapabilities GetVendorCapabilities(
     const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
   printer::VendorCapabilities vendor_capabilities;
@@ -164,7 +164,7 @@ printer::VendorCapabilities GetVendorCapabilities(
 
   return vendor_capabilities;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -231,7 +231,7 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
   orientation.AddOption(printer::OrientationType::AUTO_ORIENTATION);
   orientation.SaveTo(&description);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   printer::PinCapability pin;
   pin.set_value(semantic_info.pin_supported);
   pin.SaveTo(&description);
@@ -241,7 +241,7 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
         GetVendorCapabilities(semantic_info);
     vendor_capabilities.SaveTo(&description);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   return std::move(description).ToValue();
 }

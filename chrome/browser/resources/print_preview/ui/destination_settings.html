@@ -1,5 +1,5 @@
 <style include="print-preview-shared">
-<if expr="chromeos">
+<if expr="chromeos or lacros">
   :host([has-pin-setting_]) {
     margin-bottom: 0 !important;
   }
@@ -11,7 +11,7 @@
       users="{{users_}}" destination-store="[[destinationStore_]]">
   </print-preview-user-manager>
 </template>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
   <print-preview-destination-select id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"
@@ -35,7 +35,7 @@
     </template>
   </cr-lazy-render>
 </if>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
   <print-preview-destination-select-cros id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"

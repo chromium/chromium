@@ -6,16 +6,16 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../data/user_manager.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './destination_dialog.js';
 // </if>
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import './destination_dialog_cros.js';
 // </if>
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './destination_select.js';
 // </if>
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import './destination_select_cros.js';
 // </if>
 import './print_preview_shared_css.js';
@@ -33,7 +33,7 @@ import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/p
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, makeRecentDestination, RecentDestination} from '../data/destination.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
@@ -53,7 +53,7 @@ export const DestinationState = {
 
 /** @type {number} Number of recent destinations to save. */
 export let NUM_PERSISTED_DESTINATIONS = 5;
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 NUM_PERSISTED_DESTINATIONS = 10;
 // </if>
 
@@ -127,7 +127,7 @@ Polymer({
     /** @private {!Array<!Destination>} */
     displayedDestinations_: Array,
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /** @private {string} */
     driveDestinationKey_: {
       type: String,
@@ -165,7 +165,7 @@ Polymer({
     /** @private {!Array<string>} */
     users_: Array,
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /** @private */
     printerStatusFlagEnabled_: {
       type: Boolean,
@@ -207,7 +207,7 @@ Polymer({
         DestinationStore.EventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     this.tracker_.add(
         this.destinationStore_,
         DestinationStore.EventType.DESTINATION_EULA_READY,
@@ -276,7 +276,7 @@ Polymer({
       });
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     // Remove Cloud Print Drive destination. The Chrome OS version will always
     // be shown in the dropdown and is still supported.
     filteredDestinations = filteredDestinations.filter(d => {
@@ -306,7 +306,7 @@ Polymer({
     let recentDestinations =
         /** @type {!Array<!RecentDestination>} */ (
             this.getSettingValue('recentDestinations'));
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     this.driveDestinationKey_ =
         isDriveMounted ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY : '';
     // </if>
@@ -434,7 +434,7 @@ Polymer({
    *     Drive.
    */
   destinationIsDriveOrPdf_(destination) {
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
@@ -549,7 +549,7 @@ Polymer({
               PrinterType.PDF_PRINTER));
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * @return {boolean}
    * @private
@@ -625,7 +625,7 @@ Polymer({
     return assert(this.destinationStore_);
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * @param {!CustomEvent<string>} e Event containing the current destination's
    * EULA URL.

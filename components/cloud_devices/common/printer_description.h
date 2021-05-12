@@ -525,11 +525,11 @@ typedef ValueCapability<Copies, class CopiesCapabilityTraits> CopiesCapability;
 typedef EmptyCapability<class PageRangeTraits> PageRangeCapability;
 typedef BooleanCapability<class CollateTraits> CollateCapability;
 typedef BooleanCapability<class ReverseTraits> ReverseCapability;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // This capability is not a part of standard CDD description. It's used for
 // providing PIN printing opportunity in Chrome OS native printing.
 typedef ValueCapability<bool, class PinTraits> PinCapability;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 typedef TicketItem<PwgRasterConfig, PwgRasterConfigTraits>
     PwgRasterConfigTicketItem;

@@ -113,7 +113,7 @@ preprocess_if_expr("preprocess") {
     "ui/settings_behavior.js",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     in_files += [
       "data/print_server_store.js",
       "data/printer_status_cros.js",
@@ -165,7 +165,7 @@ preprocess_if_expr("preprocess_generated") {
     "ui/throbber_css.js",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     in_files += [
       "ui/destination_dropdown_cros.js",
       "ui/destination_select_cros.js",
@@ -275,7 +275,7 @@ js_library("print_preview") {
     "ui:settings_select",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "data:print_server_store" ]
   }
 }

@@ -4,7 +4,7 @@
 
 import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, MeasurementSystemUnitType, NativeInitialSettings, SelectOption} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -96,7 +96,7 @@ export function getCddTemplate(printerId, opt_printerName) {
       }
     }
   };
-  if (isChromeOS) {
+  if (isChromeOS || isLacros) {
     template.capabilities.printer.pin = {supported: true};
   }
   return template;
@@ -261,7 +261,8 @@ export function getDefaultOrientation(device) {
  */
 export function getDestinations(localDestinations) {
   const destinations = [];
-  const origin = isChromeOS ? DestinationOrigin.CROS : DestinationOrigin.LOCAL;
+  const origin =
+      isChromeOS || isLacros ? DestinationOrigin.CROS : DestinationOrigin.LOCAL;
   // Five destinations. FooDevice is the system default.
   [{deviceName: 'ID1', printerName: 'One'},
    {deviceName: 'ID2', printerName: 'Two'},

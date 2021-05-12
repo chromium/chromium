@@ -286,7 +286,7 @@
     <message name="IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT" desc="Text shown when hovering over the enterprise managed icon in the header">
       These settings are enforced by your administrator
     </message>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
                desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
         Save to Google Drive
@@ -360,7 +360,7 @@
         other {Exceeds limit of {COUNT} sheets of paper}}
       </message>
     </if>
-    <if expr="not chromeos">
+    <if expr="not chromeos and not lacros">
       <message name="IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION" desc="Option allowing the user to access advanced printer settings using the native print system dialog instead of printing through the print preview mechanism. Shortcut key is not translated">
         Print using system dialog... <ph name="SHORTCUT_KEY">$1<ex>(Shift+Ctrl+P)</ex></ph>
       </message>

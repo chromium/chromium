@@ -73,7 +73,7 @@
     opacity: 0.4;
   }
 
-<if expr="chromeos">
+<if expr="chromeos or lacros">
   :host([is-destination-cros-local_]) .connection-status {
     color: var(--google-red-600);
   }
@@ -100,7 +100,7 @@
   <span class="extension-icon" role="button" tabindex="0"
       title="[[getExtensionPrinterTooltip_(destination)]]"></span>
 </span>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
 <span class="configuring-in-progress-text"
   hidden$="[[!checkConfigurationStatus_(statusEnum_.IN_PROGRESS,
                                         configurationStatus_)]]">

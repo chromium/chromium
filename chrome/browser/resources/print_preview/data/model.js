@@ -12,7 +12,7 @@ import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
 import {Cdd, CddCapabilities, VendorCapability} from './cdd.js';
 import {Destination, DestinationOrigin, DestinationType, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from './destination_policies.js';
 // </if>
 import {DocumentSettings} from './document_info.js';
@@ -175,7 +175,7 @@ const STICKY_SETTING_NAMES = [
   'scalingTypePdf',
   'vendorItems',
 ];
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 STICKY_SETTING_NAMES.push('pin', 'pinValue');
 // </if>
 
@@ -443,7 +443,7 @@ Polymer({
             key: 'recentDestinations',
             updatesPreview: false,
           },
-          // <if expr="chromeos">
+          // <if expr="chromeos or lacros">
           pin: {
             value: false,
             unavailableValue: false,
@@ -694,7 +694,7 @@ Polymer({
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     const pinSupported = !!caps && !!caps.pin && !!caps.pin.supported &&
         loadTimeData.getBoolean('isEnterpriseManaged');
     this.set('settings.pin.available', pinSupported);
@@ -1090,7 +1090,7 @@ Polymer({
       const allowedMode = policies[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (policies['sheets']) {
       if (!this.policySettings_) {
         this.policySettings_ = {};
@@ -1157,7 +1157,7 @@ Polymer({
     if (this.policySettings_) {
       for (const [settingName, policy] of Object.entries(
                this.policySettings_)) {
-        // <if expr="chromeos">
+        // <if expr="chromeos or lacros">
         if (settingName === 'sheets') {
           this.maxSheets = this.policySettings_['sheets'].value;
           continue;
@@ -1180,7 +1180,7 @@ Polymer({
    * current destination.
    */
   applyDestinationSpecificPolicies() {
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     const colorPolicy = this.destination.colorPolicy;
     const colorValue =
         colorPolicy ? colorPolicy : this.destination.defaultColorPolicy;
@@ -1246,7 +1246,7 @@ Polymer({
   /** @private */
   updateManaged_() {
     let managedSettings = ['cssBackground', 'headerFooter'];
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);
     // </if>
@@ -1357,7 +1357,7 @@ Polymer({
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
     };
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     ticket.printToGoogleDrive = ticket.printToGoogleDrive ||
         destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS;
     // </if>
@@ -1382,7 +1382,7 @@ Polymer({
       ticket.OpenPDFInPreview = true;
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (this.getSettingValue('pin')) {
       ticket.pinValue = this.getSettingValue('pinValue');
     }

@@ -57,7 +57,7 @@
 <if expr="is_macosx">
     on-open-pdf-in-preview="onOpenPdfInPreview_"
 </if>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
     on-print-with-system-dialog="onPrintWithSystemDialog_"
 </if>
     on-print-requested="onPrintRequested_"

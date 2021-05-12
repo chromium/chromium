@@ -50,7 +50,7 @@ js_type_check("closure_compile_module") {
     ":sidebar",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       ":destination_dialog_cros",
       ":destination_dropdown_cros",
@@ -126,7 +126,7 @@ js_library("button_strip") {
     "//ui/webui/resources/js:plural_string_proxy",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ ":pin_settings" ]
   }
 }
@@ -156,7 +156,7 @@ js_library("destination_settings") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       ":destination_dialog_cros",
       ":destination_select_cros",
@@ -169,7 +169,7 @@ js_library("destination_settings") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   js_library("destination_select_cros") {
     deps = [
       ":destination_dropdown_cros",
@@ -437,7 +437,7 @@ js_library("plugin_proxy") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   js_library("destination_dialog_cros") {
     deps = [
       ":destination_list",
@@ -526,7 +526,7 @@ js_library("print_preview_search_box") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   js_library("provisional_destination_resolver") {
     deps = [
       "../data:destination",
@@ -586,7 +586,7 @@ html_to_js("web_components") {
     "sidebar.js",
     "throbber_css.js",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     js_files += [
       "destination_dialog_cros.js",
       "destination_dropdown_cros.js",

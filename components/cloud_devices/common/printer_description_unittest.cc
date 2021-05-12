@@ -507,7 +507,7 @@ const char kSeveralInnerCapabilitiesVendorCapabilityCdd[] = R"(
       }
     })";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 const char kPinOnlyCdd[] = R"(
     {
       "version": "1.0",
@@ -517,7 +517,7 @@ const char kPinOnlyCdd[] = R"(
         }
       }
     })";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 const char kCjt[] = R"(
     {
@@ -1103,7 +1103,7 @@ TEST(PrinterDescriptionTest, CddSetVendorCapability) {
             NormalizeJson(description.ToString()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST(PrinterDescriptionTest, CddGetPin) {
   {
     CloudDeviceDescription description;
@@ -1129,7 +1129,7 @@ TEST(PrinterDescriptionTest, CddSetPin) {
   pin_capability.SaveTo(&description);
   EXPECT_EQ(NormalizeJson(kPinOnlyCdd), NormalizeJson(description.ToString()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 TEST(PrinterDescriptionTest, CddGetAll) {
   CloudDeviceDescription description;

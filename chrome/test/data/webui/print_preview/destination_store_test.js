@@ -4,14 +4,14 @@
 
 import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxy, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -77,7 +77,7 @@ suite(destination_store_test.suiteName, function() {
 
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
 
@@ -214,7 +214,7 @@ suite(destination_store_test.suiteName, function() {
           // The other local destinations should be in the store, but only one
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
-          const expectedPrinters = isChromeOS ? 7 : 6;
+          const expectedPrinters = isChromeOS || isLacros ? 7 : 6;
           assertEquals(expectedPrinters, reportedPrinters.length);
           destinations.forEach((destination, index) => {
             assertTrue(reportedPrinters.some(p => p.id === destination.id));
@@ -489,7 +489,7 @@ suite(destination_store_test.suiteName, function() {
                 deviceName: id1,
                 printerName: name1
               };
-              if (isChromeOS) {
+              if (isChromeOS || isLacros) {
                 localDestinationInfo.policies = {
                   allowedColorModes: 0x1,  // ColorModeRestriction.MONOCHROME
                   defaultColorMode: 0x1,   // ColorModeRestriction.MONOCHROME
@@ -514,7 +514,7 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.destinations().find(d => d.id === id1);
               // No capabilities or policies yet.
               assertFalse(!!destination.capabilities);
-              if (isChromeOS) {
+              if (isChromeOS || isLacros) {
                 assertEquals(null, destination.policies);
               }
               destinationStore.selectDestination(destination);
@@ -524,7 +524,7 @@ suite(destination_store_test.suiteName, function() {
               assertEquals(destination, destinationStore.selectedDestination);
               // Capabilities are updated.
               assertTrue(!!destination.capabilities);
-              if (isChromeOS) {
+              if (isChromeOS || isLacros) {
                 // Policies are updated.
                 assertTrue(!!destination.policies);
               }

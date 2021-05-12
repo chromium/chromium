@@ -9,7 +9,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 import {parseCloudDestination} from './data/cloud_parsers.js';
 import {CloudOrigins, DestinationOrigin} from './data/destination.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {NativeLayerCrosImpl} from './native_layer_cros.js';
 // </if>
 
@@ -57,7 +57,7 @@ export class CloudPrintInterfaceImpl {
      */
     this.outstandingCloudSearchRequests_ = [];
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /**
      * Promise that will be resolved when the access token for
      * DestinationOrigin.DEVICE is available. Null if there is no request
@@ -257,7 +257,7 @@ export class CloudPrintInterfaceImpl {
       return;
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     assert(request.origin === DestinationOrigin.DEVICE);
     if (this.accessTokenRequestPromise_ === null) {
       this.accessTokenRequestPromise_ =
@@ -360,7 +360,7 @@ export class CloudPrintInterfaceImpl {
         });
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * Called when a native layer receives access token. Assumes that the
    * destination type for this token is DestinationOrigin.DEVICE.

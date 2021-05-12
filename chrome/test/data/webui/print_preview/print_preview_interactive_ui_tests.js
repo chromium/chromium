@@ -8,7 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "build/build_config.h"');
 
 const PrintPreviewInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
@@ -54,7 +54,7 @@ TEST_F(
           button_strip_interactive_test.TestNames.FocusPrintOnReady);
     });
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#if !defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
 var PrintPreviewDestinationDialogInteractiveTest =
     class extends PrintPreviewInteractiveUITest {
@@ -193,7 +193,7 @@ TEST_F(
           scaling_settings_interactive_test.TestNames.AutoFocusInput);
     });
 
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#if defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
 var PrintPreviewDestinationDropdownCrosTest =
     class extends PrintPreviewInteractiveUITest {

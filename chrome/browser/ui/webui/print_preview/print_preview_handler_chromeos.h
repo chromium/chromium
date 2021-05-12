@@ -22,6 +22,11 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#endif
+
 namespace base {
 class DictionaryValue;
 }
@@ -34,9 +39,16 @@ class PrintPreviewHandler;
 // The handler for Javascript messages related to the print preview dialog.
 class PrintPreviewHandlerChromeOS
     : public content::WebUIMessageHandler,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       public chromeos::PrintServersManager::Observer {
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      public crosapi::mojom::PrintServerObserver {
+#endif
  public:
   PrintPreviewHandlerChromeOS();
+  PrintPreviewHandlerChromeOS(const PrintPreviewHandlerChromeOS&) = delete;
+  PrintPreviewHandlerChromeOS& operator=(const PrintPreviewHandlerChromeOS&) =
+      delete;
   ~PrintPreviewHandlerChromeOS() override;
 
   // WebUIMessageHandler implementation.
@@ -49,6 +61,7 @@ class PrintPreviewHandlerChromeOS
   virtual PrinterHandler* GetPrinterHandler(PrinterType printer_type);
 
  private:
+  friend class PrintPreviewHandlerChromeOSTest;
   class AccessTokenService;
 
   PrintPreviewHandler* GetPrintPreviewHandler();
@@ -91,16 +104,19 @@ class PrintPreviewHandlerChromeOS
   // Called to initiate a status request for a printer.
   void HandleRequestPrinterStatusUpdate(const base::ListValue* args);
 
-  // Resolves callback with printer status.
-  void OnPrinterStatusUpdated(const std::string& callback_id,
-                              const base::Value& cups_printer_status);
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // PrintServersManager::Observer implementation
   void OnPrintServersChanged(
       const chromeos::PrintServersConfig& config) override;
   void OnServerPrintersChanged(
       const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers)
       override;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // crosapi::mojom::PrintServerObserver Implementation
+  void OnPrintServersChanged(
+      crosapi::mojom::PrintServersConfigPtr ptr) override;
+  void OnServerPrintersChanged() override;
+#endif
 
   // Loads printers corresponding to the print server(s).  First element of
   // |args| is the print server IDs.
@@ -112,11 +128,20 @@ class PrintPreviewHandlerChromeOS
   // Holds token service to get OAuth2 access tokens.
   std::unique_ptr<AccessTokenService> token_service_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PrintServersManager* print_servers_manager_;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
+
+  // Used to transmit mojo interface method calls to ash chrome.
+  // Null if the interface is unavailable.
+  // Note that this is not propagated to LocalPrinterHandlerLacros.
+  // The pointer is constant - if ash crashes and the mojo connection is lost,
+  // lacros will automatically be restarted.
+  crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+#endif
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerChromeOS);
 };
 
 }  // namespace printing

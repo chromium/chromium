@@ -4,7 +4,7 @@
 
 import {Cdd, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -63,7 +63,7 @@ suite(model_test.suiteName, function() {
       isColorEnabled: true,
       vendorOptions: {},
     };
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       stickySettingsDefault.isPinEnabled = false;
       stickySettingsDefault.pinValue = '';
     }
@@ -90,7 +90,7 @@ suite(model_test.suiteName, function() {
         printArea: 6,
       },
     };
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       stickySettingsChange.isPinEnabled = true;
       stickySettingsChange.pinValue = '0000';
     }
@@ -153,7 +153,7 @@ suite(model_test.suiteName, function() {
             .then(() => testStickySetting('scalingType', 'scalingType'))
             .then(() => testStickySetting('scalingTypePdf', 'scalingTypePdf'))
             .then(() => testStickySetting('vendorItems', 'vendorOptions'));
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       promise = promise.then(() => testStickySetting('pin', 'isPinEnabled'))
                     .then(() => testStickySetting('pinValue', 'pinValue'));
     }
@@ -224,7 +224,7 @@ suite(model_test.suiteName, function() {
       },
       ranges: [{from: 2, to: 2}],
     };
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       settingsChange.pin = true;
       settingsChange.pinValue = '0000';
     }
@@ -266,15 +266,15 @@ suite(model_test.suiteName, function() {
    * print ticket.
    */
   test(assert(model_test.TestNames.GetPrintTicket), function() {
-    const origin =
-        isChromeOS ? DestinationOrigin.CROS : DestinationOrigin.LOCAL;
+    const origin = isChromeOS || isLacros ? DestinationOrigin.CROS :
+                                            DestinationOrigin.LOCAL;
     const testDestination = new Destination(
         'FooDevice', DestinationType.LOCAL, origin, 'FooName',
         DestinationConnectionStatus.ONLINE);
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
 
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       // Make device managed. It's used for testing pin setting behavior.
       loadTimeData.overrideValues({isEnterpriseManaged: true});
     }
@@ -310,7 +310,7 @@ suite(model_test.suiteName, function() {
       pageHeight: 792,
       showSystemDialog: false,
     };
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       expectedDefaultTicketObject.advancedSettings = {
         printArea: 4,
         paperType: 0,
@@ -354,7 +354,7 @@ suite(model_test.suiteName, function() {
         marginLeft: 400,
       },
     };
-    if (isChromeOS) {
+    if (isChromeOS || isLacros) {
       expectedNewTicketObject.pinValue = '0000';
       expectedNewTicketObject.advancedSettings = {
         printArea: 6,

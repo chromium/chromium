@@ -9,11 +9,11 @@ export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_i
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
 export {Cdd} from './data/cdd.js';
 export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, makeRecentDestination, RecentDestination} from './data/destination.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 // </if>
 export {PrinterType} from './data/destination_match.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from './data/destination_policies.js';
 // </if>
 export {DestinationErrorType, DestinationStore} from './data/destination_store.js';
@@ -22,17 +22,17 @@ export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_par
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, whenReady} from './data/model.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {PrintServerStore} from './data/print_server_store.js';
 // </if>
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 // </if>
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
 export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, NativeInitialSettings, NativeLayer, NativeLayerImpl} from './native_layer.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from './native_layer_cros.js';
 // </if>
 export {getSelectDropdownBackground} from './print_preview_utils.js';

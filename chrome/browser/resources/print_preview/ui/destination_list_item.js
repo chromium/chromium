@@ -11,21 +11,20 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 // </if>
 
 import {updateHighlights} from './highlight_utils.js';
 
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 /** @enum {number} */
 const DestinationConfigStatus = {
   IDLE: 0,
@@ -39,7 +38,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   behaviors: [I18nBehavior],
   // </if>
 
@@ -71,10 +70,10 @@ Polymer({
       type: String,
       computed:
           'computeStatusText_(destination, destination.printerStatusReason,' +
-              'configurationStatus_)',
+          'configurationStatus_)',
     },
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     /** @private */
     isDestinationCrosLocal_: {
       type: Boolean,
@@ -114,7 +113,7 @@ Polymer({
         'destination.displayName, destination.isOfflineOrInvalid, ' +
         'destination.isExtension)',
     'updateHighlightsAndHint_(destination, searchQuery)',
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     'requestPrinterStatus_(destination.key)',
     // </if>
   ],
@@ -136,7 +135,7 @@ Polymer({
     }
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * Called if the printer configuration request is accepted. Show the waiting
    * message to the user as the configuration might take longer than expected.
@@ -209,7 +208,7 @@ Polymer({
       return '';
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (this.printerStatusFlagEnabled_ &&
         this.destination.origin === DestinationOrigin.CROS) {
       // Don't show status text when destination is configuring.
@@ -243,7 +242,7 @@ Polymer({
       return '';
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos or lacros">
     if (this.printerStatusFlagEnabled_ &&
         this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
@@ -255,7 +254,7 @@ Polymer({
     return this.destination.icon;
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   /**
    * True when the destination is a CrOS local printer.
    * @return {boolean}

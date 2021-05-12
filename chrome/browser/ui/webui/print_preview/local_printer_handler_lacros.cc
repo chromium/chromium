@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +25,7 @@
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
 #include "printing/print_job_constants.h"
+#include "url/gurl.h"
 
 namespace printing {
 
@@ -78,6 +80,23 @@ void GetPrinters(
     std::move(callback).Run(std::move(list));
   }
   std::move(done_callback).Run();
+}
+
+base::Value StatusToValue(crosapi::mojom::PrinterStatusPtr ptr) {
+  // There is an implicit DCHECK(ptr) here.
+  base::Value status(base::Value::Type::DICTIONARY);
+  status.SetStringKey("printerId", ptr->printer_id);
+  status.SetDoubleKey("timestamp", ptr->timestamp.ToJsTimeIgnoringNull());
+  base::Value status_reasons(base::Value::Type::LIST);
+  for (crosapi::mojom::StatusReasonPtr& reason_ptr : ptr->status_reasons) {
+    // There is an implicit DCHECK(reason_ptr) here.
+    base::Value status_reason(base::Value::Type::DICTIONARY);
+    status_reason.SetIntKey("reason", static_cast<int>(reason_ptr->reason));
+    status_reason.SetIntKey("severity", static_cast<int>(reason_ptr->severity));
+    status_reasons.Append(std::move(status_reason));
+  }
+  status.SetKey("statusReasons", std::move(status_reasons));
+  return status;
 }
 
 }  // namespace
@@ -144,9 +163,38 @@ void LocalPrinterHandlerLacros::StartPrint(
     PrintCallback callback) {
   size_t size_in_kb = print_data->size() / 1024;
   base::UmaHistogramMemoryKB("Printing.CUPS.PrintDocumentSize", size_in_kb);
-  // TOOD: add support for printing.send_username_and_filename_enabled flag.
+  // TODO(crbug.com/1206495): add support for
+  // printing.send_username_and_filename_enabled flag.
   StartLocalPrint(std::move(settings), std::move(print_data),
                   preview_web_contents_, std::move(callback));
+}
+
+void LocalPrinterHandlerLacros::StartGetEulaUrl(
+    const std::string& destination_id,
+    GetEulaUrlCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!service_->IsAvailable<crosapi::mojom::LocalPrinter>()) {
+    LOG(ERROR) << "Local printer not available";
+    std::move(callback).Run("");
+    return;
+  }
+  service_->GetRemote<crosapi::mojom::LocalPrinter>()->GetEulaUrl(
+      destination_id, base::BindOnce([](const GURL& url) {
+                        return url.spec();
+                      }).Then(std::move(callback)));
+}
+
+void LocalPrinterHandlerLacros::StartPrinterStatusRequest(
+    const std::string& printer_id,
+    PrinterStatusRequestCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!service_->IsAvailable<crosapi::mojom::LocalPrinter>()) {
+    LOG(ERROR) << "Local printer not available";
+    std::move(callback).Run(base::Value());
+    return;
+  }
+  service_->GetRemote<crosapi::mojom::LocalPrinter>()->GetStatus(
+      printer_id, base::BindOnce(StatusToValue).Then(std::move(callback)));
 }
 
 }  // namespace printing

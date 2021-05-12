@@ -4,7 +4,7 @@
 
 import {DuplexMode} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -111,7 +111,7 @@ suite('DuplexSettingsTest', function() {
     assertTrue(duplexSection.getSetting('duplexShortEdge').setFromUi);
   });
 
-  if (isChromeOS) {
+  if (isChromeOS || isLacros) {
     // Tests that if settings are enforced by enterprise policy the
     // appropriate UI is disabled.
     test('disabled by policy', function() {

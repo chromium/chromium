@@ -43,6 +43,10 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -181,8 +185,9 @@ class TestPrinterHandler : public PrinterHandler {
   explicit TestPrinterHandler(const std::vector<PrinterInfo>& printers) {
     SetPrinters(printers);
   }
-
-  ~TestPrinterHandler() override {}
+  TestPrinterHandler(const TestPrinterHandler&) = delete;
+  TestPrinterHandler& operator=(const TestPrinterHandler&) = delete;
+  ~TestPrinterHandler() override = default;
 
   void Reset() override {}
 
@@ -229,8 +234,6 @@ class TestPrinterHandler : public PrinterHandler {
   base::ListValue printers_;
   std::map<std::string, std::unique_ptr<base::DictionaryValue>>
       printer_capabilities_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrinterHandler);
 };
 
 class FakePrintPreviewUI : public PrintPreviewUI {
@@ -238,8 +241,9 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   FakePrintPreviewUI(content::WebUI* web_ui,
                      std::unique_ptr<PrintPreviewHandler> handler)
       : PrintPreviewUI(web_ui, std::move(handler)) {}
-
-  ~FakePrintPreviewUI() override {}
+  FakePrintPreviewUI(const FakePrintPreviewUI&) = delete;
+  FakePrintPreviewUI& operator=(const FakePrintPreviewUI&) = delete;
+  ~FakePrintPreviewUI() override = default;
 
   void GetPrintPreviewDataForIndex(
       int index,
@@ -253,9 +257,6 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   void OnCancelPendingPreviewRequest() override {}
   void OnHidePreviewDialog() override {}
   void OnClosePrintPreviewDialog() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakePrintPreviewUI);
 };
 
 class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
@@ -263,7 +264,10 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
   explicit TestPrintPreviewPrintRenderFrame(
       blink::AssociatedInterfaceProvider* provider)
       : FakePrintRenderFrame(provider) {}
-
+  TestPrintPreviewPrintRenderFrame(const TestPrintPreviewPrintRenderFrame&) =
+      delete;
+  TestPrintPreviewPrintRenderFrame& operator=(
+      const TestPrintPreviewPrintRenderFrame&) = delete;
   ~TestPrintPreviewPrintRenderFrame() final = default;
 
   const base::Value& GetSettings() { return settings_; }
@@ -283,6 +287,65 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
   base::Value settings_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
+ public:
+  FakeLocalPrinter() : policies_(crosapi::mojom::Policies()) {}
+  FakeLocalPrinter(const FakeLocalPrinter&) = delete;
+  FakeLocalPrinter& operator=(const FakeLocalPrinter&) = delete;
+  ~FakeLocalPrinter() override = default;
+
+  void set_policies(const crosapi::mojom::Policies& policies) {
+    policies_ = policies;
+  }
+
+  // The only functions called are GetPolicies() and ShowSystemPrintSettings().
+  // crosapi::mojom::LocalPrinter:
+  void GetPrinters(GetPrintersCallback callback) override { FAIL(); }
+  void GetCapability(const std::string& printer_id,
+                     GetCapabilityCallback callback) override {
+    FAIL();
+  }
+  void GetEulaUrl(const std::string& printer_id,
+                  GetEulaUrlCallback callback) override {
+    FAIL();
+  }
+  void GetStatus(const std::string& printer_id,
+                 GetStatusCallback callback) override {
+    FAIL();
+  }
+  void ShowSystemPrintSettings(
+      ShowSystemPrintSettingsCallback callback) override {
+    // Remove FAIL() if this function is used in the unit tests.
+    FAIL();
+  }
+  void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
+                      CreatePrintJobCallback callback) override {
+    FAIL();
+  }
+  void GetPrintServersConfig(GetPrintServersConfigCallback callback) override {
+    FAIL();
+  }
+  void ChoosePrintServers(const std::vector<std::string>& print_server_ids,
+                          ChoosePrintServersCallback callback) override {
+    FAIL();
+  }
+  void AddObserver(
+      mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
+      AddObserverCallback callback) override {
+    FAIL();
+  }
+  void GetPolicies(GetPoliciesCallback callback) override {
+    ASSERT_TRUE(policies_);
+    std::move(callback).Run(policies_->Clone());
+    policies_.reset();
+  }
+
+ private:
+  base::Optional<crosapi::mojom::Policies> policies_;
+};
+#endif
+
 class TestPrintPreviewHandler : public PrintPreviewHandler {
  public:
   TestPrintPreviewHandler(std::unique_ptr<PrinterHandler> printer_handler,
@@ -290,6 +353,9 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
       : bad_messages_(0),
         test_printer_handler_(std::move(printer_handler)),
         initiator_(initiator) {}
+  TestPrintPreviewHandler(const TestPrintPreviewHandler&) = delete;
+  TestPrintPreviewHandler& operator=(const TestPrintPreviewHandler&) = delete;
+  ~TestPrintPreviewHandler() override = default;
 
   PrinterHandler* GetPrinterHandler(PrinterType printer_type) override {
     called_for_type_.insert(printer_type);
@@ -318,8 +384,6 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   base::flat_set<PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
   content::WebContents* const initiator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrintPreviewHandler);
 };
 
 }  // namespace
@@ -327,7 +391,15 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
 class PrintPreviewHandlerTest : public testing::Test {
  public:
   PrintPreviewHandlerTest() = default;
+  PrintPreviewHandlerTest(const PrintPreviewHandlerTest&) = delete;
+  PrintPreviewHandlerTest& operator=(const PrintPreviewHandlerTest&) = delete;
   ~PrintPreviewHandlerTest() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetPolicies(const crosapi::mojom::Policies& policies) {
+    local_printer_.set_policies(policies);
+  }
+#endif
 
   void SetUp() override {
     TestingProfile::Builder builder;
@@ -349,6 +421,9 @@ class PrintPreviewHandlerTest : public testing::Test {
 
     auto preview_handler = std::make_unique<TestPrintPreviewHandler>(
         std::move(printer_handler), initiator);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    preview_handler->local_printer_ = &local_printer_;
+#endif
     preview_handler->set_web_ui(web_ui());
     handler_ = preview_handler.get();
 
@@ -362,6 +437,10 @@ class PrintPreviewHandlerTest : public testing::Test {
     PrintViewManager::FromWebContents(initiator_web_contents_.get())
         ->PrintPreviewDone();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void DisableAshChrome() { handler_->local_printer_ = nullptr; }
+#endif
 
   virtual std::unique_ptr<TestPrinterHandler> CreatePrinterHandler(
       const std::vector<PrinterInfo>& printers) {
@@ -617,8 +696,9 @@ class PrintPreviewHandlerTest : public testing::Test {
   std::vector<PrinterInfo> printers_;
   TestPrinterHandler* printer_handler_;
   TestPrintPreviewHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerTest);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FakeLocalPrinter local_printer_;
+#endif
 };
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsSimple) {
@@ -661,10 +741,38 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
                                      base::nullopt);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
+  DisableAshChrome();
+  Initialize();
+  // Verify initial settings were sent.
+  ValidateInitialSettings(*web_ui()->call_data().back(), kDummyPrinterName,
+                          kDummyInitiatorName);
+  // Verify policy settings are empty.
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "headerFooter", base::nullopt,
+                                                  base::nullopt);
+  ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
+                                                  "cssBackground",
+                                                  base::nullopt, base::nullopt);
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "mediaSize", base::nullopt, base::nullopt);
+  ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
+                                     base::nullopt);
+}
+#endif
+
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterEnabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.print_header_footer_allowed =
+      crosapi::mojom::Policies::OptionalBool::kTrue;
+  SetPolicies(policies);
+#else
   // Set a pref with allowed value.
   prefs()->SetManagedPref(prefs::kPrintHeaderFooter,
                           std::make_unique<base::Value>(true));
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(true),
@@ -672,9 +780,16 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterEnabled) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.print_header_footer_allowed =
+      crosapi::mojom::Policies::OptionalBool::kFalse;
+  SetPolicies(policies);
+#else
   // Set a pref with allowed value.
   prefs()->SetManagedPref(prefs::kPrintHeaderFooter,
                           std::make_unique<base::Value>(false));
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(false),
@@ -682,8 +797,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.print_header_footer_default =
+      crosapi::mojom::Policies::OptionalBool::kTrue;
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->SetBoolean(prefs::kPrintHeaderFooter, true);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
                                                   "headerFooter", base::nullopt,
@@ -691,8 +813,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableHeaderFooter) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.print_header_footer_default =
+      crosapi::mojom::Policies::OptionalBool::kFalse;
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->SetBoolean(prefs::kPrintHeaderFooter, false);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
                                                   "headerFooter", base::nullopt,
@@ -701,8 +830,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableHeaderFooter) {
 
 TEST_F(PrintPreviewHandlerTest,
        InitialSettingsRestrictBackgroundGraphicsEnabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.allowed_background_graphics_modes =
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kEnabled;
+  SetPolicies(policies);
+#else
   // Set a pref with allowed value.
   prefs()->SetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes, 1);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::Value(1),
@@ -711,8 +847,15 @@ TEST_F(PrintPreviewHandlerTest,
 
 TEST_F(PrintPreviewHandlerTest,
        InitialSettingsRestrictBackgroundGraphicsDisabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.allowed_background_graphics_modes =
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kDisabled;
+  SetPolicies(policies);
+#else
   // Set a pref with allowed value.
   prefs()->SetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes, 2);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::Value(2),
@@ -720,8 +863,15 @@ TEST_F(PrintPreviewHandlerTest,
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.background_graphics_default =
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kEnabled;
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 1);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::nullopt,
@@ -729,8 +879,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableBackgroundGraphics) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.background_graphics_default =
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kDisabled;
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 2);
+#endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::nullopt,
@@ -751,8 +908,14 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
   base::Optional<base::Value> default_paper_size =
       base::JSONReader::Read(kPrintingPaperSizeDefaultName);
   ASSERT_TRUE(default_paper_size.has_value());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.paper_size_default = gfx::Size(148000, 210000);
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->Set(prefs::kPrintingPaperSizeDefault, default_paper_size.value());
+#endif
   Initialize();
 
   base::Optional<base::Value> expected_initial_settings_policy =
@@ -782,8 +945,14 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
   base::Optional<base::Value> default_paper_size =
       base::JSONReader::Read(kPrintingPaperSizeDefaultCustomSize);
   ASSERT_TRUE(default_paper_size.has_value());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.paper_size_default = gfx::Size(148000, 210000);
+  SetPolicies(policies);
+#else
   // Set a pref that should take priority over StickySettings.
   prefs()->Set(prefs::kPrintingPaperSizeDefault, default_paper_size.value());
+#endif
   Initialize();
 
   base::Optional<base::Value> expected_initial_settings_policy =
@@ -795,14 +964,21 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
       std::move(expected_initial_settings_policy));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.max_sheets_allowed = 2;
+  policies.max_sheets_allowed_has_value = true;
+  SetPolicies(policies);
+#else
   prefs()->SetInteger(prefs::kPrintingMaxSheetsAllowed, 2);
+#endif
   Initialize();
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
                                      base::Value(2));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 TEST_F(PrintPreviewHandlerTest, GetPrinters) {
   Initialize();
@@ -1111,30 +1287,30 @@ class FailingTestPrinterHandler : public TestPrinterHandler {
  public:
   explicit FailingTestPrinterHandler(const std::vector<PrinterInfo>& printers)
       : TestPrinterHandler(printers) {}
-
+  FailingTestPrinterHandler(const FailingTestPrinterHandler&) = delete;
+  FailingTestPrinterHandler& operator=(const FailingTestPrinterHandler&) =
+      delete;
   ~FailingTestPrinterHandler() override = default;
 
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override {
     std::move(callback).Run(base::Value());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailingTestPrinterHandler);
 };
 
 class PrintPreviewHandlerFailingTest : public PrintPreviewHandlerTest {
  public:
   PrintPreviewHandlerFailingTest() = default;
+  PrintPreviewHandlerFailingTest(const PrintPreviewHandlerFailingTest&) =
+      delete;
+  PrintPreviewHandlerFailingTest& operator=(
+      const PrintPreviewHandlerFailingTest&) = delete;
   ~PrintPreviewHandlerFailingTest() override = default;
 
   std::unique_ptr<TestPrinterHandler> CreatePrinterHandler(
       const std::vector<PrinterInfo>& printers) override {
     return std::make_unique<FailingTestPrinterHandler>(printers);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerFailingTest);
 };
 
 // This test is similar to PrintPreviewHandlerTest.GetPrinterCapabilities, but

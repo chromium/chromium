@@ -49,7 +49,7 @@ class PrinterHandler {
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
   using GetPrinterInfoCallback =
       base::OnceCallback<void(const base::DictionaryValue& printer_info)>;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   using GetEulaUrlCallback =
       base::OnceCallback<void(const std::string& license)>;
   using PrinterStatusRequestCallback =
@@ -117,7 +117,7 @@ class PrinterHandler {
                           scoped_refptr<base::RefCountedMemory> print_data,
                           PrintCallback callback) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Starts getting the printer's PPD EULA URL with the provided destination ID.
   // |destination_id|: The ID of the printer.
   // |callback| should be called in response to the request.
