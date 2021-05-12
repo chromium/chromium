@@ -38,7 +38,7 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  if (!audio_frame->buffer()) {
+  if (!audio_frame->data()) {
     exception_state.ThrowTypeError("Empty or closed audio frame.");
     return ScriptPromise();
   }
