@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   InputMethod* GetInputMethod() override;
   void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
   bool HasCompositionText() override;
+  ukm::SourceId GetClientSourceForMetrics() override;
 
   std::vector<GrammarFragment> get_grammar_fragments() const {
     return grammar_fragments_;

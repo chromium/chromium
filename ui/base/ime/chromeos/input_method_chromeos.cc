@@ -912,6 +912,11 @@ bool InputMethodChromeOS::HasCompositionText() {
   return client && client->HasCompositionText();
 }
 
+ukm::SourceId InputMethodChromeOS::GetClientSourceForMetrics() {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->GetClientSourceForMetrics() : ukm::kInvalidSourceId;
+}
+
 InputMethod* InputMethodChromeOS::GetInputMethod() {
   return this;
 }

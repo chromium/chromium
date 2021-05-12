@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
 
   // Returns true if there is any composition text.
   virtual bool HasCompositionText() = 0;
+
+  // Returns the ukm::SourceId that identifies the currently focused client.
+  virtual ukm::SourceId GetClientSourceForMetrics() = 0;
 };
 
 }  // namespace ui

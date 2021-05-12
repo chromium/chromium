@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   InputMethod* GetInputMethod() override;
   void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
   bool HasCompositionText() override;
+  ukm::SourceId GetClientSourceForMetrics() override;
 
  protected:
   // Converts |text| into CompositionText.

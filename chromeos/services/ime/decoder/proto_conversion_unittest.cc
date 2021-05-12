@@ -172,5 +172,19 @@ TEST(ProtoConversionTest, ProtoToSuggestionsRequest) {
   EXPECT_FLOAT_EQ(result->completion_candidates[0].score, 0.55);
 }
 
+TEST(ProtoConversionTest, ProtoToUkmEntry) {
+  RecordUkm record_ukm;
+  record_ukm.mutable_non_compliant_api()->set_non_compliant_operation(
+      NonCompliantApiMetric::OPERATION_SET_COMPOSITION_TEXT);
+
+  mojom::UkmEntryPtr result = ProtoToUkmEntry(record_ukm);
+
+  auto metric = mojom::NonCompliantApiMetric::New(
+      mojom::InputMethodApiOperation::kSetCompositionText);
+  auto expected = mojom::UkmEntry::New();
+  expected->set_non_compliant_api(std::move(metric));
+  EXPECT_EQ(result, expected);
+}
+
 }  // namespace ime
 }  // namespace chromeos

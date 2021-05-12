@@ -160,6 +160,7 @@ class NativeInputMethodEngine
                             RequestSuggestionsCallback callback) override;
     void DisplaySuggestions(
         const std::vector<ime::TextSuggestion>& suggestions) override;
+    void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
 
     // Called when suggestions are collected from the system via
     // suggestions_collector_.

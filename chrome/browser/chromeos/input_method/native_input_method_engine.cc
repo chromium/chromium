@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/chromeos/input_method_ukm.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace chromeos {
@@ -612,6 +613,16 @@ void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
 void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
     const std::vector<ime::TextSuggestion>& suggestions) {
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+}
+
+void NativeInputMethodEngine::ImeObserver::RecordUkm(
+    ime::mojom::UkmEntryPtr entry) {
+  if (entry->is_non_compliant_api()) {
+    ui::RecordUkmNonCompliantApi(
+        GetInputContext()->GetClientSourceForMetrics(),
+        static_cast<int>(
+            entry->get_non_compliant_api()->non_compliant_operation));
+  }
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

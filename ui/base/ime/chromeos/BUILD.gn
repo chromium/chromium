@@ -54,6 +54,8 @@ component("chromeos") {
     "input_method_descriptor.h",
     "input_method_manager.cc",
     "input_method_manager.h",
+    "input_method_ukm.cc",
+    "input_method_ukm.h",
     "input_method_util.cc",
     "input_method_util.h",
   ]
@@ -71,7 +73,9 @@ component("chromeos") {
     "//build:branding_buildflags",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/system",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/icu",
+    "//ui/base",
     "//ui/base",
     "//ui/chromeos/strings",
     "//ui/ozone:ozone_base",

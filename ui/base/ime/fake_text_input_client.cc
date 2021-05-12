@@ -20,6 +20,10 @@ void FakeTextInputClient::set_text_input_type(TextInputType text_input_type) {
   text_input_type_ = text_input_type;
 }
 
+void FakeTextInputClient::set_source_id(ukm::SourceId source_id) {
+  source_id_ = source_id;
+}
+
 void FakeTextInputClient::SetTextAndSelection(const std::u16string& text,
                                               gfx::Range selection) {
   DCHECK_LE(selection_.end(), text.length());
@@ -144,7 +148,7 @@ void FakeTextInputClient::SetTextEditCommandForNextKeyEvent(
     TextEditCommand command) {}
 
 ukm::SourceId FakeTextInputClient::GetClientSourceForMetrics() const {
-  return {};
+  return source_id_;
 }
 
 bool FakeTextInputClient::ShouldDoLearning() {
