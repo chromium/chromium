@@ -7,12 +7,26 @@
  * 'os-settings-files-page' is the settings page containing files settings.
  *
  */
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import './smb_shares_page.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-files-page',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -29,8 +43,8 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.SMB_SHARES) {
-          map.set(settings.routes.SMB_SHARES.path, '#smbShares');
+        if (routes.SMB_SHARES) {
+          map.set(routes.SMB_SHARES.path, '#smbShares');
         }
         return map;
       },
@@ -48,12 +62,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.FILES) {
+    if (route !== routes.FILES) {
       return;
     }
 
@@ -62,6 +76,6 @@ Polymer({
 
   /** @private */
   onTapSmbShares_() {
-    settings.Router.getInstance().navigateTo(settings.routes.SMB_SHARES);
+    Router.getInstance().navigateTo(routes.SMB_SHARES);
   },
 });

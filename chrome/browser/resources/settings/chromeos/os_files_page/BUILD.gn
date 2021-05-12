@@ -3,60 +3,37 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":os_files_page.m",
-    ":smb_shares_page.m",
+    ":os_files_page",
+    ":smb_shares_page",
   ]
 }
 
-js_library("os_files_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_files_page/os_files_page.m.js" ]
+js_library("os_files_page") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router",
   ]
-  extra_deps = [ ":os_files_page_module" ]
 }
 
-js_library("smb_shares_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_files_page/smb_shares_page.m.js" ]
+js_library("smb_shares_page") {
   deps = [
     "..:os_route.m",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":smb_shares_page_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":os_files_page_module",
-    ":smb_shares_page_module",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+html_to_js("web_components") {
+  js_files = [
+    "os_files_page.js",
+    "smb_shares_page.js",
   ]
-}
-
-polymer_modulizer("os_files_page") {
-  js_file = "os_files_page.js"
-  html_file = "os_files_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("smb_shares_page") {
-  js_file = "smb_shares_page.js"
-  html_file = "smb_shares_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
 }

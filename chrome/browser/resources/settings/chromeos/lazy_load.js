@@ -24,7 +24,7 @@ import './os_a11y_page/switch_access_action_assignment_dialog.m.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.m.js';
 import './os_a11y_page/switch_access_subpage.m.js';
 import './os_a11y_page/tts_subpage.m.js';
-import './os_files_page/os_files_page.m.js';
+import './os_files_page/os_files_page.js';
 import './os_languages_page/input_method_options_page.m.js';
 import './os_languages_page/input_page.m.js';
 import './os_languages_page/os_edit_dictionary_page.m.js';
@@ -50,7 +50,7 @@ import './os_privacy_page/peripheral_data_access_protection_dialog.m.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_reset_page/os_reset_page.js';
-import './os_files_page/smb_shares_page.m.js';
+import './os_files_page/smb_shares_page.js';
 
 export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../languages_page/languages_browser_proxy.js';

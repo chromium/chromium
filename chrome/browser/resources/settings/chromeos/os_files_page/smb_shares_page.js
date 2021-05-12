@@ -2,11 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/js/action_link.js';
+import '//resources/cr_elements/action_link_css.m.js';
+import '../localized_link/localized_link.m.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-smb-shares-page',
 
   behaviors: [
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -23,15 +39,14 @@ Polymer({
   },
 
   /**
-   * Overridden from settings.RouteObserverBehavior.
-   * @param {!settings.Route} route
+   * Overridden from RouteObserverBehavior.
+   * @param {!Route} route
    * @protected
    */
   currentRouteChanged(route) {
-    if (route === settings.routes.SMB_SHARES) {
-      this.showAddSmbDialog_ =
-          settings.Router.getInstance().getQueryParameters().get(
-              'showAddShare') === 'true';
+    if (route === routes.SMB_SHARES) {
+      this.showAddSmbDialog_ = Router.getInstance().getQueryParameters().get(
+                                   'showAddShare') === 'true';
     }
   },
 
