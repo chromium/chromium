@@ -17600,15 +17600,21 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.AudioPermissionEvent"
+<histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
     enum="AudioPermissionState" expires_after="2021-08-22">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The events related to granting or denying audio permission for
-    system level transcription (as opposite to Assistant). Will be logged each
-    time non-Assistant voice recognition is triggered with a mic button click.
+    system level transcription (as opposite to Assistant). Will be logged
+    {Timing}.
   </summary>
+  <token key="Timing">
+    <variant name=""
+        summary="each time non-Assistant voice recognition is triggered with
+                 a mic button press"/>
+    <variant name=".SessionStart" summary="on browser session start"/>
+  </token>
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventSource"
