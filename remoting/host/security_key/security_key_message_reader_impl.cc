@@ -26,7 +26,7 @@ SecurityKeyMessageReaderImpl::SecurityKeyMessageReaderImpl(
       reader_thread_("SecurityKeyMessageReaderImpl") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  reader_thread_.StartWithOptions(options);
+  reader_thread_.StartWithOptions(std::move(options));
 
   read_task_runner_ = reader_thread_.task_runner();
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
