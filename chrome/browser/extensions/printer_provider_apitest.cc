@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
 
   run_loop.Run();
 
-  EXPECT_TRUE(printers.empty());
+  EXPECT_TRUE(printers.GetList().empty());
 }
 
 IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersNoListener) {
 
   run_loop.Run();
 
-  EXPECT_TRUE(printers.empty());
+  EXPECT_TRUE(printers.GetList().empty());
 }
 
 IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersNotArray) {
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersNotArray) {
 
   run_loop.Run();
 
-  EXPECT_TRUE(printers.empty());
+  EXPECT_TRUE(printers.GetList().empty());
 }
 
 IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
 
   run_loop.Run();
 
-  EXPECT_TRUE(printers.empty());
+  EXPECT_TRUE(printers.GetList().empty());
 }
 
 IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersInvalidPrinterValue) {
