@@ -2150,8 +2150,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                                 cacheHit);
         }
       }
+      ssl_info = base::make_optional<net::SSLInfo>(info);
     }
-    ssl_info = base::make_optional<net::SSLInfo>(info);
   }
   NSString* failingURLString =
       error.userInfo[NSURLErrorFailingURLStringErrorKey];
@@ -2260,7 +2260,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
         // the placeholder navigation for the error page is committed and
         // there is no server trust (since there's no network navigation), which
         // is required to create a cert in CRWSSLStatusUpdater.
-        if (web::IsWKWebViewSSLCertError(context->GetError())) {
+        if (web::IsWKWebViewSSLCertError(context->GetError()) && info.cert) {
           web::SSLStatus& SSLStatus =
               self.navigationManagerImpl->GetLastCommittedItem()->GetSSL();
           SSLStatus.cert_status = info.cert_status;
