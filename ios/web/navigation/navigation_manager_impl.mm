@@ -71,7 +71,8 @@ NavigationManager::WebLoadParams::WebLoadParams(const GURL& url)
     : url(url),
       transition_type(ui::PAGE_TRANSITION_LINK),
       is_renderer_initiated(false),
-      post_data(nil) {}
+      post_data(nil),
+      is_using_https_as_default_scheme(false) {}
 
 NavigationManager::WebLoadParams::~WebLoadParams() {}
 
@@ -82,7 +83,9 @@ NavigationManager::WebLoadParams::WebLoadParams(const WebLoadParams& other)
       transition_type(other.transition_type),
       is_renderer_initiated(other.is_renderer_initiated),
       extra_headers([other.extra_headers copy]),
-      post_data([other.post_data copy]) {}
+      post_data([other.post_data copy]),
+      is_using_https_as_default_scheme(other.is_using_https_as_default_scheme) {
+}
 
 NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
     const WebLoadParams& other) {
@@ -93,6 +96,7 @@ NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
   transition_type = other.transition_type;
   extra_headers = [other.extra_headers copy];
   post_data = [other.post_data copy];
+  is_using_https_as_default_scheme = other.is_using_https_as_default_scheme;
 
   return *this;
 }
@@ -180,7 +184,8 @@ void NavigationManagerImpl::AddPendingItem(
     const GURL& url,
     const web::Referrer& referrer,
     ui::PageTransition navigation_type,
-    NavigationInitiationType initiation_type) {
+    NavigationInitiationType initiation_type,
+    bool is_using_https_as_default_scheme) {
   DiscardNonCommittedItems();
 
   pending_item_index_ = -1;
@@ -188,6 +193,7 @@ void NavigationManagerImpl::AddPendingItem(
       GetLastCommittedItemInCurrentOrRestoredSession();
   pending_item_ = CreateNavigationItemWithRewriters(
       url, referrer, navigation_type, initiation_type,
+      is_using_https_as_default_scheme,
       last_committed_item ? last_committed_item->GetURL() : GURL::EmptyGURL(),
       &transient_url_rewriters_);
   RemoveTransientURLRewriters();
@@ -689,7 +695,7 @@ void NavigationManagerImpl::LoadURLWithParams(
           ? NavigationInitiationType::RENDERER_INITIATED
           : NavigationInitiationType::BROWSER_INITIATED;
   AddPendingItem(params.url, params.referrer, params.transition_type,
-                 initiation_type);
+                 initiation_type, params.is_using_https_as_default_scheme);
 
   // Mark pending item as created from hash change if necessary. This is needed
   // because window.hashchange message may not arrive on time.
@@ -708,6 +714,9 @@ void NavigationManagerImpl::LoadURLWithParams(
 
     if (params.virtual_url.is_valid())
       pending_item->SetVirtualURL(params.virtual_url);
+
+    if (params.is_using_https_as_default_scheme)
+      pending_item->SetUpgradedToHttps();
   }
 
   // Add additional headers to the NavigationItem before loading it in the web
@@ -718,6 +727,10 @@ void NavigationManagerImpl::LoadURLWithParams(
   DCHECK(added_item);
   if (params.extra_headers)
     added_item->AddHttpRequestHeaders(params.extra_headers);
+
+  if (params.is_using_https_as_default_scheme)
+    added_item->SetUpgradedToHttps();
+
   if (params.post_data) {
     DCHECK([added_item->GetHttpRequestHeaders() objectForKey:@"Content-Type"])
         << "Post data should have an associated content type";
@@ -1005,6 +1018,7 @@ NavigationManagerImpl::GetLastCommittedItemInCurrentOrRestoredSession() const {
           /*url=*/GURL::EmptyGURL(), Referrer(),
           ui::PageTransition::PAGE_TRANSITION_LINK,
           NavigationInitiationType::RENDERER_INITIATED,
+          /*is_using_https_as_default_scheme=*/false,
           /*previous_url=*/GURL::EmptyGURL(),
           nullptr /* use default rewriters only */);
       last_committed_web_view_item_->SetUntrusted();
@@ -1199,6 +1213,7 @@ NavigationManagerImpl::CreateNavigationItemWithRewriters(
     const Referrer& referrer,
     ui::PageTransition transition,
     NavigationInitiationType initiation_type,
+    bool is_using_https_as_default_scheme,
     const GURL& previous_url,
     const std::vector<BrowserURLRewriter::URLRewriter>* additional_rewriters)
     const {
@@ -1243,6 +1258,8 @@ NavigationManagerImpl::CreateNavigationItemWithRewriters(
   item->SetReferrer(referrer);
   item->SetTransitionType(transition);
   item->SetNavigationInitiationType(initiation_type);
+  if (is_using_https_as_default_scheme)
+    item->SetUpgradedToHttps();
 
   return item;
 }
@@ -1426,6 +1443,7 @@ NavigationManagerImpl::WKWebViewCache::GetNavigationItemImplAtIndex(
                         : web::Referrer()),
           ui::PageTransition::PAGE_TRANSITION_LINK,
           NavigationInitiationType::RENDERER_INITIATED,
+          /*is_using_https_as_default_scheme=*/false,
           // Not using GetLastCommittedItem()->GetURL() in case the last
           // committed item in the WKWebView hasn't been linked to a
           // NavigationItem and this method is called in that code path to avoid

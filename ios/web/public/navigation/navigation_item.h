@@ -128,6 +128,17 @@ class NavigationItem : public base::SupportsUserData {
   // Adds headers from |additional_headers| to the item's http request headers.
   // Existing headers with the same key will be overridden.
   virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
+
+  // Returns true if the navigation was typed without a scheme and upgraded
+  // by the omnibox to use https:// as the scheme. (e.g. example.com is
+  // upgraded to https://example.com instead of http://example.com). This has
+  // the same purpose as
+  // ChromeNavigationUIData::is_using_https_as_default_scheme().
+  virtual bool IsUpgradedToHttps() const = 0;
+  // Sets the upgraded bit to true. Called from NavigationManager. Once this bit
+  // is set, it's never reset to false. Navigations defaulting to https but fail
+  // to load end up creating new navigations with this bit cleared.
+  virtual void SetUpgradedToHttps() = 0;
 };
 
 }  // namespace web

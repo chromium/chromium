@@ -486,21 +486,33 @@ TEST_F(NavigationManagerTest, OffsetsWithoutPendingIndex) {
 
 // Tests that when given a pending item, adding a new pending item replaces the
 // existing pending item if their URLs are different.
-TEST_F(NavigationManagerTest, ReplacePendingItemIfDiffernetURL) {
+TEST_F(NavigationManagerTest, ReplacePendingItemIfDifferentURL) {
   GURL existing_url = GURL("http://www.existing.com");
   navigation_manager()->AddPendingItem(
       existing_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED);
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
   EXPECT_EQ(existing_url, navigation_manager()->GetPendingItem()->GetURL());
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 
-  GURL new_url = GURL("http://www.new.com");
+  GURL new_url1 = GURL("http://www.new1.com");
   navigation_manager()->AddPendingItem(
-      new_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+      new_url1, Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED);
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
-  EXPECT_EQ(new_url, navigation_manager()->GetPendingItem()->GetURL());
+  EXPECT_EQ(new_url1, navigation_manager()->GetPendingItem()->GetURL());
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
+  EXPECT_EQ(0, navigation_manager()->GetItemCount());
+
+  GURL new_url2 = GURL("http://www.new2.com");
+  navigation_manager()->AddPendingItem(
+      new_url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_upgraded_to_https=*/true);
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_EQ(new_url2, navigation_manager()->GetPendingItem()->GetURL());
+  EXPECT_TRUE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -516,6 +528,7 @@ TEST_F(NavigationManagerTest, NotReplaceSameUrlPendingItemIfNotFormSubmission) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_TYPED));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 
   navigation_manager()->AddPendingItem(
@@ -529,6 +542,14 @@ TEST_F(NavigationManagerTest, NotReplaceSameUrlPendingItemIfNotFormSubmission) {
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
+
+  // Try again with a pending item that uses https as the default scheme.
+  navigation_manager()->AddPendingItem(
+      existing_url, Referrer(), ui::PAGE_TRANSITION_LINK,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_upgraded_to_https=*/true);
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_TRUE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
 }
 
 // Tests that when given a pending item, adding a new pending item with the same
@@ -543,6 +564,7 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItemIfFormSubmission) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_TYPED));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 
   navigation_manager()->AddPendingItem(
@@ -552,6 +574,19 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItemIfFormSubmission) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_FORM_SUBMIT));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
+  EXPECT_EQ(0, navigation_manager()->GetItemCount());
+
+  // Try again with a pending item that uses https as the default scheme.
+  navigation_manager()->AddPendingItem(
+      existing_url, Referrer(), ui::PAGE_TRANSITION_FORM_SUBMIT,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_upgraded_to_https=*/true);
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      navigation_manager()->GetPendingItem()->GetTransitionType(),
+      ui::PAGE_TRANSITION_FORM_SUBMIT));
+  EXPECT_TRUE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -595,6 +630,7 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItem) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_TYPED));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 
   navigation_manager()->AddPendingItem(
@@ -604,6 +640,18 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItem) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_RELOAD));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
+  EXPECT_EQ(0, navigation_manager()->GetItemCount());
+
+  navigation_manager()->AddPendingItem(
+      existing_url, Referrer(), ui::PAGE_TRANSITION_RELOAD,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_upgraded_to_https=*/true);
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      navigation_manager()->GetPendingItem()->GetTransitionType(),
+      ui::PAGE_TRANSITION_RELOAD));
+  EXPECT_TRUE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -622,6 +670,7 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItemFromDesktop) {
       ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(web::UserAgentType::DESKTOP,
             navigation_manager()->GetPendingItem()->GetUserAgentType());
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 
   navigation_manager()->AddPendingItem(
@@ -631,6 +680,18 @@ TEST_F(NavigationManagerTest, ReplaceSameUrlPendingItemFromDesktop) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager()->GetPendingItem()->GetTransitionType(),
       ui::PAGE_TRANSITION_RELOAD));
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
+  EXPECT_EQ(0, navigation_manager()->GetItemCount());
+
+  navigation_manager()->AddPendingItem(
+      existing_url, Referrer(), ui::PAGE_TRANSITION_RELOAD,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_upgraded_to_https=*/true);
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      navigation_manager()->GetPendingItem()->GetTransitionType(),
+      ui::PAGE_TRANSITION_RELOAD));
+  EXPECT_TRUE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(0, navigation_manager()->GetItemCount());
 }
 
@@ -656,6 +717,7 @@ TEST_F(NavigationManagerTest, AddPendingItemIfDiffernetURL) {
       web::NavigationInitiationType::BROWSER_INITIATED);
   ASSERT_TRUE(navigation_manager()->GetPendingItem());
   EXPECT_EQ(new_url, navigation_manager()->GetPendingItem()->GetURL());
+  EXPECT_FALSE(navigation_manager()->GetPendingItem()->IsUpgradedToHttps());
   EXPECT_EQ(1, navigation_manager()->GetItemCount());
 }
 
@@ -1564,6 +1626,7 @@ TEST_F(NavigationManagerTest, LoadURLWithParamsSavesStateOnCurrentItem) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(pending_item->GetTransitionType(),
                                            ui::PAGE_TRANSITION_TYPED));
   EXPECT_FALSE(pending_item->HasPostData());
+  EXPECT_FALSE(pending_item->IsUpgradedToHttps());
 }
 
 TEST_F(NavigationManagerTest, UpdatePendingItemWithoutPendingItem) {
@@ -1840,6 +1903,7 @@ TEST_F(NavigationManagerTest, SyncAfterItemAtIndex) {
                                            item->GetTransitionType()));
   EXPECT_EQ(UserAgentType::NONE, item->GetUserAgentType());
   EXPECT_FALSE(item->GetTimestamp().is_null());
+  EXPECT_FALSE(item->IsUpgradedToHttps());
 }
 
 // Tests that Referrer is inferred from the previous WKBackForwardListItem.

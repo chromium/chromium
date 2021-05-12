@@ -143,11 +143,14 @@ class NavigationManagerImpl : public NavigationManager {
   // type and user agent override option, making it the pending item. If pending
   // item is the same as the current item, this does nothing. |referrer| may be
   // nil if there isn't one. The item starts out as pending, and will be lost
-  // unless |-commitPendingItem| is called.
+  // unless |-commitPendingItem| is called. |is_using_https_as_default_scheme|
+  // must be true for navigations that use https:// as the default scheme
+  // in their URL, if the user typed the URL without a scheme.
   void AddPendingItem(const GURL& url,
                       const web::Referrer& referrer,
                       ui::PageTransition navigation_type,
-                      NavigationInitiationType initiation_type);
+                      NavigationInitiationType initiation_type,
+                      bool is_using_https_as_default_scheme = false);
 
   // Commits the pending item, if any.
   // TODO(crbug.com/936933): Remove this method.
@@ -365,6 +368,7 @@ class NavigationManagerImpl : public NavigationManager {
       const Referrer& referrer,
       ui::PageTransition transition,
       NavigationInitiationType initiation_type,
+      bool is_using_https_as_default_scheme,
       const GURL& previous_url,
       const std::vector<BrowserURLRewriter::URLRewriter>* url_rewriters) const;
 

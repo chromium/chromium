@@ -60,6 +60,13 @@ class NavigationManager {
     // generally set a Content-Type header as well.
     NSData* post_data;
 
+    // True if the navigation was initiated by typing in the omnibox but the
+    // typed text didn't have a scheme such as http or https (e.g. google.com),
+    // and https was used as the default scheme for the navigation. This is used
+    // by TypedNavigationUpgradeThrottle to determine if the navigation should
+    // be observed and fall back to using http scheme if necessary.
+    bool is_using_https_as_default_scheme;
+
     // Create a new WebLoadParams with the given URL and defaults for all other
     // parameters.
     explicit WebLoadParams(const GURL& url);
