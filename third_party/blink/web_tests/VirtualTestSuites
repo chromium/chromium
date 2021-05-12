@@ -1014,8 +1014,7 @@
   },
   {
     "prefix": "force-renderer-accessibility",
-    "bases": ["accessibility/slot-poison.html",
-              "accessibility/details-summary-crash.html"],
+    "bases": ["accessibility/slot-poison.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {

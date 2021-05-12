@@ -1715,16 +1715,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCustomElementHidden) {
-  RunHtmlTest(FILE_PATH_LITERAL("custom-element-hidden.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCustomElementRemoveNodes) {
-  RunHtmlTest(FILE_PATH_LITERAL("custom-element-remove-nodes.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCustomElementWithAriaOwnsOutside) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-outside.html"));
 }
