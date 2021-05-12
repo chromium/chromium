@@ -119,7 +119,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
 
   base::Thread::Options options;
   options.priority = base::ThreadPriority::REALTIME_AUDIO;
-  feeder_thread_.StartWithOptions(options);
+  feeder_thread_.StartWithOptions(std::move(options));
   feeder_task_runner_ = feeder_thread_.task_runner();
   weak_this_ = weak_factory_.GetWeakPtr();
 }

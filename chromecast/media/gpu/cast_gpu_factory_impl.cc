@@ -53,7 +53,7 @@ CastGpuFactoryImpl::CastGpuFactoryImpl(
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.priority = base::ThreadPriority::DISPLAY;
-  gpu_io_thread_.StartWithOptions(options);
+  gpu_io_thread_.StartWithOptions(std::move(options));
 
   mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
   browser_services_->Bind(remote_gpu.InitWithNewPipeAndPassReceiver());

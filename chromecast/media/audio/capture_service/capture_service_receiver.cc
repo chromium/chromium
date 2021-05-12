@@ -189,7 +189,7 @@ CaptureServiceReceiver::CaptureServiceReceiver(
   // TODO(b/137106361): Tweak the thread priority once the thread priority for
   // speech processing gets fixed.
   options.priority = base::ThreadPriority::DISPLAY;
-  CHECK(io_thread_.StartWithOptions(options));
+  CHECK(io_thread_.StartWithOptions(std::move(options)));
   task_runner_ = io_thread_.task_runner();
   DCHECK(task_runner_);
 }

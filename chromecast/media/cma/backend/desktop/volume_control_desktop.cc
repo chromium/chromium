@@ -41,7 +41,7 @@ class VolumeControlInternal {
 
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    thread_.StartWithOptions(options);
+    thread_.StartWithOptions(std::move(options));
   }
 
   ~VolumeControlInternal() = default;

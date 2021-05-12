@@ -20,7 +20,7 @@ AudioIoThread::AudioIoThread() : thread_("AudioIO") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.priority = base::ThreadPriority::REALTIME_AUDIO;
-  CHECK(thread_.StartWithOptions(options));
+  CHECK(thread_.StartWithOptions(std::move(options)));
 }
 
 AudioIoThread::~AudioIoThread() = default;

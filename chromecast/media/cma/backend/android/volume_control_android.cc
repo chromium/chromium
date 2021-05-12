@@ -46,7 +46,7 @@ VolumeControlAndroid::VolumeControlAndroid()
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  thread_.StartWithOptions(options);
+  thread_.StartWithOptions(std::move(options));
 
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&VolumeControlAndroid::InitializeOnThread,
