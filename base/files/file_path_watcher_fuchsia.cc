@@ -4,6 +4,7 @@
 
 #include "base/files/file_path_watcher.h"
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
