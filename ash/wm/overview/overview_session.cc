@@ -14,12 +14,17 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -729,6 +734,28 @@ void OverviewSession::OnWindowActivating(
     RestoreWindowActivation(false);
     EndOverview();
     return;
+  }
+
+  // The message center takes activation when someone clicks one of its buttons.
+  // We shouldn't close overview in that case. There are two different possible
+  // message center widgets. The stand alone one, and the one that is part of
+  // the unified system tray bubble.
+  if (gained_active->GetName() ==
+      AshMessagePopupCollection::kMessagePopupWidgetName) {
+    return;
+  }
+
+  for (RootWindowController* root_window_controller :
+       Shell::GetAllRootWindowControllers()) {
+    UnifiedSystemTray* system_tray =
+        root_window_controller->GetStatusAreaWidget()->unified_system_tray();
+    if (system_tray->IsBubbleShown()) {
+      if (gained_active == system_tray->message_center_bubble()
+                               ->GetBubbleWidget()
+                               ->GetNativeWindow()) {
+        return;
+      }
+    }
   }
 
   // If app list is open in clamshell mode, end overview. Note: we have special
