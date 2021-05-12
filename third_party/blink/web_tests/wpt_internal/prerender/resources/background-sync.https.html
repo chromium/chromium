@@ -15,7 +15,7 @@ const isPrerendering = params.has('prerendering');
 
 async function service_worker_install() {
   const scope = "resources/";
-  const script = "background-sync.js";
+  const script = "do-nothing-worker.js";
 
   const t = async_test("Test background sync");
   const registration =

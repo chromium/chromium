@@ -49,7 +49,8 @@ async function writeValueToServer(key, value) {
   await fetch(serverUrl);
 }
 
-// Loads the initiator page, and the page will start a prerender.
+// Loads the initiator page, and navigates to the prerendered page after it
+// receives a message('loaded' or 'readyToActivate' message).
 function loadInitiatorPage() {
   // Used to communicate with the prerendering page.
   const prerenderChannel = new BroadcastChannel('prerender-channel');
@@ -57,14 +58,18 @@ function loadInitiatorPage() {
     prerenderChannel.close();
   });
 
-  // We need to wait for load before navigation since the prerendering
-  // implementation in Chromium can only activate if the response for the
-  // prerendering navigation has already been received and the prerendering
-  // document was created.
-  const loaded = new Promise(resolve => {
+  // We need to wait for 'loaded' or 'readyToActivate' message before navigation
+  // since the prerendering implementation in Chromium can only activate if the
+  // response for the prerendering navigation has already been received and the
+  // prerendering document was created.
+  // TODO(crbug.com/1201119): The tests that use 'loaded' should be migrated to
+  // use 'readyToActivate'.
+  const readyToActivate = new Promise((resolve, reject) => {
     prerenderChannel.addEventListener('message', e => {
+      if (e.data != 'loaded' && e.data != 'readyToActivate')
+        reject(`The initiator page receives an unsupported message: ${e.data}`);
       resolve(e.data);
-    }, {once: true});
+    });
   });
 
   const url = new URL(document.URL);
@@ -74,8 +79,14 @@ function loadInitiatorPage() {
   startPrerendering(url.toString());
 
   // Navigate to the prerendered page after being informed.
-  loaded.then(() => {
+  readyToActivate.then(() => {
     // navigate to the prerenderered page.
     window.location = url.toString();
+  }).catch(e => {
+    const testChannel = new BroadcastChannel('test-channel');
+    testChannel.postMessage(
+        `Failed to navigate the prerendered page: ${e.toString()}`);
+    testChannel.close();
+    window.close();
   });
 }

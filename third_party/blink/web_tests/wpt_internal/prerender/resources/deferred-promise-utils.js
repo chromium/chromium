@@ -10,7 +10,8 @@
  *  Suppose the html is "prerender-promise-test.html"
  *  On prerendering page, prerender-promise-test.html?prerendering:
  *    const promise = {a promise that should be deferred during prerendering};
- *    const prerenderEventCollector = new PrerenderEventCollector();
+ *    const prerenderEventCollector =
+ *        new PrerenderEventCollector({supportReadyToActivate: bool});
  *    prerenderEventCollector.start(promise, {promise name});
  *
  *  On the initiator page, prerender-promise-test.html:
@@ -25,12 +26,13 @@
 // 3. the promise passed to start() is resolved.
 // 4. addEvent() is called manually.
 class PrerenderEventCollector {
-  constructor() {
+  constructor(options = { supportReadyToActivate: false }) {
     // Used to communicate with the initiator page.
     this.prerenderChannel_ = new BroadcastChannel('prerender-channel');
     // Used to communicate with the main test page.
     this.testChannel_ = new BroadcastChannel('test-channel');
     this.eventsSeen_ = [];
+    this.supportReadyToActivate = options.supportReadyToActivate;
   }
 
   // Adds an event to `eventsSeen_` along with the prerendering state of the
@@ -38,6 +40,15 @@ class PrerenderEventCollector {
   addEvent(eventMessage) {
     this.eventsSeen_.push(
         {event: eventMessage, prerendering: document.prerendering});
+  }
+
+  // Informs the initiator page that this page is ready to be activated.
+  readyToActivate() {
+    // Post a task to give the implementation a chance to fail in case it
+    // resolves a promise without waiting for activation.
+    setTimeout(() => {
+      this.prerenderChannel_.postMessage('readyToActivate');
+    }, 0);
   }
 
   // Starts collecting events until the promise resolves.
@@ -63,9 +74,13 @@ class PrerenderEventCollector {
       this.addEvent('prerendering change');
     });
 
-    window.addEventListener('load', () => {
-      // Inform the initiator page that this page was loaded.
-      this.prerenderChannel_.postMessage('loaded');
-    });
+    if (!this.supportReadyToActivate_) {
+      // TODO(crbug.com/1201119): Can we remove this 'load' event listener
+      // after all tests send 'readyToActivate' signal explicitly?
+      window.addEventListener('load', () => {
+        // Inform the initiator page that this page was ready to activate.
+        this.prerenderChannel_.postMessage('readyToActivate');
+      });
+    }
   }
 }
