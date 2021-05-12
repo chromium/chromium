@@ -376,7 +376,7 @@ int main(int argc, char** argv) {
   // CertNetFetcher to be constructed on that thread.
   base::Thread::Options options(base::MessagePumpType::IO, 0);
   base::Thread thread("network_thread");
-  CHECK(thread.StartWithOptions(options));
+  CHECK(thread.StartWithOptions(std::move(options)));
   // Owned by this thread, but initialized, used, and shutdown on the network
   // thread.
   std::unique_ptr<net::URLRequestContext> context;

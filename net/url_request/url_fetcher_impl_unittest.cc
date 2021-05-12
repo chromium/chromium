@@ -365,7 +365,8 @@ class URLFetcherTest : public TestWithTaskEnvironment {
       network_thread_ = std::make_unique<base::Thread>("network thread");
       base::Thread::Options network_thread_options;
       network_thread_options.message_pump_type = base::MessagePumpType::IO;
-      bool result = network_thread_->StartWithOptions(network_thread_options);
+      bool result =
+          network_thread_->StartWithOptions(std::move(network_thread_options));
       CHECK(result);
     }
 

@@ -204,7 +204,8 @@ bool QuicSimpleTestServer::Start() {
   g_quic_server_thread = new base::Thread("quic server thread");
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
-  bool started = g_quic_server_thread->StartWithOptions(thread_options);
+  bool started =
+      g_quic_server_thread->StartWithOptions(std::move(thread_options));
   DCHECK(started);
   base::FilePath test_files_root = GetTestCertsDirectory();
 
