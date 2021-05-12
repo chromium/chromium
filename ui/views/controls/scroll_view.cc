@@ -200,7 +200,9 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   // sure the field is initialized.
   auto contents_viewport = std::make_unique<Viewport>(this);
   contents_viewport_ = contents_viewport.get();
-  AddChildView(std::move(contents_viewport));
+  // Add content view port as the first child, so that the scollbars can
+  // overlay it.
+  AddChildViewAt(std::move(contents_viewport), 0);
   header_viewport_ = AddChildView(std::make_unique<Viewport>(this));
 
   horiz_sb_->SetVisible(false);
@@ -888,7 +890,7 @@ void ScrollView::SetHeaderOrContents(View* parent,
                                      View** member) {
   delete *member;
   if (new_view.get())
-    *member = parent->AddChildView(std::move(new_view));
+    *member = parent->AddChildViewAt(std::move(new_view), 0);
   else
     *member = nullptr;
   InvalidateLayout();
