@@ -5791,6 +5791,7 @@ crbug.com/476553 virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds
 crbug.com/476553 virtual/scroll-unification/plugins/gesture-events-scrolled.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/plugins/gesture-events.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/plugins/mouse-click-iframe-to-plugin.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/plugins/sequential-focus.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/plugins/transformed-events.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/scrollbars/listbox-scrollbar-combinations.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-legend-change.html [ Pass Failure Timeout Crash ]
