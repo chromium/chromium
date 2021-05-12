@@ -506,7 +506,8 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   // since the client is required to do so manually.
   const bool is_flush = pending_request_->type == Request::Type::kFlush;
   if (is_flush && pending_request_->reset_generation != reset_generation_) {
-    pending_request_.Release()->resolver.Release()->Resolve();
+    // TODO(crbug.com/1201299): Emit an AbortError.
+    pending_request_.Release()->resolver.Release()->Reject();
     ProcessRequests();
     return;
   }

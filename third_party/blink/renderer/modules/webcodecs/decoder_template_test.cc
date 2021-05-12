@@ -158,7 +158,7 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
 
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
-    ASSERT_TRUE(tester.IsFulfilled());
+    ASSERT_TRUE(tester.IsRejected());
   }
 }
 

@@ -297,5 +297,5 @@ promise_test(async t => {
 
   let p = decoder.flush();
   decoder.reset();
-  return p;
+  await promise_rejects_exactly(t, undefined, p);
 }, 'Test reset during flush.');

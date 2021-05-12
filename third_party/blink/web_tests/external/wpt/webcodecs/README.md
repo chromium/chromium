@@ -88,6 +88,11 @@ Used a [custom tool](https://storage.googleapis.com/dalecurtis/avif2mp4.html) to
 ffmpeg -f lavfi -i testsrc=rate=10:n=1 -t 1 -pix_fmt yuv420p -vcodec h264 -tune zerolatency h264.mp4
 ```
 
+### h264.annexb
+```
+ffmpeg -i h264.mp4 -codec copy -bsf:v h264_mp4toannexb -f h264 h264.annexb
+```
+
 ### sfx-opus.ogg
 ```
 sox -n -r 48000 sfx.wav synth 1 sine 480
