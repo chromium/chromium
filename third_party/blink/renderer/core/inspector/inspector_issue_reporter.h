@@ -15,7 +15,6 @@ class UnguessableToken;
 namespace blink {
 class CoreProbeSink;
 class DocumentLoader;
-class LocalFrame;
 class ResourceError;
 class InspectorIssueStorage;
 
@@ -36,7 +35,6 @@ class CORE_EXPORT InspectorIssueReporter final
                       DocumentLoader* loader,
                       const ResourceError& error,
                       const base::UnguessableToken& token);
-  void DomContentLoadedEventFired(LocalFrame*);
 
   void Trace(Visitor*) const;
 

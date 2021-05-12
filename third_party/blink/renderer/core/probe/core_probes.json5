@@ -27,7 +27,6 @@
     InspectorIssueReporter: {
       probes: [
         "DidFailLoading",
-        "DomContentLoadedEventFired",
       ]
     },
     InspectorAnimationAgent: {

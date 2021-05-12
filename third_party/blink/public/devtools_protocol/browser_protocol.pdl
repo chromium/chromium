@@ -733,18 +733,6 @@ experimental domain Audits
       optional DOM.BackendNodeId violatingNodeId
       optional string invalidParameter
 
-# Details for issues about documents in Quirks Mode
-# or Limited Quirks Mode that affects page layouting.
-  type QuirksModeIssueDetails extends object
-    properties
-      # If false, it means the document's mode is "quirks"
-      # instead of "limited-quirks".
-      boolean isLimitedQuirksMode
-      DOM.BackendNodeId documentNodeId
-      string url
-      Page.FrameId frameId
-      Network.LoaderId loaderId
-
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -760,7 +748,6 @@ experimental domain Audits
       LowTextContrastIssue
       CorsIssue
       AttributionReportingIssue
-      QuirksModeIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -777,7 +764,6 @@ experimental domain Audits
       optional LowTextContrastIssueDetails lowTextContrastIssueDetails
       optional CorsIssueDetails corsIssueDetails
       optional AttributionReportingIssueDetails attributionReportingIssueDetails
-      optional QuirksModeIssueDetails quirksModeIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object
