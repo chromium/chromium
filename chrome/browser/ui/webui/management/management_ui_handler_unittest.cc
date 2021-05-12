@@ -1284,11 +1284,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   EXPECT_CALL(policy_service_, GetPolicies(chrome_policies_namespace))
       .WillRepeatedly(ReturnRef(chrome_policies));
 
-  base::DictionaryValue* threat_protection_info = nullptr;
+  const base::DictionaryValue* threat_protection_info = nullptr;
 
   // When no policies are set, nothing to report.
   auto info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
-  info.GetAsDictionary(&threat_protection_info);
+  ASSERT_TRUE(info.is_dict());
+  threat_protection_info = &base::Value::AsDictionaryValue(info);
   EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1307,7 +1308,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 0);
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
-  info.GetAsDictionary(&threat_protection_info);
+  ASSERT_TRUE(info.is_dict());
+  threat_protection_info = &base::Value::AsDictionaryValue(info);
   EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1334,7 +1336,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       policy::POLICY_SCOPE_MACHINE);
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
-  info.GetAsDictionary(&threat_protection_info);
+  ASSERT_TRUE(info.is_dict());
+  threat_protection_info = &base::Value::AsDictionaryValue(info);
   EXPECT_TRUE(threat_protection_info->FindListKey("info")->GetList().empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1346,7 +1349,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       policy::DMToken::CreateValidTokenForTesting("fake-token"));
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
-  info.GetAsDictionary(&threat_protection_info);
+  ASSERT_TRUE(info.is_dict());
+  threat_protection_info = &base::Value::AsDictionaryValue(info);
   EXPECT_EQ(5u, threat_protection_info->FindListKey("info")->GetList().size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
