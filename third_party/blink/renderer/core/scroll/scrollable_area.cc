@@ -334,6 +334,7 @@ void ScrollableArea::ProgrammaticScrollHelper(
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_sequenced_scroll,
     ScrollCallback on_finish) {
+  recordreplay::Assert("ScrollableArea::ProgrammaticScrollHelper");
   CancelScrollAnimation();
 
   ScrollCallback callback = std::move(on_finish);
@@ -393,6 +394,8 @@ PhysicalRect ScrollableArea::ScrollIntoView(
 
 void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
                                          mojom::blink::ScrollType scroll_type) {
+  recordreplay::Assert("ScrollableArea::ScrollOffsetChanged Start");
+
   TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x",
                offset.Width(), "y", offset.Height());
   TRACE_EVENT_INSTANT1("input", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
@@ -408,8 +411,10 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
 
   // If the layout object has been detached as a result of updating the scroll
   // this object will be cleaned up shortly.
-  if (HasBeenDisposed())
+  if (HasBeenDisposed()) {
+    recordreplay::Assert("ScrollableArea::ScrollOffsetChanged #1");
     return;
+  }
 
   // Tell the scrollbars to update their thumb postions.
   // If the scrollbar does not have its own layer, it must always be
@@ -446,6 +451,7 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   }
 
   GetScrollAnimator().SetCurrentOffset(offset);
+  recordreplay::Assert("ScrollableArea::ScrollOffsetChanged Done");
 }
 
 bool ScrollableArea::ScrollBehaviorFromString(
