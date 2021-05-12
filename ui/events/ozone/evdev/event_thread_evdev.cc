@@ -86,7 +86,7 @@ void EventThreadEvdev::Start(
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::UI;
   thread_options.priority = base::ThreadPriority::DISPLAY;
-  if (!thread_->StartWithOptions(thread_options))
+  if (!thread_->StartWithOptions(std::move(thread_options)))
     LOG(FATAL) << "Failed to create input thread";
 }
 
