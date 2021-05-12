@@ -58,6 +58,11 @@ void PCScan::NotifyThreadDestroyed() {
   PCScanInternal::Instance().NotifyThreadDestroyed();
 }
 
+void PCScan::SetClearType(ClearType clear_type) {
+  PCScan& instance = Instance();
+  instance.clear_type_ = clear_type;
+}
+
 void PCScan::UninitForTesting() {
   PCScanInternal::Instance().ClearRootsForTesting();  // IN-TEST
   ReinitPCScanMetadataAllocatorForTesting();          // IN-TEST

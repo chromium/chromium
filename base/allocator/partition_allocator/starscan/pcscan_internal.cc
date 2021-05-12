@@ -595,21 +595,25 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   using AccessType = QuarantineBitmap::AccessType;
 
   const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
+  const PCScan::ClearType clear_type = pcscan_.clear_type_;
+
   PCScanSnapshot::SuperPagesWorklist::RandomizedView super_pages(
       snapshot_.quarantinable_super_pages_worklist());
-  super_pages.Visit([this, giga_cage_enabled](uintptr_t super_page_base) {
+  super_pages.Visit([this, giga_cage_enabled,
+                     clear_type](uintptr_t super_page_base) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page_base));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page_base));
     bitmap->template Iterate<AccessType::kNonAtomic>(
-        [root, giga_cage_enabled](uintptr_t ptr) {
+        [root, giga_cage_enabled, clear_type](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           // Use zero as a zapping value to speed up the fast bailout check in
           // ScanPartitions.
           const size_t size = slot_span->GetUsableSize(root);
-          memset(object, 0, size);
+          if (clear_type == PCScan::ClearType::kLazy)
+            memset(object, 0, size);
 #if defined(PA_HAS_64_BITS_POINTERS)
           if (giga_cage_enabled) {
             // Set card(s) for this quarantined object.
@@ -1001,6 +1005,7 @@ PCScanInternal::~PCScanInternal() = default;
 void PCScanInternal::Initialize() {
   PA_DCHECK(!is_initialized_);
   CommitCardTable();
+  PCScan::SetClearType(PCScan::ClearType::kLazy);
   is_initialized_ = true;
 }
 

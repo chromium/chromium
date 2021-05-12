@@ -994,7 +994,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
     if (LIKELY(!root->IsDirectMappedBucket(slot_span->bucket))) {
-      PCScan::MoveToQuarantine(ptr, slot_span->bucket->slot_size);
+      PCScan::MoveToQuarantine(ptr, slot_span->GetUsableSize(root),
+                               slot_span->bucket->slot_size);
       return;
     }
   }
