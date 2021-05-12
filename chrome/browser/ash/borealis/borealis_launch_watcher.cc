@@ -6,6 +6,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace borealis {
 

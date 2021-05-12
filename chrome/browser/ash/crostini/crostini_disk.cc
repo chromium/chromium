@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/concierge_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace {

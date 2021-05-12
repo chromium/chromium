@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace borealis {
 

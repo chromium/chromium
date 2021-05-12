@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
