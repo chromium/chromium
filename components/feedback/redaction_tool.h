@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -35,6 +34,12 @@ struct CustomPatternWithAlias {
 // using custom patterns.
 class RedactionTool {
  public:
+  // Disallow copy or move
+  RedactionTool(const RedactionTool&) = delete;
+  RedactionTool& operator=(const RedactionTool&) = delete;
+  RedactionTool(RedactionTool&&) = delete;
+  RedactionTool& operator=(RedactionTool&&) = delete;
+
   // |first_party_extension_ids| is a null terminated array of all the 1st
   // party extension IDs whose URLs won't be redacted. It is OK to pass null for
   // that value if it's OK to redact those URLs or they won't be present.
@@ -96,8 +101,6 @@ class RedactionTool {
   std::map<std::string, std::unique_ptr<re2::RE2>> regexp_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RedactionTool);
 };
 
 // A container for a RedactionTool that is thread-safely ref-countable.
