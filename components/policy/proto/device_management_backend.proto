@@ -1797,6 +1797,10 @@ message Policy {
 
     // A policy is set by command line switch for testing purpose.
     SOURCE_COMMAND_LINE = 8;
+
+    // A policy is set by Google's cloud management tool in Ash and piped to
+    // Lacros.
+    SOURCE_CLOUD_FROM_ASH = 9;
   }
   optional PolicySource source = 4;
 

@@ -27,6 +27,7 @@ const webui::LocalizedString kPolicySources[POLICY_SOURCE_COUNT] = {
     {"platform", IDS_POLICY_SOURCE_PLATFORM},
     {"priorityCloud", IDS_POLICY_SOURCE_CLOUD},
     {"merged", IDS_POLICY_SOURCE_MERGED},
+    {"cloud_from_ash", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
 };
 
 PolicyConversions::PolicyConversions(

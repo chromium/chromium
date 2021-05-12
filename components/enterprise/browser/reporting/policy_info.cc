@@ -62,6 +62,8 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
       return em::Policy_PolicySource_SOURCE_PRIORITY_CLOUD;
     case policy::POLICY_SOURCE_MERGED:
       return em::Policy_PolicySource_SOURCE_MERGED;
+    case policy::POLICY_SOURCE_CLOUD_FROM_ASH:
+      return em::Policy_PolicySource_SOURCE_CLOUD_FROM_ASH;
     case policy::POLICY_SOURCE_COUNT:
       NOTREACHED();
       return em::Policy_PolicySource_SOURCE_UNKNOWN;

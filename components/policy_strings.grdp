@@ -483,6 +483,9 @@ Additional details:
   <message name="IDS_POLICY_SOURCE_MERGED" desc="Indicates that the policy is a merged values from multiple sources.">
     Merged
   </message>
+  <message name="IDS_POLICY_SOURCE_CLOUD_FROM_ASH" desc="Indicates that the policy originates from the cloud in Ash and piped to Lacros.">
+    Cloud (system-wide)
+  </message>
   <message name="IDS_POLICY_SOURCE_ACTIVE_DIRECTORY" desc="Indicates that the policy originates from a local server, e.g. Samba or Active Directory.">
     <ph name="MICROSOFT_ACTIVE_DIRECTORY">Local Server</ph>
   </message>

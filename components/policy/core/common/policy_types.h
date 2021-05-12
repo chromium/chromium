@@ -58,6 +58,9 @@ enum PolicySource {
   // The policy coming from multiple sources and its value has been merged.
   POLICY_SOURCE_MERGED,
 
+  // The policy was set by Cloud in Ash and piped to Lacros.
+  POLICY_SOURCE_CLOUD_FROM_ASH,
+
   // Number of source types. Has to be the last element.
   POLICY_SOURCE_COUNT
 };
