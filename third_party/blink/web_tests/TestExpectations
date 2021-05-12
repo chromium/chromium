@@ -6696,9 +6696,6 @@ crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout
 # Sheriff 2021-04-14
 crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Pass Failure ]
 
-# Test to fix as part of the PlzServiceWorker project.
-crbug.com/1198443 virtual/plz-service-worker/http/tests/serviceworker/clients-openwindow.html [ Pass Failure ]
-
 # Sheriff 2021-04-15
 crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
 crbug.com/1194460 virtual/scroll-unification/fast/events/mouseenter-mouseleave-chained-listeners.html [ Skip ]
