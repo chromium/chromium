@@ -78,7 +78,9 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
     base::ListValue disabled_feature_list;
-    disabled_feature_list.AppendStrings(features);
+    for (const std::string& feature : features) {
+      disabled_feature_list.Append(feature);
+    }
     ListPrefUpdate update(
         local_state(), embedder_support::prefs::kOriginTrialDisabledFeatures);
     update->Swap(&disabled_feature_list);
@@ -110,7 +112,9 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
     base::ListValue disabled_token_list;
-    disabled_token_list.AppendStrings(tokens);
+    for (const std::string& token : tokens) {
+      disabled_token_list.Append(token);
+    }
     ListPrefUpdate update(local_state(),
                           embedder_support::prefs::kOriginTrialDisabledTokens);
     update->Swap(&disabled_token_list);
@@ -232,7 +236,9 @@ TEST_F(OriginTrialsComponentInstallerTest,
 
   auto manifest = std::make_unique<base::DictionaryValue>();
   auto disabled_feature_list = std::make_unique<base::ListValue>();
-  disabled_feature_list->AppendStrings(kNewDisabledFeatures);
+  for (const std::string& feature : kNewDisabledFeatures) {
+    disabled_feature_list->Append(feature);
+  }
   manifest->Set(kManifestDisabledFeaturesPath,
                 std::move(disabled_feature_list));
 
@@ -311,7 +317,9 @@ TEST_F(OriginTrialsComponentInstallerTest,
 
   auto manifest = std::make_unique<base::DictionaryValue>();
   auto disabled_token_list = std::make_unique<base::ListValue>();
-  disabled_token_list->AppendStrings(kNewDisabledTokens);
+  for (const std::string& token : kNewDisabledTokens) {
+    disabled_token_list->Append(token);
+  }
   manifest->Set(kManifestDisabledTokenSignaturesPath,
                 std::move(disabled_token_list));
 
