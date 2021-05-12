@@ -7,8 +7,11 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 
 namespace blink {
+
+class ExecutionContext;
 
 namespace protocol {
 namespace Audits {
@@ -41,6 +44,13 @@ class CORE_EXPORT AuditsIssue {
   std::unique_ptr<protocol::Audits::InspectorIssue> TakeIssue();
 
   ~AuditsIssue();
+
+  static void ReportQuirksModeIssue(ExecutionContext* execution_context,
+                                    bool isLimitedQuirksMode,
+                                    DOMNodeId document_node_id,
+                                    String url,
+                                    String frame_id,
+                                    String loader_id);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);
