@@ -283,7 +283,7 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
       base::DictionaryValue::From(content_settings->GetWebsiteSetting(
           hostname, GURL(), contents_setting_type, nullptr));
 
-  if (!cache_dictionary || cache_dictionary->empty())
+  if (!cache_dictionary || cache_dictionary->DictEmpty())
     return T::VERDICT_TYPE_UNSPECIFIED;
 
   base::Value* verdict_dictionary =
@@ -817,7 +817,7 @@ size_t VerdictCacheManager::GetPhishGuardVerdictCountForURL(
   std::unique_ptr<base::DictionaryValue> cache_dictionary =
       base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
           url, GURL(), ContentSettingsType::PASSWORD_PROTECTION, nullptr));
-  if (!cache_dictionary || cache_dictionary->empty())
+  if (!cache_dictionary || cache_dictionary->DictEmpty())
     return 0;
 
   int verdict_cnt = 0;
@@ -843,7 +843,7 @@ size_t VerdictCacheManager::GetRealTimeUrlCheckVerdictCountForURL(
       base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
           url, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
           nullptr));
-  if (!cache_dictionary || cache_dictionary->empty())
+  if (!cache_dictionary || cache_dictionary->DictEmpty())
     return 0;
   base::Value* verdict_dictionary =
       cache_dictionary->FindKey(kRealTimeUrlCacheKey);
