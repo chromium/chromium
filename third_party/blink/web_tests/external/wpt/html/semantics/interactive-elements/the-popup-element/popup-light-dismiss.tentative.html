@@ -58,6 +58,9 @@
       .pointerUp({button: actions.ButtonType.LEFT})
       .send();
   }
+  function eventLoop() {
+    return new Promise(resolve => setTimeout(resolve, 0));
+  }
 
   const popup1 = document.querySelector('#p1');
   const button1 = document.querySelector('#b1');
@@ -183,17 +186,27 @@
       popup6.hide();
     },'Scrolling within a popup should not close the popup');
 
+    popup1.show();
+    await eventLoop(); // Wait for initial resize observer to run
+    assert_true(popup1.open,'popup1 should be open');
+    popup1.style.width = "250px";
+    await eventLoop(); // Wait for style change resize to run
     test(t => {
-      popup1.show();
-      assert_true(popup1.open,'popup1 should be open');
-      popup1.style.width = "100px";
       assert_false(popup1.open,'popup1 should close when resized');
       popup1.style.width = "";
-      popup1.show();
-      assert_true(popup1.open);
-      popup1.querySelector('span').textContent = "This is a test, which is longer than original";
+    },'Popup should be closed by an explicit resize of the popup');
+
+    popup1.show();
+    await eventLoop(); // Wait for initial resize observer to run
+    assert_true(popup1.open);
+    const popup1Text = popup1.querySelector('span');
+    const originalText = popup1Text.textContent;
+    popup1Text.textContent = "This is a test, which is longer than the original";
+    await eventLoop(); // Wait for style change resize to run
+    test(t => {
       assert_false(popup1.open,'popup1 should close when text content forces its size to change');
-    },'Popup should be closed by a resize of the popup');
+      popup1Text.textContent = originalText;
+    },'Popup should be closed by an implicit resize of the popup');
 
     done();
   })();

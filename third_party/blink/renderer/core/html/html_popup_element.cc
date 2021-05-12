@@ -5,12 +5,15 @@
 #include "third_party/blink/renderer/core/html/html_popup_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -19,11 +22,31 @@
 
 namespace blink {
 
+class HTMLPopupElement::PopupResizeDelegate final
+    : public ResizeObserver::Delegate {
+ public:
+  PopupResizeDelegate() : ResizeObserver::Delegate() {}
+  void OnResize(
+      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
+    DCHECK_EQ(entries.size(), 1u);
+    auto* popup = DynamicTo<HTMLPopupElement>(entries[0]->target());
+    DCHECK(popup);
+    if (popup->being_shown_)
+      popup->being_shown_ = false;
+    else
+      popup->hide();
+  }
+};
+
 HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
+      being_shown_(false),
       had_initiallyopen_when_parsed_(false),
       invoker_(nullptr),
+      resize_observer_(
+          ResizeObserver::Create(GetDocument().domWindow(),
+                                 MakeGarbageCollected<PopupResizeDelegate>())),
       needs_repositioning_for_select_menu_(false),
       owner_select_menu_element_(nullptr) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
@@ -44,6 +67,7 @@ bool HTMLPopupElement::open() const {
 void HTMLPopupElement::hide() {
   if (!open_)
     return;
+  resize_observer_->disconnect();
   open_ = false;
   invoker_ = nullptr;
   if (!isConnected())
@@ -78,6 +102,8 @@ void HTMLPopupElement::show() {
   PushNewPopupElement(this);
   MarkStyleDirty();
   SetFocus();
+  being_shown_ = true;
+  resize_observer_->observe(this);
 }
 
 bool HTMLPopupElement::IsKeyboardFocusable() const {
@@ -370,6 +396,7 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
 
 void HTMLPopupElement::Trace(Visitor* visitor) const {
   visitor->Trace(invoker_);
+  visitor->Trace(resize_observer_);
   visitor->Trace(owner_select_menu_element_);
   HTMLElement::Trace(visitor);
 }
