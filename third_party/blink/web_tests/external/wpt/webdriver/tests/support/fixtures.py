@@ -105,8 +105,8 @@ def http(configuration):
 
 @pytest.fixture
 def server_config():
-    return json.loads(os.environ.get("WD_SERVER_CONFIG"))
-
+    with open(os.environ.get("WD_SERVER_CONFIG_FILE"), "r") as f:
+            return json.load(f)
 
 @pytest.fixture(scope="session")
 def configuration():

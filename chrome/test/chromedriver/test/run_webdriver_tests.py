@@ -194,11 +194,13 @@ def set_up_config(path_finder, chromedriver_server):
       }
   })
 
+  config_path = os.path.join(tempfile.mkdtemp(), "wd_server_config.json")
+  os.environ["WD_SERVER_CONFIG_FILE"] = config_path
   # Port numbers are defined at
   # https://cs.chromium.org/chromium/src/third_party/blink/tools
   # /blinkpy/web_tests/servers/wptserve.py?l=23&rcl=375b34c6ba64
   # 5d00c1413e4c6106c7bb74581c85
-  os.environ["WD_SERVER_CONFIG"] = json.dumps({
+  config_dict = {
     "doc_root": path_finder.path_from_chromium_base(CHROMIUM_WPT_DIR),
     "browser_host": "web-platform.test",
     "domains": {"": {"": "web-platform.test",
@@ -206,7 +208,10 @@ def set_up_config(path_finder, chromedriver_server):
                      "www.www": "www.www.web-platform.test",
                      "www1": "www1.web-platform.test",
                      "www2": "www2.web-platform.test"}},
-    "ports": {"ws": [9001], "wss": [9444], "http": [8001], "https": [8444]}})
+    "ports": {"ws": [9001], "wss": [9444], "http": [8001], "https": [8444]}}
+  with open(config_path, "w") as f:
+    json.dump(config_dict, f)
+
 
 def run_test(path, path_finder, port, skipped_tests=[]):
   abs_path = os.path.abspath(path)
