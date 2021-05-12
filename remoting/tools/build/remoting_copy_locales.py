@@ -10,6 +10,8 @@ loop over a list of locales when repacking pak files, thus avoiding a
 proliferation of mostly duplicate, cut-n-paste gyp actions.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import sys
@@ -159,4 +161,4 @@ def DoMain(argv):
 if __name__ == '__main__':
   results = DoMain(sys.argv[1:])
   if results:
-    print results
+    print(results)
