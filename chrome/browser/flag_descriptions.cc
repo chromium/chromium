@@ -4979,12 +4979,6 @@ const char kTextfieldFocusOnTapUpDescription[] =
     "When enabled, Views-based text fields take focus on touch-up instead of "
     "touch-down. This includes the Omnibox.";
 
-const char kEnableNewBadgeOnMenuItemsName[] =
-    "Enable 'New' badge on menu items";
-const char kEnableNewBadgeOnMenuItemsDescription[] =
-    "When enabled, allows 'New' badge to help users identify menu items which "
-    "access new functionality.";
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------

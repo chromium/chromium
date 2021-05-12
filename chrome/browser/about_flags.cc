@@ -5437,14 +5437,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kEnableAssistantSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(TOOLKIT_VIEWS)
-
-    {"enable-new-badge-on-menu-items",
-     flag_descriptions::kEnableNewBadgeOnMenuItemsName,
-     flag_descriptions::kEnableNewBadgeOnMenuItemsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(views::features::kEnableNewBadgeOnMenuItems)},
-#endif  // defined(TOOLKIT_VIEWS)
-
     {"strict-origin-isolation", flag_descriptions::kStrictOriginIsolationName,
      flag_descriptions::kStrictOriginIsolationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kStrictOriginIsolation)},

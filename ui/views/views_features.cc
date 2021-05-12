@@ -12,11 +12,6 @@ namespace features {
 
 // Please keep alphabetized.
 
-// Allows a "New" badge to be displayed on menu items that provide access to new
-// features.
-const base::Feature kEnableNewBadgeOnMenuItems{
-    "EnableNewBadgeOnMenuItems", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Use a high-contrast style for ink drops when in platform high-contrast mode,
 // including full opacity and a high-contrast color
 const base::Feature kEnablePlatformHighContrastInkDrop{

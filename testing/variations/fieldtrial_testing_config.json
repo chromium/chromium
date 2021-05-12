@@ -2827,7 +2827,6 @@
                         "session_rate": "<3"
                     },
                     "enable_features": [
-                        "EnableNewBadgeOnMenuItems",
                         "IPH_DesktopSnoozeFeature",
                         "IPH_DesktopTabGroupsNewGroup"
                     ]

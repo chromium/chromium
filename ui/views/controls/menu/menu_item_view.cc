@@ -23,7 +23,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/animation/animation.h"
@@ -50,7 +49,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_MAC)
@@ -746,9 +744,7 @@ void MenuItemView::SetAlerted() {
 }
 
 bool MenuItemView::ShouldShowNewBadge() const {
-  static const bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kEnableNewBadgeOnMenuItems);
-  return feature_enabled && is_new_;
+  return is_new_;
 }
 
 bool MenuItemView::IsTraversableByKeyboard() const {

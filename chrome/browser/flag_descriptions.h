@@ -2909,9 +2909,6 @@ extern const char kInstallableInkDropDescription[];
 extern const char kTextfieldFocusOnTapUpName[];
 extern const char kTextfieldFocusOnTapUpDescription[];
 
-extern const char kEnableNewBadgeOnMenuItemsName[];
-extern const char kEnableNewBadgeOnMenuItemsDescription[];
-
 #endif  // defined(TOOLKIT_VIEWS)
 
 // Random platform combinations -----------------------------------------------
