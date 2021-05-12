@@ -28,7 +28,7 @@ class NotificationThreadMac {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::UI;
     options.joinable = false;
-    thread_.StartWithOptions(options);
+    thread_.StartWithOptions(std::move(options));
     task_runner_ = thread_.task_runner();
     thread_.DetachFromSequence();
   }

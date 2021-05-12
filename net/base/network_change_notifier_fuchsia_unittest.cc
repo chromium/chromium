@@ -179,7 +179,7 @@ class FakeWatcherAsync {
  public:
   explicit FakeWatcherAsync() {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    CHECK(thread_.StartWithOptions(options));
+    CHECK(thread_.StartWithOptions(std::move(options)));
     watcher_ = base::SequenceBound<FakeWatcher>(thread_.task_runner());
   }
   FakeWatcherAsync(const FakeWatcherAsync&) = delete;

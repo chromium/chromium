@@ -268,7 +268,7 @@ NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
   // needs a thread with a CFRunLoop, and there's no guarantee that
   // CurrentThread::Get() meets that criterion.
   base::Thread::Options thread_options(base::MessagePumpType::UI, 0);
-  notifier_thread_->StartWithOptions(thread_options);
+  notifier_thread_->StartWithOptions(std::move(thread_options));
 }
 
 NetworkConfigWatcherMac::~NetworkConfigWatcherMac() {}
