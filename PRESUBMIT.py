@@ -4343,6 +4343,50 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
   return []
 
 
+def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
+  stl_include_re = input_api.re.compile(
+      r'^#include\s+<'
+      r'algorithm|'
+      r'array|'
+      r'limits|'
+      r'list|'
+      r'map|'
+      r'memory|'
+      r'queue|'
+      r'set|'
+      r'string|'
+      r'unordered_map|'
+      r'unordered_set|'
+      r'utility|'
+      r'vector>')
+  std_namespace_re = input_api.re.compile(r'std::')
+  errors = []
+  for f in input_api.AffectedFiles():
+    if not _IsCPlusPlusHeaderFile(input_api, f.LocalPath()):
+      continue
+
+    uses_std_namespace = False
+    has_stl_include = False
+    for line in f.NewContents():
+      if has_stl_include and uses_std_namespace:
+        break
+
+      if not has_stl_include and stl_include_re.search(line):
+        has_stl_include = True
+        continue
+
+      if not uses_std_namespace and std_namespace_re.search(line):
+        uses_std_namespace = True
+        continue
+
+    if has_stl_include and not uses_std_namespace:
+      errors.append('%s: Includes STL header(s) but does not reference std::'
+                    % f.LocalPath())
+  if errors:
+    return [output_api.PresubmitPromptWarning('\n'.join(errors))]
+  return []
+
+
 def _DidYouMeanOSMacro(bad_macro):
   try:
     return {'A': 'OS_ANDROID',
