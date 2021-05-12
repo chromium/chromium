@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -217,6 +218,9 @@ class SelfDeleteInstaller
     // Do nothing if this function has been called.
     if (callback_.is_null())
       return;
+
+    base::UmaHistogramBoolean("PaymentRequest.PaymentHandlerInstallSuccess",
+                              success);
 
     if (success) {
       std::move(callback_).Run(registration_id_);

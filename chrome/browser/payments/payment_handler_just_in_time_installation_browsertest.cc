@@ -95,6 +95,8 @@ using PaymentHandlerSkipSheetTest = PaymentHandlerJustInTimeInstallationTest;
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", 0);
   ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
   EXPECT_TRUE(
       content::ExecJs(GetActiveWebContents(),
@@ -102,6 +104,13 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
                       " {supportedMethods: 'https://kylepay.com/webpay'}])"));
   WaitForObservedEvent();
   ExpectBodyContains("kylepay.com/webpay");
+
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", 1);
+  histogram_tester.ExpectBucketCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", false, 0);
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -118,6 +127,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
   // if there is no user gesture, the request should stop at the payment sheet
   // waiting for user action.
   base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", 0);
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
   EXPECT_TRUE(
       content::ExecJs(GetActiveWebContents(),
@@ -127,6 +138,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
                           content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForObservedEvent();
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
+
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.PaymentHandlerInstallSuccess", 0);
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
