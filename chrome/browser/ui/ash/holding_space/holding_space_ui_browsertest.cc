@@ -315,7 +315,7 @@ class DropSenderView : public views::WidgetDelegateView,
   void ClearFileSystemSourcesData() { file_system_sources_data_.reset(); }
 
   void SetFileSystemSourcesData(const std::vector<GURL>& file_system_urls) {
-    constexpr char kFileSystemSourcesType[] = "fs/sources";
+    constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
     std::stringstream file_system_sources;
     for (const GURL& file_system_url : file_system_urls)
@@ -324,7 +324,7 @@ class DropSenderView : public views::WidgetDelegateView,
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(
         std::unordered_map<std::u16string, std::u16string>(
-            {{base::UTF8ToUTF16(kFileSystemSourcesType),
+            {{kFileSystemSourcesType,
               base::UTF8ToUTF16(file_system_sources.str())}}),
         &pickle);
 

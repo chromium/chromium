@@ -34,6 +34,7 @@
 namespace {
 
 constexpr char kEmail[] = "test-user@example.com";
+constexpr char16_t kEmail16[] = u"test-user@example.com";
 constexpr char kRequestUrl[] =
     "https://appsitemsuggest-pa.googleapis.com/v1/items";
 constexpr char kValidJsonResponse[] = R"(
@@ -107,7 +108,7 @@ class ItemSuggestCacheTest : public testing::Test {
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &url_loader_factory_)});
     profile_ = profile_manager_->CreateTestingProfile(
-        kEmail, /*prefs=*/{}, base::UTF8ToUTF16(kEmail),
+        kEmail, /*prefs=*/{}, kEmail16,
         /*avatar_id=*/0, /*supervised_user_id=*/{}, factories);
 
     identity_test_env_adaptor_ =

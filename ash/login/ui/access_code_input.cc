@@ -310,9 +310,7 @@ void FixedLengthCodeInput::ResetTextValueForA11y() {
     if (input_fields_[i]->GetText().empty()) {
       result.push_back(' ');
     } else {
-      result.push_back(is_obscure_pin_ ?
-                       base::UTF8ToUTF16("\u2022" /*bullet*/)[0]
-                     : input_fields_[i]->GetText()[0]);
+      result.push_back(is_obscure_pin_ ? u'•' : input_fields_[i]->GetText()[0]);
     }
   }
 

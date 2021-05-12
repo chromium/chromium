@@ -35,14 +35,12 @@
 #include "ui/events/test/keyboard_layout.h"
 #include "ui/gfx/geometry/rect.h"
 
-using base::UTF8ToUTF16;
 using base::UTF16ToUTF8;
 
 namespace ui {
 namespace {
 
-const std::u16string kSampleText = base::UTF8ToUTF16(
-    "\xE3\x81\x82\xE3\x81\x84\xE3\x81\x86\xE3\x81\x88\xE3\x81\x8A");
+const std::u16string kSampleText = u"あいうえお";
 
 using KeyEventCallback = IMEEngineHandlerInterface::KeyEventDoneCallback;
 

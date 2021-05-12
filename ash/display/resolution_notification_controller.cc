@@ -145,7 +145,7 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
   // Construct the timeout message, leaving a placeholder for the countdown
   // timer so that the string does not need to be completely rebuilt every
   // timer tick.
-  constexpr char kTimeoutPlaceHolder[] = "$1";
+  constexpr char16_t kTimeoutPlaceHolder[] = u"$1";
 
   std::u16string timeout_message_with_placeholder;
   if (display::features::IsListAllDisplayModesEnabled()) {
@@ -161,28 +161,27 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
                              actual_refresh_rate == requested_refresh_rate;
 
     timeout_message_with_placeholder =
-        no_fallback
-            ? l10n_util::GetStringFUTF16(
-                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED,
-                  display_name, actual_display_size, actual_refresh_rate,
-                  base::UTF8ToUTF16(kTimeoutPlaceHolder))
-            : l10n_util::GetStringFUTF16(
-                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
-                  {display_name, requested_display_size, requested_refresh_rate,
-                   actual_display_size, actual_refresh_rate,
-                   base::UTF8ToUTF16(kTimeoutPlaceHolder)},
-                  /*offsets=*/nullptr);
+        no_fallback ? l10n_util::GetStringFUTF16(
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED,
+                          display_name, actual_display_size,
+                          actual_refresh_rate, kTimeoutPlaceHolder)
+                    : l10n_util::GetStringFUTF16(
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
+                          {display_name, requested_display_size,
+                           requested_refresh_rate, actual_display_size,
+                           actual_refresh_rate, kTimeoutPlaceHolder},
+                          /*offsets=*/nullptr);
 
   } else {
     timeout_message_with_placeholder =
         actual_display_size == requested_display_size
             ? l10n_util::GetStringFUTF16(
                   IDS_ASH_RESOLUTION_CHANGE_DIALOG_CHANGED, display_name,
-                  actual_display_size, base::UTF8ToUTF16(kTimeoutPlaceHolder))
+                  actual_display_size, kTimeoutPlaceHolder)
             : l10n_util::GetStringFUTF16(
                   IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK, display_name,
                   requested_display_size, actual_display_size,
-                  base::UTF8ToUTF16(kTimeoutPlaceHolder));
+                  kTimeoutPlaceHolder);
   }
 
   DisplayChangeDialog* dialog = new DisplayChangeDialog(

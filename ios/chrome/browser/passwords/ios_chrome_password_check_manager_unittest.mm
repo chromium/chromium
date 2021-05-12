@@ -48,6 +48,7 @@ constexpr char kUsername2[] = "bob";
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char16_t kPassword116[] = u"s3cre3t";
 constexpr char kPassword2[] = "bett3r_S3cre3t";
+constexpr char16_t kPassword216[] = u"bett3r_S3cre3t";
 
 using password_manager::PasswordForm;
 using password_manager::BulkLeakCheckServiceInterface;
@@ -417,7 +418,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditCompromisedPassword) {
   manager().EditCompromisedPasswordForm(form, kPassword2);
   RunUntilIdle();
 
-  EXPECT_EQ(base::UTF8ToUTF16(kPassword2),
+  EXPECT_EQ(kPassword216,
             store().stored_passwords().at(kExampleCom).at(0).password_value);
 }
 

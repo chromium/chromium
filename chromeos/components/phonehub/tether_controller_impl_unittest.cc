@@ -63,7 +63,7 @@ PhoneStatusModel CreateTestPhoneStatusModel(
   metadata.signal_strength = PhoneStatusModel::SignalStrength::kFourBars;
   metadata.mobile_provider =
       mobile_status == PhoneStatusModel::MobileStatus::kSimWithReception
-          ? base::UTF8ToUTF16(kFakeMobileProviderName)
+          ? std::u16string(kFakeMobileProviderName)
           : std::u16string();
   return PhoneStatusModel(mobile_status, metadata,
                           PhoneStatusModel::ChargingState::kNotCharging,

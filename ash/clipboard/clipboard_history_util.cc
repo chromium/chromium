@@ -25,7 +25,7 @@ namespace ClipboardHistoryUtil {
 
 namespace {
 
-constexpr char kFileSystemSourcesType[] = "fs/sources";
+constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
 // The array of formats in order of decreasing priority.
 constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
@@ -134,9 +134,9 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
 
   // Attempt to read file system sources in the custom data.
   std::u16string sources;
-  ui::ReadCustomDataForType(
-      data.custom_data_data().c_str(), data.custom_data_data().size(),
-      base::UTF8ToUTF16(kFileSystemSourcesType), &sources);
+  ui::ReadCustomDataForType(data.custom_data_data().c_str(),
+                            data.custom_data_data().size(),
+                            kFileSystemSourcesType, &sources);
 
   return sources;
 }

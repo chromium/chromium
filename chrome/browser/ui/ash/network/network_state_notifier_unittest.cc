@@ -40,7 +40,9 @@ namespace {
 const char kWiFi1Guid[] = "wifi1_guid";
 const char kCellular1Guid[] = "cellular1_guid";
 const char kCellular1NetworkName[] = "cellular1";
+const char16_t kCellular1NetworkName16[] = u"cellular1";
 const char kTestEsimProfileName[] = "test_profile_name";
+const char16_t kTestEsimProfileName16[] = u"test_profile_name";
 
 class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
  public:
@@ -235,8 +237,7 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
   EXPECT_EQ(
       notification->message(),
       l10n_util::GetStringFUTF16(
-          IDS_NETWORK_CONNECTION_ERROR_MESSAGE,
-          base::UTF8ToUTF16(kCellular1NetworkName),
+          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kCellular1NetworkName16,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
 
   // Clicking the notification should open SIM unlock settings.
@@ -262,8 +263,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   EXPECT_EQ(
       notification->message(),
       l10n_util::GetStringFUTF16(
-          IDS_NETWORK_CONNECTION_ERROR_MESSAGE,
-          base::UTF8ToUTF16(kTestEsimProfileName),
+          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
 }
 

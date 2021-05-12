@@ -95,14 +95,14 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
       launchable);
 
   const size_t kMaxResults = launchable ? 4 : 0;
-  constexpr char kQuery[] = "shortlabel";
+  constexpr char16_t kQuery[] = u"shortlabel";
 
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
   EXPECT_TRUE(provider->results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
   const auto& results = provider->results();
   EXPECT_EQ(kMaxResults, results.size());
   // Verify search results.

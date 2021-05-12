@@ -50,14 +50,14 @@ const char kAppEmail[] = "lala@example.com";
 const char kAppInstallUrl[] = "https://example.com";
 const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kAppLaunchBadUrl[] = "https://badexample.com";
-const char kAppTitle[] = "app";
+const char16_t kAppTitle[] = u"app";
 
 std::unique_ptr<web_app::WebAppDataRetriever> CreateDataRetrieverWithData(
     const GURL& url) {
   auto data_retriever = std::make_unique<web_app::TestDataRetriever>();
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = url;
-  info->title = base::UTF8ToUTF16(kAppTitle);
+  info->title = kAppTitle;
   data_retriever->SetRendererWebApplicationInfo(std::move(info));
   return std::unique_ptr<web_app::WebAppDataRetriever>(
       std::move(data_retriever));
@@ -131,7 +131,7 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
     if (installed) {
       auto info = std::make_unique<WebApplicationInfo>();
       info->start_url = GURL(kAppLaunchUrl);
-      info->title = base::UTF8ToUTF16(kAppTitle);
+      info->title = kAppTitle;
       app_manager_->UpdateAppByAccountId(account_id_, std::move(info));
     }
   }

@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
@@ -67,7 +69,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
 
 TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
   constexpr size_t kMaxResults = 12;
-  constexpr char kQuery[] = "Play App";
+  constexpr char16_t kQuery[] = u"Play App";
 
   std::unique_ptr<ArcPlayStoreSearchProvider> provider =
       CreateSearch(kMaxResults);
@@ -77,7 +79,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
   // Check that the result size of a query doesn't exceed the |kMaxResults|.
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
   const SearchProvider::Results& results = provider->results();
   ASSERT_GT(results.size(), 0u);
   // Play Store returns |kMaxResults| results, but the first one (GMail) already
@@ -87,8 +89,8 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
   // Check that information is correctly set in each result.
   for (size_t i = 0; i < results.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
-    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
-              base::StringPrintf("%s %zu", kQuery, i));
+    EXPECT_EQ(results[i]->title(),
+              base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
     EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
@@ -113,11 +115,12 @@ TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
-  const std::string kQuery = base::StringPrintf(
-      "PartiallyFailedQueryWithCode-%d",
-      arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA);
+  const std::u16string kQuery =
+      u"PartiallyFailedQueryWithCode-" +
+      base::NumberToString16(static_cast<int>(
+          arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA));
 
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
 
   const SearchProvider::Results& results = provider->results();
   ASSERT_GT(results.size(), 0u);
@@ -128,8 +131,8 @@ TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
   // Check that information is correctly set in each result.
   for (size_t i = 0; i < results.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
-    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
-              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->title(),
+              base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
     EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
@@ -153,9 +156,9 @@ TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
-  const std::string kQuery = "QueryWithoutRatingAndPrice";
+  const std::u16string kQuery = u"QueryWithoutRatingAndPrice";
 
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
 
   const SearchProvider::Results& results = provider->results();
   ASSERT_GT(results.size(), 0u);
@@ -166,8 +169,8 @@ TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
   // Check that information is correctly set in each result.
   for (size_t i = 0; i < results.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
-    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
-              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->title(),
+              base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
     EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()), "");
     EXPECT_EQ(results[i]->rating(), -1);
@@ -189,9 +192,9 @@ TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
-  const std::string kQuery = "QueryWithSomeResultsMissingIcon";
+  const std::u16string kQuery = u"QueryWithSomeResultsMissingIcon";
 
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
 
   const SearchProvider::Results& results = provider->results();
   ASSERT_GT(results.size(), 0u);
@@ -203,8 +206,8 @@ TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
   // Check that information is correctly set in each result.
   for (size_t i = 0; i < results.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing result %zu", i));
-    EXPECT_EQ(base::UTF16ToUTF8(results[i]->title()),
-              base::StringPrintf("%s %zu", kQuery.c_str(), i));
+    EXPECT_EQ(results[i]->title(),
+              base::StrCat({kQuery, u" ", base::NumberToString16(i)}));
     EXPECT_EQ(results[i]->display_type(), ash::SearchResultDisplayType::kTile);
     EXPECT_EQ(base::UTF16ToUTF8(results[i]->formatted_price()),
               base::StringPrintf("$%zu.22", i));
@@ -218,8 +221,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
 
 TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   constexpr size_t kMaxResults = 12;
-  constexpr char kQuery[] = "Play App";
-  const std::u16string kQueryString16 = base::UTF8ToUTF16(kQuery);
+  constexpr char16_t kQuery[] = u"Play App";
 
   std::unique_ptr<ArcPlayStoreSearchProvider> provider =
       CreateSearch(kMaxResults);
@@ -228,7 +230,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
 
   // Test for empty queries.
   // Create a non-empty query.
-  provider->Start(kQueryString16);
+  provider->Start(kQuery);
   EXPECT_GT(provider->results().size(), 0u);
 
   // Create an empty query and it should clear the result list.
@@ -236,7 +238,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   EXPECT_EQ(0u, provider->results().size());
 
   // Test for queries with a failure state code.
-  constexpr char kFailedQueryPrefix[] = "FailedQueryWithCode-";
+  constexpr char16_t kFailedQueryPrefix[] = u"FailedQueryWithCode-";
   using RequestState = arc::ArcPlayStoreSearchRequestState;
   const std::array<RequestState, 15> kErrorStates = {
       RequestState::PLAY_STORE_PROXY_NOT_AVAILABLE,
@@ -260,12 +262,12 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
       "Missing entries");
   for (const auto& error_state : kErrorStates) {
     // Create a non-empty query.
-    provider->Start(kQueryString16);
+    provider->Start(kQuery);
     EXPECT_GT(provider->results().size(), 0u);
 
     // Fabricate a failing query and it should clear the result list.
-    provider->Start(base::UTF8ToUTF16(
-        base::StringPrintf("%s%d", kFailedQueryPrefix, error_state)));
+    provider->Start(kFailedQueryPrefix +
+                    base::NumberToString16(static_cast<int>(error_state)));
     EXPECT_EQ(0u, provider->results().size());
   }
 }

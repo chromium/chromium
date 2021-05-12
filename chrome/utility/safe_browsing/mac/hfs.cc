@@ -214,10 +214,9 @@ class HFSBTreeIterator {
   Entry current_record_;  // The record read at |current_leaf_offset_|.
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.
-  const std::u16string kHFSMetadataFolder =
-      base::UTF8ToUTF16(base::StringPiece("\x0\x0\x0\x0HFS+ Private Data", 21));
+  const std::u16string kHFSMetadataFolder{u"\0\0\0\0HFS+ Private Data", 21};
   const std::u16string kHFSDirMetadataFolder =
-      base::UTF8ToUTF16(".HFS+ Private Directory Data\xd");
+      u".HFS+ Private Directory Data\r";
 
   DISALLOW_COPY_AND_ASSIGN(HFSBTreeIterator);
 };

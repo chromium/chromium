@@ -18,7 +18,7 @@ namespace ui {
 namespace ime {
 
 namespace {
-const char kUndoButtonText[] = "Undo";
+const char16_t kUndoButtonText[] = u"Undo";
 // TODO(crbug/1099044): Update and use cros_colors.json5
 constexpr SkColor kButtonHighlightColor =
     SkColorSetA(SK_ColorBLACK, 0x0F);  // 6% Black.
@@ -40,7 +40,7 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   undo_button_ = AddChildView(std::make_unique<views::LabelButton>(
       base::BindRepeating(&UndoWindow::UndoButtonPressed,
                           base::Unretained(this)),
-      base::UTF8ToUTF16(kUndoButtonText)));
+      kUndoButtonText));
   undo_button_->SetImageLabelSpacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));

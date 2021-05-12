@@ -132,7 +132,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
                                   base::FilePath("filename"))})
       .SetBookmarkTitle("Bookmark Title")
       .SetBitmap(gfx::test::CreateBitmap(10, 10))
-      .SetFileSystemData({"/path/to/File.txt", "/path/to/Other%20File.txt"})
+      .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
       .SetWebSmartPaste(true);
 
   // Bitmap data always take precedence.

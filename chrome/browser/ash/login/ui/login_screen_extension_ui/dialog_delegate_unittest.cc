@@ -24,6 +24,7 @@
 namespace {
 
 const char kExtensionName[] = "extension-name";
+const char16_t kExtensionName16[] = u"extension-name";
 const char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 const char kResourcePath[] = "path/to/file.html";
 
@@ -53,7 +54,7 @@ TEST_F(DialogDelegateUnittest, Test) {
 
   EXPECT_EQ(ui::MODAL_TYPE_WINDOW, delegate->GetDialogModalType());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_LOGIN_EXTENSION_UI_DIALOG_TITLE,
-                                       base::UTF8ToUTF16(kExtensionName)),
+                                       kExtensionName16),
             delegate->GetDialogTitle());
   EXPECT_EQ(extensions::Extension::GetResourceURL(
                 extensions::Extension::GetBaseURLFromExtensionId(kExtensionId),

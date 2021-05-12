@@ -65,13 +65,14 @@ const char kJsConnectivityChangedCallback[] =
     "mobile.MobileSetupPortal.onConnectivityChanged";
 
 // TODO(tbarzic): Localize these strings.
-const char kDefaultActivationError[] =
-    "$1 is unable to connect to $2 at this time. Please try again later.";
-const char kCellularDisabledError[] =
-    "Mobile network connections are not currently enabled on this device.";
-const char kNoCellularDeviceError[] = "Mobile network modem is not present.";
-const char kNoCellularServiceError[] =
-    "$1 is unable to connect at this time due to insufficient coverage.";
+const char16_t kDefaultActivationError[] =
+    u"$1 is unable to connect to $2 at this time. Please try again later.";
+const char16_t kCellularDisabledError[] =
+    u"Mobile network connections are not currently enabled on this device.";
+const char16_t kNoCellularDeviceError[] =
+    u"Mobile network modem is not present.";
+const char16_t kNoCellularServiceError[] =
+    u"$1 is unable to connect at this time due to insufficient coverage.";
 
 bool ActivationErrorRequiresCarrier(
     ash::MobileActivator::ActivationError error) {
@@ -95,19 +96,18 @@ std::u16string GetActivationErrorMessage(
       return std::u16string();
     case ash::MobileActivator::ActivationError::kActivationFailed: {
       return base::ReplaceStringPlaceholders(
-          base::UTF8ToUTF16(kDefaultActivationError),
+          kDefaultActivationError,
           std::vector<std::u16string>(
               {ui::GetChromeOSDeviceName(), base::UTF8ToUTF16(carrier)}),
           nullptr);
     }
     case ash::MobileActivator::ActivationError::kCellularDisabled:
-      return base::UTF8ToUTF16(kCellularDisabledError);
+      return kCellularDisabledError;
     case ash::MobileActivator::ActivationError::kNoCellularDevice:
-      return base::UTF8ToUTF16(kNoCellularDeviceError);
+      return kNoCellularDeviceError;
     case ash::MobileActivator::ActivationError::kNoCellularService:
       return base::ReplaceStringPlaceholders(
-          base::UTF8ToUTF16(kNoCellularServiceError),
-          ui::GetChromeOSDeviceName(), nullptr);
+          kNoCellularServiceError, ui::GetChromeOSDeviceName(), nullptr);
   }
   NOTREACHED() << "Unexpected activation error";
   return GetActivationErrorMessage(

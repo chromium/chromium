@@ -636,7 +636,7 @@ TEST(StringPiece16Test, CheckSTL) {
 TEST(StringPiece16Test, CheckConversion) {
   // Make sure that we can convert from UTF8 to UTF16 and back. We use a
   // character (G clef) outside the BMP to test this.
-  const char kTest[] = "\U0001D11E";
+  const char* kTest = "\U0001D11E";
   ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16(kTest)), kTest);
 }
 

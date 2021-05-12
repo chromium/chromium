@@ -50,7 +50,7 @@ TEST(PhoneStatusModelTest, NoReceptionWithMetadata_MobileCarrierProvided) {
   EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
             no_sim.mobile_status());
   EXPECT_TRUE(no_sim.mobile_connection_metadata().has_value());
-  EXPECT_EQ(base::UTF8ToUTF16(kFakeMobileProviderName),
+  EXPECT_EQ(kFakeMobileProviderName,
             no_sim.mobile_connection_metadata()->mobile_provider);
   EXPECT_EQ(PhoneStatusModel::SignalStrength::kOneBar,
             no_sim.mobile_connection_metadata()->signal_strength);

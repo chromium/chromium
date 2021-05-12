@@ -100,7 +100,7 @@ class FadeoutLayerDelegate : public ui::LayerDelegate {
 };
 
 // Typography.
-constexpr char kMiddleDotSeparator[] = " \u2022 ";
+constexpr char16_t kMiddleDotSeparator[] = u" • ";
 
 constexpr int kMusicNoteIconSizeDip = 20;
 
@@ -160,7 +160,7 @@ void MediaStringView::MediaSessionMetadataChanged(
       metadata.value_or(media_session::MediaMetadata());
 
   std::u16string media_string;
-  std::u16string middle_dot = base::UTF8ToUTF16(kMiddleDotSeparator);
+  std::u16string middle_dot = kMiddleDotSeparator;
   if (!session_metadata.title.empty() && !session_metadata.artist.empty()) {
     media_string =
         session_metadata.title + middle_dot + session_metadata.artist;

@@ -354,9 +354,9 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
   auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
   data_offer->OnOffer(kMimeTypeText,
                       ToClipboardData(std::string(kSampleTextForDragAndDrop)));
-  data_offer->OnOffer(kMimeTypeMozillaURL, ToClipboardData(base::UTF8ToUTF16(
-                                               "https://sample.com/\r\n"
-                                               "Sample")));
+  data_offer->OnOffer(
+      kMimeTypeMozillaURL,
+      ToClipboardData(std::u16string(u"https://sample.com/\r\nSample")));
   data_offer->OnOffer(
       kMimeTypeURIList,
       ToClipboardData(std::string("file:///home/user/file\r\n")));
@@ -446,21 +446,20 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
 // the console when this test is running are the expected and valid side effect.
 TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
   const struct {
-    std::string content;
+    std::u16string content;
     std::string expected_url;
-    std::string expected_title;
+    std::u16string expected_title;
   } kCases[] = {
       {{}, {}, {}},
-      {"http://sample.com/\r\nSample", "http://sample.com/", "Sample"},
-      {"http://title.must.be.set/", {}, {}},
-      {"url.must.be.valid/and/have.scheme\r\nInvalid URL", {}, {}},
-      {"file:///files/are/ok\r\nThe policy allows that", "file:///files/are/ok",
-       "The policy allows that"}};
+      {u"http://sample.com/\r\nSample", "http://sample.com/", u"Sample"},
+      {u"http://title.must.be.set/", {}, {}},
+      {u"url.must.be.valid/and/have.scheme\r\nInvalid URL", {}, {}},
+      {u"file:///files/are/ok\r\nThe policy allows that",
+       "file:///files/are/ok", u"The policy allows that"}};
 
   for (const auto& kCase : kCases) {
     auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
-    data_offer->OnOffer(kMimeTypeMozillaURL,
-                        ToClipboardData(base::UTF8ToUTF16(kCase.content)));
+    data_offer->OnOffer(kMimeTypeMozillaURL, ToClipboardData(kCase.content));
 
     EXPECT_CALL(*drop_handler_, MockOnDragEnter()).Times(1);
     gfx::Point entered_point(10, 10);
@@ -488,7 +487,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
       EXPECT_TRUE(
           dropped_data->GetURLAndTitle(kFilenameToURLPolicy, &url, &title));
       EXPECT_EQ(url.spec(), kCase.expected_url);
-      EXPECT_EQ(title, base::UTF8ToUTF16(kCase.expected_title));
+      EXPECT_EQ(title, kCase.expected_title);
     }
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);

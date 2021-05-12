@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
@@ -50,29 +51,29 @@ class ArcAppDataSearchProviderTest : public AppListTestBase {
 
 TEST_F(ArcAppDataSearchProviderTest, Basic) {
   constexpr size_t kMaxResults = 6;
-  constexpr char kQuery[] = "App Data Search";
+  constexpr char16_t kQuery[] = u"App Data Search";
 
   std::unique_ptr<ArcAppDataSearchProvider> provider =
       CreateSearch(kMaxResults);
   EXPECT_TRUE(provider->results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
-  provider->Start(base::UTF8ToUTF16(kQuery));
+  provider->Start(kQuery);
   const auto& results = provider->results();
   EXPECT_EQ(2u, results.size());
   // Verify Person search result.
   int i = 0;
-  EXPECT_EQ(base::StringPrintf("Label %s %d", kQuery, i),
-            base::UTF16ToUTF8(results[i]->title()));
+  EXPECT_EQ(base::StrCat({u"Label ", kQuery, u" ", base::NumberToString16(i)}),
+            results[i]->title());
   EXPECT_EQ(ash::SearchResultDisplayType::kTile, results[i]->display_type());
   EXPECT_TRUE(results[i]->details().empty());
   // Verify Note document search result.
   ++i;
-  EXPECT_EQ(base::StringPrintf("Label %s %d", kQuery, i),
-            base::UTF16ToUTF8(results[i]->title()));
+  EXPECT_EQ(base::StrCat({u"Label ", kQuery, u" ", base::NumberToString16(i)}),
+            results[i]->title());
   EXPECT_EQ(ash::SearchResultDisplayType::kList, results[i]->display_type());
-  EXPECT_EQ(base::StringPrintf("Text %s %d", kQuery, i),
-            base::UTF16ToUTF8(results[i]->details()));
+  EXPECT_EQ(base::StrCat({u"Text ", kQuery, u" ", base::NumberToString16(i)}),
+            results[i]->details());
 }
 
 }  // namespace app_list

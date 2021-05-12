@@ -18,23 +18,22 @@ namespace chromeos {
 namespace phonehub {
 namespace {
 
-const char kAppName[] = "Test App";
+const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
 
-const char kTitle[] = "Test notification";
-const char kTextContent[] = "This is a test notification";
+const char16_t kTitle[] = u"Test notification";
+const char16_t kTextContent[] = u"This is a test notification";
 
 enum class NotificationState { kAdded, kUpdated, kRemoved };
 
 Notification CreateNotification(int64_t id) {
   return chromeos::phonehub::Notification(
       id,
-      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
-                                                    kPackageName,
+      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
                                                     /*icon=*/gfx::Image()),
       base::Time::Now(), Notification::Importance::kDefault,
-      /*inline_reply_id=*/0, Notification::InteractionBehavior::kNone,
-      base::UTF8ToUTF16(kTitle), base::UTF8ToUTF16(kTextContent));
+      /*inline_reply_id=*/0, Notification::InteractionBehavior::kNone, kTitle,
+      kTextContent);
 }
 
 using multidevice_setup::mojom::Feature;

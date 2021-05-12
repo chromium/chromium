@@ -31,6 +31,7 @@
 namespace {
 
 static const char kWebUrl[] = "http://www.chromium.org";
+static const char16_t kWebUrl16[] = u"http://www.chromium.org";
 static const char kNativeUrl[] = "chrome://version";
 
 class BrowserViewControllerHelperTest : public PlatformTest {
@@ -94,9 +95,8 @@ TEST_F(BrowserViewControllerHelperTest, TestisWebStateBookmarked) {
           chrome_browser_state_.get());
   const bookmarks::BookmarkNode* bookmarks =
       bookmark_model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmarks, bookmarks->children().size(),
-                             base::UTF8ToUTF16(kWebUrl), GURL(kWebUrl));
+  const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
+      bookmarks, bookmarks->children().size(), kWebUrl16, GURL(kWebUrl));
   EXPECT_TRUE([helper_ isWebStateBookmarked:web_state_.get()]);
 
   // Remove the bookmark and verify the location bar model indicates that the

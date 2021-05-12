@@ -187,7 +187,7 @@ namespace policy {
 
 namespace {
 
-const char kDomain[] = "example.com";
+const char16_t kDomain[] = u"example.com";
 const char kAccountId1[] = "dla1@example.com";
 const char kAccountId2[] = "dla2@example.com";
 const char kDisplayName1[] = "display name 1";
@@ -212,6 +212,7 @@ const char kHostedAppID[] = "kbmnembihfiondgfjekmnmcbddelicoi";
 const char kHostedAppCRXPath[] = "extensions/hosted_app.crx";
 const char kHostedAppVersion[] = "1.0.0.0";
 const char kGoodExtensionID[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+const char16_t kGoodExtensionID16[] = u"ldnnhddmnhbkjipkidpdiheffobcpfmf";
 const char kGoodExtensionCRXPath[] = "extensions/good.crx";
 const char kGoodExtensionVersion[] = "1.0";
 const char kPackagedAppCRXPath[] = "extensions/platform_apps/app_window_2.crx";
@@ -378,13 +379,12 @@ TestingUpdateManifestProvider::HandleRequest(
 TestingUpdateManifestProvider::~TestingUpdateManifestProvider() {
 }
 
-
-bool DoesInstallFailureReferToId(const std::string& id,
+bool DoesInstallFailureReferToId(const std::u16string& id,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
   return content::Details<const extensions::CrxInstallError>(details)
              ->message()
-             .find(base::UTF8ToUTF16(id)) != std::u16string::npos;
+             .find(id) != std::u16string::npos;
 }
 
 bool IsSessionStarted() {
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID16));
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
   // Wait for the hosted app installation to succeed and the extension
@@ -1175,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID16));
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
@@ -1321,7 +1321,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   ExtensionInstallObserver install_observer(kHostedAppID);
   content::WindowedNotificationObserver extension_observer(
       extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID));
+      base::BindRepeating(DoesInstallFailureReferToId, kGoodExtensionID16));
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
@@ -1752,37 +1752,36 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
   ASSERT_TRUE(user);
   ASSERT_EQ(user->GetType(), user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
-  std::string timezone_id1("America/Los_Angeles");
+  std::u16string timezone_id1(u"America/Los_Angeles");
   std::string timezone_id2("Europe/Berlin");
-  std::u16string timezone_id1_utf16(base::UTF8ToUTF16(timezone_id1));
-  std::u16string timezone_id2_utf16(base::UTF8ToUTF16(timezone_id2));
+  std::u16string timezone_id2_utf16(u"Europe/Berlin");
 
   chromeos::system::TimezoneSettings* timezone_settings =
       chromeos::system::TimezoneSettings::GetInstance();
 
-  timezone_settings->SetTimezoneFromID(timezone_id1_utf16);
+  timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(em::SystemTimezoneProto::DISABLED);
   chromeos::system::SetSystemTimezone(user, timezone_id2);
   EXPECT_EQ(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
-  timezone_settings->SetTimezoneFromID(timezone_id1_utf16);
+  timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::USERS_DECIDE);
   chromeos::system::SetSystemTimezone(user, timezone_id2);
   EXPECT_EQ(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
-  timezone_settings->SetTimezoneFromID(timezone_id1_utf16);
+  timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(em::SystemTimezoneProto::IP_ONLY);
   chromeos::system::SetSystemTimezone(user, timezone_id2);
   EXPECT_NE(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
-  timezone_settings->SetTimezoneFromID(timezone_id1_utf16);
+  timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS);
   chromeos::system::SetSystemTimezone(user, timezone_id2);
   EXPECT_NE(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
-  timezone_settings->SetTimezoneFromID(timezone_id1_utf16);
+  timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::SEND_ALL_LOCATION_INFO);
   chromeos::system::SetSystemTimezone(user, timezone_id2);
@@ -2688,10 +2687,10 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
       {"terms-of-service", "termsOfServiceFrame"});
 
   // Get the expected values for heading and subheading.
-  const std::string expected_heading = l10n_util::GetStringFUTF8(
-      IDS_TERMS_OF_SERVICE_SCREEN_HEADING, base::UTF8ToUTF16(kDomain));
+  const std::string expected_heading =
+      l10n_util::GetStringFUTF8(IDS_TERMS_OF_SERVICE_SCREEN_HEADING, kDomain);
   const std::string expected_subheading = l10n_util::GetStringFUTF8(
-      IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING, base::UTF8ToUTF16(kDomain));
+      IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING, kDomain);
 
   // Compare heading and subheading
   chromeos::test::OobeJS().ExpectEQ(

@@ -10,8 +10,6 @@
 namespace chromeos {
 namespace string_matching {
 
-using base::UTF8ToUTF16;
-
 TEST(TermBreakIteratorTest, EmptyWord) {
   std::u16string empty;
   TermBreakIterator iter(empty);
@@ -74,12 +72,12 @@ TEST(TermBreakIteratorTest, StartsWithNumber) {
 
 TEST(TermBreakIteratorTest, CaseAndNoCase) {
   // "English" + two Chinese chars U+4E2D U+6587 + "Word"
-  std::u16string word(UTF8ToUTF16("English\xe4\xb8\xad\xe6\x96\x87Word"));
+  std::u16string word(u"English中文Word");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"English", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("\xe4\xb8\xad\xe6\x96\x87"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"中文", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"Word", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.

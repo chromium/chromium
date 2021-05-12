@@ -120,9 +120,9 @@ class TextInputTest : public test::ExoTestBase {
     return surface_->window()->GetHost()->GetInputMethod();
   }
 
-  void SetCompositionText(const std::string& utf8) {
+  void SetCompositionText(const std::u16string& utf16) {
     ui::CompositionText t;
-    t.text = base::UTF8ToUTF16(utf8);
+    t.text = utf16;
     t.selection = gfx::Range(1u);
     t.ime_text_spans.push_back(
         ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, t.text.size(),
@@ -239,7 +239,7 @@ TEST_F(TextInputTest, CaretBounds) {
 }
 
 TEST_F(TextInputTest, CompositionText) {
-  SetCompositionText("composition");
+  SetCompositionText(u"composition");
 
   ui::CompositionText empty;
   EXPECT_CALL(*delegate(), SetCompositionText(empty)).Times(1);
@@ -247,14 +247,14 @@ TEST_F(TextInputTest, CompositionText) {
 }
 
 TEST_F(TextInputTest, CompositionTextEmpty) {
-  SetCompositionText("");
+  SetCompositionText(u"");
 
   EXPECT_CALL(*delegate(), SetCompositionText(_)).Times(0);
   text_input()->ClearCompositionText();
 }
 
 TEST_F(TextInputTest, CommitCompositionText) {
-  SetCompositionText("composition");
+  SetCompositionText(u"composition");
 
   EXPECT_CALL(*delegate(), Commit(std::u16string(u"composition"))).Times(1);
   const uint32_t composition_text_length =
@@ -267,7 +267,7 @@ TEST_F(TextInputTest, CommitCompositionText) {
 }
 
 TEST_F(TextInputTest, ResetCompositionText) {
-  SetCompositionText("composition");
+  SetCompositionText(u"composition");
 
   text_input()->Reset();
   EXPECT_EQ(0u, text_input()->ConfirmCompositionText(/*keep_selection=*/false));
@@ -319,7 +319,7 @@ TEST_F(TextInputTest, SurroundingText) {
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
-  std::u16string text = base::UTF8ToUTF16("surrounding\xE3\x80\x80text");
+  std::u16string text = u"surrounding\u3000text";
   text_input()->SetSurroundingText(text, 11, 12);
 
   EXPECT_TRUE(text_input()->GetTextRange(&range));
@@ -337,7 +337,7 @@ TEST_F(TextInputTest, SurroundingText) {
   text_input()->ExtendSelectionAndDelete(0, 0);
 
   size_t composition_size = std::string("composition").size();
-  SetCompositionText("composition");
+  SetCompositionText(u"composition");
   EXPECT_TRUE(text_input()->GetCompositionTextRange(&range));
   EXPECT_EQ(gfx::Range(11, 11 + composition_size).ToString(), range.ToString());
   EXPECT_TRUE(text_input()->GetTextRange(&range));
@@ -351,24 +351,24 @@ TEST_F(TextInputTest, GetTextRange) {
   std::u16string text = u"surrounding text";
   text_input()->SetSurroundingText(text, 11, 12);
 
-  SetCompositionText("composition");
+  SetCompositionText(u"composition");
 
   const struct {
     gfx::Range range;
-    std::string expected;
+    std::u16string expected;
   } kTestCases[] = {
-      {gfx::Range(0, 3), "sur"},
-      {gfx::Range(10, 13), "gco"},
-      {gfx::Range(10, 23), "gcompositiont"},
-      {gfx::Range(12, 15), "omp"},
-      {gfx::Range(12, 23), "ompositiont"},
-      {gfx::Range(22, 25), "tex"},
+      {gfx::Range(0, 3), u"sur"},
+      {gfx::Range(10, 13), u"gco"},
+      {gfx::Range(10, 23), u"gcompositiont"},
+      {gfx::Range(12, 15), u"omp"},
+      {gfx::Range(12, 23), u"ompositiont"},
+      {gfx::Range(22, 25), u"tex"},
   };
   for (auto& c : kTestCases) {
     std::u16string result;
     EXPECT_TRUE(text_input()->GetTextFromRange(c.range, &result))
         << c.range.ToString();
-    EXPECT_EQ(base::UTF8ToUTF16(c.expected), result) << c.range.ToString();
+    EXPECT_EQ(c.expected, result) << c.range.ToString();
   }
 }
 

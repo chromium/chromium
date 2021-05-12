@@ -30,8 +30,8 @@ namespace web_app {
 
 namespace {
 
-constexpr char kFakeChromeBundleId[] = {"fake.cfbundleidentifier"};
-constexpr char kAppTitle[] = {"app"};
+constexpr char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
+constexpr char16_t kAppTitle[] = u"app";
 
 class WebAppAutoLoginUtilMock : public WebAppAutoLoginUtil {
  public:
@@ -116,7 +116,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     std::unique_ptr<ShortcutInfo> info(new ShortcutInfo);
     info->extension_id = "app-id";
-    info->title = base::UTF8ToUTF16(kAppTitle);
+    info->title = kAppTitle;
     info->url = GURL("http://example.com/");
     info->profile_path = user_data_dir_.Append("Profile 1");
     info->profile_name = "profile name";

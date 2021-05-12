@@ -64,8 +64,7 @@ TEST_F(SmsObserverTest, SendTextMessage) {
   EXPECT_EQ(1u, notifications.size());
 
   EXPECT_EQ(u"000-000-0000", (*notifications.begin())->title());
-  EXPECT_EQ(base::UTF8ToUTF16("FakeSMSClient: \xF0\x9F\x98\x8A"),
-            (*notifications.begin())->message());
+  EXPECT_EQ(u"FakeSMSClient: 😊", (*notifications.begin())->message());
   MessageCenter::Get()->RemoveAllNotifications(false /* by_user */,
                                                MessageCenter::RemoveType::ALL);
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());

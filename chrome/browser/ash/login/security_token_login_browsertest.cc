@@ -68,18 +68,18 @@ constexpr char kCorrectPin[] = "17093";
 constexpr char kWrongPin[] = "1234";
 
 // UI golden strings in the en-US locale:
-constexpr char kChallengeResponseLoginLabel[] = "Sign in with smart card";
-constexpr char kChallengeResponseErrorLabel[] =
-    "Couldn’t recognize your smart card. Try again.";
-constexpr char kPinDialogDefaultTitle[] = "Smart card PIN";
-constexpr char kPinDialogInvalidPinTitle[] = "Invalid PIN.";
-constexpr char kPinDialogInvalidPin2AttemptsTitle[] =
-    "Invalid PIN. 2 attempts left";
+constexpr char16_t kChallengeResponseLoginLabel[] = u"Sign in with smart card";
+constexpr char16_t kChallengeResponseErrorLabel[] =
+    u"Couldn’t recognize your smart card. Try again.";
+constexpr char16_t kPinDialogDefaultTitle[] = u"Smart card PIN";
+constexpr char16_t kPinDialogInvalidPinTitle[] = u"Invalid PIN.";
+constexpr char16_t kPinDialogInvalidPin2AttemptsTitle[] =
+    u"Invalid PIN. 2 attempts left";
 
-constexpr char kPinDialogInvalidPin1AttemptTitle[] =
-    "Invalid PIN. 1 attempt left";
-constexpr char kPinDialogNoAttemptsLeftTitle[] =
-    "Maximum allowed attempts exceeded.";
+constexpr char16_t kPinDialogInvalidPin1AttemptTitle[] =
+    u"Invalid PIN. 1 attempt left";
+constexpr char16_t kPinDialogNoAttemptsLeftTitle[] =
+    u"Maximum allowed attempts exceeded.";
 
 constexpr char kChallengeData[] = "challenge";
 
@@ -282,21 +282,21 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
     pin_dialog_waiting_run_loop.Run();
   }
 
-  void WaitForChallengeResponseLabel(const std::string& awaited_label) {
+  void WaitForChallengeResponseLabel(const std::u16string& awaited_label) {
     test::TestPredicateWaiter waiter(base::BindRepeating(
-        [](const AccountId& account_id, const std::string& awaited_label) {
+        [](const AccountId& account_id, const std::u16string& awaited_label) {
           return LoginScreenTestApi::GetChallengeResponseLabel(account_id) ==
-                 base::UTF8ToUTF16(awaited_label);
+                 awaited_label;
         },
         GetChallengeResponseAccountId(), awaited_label));
     waiter.Wait();
   }
 
-  void WaitForPinDialogTitle(const std::string& awaited_title) {
+  void WaitForPinDialogTitle(const std::u16string& awaited_title) {
     test::TestPredicateWaiter waiter(base::BindRepeating(
-        [](const std::string& awaited_title) {
+        [](const std::u16string& awaited_title) {
           return LoginScreenTestApi::GetPinRequestWidgetTitle() ==
-                 base::UTF8ToUTF16(awaited_title);
+                 awaited_title;
         },
         awaited_title));
     waiter.Wait();
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, Basic) {
       GetChallengeResponseAccountId()));
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
-            base::UTF8ToUTF16(kChallengeResponseLoginLabel));
+            kChallengeResponseLoginLabel);
 
   // The challenge-response "start" button is clicked. The MountEx request is
   // sent to cryptohome, and in turn cryptohome makes a challenge request. The
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, Basic) {
   // dialog.
   StartLoginAndWaitForPinDialog();
   EXPECT_EQ(LoginScreenTestApi::GetPinRequestWidgetTitle(),
-            base::UTF8ToUTF16(kPinDialogDefaultTitle));
+            kPinDialogDefaultTitle);
 
   // The PIN is entered.
   LoginScreenTestApi::SubmitPinRequestWidget(kCorrectPin);
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, Basic) {
 IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, MissingExtension) {
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
-            base::UTF8ToUTF16(kChallengeResponseLoginLabel));
+            kChallengeResponseLoginLabel);
 
   LoginScreenTestApi::ClickChallengeResponseButton(
       GetChallengeResponseAccountId());
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, PinCancel) {
       GetChallengeResponseAccountId()));
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
-            base::UTF8ToUTF16(kChallengeResponseLoginLabel));
+            kChallengeResponseLoginLabel);
 }
 
 // Test the successful login scenario when the correct PIN was entered only on
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, SigningFailure) {
       GetChallengeResponseAccountId()));
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
-            base::UTF8ToUTF16(kChallengeResponseErrorLabel));
+            kChallengeResponseErrorLabel);
 }
 
 // Tests for the SecurityTokenSessionBehavior and

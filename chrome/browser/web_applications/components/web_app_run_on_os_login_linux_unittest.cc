@@ -22,8 +22,8 @@ namespace web_app {
 
 namespace {
 
-constexpr char kAppTitle[] = {"app"};
-constexpr char kAppId[] = {"app-id"};
+constexpr char16_t kAppTitle[] = u"app";
+constexpr char kAppId[] = "app-id";
 
 }  // namespace
 
@@ -37,7 +37,7 @@ class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
     shortcut_info->extension_id = kAppId;
-    shortcut_info->title = base::UTF8ToUTF16(kAppTitle);
+    shortcut_info->title = kAppTitle;
     shortcut_info->profile_path = profile()->GetPath();
 
     gfx::ImageFamily image_family;
@@ -76,8 +76,7 @@ TEST_F(WebAppRunOnOsLoginLinuxTest, Unregister) {
   EXPECT_TRUE(base::PathExists(GetPathToAutoStartFile()));
 
   result = internals::UnregisterRunOnOsLogin(shortcut_info->extension_id,
-                                             profile()->GetPath(),
-                                             base::UTF8ToUTF16(kAppTitle));
+                                             profile()->GetPath(), kAppTitle);
   EXPECT_TRUE(result);
   EXPECT_FALSE(base::PathExists(GetPathToAutoStartFile()));
 }

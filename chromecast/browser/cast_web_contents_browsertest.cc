@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -795,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessagePassMessagePort) {
   constexpr char kOriginalTitle[] = "messageport";
   constexpr char16_t kOriginalTitle16[] = u"messageport";
   constexpr char kHelloMsg[] = "hi";
-  constexpr char kPingMsg[] = "ping";
+  constexpr char16_t kPingMsg[] = u"ping";
 
   EXPECT_CALL(mock_cast_wc_observer_,
               UpdateTitle(std::u16string(kOriginalTitle16)));
@@ -849,8 +850,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, PostMessagePassMessagePort) {
         std::move(quit_closure));
     message_receiver.WaitForNextIncomingMessage(
         std::move(received_message_callback));
-    platform_port.PostMessage(
-        blink::WebMessagePort::Message(base::UTF8ToUTF16(kPingMsg)));
+    platform_port.PostMessage(blink::WebMessagePort::Message(kPingMsg));
     run_loop.Run();
   }
 }
@@ -932,6 +932,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ExecuteJavaScript) {
   // ExecuteJavaScript with callback to retrieve that value.
   // ===========================================================================
   constexpr char kSoyMilkJsonStringLiteral[] = "\"SoyMilk\"";
+  constexpr char16_t kSoyMilkJsonStringLiteral16[] = u"\"SoyMilk\"";
 
   // Load page with title "hello":
   GURL gurl{embedded_test_server()->GetURL("/title1.html")};
@@ -952,8 +953,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ExecuteJavaScript) {
 
   // Execute with empty callback.
   cast_web_contents_->ExecuteJavaScript(
-      base::UTF8ToUTF16(
-          base::StringPrintf("const the_var = %s;", kSoyMilkJsonStringLiteral)),
+      base::StrCat({u"const the_var = ", kSoyMilkJsonStringLiteral16, u";"}),
       base::DoNothing());
 
   // Execute a script snippet to return the variable's value.

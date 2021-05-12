@@ -197,14 +197,13 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearCustomData() {
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
-    const std::initializer_list<std::string>& source_list) {
-  constexpr char kFileSystemSourcesType[] = "fs/sources";
+    const std::initializer_list<std::u16string>& source_list) {
+  constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
   base::Pickle custom_data;
   ui::WriteCustomDataToPickle(
       std::unordered_map<std::u16string, std::u16string>(
-          {{base::UTF8ToUTF16(kFileSystemSourcesType),
-            base::UTF8ToUTF16(base::JoinString(source_list, "\n"))}}),
+          {{kFileSystemSourcesType, base::JoinString(source_list, u"\n")}}),
       &custom_data);
 
   return SetCustomData(

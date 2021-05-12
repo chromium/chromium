@@ -24,6 +24,8 @@
 namespace {
 const char kPluginNotSupportedText[] =
     "hahaha, your plugin is not supported :D";
+const char16_t kPluginNotSupportedText16[] =
+    u"hahaha, your plugin is not supported :D";
 }
 
 namespace web {
@@ -34,8 +36,7 @@ class PluginPlaceholderTest : public WebTestWithWebState {
   PluginPlaceholderTest()
       : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
     FakeWebClient* web_client = static_cast<FakeWebClient*>(GetWebClient());
-    web_client->SetPluginNotSupportedText(
-        base::UTF8ToUTF16(kPluginNotSupportedText));
+    web_client->SetPluginNotSupportedText(kPluginNotSupportedText16);
   }
 
   // Sets up |server_| with |html| as response content.

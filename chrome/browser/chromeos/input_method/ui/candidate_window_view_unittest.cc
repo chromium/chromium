@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/candidate_view.h"
@@ -20,19 +21,19 @@ namespace ui {
 namespace ime {
 
 namespace {
-const char* kSampleCandidate[] = {"Sample Candidate 1", "Sample Candidate 2",
-                                  "Sample Candidate 3"};
-const char* kSampleAnnotation[] = {"Sample Annotation 1", "Sample Annotation 2",
-                                   "Sample Annotation 3"};
-const char* kSampleDescriptionTitle[] = {
-    "Sample Description Title 1",
-    "Sample Description Title 2",
-    "Sample Description Title 3",
+const char16_t* kSampleCandidate[] = {
+    u"Sample Candidate 1", u"Sample Candidate 2", u"Sample Candidate 3"};
+const char16_t* kSampleAnnotation[] = {
+    u"Sample Annotation 1", u"Sample Annotation 2", u"Sample Annotation 3"};
+const char16_t* kSampleDescriptionTitle[] = {
+    u"Sample Description Title 1",
+    u"Sample Description Title 2",
+    u"Sample Description Title 3",
 };
-const char* kSampleDescriptionBody[] = {
-    "Sample Description Body 1",
-    "Sample Description Body 2",
-    "Sample Description Body 3",
+const char16_t* kSampleDescriptionBody[] = {
+    u"Sample Description Body 1",
+    u"Sample Description Body 2",
+    u"Sample Description Body 3",
 };
 
 void InitCandidateWindow(size_t page_size,
@@ -49,8 +50,8 @@ void InitCandidateWindowWithCandidatesFilled(
   InitCandidateWindow(page_size, candidate_window);
   for (size_t i = 0; i < page_size; ++i) {
     ui::CandidateWindow::Entry entry;
-    entry.value = base::UTF8ToUTF16(base::StringPrintf("value %zu", i));
-    entry.label = base::UTF8ToUTF16(base::StringPrintf("%zu", i));
+    entry.value = u"value " + base::NumberToString16(i);
+    entry.label = base::NumberToString16(i);
     candidate_window->mutable_candidates()->push_back(entry);
   }
 }
@@ -99,13 +100,13 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
     candidate_window_view_->MaybeInitializeCandidateViews(candidate_window);
   }
 
-  void ExpectLabels(const std::string& shortcut,
-                    const std::string& candidate,
-                    const std::string& annotation,
+  void ExpectLabels(const std::u16string& shortcut,
+                    const std::u16string& candidate,
+                    const std::u16string& annotation,
                     const CandidateView* row) {
-    EXPECT_EQ(shortcut, base::UTF16ToUTF8(row->shortcut_label_->GetText()));
-    EXPECT_EQ(candidate, base::UTF16ToUTF8(row->candidate_label_->GetText()));
-    EXPECT_EQ(annotation, base::UTF16ToUTF8(row->annotation_label_->GetText()));
+    EXPECT_EQ(shortcut, row->shortcut_label_->GetText());
+    EXPECT_EQ(candidate, row->candidate_label_->GetText());
+    EXPECT_EQ(annotation, row->annotation_label_->GetText());
   }
 
  private:
@@ -164,9 +165,9 @@ TEST_F(CandidateWindowViewTest, SelectCandidateAtTest) {
 }
 
 TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
-  const char* kEmptyLabel = "";
-  const char* kCustomizedLabel[] = {"a", "s", "d"};
-  const char* kExpectedHorizontalCustomizedLabel[] = {"a.", "s.", "d."};
+  const char16_t* kEmptyLabel = u"";
+  const char16_t* kCustomizedLabel[] = {u"a", u"s", u"d"};
+  const char16_t* kExpectedHorizontalCustomizedLabel[] = {u"a.", u"s.", u"d."};
 
   {
     SCOPED_TRACE("candidate_views allocation test");
@@ -187,11 +188,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(kSampleCandidate[i]);
-      entry.annotation = base::UTF8ToUTF16(kSampleAnnotation[i]);
-      entry.description_title = base::UTF8ToUTF16(kSampleDescriptionTitle[i]);
-      entry.description_body = base::UTF8ToUTF16(kSampleDescriptionBody[i]);
-      entry.label = base::UTF8ToUTF16(kEmptyLabel);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -213,11 +214,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(kSampleCandidate[i]);
-      entry.annotation = base::UTF8ToUTF16(kSampleAnnotation[i]);
-      entry.description_title = base::UTF8ToUTF16(kSampleDescriptionTitle[i]);
-      entry.description_body = base::UTF8ToUTF16(kSampleDescriptionBody[i]);
-      entry.label = base::UTF8ToUTF16(kEmptyLabel);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -239,11 +240,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(kSampleCandidate[i]);
-      entry.annotation = base::UTF8ToUTF16(kSampleAnnotation[i]);
-      entry.description_title = base::UTF8ToUTF16(kSampleDescriptionTitle[i]);
-      entry.description_body = base::UTF8ToUTF16(kSampleDescriptionBody[i]);
-      entry.label = base::UTF8ToUTF16(kCustomizedLabel[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kCustomizedLabel[i];
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -265,11 +266,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(kSampleCandidate[i]);
-      entry.annotation = base::UTF8ToUTF16(kSampleAnnotation[i]);
-      entry.description_title = base::UTF8ToUTF16(kSampleDescriptionTitle[i]);
-      entry.description_body = base::UTF8ToUTF16(kSampleDescriptionBody[i]);
-      entry.label = base::UTF8ToUTF16(kCustomizedLabel[i]);
+      entry.value = kSampleCandidate[i];
+      entry.annotation = kSampleAnnotation[i];
+      entry.description_title = kSampleDescriptionTitle[i];
+      entry.description_body = kSampleDescriptionBody[i];
+      entry.label = kCustomizedLabel[i];
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -290,8 +291,7 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   ui::CandidateWindow no_shortcut_candidate_window;
 
   const std::u16string kSampleCandidate1 = u"Sample String 1";
-  const std::u16string kSampleCandidate2 =
-      base::UTF8ToUTF16("\xE3\x81\x82");  // multi byte string.
+  const std::u16string kSampleCandidate2 = u"あ";  // multi byte string.
   const std::u16string kSampleCandidate3 = u".....";
 
   const std::u16string kSampleShortcut1 = u"1";
@@ -299,8 +299,7 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   const std::u16string kSampleShortcut3 = u"C";
 
   const std::u16string kSampleAnnotation1 = u"Sample Annotation 1";
-  const std::u16string kSampleAnnotation2 =
-      base::UTF8ToUTF16("\xE3\x81\x82");  // multi byte string.
+  const std::u16string kSampleAnnotation2 = u"あ";  // multi byte string.
   const std::u16string kSampleAnnotation3 = u"......";
 
   // Create CandidateWindow object.

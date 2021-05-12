@@ -102,12 +102,11 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     return {};
   }
 
-  constexpr char kFileSystemSourcesType[] = "fs/sources";
+  constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
   std::u16string file_system_sources;
   ui::ReadCustomDataForType(pickle.data(), pickle.size(),
-                            base::UTF8ToUTF16(kFileSystemSourcesType),
-                            &file_system_sources);
+                            kFileSystemSourcesType, &file_system_sources);
   if (file_system_sources.empty())
     return {};
 

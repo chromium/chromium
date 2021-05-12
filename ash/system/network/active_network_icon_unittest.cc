@@ -31,6 +31,7 @@ namespace {
 const char kShillManagerClientStubCellularDevice[] =
     "/device/stub_cellular_device";
 const char kCellularNetworkGuid[] = "cellular_guid";
+const char16_t kCellularNetworkGuid16[] = u"cellular_guid";
 
 }  // namespace
 
@@ -185,12 +186,11 @@ TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
       ActiveNetworkIcon::Type::kSingle, &name, &desc, &tooltip);
   // Note: The guid is used for the name in ConfigureService.
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
-                                       base::UTF8ToUTF16(kCellularNetworkGuid)),
+                                       kCellularNetworkGuid16),
             name);
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP,
-          base::UTF8ToUTF16(kCellularNetworkGuid),
+          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP, kCellularNetworkGuid16,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_STRONG)),
       tooltip);
 }

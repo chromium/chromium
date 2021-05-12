@@ -198,8 +198,7 @@ void EnsureNoWordBreaks(std::u16string* shortcut_text) {
 
   // The plus sign surrounded by the word joiner to guarantee an non-breaking
   // shortcut.
-  const std::u16string non_breaking_plus =
-      base::UTF8ToUTF16("\xe2\x81\xa0+\xe2\x81\xa0");
+  const std::u16string non_breaking_plus = u"\u2060+\u2060";
   shortcut_text->clear();
   for (size_t i = 0; i < keys.size() - 1; ++i) {
     *shortcut_text += keys[i];

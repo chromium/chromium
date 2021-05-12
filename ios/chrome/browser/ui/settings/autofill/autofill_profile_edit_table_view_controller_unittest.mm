@@ -27,18 +27,18 @@
 
 namespace {
 
-const char kTestHonorificPrefix[] = "";
-const char kTestFullName[] = "That Guy John";
-const char kTestCompany[] = "Awesome Inc.";
-const char kTestAddressLine1[] = "Some person's garage";
-const char kTestAddressLine2[] = "Near the lake";
-const char kTestCity[] = "Springfield";
-const char kTestState[] = "IL";
-const char kTestZip[] = "55123";
-const char kTestCountryCode[] = "US";
-const char kTestCountry[] = "United States";
-const char kTestPhone[] = "16502530000";
-const char kTestEmail[] = "test@email.com";
+const char16_t kTestHonorificPrefix[] = u"";
+const char16_t kTestFullName[] = u"That Guy John";
+const char16_t kTestCompany[] = u"Awesome Inc.";
+const char16_t kTestAddressLine1[] = u"Some person's garage";
+const char16_t kTestAddressLine2[] = u"Near the lake";
+const char16_t kTestCity[] = u"Springfield";
+const char16_t kTestState[] = u"IL";
+const char16_t kTestZip[] = u"55123";
+const char16_t kTestCountryCode[] = u"US";
+const char16_t kTestCountry[] = u"United States";
+const char16_t kTestPhone[] = u"16502530000";
+const char16_t kTestEmail[] = u"test@email.com";
 
 static NSArray* FindTextFieldDescendants(UIView* root) {
   NSMutableArray* textFields = [NSMutableArray array];
@@ -76,27 +76,20 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     autofill_profile =
         autofill::AutofillProfile(guid, "https://www.example.com/");
     autofill_profile.SetRawInfo(autofill::NAME_HONORIFIC_PREFIX,
-                                base::UTF8ToUTF16(kTestHonorificPrefix));
-    autofill_profile.SetRawInfo(autofill::NAME_FULL,
-                                base::UTF8ToUTF16(kTestFullName));
-    autofill_profile.SetRawInfo(autofill::COMPANY_NAME,
-                                base::UTF8ToUTF16(kTestCompany));
+                                kTestHonorificPrefix);
+    autofill_profile.SetRawInfo(autofill::NAME_FULL, kTestFullName);
+    autofill_profile.SetRawInfo(autofill::COMPANY_NAME, kTestCompany);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
-                                base::UTF8ToUTF16(kTestAddressLine1));
+                                kTestAddressLine1);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2,
-                                base::UTF8ToUTF16(kTestAddressLine2));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY,
-                                base::UTF8ToUTF16(kTestCity));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE,
-                                base::UTF8ToUTF16(kTestState));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP,
-                                base::UTF8ToUTF16(kTestZip));
+                                kTestAddressLine2);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, kTestCity);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE, kTestState);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, kTestZip);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY,
-                                base::UTF8ToUTF16(kTestCountryCode));
-    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                                base::UTF8ToUTF16(kTestPhone));
-    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS,
-                                base::UTF8ToUTF16(kTestEmail));
+                                kTestCountryCode);
+    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, kTestPhone);
+    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS, kTestEmail);
     personal_data_manager_->SaveImportedProfile(autofill_profile);
     waiter.Wait();  // Wait for the completion of the asynchronous operation.
 
@@ -132,7 +125,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
-  std::vector<const char*> expected_values = {
+  std::vector<const char16_t*> expected_values = {
       kTestFullName, kTestCompany, kTestAddressLine1, kTestAddressLine2,
       kTestCity,     kTestState,   kTestZip,          kTestCountry,
       kTestPhone,    kTestEmail};
@@ -153,7 +146,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
     UITextField* field = [textFields objectAtIndex:0];
     EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
     EXPECT_TRUE([[field text]
-        isEqualToString:base::SysUTF8ToNSString(expected_values[row])]);
+        isEqualToString:base::SysUTF16ToNSString(expected_values[row])]);
   }
 }
 

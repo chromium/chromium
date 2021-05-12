@@ -38,7 +38,7 @@ namespace {
 
 const char kAppInstallUrl[] = "https://app.com/install";
 const char kAppLaunchUrl[] = "https://app.com/launch";
-const char kAppTitle[] = "title.";
+const char16_t kAppTitle[] = u"title.";
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 
@@ -92,7 +92,7 @@ class WebKioskTest : public OobeBaseTest {
   void MakeAppAlreadyInstalled() {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kAppLaunchUrl);
-    info->title = base::UTF8ToUTF16(kAppTitle);
+    info->title = kAppTitle;
     WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(),
                                                     std::move(info));
   }

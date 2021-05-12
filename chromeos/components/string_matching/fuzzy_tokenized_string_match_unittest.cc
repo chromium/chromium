@@ -154,8 +154,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, WeightedRatio) {
   {
     std::u16string query(u"short text!!!");
     std::u16string text(
-        base::UTF8ToUTF16("this sentence is much much much much much longer "
-                          "than the text before"));
+        u"this sentence is much much much much much longer "
+        u"than the text before");
     EXPECT_NEAR(
         match.WeightedRatio(TokenizedString(query), TokenizedString(text),
                             kPartialMatchPenaltyRate, false, 0.0),

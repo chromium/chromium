@@ -68,7 +68,7 @@ using wk_navigation_util::CreateRedirectUrl;
 
 const char kExpectedMimeType[] = "text/html";
 
-const char kFailedTitle[] = "failed_title";
+const char16_t kFailedTitle[] = u"failed_title";
 
 // Location of a test page.
 const char kTestPageURL[] = "/pony.html";
@@ -1016,13 +1016,13 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   // Ensure that title is not overridden by a placeholder navigation.
   web::NavigationManager* manager = web_state()->GetNavigationManager();
   web::NavigationItem* item = manager->GetPendingItem();
-  item->SetTitle(base::UTF8ToUTF16(kFailedTitle));
+  item->SetTitle(kFailedTitle);
   ASSERT_TRUE(test::WaitForWebViewContainingText(
       web_state(), testing::GetErrorText(web_state(), url,
                                          testing::CreateConnectionLostError(),
                                          /*is_post=*/false, /*is_otr=*/false,
                                          /*cert_status=*/0)));
-  EXPECT_EQ(item->GetTitle(), base::UTF8ToUTF16(kFailedTitle));
+  EXPECT_EQ(item->GetTitle(), kFailedTitle);
 }
 
 // Tests that navigation to an invalid URL is disallowed.

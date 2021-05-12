@@ -32,7 +32,9 @@ using ::chromeos::AuthPolicyClient;
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 constexpr char kProfileEmail[] = "user@example.com";
 constexpr char kDisplayName[] = "DisplayName";
+constexpr char16_t kDisplayName16[] = u"DisplayName";
 constexpr char kGivenName[] = "Given Name";
+constexpr char16_t kGivenName16[] = u"Given Name";
 
 MATCHER_P(UserAccountDataEq, value, "Compares two UserAccountData") {
   const user_manager::UserManager::UserAccountData& expected_data = value;
@@ -145,8 +147,7 @@ TEST_F(AuthPolicyCredentialsManagerTest, SaveNames) {
   fake_authpolicy_client()->set_display_name(kDisplayName);
   fake_authpolicy_client()->set_given_name(kGivenName);
   user_manager::UserManager::UserAccountData user_account_data(
-      base::UTF8ToUTF16(kDisplayName), base::UTF8ToUTF16(kGivenName),
-      std::string() /* locale */);
+      kDisplayName16, kGivenName16, std::string() /* locale */);
 
   EXPECT_CALL(*mock_user_manager(),
               UpdateUserAccountData(

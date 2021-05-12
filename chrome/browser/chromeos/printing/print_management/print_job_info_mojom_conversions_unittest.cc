@@ -24,8 +24,10 @@ namespace mojom = printing::printing_manager::mojom;
 namespace {
 
 constexpr char kName[] = "name";
+constexpr char16_t kName16[] = u"name";
 constexpr char kUri[] = "ipp://192.168.1.5:631";
 constexpr char kTitle[] = "title";
+constexpr char16_t kTitle16[] = u"title";
 constexpr char kId[] = "id";
 constexpr char kPrinterId[] = "printerId";
 constexpr int64_t kJobCreationTime = 0;
@@ -77,10 +79,10 @@ TEST(PrintJobInfoMojomConversionsTest, PrintJobProtoToMojom) {
           CreatePrintJobInfoProto());
 
   EXPECT_EQ(kId, print_job_mojo->id);
-  EXPECT_EQ(base::UTF8ToUTF16(kTitle), print_job_mojo->title);
+  EXPECT_EQ(kTitle16, print_job_mojo->title);
   EXPECT_EQ(base::Time::FromJsTime(kJobCreationTime),
             print_job_mojo->creation_time);
-  EXPECT_EQ(base::UTF8ToUTF16(kName), print_job_mojo->printer_name);
+  EXPECT_EQ(kName16, print_job_mojo->printer_name);
   EXPECT_EQ(kUri, print_job_mojo->printer_uri.spec());
   EXPECT_EQ(kPagesNumber, print_job_mojo->number_of_pages);
   EXPECT_EQ(mojom::PrintJobCompletionStatus::kPrinted,
@@ -95,9 +97,9 @@ TEST(PrintJobInfoMojomConversionsTest, CupsPrintJobToMojom) {
       printing::print_management::CupsPrintJobToMojom(*cups_print_job);
 
   EXPECT_EQ(cups_print_job->GetUniqueId(), print_job_mojo->id);
-  EXPECT_EQ(base::UTF8ToUTF16(kTitle), print_job_mojo->title);
+  EXPECT_EQ(kTitle16, print_job_mojo->title);
   EXPECT_EQ(cups_print_job->creation_time(), print_job_mojo->creation_time);
-  EXPECT_EQ(base::UTF8ToUTF16(kName), print_job_mojo->printer_name);
+  EXPECT_EQ(kName16, print_job_mojo->printer_name);
   EXPECT_EQ(kUri, print_job_mojo->printer_uri.spec());
   EXPECT_EQ(kPagesNumber, print_job_mojo->number_of_pages);
   EXPECT_EQ(kPrintedPageNumber,

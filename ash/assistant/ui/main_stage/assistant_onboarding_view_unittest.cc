@@ -169,10 +169,10 @@ class AssistantOnboardingViewTest : public AssistantAshTestBase {
 
 TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
   struct ExpectedGreeting {
-    std::string for_morning;
-    std::string for_afternoon;
-    std::string for_evening;
-    std::string for_night;
+    std::u16string for_morning;
+    std::u16string for_afternoon;
+    std::u16string for_evening;
+    std::u16string for_night;
   };
 
   struct TestCase {
@@ -185,18 +185,18 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
       TestCase{/*display_email=*/"empty@test",
                /*given_name=*/std::string(),
                ExpectedGreeting{
-                   /*for_morning=*/"Good morning,",
-                   /*for_afternoon=*/"Good afternoon,",
-                   /*for_evening=*/"Good evening,",
-                   /*for_night=*/"Good night,",
+                   /*for_morning=*/u"Good morning,",
+                   /*for_afternoon=*/u"Good afternoon,",
+                   /*for_evening=*/u"Good evening,",
+                   /*for_night=*/u"Good night,",
                }},
       TestCase{/*display_email=*/"david@test",
                /*given_name=*/"David",
                ExpectedGreeting{
-                   /*for_morning=*/"Good morning David,",
-                   /*for_afternoon=*/"Good afternoon David,",
-                   /*for_evening=*/"Good evening David,",
-                   /*for_night=*/"Good night David,",
+                   /*for_morning=*/u"Good morning David,",
+                   /*for_afternoon=*/u"Good afternoon David,",
+                   /*for_evening=*/u"Good evening David,",
+                   /*for_night=*/u"Good night David,",
                }}};
 
   for (const auto& test_case : test_cases) {
@@ -212,7 +212,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
                    base::TimeDelta::FromMinutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_night));
+                test_case.expected_greeting.for_night);
     }
 
     {
@@ -220,7 +220,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
       AdvanceClock(base::TimeDelta::FromMinutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_morning));
+                test_case.expected_greeting.for_morning);
     }
 
     {
@@ -229,7 +229,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
                    base::TimeDelta::FromMinutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_morning));
+                test_case.expected_greeting.for_morning);
     }
 
     {
@@ -237,7 +237,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
       AdvanceClock(base::TimeDelta::FromMinutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_afternoon));
+                test_case.expected_greeting.for_afternoon);
     }
 
     {
@@ -246,7 +246,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
                    base::TimeDelta::FromMinutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_afternoon));
+                test_case.expected_greeting.for_afternoon);
     }
 
     {
@@ -254,7 +254,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
       AdvanceClock(base::TimeDelta::FromMinutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_evening));
+                test_case.expected_greeting.for_evening);
     }
 
     {
@@ -263,7 +263,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
                    base::TimeDelta::FromMinutes(59));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_evening));
+                test_case.expected_greeting.for_evening);
     }
 
     {
@@ -271,7 +271,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
       AdvanceClock(base::TimeDelta::FromMinutes(1));
       ScopedShowUi scoped_show_ui;
       EXPECT_EQ(greeting_label()->GetText(),
-                base::UTF8ToUTF16(test_case.expected_greeting.for_night));
+                test_case.expected_greeting.for_night);
     }
   }
 }
@@ -279,9 +279,8 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
 TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedIntro) {
   ShowAssistantUi();
   EXPECT_EQ(intro_label()->GetText(),
-            base::UTF8ToUTF16(
-                "I'm your Google Assistant, here to help you throughout your "
-                "day!\nHere are some things you can try to get started."));
+            u"I'm your Google Assistant, here to help you throughout your day!"
+            u"\nHere are some things you can try to get started.");
 }
 
 TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
@@ -294,7 +293,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
   };
 
   struct ExpectedSuggestion {
-    std::string message;
+    std::u16string message;
     std::unique_ptr<VectorIconWithColor> icon_with_color;
   };
 
@@ -309,53 +308,53 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
     switch (onboarding_mode) {
       case AssistantOnboardingMode::kEducation:
         expected_suggestions.push_back(
-            {/*message=*/"Square root of 71",
+            {/*message=*/u"Square root of 71",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kCalculateIcon, gfx::kGoogleBlue800)});
         expected_suggestions.push_back(
-            {/*message=*/"How far is Venus",
+            {/*message=*/u"How far is Venus",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kStraightenIcon, gfx::kGoogleRed800)});
         expected_suggestions.push_back(
-            {/*message=*/"Set timer",
+            {/*message=*/u"Set timer",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
         expected_suggestions.push_back(
-            {/*message=*/"Tell me a joke",
+            {/*message=*/u"Tell me a joke",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
         expected_suggestions.push_back(
-            {/*message=*/"\"Hello\" in Chinese",
+            {/*message=*/u"\"Hello\" in Chinese",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
         expected_suggestions.push_back(
-            {/*message=*/"Take a screenshot",
+            {/*message=*/u"Take a screenshot",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kScreenshotIcon, gfx::kGoogleBlue800)});
         break;
       case AssistantOnboardingMode::kDefault:
         expected_suggestions.push_back(
-            {/*message=*/"5K in miles",
+            {/*message=*/u"5K in miles",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kConversionPathIcon, gfx::kGoogleBlue800)});
         expected_suggestions.push_back(
-            {/*message=*/"Population in Nigeria",
+            {/*message=*/u"Population in Nigeria",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kPersonPinCircleIcon, gfx::kGoogleRed800)});
         expected_suggestions.push_back(
-            {/*message=*/"Set timer",
+            {/*message=*/u"Set timer",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kTimerIcon, SkColorSetRGB(0xBF, 0x50, 0x00))});
         expected_suggestions.push_back(
-            {/*message=*/"Tell me a joke",
+            {/*message=*/u"Tell me a joke",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kSentimentVerySatisfiedIcon, gfx::kGoogleGreen800)});
         expected_suggestions.push_back(
-            {/*message=*/"\"Hello\" in Chinese",
+            {/*message=*/u"\"Hello\" in Chinese",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kTranslateIcon, SkColorSetRGB(0x8A, 0x0E, 0x9E))});
         expected_suggestions.push_back(
-            {/*message=*/"Take a screenshot",
+            {/*message=*/u"Take a screenshot",
              /*icon_with_color=*/std::make_unique<VectorIconWithColor>(
                  chromeos::kScreenshotIcon, gfx::kGoogleBlue800)});
         break;
@@ -372,8 +371,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
       const auto* suggestion_view = suggestion_views.at(i);
       const auto& expected_suggestion = expected_suggestions.at(i);
 
-      EXPECT_EQ(suggestion_view->GetText(),
-                base::UTF8ToUTF16(expected_suggestion.message));
+      EXPECT_EQ(suggestion_view->GetText(), expected_suggestion.message);
 
       ASSERT_PIXELS_EQ(
           suggestion_view->GetIcon(),

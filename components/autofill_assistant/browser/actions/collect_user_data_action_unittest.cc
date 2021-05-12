@@ -882,14 +882,10 @@ TEST_F(CollectUserDataActionTest, ContactDetailsCanHandleUtf8) {
   contact_details_proto->set_request_payer_name(true);
   contact_details_proto->set_request_payer_email(true);
 
-  // Name = 艾丽森 in UTF-8.
   autofill::AutofillProfile contact_profile;
-  contact_profile.SetRawInfo(
-      autofill::ServerFieldType::NAME_FULL,
-      base::UTF8ToUTF16("\xE8\x89\xBE\xE4\xB8\xBD\xE6\xA3\xAE"));
-  contact_profile.SetRawInfo(
-      autofill::ServerFieldType::EMAIL_ADDRESS,
-      base::UTF8ToUTF16("\xE8\x89\xBE\xE4\xB8\xBD\xE6\xA3\xAE@example.com"));
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, u"艾丽森");
+  contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
+                             u"艾丽森@example.com");
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -902,24 +898,20 @@ TEST_F(CollectUserDataActionTest, ContactDetailsCanHandleUtf8) {
                 .Run(&user_data_, &user_model_);
           }));
 
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(AllOf(
-          Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              Property(&CollectUserDataResultProto::payer_email,
-                       "\xE8\x89\xBE\xE4\xB8\xBD\xE6\xA3\xAE@example.com"))))));
+  EXPECT_CALL(callback_,
+              Run(Pointee(AllOf(
+                  Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                  Property(&ProcessedActionProto::collect_user_data_result,
+                           Property(&CollectUserDataResultProto::payer_email,
+                                    "艾丽森@example.com"))))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
   EXPECT_EQ(user_data_.has_selected_address(kMemoryLocation), true);
   auto* profile = user_data_.selected_address(kMemoryLocation);
-  EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL),
-            base::UTF8ToUTF16("\xE8\x89\xBE\xE4\xB8\xBD\xE6\xA3\xAE"));
-  EXPECT_EQ(
-      profile->GetRawInfo(autofill::EMAIL_ADDRESS),
-      base::UTF8ToUTF16("\xE8\x89\xBE\xE4\xB8\xBD\xE6\xA3\xAE@example.com"));
+  EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"艾丽森");
+  EXPECT_EQ(profile->GetRawInfo(autofill::EMAIL_ADDRESS),
+            u"艾丽森@example.com");
 }
 
 TEST_F(CollectUserDataActionTest, UserDataComplete_Contact) {

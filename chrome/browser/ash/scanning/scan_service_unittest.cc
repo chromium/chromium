@@ -42,7 +42,9 @@ constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 
 // Scanner names used for tests.
 constexpr char kFirstTestScannerName[] = "Test Scanner 1";
+constexpr char16_t kFirstTestScannerName16[] = u"Test Scanner 1";
 constexpr char kSecondTestScannerName[] = "Test Scanner 2";
+constexpr char16_t kSecondTestScannerName16[] = u"Test Scanner 2";
 constexpr char kEpsonTestName[] = "Epson";
 
 // Document source name used for tests.
@@ -276,8 +278,7 @@ TEST_F(ScanServiceTest, GetScanners) {
       {kFirstTestScannerName});
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
-  EXPECT_EQ(scanners[0]->display_name,
-            base::UTF8ToUTF16(kFirstTestScannerName));
+  EXPECT_EQ(scanners[0]->display_name, kFirstTestScannerName16);
 }
 
 // Test that two returned scanners have unique IDs.
@@ -286,10 +287,8 @@ TEST_F(ScanServiceTest, UniqueScannerIds) {
       {kFirstTestScannerName, kSecondTestScannerName});
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 2u);
-  EXPECT_EQ(scanners[0]->display_name,
-            base::UTF8ToUTF16(kFirstTestScannerName));
-  EXPECT_EQ(scanners[1]->display_name,
-            base::UTF8ToUTF16(kSecondTestScannerName));
+  EXPECT_EQ(scanners[0]->display_name, kFirstTestScannerName16);
+  EXPECT_EQ(scanners[1]->display_name, kSecondTestScannerName16);
   EXPECT_NE(scanners[0]->id, scanners[1]->id);
 }
 

@@ -62,7 +62,7 @@ constexpr const char kDebugEnterpriseInfo[] = "Asset ID: 1111";
 constexpr const char kDebugBluetoothName[] = "Bluetooth adapter";
 
 constexpr const char kDebugKioskAppId[] = "asdf1234";
-constexpr const char kDebugKioskAppName[] = "Test App Name";
+constexpr const char16_t kDebugKioskAppName[] = u"Test App Name";
 
 constexpr const char kDebugDefaultLocaleCode[] = "en-GB";
 constexpr const char kDebugDefaultLocaleTitle[] = "English";
@@ -409,7 +409,7 @@ class LockDebugView::DebugDataDispatcherTransformer
   void AddKioskApp(ShelfWidget* shelf_widget) {
     KioskAppMenuEntry menu_item;
     menu_item.app_id = kDebugKioskAppId;
-    menu_item.name = base::UTF8ToUTF16(kDebugKioskAppName);
+    menu_item.name = kDebugKioskAppName;
     kiosk_apps_.push_back(std::move(menu_item));
     shelf_widget->login_shelf_view()->SetKioskApps(kiosk_apps_, {}, {});
   }

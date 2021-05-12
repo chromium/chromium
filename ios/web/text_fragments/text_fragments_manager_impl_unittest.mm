@@ -37,12 +37,12 @@ namespace {
 
 const char kValidFragmentsURL[] =
     "https://chromium.org#idFrag:~:text=text%201&text=text%202";
-const char kScriptForValidFragmentsURL[] =
-    "__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
-    "1\"},{\"textStart\":\"text 2\"}], true, null, null)";
-const char kScriptForValidFragmentsColorChangeURL[] =
-    "__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
-    "1\"},{\"textStart\":\"text 2\"}], true, 'e9d2fd', '000000')";
+const char16_t kScriptForValidFragmentsURL[] =
+    u"__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
+    u"1\"},{\"textStart\":\"text 2\"}], true, null, null)";
+const char16_t kScriptForValidFragmentsColorChangeURL[] =
+    u"__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
+    u"1\"},{\"textStart\":\"text 2\"}], true, 'e9d2fd', '000000')";
 
 const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
 const char kTwoFragmentsURL[] =
@@ -140,8 +140,7 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptSuccess) {
 
   manager->DidFinishNavigation(web_state_, &context_);
 
-  std::u16string expected_javascript =
-      base::UTF8ToUTF16(kScriptForValidFragmentsURL);
+  std::u16string expected_javascript = kScriptForValidFragmentsURL;
   EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
 
   // Verify that a command callback was added with the right prefix.
@@ -166,8 +165,7 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
 
   manager->DidFinishNavigation(web_state_, &context_);
 
-  std::u16string expected_javascript =
-      base::UTF8ToUTF16(kScriptForValidFragmentsColorChangeURL);
+  std::u16string expected_javascript = kScriptForValidFragmentsColorChangeURL;
   EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
 
   // Verify that a command callback was added with the right prefix.

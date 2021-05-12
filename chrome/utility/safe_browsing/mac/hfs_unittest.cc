@@ -52,8 +52,7 @@ class HFSIteratorTest : public testing::Test {
     for (size_t i = 0; i < base::size(kBaseFiles); ++i)
       files->insert(dmg_name + kBaseFiles[i]);
 
-    files->insert(dmg_name + u"first/second/" +
-                  base::UTF8ToUTF16("Te\xCC\x86st\xCC\x88 \xF0\x9F\x90\x90 "));
+    files->insert(dmg_name + u"first/second/" + u"Tĕsẗ 🐐 ");
 
     dirs->insert(dmg_name.substr(0, dmg_name.size() - 1));
     for (size_t i = 0; i < base::size(kBaseDirs); ++i)

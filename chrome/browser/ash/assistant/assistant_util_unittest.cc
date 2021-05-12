@@ -33,6 +33,7 @@ namespace assistant {
 namespace {
 
 constexpr char kTestProfileName[] = "user@gmail.com";
+constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 constexpr char kTestGaiaId[] = "1234567890";
 
 class ScopedSpoofGoogleBrandedDevice {
@@ -192,7 +193,7 @@ class ChromeAssistantUtilTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
 
     profile_ = profile_manager_->CreateTestingProfile(
-        kTestProfileName, /*prefs=*/{}, base::UTF8ToUTF16(kTestProfileName),
+        kTestProfileName, /*prefs=*/{}, kTestProfileName16,
         /*avatar_id=*/0, /*supervised_user_id=*/{},
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());

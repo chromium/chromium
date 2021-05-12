@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 
 const char kFileURL[] = "file:///home/user/file.txt";
+const char16_t kFileURL16[] = u"file:///home/user/file.txt";
 const char kFileName[] = "/home/user/file.txt";
 const char16_t kGoogleTitle[] = u"Google";
 const char kGoogleURL[] = "http://www.google.com/";
@@ -106,7 +107,7 @@ TEST_F(OSExchangeDataProviderX11Test, URIListWithBoth) {
 }
 
 TEST_F(OSExchangeDataProviderX11Test, OnlyStringURLIsUnfiltered) {
-  const std::u16string file_url = base::UTF8ToUTF16(kFileURL);
+  const std::u16string file_url = kFileURL16;
   provider.SetString(file_url);
 
   EXPECT_TRUE(provider.HasString());
@@ -114,7 +115,7 @@ TEST_F(OSExchangeDataProviderX11Test, OnlyStringURLIsUnfiltered) {
 }
 
 TEST_F(OSExchangeDataProviderX11Test, StringAndURIListFilterString) {
-  const std::u16string file_url = base::UTF8ToUTF16(kFileURL);
+  const std::u16string file_url = kFileURL16;
   provider.SetString(file_url);
   AddURLList(kFileURL);
 

@@ -31,11 +31,11 @@ namespace {
 const char kFakeDeviceName[] = "My Cool Chromebook";
 const char kFakeEmptyDeviceName[] = "";
 const char kFakeFullName[] = "Barack Obama";
-const char kFakeGivenName[] = "Barack";
+const char16_t kFakeGivenName[] = u"Barack";
 const char kFakeIconUrl[] = "https://www.google.com";
 const char kFakeInvalidDeviceName[] = {0xC0, 0x00};
 const char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
-const char kFakeTooLongGivenName[] = "this is a 33-byte string in utf-8";
+const char16_t kFakeTooLongGivenName[] = u"this is a 33-byte string in utf-8";
 const char kFakeTooLongTruncatedDeviceName[] =
     "this is a 33-...'s Chrome device";
 
@@ -101,7 +101,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
     NearbyShareSchedulerFactory::SetFactoryForTesting(&scheduler_factory_);
     NearbyShareDeviceDataUpdaterImpl::Factory::SetFactoryForTesting(
         &updater_factory_);
-    profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
+    profile_info_provider()->set_given_name(kFakeGivenName);
   }
 
   void TearDown() override {
@@ -282,16 +282,15 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
 
   // Set given name and expect full default device name of the form
   // "<given name>'s <device type>."
-  profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
-  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME,
-                                      base::UTF8ToUTF16(kFakeGivenName),
-                                      ui::GetChromeOSDeviceName()),
-            manager()->GetDeviceName());
+  profile_info_provider()->set_given_name(kFakeGivenName);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME, kFakeGivenName,
+                                ui::GetChromeOSDeviceName()),
+      manager()->GetDeviceName());
 
   // Make sure that when we use a given name that is very long we truncate
   // correctly.
-  profile_info_provider()->set_given_name(
-      base::UTF8ToUTF16(kFakeTooLongGivenName));
+  profile_info_provider()->set_given_name(kFakeTooLongGivenName);
   EXPECT_EQ(kFakeTooLongTruncatedDeviceName, manager()->GetDeviceName());
 }
 
@@ -311,10 +310,10 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
 
-  profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
-  std::string expected_default_device_name = l10n_util::GetStringFUTF8(
-      IDS_NEARBY_DEFAULT_DEVICE_NAME, base::UTF8ToUTF16(kFakeGivenName),
-      ui::GetChromeOSDeviceName());
+  profile_info_provider()->set_given_name(kFakeGivenName);
+  std::string expected_default_device_name =
+      l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME, kFakeGivenName,
+                                ui::GetChromeOSDeviceName());
   EXPECT_EQ(expected_default_device_name, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
 

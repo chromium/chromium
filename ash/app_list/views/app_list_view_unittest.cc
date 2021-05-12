@@ -263,13 +263,13 @@ class AppListViewTest : public views::ViewsTestBase,
            view_->search_box_view()->GetWidget()->GetWindowBoundsInScreen();
   }
 
-  void SetTextInSearchBox(const std::string& text) {
+  void SetTextInSearchBox(const std::u16string& text) {
     views::Textfield* search_box =
         view_->app_list_main_view()->search_box_view()->search_box();
     // Set new text as if it is typed by a user.
     search_box->SetText(std::u16string());
     search_box->InsertText(
-        base::UTF8ToUTF16(text),
+        text,
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
@@ -684,12 +684,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     TestLeftAndRightKeyTraversalOnTextfield(textfield);
 
     // Type something in textfield.
-    std::u16string text =
-        text_rtl
-            // Arabic word of "test".
-            ? base::UTF8ToUTF16(
-                  "\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1")
-            : u"test";
+    std::u16string text = text_rtl ? u"اختبار" : u"test";
     textfield->InsertText(
         text,
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -1007,12 +1002,7 @@ TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   // Type something in textfield.
-  std::u16string text =
-      is_rtl_
-          // Arabic word of "test".
-          ? base::UTF8ToUTF16(
-                "\xd8\xa7\xd8\xae\xd8\xaa\xd8\xa8\xd8\xa7\xd8\xb1")
-          : u"test";
+  std::u16string text = is_rtl_ ? u"اختبار" : u"test";
   search_box_view()->search_box()->InsertText(
       text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -1894,7 +1884,7 @@ TEST_F(AppListViewTest, EscapeKeyHalfToPeeking) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
-  SetTextInSearchBox("doggie");
+  SetTextInSearchBox(u"doggie");
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
@@ -1939,7 +1929,7 @@ TEST_F(AppListViewTest, EscapeKeyFullscreenSearchToFullscreen) {
   Show();
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
 
-  SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
+  SetTextInSearchBox(u"https://youtu.be/dQw4w9WgXcQ");
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
@@ -1951,7 +1941,7 @@ TEST_F(AppListViewTest, EscapeKeySideShelfSearchToFullscreen) {
   Initialize(false /*is_tablet_mode*/);
 
   Show(true /*is_side_shelf*/);
-  SetTextInSearchBox("kitty");
+  SetTextInSearchBox(u"kitty");
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
@@ -1973,7 +1963,7 @@ TEST_F(AppListViewTest, EscapeKeyTabletModeSearchToFullscreen) {
   Initialize(true /*is_tablet_mode*/);
 
   Show();
-  SetTextInSearchBox("yay");
+  SetTextInSearchBox(u"yay");
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
@@ -2595,7 +2585,7 @@ TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToAppList) {
   // First we're in the fullscreen app list
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
   // Then we go to search by entering text
-  SetTextInSearchBox("search query");
+  SetTextInSearchBox(u"search query");
   // From there we launch the Assistant UI
   contents_view()->ShowEmbeddedAssistantUI(true);
 
@@ -2614,7 +2604,7 @@ TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToPeeking) {
   Show();
 
   // Enter half screen search by entering text
-  SetTextInSearchBox("search query");
+  SetTextInSearchBox(u"search query");
   // From there we launch the Assistant UI
   contents_view()->ShowEmbeddedAssistantUI(true);
 
@@ -2694,7 +2684,7 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityTest) {
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
 
   // Typing text in the search box should hide the expand arrow view.
-  SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
+  SetTextInSearchBox(u"https://youtu.be/dQw4w9WgXcQ");
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
   // Pressing escape should show the expand arrow view again.
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -2728,7 +2718,7 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
             contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   // Typing text in the search box should hide the expand arrow view.
-  SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
+  SetTextInSearchBox(u"https://youtu.be/dQw4w9WgXcQ");
   EXPECT_EQ(0.0f,
             contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 

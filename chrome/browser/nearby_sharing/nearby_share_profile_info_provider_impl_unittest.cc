@@ -18,7 +18,7 @@
 
 namespace {
 
-const char kFakeGivenName[] = "Barack";
+const char16_t kFakeGivenName[] = u"Barack";
 const char kFakeProfileUserName[] = "test@gmail.com";
 
 }  // namespace
@@ -40,11 +40,11 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
 
   void AddUser() { user_manager_->AddUser(account_id_); }
 
-  void SetUserGivenName(const std::string& name) {
+  void SetUserGivenName(const std::u16string& name) {
     user_manager_->UpdateUserAccountData(
         account_id_, user_manager::UserManager::UserAccountData(
                          /*display_name=*/std::u16string(),
-                         /*given_name=*/base::UTF8ToUTF16(name),
+                         /*given_name=*/name,
                          /*locale=*/std::string()));
   }
 
@@ -64,12 +64,11 @@ TEST_F(NearbyShareProfileInfoProviderImplTest, GivenName) {
 
   // If given name is empty, return base::nullopt.
   AddUser();
-  SetUserGivenName(std::string());
+  SetUserGivenName(std::u16string());
   EXPECT_FALSE(profile_info_provider.GetGivenName());
 
   SetUserGivenName(kFakeGivenName);
-  EXPECT_EQ(base::UTF8ToUTF16(kFakeGivenName),
-            profile_info_provider.GetGivenName());
+  EXPECT_EQ(kFakeGivenName, profile_info_provider.GetGivenName());
 }
 
 TEST_F(NearbyShareProfileInfoProviderImplTest, ProfileUserName) {

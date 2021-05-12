@@ -44,6 +44,7 @@ using user_manager::UserManager;
 using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;
 
 const char kManager[] = "admin@example.com";
+const char16_t kManager16[] = u"admin@example.com";
 const char kNewUser[] = "new_test_user@gmail.com";
 const char kNewGaiaID[] = "11111";
 const char kManagedUser[] = "user@example.com";
@@ -243,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
   LoginUser(managed_user_.account_id);
   EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
                                             true /* open_tray */));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
-                                       base::UTF8ToUTF16(kManager)),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, kManager16),
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_TRAY_ENTERPRISE));
 
   // Switch to unmanaged account should still show the managed string (since the
@@ -262,8 +262,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
   UserManager::Get()->SwitchActiveUser(managed_user_.account_id);
   EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
                                             true /* open_tray */));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
-                                       base::UTF8ToUTF16(kManager)),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, kManager16),
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_TRAY_ENTERPRISE));
 }
 
@@ -306,7 +305,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
   // Verify that tray is showing info on chrome restart.
   EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
                                             true /* open_tray */));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
-                                       base::UTF8ToUTF16(kManager)),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, kManager16),
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_TRAY_ENTERPRISE));
 }

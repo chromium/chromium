@@ -45,7 +45,8 @@ namespace policy {
 namespace {
 
 constexpr char kClipboardText1[] = "Hello World";
-constexpr char kClipboardText2[] = "abcdef";
+constexpr char16_t kClipboardText116[] = u"Hello World";
+constexpr char16_t kClipboardText2[] = u"abcdef";
 
 constexpr char kMailUrl[] = "https://mail.google.com";
 constexpr char kDocsUrl[] = "https://docs.google.com";
@@ -228,14 +229,14 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1), nullptr);
+  SetClipboardText(kClipboardText116, nullptr);
 
   ui::DataTransferEndpoint data_dst(
       url::Origin::Create(GURL("https://google.com")));
   std::u16string result;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
+  EXPECT_EQ(kClipboardText116, result);
 }
 
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
@@ -275,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
 
   SetDlpRulesPolicy(std::move(rules));
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1),
+  SetClipboardText(kClipboardText116,
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kMailUrl))));
 
@@ -283,13 +284,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   std::u16string result1;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result1);
+  EXPECT_EQ(kClipboardText116, result1);
 
   ui::DataTransferEndpoint data_dst2(url::Origin::Create(GURL(kDocsUrl)));
   std::u16string result2;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result2);
+  EXPECT_EQ(kClipboardText116, result2);
 
   ui::DataTransferEndpoint data_dst3(url::Origin::Create(GURL(kExampleUrl)));
   std::u16string result3;
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
 
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1),
+  SetClipboardText(kClipboardText116,
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kExampleUrl))));
   testing::Mock::VerifyAndClearExpectations(&helper);
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   std::u16string result4;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result4);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result4);
+  EXPECT_EQ(kClipboardText116, result4);
 
   FlushMessageLoop();
 }
@@ -347,13 +348,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
                                      std::make_unique<ui::DataTransferEndpoint>(
                                          url::Origin::Create(GURL(kMailUrl))));
-    writer.WriteText(base::UTF8ToUTF16(kClipboardText1));
+    writer.WriteText(kClipboardText116);
   }
   ui::DataTransferEndpoint data_dst1(ui::EndpointType::kDefault);
   std::u16string result1;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result1);
+  EXPECT_EQ(kClipboardText116, result1);
 
   ui::DataTransferEndpoint data_dst2(ui::EndpointType::kArc);
   std::u16string result2;
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1),
+  SetClipboardText(kClipboardText116,
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kMailUrl))));
 
@@ -427,11 +428,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   helper.ProceedPressed(default_endpoint);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 
-  EXPECT_EQ(kClipboardText1, base::UTF16ToUTF8(textfield_->GetText()));
+  EXPECT_EQ(kClipboardText116, textfield_->GetText());
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText2),
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(kClipboardText2, std::make_unique<ui::DataTransferEndpoint>(
+                                        url::Origin::Create(GURL(kMailUrl))));
 
   // Initiate a paste on textfield_.
   textfield_->SetText(std::u16string());
@@ -454,9 +454,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText2),
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kDocsUrl))));
+  SetClipboardText(kClipboardText2, std::make_unique<ui::DataTransferEndpoint>(
+                                        url::Origin::Create(GURL(kDocsUrl))));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 
   FlushMessageLoop();
@@ -507,20 +506,20 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
                                      std::make_unique<ui::DataTransferEndpoint>(
                                          url::Origin::Create(GURL(kMailUrl))));
-    writer.WriteText(base::UTF8ToUTF16(kClipboardText1));
+    writer.WriteText(kClipboardText116);
   }
 
   ui::DataTransferEndpoint arc_endpoint(ui::EndpointType::kArc);
   std::u16string result;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
+  EXPECT_EQ(kClipboardText116, result);
 
   ui::DataTransferEndpoint crostini_endpoint(ui::EndpointType::kCrostini);
   result.clear();
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &crostini_endpoint, &result);
-  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
+  EXPECT_EQ(kClipboardText116, result);
 }
 
 class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
@@ -590,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1),
+  SetClipboardText(kClipboardText116,
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kMailUrl))));
 
@@ -668,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(base::UTF8ToUTF16(kClipboardText1),
+  SetClipboardText(kClipboardText116,
                    std::make_unique<ui::DataTransferEndpoint>(
                        url::Origin::Create(GURL(kMailUrl))));
 

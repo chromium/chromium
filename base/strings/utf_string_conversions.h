@@ -75,6 +75,12 @@ std::u16string WideToUTF16(const wchar_t (&str)[N]) {
 }
 
 template <size_t N>
+std::u16string UTF8ToUTF16(const char (&str)[N]) {
+  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  return std::u16string();
+}
+
+template <size_t N>
 std::u16string ASCIIToUTF16(const char (&str)[N]) {
   static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
   return std::u16string();

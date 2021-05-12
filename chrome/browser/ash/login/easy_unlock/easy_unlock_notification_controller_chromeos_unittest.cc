@@ -15,6 +15,7 @@ namespace ash {
 namespace {
 
 const char kPhoneName[] = "Nexus 6";
+const char16_t kPhoneName16[] = u"Nexus 6";
 
 class TestableNotificationController : public EasyUnlockNotificationController {
  public:
@@ -111,8 +112,7 @@ TEST_F(EasyUnlockNotificationControllerTest,
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
   // Check that the phone name is in the notification message.
-  EXPECT_NE(std::string::npos,
-            notification->message().find(base::UTF8ToUTF16(kPhoneName)));
+  EXPECT_NE(std::string::npos, notification->message().find(kPhoneName16));
 
   // Clicking notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());

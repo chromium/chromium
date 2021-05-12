@@ -79,7 +79,7 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   // Sets/clears file system data.
   // NOTE: File system data is a special type of custom data.
   ClipboardHistoryItemBuilder& SetFileSystemData(
-      const std::initializer_list<std::string>& source_list);
+      const std::initializer_list<std::u16string>& source_list);
 
   // Sets/clears `web_smart_paste_` data.
   ClipboardHistoryItemBuilder& SetWebSmartPaste(bool web_smart_paste);

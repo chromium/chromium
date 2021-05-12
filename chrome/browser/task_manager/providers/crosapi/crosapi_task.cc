@@ -11,10 +11,10 @@
 
 namespace {
 
-constexpr char kCrosapiTaskTitlePrefix[] = "Lacros: ";
+constexpr char16_t kCrosapiTaskTitlePrefix[] = u"Lacros: ";
 
 std::u16string GetCrosapiTaskTitle(const std::u16string& mojo_task_title) {
-  return base::UTF8ToUTF16(kCrosapiTaskTitlePrefix) + mojo_task_title;
+  return kCrosapiTaskTitlePrefix + mojo_task_title;
 }
 
 task_manager::Task::Type FromMojo(crosapi::mojom::TaskType mojo_type) {
@@ -71,8 +71,8 @@ namespace task_manager {
 CrosapiTask::CrosapiTask(const crosapi::mojom::TaskPtr& mojo_task)
     : Task(GetCrosapiTaskTitle(mojo_task->title),
            &mojo_task->icon,
-           mojo_task->process_id, /* process handle, which is the same as pid on
-                                     POSIX */
+           mojo_task->process_id,  // process handle, which is the same as pid
+                                   // on POSIX
            mojo_task->process_id),
       // cache the |mojo_task| received from crosapi.
       mojo_task_(mojo_task.Clone()) {}

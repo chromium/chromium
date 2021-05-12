@@ -83,6 +83,7 @@ struct TypeConverter<arc::mojom::ShortcutInfoPtr, arc::mojom::ShortcutInfo> {
 namespace {
 
 constexpr char kTestAppName[] = "Test ARC App";
+constexpr char16_t kTestAppName16[] = u"Test ARC App";
 constexpr char kTestAppName2[] = "Test ARC App 2";
 constexpr char kTestShortcutName[] = "Test Shortcut";
 constexpr char kTestShortcutName2[] = "Test Shortcut 2";
@@ -443,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   if (is_pinned()) {
     controller->PinAppWithID(app_id);
     const ash::ShelfItem* item = controller->GetItem(shelf_id);
-    EXPECT_EQ(base::UTF8ToUTF16(kTestAppName), item->title);
+    EXPECT_EQ(kTestAppName16, item->title);
   } else {
     EXPECT_FALSE(controller->GetItem(shelf_id));
   }
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   }
 
   const ash::ShelfItem* item = controller->GetItem(shelf_id);
-  EXPECT_EQ(base::UTF8ToUTF16(kTestAppName), item->title);
+  EXPECT_EQ(kTestAppName16, item->title);
   AppAnimatedWaiter(app_id).Wait();
 
   switch (test_action()) {
@@ -632,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, ShelfGroup) {
   ASSERT_TRUE(item1);
 
   // The shelf group item's title should be the title of the referenced ARC app.
-  EXPECT_EQ(base::UTF8ToUTF16(kTestAppName), item1->title);
+  EXPECT_EQ(kTestAppName16, item1->title);
 
   // Destroy task #0, this kills shelf group 1
   app_host()->OnTaskDestroyed(1);
