@@ -176,15 +176,18 @@ CartDiscountFetcher::~CartDiscountFetcher() = default;
 
 void CartDiscountFetcher::Fetch(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-    CartDiscountFetcherCallback callback) {
-  CartDiscountFetcher::fetchForDiscounts(std::move(pending_factory),
-                                         std::move(callback));
+    CartDiscountFetcherCallback callback,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  CartDiscountFetcher::fetchForDiscounts(
+      std::move(pending_factory), std::move(callback), std::move(proto_pairs));
 }
 
 void CartDiscountFetcher::fetchForDiscounts(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-    CartDiscountFetcherCallback callback) {
-  auto fetcher = CreateEndpointFetcher(std::move(pending_factory));
+    CartDiscountFetcherCallback callback,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  auto fetcher =
+      CreateEndpointFetcher(std::move(pending_factory), std::move(proto_pairs));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->PerformRequest(
@@ -194,7 +197,8 @@ void CartDiscountFetcher::fetchForDiscounts(
 }
 
 std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory) {
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_cart_discounts_lookup", R"(
         semantics {
@@ -224,10 +228,9 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
             "feature."
         })");
 
-  std::string post_data = "";
   return std::make_unique<EndpointFetcher>(
       GURL(FETCH_DISCOUNTS_ENDPOINT), POST_METHOD, CONTENT_TYPE, TIMEOUT_MS,
-      post_data, traffic_annotation,
+      generatePostData(proto_pairs, base::Time::Now()), traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
 }
 

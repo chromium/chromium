@@ -114,19 +114,22 @@ void FetchDiscountWorker::ReadyToFetch(
   backend_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FetchInBackground, std::move(pending_factory),
-                     std::move(fetcher), std::move(done_fetching_callback)),
+                     std::move(fetcher), std::move(done_fetching_callback),
+                     std::move(proto_pairs)),
       base::TimeDelta::FromMilliseconds(delay_fetch_ms));
 }
 
 void FetchDiscountWorker::FetchInBackground(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     std::unique_ptr<CartDiscountFetcher> fetcher,
-    AfterFetchingCallback after_fetching_callback) {
+    AfterFetchingCallback after_fetching_callback,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   auto done_fetching_callback = base::BindOnce(
       &DoneFetchingInBackground, std::move(after_fetching_callback));
-  fetcher->Fetch(std::move(pending_factory), std::move(done_fetching_callback));
+  fetcher->Fetch(std::move(pending_factory), std::move(done_fetching_callback),
+                 std::move(proto_pairs));
 }
 
 // TODO(meiliang): Follow up to use BindPostTask.

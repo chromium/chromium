@@ -75,7 +75,8 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
  public:
   void Fetch(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-      CartDiscountFetcherCallback callback) override {
+      CartDiscountFetcherCallback callback,
+      std::vector<CartDB::KeyAndValue> proto_pairs) override {
     std::move(callback).Run(std::move(fake_result_));
   }
 
@@ -93,7 +94,8 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
       void,
       Fetch,
       (std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-       CartDiscountFetcherCallback callback),
+       CartDiscountFetcherCallback callback,
+       std::vector<CartDB::KeyAndValue> proto_pairs),
       (override));
 
   void DelegateToFake(CartDiscountMap fake_result) {
@@ -103,9 +105,11 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
         .WillByDefault(
             [this](std::unique_ptr<network::PendingSharedURLLoaderFactory>
                        pending_factory,
-                   CartDiscountFetcherCallback callback) {
+                   CartDiscountFetcherCallback callback,
+                   std::vector<CartDB::KeyAndValue> proto_pairs) {
               return fake_cart_discount_fetcher_.Fetch(
-                  std::move(pending_factory), std::move(callback));
+                  std::move(pending_factory), std::move(callback),
+                  std::move(proto_pairs));
             });
   }
 

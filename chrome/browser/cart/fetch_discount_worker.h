@@ -107,7 +107,8 @@ class FetchDiscountWorker {
   static void FetchInBackground(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       std::unique_ptr<CartDiscountFetcher> fetcher,
-      AfterFetchingCallback after_fetching_callback);
+      AfterFetchingCallback after_fetching_callback,
+      std::vector<CartDB::KeyAndValue> proto_pairs);
 
   // This is run in a background thread, it posts AfterDiscountFetched() back to
   // UI thread to process the fetched result.
