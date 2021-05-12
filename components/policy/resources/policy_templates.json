@@ -5752,8 +5752,6 @@
 
       Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies. URLs not covered by the patterns specified also result in the use of defaults.
 
-      If <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running in Background mode, the session might stay active until the user exits the browser, not just closes the last window. See <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME">BackgroundModeEnabled</ph> for details about configuring this behavior.
-
       While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph>. URL patterns among these 3 policies must not conflict.''',
     },
     {
@@ -6917,8 +6915,6 @@
       'desc': '''Unless the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policy is set to permanently restore URLs from previous sessions, then setting <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME">CookiesSessionOnlyForUrls</ph> lets you make a list of URL patterns that specify sites that can and can't set cookies for one session.
 
       Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies. URLs not covered by the patterns specified also result in the use of defaults.
-
-      If <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is running in Background mode, the session might stay active until the user exits the browser, not just closes the last window. See <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME">BackgroundModeEnabled</ph> for details about configuring this behavior.
 
       While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph>. URL patterns among these 3 policies must not conflict.
 
@@ -10860,7 +10856,7 @@
       'id': 138,
       'caption': '''Continue running background apps when <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is closed''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy to Enabled turns background mode on. In backgroudn mode, a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> process is started on OS sign-in and keeps running when the last browser window is closed, allowing background apps and the browsing session to remain active, including any session cookies. The background process displays an icon in the system tray and can always be closed from there.
+      'desc': '''Setting the policy to Enabled turns background mode on. In background mode, a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> process is started on OS sign-in and keeps running when the last browser window is closed, allowing background apps and the browsing session to remain active. The background process displays an icon in the system tray and can always be closed from there.
 
       Setting the policy to Disabled turns background mode off.
 
