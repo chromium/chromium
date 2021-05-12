@@ -94,14 +94,14 @@ class InstanceRegistry {
   // Return windows for the |app_id|.
   std::set<aura::Window*> GetWindows(const std::string& app_id);
 
-  // Return the state for the |window|.
-  InstanceState GetState(aura::Window* window) const;
+  // Return the state for the |instance_key|.
+  InstanceState GetState(const Instance::InstanceKey& instance_key) const;
 
-  // Return the shelf id for the |window|.
-  ash::ShelfID GetShelfId(aura::Window* window) const;
+  // Return the shelf id for the |instance_key|.
+  ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;
 
-  // Return true if there is an instance for the |window|.
-  bool Exists(aura::Window* window) const;
+  // Return true if there is an instance for the |instance_key|.
+  bool Exists(const Instance::InstanceKey& instance_key) const;
 
   // Calls f, a void-returning function whose arguments are (const
   // apps::InstanceUpdate&), on each window in the instance_registry.
@@ -128,7 +128,7 @@ class InstanceRegistry {
 
   // Calls f, a void-returning function whose arguments are (const
   // apps::InstanceUpdate&), on the instance in the instance_registry with the
-  // given window. It will return true (and call f) if there is such an
+  // given instance_key. It will return true (and call f) if there is such an
   // instance, otherwise it will return false (and not call f). The
   // InstanceUpdate argument to f has the same semantics as for ForEachInstance,
   // above.
@@ -136,10 +136,11 @@ class InstanceRegistry {
   // f must be synchronous, and if it asynchronously calls ForOneInstance again,
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
-  bool ForOneInstance(const aura::Window* window, FunctionType f) {
+  bool ForOneInstance(const Instance::InstanceKey& instance_key,
+                      FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    auto s_iter = states_.find(window);
+    auto s_iter = states_.find(instance_key);
     apps::Instance* state =
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     if (state) {
@@ -167,8 +168,9 @@ class InstanceRegistry {
   // exactly once, and deltas_pending_ will stay empty.
   bool in_progress_ = false;
 
-  // Maps from window to the latest state: the "sum" of all previous deltas.
-  std::map<const aura::Window*, InstancePtr> states_;
+  // Maps from instance key to the latest state: the "sum" of all previous
+  // deltas.
+  std::map<const Instance::InstanceKey, InstancePtr> states_;
   Instances deltas_pending_;
 
   // Maps from app id to app windows.

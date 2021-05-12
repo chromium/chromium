@@ -97,22 +97,24 @@ std::set<aura::Window*> InstanceRegistry::GetWindows(
   return std::set<aura::Window*>{};
 }
 
-InstanceState InstanceRegistry::GetState(aura::Window* window) const {
-  auto s_iter = states_.find(window);
+InstanceState InstanceRegistry::GetState(
+    const Instance::InstanceKey& instance_key) const {
+  auto s_iter = states_.find(instance_key);
   return (s_iter != states_.end()) ? s_iter->second.get()->State()
                                    : InstanceState::kUnknown;
 }
 
-ash::ShelfID InstanceRegistry::GetShelfId(aura::Window* window) const {
-  auto s_iter = states_.find(window);
+ash::ShelfID InstanceRegistry::GetShelfId(
+    const Instance::InstanceKey& instance_key) const {
+  auto s_iter = states_.find(instance_key);
   return (s_iter != states_.end())
              ? ash::ShelfID(s_iter->second.get()->AppId(),
                             s_iter->second.get()->LaunchId())
              : ash::ShelfID();
 }
 
-bool InstanceRegistry::Exists(aura::Window* window) const {
-  return states_.find(window) != states_.end();
+bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
+  return states_.find(instance_key) != states_.end();
 }
 
 void InstanceRegistry::DoOnInstances(const Instances& deltas) {
@@ -122,7 +124,7 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
   // OninstanceUpdate is called for each updates, and notify the observers for
   // every de-duplicated delta. Also update the states for every delta.
   for (const auto& d_iter : deltas) {
-    auto s_iter = states_.find(d_iter->Window());
+    auto s_iter = states_.find(d_iter->GetInstanceKey());
     Instance* state =
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     if (InstanceUpdate::Equals(state, d_iter.get())) {
@@ -134,8 +136,8 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
       old_state = state->Clone();
       InstanceUpdate::Merge(state, d_iter.get());
     } else {
-      states_.insert(
-          std::make_pair(d_iter.get()->Window(), (d_iter.get()->Clone())));
+      states_.insert(std::make_pair(d_iter.get()->GetInstanceKey(),
+                                    (d_iter.get()->Clone())));
     }
 
     for (auto& obs : observers_) {
@@ -145,7 +147,7 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
     if (static_cast<InstanceState>(d_iter.get()->State() &
                                    InstanceState::kDestroyed) !=
         InstanceState::kUnknown) {
-      states_.erase(d_iter.get()->Window());
+      states_.erase(d_iter.get()->GetInstanceKey());
     }
   }
   in_progress_ = false;

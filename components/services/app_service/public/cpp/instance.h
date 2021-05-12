@@ -34,7 +34,7 @@ class Instance {
     explicit InstanceKey(aura::Window* window);
     ~InstanceKey() = default;
     aura::Window* Window() const { return window_; }
-    bool operator<(const InstanceKey& other);
+    bool operator<(const InstanceKey& other) const;
 
    private:
     // window_ is owned by ash and will be deleted when the user closes the

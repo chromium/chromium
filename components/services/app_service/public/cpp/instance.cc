@@ -10,7 +10,7 @@ namespace apps {
 
 Instance::InstanceKey::InstanceKey(aura::Window* window) : window_(window) {}
 
-bool Instance::InstanceKey::operator<(const InstanceKey& other) {
+bool Instance::InstanceKey::operator<(const InstanceKey& other) const {
   return this->Window() < other.Window();
 }
 

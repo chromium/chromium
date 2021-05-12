@@ -139,7 +139,8 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
   // Deactivates the running app windows in InstanceRegistry for the inactive
   // user, and activates the app windows for the active user.
   for (auto* window : window_list_) {
-    ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(window);
+    ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(
+        apps::Instance::InstanceKey(window));
     if (!shelf_id.IsNull()) {
       RegisterWindow(window, shelf_id);
     } else {
@@ -234,7 +235,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
 
   // Only register the visible non-browser |window| for the active user.
   if (!visible || shelf_id.app_id == extension_misc::kChromeAppId ||
-      !proxy_->InstanceRegistry().Exists(window)) {
+      !proxy_->InstanceRegistry().Exists(apps::Instance::InstanceKey(window))) {
     return;
   }
 
@@ -380,7 +381,8 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // MultiUserWindowManagerHelper manages those windows.
     auto app_window_it = aura_window_to_app_window_.find(window);
     if (app_window_it != aura_window_to_app_window_.end() &&
-        proxy_->InstanceRegistry().Exists(window)) {
+        proxy_->InstanceRegistry().Exists(
+            apps::Instance::InstanceKey(window))) {
       RemoveAppWindowFromShelf(app_window_it->second.get());
       aura_window_to_app_window_.erase(app_window_it);
     }
@@ -653,7 +655,8 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
   // InstanceRegistry.
   for (auto* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    shelf_id = proxy->InstanceRegistry().GetShelfId(window);
+    shelf_id = proxy->InstanceRegistry().GetShelfId(
+        apps::Instance::InstanceKey(window));
     if (!shelf_id.IsNull())
       break;
   }
@@ -685,7 +688,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     content::BrowserContext* browser_context) {
   // If the window was created for the active user, register it to show an item
   // on the shelf.
-  if (proxy_->InstanceRegistry().Exists(window)) {
+  if (proxy_->InstanceRegistry().Exists(apps::Instance::InstanceKey(window))) {
     RegisterWindow(window, shelf_id);
     return;
   }

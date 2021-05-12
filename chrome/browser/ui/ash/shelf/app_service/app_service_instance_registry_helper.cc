@@ -210,7 +210,8 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy_for_profile =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    if (proxy_for_profile->InstanceRegistry().Exists(window)) {
+    if (proxy_for_profile->InstanceRegistry().Exists(
+            apps::Instance::InstanceKey(window))) {
       proxy = proxy_for_profile;
       break;
     }
@@ -441,7 +442,8 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     bool found = false;
     proxy->InstanceRegistry().ForOneInstance(
-        window, [&browser_context, &found](const apps::InstanceUpdate& update) {
+        apps::Instance::InstanceKey(window),
+        [&browser_context, &found](const apps::InstanceUpdate& update) {
           browser_context = update.BrowserContext();
           found = true;
         });
@@ -456,7 +458,9 @@ std::string AppServiceInstanceRegistryHelper::GetAppId(
     aura::Window* window) const {
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    std::string app_id = proxy->InstanceRegistry().GetShelfId(window).app_id;
+    std::string app_id = proxy->InstanceRegistry()
+                             .GetShelfId(apps::Instance::InstanceKey(window))
+                             .app_id;
     if (!app_id.empty())
       return app_id;
   }
@@ -498,7 +502,8 @@ apps::InstanceState AppServiceInstanceRegistryHelper::GetState(
     aura::Window* window) const {
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    auto state = proxy->InstanceRegistry().GetState(window);
+    auto state =
+        proxy->InstanceRegistry().GetState(apps::Instance::InstanceKey(window));
     if (state != apps::InstanceState::kUnknown)
       return state;
   }

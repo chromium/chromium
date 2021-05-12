@@ -35,7 +35,7 @@ class InstanceRegistryTest : public testing::Test,
 
   apps::InstanceState GetState(apps::InstanceRegistry& instance_registry,
                                aura::Window* window) {
-    return instance_registry.GetState(window);
+    return instance_registry.GetState(apps::Instance::InstanceKey(window));
   }
 
   // apps::InstanceRegistry::Observer overrides.
@@ -102,7 +102,8 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
         });
 
     EXPECT_TRUE(instance_registry_->ForOneInstance(
-        outer.Window(), [&outer](const apps::InstanceUpdate& inner) {
+        apps::Instance::InstanceKey(outer.Window()),
+        [&outer](const apps::InstanceUpdate& inner) {
           ExpectEq(outer, inner);
         }));
 
@@ -230,7 +231,8 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
 
   bool found_window4 = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      &window4, [&found_window4](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window4),
+      [&found_window4](const apps::InstanceUpdate& update) {
         found_window4 = true;
         EXPECT_EQ("c", update.AppId());
       }));
@@ -240,7 +242,8 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window5, [&found_window5](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window5),
+      [&found_window5](const apps::InstanceUpdate& update) {
         found_window5 = true;
       }));
   EXPECT_FALSE(found_window5);
@@ -370,7 +373,8 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_FALSE(found_window);
@@ -385,7 +389,8 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      &window, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_TRUE(found_window);
@@ -472,28 +477,32 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window2, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window2),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_FALSE(found_window);
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window4, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window4),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_FALSE(found_window);
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window3, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window3),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_FALSE(found_window);
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      &window1, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window1),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_FALSE(found_window);
@@ -508,7 +517,8 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      &window2, [&found_window](const apps::InstanceUpdate& update) {
+      apps::Instance::InstanceKey(&window2),
+      [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
   EXPECT_TRUE(found_window);
