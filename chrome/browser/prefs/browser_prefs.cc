@@ -565,10 +565,11 @@ const char kTranslateLastDeniedTimeForLanguage[] =
 const char kTranslateTooOftenDeniedForLanguage[] =
     "translate_too_often_denied_for_language";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Deprecated 05/2021.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kToolbarSize[] = "extensions.toolbarsize";
 #endif
+const char kSessionExitedCleanly[] = "profile.exited_cleanly";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -698,6 +699,7 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterIntegerPref(kToolbarSize, -1);
 #endif
+  registry->RegisterBooleanPref(kSessionExitedCleanly, true);
 }
 
 }  // namespace
@@ -1407,10 +1409,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kTranslateLastDeniedTimeForLanguage);
   profile_prefs->ClearPref(kTranslateTooOftenDeniedForLanguage);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Added 05/2021.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   profile_prefs->ClearPref(kToolbarSize);
 #endif
+  profile_prefs->ClearPref(kSessionExitedCleanly);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -301,7 +301,7 @@ base::Time CreateProfileDirectory(base::SequencedTaskRunner* io_task_runner,
   return base::Time::Now();
 }
 
-// Converts the kSessionExitedCleanly pref to the corresponding EXIT_TYPE.
+// Converts the `kSessionExitType` pref to the corresponding EXIT_TYPE.
 Profile::ExitType SessionTypePrefValueToExitType(const std::string& value) {
   if (value == kPrefExitTypeSessionEnded)
     return Profile::EXIT_SESSION_ENDED;
@@ -1080,23 +1080,10 @@ void ProfileImpl::OnLocaleReady() {
   }
 #endif
 
-  // |kSessionExitType| was added after |kSessionExitedCleanly|. If the pref
-  // value is empty fallback to checking for |kSessionExitedCleanly|.
-  const std::string exit_type_pref_value(
+  last_session_exit_type_ = SessionTypePrefValueToExitType(
       prefs_->GetString(prefs::kSessionExitType));
-  if (exit_type_pref_value.empty()) {
-    last_session_exit_type_ = prefs_->GetBoolean(prefs::kSessionExitedCleanly)
-                                  ? EXIT_NORMAL
-                                  : EXIT_CRASHED;
-  } else {
-    last_session_exit_type_ =
-        SessionTypePrefValueToExitType(exit_type_pref_value);
-  }
   // Mark the session as open.
   prefs_->SetString(prefs::kSessionExitType, kPrefExitTypeCrashed);
-  // Force this to true in case we fallback and use it.
-  // TODO(sky): remove this in a couple of releases (m28ish).
-  prefs_->SetBoolean(prefs::kSessionExitedCleanly, true);
 
   g_browser_process->profile_manager()->InitProfileUserPrefs(this);
 
