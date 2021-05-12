@@ -20,6 +20,25 @@ class OpenSSLErrStackTracer;
 
 namespace syncer {
 
+// Encrypts |payload| according to SecureBox v2 spec:
+// 1. Encryption key is derived from |shared_secret| using HKDF-SHA256.
+// 2. |payload| is encrypted using AES-128-GCM, using random 96-bit nonce and
+// given |header|.
+// |shared_secret|, |header| and |payload| may be empty, though empty
+// |shared_secret| shouldn't be used.
+std::vector<uint8_t> SecureBoxSymmetricEncrypt(
+    base::span<const uint8_t> shared_secret,
+    base::span<const uint8_t> header,
+    base::span<const uint8_t> payload);
+
+// Decrypts |encrypted_payload| according to SecureBox v2 spec (see
+// above). Returns nullopt if payload was encrypted with different parameters or
+// |encrypted_payload| isn't a valid SecureBox encrypted data.
+base::Optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
+    base::span<const uint8_t> shared_secret,
+    base::span<const uint8_t> header,
+    base::span<const uint8_t> encrypted_payload);
+
 class SecureBoxPublicKey {
  public:
   // Creates public key given a X9.62 formatted NIST P-256 point as |key_bytes|
