@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -338,7 +339,13 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
+// Disable due to flaky. https://crbug.com/1206352
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OOPIFNotAmpSubframe DISABLED_OOPIFNotAmpSubframe
+#else
+#define MAYBE_OOPIFNotAmpSubframe OOPIFNotAmpSubframe
+#endif  // defined(OS_LINUX)
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, MAYBE_OOPIFNotAmpSubframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
