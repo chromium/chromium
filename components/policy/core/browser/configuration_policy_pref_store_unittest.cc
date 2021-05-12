@@ -116,20 +116,16 @@ TEST_F(ConfigurationPolicyPrefStoreBooleanTest, SetValue) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   ASSERT_TRUE(value);
-  bool boolean_value = true;
-  bool result = value->GetAsBoolean(&boolean_value);
-  ASSERT_TRUE(result);
-  EXPECT_FALSE(boolean_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 
   policy.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   UpdateProviderPolicy(policy);
   value = nullptr;
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  boolean_value = false;
-  result = value->GetAsBoolean(&boolean_value);
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(boolean_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 }
 
 // Test cases for integer-valued policy settings.
