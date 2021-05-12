@@ -74,6 +74,15 @@ Polymer({
     },
 
     /**
+     * Error, if defined, that error_ should be set as the next time deviceState
+     * updates.
+     * @private {ErrorType|undefined}
+     */
+    pendingError_: {
+      type: Object,
+    },
+
+    /**
      * Used to enable enter button in |enterPin| dialog.
      * @private
      */
@@ -163,6 +172,12 @@ Polymer({
     // or it is set for the first time.
     if (!oldDeviceState || !newDeviceState) {
       return;
+    }
+    if (this.pendingError_) {
+      // If pendingError_ is defined, we were waiting for the next deviceState
+      // change to set error_ to the same value as pendingError_.
+      this.error_ = this.pendingError_;
+      this.pendingError_ = undefined;
     }
     this.updateDialogVisibility_();
   },
@@ -357,7 +372,10 @@ Polymer({
     this.networkConfig_.setCellularSimState(cellularSimState).then(response => {
       this.inProgress_ = false;
       if (!response.success) {
-        this.error_ = ErrorType.INCORRECT_PIN;
+        // deviceState is not updated with the new cellularSimState when the
+        // response returns, set pendingError_ as the value error_ should be set
+        // as on the next deviceState change.
+        this.pendingError_ = ErrorType.INCORRECT_PIN;
         this.focusDialogInput_();
       } else {
         this.error_ = ErrorType.NONE;
@@ -440,7 +458,10 @@ Polymer({
     this.networkConfig_.setCellularSimState(cellularSimState).then(response => {
       this.inProgress_ = false;
       if (!response.success) {
-        this.error_ =
+        // deviceState is not updated with the new cellularSimState when the
+        // response returns, set pendingError_ as the value error_ should be set
+        // as on the next deviceState change.
+        this.pendingError_ =
             opt_puk ? ErrorType.INCORRECT_PUK : ErrorType.INCORRECT_PIN;
         this.focusDialogInput_();
       } else {

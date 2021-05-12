@@ -33,7 +33,7 @@
             on-enter="sendEnterPin_"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="dialog-error">
+        <div class="dialog-error" aria-live="assertive">
           [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
@@ -71,7 +71,7 @@
             on-enter="sendChangePin_"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="dialog-error">
+        <div class="dialog-error" aria-live="assertive">
           [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
@@ -99,7 +99,7 @@
             on-enter="sendUnlockPin_"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="dialog-error">
+        <div class="dialog-error" aria-live="assertive">
           [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
@@ -129,7 +129,7 @@
             label="[[i18n('networkSimEnterPuk')]]"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="dialog-error">
+        <div class="dialog-error" aria-live="assertive">
           [[getErrorMsg_(error_, deviceState)]]
         </div>
         <network-password-input id="unlockPin1"
