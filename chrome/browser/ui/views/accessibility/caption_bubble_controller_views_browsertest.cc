@@ -987,7 +987,14 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
+// Disable due to flaky, https://crbug.com/1206677
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HidesAfterInactivity DISABLED_HidesAfterInactivity
+#else
+#define MAYBE_HidesAfterInactivity HidesAfterInactivity
+#endif
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       MAYBE_HidesAfterInactivity) {
   // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
   // a mock tick clock that replaces the default tick clock with mock time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
