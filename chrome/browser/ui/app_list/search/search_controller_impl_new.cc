@@ -78,8 +78,9 @@ SearchControllerImplNew::SearchControllerImplNew(
     ash::AppListNotifier* notifier,
     Profile* profile)
     : profile_(profile),
-      ranker_(std::make_unique<RankerDelegate>(profile, model_updater, this)),
+      ranker_(std::make_unique<RankerDelegate>(profile, this)),
       metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
+      model_updater_(model_updater),
       list_controller_(list_controller) {
   DCHECK(app_list_features::IsCategoricalSearchEnabled());
 }
@@ -105,9 +106,9 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
   }
 
   last_query_ = query;
-  for (const auto& provider : providers_) {
+  results_.clear();
+  for (const auto& provider : providers_)
     provider->Start(query);
-  }
 }
 
 void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
@@ -170,13 +171,37 @@ void SearchControllerImplNew::SetResults(
   }
 
   results_[provider_type] = std::move(results);
-  // TODO(crbug.com/1199206): Implement ranking.
+
+  // Update ranking of all results.
+  ranker_->Rank(results_, provider_type);
+
+  // Compile a single list of results and sort by their relevance.
+  std::vector<ChromeSearchResult*> all_results;
+  for (const auto& type_results : results_) {
+    for (const auto& result : type_results.second) {
+      // TODO(crbug.com/1199206): Category-based search combines apps into the
+      // results list, so redirect any kTile results to kList before updating
+      // the UI. Once SearchControllerImplNew is the only search controller,
+      // this can be removed and all results can be created as kList.
+      if (result->display_type() == ash::SearchResultDisplayType::kTile) {
+        result->SetDisplayType(ash::SearchResultDisplayType::kList);
+      }
+
+      all_results.push_back(result.get());
+    }
+  }
+  std::sort(all_results.begin(), all_results.end(),
+            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              return a->relevance() > b->relevance();
+            });
+
+  model_updater_->PublishSearchResults(all_results);
 }
 
 ChromeSearchResult* SearchControllerImplNew::FindSearchResult(
     const std::string& result_id) {
-  for (const auto& provider : providers_) {
-    for (const auto& result : provider->results()) {
+  for (const auto& provider_results : results_) {
+    for (const auto& result : provider_results.second) {
       if (result->id() == result_id)
         return result.get();
     }
@@ -261,7 +286,7 @@ void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
                      base::HashMetricName(base::UTF16ToUTF8(last_query_)))}});
 
   // Train all search result ranking models.
-  // TODO(crbug.com/1199206): Implement.
+  ranker_->Train(app_launch_data);
 }
 
 void SearchControllerImplNew::AppListShown() {

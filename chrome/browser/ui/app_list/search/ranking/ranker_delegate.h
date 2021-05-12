@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 
-class AppListModelUpdater;
 class ChromeSearchResult;
 class Profile;
 
@@ -15,13 +14,26 @@ namespace app_list {
 
 class SearchController;
 
-// TODO(crbug.com/1199206): Implement.
-class RankerDelegate : Ranker {
+// A delegate for a series of rankers. Rankers can be added via AddRanker, and
+// all other methods will delegate the call to each ranker in the order they
+// were added.
+class RankerDelegate : public Ranker {
  public:
   RankerDelegate(Profile* profile,
-                 AppListModelUpdater* model_updater,
                  SearchController* controller);
-  ~RankerDelegate();
+  ~RankerDelegate() override;
+
+  RankerDelegate(const RankerDelegate&) = delete;
+  RankerDelegate& operator=(const RankerDelegate&) = delete;
+
+  void AddRanker(std::unique_ptr<Ranker> ranker);
+
+  // Ranker:
+  void Rank(ResultsMap& results, ProviderType provider) override;
+  void Train(const AppLaunchData& launch) override;
+
+ private:
+  std::vector<std::unique_ptr<Ranker>> rankers_;
 };
 
 }  // namespace app_list

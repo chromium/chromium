@@ -7,9 +7,22 @@
 namespace app_list {
 
 RankerDelegate::RankerDelegate(Profile* profile,
-                               AppListModelUpdater* model_updater,
                                SearchController* controller) {}
 
 RankerDelegate::~RankerDelegate() {}
+
+void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {
+  for (auto& ranker : rankers_)
+    ranker->Rank(results, provider);
+}
+
+void RankerDelegate::Train(const AppLaunchData& launch) {
+  for (auto& ranker : rankers_)
+    ranker->Train(launch);
+}
+
+void RankerDelegate::AddRanker(std::unique_ptr<Ranker> ranker) {
+  rankers_.emplace_back(std::move(ranker));
+}
 
 }  // namespace app_list

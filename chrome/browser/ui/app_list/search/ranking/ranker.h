@@ -5,10 +5,28 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 
+#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+
 namespace app_list {
 
-// TODO(crbug.com/1199206): Implement.
-class Ranker {};
+// Interface for a ranker.
+class Ranker {
+ public:
+  Ranker() {}
+  virtual ~Ranker() {}
+
+  Ranker(const Ranker&) = delete;
+  Ranker& operator=(const Ranker&) = delete;
+
+  // Called each time a search provider sets new results. Passed the |provider|
+  // type that triggered this call, and all |results| received so far for this
+  // search session.
+  virtual void Rank(ResultsMap& results, ProviderType provider) {}
+
+  // Called each time a user launches a result.
+  virtual void Train(const AppLaunchData& launch) {}
+};
 
 }  // namespace app_list
 

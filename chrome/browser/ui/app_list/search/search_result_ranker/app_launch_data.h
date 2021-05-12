@@ -12,6 +12,9 @@
 
 namespace app_list {
 
+// TODO(crbug.com/1199206): We should move this class to app_list/search, as the
+// search_result_ranker/ directory will eventually be deleted.
+
 // Data concerning the app launch. Used for training models.
 struct AppLaunchData {
   AppLaunchData();

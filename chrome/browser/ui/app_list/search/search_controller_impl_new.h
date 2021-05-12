@@ -104,7 +104,8 @@ class SearchControllerImplNew : public SearchController {
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
-  AppListControllerDelegate* list_controller_;
+  AppListModelUpdater* const model_updater_;
+  AppListControllerDelegate* const list_controller_;
 };
 
 }  // namespace app_list
