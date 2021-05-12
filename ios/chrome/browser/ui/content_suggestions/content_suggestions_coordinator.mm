@@ -200,8 +200,7 @@
   self.headerController.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
                      FakeboxFocuser>>(self.browser->GetCommandDispatcher());
-  self.headerController.commandHandler = self.ntpMediator;
-  self.headerController.headerCommandHandler = self;
+  self.headerController.commandHandler = self;
   self.headerController.delegate = self.ntpMediator;
 
   self.headerController.readingListModel =
@@ -609,8 +608,17 @@
 
 #pragma mark - ContentSuggestionsHeaderCommands
 
+- (void)prepareForVoiceSearchPresentation {
+  [self.ntpMediator dismissModals];
+}
+
 - (void)updateForHeaderSizeChange {
   [self.ntpCommandHandler updateDiscoverFeedLayout];
+}
+
+- (void)updateForLocationBarResignedFirstResponder {
+  // TODO(crbug.com/1200303): Check if doing this is actually needed.
+  [self.ntpMediator dismissModals];
 }
 
 #pragma mark - ContentSuggestionsActionHandler

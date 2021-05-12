@@ -43,11 +43,7 @@ class ReadingListModel;
         dispatcher;
 @property(nonatomic, weak) id<ContentSuggestionsHeaderViewControllerDelegate>
     delegate;
-// TODO(crbug.com/1200303): Remove this and use instead
-// ContentSuggestionsHeaderCommands.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
-@property(nonatomic, weak) id<ContentSuggestionsHeaderCommands>
-    headerCommandHandler;
+@property(nonatomic, weak) id<ContentSuggestionsHeaderCommands> commandHandler;
 @property(nonatomic, assign) ReadingListModel* readingListModel;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
