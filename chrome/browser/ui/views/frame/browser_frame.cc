@@ -48,6 +48,10 @@
 #include "ui/display/screen.h"
 #endif
 
+#if defined(OS_LINUX)
+#include "ui/views/linux_ui/linux_ui.h"
+#endif
+
 namespace {
 
 bool IsUsingGtkTheme(Profile* profile) {
@@ -353,6 +357,11 @@ void BrowserFrame::SelectNativeTheme() {
       native_theme = ui::NativeTheme::GetInstanceForDarkUI();
     }
   }
+
+#if defined(OS_LINUX)
+  if (const views::LinuxUI* linux_ui = views::LinuxUI::instance())
+    native_theme = linux_ui->GetNativeTheme(GetNativeWindow());
+#endif
 
   SetNativeTheme(native_theme);
 }
