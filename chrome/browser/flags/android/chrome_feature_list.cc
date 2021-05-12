@@ -371,9 +371,6 @@ const base::Feature kAppMenuMobileSiteOption{"AppMenuMobileSiteOption",
 const base::Feature kAppToWebAttribution{"AppToWebAttribution",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBackgroundTaskComponentUpdate{
-    "BackgroundTaskComponentUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kBackgroundThreadPool{"BackgroundThreadPool",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

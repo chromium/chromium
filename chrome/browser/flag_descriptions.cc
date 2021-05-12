@@ -2844,11 +2844,6 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
-const char kBackgroundTaskComponentUpdateName[] =
-    "Background Task Component Updates";
-const char kBackgroundTaskComponentUpdateDescription[] =
-    "Schedule component updates with BackgroundTaskScheduler";
-
 const char kBentoOfflineName[] =
     "Enables an experiment for Offline Bento content on Android";
 const char kBentoOfflineDescription[] =

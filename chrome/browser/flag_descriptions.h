@@ -1651,9 +1651,6 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAppMenuMobileSiteOptionName[];
 extern const char kAppMenuMobileSiteOptionDescription[];
 
-extern const char kBackgroundTaskComponentUpdateName[];
-extern const char kBackgroundTaskComponentUpdateDescription[];
-
 extern const char kBentoOfflineName[];
 extern const char kBentoOfflineDescription[];
 

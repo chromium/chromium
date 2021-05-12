@@ -431,11 +431,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "background-task-component-update",
-    "owners": [ "sorin", "waffles", "tiborg" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "bento-offline",
     "owners": [ "ahawker@google.com", "donnd" ],
     "expiry_milestone": 89

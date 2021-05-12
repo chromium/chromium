@@ -152,7 +152,6 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
-#include "components/component_updater/android/background_task_update_scheduler.h"
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -1019,17 +1018,8 @@ BrowserProcessImpl::component_updater() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI))
     return nullptr;
 
-  std::unique_ptr<component_updater::UpdateScheduler> scheduler;
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kBackgroundTaskComponentUpdate) &&
-      component_updater::BackgroundTaskUpdateScheduler::IsAvailable()) {
-    scheduler =
-        std::make_unique<component_updater::BackgroundTaskUpdateScheduler>();
-  }
-#endif
-  if (!scheduler)
-    scheduler = std::make_unique<component_updater::TimerUpdateScheduler>();
+  std::unique_ptr<component_updater::UpdateScheduler> scheduler =
+      std::make_unique<component_updater::TimerUpdateScheduler>();
 
   component_updater_ = component_updater::ComponentUpdateServiceFactory(
       component_updater::MakeChromeComponentUpdaterConfigurator(
