@@ -61,8 +61,7 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
       AcceptSuggestion();
       return SuggestionStatus::kAccept;
     default:
-      DismissSuggestion();
-      return SuggestionStatus::kDismiss;
+      return SuggestionStatus::kNotHandled;
   }
 }
 
@@ -94,7 +93,7 @@ void MultiWordSuggester::DismissSuggestion() {
 }
 
 AssistiveType MultiWordSuggester::GetProposeActionType() {
-  return AssistiveType::kMultiWordPrediction;
+  return AssistiveType::kMultiWordCompletion;
 }
 
 bool MultiWordSuggester::HasSuggestions() {

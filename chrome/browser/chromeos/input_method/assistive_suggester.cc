@@ -356,7 +356,17 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
       default:
         break;
     }
+
+    if (IsMultiWordSuggestEnabled() && current_suggester_) {
+      auto proposed_action = current_suggester_->GetProposeActionType();
+      if (proposed_action == AssistiveType::kMultiWordCompletion ||
+          proposed_action == AssistiveType::kMultiWordPrediction) {
+        current_suggester_->DismissSuggestion();
+        current_suggester_ = nullptr;
+      }
+    }
   }
+
   return false;
 }
 

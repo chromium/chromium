@@ -97,7 +97,7 @@ TEST(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 
-TEST(MultiWordSuggesterTest, DismissesSuggestionOnNonTabKeypress) {
+TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
   int focused_context_id = 5;
@@ -112,10 +112,9 @@ TEST(MultiWordSuggesterTest, DismissesSuggestionOnNonTabKeypress) {
   suggester.OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
 
-  EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_TRUE(suggestion_handler.GetDismissedSuggestion());
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
   EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
-  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hi there!");
 }
 
 }  // namespace chromeos
