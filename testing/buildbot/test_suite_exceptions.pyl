@@ -705,7 +705,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 30,
+          'shards': 40,
         },
       },
       'linux-chromeos-ltc': {
