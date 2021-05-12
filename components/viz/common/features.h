@@ -39,6 +39,9 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
+#if defined(OS_ANDROID)
+VIZ_COMMON_EXPORT extern const base::Feature kUseSurfaceLayerForVideoDefault;
+#endif
 
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
 #if defined(OS_ANDROID)
@@ -59,6 +62,9 @@ VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // OS_WIN
 VIZ_COMMON_EXPORT base::Optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
+#if defined(OS_ANDROID)
+VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
+#endif
 
 }  // namespace features
 

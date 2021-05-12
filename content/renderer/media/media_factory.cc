@@ -234,11 +234,9 @@ enum class MediaPlayerType {
 blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
     MediaPlayerType type) {
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kDisableSurfaceLayerForVideo) &&
-      !features::IsUsingVizForWebView()) {
+  if (!::features::UseSurfaceLayerForVideo())
     return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
-  }
-#endif  // OS_ANDROID
+#endif
 
   if (type != MediaPlayerType::kMediaStream)
     return blink::WebMediaPlayer::SurfaceLayerMode::kAlways;

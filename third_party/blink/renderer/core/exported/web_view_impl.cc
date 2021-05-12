@@ -383,11 +383,9 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
 
 WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() {
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kDisableSurfaceLayerForVideo) &&
-      !::features::IsUsingVizForWebView())
-    return WebMediaPlayer::SurfaceLayerMode::kNever;
-#endif  // OS_ANDROID
-
+  if (!::features::UseSurfaceLayerForVideo())
+    return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
+#endif
   return WebMediaPlayer::SurfaceLayerMode::kAlways;
 }
 

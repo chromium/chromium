@@ -272,6 +272,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // TODO(crbug.com/921655): Add support for User Agent Client hints on
     // WebView.
     features.DisableIfNotSet(::features::kUserAgentClientHint);
+
+    // Disabled until viz scheduling can be improved.
+    features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
   }
 
   android_webview::RegisterPathProvider();
