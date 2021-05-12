@@ -36,7 +36,7 @@ ServerEnvironment::ServerEnvironment()
   base::CommandLine::Init(0, nullptr);
 
   base::Thread::Options ui_options(base::MessagePumpType::UI, 0);
-  ui_thread_.StartWithOptions(ui_options);
+  ui_thread_.StartWithOptions(std::move(ui_options));
   WaylandClientTestHelper::SetUIThreadTaskRunner(ui_thread_.task_runner());
 }
 
