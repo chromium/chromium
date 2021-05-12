@@ -12,6 +12,7 @@ import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/python.gni")
+import("//build/config/rts.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -3671,6 +3672,14 @@ if (enable_java_templates) {
   #     apk_under_test: ":bar"
   #   }
   template("instrumentation_test_runner") {
+    if (use_rts) {
+      action("${invoker.target_name}__rts_filters") {
+        script = "//build/add_rts_filters.py"
+        rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
+        args = [ rebase_path(rts_file, root_build_dir) ]
+        outputs = [ rts_file ]
+      }
+    }
     test_runner_script(target_name) {
       forward_variables_from(invoker,
                              [
@@ -3708,6 +3717,12 @@ if (enable_java_templates) {
       }
       if (defined(invoker.additional_apks)) {
         public_deps += invoker.additional_apks
+      }
+      if (use_rts) {
+        if (!defined(data_deps)) {
+          data_deps = []
+        }
+        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   }

@@ -1,0 +1,5 @@
+declare_args() {
+  # For more info about RTS, please see
+  # //docs/testing/regression-test-selection.md
+  use_rts = false
+}

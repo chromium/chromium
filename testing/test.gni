@@ -8,13 +8,10 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/rts.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # For more info about RTS, please see
-  # //docs/testing/regression-test-selection.md
-  use_rts = false
-
   # Some component repos (e.g. ANGLE) import //testing but do not have "location_tags.json"
   tests_have_location_tags = true
 }
