@@ -39,17 +39,9 @@ inline LayoutUnit GetSpaceBetweenImageTiles(LayoutUnit area_size,
 }
 
 float ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
-  // Identify the number of tiles that fit within the computed
-  // position in the direction we should be moving.
-  float number_of_tiles_in_position =
-      position.ToFloat() / tile_extent.ToFloat();
-
   // Assuming a non-integral number of tiles, find out how much of the
   // partial tile is visible. That is the phase.
-  float fractional_position_within_tile =
-      1.0f -
-      (number_of_tiles_in_position - truncf(number_of_tiles_in_position));
-  return fractional_position_within_tile * tile_extent;
+  return tile_extent ? tile_extent - IntMod(position, tile_extent) : 0.0f;
 }
 
 bool FixedBackgroundPaintsInLocalCoordinates(
@@ -227,19 +219,15 @@ void BackgroundImageGeometry::SetRepeatY(const FillLayer& fill_layer,
 void BackgroundImageGeometry::SetSpaceX(LayoutUnit space,
                                         LayoutUnit extra_offset) {
   SetSpaceSize(PhysicalSize(space, SpaceSize().height));
-  // Modify the phase to start a full tile at the edge of the paint area
-  LayoutUnit actual_width = tile_size_.width + space;
-  SetPhaseX(actual_width ? actual_width - fmodf(extra_offset, actual_width)
-                         : 0);
+  // Modify the phase to start a full tile at the edge of the paint area.
+  SetPhaseX(ComputeTilePhase(extra_offset, tile_size_.width + space));
 }
 
 void BackgroundImageGeometry::SetSpaceY(LayoutUnit space,
                                         LayoutUnit extra_offset) {
   SetSpaceSize(PhysicalSize(SpaceSize().width, space));
-  // Modify the phase to start a full tile at the edge of the paint area
-  LayoutUnit actual_height = tile_size_.height + space;
-  SetPhaseY(actual_height ? actual_height - fmodf(extra_offset, actual_height)
-                          : 0);
+  // Modify the phase to start a full tile at the edge of the paint area.
+  SetPhaseY(ComputeTilePhase(extra_offset, tile_size_.height + space));
 }
 
 void BackgroundImageGeometry::UseFixedAttachment(
@@ -884,11 +872,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
     tile_size_.width = rounded_width;
 
     // Force the first tile to line up with the edge of the positioning area.
-    SetPhaseX(tile_size_.width
-                  ? tile_size_.width -
-                        fmodf(computed_x_position + unsnapped_box_offset.left,
-                              tile_size_.width)
-                  : 0);
+    SetPhaseX(ComputeTilePhase(computed_x_position + unsnapped_box_offset.left,
+                               tile_size_.width));
     SetSpaceSize(PhysicalSize());
   }
 
@@ -907,11 +892,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
     tile_size_.height = rounded_height;
 
     // Force the first tile to line up with the edge of the positioning area.
-    SetPhaseY(tile_size_.height
-                  ? tile_size_.height -
-                        fmodf(computed_y_position + unsnapped_box_offset.top,
-                              tile_size_.height)
-                  : 0);
+    SetPhaseY(ComputeTilePhase(computed_y_position + unsnapped_box_offset.top,
+                               tile_size_.height));
     SetSpaceSize(PhysicalSize());
   }
 
