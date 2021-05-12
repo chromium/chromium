@@ -237,7 +237,7 @@ class Worker : public Listener, public Sender {
   void StartThread(base::Thread* thread, base::MessagePumpType type) {
     base::Thread::Options options;
     options.message_pump_type = type;
-    thread->StartWithOptions(options);
+    thread->StartWithOptions(std::move(options));
   }
 
   std::unique_ptr<WaitableEvent> done_;
@@ -907,7 +907,7 @@ class SyncMessageFilterServer : public Worker {
         thread_("helper_thread") {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::DEFAULT;
-    thread_.StartWithOptions(options);
+    thread_.StartWithOptions(std::move(options));
     filter_ = new TestSyncMessageFilter(shutdown_event(), this,
                                         thread_.task_runner());
   }

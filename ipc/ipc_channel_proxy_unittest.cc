@@ -246,7 +246,7 @@ class IPCChannelProxyTest : public IPCChannelMojoTestBase {
     thread_ = std::make_unique<base::Thread>("ChannelProxyTestServerThread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    thread_->StartWithOptions(options);
+    thread_->StartWithOptions(std::move(options));
 
     listener_ = std::make_unique<QuitListener>();
     channel_proxy_ = IPC::ChannelProxy::Create(
