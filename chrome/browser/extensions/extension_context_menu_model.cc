@@ -153,7 +153,7 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
 
 // A stub for the uninstall dialog.
 // TODO(devlin): Ideally, we would just have the uninstall dialog take a
-// base::Callback, but that's a bunch of churn.
+// base::OnceCallback, but that's a bunch of churn.
 class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
  public:
   // Kicks off the asynchronous process to confirm and uninstall the given

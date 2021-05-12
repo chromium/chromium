@@ -315,7 +315,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Task posted for the deadline or drawing phase of the scheduler. This task
   // can be rescheduled e.g. when the condition for the deadline is met, it is
   // scheduled to run immediately.
-  // NOTE: Scheduler weak ptrs are not necessary if CancelableCallback is used.
+  // NOTE: Scheduler weak ptrs are not necessary if CancelableOnceCallback is
+  // used.
   base::CancelableOnceClosure begin_impl_frame_deadline_task_;
 
   // This is used for queueing begin frames while scheduler is waiting for

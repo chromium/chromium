@@ -150,7 +150,7 @@ src:*ppapi/*
 src:*content/renderer/pepper*
 fun:*PpapiThread*
 fun:*BrokerProcessDispatcher*
-# Ignore base::Callback due to https://crbug.com/845855
+# Ignore base::{Once, Repeating}Callback due to https://crbug.com/845855
 fun:*FunctorTraits*
 
 # PipeWire due to https://crbug.com/926115

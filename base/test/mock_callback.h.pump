@@ -12,11 +12,12 @@ $$
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Analogous to GMock's built-in MockFunction, but for base::Callback instead of
-// std::function. It takes the full callback type as a parameter, so that it can
-// support both OnceCallback and RepeatingCallback. Furthermore, this file
-// defines convenience typedefs in the form of MockOnceCallback<Signature>,
-// MockRepeatingCallback<Signature>, MockOnceClosure and MockRepeatingClosure.
+// Analogous to GMock's built-in MockFunction, but for base::{Once,
+// Repeating}Callback instead of std::function. It takes the full callback type
+// as a parameter, so that it can support both OnceCallback and
+// RepeatingCallback. Furthermore, this file defines convenience typedefs in the
+// form of MockOnceCallback<Signature>, MockRepeatingCallback<Signature>,
+// MockOnceClosure and MockRepeatingClosure.
 //
 // Use:
 //   using FooCallback = base::RepeatingCallback<int(std::string)>;
@@ -37,7 +38,7 @@ $$
 //
 //
 // Can be used with StrictMock and NiceMock. Caller must ensure that it outlives
-// any base::Callback obtained from it.
+// any base::{Once, Repeating}Callback obtained from it.
 
 #ifndef BASE_TEST_MOCK_CALLBACK_H_
 #define BASE_TEST_MOCK_CALLBACK_H_

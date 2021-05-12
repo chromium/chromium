@@ -873,8 +873,8 @@ void BluetoothLowEnergyWeaveClientConnection::GetConnectionRssi(
     return;
   }
 
-  // device::BluetoothDevice has not converted to using a base::OnceCallback
-  // instead of a base::Callback, so use a wrapper for now.
+  // TODO(crbug.com/730593): It should be feasible to remove the conversion to
+  // RepeatingCallback entirely.
   auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
   bluetooth_device->GetConnectionInfo(
       base::BindOnce(&BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo,

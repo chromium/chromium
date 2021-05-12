@@ -184,7 +184,10 @@ class CallbackPrinter(Printer):
     return '...'
 
 
-pp_set.add_printer('base::Callback', '^base::Callback<.*>$', CallbackPrinter)
+pp_set.add_printer('base::OnceCallback', '^base::OnceCallback<.*>$',
+                   CallbackPrinter)
+pp_set.add_printer('base::RepeatingCallback', '^base::RepeatingCallback<.*>$',
+                   CallbackPrinter)
 
 
 class LocationPrinter(Printer):

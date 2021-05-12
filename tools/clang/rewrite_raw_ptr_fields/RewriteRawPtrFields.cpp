@@ -555,7 +555,7 @@ const clang::ParmVarDecl* GetExplicitDecl(
   if (!original_func) {
     // |!original_func| may happen when the ParmVarDecl is part of a
     // FunctionType, but not part of a FunctionDecl:
-    //     base::Callback<void(int parm_var_decl_here)>
+    //     base::RepeatingCallback<void(int parm_var_decl_here)>
     //
     // In theory, |parm_var_decl_here| can also represent an implicit template
     // specialization in this scenario.  OTOH, it should be rare + shouldn't

@@ -88,9 +88,10 @@ BindRepeating(Functor&& functor, Args&&... args) {
                                                std::forward<Args>(args)...);
 }
 
-// Special cases for binding to a base::Callback without extra bound arguments.
-// We CHECK() the validity of callback to guard against null pointers
-// accidentally ending up in posted tasks, causing hard-to-debug crashes.
+// Special cases for binding to a base::{Once, Repeating}Callback without extra
+// bound arguments. We CHECK() the validity of callback to guard against null
+// pointers accidentally ending up in posted tasks, causing hard-to-debug
+// crashes.
 template <typename Signature>
 OnceCallback<Signature> BindOnce(OnceCallback<Signature> callback) {
   CHECK(callback);

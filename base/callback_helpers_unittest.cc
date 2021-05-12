@@ -22,8 +22,8 @@ TEST(CallbackHelpersTest, IsBaseCallback) {
   static_assert(base::IsBaseCallback<base::OnceClosure&&>::value, "");
   static_assert(base::IsBaseCallback<const base::RepeatingClosure&>::value, "");
 
-  // Check that base::Callbacks with a given RunType and references to them are
-  // considered base::Callbacks.
+  // Check that base::{Once, Repeating}Callbacks with a given RunType and
+  // references to them are considered base::{Once, Repeating}Callbacks.
   static_assert(base::IsBaseCallback<base::OnceCallback<int(int)>>::value, "");
   static_assert(base::IsBaseCallback<base::RepeatingCallback<int(int)>>::value,
                 "");
@@ -33,13 +33,13 @@ TEST(CallbackHelpersTest, IsBaseCallback) {
       base::IsBaseCallback<const base::RepeatingCallback<int(int)>&>::value,
       "");
 
-  // Check that POD types are not considered base::Callbacks.
+  // Check that POD types are not considered base::{Once, Repeating}Callbacks.
   static_assert(!base::IsBaseCallback<bool>::value, "");
   static_assert(!base::IsBaseCallback<int>::value, "");
   static_assert(!base::IsBaseCallback<double>::value, "");
 
   // Check that the closely related std::function is not considered a
-  // base::Callback.
+  // base::{Once, Repeating}Callback.
   static_assert(!base::IsBaseCallback<std::function<void()>>::value, "");
   static_assert(!base::IsBaseCallback<const std::function<void()>&>::value, "");
   static_assert(!base::IsBaseCallback<std::function<void()>&&>::value, "");

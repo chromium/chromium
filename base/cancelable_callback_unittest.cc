@@ -80,8 +80,8 @@ TEST(CancelableCallbackTest, MultipleCancel) {
   EXPECT_TRUE(callback3.is_null());
 }
 
-// CancelableCallback destroyed before callback is run.
-//  - Destruction of CancelableCallback cancels outstanding callbacks.
+// CancelableRepeatingCallback destroyed before callback is run.
+//  - Destruction of CancelableRepeatingCallback cancels outstanding callbacks.
 TEST(CancelableCallbackTest, CallbackCanceledOnDestruction) {
   int count = 0;
   base::RepeatingClosure callback;
@@ -152,7 +152,7 @@ TEST(CancelableCallbackTest, Reset) {
 }
 
 // IsCanceled().
-//  - Cancel() transforms the CancelableCallback into a cancelled state.
+//  - Cancel() transforms the CancelableOnceCallback into a cancelled state.
 TEST(CancelableCallbackTest, IsNull) {
   CancelableOnceClosure cancelable;
   EXPECT_TRUE(cancelable.IsCancelled());
@@ -165,7 +165,7 @@ TEST(CancelableCallbackTest, IsNull) {
   EXPECT_TRUE(cancelable.IsCancelled());
 }
 
-// CancelableCallback posted to a task environment with PostTask.
+// CancelableRepeatingCallback posted to a task environment with PostTask.
 //  - Posted callbacks can be cancelled.
 TEST(CancelableCallbackTest, PostTask) {
   test::TaskEnvironment task_environment;
@@ -189,7 +189,7 @@ TEST(CancelableCallbackTest, PostTask) {
   EXPECT_EQ(1, count);
 }
 
-// CancelableCallback can be used with move-only types.
+// CancelableRepeatingCallback can be used with move-only types.
 TEST(CancelableCallbackTest, MoveOnlyType) {
   const int kExpectedResult = 42;
 

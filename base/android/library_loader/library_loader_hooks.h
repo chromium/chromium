@@ -65,8 +65,9 @@ BASE_EXPORT void RecordLibraryLoaderRendererHistograms();
 // libraries are loaded. The hook function should register the JNI bindings
 // required to start the application. It should return true for success and
 // false for failure.
-// Note: this can't use base::Callback because there is no way of initializing
-// the default callback without using static objects, which we forbid.
+// Note: this can't use base::{Once, Repeating}Callback because there is no
+// way of initializing the default callback without using static objects, which
+// we forbid.
 typedef bool LibraryLoadedHook(JNIEnv* env,
                                jclass clazz,
                                LibraryProcessType library_process_type);

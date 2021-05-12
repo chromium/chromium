@@ -13,11 +13,11 @@
 //
 // NOTE:
 //
-// CancelableCallback (base/cancelable_callback.h) and WeakPtr binding are
+// CancelableOnceCallback (base/cancelable_callback.h) and WeakPtr binding are
 // preferred solutions for canceling a task. However, they don't support
 // cancelation from another sequence. This is sometimes a performance critical
 // requirement. E.g. We need to cancel database lookup task on DB thread when
-// user changes inputed text. If it is performance critical to do a best effort
+// user changes inputted text. If it is performance critical to do a best effort
 // cancelation of a task, then CancelableTaskTracker is appropriate, otherwise
 // use one of the other mechanisms.
 //

@@ -554,7 +554,7 @@ void WebContentsAndroid::EvaluateJavaScript(
   }
 
   // Secure the Java callback in a scoped object and give ownership of it to the
-  // base::Callback.
+  // base::OnceCallback below.
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
@@ -582,7 +582,7 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
   }
 
   // Secure the Java callback in a scoped object and give ownership of it to the
-  // base::Callback.
+  // base::OnceCallback below.
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
@@ -641,7 +641,7 @@ void WebContentsAndroid::RequestSmartClipExtract(
     jint width,
     jint height) {
   // Secure the Java callback in a scoped object and give ownership of it to the
-  // base::Callback.
+  // base::OnceCallback below.
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
@@ -670,7 +670,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& callback) {
   // Secure the Java callback in a scoped object and give ownership of it to the
-  // base::Callback.
+  // base::OnceCallback below.
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 

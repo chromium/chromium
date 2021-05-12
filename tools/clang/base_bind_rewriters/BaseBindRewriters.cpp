@@ -135,8 +135,8 @@ class PassedToMoveRewriter : public MatchFinder::MatchCallback,
 // resulting callbacks are implicitly converted into base::OnceCallback.
 // Example:
 //   // Before
-//   base::PostTask(FROM_HERE, base::Bind(&Foo));
-//   base::OnceCallback<void()> cb = base::Bind(&Foo);
+//   base::PostTask(FROM_HERE, base::BindRepeating(&Foo));
+//   base::OnceCallback<void()> cb = base::BindRepeating(&Foo);
 //
 //   // After
 //   base::PostTask(FROM_HERE, base::BindOnce(&Foo));
@@ -180,16 +180,16 @@ class BindOnceRewriter : public MatchFinder::MatchCallback, public Rewriter {
   Replacements* replacements_;
 };
 
-// Converts pass-by-const-ref base::Callback's to pass-by-value.
-// Example:
+// Converts pass-by-const-ref base::RepeatingCallback's to
+// pass-by-value. Example:
 //   // Before
-//   using BarCallback = base::Callback<void(void*)>;
-//   void Foo(const base::Callback<void(int)>& cb);
+//   using BarCallback = base::RepeatingCallback<void(void*)>;
+//   void Foo(const base::RepeatingCallback<void(int)>& cb);
 //   void Bar(const BarCallback& cb);
 //
 //   // After
-//   using BarCallback = base::Callback<void(void*)>;
-//   void Foo(base::Callback<void(int)> cb);
+//   using BarCallback = base::RepeatingCallback<void(void*)>;
+//   void Foo(base::RepeatingCallback<void(int)> cb);
 //   void Bar(BarCallback cb);
 class PassByValueRewriter : public MatchFinder::MatchCallback, public Rewriter {
  public:
@@ -586,7 +586,7 @@ class AddStdMoveRewriter : public MatchFinder::MatchCallback, public Rewriter {
 //       FROM_HERE,
 //       base::AdaptCallbackForRepeating(base::BindOnce(&Foo)));
 //   base::OnceCallback<void()> cb = base::AdaptCallbackForRepeating(
-//       base::OnceBind(&Foo));
+//       base::BindOnce(&Foo));
 //
 //   // After
 //   base::PostTask(FROM_HERE, base::BindOnce(&Foo));

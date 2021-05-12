@@ -38,9 +38,9 @@ struct CallbackParamTraits<const T*> {
   typedef T* LocalType;
 };
 
-// CallbackHolder and CallbackHolderBase are used to pass a base::Callback from
-// CreateFunctionTemplate through v8 (via v8::FunctionTemplate) to
-// DispatchToCallback, where it is invoked.
+// CallbackHolder and CallbackHolderBase are used to pass a
+// base::RepeatingCallback from CreateFunctionTemplate through v8 (via
+// v8::FunctionTemplate) to DispatchToCallback, where it is invoked.
 
 // This simple base class is used so that we can share a single object template
 // among every CallbackHolder instance.
@@ -188,7 +188,7 @@ class Invoker<std::index_sequence<indices...>, ArgTypes...>
 };
 
 // DispatchToCallback converts all the JavaScript arguments to C++ types and
-// invokes the base::Callback.
+// invokes the base::RepeatingCallback.
 template <typename Sig>
 struct Dispatcher {};
 
@@ -226,12 +226,13 @@ struct Dispatcher<ReturnType(ArgTypes...)> {
 }  // namespace internal
 
 // CreateFunctionTemplate creates a v8::FunctionTemplate that will create
-// JavaScript functions that execute a provided C++ function or base::Callback.
-// JavaScript arguments are automatically converted via gin::Converter, as is
-// the return value of the C++ function, if any. |invoker_options| contains
-// additional parameters. If it contains a holder_type, it will be used to
-// provide a useful conversion error if the holder is the first argument. If not
-// provided, a generic invocation error will be used.
+// JavaScript functions that execute a provided C++ function or
+// base::RepeatingCallback. JavaScript arguments are automatically converted via
+// gin::Converter, as is the return value of the C++ function, if any.
+// |invoker_options| contains additional parameters. If it contains a
+// holder_type, it will be used to provide a useful conversion error if the
+// holder is the first argument. If not provided, a generic invocation error
+// will be used.
 //
 // NOTE: V8 caches FunctionTemplates for a lifetime of a web page for its own
 // internal reasons, thus it is generally a good idea to cache the template

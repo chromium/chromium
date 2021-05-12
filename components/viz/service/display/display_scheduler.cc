@@ -162,7 +162,7 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
     DCHECK(missed_begin_frame_task_.IsCancelled());
     missed_begin_frame_task_.Reset(
         base::BindOnce(base::IgnoreResult(&DisplayScheduler::OnBeginFrame),
-                       // The CancelableCallback will not run after it is
+                       // The CancelableOnceCallback will not run after it is
                        // destroyed, which happens when |this| is destroyed.
                        base::Unretained(this), args));
     task_runner_->PostTask(FROM_HERE, missed_begin_frame_task_.callback());

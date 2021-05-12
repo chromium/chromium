@@ -700,7 +700,7 @@ void FaviconHandler::OnFaviconData(
 void FaviconHandler::ScheduleImageDownload(const GURL& image_url,
                                            favicon_base::IconType icon_type) {
   DCHECK(image_url.is_valid());
-  // Note that CancelableCallback starts cancelled.
+  // Note that CancelableOnceCallback starts cancelled.
   DCHECK(image_download_request_.IsCancelled())
       << "More than one ongoing download";
   if (service_ && service_->WasUnableToDownloadFavicon(image_url)) {

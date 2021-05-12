@@ -1389,8 +1389,8 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
   // reason notifying request A ends up cancelling request B (for the same key),
   // we won't find request B anywhere (because it would be in a local variable
   // here) and that's bad. If there is a chance for that to happen, we'll have
-  // to move the callback used to be a CancelableCallback. By the way, for this
-  // to happen the action (to cancel B) has to be synchronous to the
+  // to move the callback used to be a CancelableOnceCallback. By the way, for
+  // this to happen the action (to cancel B) has to be synchronous to the
   // notification for request A.
   WorkItemList pending_items;
   pending_items.swap(pending_op->pending_queue);

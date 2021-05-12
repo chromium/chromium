@@ -35,8 +35,8 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
  public:
   // Callback function to reshape line edges.
   //
-  // std::function is forbidden in Chromium and base::Callback is way too
-  // expensive so we resort to a good old function pointer instead.
+  // std::function is forbidden in Chromium and base::RepeatingCallback is way
+  // too expensive so we resort to a good old function pointer instead.
   using ShapeCallback = scoped_refptr<ShapeResult> (*)(void* context,
                                                        unsigned start,
                                                        unsigned end);

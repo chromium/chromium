@@ -32,7 +32,7 @@ typedef ValidatingAuthenticator::Result ValidationResult;
 
 constexpr char kRemoteTestJid[] = "ficticious_jid_for_testing";
 
-// testing::InvokeArgument<N> does not work with base::Callback, fortunately
+// testing::InvokeArgument<N> does not work with base::OnceCallback, fortunately
 // gmock makes it simple to create action templates that do for the various
 // possible numbers of arguments.
 ACTION_TEMPLATE(InvokeCallbackArgument,

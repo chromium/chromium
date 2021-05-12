@@ -2035,7 +2035,7 @@ void HistoryBackend::Commit() {
 
 void HistoryBackend::ScheduleCommit() {
   // Non-cancelled means there's an already scheduled commit. Note that
-  // CancelableClosure starts cancelled with the default constructor.
+  // CancelableOnceClosure starts cancelled with the default constructor.
   if (!scheduled_commit_.IsCancelled())
     return;
 

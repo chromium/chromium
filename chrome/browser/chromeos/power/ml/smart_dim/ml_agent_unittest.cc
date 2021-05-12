@@ -196,8 +196,8 @@ TEST_F(SmartDimMlAgentTest, SwitchBetweenWorkers) {
   EXPECT_TRUE(callback_done);
 }
 
-// Check that CancelableCallback ensures a callback doesn't execute twice, in
-// case two RequestDimDecision() calls were made before any callback ran.
+// Check that CancelableOnceCallback ensures a callback doesn't execute twice,
+// in case two RequestDimDecision() calls were made before any callback ran.
 TEST_F(SmartDimMlAgentTest, CheckCancelableCallback) {
   SmartDimMlAgent::GetInstance()->ResetForTesting();
 

@@ -1304,12 +1304,12 @@ _CONFIG = [
             'base::LazyInstance',
             'base::Lock',
             # TODO(crbug.com/787254): Remove base::BindOnce, base::Unretained,
-            # base::Passed, base::Closure, base::CurrentThread and
-            # base::RetainedRef.
+            # base::Passed, base::OnceClosure, base::RepeatingClosure,
+            # base::CurrentThread and base::RetainedRef.
             'base::Bind.*',
-            'base::Closure',
             'base::MD5.*',
             'base::CurrentThread',
+            'base::.*Closure',
             'base::Passed',
             'base::PowerObserver',
             'base::RetainedRef',
