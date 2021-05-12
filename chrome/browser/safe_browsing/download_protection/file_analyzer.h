@@ -114,7 +114,6 @@ class FileAnalyzer {
   base::TimeTicks zip_analysis_start_time_;
 
   scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
-  base::TimeTicks rar_analysis_start_time_;
 
 #if defined(OS_MAC)
   scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;

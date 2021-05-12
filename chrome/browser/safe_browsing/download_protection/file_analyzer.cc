@@ -185,7 +185,6 @@ void FileAnalyzer::OnZipAnalysisFinished(
 void FileAnalyzer::StartExtractRarFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  rar_analysis_start_time_ = base::TimeTicks::Now();
   // We give the rar analyzer a weak pointer to this object.  Since the
   // analyzer is refcounted, it might outlive the request.
   rar_analyzer_ = new SandboxedRarAnalyzer(
@@ -206,10 +205,6 @@ void FileAnalyzer::OnRarAnalysisFinished(
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
-
-  // Log metrics for Rar Analysis
-  UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractRarFeaturesTimeMedium",
-                             base::TimeTicks::Now() - rar_analysis_start_time_);
 
   if (!results_.archived_executable) {
     if (archive_results.has_archive) {
