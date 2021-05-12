@@ -113,7 +113,9 @@ class MODULES_EXPORT IDBTransaction final
   int64_t Id() const { return id_; }
   bool IsActive() const { return state_ == kActive; }
   bool IsFinished() const { return state_ == kFinished; }
-  bool IsFinishing() const { return state_ == kFinishing; }
+  bool IsFinishing() const {
+    return state_ == kCommitting || state_ == kAborting;
+  }
   bool IsReadOnly() const {
     return mode_ == mojom::IDBTransactionMode::ReadOnly;
   }
@@ -215,10 +217,11 @@ class MODULES_EXPORT IDBTransaction final
   void Finished();
 
   enum State {
-    kInactive,   // Created or started, but not in an event callback
-    kActive,     // Created or started, in creation scope or an event callback
-    kFinishing,  // In the process of aborting or completing.
-    kFinished,   // No more events will fire and no new requests may be filed.
+    kInactive,    // Created or started, but not in an event callback.
+    kActive,      // Created or started, in creation scope or an event callback.
+    kCommitting,  // In the process of completing.
+    kAborting,    // In the process of aborting.
+    kFinished,    // No more events will fire and no new requests may be filed.
   };
 
   std::unique_ptr<WebIDBTransaction> transaction_backend_;
