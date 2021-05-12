@@ -12,7 +12,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [ "navigation_selector.js" ]
+polymer_element_files = [
+  "navigation_selector.js",
+  "navigation_view_panel.js",
+]
 
 generate_grd("build_grdp") {
   input_files = [
@@ -33,6 +36,7 @@ js_type_check("closure_compile_module") {
     ":fake_method_resolver",
     ":fake_observables",
     ":navigation_selector",
+    ":navigation_view_panel",
   ]
 }
 
@@ -46,6 +50,13 @@ js_library("fake_method_resolver") {
 
 js_library("navigation_selector") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("navigation_view_panel") {
+  deps = [
+    ":navigation_selector",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

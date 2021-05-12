@@ -1,0 +1,23 @@
+<style include="cr-shared-style">
+  #container {
+    align-items: flex-start;
+    display: flex;
+    flex: 1;
+    overflow: overlay;
+    position: relative;
+  }
+
+  .left-aligned {
+    position: sticky;
+  }
+</style>
+
+<div id="container">
+  <div id="navigationSelector" class="left-aligned">
+    <navigation-selector menu-items={{menuItems_}}
+        selected-item={{selectedItem}}>
+    </navigation-selector>
+  </div>
+
+  <div id="navigationBody" class="right-aligned"></div>
+</div>

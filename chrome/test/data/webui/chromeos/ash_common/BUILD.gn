@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":fake_method_resolver_test",
     ":fake_observables_test",
     ":navigation_selector_test",
+    ":navigation_view_panel_test",
   ]
 }
 
@@ -43,5 +44,12 @@ js_library("navigation_selector_test") {
     "../..:chai_assert",
     "//ash/content/common/resources:navigation_selector",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+  ]
+}
+
+js_library("navigation_view_panel_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/content/common/resources:navigation_view_panel",
   ]
 }
