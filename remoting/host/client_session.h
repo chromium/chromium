@@ -18,12 +18,12 @@
 #include "base/timer/timer.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/desktop_and_cursor_composer_notifier.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
-#include "remoting/host/pointer_lock_detector.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/protocol/clipboard_echo_filter.h"
@@ -66,7 +66,7 @@ class ClientSession : public protocol::HostStub,
                       public protocol::VideoStream::Observer,
                       public ClientSessionControl,
                       public ClientSessionDetails,
-                      public PointerLockDetector::EventHandler,
+                      public DesktopAndCursorComposerNotifier::EventHandler,
                       public webrtc::MouseCursorMonitor::Callback {
  public:
   // Callback interface for passing events to the ChromotingHost.
@@ -156,8 +156,8 @@ class ClientSession : public protocol::HostStub,
   uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
-  // PointerLockDetector::EventHandler interface
-  void OnPointerLockChanged(bool active) override;
+  // DesktopAndCursorComposerNotifier::EventHandler interface
+  void SetComposeEnabled(bool enabled) override;
 
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
@@ -234,8 +234,10 @@ class ClientSession : public protocol::HostStub,
   // Filter used to clamp mouse events to the current display dimensions.
   protocol::MouseInputFilter mouse_clamping_filter_;
 
-  // Filter used to detect transitions into and out of client-side pointer lock.
-  PointerLockDetector pointer_lock_detector_;
+  // Filter used to detect transitions into and out of client-side pointer lock,
+  // and to monitor local input to determine whether or not to include the mouse
+  // cursor in the desktop image.
+  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
 
   // Filter to used to stop clipboard items sent from the client being echoed
   // back to it.  It is the final element in the clipboard (client -> host)

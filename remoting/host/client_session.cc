@@ -68,8 +68,8 @@ ClientSession::ClientSession(
       input_tracker_(&host_input_filter_),
       remote_input_filter_(&input_tracker_),
       mouse_clamping_filter_(&remote_input_filter_),
-      pointer_lock_detector_(&mouse_clamping_filter_, this),
-      disable_input_filter_(&pointer_lock_detector_),
+      desktop_and_cursor_composer_notifier_(&mouse_clamping_filter_, this),
+      disable_input_filter_(&desktop_and_cursor_composer_notifier_),
       disable_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_factory_(clipboard_echo_filter_.client_filter()),
       max_duration_(max_duration),
@@ -561,8 +561,12 @@ void ClientSession::OnLocalPointerMoved(const webrtc::DesktopVector& position,
                                         ui::EventType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_local = remote_input_filter_.LocalPointerMoved(position, type);
-  if (is_local && desktop_environment_options_.terminate_upon_input())
-    DisconnectSession(protocol::OK);
+  if (is_local) {
+    if (desktop_environment_options_.terminate_upon_input())
+      DisconnectSession(protocol::OK);
+    else
+      desktop_and_cursor_composer_notifier_.OnLocalInput();
+  }
 }
 
 void ClientSession::SetDisableInputs(bool disable_inputs) {
@@ -586,10 +590,10 @@ ClientSessionControl* ClientSession::session_control() {
   return this;
 }
 
-void ClientSession::OnPointerLockChanged(bool active) {
+void ClientSession::SetComposeEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desktop_and_cursor_composer_)
-    desktop_and_cursor_composer_->SetComposeEnabled(active);
+    desktop_and_cursor_composer_->SetComposeEnabled(enabled);
 }
 
 void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
