@@ -10,7 +10,7 @@ ConfigurationRefresher::ConfigurationRefresher() = default;
 ConfigurationRefresher::~ConfigurationRefresher() = default;
 
 void ConfigurationRefresher::Observe(syncer::SyncService* sync_service) {
-  scoped_observer_.Add(sync_service);
+  scoped_observations_.AddObservation(sync_service);
 }
 
 void ConfigurationRefresher::OnSyncConfigurationCompleted(
@@ -22,5 +22,5 @@ void ConfigurationRefresher::OnSyncConfigurationCompleted(
 }
 
 void ConfigurationRefresher::OnSyncShutdown(syncer::SyncService* sync_service) {
-  scoped_observer_.Remove(sync_service);
+  scoped_observations_.RemoveObservation(sync_service);
 }

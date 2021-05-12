@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -38,8 +38,9 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
 
  private:
   std::vector<syncer::ProfileSyncService*> services_;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_{this};
+  base::ScopedMultiSourceObservation<syncer::SyncService,
+                                     syncer::SyncServiceObserver>
+      scoped_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MultiClientStatusChangeChecker);
 };

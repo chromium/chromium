@@ -9,7 +9,7 @@ MultiClientStatusChangeChecker::MultiClientStatusChangeChecker(
     std::vector<syncer::ProfileSyncService*> services)
     : services_(services) {
   for (syncer::ProfileSyncService* service : services)
-    scoped_observer_.Add(service);
+    scoped_observations_.AddObservation(service);
 }
 
 MultiClientStatusChangeChecker::~MultiClientStatusChangeChecker() = default;
@@ -19,5 +19,5 @@ void MultiClientStatusChangeChecker::OnStateChanged(syncer::SyncService* sync) {
 }
 
 void MultiClientStatusChangeChecker::OnSyncShutdown(syncer::SyncService* sync) {
-  scoped_observer_.Remove(sync);
+  scoped_observations_.RemoveObservation(sync);
 }

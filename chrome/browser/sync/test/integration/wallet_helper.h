@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -219,8 +220,8 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
   const syncer::SyncService* const service_;
   const syncer::ModelType model_type_;
 
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_WALLET_HELPER_H_

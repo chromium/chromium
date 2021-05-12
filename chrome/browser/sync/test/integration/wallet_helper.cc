@@ -677,7 +677,7 @@ FullUpdateTypeProgressMarkerChecker::FullUpdateTypeProgressMarkerChecker(
           min_required_progress_marker_timestamp),
       service_(service),
       model_type_(model_type) {
-  scoped_observer_.Add(service);
+  scoped_observation_.Observe(service);
 }
 
 FullUpdateTypeProgressMarkerChecker::~FullUpdateTypeProgressMarkerChecker() =

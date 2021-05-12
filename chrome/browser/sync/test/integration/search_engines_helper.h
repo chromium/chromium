@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -90,8 +90,9 @@ class SearchEnginesMatchChecker : public StatusChangeChecker,
   void OnTemplateURLServiceChanged() override;
 
  private:
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
-      this};
+  base::ScopedMultiSourceObservation<TemplateURLService,
+                                     TemplateURLServiceObserver>
+      observations_{this};
 };
 
 // Checker that blocks until |profile_index| has a search engine matching the
@@ -111,8 +112,9 @@ class HasSearchEngineChecker : public StatusChangeChecker,
  private:
   TemplateURLService* const service_;
   const std::u16string keyword_;
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
-      this};
+  base::ScopedMultiSourceObservation<TemplateURLService,
+                                     TemplateURLServiceObserver>
+      observations_{this};
 };
 
 }  // namespace search_engines_helper
