@@ -1063,7 +1063,7 @@ void BrowserProcessImpl::CreateWatchdogThread() {
   auto thread = std::make_unique<WatchDogThread>();
   base::Thread::Options options;
   options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-  if (!thread->StartWithOptions(options))
+  if (!thread->StartWithOptions(std::move(options)))
     return;
   watchdog_thread_.swap(thread);
 }
