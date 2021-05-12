@@ -208,7 +208,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
 
   EXPECT_CALL(*authenticator(), CanAuthenticate())
       .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(*authenticator(), Authenticate(credentials[0], _))
+  EXPECT_CALL(
+      *authenticator(),
+      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -226,7 +228,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
 
   EXPECT_CALL(*authenticator(), CanAuthenticate())
       .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(*authenticator(), Authenticate(credentials[0], _))
+  EXPECT_CALL(
+      *authenticator(),
+      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -343,24 +347,20 @@ TEST_F(TouchToFillControllerTest, Dismiss) {
 }
 
 TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
-  std::unique_ptr<TouchToFillController> controller = CreateAuthController();
-  std::unique_ptr<MockTouchToFillView> mock_view =
-      std::make_unique<MockTouchToFillView>();
-  MockTouchToFillView* weak_view = mock_view.get();
-  controller->set_view(std::move(mock_view));
-
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                               ElementsAreArray(credentials)));
-  controller->Show(credentials, driver().AsWeakPtr());
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials)));
+  touch_to_fill_controller().Show(credentials, driver().AsWeakPtr());
 
   EXPECT_CALL(*authenticator(), CanAuthenticate)
       .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(*authenticator(), Authenticate(credentials[0], _));
-  controller->OnCredentialSelected(credentials[0]);
+  EXPECT_CALL(
+      *authenticator(),
+      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _));
+  touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator(), Cancel);
-  controller.reset();
+  EXPECT_CALL(*authenticator(),
+              Cancel(password_manager::BiometricAuthRequester::kTouchToFill));
 }

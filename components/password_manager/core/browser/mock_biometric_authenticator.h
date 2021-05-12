@@ -19,9 +19,9 @@ class MockBiometricAuthenticator : public BiometricAuthenticator {
   MOCK_METHOD(BiometricsAvailability, CanAuthenticate, (), (override));
   MOCK_METHOD(void,
               Authenticate,
-              (const UiCredential&, AuthenticateCallback),
+              (BiometricAuthRequester, AuthenticateCallback),
               (override));
-  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, Cancel, (BiometricAuthRequester), (override));
 
  private:
   ~MockBiometricAuthenticator() override;

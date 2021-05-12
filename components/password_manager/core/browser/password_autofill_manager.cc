@@ -34,6 +34,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -325,6 +326,8 @@ PasswordAutofillManager::PasswordAutofillManager(
       password_client_(password_client) {}
 
 PasswordAutofillManager::~PasswordAutofillManager() {
+  CancelBiometricReauthIfOngoing();
+
   if (deletion_callback_)
     std::move(deletion_callback_).Run();
 }
@@ -417,13 +420,29 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
             : PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration,
         password_client_->IsIncognito());
   } else {
-    bool success = FillSuggestion(GetUsernameFromSuggestion(value), identifier);
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kPassword,
         password_client_->IsIncognito());
-    DCHECK(success);
-  }
 
+    scoped_refptr<BiometricAuthenticator> authenticator =
+        password_client_->GetBiometricAuthenticator();
+    // Note: this is currently only implemented on Android. For desktop,
+    // the `authenticator` will be null.
+    if (!authenticator || authenticator->CanAuthenticate() !=
+                              BiometricsAvailability::kAvailable) {
+      bool success =
+          FillSuggestion(GetUsernameFromSuggestion(value), identifier);
+      DCHECK(success);
+    } else {
+      // `this` cancels the authentication when it is destructed, which
+      // invalidates the callback, so using base::Unretained here is safe.
+      authenticator_ = std::move(authenticator);
+      authenticator_->Authenticate(
+          BiometricAuthRequester::kAutofillSuggestion,
+          base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
+                         base::Unretained(this), value, identifier));
+    }
+  }
   autofill_client_->HideAutofillPopup(
       autofill::PopupHidingReason::kAcceptSuggestion);
 }
@@ -472,6 +491,10 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   if (!autofill::IsValidPasswordFormFillData(fill_data))
     return;
 
+  // If the `fill_data_` changes, then it's likely that the filling context
+  // changed as well, so the biometric auth is now out of scope.
+  CancelBiometricReauthIfOngoing();
+
   fill_data_ = std::make_unique<autofill::PasswordFormFillData>(fill_data);
   RequestFavicon(fill_data.url);
 
@@ -507,6 +530,7 @@ void PasswordAutofillManager::DeleteFillData() {
     autofill_client_->HideAutofillPopup(
         autofill::PopupHidingReason::kStaleData);
   }
+  CancelBiometricReauthIfOngoing();
 }
 
 void PasswordAutofillManager::OnShowPasswordSuggestions(
@@ -545,6 +569,7 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
 
 void PasswordAutofillManager::DidNavigateMainFrame() {
   fill_data_.reset();
+  CancelBiometricReauthIfOngoing();
   favicon_tracker_.TryCancelAll();
   page_favicon_ = gfx::Image();
 }
@@ -766,6 +791,24 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
   }
   UpdatePopup(SetUnlockLoadingState(reopen_args.suggestions, unlock_item,
                                     IsLoading(false)));
+}
+
+void PasswordAutofillManager::OnBiometricReauthCompleted(
+    const std::u16string& value,
+    int identifier,
+    bool auth_succeeded) {
+  authenticator_.reset();
+  if (!auth_succeeded)
+    return;
+  bool success = FillSuggestion(GetUsernameFromSuggestion(value), identifier);
+  DCHECK(success);
+}
+
+void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
+  if (!authenticator_)
+    return;
+  authenticator_->Cancel(BiometricAuthRequester::kAutofillSuggestion);
+  authenticator_.reset();
 }
 
 }  //  namespace password_manager

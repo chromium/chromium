@@ -98,10 +98,6 @@ class TouchToFillController {
   // Authenticator used to trigger a biometric auth before filling.
   scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
 
-  // True while an authentication is in progress. Used to check whether there
-  // is an auth to cancel when this object is destroyed.
-  bool auth_in_progress_ = false;
-
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 
   // View used to communicate with the Android frontend. Lazily instantiated so

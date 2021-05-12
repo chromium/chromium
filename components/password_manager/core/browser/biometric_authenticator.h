@@ -10,8 +10,6 @@
 
 namespace password_manager {
 
-class UiCredential;
-
 // Different states for biometric availability for a given device. Either no
 // biometric hardware is available, hardware is available but the user has no
 // biometrics enrolled, or hardware is available and the user makes use of it.
@@ -22,6 +20,16 @@ enum class BiometricsAvailability {
   kNotEnrolled = 2,
   kAndroidVersionNotSupported = 3,
   kAvailableNoFallback = 4,
+};
+
+// The filling surface asking for biometric authentication.
+enum class BiometricAuthRequester {
+  // The filling surface shown on the first tap on the field after page load.
+  // This surface has replaced autofilling on Android.
+  kTouchToFill = 0,
+
+  // The suggestion presented in the keyboard accessory or autofill popup.
+  kAutofillSuggestion = 1,
 };
 
 // This interface encapsulates operations related to biometric authentication.
@@ -39,13 +47,16 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // returns kAvailable, callers can expect Authenticate() to succeed.
   virtual BiometricsAvailability CanAuthenticate() = 0;
 
-  // Asks the user to authenticate for the given |credential|. Invokes
-  // |callback| asynchronously on the main thread with the result.
-  virtual void Authenticate(const UiCredential& credential,
+  // Asks the user to authenticate. Invokes |callback| asynchronously when
+  // the auth flow returns with the result.
+  // |requester| is the filling surface that is asking for authentication.
+  virtual void Authenticate(BiometricAuthRequester requester,
                             AuthenticateCallback callback) = 0;
 
-  // Cancels an in-progress authentication.
-  virtual void Cancel() = 0;
+  // Cancels an in-progress authentication if the filling surface requesting
+  // the cancelation corresponds to the one for which the ongoing auth was
+  // triggered.
+  virtual void Cancel(BiometricAuthRequester requester) = 0;
 
  protected:
   virtual ~BiometricAuthenticator() = default;

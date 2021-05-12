@@ -11,8 +11,10 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +30,8 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -66,6 +70,7 @@ using autofill::SuggestionVectorIdsAre;
 using autofill::SuggestionVectorLabelsAre;
 using autofill::SuggestionVectorValuesAre;
 using autofill::password_generation::PasswordGenerationType;
+using base::test::RunOnceCallback;
 using favicon_base::FaviconImageCallback;
 using gfx::test::AreImagesEqual;
 using testing::_;
@@ -146,6 +151,15 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(needs_signin));
   }
 
+  void SetBiometricAuthenticator(
+      scoped_refptr<MockBiometricAuthenticator> biometric_authenticator) {
+    biometric_authenticator_ = std::move(biometric_authenticator);
+  }
+
+  scoped_refptr<BiometricAuthenticator> GetBiometricAuthenticator() override {
+    return biometric_authenticator_;
+  }
+
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(void,
               TriggerReauthForPrimaryAccount,
@@ -161,6 +175,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   MockPasswordManagerDriver driver_;
+  scoped_refptr<MockBiometricAuthenticator> biometric_authenticator_ = nullptr;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<MockPasswordFeatureManager> feature_manager_{
       new NiceMock<MockPasswordFeatureManager>};
@@ -314,6 +329,9 @@ class PasswordAutofillManagerTest : public testing::Test {
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
 
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
+
+  scoped_refptr<MockBiometricAuthenticator> authenticator_ =
+      base::MakeRefCounted<MockBiometricAuthenticator>();
 
   std::u16string test_username_;
   std::u16string test_password_;
@@ -1432,6 +1450,274 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
   EXPECT_THAT(open_args.suggestions[0].store_indicator_icon, "google");
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
+}
+
+TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  for (bool is_suggestion_on_password_field : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "is_suggestion_on_password_field = "
+                                    << is_suggestion_on_password_field);
+    // Show the popup
+    autofill::AutofillClient::PopupOpenArgs open_args;
+    EXPECT_CALL(autofill_client, ShowAutofillPopup)
+        .WillOnce(testing::SaveArg<0>(&open_args));
+
+    int show_suggestion_options =
+        is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
+    password_autofill_manager_->OnShowPasswordSuggestions(
+        base::i18n::RIGHT_TO_LEFT, std::u16string(), show_suggestion_options,
+        gfx::RectF());
+    ASSERT_GE(open_args.suggestions.size(), 1u);
+    EXPECT_THAT(open_args.suggestions,
+                SuggestionVectorIdsAre(ElementsAre(
+                    is_suggestion_on_password_field
+                        ? autofill::POPUP_ITEM_ID_PASSWORD_ENTRY
+                        : autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+                    autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+
+    // Suggestions should always be filled if the authenticator is not available
+    // or it cannot be used.
+    EXPECT_CALL(*client.mock_driver(),
+                FillSuggestion(test_username_, test_password_));
+
+    // The authenticator exists, but cannot be used for authentication.
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+        .WillOnce(
+            Return(password_manager::BiometricsAvailability::kNoHardware));
+
+    // Accept the suggestion to start the filing process which tries to
+    // reauthenticate the user if possible.
+    password_autofill_manager_->DidAcceptSuggestion(
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+  }
+}
+
+TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  for (bool is_suggestion_on_password_field : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "is_suggestion_on_password_field = "
+                                    << is_suggestion_on_password_field);
+    // Show the popup
+    autofill::AutofillClient::PopupOpenArgs open_args;
+    EXPECT_CALL(autofill_client, ShowAutofillPopup)
+        .WillOnce(testing::SaveArg<0>(&open_args));
+
+    int show_suggestion_options =
+        is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
+    password_autofill_manager_->OnShowPasswordSuggestions(
+        base::i18n::RIGHT_TO_LEFT, std::u16string(), show_suggestion_options,
+        gfx::RectF());
+    ASSERT_GE(open_args.suggestions.size(), 1u);
+    EXPECT_THAT(open_args.suggestions,
+                SuggestionVectorIdsAre(ElementsAre(
+                    is_suggestion_on_password_field
+                        ? autofill::POPUP_ITEM_ID_PASSWORD_ENTRY
+                        : autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+                    autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+
+    // The suggestion should be filled if the authentication is successful.
+    EXPECT_CALL(*client.mock_driver(),
+                FillSuggestion(test_username_, test_password_));
+
+    // Accepting a suggestion should trigger a call to hide the popup.
+    EXPECT_CALL(
+        autofill_client,
+        HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
+
+    // The authenticator exists and is available.
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+        .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+    EXPECT_CALL(*authenticator_.get(),
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+
+    // Accept the suggestion to start the filing process which tries to
+    // reauthenticate the user if possible.
+    password_autofill_manager_->DidAcceptSuggestion(
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+  }
+}
+
+TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
+  for (bool is_suggestion_on_password_field : {false, true}) {
+    TestPasswordManagerClient client;
+    NiceMock<MockAutofillClient> autofill_client;
+    client.SetBiometricAuthenticator(authenticator_);
+
+    InitializePasswordAutofillManager(&client, &autofill_client);
+
+    SCOPED_TRACE(testing::Message() << "is_suggestion_on_password_field = "
+                                    << is_suggestion_on_password_field);
+    // Show the popup
+    autofill::AutofillClient::PopupOpenArgs open_args;
+    EXPECT_CALL(autofill_client, ShowAutofillPopup)
+        .WillOnce(testing::SaveArg<0>(&open_args));
+
+    int show_suggestion_options =
+        is_suggestion_on_password_field ? autofill::IS_PASSWORD_FIELD : 0;
+    password_autofill_manager_->OnShowPasswordSuggestions(
+        base::i18n::RIGHT_TO_LEFT, std::u16string(), show_suggestion_options,
+        gfx::RectF());
+    ASSERT_GE(open_args.suggestions.size(), 1u);
+    EXPECT_THAT(open_args.suggestions,
+                SuggestionVectorIdsAre(ElementsAre(
+                    is_suggestion_on_password_field
+                        ? autofill::POPUP_ITEM_ID_PASSWORD_ENTRY
+                        : autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+                    autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+
+    // The suggestion should not be filled if the authentication fails.
+    EXPECT_CALL(*client.mock_driver(),
+                FillSuggestion(test_username_, test_password_))
+        .Times(0);
+    // Accepting a suggestion should trigger a call to hide the popup.
+    EXPECT_CALL(
+        autofill_client,
+        HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
+
+    // The authenticator exists and is available.
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+        .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+    EXPECT_CALL(*authenticator_.get(),
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _))
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+
+    // Accept the suggestion to start the filing process which tries to
+    // reauthenticate the user if possible.
+    password_autofill_manager_->DidAcceptSuggestion(
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+  }
+}
+
+TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Show the popup
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, std::u16string(), autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
+  ASSERT_GE(open_args.suggestions.size(), 1u);
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_))
+      .Times(0);
+
+  // The authenticator exists and is available.
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator_.get(),
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+
+  // Accept the suggestion to start the filing process which tries to
+  // reauthenticate the user if possible.
+  password_autofill_manager_->DidAcceptSuggestion(
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+
+  EXPECT_CALL(*authenticator_.get(),
+              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       CancelsOngoingBiometricAuthOnDeleteFillData) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Show the popup
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, std::u16string(), autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
+  ASSERT_GE(open_args.suggestions.size(), 1u);
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_))
+      .Times(0);
+
+  // The authenticator exists and is available.
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator_.get(),
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+
+  // Accept the suggestion to start the filing process which tries to
+  // reauthenticate the user if possible.
+  password_autofill_manager_->DidAcceptSuggestion(
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+
+  EXPECT_CALL(*authenticator_.get(),
+              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+  password_autofill_manager_->DeleteFillData();
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       CancelsOngoingBiometricAuthOnFillDataChange) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Show the popup
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, std::u16string(), autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
+  ASSERT_GE(open_args.suggestions.size(), 1u);
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_))
+      .Times(0);
+
+  // The authenticator exists and is available.
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator_.get(),
+              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _));
+
+  // Accept the suggestion to start the filing process which tries to
+  // reauthenticate the user if possible.
+  password_autofill_manager_->DidAcceptSuggestion(
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1);
+
+  EXPECT_CALL(*authenticator_.get(),
+              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+  password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
 
 }  // namespace password_manager

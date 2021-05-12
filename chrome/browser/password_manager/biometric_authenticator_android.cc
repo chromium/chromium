@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/optional.h"
 #include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
@@ -65,15 +66,24 @@ BiometricsAvailability BiometricAuthenticatorAndroid::CanAuthenticate() {
 }
 
 void BiometricAuthenticatorAndroid::Authenticate(
-    const UiCredential& credential,
+    password_manager::BiometricAuthRequester requester,
     AuthenticateCallback callback) {
+  DCHECK(!callback_);
+  DCHECK(!requester_.has_value());
   callback_ = std::move(callback);
+  requester_ = requester;
   Java_BiometricAuthenticatorBridge_authenticate(AttachCurrentThread(),
                                                  java_object_);
 }
 
-void BiometricAuthenticatorAndroid::Cancel() {
+void BiometricAuthenticatorAndroid::Cancel(
+    password_manager::BiometricAuthRequester requester) {
+  // The object cancelling the auth is not the same as the one to which
+  // the ongoing auth corresponds.
+  if (!requester_.has_value() || requester != requester_.value())
+    return;
   callback_.Reset();
+  requester_ = base::nullopt;
   Java_BiometricAuthenticatorBridge_cancel(AttachCurrentThread(), java_object_);
 }
 
@@ -83,4 +93,5 @@ void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
   if (callback_.is_null())
     return;
   std::move(callback_).Run(success);
+  requester_ = base::nullopt;
 }

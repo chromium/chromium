@@ -68,8 +68,10 @@ TouchToFillController::TouchToFillController(
           password_client_->web_contents())) {}
 
 TouchToFillController::~TouchToFillController() {
-  if (auth_in_progress_) {
-    authenticator_->Cancel();
+  if (authenticator_) {
+    // This is a noop if no auth triggered by Touch To Fill is in progress.
+    authenticator_->Cancel(
+        password_manager::BiometricAuthRequester::kTouchToFill);
   }
 }
 
@@ -116,14 +118,13 @@ void TouchToFillController::OnCredentialSelected(
     FillCredential(credential);
     return;
   }
-
-  auth_in_progress_ = true;
   // `this` notifies the authenticator when it is destructed, resulting in
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
   authenticator_->Authenticate(
-      credential, base::BindOnce(&TouchToFillController::OnReauthCompleted,
-                                 base::Unretained(this), credential));
+      password_manager::BiometricAuthRequester::kTouchToFill,
+      base::BindOnce(&TouchToFillController::OnReauthCompleted,
+                     base::Unretained(this), credential));
 }
 
 void TouchToFillController::OnManagePasswordsSelected() {
@@ -158,12 +159,11 @@ gfx::NativeView TouchToFillController::GetNativeView() {
 }
 
 void TouchToFillController::OnReauthCompleted(UiCredential credential,
-                                              bool authSuccessful) {
-  auth_in_progress_ = false;
+                                              bool auth_successful) {
   if (!driver_)
     return;
 
-  if (!authSuccessful) {
+  if (!auth_successful) {
     std::exchange(driver_, nullptr)
         ->TouchToFillClosed(ShowVirtualKeyboard(true));
     return;

@@ -181,6 +181,16 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       autofill::AutofillClient::PopupOpenArgs reopen_args,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
+  // Called when the biometric reauth that guards password filling completes.
+  // |identifier| identifies the suggestion that was selected for filling.
+  void OnBiometricReauthCompleted(const std::u16string& username_value,
+                                  int identifier,
+                                  bool auth_succeded);
+
+  // Cancels an ongoing biometric re-authentication. Usually, because
+  // the filling scope has changed or because |this| is being destroyed.
+  void CancelBiometricReauthIfOngoing();
+
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   // Contains the favicon for the credentials offered on the current page.
@@ -198,6 +208,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;
+
+  // Used to trigger a reauthentication prompt based on biometrics that needs
+  // to be cleared before the password is filled. Currently only used
+  // on Android.
+  scoped_refptr<BiometricAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/optional.h"
 #include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -20,14 +21,15 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
   password_manager::BiometricsAvailability CanAuthenticate() override;
 
   // Trigges an authentication flow based on biometrics, with the
-  // screen lock as fallback.
-  void Authenticate(const password_manager::UiCredential& credential,
+  // screen lock as fallback. Note: this only supports one authentication
+  // request at a time.
+  void Authenticate(password_manager::BiometricAuthRequester requester,
                     AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
-  void Cancel() override;
+  void Cancel(password_manager::BiometricAuthRequester requester) override;
 
   // Called by Java when the authentication completes.
   void OnAuthenticationCompleted(JNIEnv* env, jboolean success);
@@ -37,6 +39,10 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
 
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
+
+  // Enum value representing the filling surface that has requested the current
+  // authentication.
+  base::Optional<password_manager::BiometricAuthRequester> requester_;
 
   // This object is an instance of BiometricAuthenticatorBridge, i.e. the Java
   // counterpart to this class.
