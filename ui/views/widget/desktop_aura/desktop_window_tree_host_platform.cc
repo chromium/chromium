@@ -583,7 +583,10 @@ void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen) {
   if (IsFullscreen() == fullscreen)
     return;
 
+  auto weak_ptr = GetWeakPtr();
   platform_window()->ToggleFullscreen();
+  if (!weak_ptr)
+    return;
 
   // The state must change synchronously to let media react on fullscreen
   // changes.
