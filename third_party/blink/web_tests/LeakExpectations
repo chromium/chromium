@@ -206,6 +206,9 @@ crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-
 # Sheriff 2021-05-05
 crbug.com/1205815 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/snippet-module.js [ Pass Failure ]
 
+# Sheriff 2021-05-12
+crbug.com/1208331 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/shadow/reveal-shadow-dom-node.js [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
