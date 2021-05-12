@@ -19,6 +19,7 @@ constexpr int kTicksPerSecond = 10000000;
 // in the output.
 struct Result {
   ULONG idle_wakeups_per_sec;
+  DWORD handle_count;
   double cpu_usage_percent;
   double cpu_usage_seconds;
   ULONGLONG working_set;
@@ -27,9 +28,12 @@ struct Result {
 
 typedef std::vector<Result> ResultVector;
 
-// The following 4 functions are used for sorting of ResultVector.
+// The following functions are used for sorting of ResultVector.
 ULONG GetIdleWakeupsPerSec(const Result& r) {
   return r.idle_wakeups_per_sec;
+}
+DWORD GetHandleCount(const Result& r) {
+  return r.handle_count;
 }
 double GetCpuUsagePercent(const Result& r) {
   return r.cpu_usage_percent;
@@ -211,6 +215,7 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
   ULONG idle_wakeups_delta = 0;
   ULONGLONG cpu_usage_delta = 0;
   ULONGLONG total_working_set = 0;
+  DWORD total_handle_count = 0;
 
   ProcessDataMap::const_iterator prev_it = prev_snapshot.processes.begin();
 
@@ -253,6 +258,7 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
 
     cpu_usage_delta += process_data.cpu_time - prev_process_cpu_time;
     total_working_set += process_data.working_set / 1024;
+    total_handle_count += process_data.handle_count;
   }
 
   double time_delta = snapshot.timestamp - prev_snapshot.timestamp;
@@ -263,6 +269,7 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
       (double)cpu_usage_delta * 100 / (time_delta * kTicksPerSecond);
   result.cpu_usage_seconds = (double)cpu_usage_delta / kTicksPerSecond;
   result.working_set = total_working_set;
+  result.handle_count = total_handle_count;
 
   return result;
 }
@@ -284,17 +291,19 @@ const DWORD sleep_time_sec = 2;
 void PrintHeader() {
   printf(
       "------------------------------------------------------------------------"
-      "----------\n");
+      "--------------------\n");
   printf(
       "                                                            Private\n"
       "                       Context switches/sec    CPU usage    Working set "
-      "     Power\n");
+      "     Power   Handles\n");
   printf(
       "------------------------------------------------------------------------"
-      "----------\n");
+      "--------------------\n");
 }
 
-#define RESULT_FORMAT_STRING "    %20lu    %8.2f%c    %7.2f MiB    %5.2f W\n"
+#define RESULT_FORMAT_STRING          \
+  "    %20lu    %8.2f%c    %7.2f MiB" \
+  "    %5.2f W   %7u\n"
 
 int wmain(int argc, wchar_t* argv[]) {
   ctrl_c_pressed = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -376,7 +385,8 @@ int wmain(int argc, wchar_t* argv[]) {
              result.idle_wakeups_per_sec,
              cpu_usage_in_seconds ? result.cpu_usage_seconds
                                   : result.cpu_usage_percent,
-             cpu_usage_unit, result.working_set / 1024.0, result.power);
+             cpu_usage_unit, result.working_set / 1024.0, result.power,
+             result.handle_count);
     }
 
     if (number_of_processes > 0) {
@@ -402,6 +412,7 @@ int wmain(int argc, wchar_t* argv[]) {
   average_result.cpu_usage_seconds = GetAverage(results, GetCpuUsageSeconds);
   average_result.working_set = GetAverage(results, GetWorkingSet);
   average_result.power = GetAverage(results, GetPower);
+  average_result.handle_count = GetAverage(results, GetHandleCount);
 
   const size_t cumulative_processes_destroyed = initial_number_of_processes +
                                                 cumulative_processes_created -
@@ -428,7 +439,7 @@ int wmain(int argc, wchar_t* argv[]) {
          cpu_usage_in_seconds ? average_result.cpu_usage_seconds
                               : average_result.cpu_usage_percent,
          cpu_usage_unit, average_result.working_set / 1024.0,
-         average_result.power);
+         average_result.power, average_result.handle_count);
 
   Result median_result;
   median_result.idle_wakeups_per_sec =
@@ -437,13 +448,14 @@ int wmain(int argc, wchar_t* argv[]) {
   median_result.cpu_usage_seconds = GetMedian(&results, GetCpuUsageSeconds);
   median_result.working_set = GetMedian(&results, GetWorkingSet);
   median_result.power = GetMedian(&results, GetPower);
+  median_result.handle_count = GetMedian(&results, GetHandleCount);
 
   printf("             Median" RESULT_FORMAT_STRING,
          median_result.idle_wakeups_per_sec,
          cpu_usage_in_seconds ? median_result.cpu_usage_seconds
                               : median_result.cpu_usage_percent,
          cpu_usage_unit, median_result.working_set / 1024.0,
-         median_result.power);
+         median_result.power, median_result.handle_count);
 
   if (cpu_usage_in_seconds) {
     printf("                Sum    %32.2f%c\n", cumulative_cpu_usage_seconds,

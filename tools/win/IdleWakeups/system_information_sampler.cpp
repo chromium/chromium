@@ -240,6 +240,7 @@ ProcessData GetProcessData(const SYSTEM_PROCESS_INFORMATION* const pi) {
   ProcessData process_data;
   process_data.cpu_time = pi->KernelTime + pi->UserTime;
   process_data.working_set = pi->WorkingSetPrivateSize;
+  process_data.handle_count = pi->HandleCount;
 
   // Iterate over threads and store each thread's ID and number of context
   // switches.

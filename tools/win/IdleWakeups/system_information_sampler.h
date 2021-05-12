@@ -28,6 +28,7 @@ typedef std::vector<ThreadData> ThreadsVector;
 struct ProcessData {
   ULONGLONG cpu_time;
   ULONGLONG working_set;
+  DWORD handle_count;
   ThreadsVector threads;
 };
 
