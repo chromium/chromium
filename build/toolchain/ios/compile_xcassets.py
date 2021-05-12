@@ -209,7 +209,7 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)
-    stdout, _ = process.communicate()
+    stdout = process.communicate()[0].decode('utf-8')
 
     # If the invocation of `actool` failed, copy all the compiler output to
     # the standard error stream and exit. See https://crbug.com/1205775 for
@@ -224,7 +224,7 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
     # output is not empty after filtering, then report the compilation as a
     # failure (as some version of `actool` report error to stdout, yet exit
     # with an return code of zero).
-    stdout = FilterCompilerOutput(stdout.decode('UTF-8'), relative_paths)
+    stdout = FilterCompilerOutput(stdout, relative_paths)
     if stdout:
       sys.stderr.write(stdout)
       sys.exit(1)
