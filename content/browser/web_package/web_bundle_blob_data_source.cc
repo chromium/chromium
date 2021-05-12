@@ -90,13 +90,14 @@ void OnCalculateSizeComplete(
   auto* raw_blob_reader = blob_reader.get();
   auto io_buf =
       base::MakeRefCounted<net::IOBufferWithSize>(static_cast<size_t>(length));
-  auto on_read_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &OnReadComplete, std::move(callback), std::move(blob_reader), io_buf));
   int bytes_read;
-  storage::BlobReader::Status read_status = raw_blob_reader->Read(
-      io_buf.get(), io_buf->size(), &bytes_read, on_read_callback);
+  storage::BlobReader::Status read_status =
+      raw_blob_reader->Read(io_buf.get(), io_buf->size(), &bytes_read,
+                            std::move(split_callback.first));
   if (read_status != storage::BlobReader::Status::IO_PENDING) {
-    on_read_callback.Run(bytes_read);
+    std::move(split_callback.second).Run(bytes_read);
   }
 }
 
@@ -339,14 +340,15 @@ void WebBundleBlobDataSource::BlobDataSourceCore::OnBlobReadyForRead(
   }
   auto blob_reader = blob_->CreateReader();
   auto* raw_blob_reader = blob_reader.get();
-  auto on_calculate_complete = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&OnCalculateSizeComplete, offset, length,
                      std::move(callback), std::move(blob_reader)));
-  auto status = raw_blob_reader->CalculateSize(on_calculate_complete);
+  auto status = raw_blob_reader->CalculateSize(std::move(split_callback.first));
   if (status != storage::BlobReader::Status::IO_PENDING) {
-    on_calculate_complete.Run(status == storage::BlobReader::Status::NET_ERROR
-                                  ? raw_blob_reader->net_error()
-                                  : net::OK);
+    std::move(split_callback.second)
+        .Run(status == storage::BlobReader::Status::NET_ERROR
+                 ? raw_blob_reader->net_error()
+                 : net::OK);
   }
 }
 
