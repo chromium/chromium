@@ -62,7 +62,7 @@ instances will fight over the terminal). To auto-start the renderers in the
 debugger, send the "run" command to the debugger:
 
     chrome --no-sandbox --renderer-cmd-prefix='xterm -title renderer -e gdb \
-        -ex run --args
+        -ex run --args'
 
 If you're using Emacs and `M-x gdb`, you can do
 
