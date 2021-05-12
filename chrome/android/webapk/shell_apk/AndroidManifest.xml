@@ -134,7 +134,7 @@
           {{/is_file_upload}}
         </activity-alias>
         {{/share_template}}
-        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="[[{shell_apk_version}]]" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="[[ shell_apk_version ]]" />
         {{#bound_webapk}}
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHost" android:value="{{{runtime_host}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHostApplicationName" android:value="{{{runtime_host_application_name}}}" />
@@ -167,7 +167,7 @@
 
         <meta-data android:name="org.chromium.webapk.shell_apk.webManifestUrl" android:value="{{{web_manifest_url}}}" />
 
-        <meta-data android:name="org.chromium.webapk.shell_apk.isNewStyleWebApk" android:value="[[{use_new_splash}]]" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.isNewStyleWebApk" android:value="[[ use_new_splash ]]" />
         <meta-data android:name="org.chromium.webapk.shell_apk.enableSiteSettingsShortcut" android:value="{{{enable_site_settings_shortcut}}}" />
         <service
             android:name="org.chromium.webapk.shell_apk.WebApkServiceFactory"
