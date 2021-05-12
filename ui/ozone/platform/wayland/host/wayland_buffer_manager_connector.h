@@ -29,7 +29,7 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
   void OnGpuServiceLaunched(
       int host_id,
       scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 
@@ -50,13 +50,13 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
   GpuHostBindInterfaceCallback binder_;
   GpuHostTerminateCallback terminate_callback_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> process_host_runner_;
 
   // Owned by the ui thread.
   int host_id_ = -1;
 
   THREAD_CHECKER(ui_thread_checker_);
-  THREAD_CHECKER(io_thread_checker_);
+  THREAD_CHECKER(process_thread_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(WaylandBufferManagerConnector);
 };

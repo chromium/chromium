@@ -29,7 +29,7 @@ void DrmDeviceConnector::OnChannelDestroyed(int host_id) {
 void DrmDeviceConnector::OnGpuServiceLaunched(
     int host_id,
     scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
     GpuHostBindInterfaceCallback binder,
     GpuHostTerminateCallback terminate_callback) {
   // We need to preserve |binder| to let us bind interfaces later.
@@ -39,8 +39,8 @@ void DrmDeviceConnector::OnGpuServiceLaunched(
   mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device;
   BindInterfaceDrmDevice(&drm_device);
 
-  host_drm_device_->OnGpuServiceLaunchedOnIOThread(std::move(drm_device),
-                                                   ui_runner);
+  host_drm_device_->OnGpuServiceLaunchedOnProcessThread(std::move(drm_device),
+                                                        ui_runner);
 }
 
 void DrmDeviceConnector::BindInterfaceDrmDevice(
@@ -51,7 +51,7 @@ void DrmDeviceConnector::BindInterfaceDrmDevice(
 
 void DrmDeviceConnector::ConnectSingleThreaded(
     mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device) {
-  host_drm_device_->OnGpuServiceLaunchedOnIOThread(
+  host_drm_device_->OnGpuServiceLaunchedOnProcessThread(
       std::move(drm_device), base::ThreadTaskRunnerHandle::Get());
 }
 

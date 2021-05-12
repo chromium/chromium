@@ -38,7 +38,7 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
 
   void SetDisplayManager(DrmDisplayHostManager* display_manager);
 
-  void OnGpuServiceLaunchedOnIOThread(
+  void OnGpuServiceLaunchedOnProcessThread(
       mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device,
       scoped_refptr<base::SingleThreadTaskRunner> ui_runner);
 

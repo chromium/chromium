@@ -39,11 +39,12 @@ class COMPONENT_EXPORT(OZONE_BASE) GpuPlatformSupportHost {
   virtual void OnChannelDestroyed(int host_id) = 0;
 
   // Called when the GPU service is launched.
-  // Called from the browser IO thread.
+  // Called from the browser IO thread if ProcessHostOnUI is disabled, otherwise
+  // called on the browser UI thread.
   virtual void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> host_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) = 0;
 };

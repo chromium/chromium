@@ -80,17 +80,20 @@ void ScenicGpuHost::OnChannelDestroyed(int host_id) {}
 void ScenicGpuHost::OnGpuServiceLaunched(
     int host_id,
     scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> process_host_runner,
     GpuHostBindInterfaceCallback binder,
     GpuHostTerminateCallback terminate_callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-
   mojo::PendingRemote<mojom::ScenicGpuService> scenic_gpu_service;
   BindInterface(scenic_gpu_service.InitWithNewPipeAndPassReceiver(), binder);
-  ui_thread_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ScenicGpuHost::OnGpuServiceLaunchedOnUI,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(scenic_gpu_service)));
+  if (ui_runner->BelongsToCurrentThread()) {
+    OnGpuServiceLaunchedOnUI(std::move(scenic_gpu_service));
+  } else {
+    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+    ui_thread_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ScenicGpuHost::OnGpuServiceLaunchedOnUI,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(scenic_gpu_service)));
+  }
 }
 
 void ScenicGpuHost::OnGpuServiceLaunchedOnUI(
