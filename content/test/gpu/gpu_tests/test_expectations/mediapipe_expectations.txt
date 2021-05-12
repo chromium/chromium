@@ -64,5 +64,6 @@ crbug.com/1206463 [ chromeos chromeos-board-kevin ] MediaPipe_mediapipe_face_mes
 crbug.com/1206463 [ linux display-server-wayland intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ linux display-server-x intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ linux display-server-x nvidia ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ linux display-server-x amd ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ win nvidia ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ mac apple-apple-m1 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
