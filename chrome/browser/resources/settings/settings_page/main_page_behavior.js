@@ -127,6 +127,12 @@ import {MinimumRoutes, Route, Router} from '../router.js';
      * @private
      */
     inSearchModeChanged_(current, previous) {
+      if (loadTimeData.getBoolean('enableLandingPageRedesign')) {
+        // No need to deal with overscroll, as only one section is shown at any
+        // given time.
+        return;
+      }
+
       // Ignore 1st occurrence which happens while the element is being
       // initialized.
       if (previous === undefined) {

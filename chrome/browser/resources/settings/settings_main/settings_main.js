@@ -107,6 +107,7 @@ Polymer({
 
   /** @private */
   overscrollChanged_() {
+    assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
     if (!this.overscroll_ && this.boundScroll_) {
       this.offsetParent.removeEventListener('scroll', this.boundScroll_);
       window.removeEventListener('resize', this.boundScroll_);
@@ -179,6 +180,8 @@ Polymer({
    * @private
    */
   onShowingSection_(e) {
+    assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
+
     const section = e.detail;
     // Calculate the height that the overscroll padding should be set to, so
     // that the given section is displayed at the top of the viewport.
