@@ -451,7 +451,7 @@ TEST(ChannelTest, PeerStressTest) {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread peer_thread("peer_b_io");
-  peer_thread.StartWithOptions(thread_options);
+  peer_thread.StartWithOptions(std::move(thread_options));
 
   // Create two channels that run on separate threads.
   PlatformChannel platform_channel;
@@ -606,7 +606,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread peer_thread("channel_b_io");
-  peer_thread.StartWithOptions(thread_options);
+  peer_thread.StartWithOptions(std::move(thread_options));
 
   // Create a PlatformChannel send/receive right pair.
   PlatformChannel platform_channel;

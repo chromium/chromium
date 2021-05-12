@@ -32,7 +32,7 @@ class IPCSupport {
  public:
   IPCSupport() : ipc_thread_("Mojo IPC") {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    ipc_thread_.StartWithOptions(options);
+    ipc_thread_.StartWithOptions(std::move(options));
     mojo::core::Core::Get()->SetIOTaskRunner(ipc_thread_.task_runner());
   }
 
