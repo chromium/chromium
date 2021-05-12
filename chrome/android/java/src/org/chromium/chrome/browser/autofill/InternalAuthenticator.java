@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * setEffectiveOrigin() first.
  */
 public class InternalAuthenticator {
-    private final Long mNativeInternalAuthenticatorAndroid;
+    private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
     private InternalAuthenticator(
@@ -42,6 +42,11 @@ public class InternalAuthenticator {
     }
 
     @CalledByNative
+    public void clearNativePtr() {
+        mNativeInternalAuthenticatorAndroid = 0;
+    }
+
+    @CalledByNative
     public void setEffectiveOrigin(Origin origin) {
         mAuthenticator.setEffectiveOrigin(origin);
     }
@@ -54,10 +59,13 @@ public class InternalAuthenticator {
     public void makeCredential(ByteBuffer optionsByteBuffer) {
         mAuthenticator.makeCredential(
                 PublicKeyCredentialCreationOptions.deserialize(optionsByteBuffer),
-                (status, response)
-                        -> InternalAuthenticatorJni.get().invokeMakeCredentialResponse(
+                (status, response) -> {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
+                        InternalAuthenticatorJni.get().invokeMakeCredentialResponse(
                                 mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize()));
+                                response == null ? null : response.serialize());
+                    }
+                });
     }
 
     /**
@@ -68,10 +76,13 @@ public class InternalAuthenticator {
     public void getAssertion(ByteBuffer optionsByteBuffer) {
         mAuthenticator.getAssertion(
                 PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
-                (status, response)
-                        -> InternalAuthenticatorJni.get().invokeGetAssertionResponse(
+                (status, response) -> {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
+                        InternalAuthenticatorJni.get().invokeGetAssertionResponse(
                                 mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize()));
+                                response == null ? null : response.serialize());
+                    }
+                });
     }
 
     /**
@@ -85,17 +96,21 @@ public class InternalAuthenticator {
     @CalledByNative
     public void isUserVerifyingPlatformAuthenticatorAvailable() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            InternalAuthenticatorJni.get()
-                    .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                            mNativeInternalAuthenticatorAndroid, false);
+            if (mNativeInternalAuthenticatorAndroid != 0) {
+                InternalAuthenticatorJni.get()
+                        .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
+                                mNativeInternalAuthenticatorAndroid, false);
+            }
             return;
         }
 
-        mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable(
-                (isUVPAA)
-                        -> InternalAuthenticatorJni.get()
-                                   .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                           mNativeInternalAuthenticatorAndroid, isUVPAA));
+        mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable((isUVPAA) -> {
+            if (mNativeInternalAuthenticatorAndroid != 0) {
+                InternalAuthenticatorJni.get()
+                        .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
+                                mNativeInternalAuthenticatorAndroid, isUVPAA);
+            }
+        });
     }
 
     @CalledByNative
