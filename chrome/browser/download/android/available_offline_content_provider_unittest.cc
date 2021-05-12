@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -148,7 +147,7 @@ class AvailableOfflineContentTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_ =
       std::make_unique<base::test::ScopedFeatureList>();
-  CheckedPtr<OfflineContentAggregator> aggregator_;
+  OfflineContentAggregator* aggregator_;
   offline_items_collection::MockOfflineContentProvider content_provider_;
   AvailableOfflineContentProvider provider_{&profile_};
 };

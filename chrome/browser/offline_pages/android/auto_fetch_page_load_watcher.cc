@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
@@ -101,7 +100,7 @@ class AutoFetchPageLoadWatcher::NavigationObserver
  private:
   friend class content::WebContentsUserData<
       AutoFetchPageLoadWatcher::NavigationObserver>;
-  CheckedPtr<AutoFetchPageLoadWatcher> page_load_watcher_;
+  AutoFetchPageLoadWatcher* page_load_watcher_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
   WEB_CONTENTS_USER_DATA_KEY_DECL();

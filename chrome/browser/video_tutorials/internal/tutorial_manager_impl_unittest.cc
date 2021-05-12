@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/video_tutorials/prefs.h"
@@ -169,7 +168,7 @@ class TutorialManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TutorialManager> manager_;
-  CheckedPtr<TestStore> tutorial_store_;
+  TestStore* tutorial_store_;
   std::vector<Tutorial> last_results_;
   base::Optional<Tutorial> last_get_tutorial_result_;
 };

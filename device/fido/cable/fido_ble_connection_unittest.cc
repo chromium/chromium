@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -137,11 +136,11 @@ class FidoBleConnectionTest : public ::testing::Test {
 
     ON_CALL(*fido_device_, GetGattServices())
         .WillByDefault(
-            Invoke(fido_device_.get(), &MockBluetoothDevice::GetMockServices));
+            Invoke(fido_device_, &MockBluetoothDevice::GetMockServices));
 
     ON_CALL(*fido_device_, GetGattService(_))
         .WillByDefault(
-            Invoke(fido_device_.get(), &MockBluetoothDevice::GetMockService));
+            Invoke(fido_device_, &MockBluetoothDevice::GetMockService));
     AddFidoService();
   }
 
@@ -150,8 +149,7 @@ class FidoBleConnectionTest : public ::testing::Test {
         .WillByDefault(Invoke([this, &device_address](auto& callback, auto&&) {
           connection_ =
               new NiceMockBluetoothGattConnection(adapter_, device_address);
-          std::move(callback).Run(
-              std::move(base::WrapUnique(connection_.get())));
+          std::move(callback).Run(std::move(base::WrapUnique(connection_)));
         }));
 
     ON_CALL(*fido_device_, IsGattServicesDiscoveryComplete)
@@ -183,7 +181,7 @@ class FidoBleConnectionTest : public ::testing::Test {
                    BluetoothRemoteGattCharacteristic::ErrorCallback&) {
               notify_session_ = new NiceMockBluetoothGattNotifySession(
                   fido_status_->GetWeakPtr());
-              std::move(callback).Run(base::WrapUnique(notify_session_.get()));
+              std::move(callback).Run(base::WrapUnique(notify_session_));
             }));
   }
 
@@ -400,17 +398,17 @@ class FidoBleConnectionTest : public ::testing::Test {
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<NiceMockBluetoothAdapter>();
 
-  CheckedPtr<MockBluetoothDevice> fido_device_;
-  CheckedPtr<MockBluetoothGattService> fido_service_;
+  MockBluetoothDevice* fido_device_;
+  MockBluetoothGattService* fido_service_;
 
-  CheckedPtr<MockBluetoothGattCharacteristic> fido_control_point_;
-  CheckedPtr<MockBluetoothGattCharacteristic> fido_status_;
-  CheckedPtr<MockBluetoothGattCharacteristic> fido_control_point_length_;
-  CheckedPtr<MockBluetoothGattCharacteristic> fido_service_revision_;
-  CheckedPtr<MockBluetoothGattCharacteristic> fido_service_revision_bitfield_;
+  MockBluetoothGattCharacteristic* fido_control_point_;
+  MockBluetoothGattCharacteristic* fido_status_;
+  MockBluetoothGattCharacteristic* fido_control_point_length_;
+  MockBluetoothGattCharacteristic* fido_service_revision_;
+  MockBluetoothGattCharacteristic* fido_service_revision_bitfield_;
 
-  CheckedPtr<MockBluetoothGattConnection> connection_;
-  CheckedPtr<MockBluetoothGattNotifySession> notify_session_;
+  MockBluetoothGattConnection* connection_;
+  MockBluetoothGattNotifySession* notify_session_;
 };
 
 TEST_F(FidoBleConnectionTest, Address) {

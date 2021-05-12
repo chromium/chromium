@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
@@ -69,15 +68,15 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     ~InitParams();
     InitParams& operator=(InitParams&& other);
 
-    CheckedPtr<SharedBitmapManager> shared_bitmap_manager = nullptr;
+    SharedBitmapManager* shared_bitmap_manager = nullptr;
     base::Optional<uint32_t> activation_deadline_in_frames =
         kDefaultActivationDeadlineInFrames;
-    CheckedPtr<OutputSurfaceProvider> output_surface_provider = nullptr;
+    OutputSurfaceProvider* output_surface_provider = nullptr;
     uint32_t restart_id = BeginFrameSource::kNotRestartableId;
     bool run_all_compositor_stages_before_draw = false;
     bool log_capture_pipeline_in_webrtc = false;
     DebugRendererSettings debug_renderer_settings;
-    CheckedPtr<gfx::RenderingPipeline> gpu_pipeline = nullptr;
+    gfx::RenderingPipeline* gpu_pipeline = nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
   // TODO(kylechar): Cleanup tests and remove this constructor.
@@ -261,7 +260,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     FrameSinkSourceMapping& operator=(FrameSinkSourceMapping&& other);
 
     // The currently assigned begin frame source for this client.
-    CheckedPtr<BeginFrameSource> source = nullptr;
+    BeginFrameSource* source = nullptr;
     // This represents a dag of parent -> children mapping.
     base::flat_set<FrameSinkId> children;
 
@@ -291,10 +290,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // SharedBitmapManager for the viz display service for receiving software
   // resources in CompositorFrameSinks.
-  const CheckedPtr<SharedBitmapManager> shared_bitmap_manager_;
+  SharedBitmapManager* const shared_bitmap_manager_;
 
   // Provides an output surface for CreateRootCompositorFrameSink().
-  const CheckedPtr<OutputSurfaceProvider> output_surface_provider_;
+  OutputSurfaceProvider* const output_surface_provider_;
 
   SurfaceManager surface_manager_;
 
@@ -362,14 +361,14 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   //     remote client and |ui_task_runner_| will be nullptr, and calls to
   //     OnFrameTokenChanged() will be directly called (without PostTask) on
   //     |client_|. Used for some unit tests.
-  CheckedPtr<mojom::FrameSinkManagerClient> client_ = nullptr;
+  mojom::FrameSinkManagerClient* client_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_ = nullptr;
   mojo::Remote<mojom::FrameSinkManagerClient> client_remote_;
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
 
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
 
-  CheckedPtr<gfx::RenderingPipeline> gpu_pipeline_ = nullptr;
+  gfx::RenderingPipeline* gpu_pipeline_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FrameSinkManagerImpl);
 };

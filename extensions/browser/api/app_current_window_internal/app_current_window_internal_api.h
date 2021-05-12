@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_APP_CURRENT_WINDOW_INTERNAL_APP_CURRENT_WINDOW_INTERNAL_API_H_
 #define EXTENSIONS_BROWSER_API_APP_CURRENT_WINDOW_INTERNAL_APP_CURRENT_WINDOW_INTERNAL_API_H_
 
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -23,7 +22,7 @@ class AppCurrentWindowInternalExtensionFunction : public ExtensionFunction {
   bool PreRunValidation(std::string* error) override;
 
   // The current AppWindow.
-  CheckedPtr<AppWindow> window_ = nullptr;
+  AppWindow* window_ = nullptr;
 };
 
 class AppCurrentWindowInternalFocusFunction

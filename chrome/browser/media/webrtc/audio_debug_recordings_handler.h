@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 
@@ -83,7 +82,7 @@ class AudioDebugRecordingsHandler
                                   const base::FilePath& log_directory);
 
   // The browser context associated with our renderer process.
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // This counter allows saving each debug recording in separate files.
   uint64_t current_audio_debug_recordings_id_;

@@ -7,7 +7,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_macros.h"
@@ -47,7 +46,7 @@ class PersistentHistogramAllocatorTest : public testing::Test {
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
-  CheckedPtr<PersistentMemoryAllocator> allocator_ = nullptr;
+  PersistentMemoryAllocator* allocator_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PersistentHistogramAllocatorTest);

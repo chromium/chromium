@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -56,7 +55,7 @@ class AwContentsClientBridgeTest : public Test {
   scoped_refptr<X509Certificate> selected_cert_;
   scoped_refptr<SSLPrivateKey> selected_key_;
   int cert_selected_callbacks_;
-  CheckedPtr<JNIEnv> env_;
+  JNIEnv* env_;
 };
 
 class TestClientCertificateDelegate
@@ -73,7 +72,7 @@ class TestClientCertificateDelegate
   }
 
  private:
-  CheckedPtr<AwContentsClientBridgeTest> test_;
+  AwContentsClientBridgeTest* test_;
 
   DISALLOW_COPY_AND_ASSIGN(TestClientCertificateDelegate);
 };

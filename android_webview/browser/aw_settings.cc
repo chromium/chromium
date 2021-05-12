@@ -15,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"
@@ -63,11 +62,11 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwSettingsUserData* data = static_cast<AwSettingsUserData*>(
         web_contents->GetUserData(kAwSettingsUserDataKey));
-    return data ? data->settings_.get() : NULL;
+    return data ? data->settings_ : NULL;
   }
 
  private:
-  CheckedPtr<AwSettings> settings_;
+  AwSettings* settings_;
 };
 
 AwSettings::AwSettings(JNIEnv* env,

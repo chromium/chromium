@@ -16,7 +16,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "courgette/assembly_program.h"
@@ -42,7 +41,7 @@ class NullAdjustmentMethod : public AdjustmentMethod {
 //
 class LabelInfo {
  public:
-  CheckedPtr<Label> label_;  // The label that this info a surrogate for.
+  Label* label_;              // The label that this info a surrogate for.
 
   // Information used only in debugging messages.
   uint32_t is_model_ : 1;      // Is the label in the model?
@@ -50,13 +49,12 @@ class LabelInfo {
 
   uint32_t refs_;  // Number of times this Label is referenced.
 
-  CheckedPtr<LabelInfo>
-      assignment_;  // Label from other program corresponding to this.
+  LabelInfo* assignment_;     // Label from other program corresponding to this.
 
   // LabelInfos are in a doubly linked list ordered by address (label_->rva_) so
   // we can quickly find Labels adjacent in address order.
-  CheckedPtr<LabelInfo> next_addr_;  // Label(Info) at next highest address.
-  CheckedPtr<LabelInfo> prev_addr_;  // Label(Info) at next lowest address.
+  LabelInfo* next_addr_;      // Label(Info) at next highest address.
+  LabelInfo* prev_addr_;      // Label(Info) at next lowest address.
 
   std::vector<uint32_t> positions_;  // Offsets into the trace of references.
 
@@ -145,8 +143,8 @@ struct Node {
         in_queue_(false) {
     length_ = 1 + (prev_ ? prev_->length_ : 0);
   }
-  CheckedPtr<LabelInfo> in_edge_;  //
-  CheckedPtr<Node> prev_;          // Node at shorter length.
+  LabelInfo* in_edge_;  //
+  Node* prev_;          // Node at shorter length.
   int count_;           // Frequency of this path in Trie.
   int length_;
   typedef std::map<LabelInfo*, Node*> Edges;
@@ -557,8 +555,8 @@ class AssignmentProblem {
 
   const Trace& m_trace_;
   const Trace& p_trace_;
-  CheckedPtr<Node> m_root_;
-  CheckedPtr<Node> p_root_;
+  Node* m_root_;
+  Node* p_root_;
 
   NodeQueue worklist_;
   NodeQueue unsolved_;
@@ -648,10 +646,8 @@ class GraphAdjuster : public AdjustmentMethod {
     return &slot;
   }
 
-  CheckedPtr<AssemblyProgram>
-      prog_;  // Program to be adjusted, owned by caller.
-  CheckedPtr<const AssemblyProgram>
-      model_;  // Program to be mimicked, owned by caller.
+  AssemblyProgram* prog_;         // Program to be adjusted, owned by caller.
+  const AssemblyProgram* model_;  // Program to be mimicked, owned by caller.
 
   Trace model_abs32_;
   Trace model_rel32_;

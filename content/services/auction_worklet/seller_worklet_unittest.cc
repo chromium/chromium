@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -255,7 +254,7 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
     const char* name;
     bool is_json;
     // Pointer to location at which the string can be modified.
-    CheckedPtr<std::string> value_ptr;
+    std::string* value_ptr;
   } kStringTestCases[] = {
       {
           "adMetadata",
@@ -410,7 +409,7 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
     const char* name;
     bool is_json;
     // Pointer to location at which the string can be modified.
-    CheckedPtr<std::string> value_ptr;
+    std::string* value_ptr;
   } kStringTestCases[] = {
       {
           "browserSignals.topWindowHostname",

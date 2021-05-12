@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -119,9 +118,9 @@ class DevicePermissionsPrompt {
    private:
     friend class base::RefCounted<Prompt>;
 
-    CheckedPtr<const extensions::Extension> extension_ = nullptr;
-    CheckedPtr<Observer> observer_ = nullptr;
-    CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+    const extensions::Extension* extension_ = nullptr;
+    Observer* observer_ = nullptr;
+    content::BrowserContext* browser_context_ = nullptr;
     bool multiple_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(Prompt);
@@ -162,7 +161,7 @@ class DevicePermissionsPrompt {
 
  private:
   // Parent web contents of the device permissions UI dialog.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Parameters available to the UI implementation.
   scoped_refptr<Prompt> prompt_;

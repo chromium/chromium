@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -694,7 +693,7 @@ class PrivetLocalPrintTest : public PrivetHTTPTest {
  protected:
   std::unique_ptr<PrivetLocalPrintOperation> local_print_operation_;
   StrictMock<MockLocalPrintDelegate> local_print_delegate_;
-  CheckedPtr<FakePwgRasterConverter> pwg_converter_;
+  FakePwgRasterConverter* pwg_converter_;
   PrivetLocalPrintOperationImpl::RunTasksImmediatelyForTesting
       run_tasks_immediately_for_local_print_;
 };

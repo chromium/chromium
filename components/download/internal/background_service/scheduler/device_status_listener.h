@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
 #include "components/download/internal/background_service/scheduler/device_status.h"
@@ -58,7 +57,7 @@ class DeviceStatusListener : public NetworkStatusListener::Observer,
   DeviceStatus status_;
 
   // The observer that listens to device status change events.
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   // If device status listener is started.
   bool listening_;

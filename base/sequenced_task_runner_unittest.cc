@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -39,7 +38,7 @@ class FlagOnDelete {
       EXPECT_TRUE(expected_deletion_sequence_->RunsTasksInCurrentSequence());
   }
 
-  CheckedPtr<bool> deleted_;
+  bool* deleted_;
   const scoped_refptr<SequencedTaskRunner> expected_deletion_sequence_;
 };
 

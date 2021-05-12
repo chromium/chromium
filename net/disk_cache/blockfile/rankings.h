@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "net/disk_cache/blockfile/storage_block.h"
@@ -89,7 +88,7 @@ class Rankings {
     }
 
    private:
-    CheckedPtr<Rankings> rankings_;
+    Rankings* rankings_;
     DISALLOW_COPY_AND_ASSIGN(ScopedRankingsBlock);
   };
 
@@ -101,7 +100,7 @@ class Rankings {
 
     List list;                     // Which entry was returned to the user.
     CacheRankingsBlock* nodes[3];  // Nodes on the first three lists.
-    CheckedPtr<Rankings> my_rankings;
+    Rankings* my_rankings;
   };
 
   Rankings();
@@ -205,8 +204,8 @@ class Rankings {
   bool count_lists_;
   Addr heads_[LAST_ELEMENT];
   Addr tails_[LAST_ELEMENT];
-  CheckedPtr<BackendImpl> backend_;
-  CheckedPtr<LruData> control_data_;  // Data related to the LRU lists.
+  BackendImpl* backend_;
+  LruData* control_data_;  // Data related to the LRU lists.
   IteratorList iterators_;
 
   DISALLOW_COPY_AND_ASSIGN(Rankings);

@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -135,7 +134,7 @@ class PrintSystemWatcherWin : public base::win::ObjectWatcher::Delegate {
   printing::ScopedPrinterHandle printer_;  // The printer being watched
   // Returned by FindFirstPrinterChangeNotifier.
   printing::ScopedPrinterChangeHandle printer_change_;
-  CheckedPtr<Delegate> delegate_ = nullptr;  // Delegate to notify
+  Delegate* delegate_ = nullptr;  // Delegate to notify
   std::string printer_info_;      // For crash reporting.
 };
 
@@ -170,7 +169,7 @@ class PrintServerWatcherWin
   ~PrintServerWatcherWin() override {}
 
  private:
-  CheckedPtr<PrintSystem::PrintServerWatcher::Delegate> delegate_ = nullptr;
+  PrintSystem::PrintServerWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintServerWatcherWin);
@@ -219,7 +218,7 @@ class PrinterWatcherWin
 
  private:
   const std::string printer_name_;
-  CheckedPtr<PrintSystem::PrinterWatcher::Delegate> delegate_ = nullptr;
+  PrintSystem::PrinterWatcher::Delegate* delegate_ = nullptr;
   PrintSystemWatcherWin watcher_;
 
   DISALLOW_COPY_AND_ASSIGN(PrinterWatcherWin);
@@ -384,7 +383,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
       void reset() { job_ptr_ = nullptr; }
 
      private:
-      CheckedPtr<Microsoft::WRL::ComPtr<IXpsPrintJob>> job_ptr_;
+      Microsoft::WRL::ComPtr<IXpsPrintJob>* job_ptr_;
 
       DISALLOW_COPY_AND_ASSIGN(PrintJobCanceler);
     };
@@ -503,7 +502,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
     }
 
     PlatformJobId job_id_ = -1;
-    CheckedPtr<PrintSystem::JobSpooler::Delegate> delegate_ = nullptr;
+    PrintSystem::JobSpooler::Delegate* delegate_ = nullptr;
     int saved_dc_ = 0;
     base::win::ScopedCreateDC printer_dc_;
     base::win::ScopedHandle job_progress_event_;

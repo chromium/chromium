@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -73,7 +72,7 @@ class CRYPTO_EXPORT Encryptor {
   // TODO(albertb): Support streaming encryption.
 
  private:
-  CheckedPtr<const SymmetricKey> key_;
+  const SymmetricKey* key_;
   Mode mode_;
 
   bool CryptString(bool do_encrypt,

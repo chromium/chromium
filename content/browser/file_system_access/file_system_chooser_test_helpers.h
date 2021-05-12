@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -41,7 +40,7 @@ class CancellingSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
 
  private:
-  CheckedPtr<SelectFileDialogParams> out_params_;
+  SelectFileDialogParams* out_params_;
 };
 
 // A fake ui::SelectFileDialog, which will select one or more pre-determined
@@ -62,7 +61,7 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 
  private:
   std::vector<ui::SelectedFileInfo> result_;
-  CheckedPtr<SelectFileDialogParams> out_params_;
+  SelectFileDialogParams* out_params_;
 };
 
 }  // namespace content

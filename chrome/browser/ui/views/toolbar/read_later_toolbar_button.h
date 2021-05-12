@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
@@ -24,9 +23,9 @@ class ReadLaterToolbarButton : public ToolbarButton {
  private:
   void ButtonPressed();
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
-  CheckedPtr<views::View> side_panel_webview_ = nullptr;
+  views::View* side_panel_webview_ = nullptr;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
 };
 

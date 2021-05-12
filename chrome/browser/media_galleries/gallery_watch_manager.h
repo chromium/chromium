@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -93,7 +92,7 @@ class GalleryWatchManager
                const std::string& extension_id,
                MediaGalleryPrefId gallery_id);
 
-    CheckedPtr<content::BrowserContext> browser_context;
+    content::BrowserContext* browser_context;
     const std::string extension_id;
     MediaGalleryPrefId gallery_id;
 

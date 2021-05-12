@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/ntp_snippets/remote/proto/ntp_snippets.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -109,8 +108,8 @@ class RemoteSuggestionsDatabaseTest : public testing::Test {
   std::map<std::string, SnippetImageProto> image_db_storage_;
 
   // Owned by |db_|.
-  CheckedPtr<FakeDB<SnippetProto>> suggestion_db_;
-  CheckedPtr<FakeDB<SnippetImageProto>> image_db_;
+  FakeDB<SnippetProto>* suggestion_db_;
+  FakeDB<SnippetImageProto>* image_db_;
 
   std::unique_ptr<RemoteSuggestionsDatabase> db_;
 

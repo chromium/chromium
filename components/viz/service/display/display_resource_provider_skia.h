@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/viz_service_export.h"
@@ -66,7 +65,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
       const std::vector<ResourceId>& unused) override;
 
   // Used to release resources held by an external consumer.
-  CheckedPtr<ExternalUseClient> external_use_client_ = nullptr;
+  ExternalUseClient* external_use_client_ = nullptr;
 };
 
 }  // namespace viz

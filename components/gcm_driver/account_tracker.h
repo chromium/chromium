@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -68,7 +67,7 @@ class AccountTracker : public signin::IdentityManager::Observer {
   // observers of the signed in state changes.
   void UpdateSignInState(const CoreAccountId& account_id, bool is_signed_in);
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   std::map<CoreAccountId, AccountState> accounts_;
   base::ObserverList<Observer>::Unchecked observer_list_;
   bool shutdown_called_;

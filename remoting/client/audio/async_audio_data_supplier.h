@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
-
 namespace remoting {
 
 // This interface allows caller to asynchronously request for audio data.
@@ -27,7 +25,7 @@ class AsyncAudioDataSupplier {
     // undefined behavior. Consider posting a task when necessary.
     virtual void OnDataFilled() = 0;
 
-    const CheckedPtr<void> data;
+    void* const data;
     const size_t bytes_needed;
 
     size_t bytes_extracted = 0;

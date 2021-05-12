@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -103,7 +102,7 @@ class SetFormFieldValueActionTest : public content::RenderViewHostTestHarness {
   MockWebsiteLoginManager mock_website_login_manager_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ActionProto proto_;
-  CheckedPtr<SetFormFieldValueProto> set_form_field_proto_;
+  SetFormFieldValueProto* set_form_field_proto_;
   UserData user_data_;
 };
 

@@ -8,7 +8,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -242,7 +241,7 @@ class FakeSecurityDomainsServerMemberStatusChecker
 
   int expected_member_count_;
   std::vector<uint8_t> expected_trusted_vault_key_;
-  const CheckedPtr<syncer::FakeSecurityDomainsServer> server_;
+  syncer::FakeSecurityDomainsServer* const server_;
 };
 
 class SingleClientNigoriSyncTest : public SyncTest {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -53,7 +52,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoQuotaClientWrapper
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const CheckedPtr<storage::mojom::QuotaClient> wrapped_client_
+  storage::mojom::QuotaClient* const wrapped_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

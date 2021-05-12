@@ -99,7 +99,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -199,11 +198,11 @@ struct TraceEvent {
   std::map<std::string, std::unique_ptr<base::Value>> arg_values;
 
   // The other event associated with this event (or NULL).
-  CheckedPtr<const TraceEvent> other_event;
+  const TraceEvent* other_event;
 
   // A back-link for |other_event|. That is, if other_event is not null, then
   // |event->other_event->prev_event == event| is always true.
-  CheckedPtr<const TraceEvent> prev_event;
+  const TraceEvent* prev_event;
 };
 
 typedef std::vector<const TraceEvent*> TraceEventVector;

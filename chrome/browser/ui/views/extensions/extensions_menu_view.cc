@@ -87,7 +87,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   // appropriately.
   SetPaintClientToLayer(true);
 
-  toolbar_model_observation_.Observe(toolbar_model_.get());
+  toolbar_model_observation_.Observe(toolbar_model_);
   browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/usb_manager_test.mojom.h"
@@ -40,7 +39,7 @@ class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
 
  private:
   mojo::ReceiverSet<mojom::UsbDeviceManagerTest> receivers_;
-  CheckedPtr<UsbService> usb_service_;
+  UsbService* usb_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceManagerTest);
 };

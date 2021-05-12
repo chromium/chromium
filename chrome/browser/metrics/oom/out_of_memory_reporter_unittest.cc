@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -193,7 +192,7 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 
  private:
-  CheckedPtr<base::SimpleTestTickClock> test_tick_clock_;
+  base::SimpleTestTickClock* test_tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(OutOfMemoryReporterTest);
 };

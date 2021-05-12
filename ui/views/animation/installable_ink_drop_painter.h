@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_INSTALLABLE_INK_DROP_PAINTER_H_
 #define UI_VIEWS_ANIMATION_INSTALLABLE_INK_DROP_PAINTER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/painter.h"
@@ -42,11 +41,11 @@ class VIEWS_EXPORT InstallableInkDropPainter : public Painter {
  private:
   // Contains the colors and opacities we use to paint, given the current state.
   // This isn't modified inside this class, but it can be modified by our user.
-  const CheckedPtr<const InstallableInkDropConfig> config_;
+  const InstallableInkDropConfig* const config_;
 
   // The current visual state. This isn't modified inside this class, but it can
   // be modified by our user.
-  const CheckedPtr<const State> state_;
+  const State* const state_;
 };
 
 }  // namespace views

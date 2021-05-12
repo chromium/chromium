@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -292,7 +291,7 @@ class FidoCableHandshakeHandlerTest : public Test {
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<NiceMockBluetoothAdapter>();
   FakeCableAuthenticator authenticator_;
-  CheckedPtr<MockFidoBleConnection> connection_;
+  MockFidoBleConnection* connection_;
   std::unique_ptr<FidoCableDevice> device_;
   TestDeviceCallbackReceiver callback_receiver_;
 };

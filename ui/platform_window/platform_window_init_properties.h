@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
@@ -90,7 +89,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool remove_standard_frame = false;
   std::string workspace;
 
-  CheckedPtr<WorkspaceExtensionDelegate> workspace_extension_delegate = nullptr;
+  WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
 
   PlatformWindowShadowType shadow_type = PlatformWindowShadowType::kDefault;
 

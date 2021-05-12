@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -29,7 +28,7 @@ class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
   void StatusButtonPressed();
 
   // The MessageBoxView to be tested.
-  CheckedPtr<MessageBoxView> message_box_view_;
+  MessageBoxView* message_box_view_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageBoxExample);
 };

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -193,12 +192,12 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool run_message_loop_;
 
   base::FilePath user_data_dir_;
 
-  CheckedPtr<StartupData> startup_data_;
+  StartupData* startup_data_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainParts);
 };

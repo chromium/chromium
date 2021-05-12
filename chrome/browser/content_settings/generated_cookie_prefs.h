@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_COOKIE_PREFS_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_COOKIE_PREFS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,8 +43,8 @@ class GeneratedCookiePrefBase
 
  protected:
   GeneratedCookiePrefBase(Profile* profile, const std::string& pref_name_);
-  const CheckedPtr<Profile> profile_;
-  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
+  Profile* const profile_;
+  HostContentSettingsMap* host_content_settings_map_;
   const std::string pref_name_;
   ScopedObserver<HostContentSettingsMap, content_settings::Observer>
       content_settings_observer_{this};

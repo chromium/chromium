@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -42,8 +41,8 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
   std::u16string GetWindowTitle() const override;
 
  private:
-  const CheckedPtr<Browser> browser_;
-  CheckedPtr<safe_browsing::SettingsResetPromptController> controller_;
+  Browser* const browser_;
+  safe_browsing::SettingsResetPromptController* controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_

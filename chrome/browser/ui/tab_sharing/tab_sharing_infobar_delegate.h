@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace infobars {
@@ -61,7 +60,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool can_share_;
 
   // Creates and removes delegate's infobar; outlives delegate.
-  CheckedPtr<TabSharingUI> ui_;
+  TabSharingUI* ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_

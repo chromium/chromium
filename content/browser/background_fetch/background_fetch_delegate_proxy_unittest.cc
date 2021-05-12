@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/background_fetch/background_fetch_test_base.h"
@@ -189,7 +188,7 @@ class BackgroundFetchDelegateProxyTest : public BackgroundFetchTestBase {
 
  protected:
   FakeTestBrowserContext browser_context_;
-  CheckedPtr<FakeBackgroundFetchDelegate> delegate_;
+  FakeBackgroundFetchDelegate* delegate_;
   BackgroundFetchDelegateProxy delegate_proxy_;
 };
 

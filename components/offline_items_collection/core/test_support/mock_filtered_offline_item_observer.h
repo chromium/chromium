@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +33,7 @@ class MockFilteredOfflineItemObserver {
 
    private:
     ContentId id_;
-    CheckedPtr<FilteredOfflineItemObserver> observer_;
+    FilteredOfflineItemObserver* observer_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedMockObserver);
   };

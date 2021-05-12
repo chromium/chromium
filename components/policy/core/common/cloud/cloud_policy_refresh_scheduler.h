@@ -9,7 +9,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -128,15 +127,15 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // requested.
   void OnPolicyRefreshed(bool success);
 
-  CheckedPtr<CloudPolicyClient> client_;
-  CheckedPtr<CloudPolicyStore> store_;
-  CheckedPtr<CloudPolicyService> service_;
+  CloudPolicyClient* client_;
+  CloudPolicyStore* store_;
+  CloudPolicyService* service_;
 
   // For scheduling delayed tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // For listening for network connection changes.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // The delayed refresh callback.
   base::CancelableOnceClosure refresh_callback_;

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,12 +52,12 @@ class TestInkDropHostView : public InkDropHostView {
 
   std::unique_ptr<InkDrop> CreateInkDrop() override {
     last_created_inkdrop_ = new TestInkDrop();
-    return base::WrapUnique(last_created_inkdrop_.get());
+    return base::WrapUnique(last_created_inkdrop_);
   }
 
  private:
   int on_ink_drop_created_count_ = 0;
-  CheckedPtr<TestInkDrop> last_created_inkdrop_ = nullptr;
+  TestInkDrop* last_created_inkdrop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestInkDropHostView);
 };
@@ -339,7 +338,7 @@ class InkDropHostViewClippingTest : public testing::Test {
   // Provides internal access to |host_view_| test target.
   InkDropHostViewTestApi host_view_test_api_;
 
-  CheckedPtr<InkDropImpl> ink_drop_ = nullptr;
+  InkDropImpl* ink_drop_ = nullptr;
 
   // Provides internal access to |host_view_|'s ink drop.
   std::unique_ptr<test::InkDropImplTestApi> ink_drop_test_api_;

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/view_prop.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
+#include "ui/base/view_prop.h"
 
 #include <set>
 
@@ -69,7 +68,7 @@ class ViewProp::Data : public base::RefCounted<ViewProp::Data> {
 
   const gfx::AcceleratedWidget view_;
   const char* key_;
-  CheckedPtr<void> data_;
+  void* data_;
 
   DISALLOW_COPY_AND_ASSIGN(Data);
 };

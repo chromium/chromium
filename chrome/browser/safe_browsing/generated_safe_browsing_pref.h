@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
 #define CHROME_BROWSER_SAFE_BROWSING_GENERATED_SAFE_BROWSING_PREF_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,7 +49,7 @@ class GeneratedSafeBrowsingPref
       extensions::api::settings_private::PrefObject* pref_object);
 
   // Weak reference to the profile this preference is generated for.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   PrefChangeRegistrar user_prefs_registrar_;
 };

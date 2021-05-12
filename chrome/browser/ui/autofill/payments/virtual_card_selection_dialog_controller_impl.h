@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_CONTROLLER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -61,7 +60,7 @@ class VirtualCardSelectionDialogControllerImpl
   // is accepted. Will pass the |selected_card_id_| as the param.
   base::OnceCallback<void(const std::string&)> callback_;
 
-  CheckedPtr<VirtualCardSelectionDialogView> dialog_view_ = nullptr;
+  VirtualCardSelectionDialogView* dialog_view_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

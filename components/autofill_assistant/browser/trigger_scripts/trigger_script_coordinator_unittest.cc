@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -178,17 +177,15 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
 
  protected:
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  CheckedPtr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
-  CheckedPtr<NiceMock<MockWebController>> mock_web_controller_;
+  NiceMock<MockServiceRequestSender>* mock_request_sender_;
+  NiceMock<MockWebController>* mock_web_controller_;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
   base::MockCallback<base::RepeatingCallback<bool(void)>>
       mock_is_first_time_user_callback_;
   NaggyMock<MockObserver> mock_observer_;
   std::unique_ptr<TriggerScriptCoordinator> coordinator_;
-  CheckedPtr<NiceMock<MockStaticTriggerConditions>>
-      mock_static_trigger_conditions_;
-  CheckedPtr<NiceMock<MockDynamicTriggerConditions>>
-      mock_dynamic_trigger_conditions_;
+  NiceMock<MockStaticTriggerConditions>* mock_static_trigger_conditions_;
+  NiceMock<MockDynamicTriggerConditions>* mock_dynamic_trigger_conditions_;
 };
 
 TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
@@ -296,15 +293,14 @@ TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               AddSelectorsFromTriggerScript(response.trigger_scripts(0)))
       .Times(1);
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillByDefault(Return(false));
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());
 
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
@@ -321,8 +317,7 @@ TEST_F(TriggerScriptCoordinatorTest, ShowAndHideTriggerScript) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   ON_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillByDefault(Return(true));
@@ -358,7 +353,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -370,7 +365,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   EXPECT_CALL(mock_observer_, OnVisibilityChanged(false)).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .Times(0);
   SimulateWebContentsVisibilityChanged(content::Visibility::HIDDEN);
 
@@ -381,7 +376,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -402,8 +397,7 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionNotNow) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -443,8 +437,7 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -475,8 +468,7 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -507,8 +499,7 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -532,8 +523,7 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillRepeatedly(Return(true));
@@ -579,7 +569,7 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -590,7 +580,7 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .Times(0);
   SimulateWebContentsVisibilityChanged(content::Visibility::HIDDEN);
   // Note: in reality, it should be impossible to navigate on hidden tabs.
@@ -623,8 +613,7 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
-  ON_CALL(*mock_dynamic_trigger_conditions_,
-          OnUpdate(mock_web_controller_.get(), _))
+  ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());
@@ -654,7 +643,7 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
 
   // Note: expect 4 calls: 1 initial plus 3 until timeout.
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .Times(4)
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
@@ -689,7 +678,7 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
 
   // While the trigger script is shown, the timeout is ignored.
@@ -732,7 +721,7 @@ TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
 
   EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
@@ -759,7 +748,7 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(false));
@@ -779,7 +768,7 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
       .Times(3)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .Times(3)
       .WillRepeatedly(RunOnceCallback<1>());
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -815,7 +804,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetPathPatternMatches)
@@ -845,7 +834,7 @@ TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckDomainMatch) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetDomainAndSchemeMatches)
@@ -875,7 +864,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetPathPatternMatches)
@@ -905,7 +894,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
 
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).WillOnce([&]() {
@@ -932,7 +921,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
 
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
@@ -962,7 +951,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -975,7 +964,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   EXPECT_CALL(mock_observer_, OnVisibilityChanged(false)).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .Times(0);
   SimulateWebContentsInteractabilityChanged(/* interactable = */ false);
 
@@ -986,7 +975,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillOnce(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
@@ -1014,7 +1003,7 @@ TEST_F(TriggerScriptCoordinatorTest, MAYBE_OnboardingShownAndAccepted) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());
@@ -1060,7 +1049,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());
@@ -1124,7 +1113,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());
@@ -1160,7 +1149,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
   EXPECT_CALL(*mock_static_trigger_conditions_, Init)
       .WillOnce(RunOnceCallback<4>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              OnUpdate(mock_web_controller_.get(), _))
+              OnUpdate(mock_web_controller_, _))
       .WillRepeatedly(RunOnceCallback<1>());
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>());

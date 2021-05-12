@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -115,10 +114,10 @@ class PrintViewManager : public PrintViewManagerBase,
 
   // The current RFH that is print previewing. It should be a nullptr when
   // |print_preview_state_| is NOT_PREVIEWING.
-  CheckedPtr<content::RenderFrameHost> print_preview_rfh_ = nullptr;
+  content::RenderFrameHost* print_preview_rfh_ = nullptr;
 
   // Keeps track of the pending callback during scripted print preview.
-  CheckedPtr<content::RenderProcessHost> scripted_print_preview_rph_ = nullptr;
+  content::RenderProcessHost* scripted_print_preview_rph_ = nullptr;
 
   // True if |scripted_print_preview_rph_| needs to be unblocked.
   bool scripted_print_preview_rph_set_blocked_ = false;

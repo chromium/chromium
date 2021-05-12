@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/models/table_model.h"
 #include "url/origin.h"
@@ -53,7 +52,7 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
    private:
     // The model needs access to the view it is in to access the correct theme
     // for icon colors.
-    const CheckedPtr<const views::View> owner_;
+    const views::View* const owner_;
 
     const std::vector<base::FilePath> files_;
     const std::vector<base::FilePath> directories_;

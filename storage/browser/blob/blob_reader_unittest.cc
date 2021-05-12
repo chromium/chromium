@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -225,7 +224,7 @@ class BlobReaderTest : public ::testing::Test {
         builder ? context_.AddFinishedBlob(std::move(builder)) : nullptr;
     provider_ = new MockFileStreamReaderProvider();
     reader_.reset(new BlobReader(blob_handle_.get()));
-    reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
+    reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
   }
 
   // Takes ownership of the file reader (the blob reader takes ownership).
@@ -284,7 +283,7 @@ class BlobReaderTest : public ::testing::Test {
 
   BlobStorageContext context_;
   std::unique_ptr<BlobDataHandle> blob_handle_;
-  CheckedPtr<MockFileStreamReaderProvider> provider_ = nullptr;
+  MockFileStreamReaderProvider* provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
   scoped_refptr<FileSystemContext> file_system_context_;
 
@@ -1155,7 +1154,7 @@ TEST_F(BlobReaderTest, HandleBeforeAsyncCancel) {
   EXPECT_EQ(BlobStatus::PENDING_TRANSPORT, can_populate_status);
   provider_ = new MockFileStreamReaderProvider();
   reader_.reset(new BlobReader(blob_handle_.get()));
-  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
+  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
   int size_result = -1;
   EXPECT_EQ(
       BlobReader::Status::IO_PENDING,
@@ -1183,7 +1182,7 @@ TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {
   EXPECT_EQ(BlobStatus::PENDING_TRANSPORT, can_populate_status);
   provider_ = new MockFileStreamReaderProvider();
   reader_.reset(new BlobReader(blob_handle_.get()));
-  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
+  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
   int size_result = -1;
   EXPECT_EQ(
       BlobReader::Status::IO_PENDING,

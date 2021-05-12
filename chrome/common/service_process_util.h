@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -161,7 +160,7 @@ class ServiceProcessState {
   // An opaque object that maintains state. The actual definition of this is
   // platform dependent.
   struct StateData;
-  CheckedPtr<StateData> state_;
+  StateData* state_;
 
 #if !defined(OS_MAC)
   // The shared memory mapping backing the shared state on non-macos

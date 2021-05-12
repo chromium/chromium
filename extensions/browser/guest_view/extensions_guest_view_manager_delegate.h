@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSIONS_GUEST_VIEW_MANAGER_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSIONS_GUEST_VIEW_MANAGER_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 
 namespace content {
@@ -33,7 +32,7 @@ class ExtensionsGuestViewManagerDelegate
   void RegisterAdditionalGuestViewTypes() override;
 
  private:
-  const CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* const context_;
 };
 
 }  // namespace extensions
