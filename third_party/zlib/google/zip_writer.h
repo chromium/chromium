@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -32,7 +33,7 @@ namespace internal {
 class ZipWriter {
  public:
 // Creates a writer that will write a ZIP file to |zip_file_fd|/|zip_file|
-// and which entries (specifies with AddEntries) are relative to |root_dir|.
+// and which entries (specified with WriteEntries) are relative to |root_dir|.
 // All file reads are performed using |file_accessor|.
 #if defined(OS_POSIX)
   static std::unique_ptr<ZipWriter> CreateWithFd(int zip_file_fd,
@@ -44,27 +45,22 @@ class ZipWriter {
                                            FileAccessor* file_accessor);
   ~ZipWriter();
 
-  // Writes the files at |paths| to the ZIP file and closes this Zip file.
-  // Note that the the FilePaths must be relative to |root_dir| specified in the
+  using Paths = base::span<const base::FilePath>;
+
+  // Writes the files at |paths| to the ZIP file and closes this ZIP file.
+  // The file paths must be relative to |root_dir| specified in the
   // Create method.
   // Returns true if all entries were written successfuly.
-  bool WriteEntries(const std::vector<base::FilePath>& paths);
+  bool WriteEntries(Paths paths);
 
  private:
   ZipWriter(zipFile zip_file,
             const base::FilePath& root_dir,
             FileAccessor* file_accessor);
 
-  // Writes the pending entries to the ZIP file if there are at least
-  // |kMaxPendingEntriesCount| of them. If |force| is true, all pending entries
-  // are written regardless of how many there are.
-  // Returns false if writing an entry fails, true if no entry was written or
-  // there was no error writing entries.
-  bool FlushEntriesIfNeeded(bool force);
-
   // Adds the files at |paths| to the ZIP file. These FilePaths must be relative
   // to |root_dir| specified in the Create method.
-  bool AddEntries(const std::vector<base::FilePath>& paths);
+  bool AddEntries(Paths paths);
 
   // Adds file content to currently open file entry.
   bool AddFileContent(const base::FilePath& path, base::File file);
@@ -87,9 +83,6 @@ class ZipWriter {
   // Returns true if successful, false otherwise (typically if an entry failed
   // to be written).
   bool Close();
-
-  // The entries that have been added but not yet written to the ZIP file.
-  std::vector<base::FilePath> pending_entries_;
 
   // The actual zip file.
   zipFile zip_file_;

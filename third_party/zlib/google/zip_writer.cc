@@ -110,84 +110,74 @@ ZipWriter::ZipWriter(zipFile zip_file,
                      FileAccessor* file_accessor)
     : zip_file_(zip_file), root_dir_(root_dir), file_accessor_(file_accessor) {}
 
-ZipWriter::~ZipWriter() {
-  DCHECK(pending_entries_.empty());
-}
+ZipWriter::~ZipWriter() {}
 
-bool ZipWriter::WriteEntries(const std::vector<base::FilePath>& paths) {
+bool ZipWriter::WriteEntries(Paths paths) {
   return AddEntries(paths) && Close();
 }
 
-bool ZipWriter::AddEntries(const std::vector<base::FilePath>& paths) {
-  DCHECK(zip_file_);
-  pending_entries_.insert(pending_entries_.end(), paths.begin(), paths.end());
-  return FlushEntriesIfNeeded(/*force=*/false);
-}
-
 bool ZipWriter::Close() {
-  bool success = FlushEntriesIfNeeded(/*force=*/true) &&
-                 zipClose(zip_file_, nullptr) == ZIP_OK;
+  const bool success = zipClose(zip_file_, nullptr) == ZIP_OK;
   zip_file_ = nullptr;
   return success;
 }
 
-bool ZipWriter::FlushEntriesIfNeeded(bool force) {
-  // Numbers of pending entries that triggers writing them to the ZIP file.
-  const size_t kMaxPendingEntriesCount = 50;
+bool ZipWriter::AddEntries(Paths paths) {
+  // Constructed outside the loop in order to reuse its internal buffer.
+  std::vector<base::FilePath> absolute_paths;
 
-  if (pending_entries_.size() < kMaxPendingEntriesCount && !force)
-    return true;
+  while (!paths.empty()) {
+    // Work with chunks of 50 paths at most.
+    const size_t n = std::min<size_t>(paths.size(), 50);
+    const Paths relative_paths = paths.subspan(0, n);
+    paths = paths.subspan(n, paths.size() - n);
 
-  while (pending_entries_.size() >= kMaxPendingEntriesCount ||
-         (force && !pending_entries_.empty())) {
-    size_t entry_count =
-        std::min(pending_entries_.size(), kMaxPendingEntriesCount);
-    std::vector<base::FilePath> relative_paths;
-    std::vector<base::FilePath> absolute_paths;
-    relative_paths.insert(relative_paths.begin(), pending_entries_.begin(),
-                          pending_entries_.begin() + entry_count);
-    for (auto iter = pending_entries_.begin();
-         iter != pending_entries_.begin() + entry_count; ++iter) {
-      // The FileAccessor requires absolute paths.
-      absolute_paths.push_back(root_dir_.Append(*iter));
+    // FileAccessor requires absolute paths.
+    absolute_paths.clear();
+    absolute_paths.reserve(n);
+    for (const base::FilePath& relative_path : relative_paths) {
+      absolute_paths.push_back(root_dir_.Append(relative_path));
     }
-    pending_entries_.erase(pending_entries_.begin(),
-                           pending_entries_.begin() + entry_count);
+
+    DCHECK_EQ(relative_paths.size(), n);
+    DCHECK_EQ(absolute_paths.size(), n);
 
     // We don't know which paths are files and which ones are directories, and
-    // we want to avoid making a call to file_accessor_ for each entry. Open the
-    // files instead, invalid files are returned for directories.
+    // we want to avoid making a call to file_accessor_ for each entry. Try to
+    // open all of the paths as files. We'll get invalid file descriptors for
+    // directories.
     std::vector<base::File> files =
         file_accessor_->OpenFilesForReading(absolute_paths);
-    DCHECK_EQ(files.size(), relative_paths.size());
-    for (size_t i = 0; i < files.size(); i++) {
+    DCHECK_EQ(files.size(), n);
+
+    for (size_t i = 0; i < n; i++) {
       const base::FilePath& relative_path = relative_paths[i];
       const base::FilePath& absolute_path = absolute_paths[i];
-      base::File file = std::move(files[i]);
+      base::File& file = files[i];
+
       if (file.IsValid()) {
         if (!AddFileEntry(relative_path, std::move(file))) {
-          LOG(ERROR) << "Failed to write file " << relative_path.value()
-                     << " to ZIP file.";
+          LOG(ERROR) << "Cannot add file '" << relative_path << "' to ZIP";
           return false;
         }
       } else {
-        // Missing file or directory case.
-        base::Time last_modified =
+        // Either directory or missing file.
+        const base::Time last_modified =
             file_accessor_->GetLastModifiedTime(absolute_path);
         if (last_modified.is_null()) {
-          LOG(ERROR) << "Failed to write entry " << relative_path.value()
-                     << " to ZIP file.";
+          LOG(ERROR) << "Missing file or directory '" << relative_path << "'";
           return false;
         }
+
         DCHECK(file_accessor_->DirectoryExists(absolute_path));
         if (!AddDirectoryEntry(relative_path, last_modified)) {
-          LOG(ERROR) << "Failed to write directory " << relative_path.value()
-                     << " to ZIP file.";
+          LOG(ERROR) << "Cannot add directory '" << relative_path << "' to ZIP";
           return false;
         }
       }
     }
   }
+
   return true;
 }
 
