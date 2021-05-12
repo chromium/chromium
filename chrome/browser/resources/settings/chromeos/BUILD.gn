@@ -453,6 +453,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_search_page/os_search_page.m.js",
     "chromeos/os_search_page/os_search_selection_dialog.m.js",
     "chromeos/os_search_page/search_subpage.m.js",
+    "chromeos/os_search_page/search_engine.m.js",
     "chromeos/os_settings_icons_css.m.js",
     "chromeos/os_settings_menu/os_settings_menu.m.js",
     "chromeos/os_settings_main/os_settings_main.m.js",

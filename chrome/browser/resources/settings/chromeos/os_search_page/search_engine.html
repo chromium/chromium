@@ -1,0 +1,87 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="os_search_selection_dialog.html">
+<link rel="import" href="../../controls/extension_controlled_indicator.html">
+<link rel="import" href="../../controls/controlled_button.html">
+<link rel="import" href="../../controls/settings_toggle_button.html">
+<link rel="import" href="../../prefs/prefs.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../../prefs/pref_util.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../../search_engines_page/search_engines_browser_proxy.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="../os_route.html">
+
+<dom-module id="settings-search-engine">
+  <template>
+    <style include="cr-shared-style settings-shared md-select">
+      #search-wrapper {
+        align-items: center;
+        display: flex;
+      }
+
+      cr-policy-pref-indicator {
+        padding-inline-end: 8px;
+      }
+    </style>
+
+    <!-- Omnibox and launcher search engine. This shares the same pref with
+        browser search engine because users probably don't want one engine
+        in the omnibox and a different one in the launcher. -->
+    <div class="settings-box two-line first block">
+      <div id="search-wrapper">
+        <div class="start settings-box-text" aria-hidden="true">
+          <div id="searchExplanation">$i18n{osSearchEngineLabel}</div>
+          <div class="secondary" id="currentSearchEngine">
+            [[currentSearchEngine_.name]]
+          </div>
+        </div>
+        <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
+            prefs.default_search_provider_data.template_url_data)]]">
+          <cr-policy-pref-indicator pref="[[
+              prefs.default_search_provider_data.template_url_data]]">
+          </cr-policy-pref-indicator>
+        </template>
+        <div class="separator"></div>
+        <cr-button id="searchSelectionDialogButton"
+            aria-labelledby="searchExplanation"
+            aria-describedby="currentSearchEngine"
+            disabled$="[[isDefaultSearchEngineEnforced_(
+                prefs.default_search_provider_data.template_url_data)]]"
+            on-click="onShowSearchSelectionDialogClick_">
+          $i18n{osSearchEngineButtonLabel}
+        </cr-button>
+      </div>
+      <template is="dom-if"
+          if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">
+        <extension-controlled-indicator
+            extension-id="[[
+                prefs.default_search_provider_data.template_url_data.extensionId]]"
+            extension-name="[[
+                prefs.default_search_provider_data.template_url_data.controlledByName]]"
+            extension-can-be-disabled="[[
+                prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
+            on-disable-extension="onDisableExtension_">
+        </extension-controlled-indicator>
+      </template>
+    </div>
+
+    <template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
+      <os-settings-search-selection-dialog
+          on-close="onSearchSelectionDialogClose_">
+      </os-settings-search-selection-dialog>
+    </template>
+  </template>
+  <script src="search_engine.js"></script>
+</dom-module>

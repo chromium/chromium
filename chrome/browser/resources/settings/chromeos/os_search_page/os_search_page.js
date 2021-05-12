@@ -16,14 +16,6 @@ Polymer({
   ],
 
   properties: {
-    prefs: Object,
-
-    /** @private {!SearchEngine} The current selected search engine. */
-    currentSearchEngine_: Object,
-
-    /** @private */
-    showSearchSelectionDialog_: Boolean,
-
     /** @type {?Map<string, string>} */
     focusConfig_: Object,
 
@@ -54,23 +46,8 @@ Polymer({
     },
   },
 
-  /** @private {?settings.SearchEnginesBrowserProxy} */
-  browserProxy_: null,
-
-  /** @override */
-  created() {
-    this.browserProxy_ = settings.SearchEnginesBrowserProxyImpl.getInstance();
-  },
-
   /** @override */
   ready() {
-    const updateCurrentSearchEngine = searchEngines => {
-      this.currentSearchEngine_ =
-          searchEngines.defaults.find(searchEngine => searchEngine.default);
-    };
-    this.browserProxy_.getSearchEnginesList().then(updateCurrentSearchEngine);
-    cr.addWebUIListener('search-engines-changed', updateCurrentSearchEngine);
-
     this.focusConfig_ = new Map();
     this.focusConfig_.set(
         settings.routes.SEARCH_SUBPAGE.path, '#searchSubpageTrigger');
@@ -89,22 +66,6 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
-
-  /** @private */
-  onDisableExtension_() {
-    this.fire('refresh-pref', 'default_search_provider.enabled');
-  },
-
-  /** @private */
-  onShowSearchSelectionDialogClick_() {
-    this.showSearchSelectionDialog_ = true;
-  },
-
-  /** @private */
-  onSearchSelectionDialogClose_() {
-    this.showSearchSelectionDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$.searchSelectionDialogButton));
   },
 
   /** @private */
@@ -127,24 +88,5 @@ Polymer({
     return this.i18n(
         toggleValue ? 'searchGoogleAssistantEnabled' :
                       'searchGoogleAssistantDisabled');
-  },
-
-  /**
-   * @param {!chrome.settingsPrivate.PrefObject} pref
-   * @return {boolean}
-   * @private
-   */
-  isDefaultSearchControlledByPolicy_(pref) {
-    return pref.controlledBy ===
-        chrome.settingsPrivate.ControlledBy.USER_POLICY;
-  },
-
-  /**
-   * @param {!chrome.settingsPrivate.PrefObject} pref
-   * @return {boolean}
-   * @private
-   */
-  isDefaultSearchEngineEnforced_(pref) {
-    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 });
