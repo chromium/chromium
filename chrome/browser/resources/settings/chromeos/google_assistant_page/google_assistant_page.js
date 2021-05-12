@@ -6,7 +6,7 @@
  * The types of Hotword enable status without Dsp support.
  * @enum {number}
  */
-/* #export */ const DspHotwordState = {
+export const DspHotwordState = {
   DEFAULT_ON: 0,
   ALWAYS_ON: 1,
   OFF: 2,
@@ -19,7 +19,7 @@
  * chromeos/services/assistant/public/cpp/assistant_prefs.h
  * @enum {number}
  */
-/* #export */ const ConsentStatus = {
+export const ConsentStatus = {
   // The status is unknown.
   kUnknown: 0,
 
@@ -38,12 +38,34 @@
  * @fileoverview 'settings-google-assistant-page' is the settings page
  * containing Google Assistant settings.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import {sendWithPromise, removeWebUIListener, addWebUIListener, WebUIListener} from '//resources/js/cr.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '../../controls/controlled_button.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import '../../prefs/pref_util.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import '../../settings_shared_css.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-google-assistant-page',
 
   behaviors: [
-    DeepLinkingBehavior, I18nBehavior, PrefsBehavior,
-    settings.RouteObserverBehavior, WebUIListenerBehavior
+    DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
+    WebUIListenerBehavior
   ],
 
   properties: {
@@ -120,12 +142,12 @@ Polymer({
         'prefs.settings.assistant.disabled_by_policy.value)',
   ],
 
-  /** @private {?settings.GoogleAssistantBrowserProxy} */
+  /** @private {?GoogleAssistantBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.GoogleAssistantBrowserProxyImpl.getInstance();
+    this.browserProxy_ = GoogleAssistantBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -138,12 +160,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.GOOGLE_ASSISTANT) {
+    if (route !== routes.GOOGLE_ASSISTANT) {
       return;
     }
 
@@ -163,13 +185,13 @@ Polymer({
   /** @private */
   onGoogleAssistantSettingsTapped_() {
     this.browserProxy_.showGoogleAssistantSettings();
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
   onRetrainVoiceModelTapped_() {
     this.browserProxy_.retrainAssistantVoiceModel();
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */

@@ -4,31 +4,25 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":google_assistant_browser_proxy.m",
-    ":google_assistant_page.m",
+    ":google_assistant_browser_proxy",
+    ":google_assistant_page",
   ]
 }
 
-js_library("google_assistant_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_browser_proxy.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
-  extra_deps = [ ":modulize" ]
+js_library("google_assistant_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-js_library("google_assistant_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_page.m.js" ]
+js_library("google_assistant_page") {
   deps = [
-    ":google_assistant_browser_proxy.m",
+    ":google_assistant_browser_proxy",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
@@ -46,26 +40,8 @@ js_library("google_assistant_page.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":google_assistant_page_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":google_assistant_page_module",
-    ":modulize",
-  ]
-}
-
-polymer_modulizer("google_assistant_page") {
-  js_file = "google_assistant_page.js"
-  html_file = "google_assistant_page.html"
-  html_type = "dom-module"
-  auto_imports = os_settings_auto_imports
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-js_modulizer("modulize") {
-  input_files = [ "google_assistant_browser_proxy.js" ]
-  namespace_rewrites = os_settings_namespace_rewrites
+html_to_js("web_components") {
+  js_files = [ "google_assistant_page.js" ]
 }

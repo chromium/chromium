@@ -24,7 +24,7 @@ js_library("os_search_page.m") {
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/chromeos/google_assistant_page:google_assistant_page.m",
+    "//chrome/browser/resources/settings/chromeos/google_assistant_page:google_assistant_page",
     "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
     "//chrome/browser/resources/settings/search_engines_page:search_engines_browser_proxy",
     "//chrome/browser/resources/settings/settings_page:settings_animated_pages",

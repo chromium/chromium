@@ -2,51 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used from the google assistant section
  * to interact with the browser.
  */
 
-cr.define('settings', function() {
   /** @interface */
-  /* #export */ class GoogleAssistantBrowserProxy {
-    /** Launches into the Google Assistant app settings. */
-    showGoogleAssistantSettings() {}
+export class GoogleAssistantBrowserProxy {
+  /** Launches into the Google Assistant app settings. */
+  showGoogleAssistantSettings() {}
 
-    /** Retrain the Assistant voice model. */
-    retrainAssistantVoiceModel() {}
+  /** Retrain the Assistant voice model. */
+  retrainAssistantVoiceModel() {}
 
-    /** Sync the voice model status. */
-    syncVoiceModelStatus() {}
+  /** Sync the voice model status. */
+  syncVoiceModelStatus() {}
+}
+
+/** @implements {GoogleAssistantBrowserProxy} */
+export class GoogleAssistantBrowserProxyImpl {
+  /** @override */
+  showGoogleAssistantSettings() {
+    chrome.send('showGoogleAssistantSettings');
   }
 
-  /** @implements {settings.GoogleAssistantBrowserProxy} */
-  /* #export */ class GoogleAssistantBrowserProxyImpl {
-    /** @override */
-    showGoogleAssistantSettings() {
-      chrome.send('showGoogleAssistantSettings');
-    }
-
-    /** @override */
-    retrainAssistantVoiceModel() {
-      chrome.send('retrainAssistantVoiceModel');
-    }
-
-    /** @override */
-    syncVoiceModelStatus() {
-      chrome.send('syncVoiceModelStatus');
-    }
+  /** @override */
+  retrainAssistantVoiceModel() {
+    chrome.send('retrainAssistantVoiceModel');
   }
 
-  // The singleton instance_ is replaced with a test version of this wrapper
-  // during testing.
-  cr.addSingletonGetter(GoogleAssistantBrowserProxyImpl);
+  /** @override */
+  syncVoiceModelStatus() {
+    chrome.send('syncVoiceModelStatus');
+  }
+}
 
-  // #cr_define_end
-  return {
-    GoogleAssistantBrowserProxy: GoogleAssistantBrowserProxy,
-    GoogleAssistantBrowserProxyImpl: GoogleAssistantBrowserProxyImpl,
-  };
-});
+// The singleton instance_ is replaced with a test version of this wrapper
+// during testing.
+addSingletonGetter(GoogleAssistantBrowserProxyImpl);
