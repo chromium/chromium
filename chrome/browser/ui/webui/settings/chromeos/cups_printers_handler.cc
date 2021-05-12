@@ -856,8 +856,7 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::ListValue* args) {
   CHECK(args->GetString(0, &webui_callback_id_));
 
   base::FilePath downloads_path =
-      DownloadPrefs::FromDownloadManager(
-          content::BrowserContext::GetDownloadManager(profile_))
+      DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();

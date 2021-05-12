@@ -779,8 +779,8 @@ class SignedExchangeRequestHandlerDownloadBrowserTest
 IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
                        Download) {
   std::unique_ptr<DownloadObserver> observer =
-      std::make_unique<DownloadObserver>(BrowserContext::GetDownloadManager(
-          shell()->web_contents()->GetBrowserContext()));
+      std::make_unique<DownloadObserver>(
+          shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
 
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -805,8 +805,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
   InstallMockCert();
   InstallMockCertChainInterceptor();
   std::unique_ptr<DownloadObserver> observer =
-      std::make_unique<DownloadObserver>(BrowserContext::GetDownloadManager(
-          shell()->web_contents()->GetBrowserContext()));
+      std::make_unique<DownloadObserver>(
+          shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
 
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -829,8 +829,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
                        DataURLDownload) {
   const GURL sxg_url = GURL("data:application/signed-exchange,");
   std::unique_ptr<DownloadObserver> observer =
-      std::make_unique<DownloadObserver>(BrowserContext::GetDownloadManager(
-          shell()->web_contents()->GetBrowserContext()));
+      std::make_unique<DownloadObserver>(
+          shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
 
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());

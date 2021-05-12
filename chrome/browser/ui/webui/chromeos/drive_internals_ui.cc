@@ -873,7 +873,7 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
       return;
     }
     download_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
-        content::BrowserContext::GetDownloadManager(profile_), this);
+        profile_->GetDownloadManager(), this);
     drive_internals_->DownloadLogsZip(zip_path_);
   }
 

@@ -29,8 +29,7 @@ static void JNI_BitmapDownloadRequest_DownloadBitmap(
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(
-          ProfileManager::GetLastUsedProfile());
+      ProfileManager::GetLastUsedProfile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bitmap", R"(
         semantics {

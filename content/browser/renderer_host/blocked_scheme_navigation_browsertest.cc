@@ -433,8 +433,8 @@ class BlockedSchemeNavigationBrowserTest
                                                const std::string& javascript) {
     const GURL original_url(shell()->web_contents()->GetLastCommittedURL());
     ShellAddedObserver new_shell_observer;
-    DownloadManager* download_manager = BrowserContext::GetDownloadManager(
-        shell()->web_contents()->GetBrowserContext());
+    DownloadManager* download_manager =
+        shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
 
     DownloadTestObserverTerminal download_observer(
         download_manager, 1, DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
@@ -459,8 +459,8 @@ class BlockedSchemeNavigationBrowserTest
   void ExecuteScriptAndCheckDownload(RenderFrameHost* rfh,
                                      const std::string& javascript) {
     const GURL original_url(shell()->web_contents()->GetLastCommittedURL());
-    DownloadManager* download_manager = BrowserContext::GetDownloadManager(
-        shell()->web_contents()->GetBrowserContext());
+    DownloadManager* download_manager =
+        shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
     DownloadTestObserverTerminal download_observer(
         download_manager, 1, DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
@@ -476,8 +476,8 @@ class BlockedSchemeNavigationBrowserTest
   // to be started.
   void NavigateAndCheckDownload(const GURL& url) {
     const GURL original_url(shell()->web_contents()->GetLastCommittedURL());
-    DownloadManager* download_manager = BrowserContext::GetDownloadManager(
-        shell()->web_contents()->GetBrowserContext());
+    DownloadManager* download_manager =
+        shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
     DownloadTestObserverTerminal download_observer(
         download_manager, 1, DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     // Since this navigation will result in a download, there should be no

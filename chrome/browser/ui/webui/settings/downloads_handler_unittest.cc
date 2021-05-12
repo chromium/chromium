@@ -25,8 +25,7 @@ class DownloadsHandlerTest : public testing::Test {
   DownloadsHandlerTest()
       : download_manager_(new content::MockDownloadManager()),
         handler_(&profile_) {
-    content::BrowserContext::SetDownloadManagerForTesting(
-        &profile_, base::WrapUnique(download_manager_));
+    profile_.SetDownloadManagerForTesting(base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(&profile_);
     chrome_download_manager_delegate_ = delegate.get();

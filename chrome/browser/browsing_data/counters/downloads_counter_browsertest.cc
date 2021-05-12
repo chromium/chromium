@@ -40,15 +40,16 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     time_ = base::Time::Now();
     items_count_ = 0;
-    manager_ =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+    manager_ = browser()->profile()->GetDownloadManager();
     history_ =
         DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetDownloadHistory();
     history_->AddObserver(this);
 
-    otr_manager_ = content::BrowserContext::GetDownloadManager(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    otr_manager_ = browser()
+                       ->profile()
+                       ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                       ->GetDownloadManager();
     SetDownloadsDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   }

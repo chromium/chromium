@@ -109,7 +109,7 @@ bool BrowsingDataRemoverBrowserTestBase::RunScriptAndGetBool(
 
 void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected) {
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
+      GetBrowser()->profile()->GetDownloadManager();
   DownloadManagerWaiter download_manager_waiter(download_manager);
   download_manager_waiter.WaitForInitialized();
   std::vector<download::DownloadItem*> downloads;
@@ -120,7 +120,7 @@ void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected) {
 void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   // Start a download.
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(GetBrowser()->profile());
+      GetBrowser()->profile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(
           download_manager, 1,

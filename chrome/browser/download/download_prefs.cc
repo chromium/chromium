@@ -358,7 +358,7 @@ DownloadPrefs* DownloadPrefs::FromDownloadManager(
 // static
 DownloadPrefs* DownloadPrefs::FromBrowserContext(
     content::BrowserContext* context) {
-  return FromDownloadManager(BrowserContext::GetDownloadManager(context));
+  return FromDownloadManager(context->GetDownloadManager());
 }
 
 bool DownloadPrefs::IsFromTrustedSource(const download::DownloadItem& item) {

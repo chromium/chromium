@@ -48,7 +48,7 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
   ExtensionDownloadsEventRouter* GetExtensionEventRouter() override {
     if (!router_.get()) {
       router_ = std::make_unique<ExtensionDownloadsEventRouter>(
-          profile_, content::BrowserContext::GetDownloadManager(profile_));
+          profile_, profile_->GetDownloadManager());
     }
     return router_.get();
   }

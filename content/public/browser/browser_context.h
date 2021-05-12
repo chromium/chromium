@@ -111,7 +111,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   BrowserContext();
   ~BrowserContext() override;
 
-  static DownloadManager* GetDownloadManager(BrowserContext* self);
+  DownloadManager* GetDownloadManager();
 
   // Returns BrowserContext specific external mount points. It may return
   // nullptr if the context doesn't have any BrowserContext specific external
@@ -220,8 +220,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // across the next restart.
   static void SaveSessionState(BrowserContext* self);
 
-  static void SetDownloadManagerForTesting(
-      BrowserContext* self,
+  void SetDownloadManagerForTesting(
       std::unique_ptr<DownloadManager> download_manager);
 
   static void SetPermissionControllerForTesting(

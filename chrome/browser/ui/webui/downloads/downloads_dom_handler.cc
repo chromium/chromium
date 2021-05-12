@@ -222,8 +222,8 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   dl_params->set_initiator(url::Origin::Create(GURL("chrome://downloads")));
   dl_params->set_download_source(download::DownloadSource::RETRY);
 
-  content::BrowserContext::GetDownloadManager(web_contents->GetBrowserContext())
-      ->DownloadUrl(std::move(dl_params));
+  web_contents->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
+      std::move(dl_params));
 }
 
 void DownloadsDOMHandler::Show(const std::string& id) {

@@ -22,8 +22,8 @@ void CreateContextMenuDownload(content::WebContents* web_contents,
   const GURL& url = is_link ? params.link_url : params.src_url;
   const GURL& referring_url =
       params.frame_url.is_empty() ? params.page_url : params.frame_url;
-  content::DownloadManager* dlm = content::BrowserContext::GetDownloadManager(
-      web_contents->GetBrowserContext());
+  content::DownloadManager* dlm =
+      web_contents->GetBrowserContext()->GetDownloadManager();
   std::unique_ptr<download::DownloadUrlParameters> dl_params(
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
           web_contents, url,

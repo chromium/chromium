@@ -2359,8 +2359,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, Download) {
   SetContents(CreateSimpleWebBundle(primary_url));
   WebContents* web_contents = shell()->web_contents();
   std::unique_ptr<DownloadObserver> download_observer =
-      std::make_unique<DownloadObserver>(BrowserContext::GetDownloadManager(
-          web_contents->GetBrowserContext()));
+      std::make_unique<DownloadObserver>(
+          web_contents->GetBrowserContext()->GetDownloadManager());
 
   EXPECT_FALSE(NavigateToURL(web_contents, wbn_url));
   download_observer->WaitUntilDownloadCreated();

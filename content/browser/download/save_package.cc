@@ -257,8 +257,7 @@ void SavePackage::InternalInit() {
   DCHECK(file_manager_);
 
   download_manager_ = static_cast<DownloadManagerImpl*>(
-      BrowserContext::GetDownloadManager(
-          web_contents()->GetBrowserContext()));
+      web_contents()->GetBrowserContext()->GetDownloadManager());
   DCHECK(download_manager_);
 
   download::RecordSavePackageEvent(download::SAVE_PACKAGE_STARTED);

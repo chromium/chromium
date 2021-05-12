@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
       new MockDownloadFileObserver());
   ON_CALL(*observer.get(), OnDownloadAborted())
       .WillByDefault(InvokeWithoutArgs(this, &DragDownloadFileTest::FailFast));
-  DownloadManager* manager = BrowserContext::GetDownloadManager(
-      shell()->web_contents()->GetBrowserContext());
+  DownloadManager* manager =
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
   file->Start(observer.get());
   shell()->web_contents()->Close();
   RunAllTasksUntilIdle();

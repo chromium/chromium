@@ -43,7 +43,7 @@ DownloadCoreServiceImpl::~DownloadCoreServiceImpl() {}
 
 ChromeDownloadManagerDelegate*
 DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
-  DownloadManager* manager = BrowserContext::GetDownloadManager(profile_);
+  DownloadManager* manager = profile_->GetDownloadManager();
   // If we've already created the delegate, just return it.
   if (download_manager_created_)
     return manager_delegate_.get();
@@ -116,16 +116,14 @@ bool DownloadCoreServiceImpl::HasCreatedDownloadManager() {
 int DownloadCoreServiceImpl::NonMaliciousDownloadCount() const {
   if (!download_manager_created_)
     return 0;
-  return BrowserContext::GetDownloadManager(profile_)
-      ->NonMaliciousInProgressCount();
+  return profile_->GetDownloadManager()->NonMaliciousInProgressCount();
 }
 
 void DownloadCoreServiceImpl::CancelDownloads() {
   if (!download_manager_created_)
     return;
 
-  DownloadManager* download_manager =
-      BrowserContext::GetDownloadManager(profile_);
+  DownloadManager* download_manager = profile_->GetDownloadManager();
   DownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
   for (auto it = downloads.begin(); it != downloads.end(); ++it) {
@@ -137,7 +135,7 @@ void DownloadCoreServiceImpl::CancelDownloads() {
 void DownloadCoreServiceImpl::SetDownloadManagerDelegateForTesting(
     std::unique_ptr<ChromeDownloadManagerDelegate> new_delegate) {
   manager_delegate_.swap(new_delegate);
-  DownloadManager* dm = BrowserContext::GetDownloadManager(profile_);
+  DownloadManager* dm = profile_->GetDownloadManager();
   dm->SetDelegate(manager_delegate_.get());
   if (manager_delegate_)
     manager_delegate_->SetDownloadManager(dm);
@@ -166,7 +164,7 @@ void DownloadCoreServiceImpl::Shutdown() {
     // late for us since we need to use the profile (indirectly through history
     // code) when the DownloadManager is shutting down. So we shut it down
     // manually earlier. See http://crbug.com/131692
-    BrowserContext::GetDownloadManager(profile_)->Shutdown();
+    profile_->GetDownloadManager()->Shutdown();
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_event_router_.reset();

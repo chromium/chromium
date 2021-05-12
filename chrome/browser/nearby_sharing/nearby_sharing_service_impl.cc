@@ -2126,8 +2126,7 @@ void NearbySharingServiceImpl::ReceivePayloads(
   mutual_acceptance_timeout_alarm_.Cancel();
 
   base::FilePath download_path =
-      DownloadPrefs::FromDownloadManager(
-          content::BrowserContext::GetDownloadManager(profile_))
+      DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
 
   // Register payload path for all valid file payloads.
@@ -3145,8 +3144,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
   }
 
   base::FilePath download_path =
-      DownloadPrefs::FromDownloadManager(
-          content::BrowserContext::GetDownloadManager(profile_))
+      DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
 
   base::ThreadPool::PostTaskAndReplyWithResult(

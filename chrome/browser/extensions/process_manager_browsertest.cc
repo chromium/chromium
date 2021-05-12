@@ -975,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
   content::DownloadTestObserverTerminal observer(
-      content::BrowserContext::GetDownloadManager(profile()), 1,
+      profile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   std::string script = base::StringPrintf(
       R"(var anchor = document.createElement('a');

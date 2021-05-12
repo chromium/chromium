@@ -60,8 +60,7 @@ struct FileTasksNotifier::PendingFileAvailabilityTask {
 
 FileTasksNotifier::FileTasksNotifier(Profile* profile)
     : profile_(profile),
-      download_notifier_(content::BrowserContext::GetDownloadManager(profile_),
-                         this) {}
+      download_notifier_(profile_->GetDownloadManager(), this) {}
 
 FileTasksNotifier::~FileTasksNotifier() = default;
 

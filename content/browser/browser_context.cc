@@ -106,10 +106,9 @@ BrowserContext::~BrowserContext() {
                                   "browser_context", static_cast<void*>(this));
 }
 
-// static
-DownloadManager* BrowserContext::GetDownloadManager(BrowserContext* self) {
+DownloadManager* BrowserContext::GetDownloadManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return self->impl()->GetDownloadManager();
+  return impl()->GetDownloadManager();
 }
 
 // static
@@ -301,12 +300,9 @@ void BrowserContext::SaveSessionState(BrowserContext* self) {
   indexed_db_control.SetForceKeepSessionState();
 }
 
-// static
 void BrowserContext::SetDownloadManagerForTesting(
-    BrowserContext* self,
     std::unique_ptr<DownloadManager> download_manager) {
-  self->impl()->SetDownloadManagerForTesting(  // IN-TEST
-      std::move(download_manager));
+  impl()->SetDownloadManagerForTesting(std::move(download_manager));  // IN-TEST
 }
 
 // static

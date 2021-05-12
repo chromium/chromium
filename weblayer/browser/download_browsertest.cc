@@ -54,8 +54,7 @@ class DownloadBrowserTest : public WebLayerBrowserTest,
 
     auto* browser_context = tab_impl->web_contents()->GetBrowserContext();
     auto* download_manager_delegate =
-        content::BrowserContext::GetDownloadManager(browser_context)
-            ->GetDelegate();
+        browser_context->GetDownloadManager()->GetDelegate();
     static_cast<DownloadManagerDelegateImpl*>(download_manager_delegate)
         ->set_download_dropped_closure_for_testing(base::BindRepeating(
             &DownloadBrowserTest::DownloadDropped, base::Unretained(this)));

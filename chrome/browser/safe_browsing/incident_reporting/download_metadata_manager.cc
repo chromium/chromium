@@ -406,7 +406,7 @@ void DownloadMetadataManager::GetDownloadDetails(
 content::DownloadManager*
 DownloadMetadataManager::GetDownloadManagerForBrowserContext(
     content::BrowserContext* context) {
-  return content::BrowserContext::GetDownloadManager(context);
+  return context->GetDownloadManager();
 }
 
 void DownloadMetadataManager::OnDownloadCreated(

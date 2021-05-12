@@ -387,7 +387,7 @@ void DownloadsListTracker::Init() {
   if (profile->IsOffTheRecord()) {
     Profile* original_profile = profile->GetOriginalProfile();
     original_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
-        BrowserContext::GetDownloadManager(original_profile), this);
+        original_profile->GetDownloadManager(), this);
   }
 
   RebuildSortedItems();

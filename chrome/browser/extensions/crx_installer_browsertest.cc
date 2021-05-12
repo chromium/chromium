@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       mock_prompt->CreatePrompt());
 
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser()->profile());
+      browser()->profile()->GetDownloadManager();
 
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(

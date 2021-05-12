@@ -101,7 +101,7 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
       path_(path),
       simple_factory_key_(path, path.empty()),
       resource_context_(new ResourceContextImpl()),
-      download_delegate_(BrowserContext::GetDownloadManager(this)) {
+      download_delegate_(GetDownloadManager()) {
   CreateUserPrefService();
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(

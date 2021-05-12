@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(PluginResponseInterceptorURLLoaderThrottleBrowserTest,
   WebContents* web_contents = GetActiveWebContents();
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser_context);
+      browser_context->GetDownloadManager();
   DownloadObserver download_observer;
   download_manager->AddObserver(&download_observer);
 

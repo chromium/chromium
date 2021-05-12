@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, IgnoreDownloads) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::DownloadTestObserverTerminal downloads_observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()),
+      browser()->profile()->GetDownloadManager(),
       1,  // == wait_count (only waiting for "download-test3.gif").
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::DownloadTestObserverTerminal downloads_observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()),
+      browser()->profile()->GetDownloadManager(),
       1,  // == wait_count (only waiting for "download-test1.lib").
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 

@@ -475,8 +475,7 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
   void OpenDownloadsFolder() {
     platform_util::OpenItem(
         profile_,
-        DownloadPrefs::FromDownloadManager(
-            content::BrowserContext::GetDownloadManager(profile_))
+        DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
             ->DownloadPath(),
         platform_util::OPEN_FOLDER, platform_util::OpenOperationCallback());
 

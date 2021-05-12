@@ -17,8 +17,7 @@
 namespace {
 void DownloadUrl(std::unique_ptr<download::DownloadUrlParameters> parameters,
                  Profile* profile) {
-  content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(profile);
+  content::DownloadManager* manager = profile->GetDownloadManager();
   DCHECK(manager);
   manager->DownloadUrl(std::move(parameters));
 }

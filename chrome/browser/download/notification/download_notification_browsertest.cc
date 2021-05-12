@@ -296,7 +296,7 @@ class DownloadNotificationTestBase : public InProcessBrowserTest {
 
  protected:
   content::DownloadManager* GetDownloadManager(Browser* browser) {
-    return content::BrowserContext::GetDownloadManager(browser->profile());
+    return browser->profile()->GetDownloadManager();
   }
 
   // Requests to complete the download and wait for it.

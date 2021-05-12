@@ -68,8 +68,7 @@ DownloadShelfTest::DownloadShelfTest() {
   ON_CALL(*download_manager, GetBrowserContext())
       .WillByDefault(Return(profile_.get()));
 
-  content::BrowserContext::SetDownloadManagerForTesting(
-      profile_.get(), std::move(download_manager));
+  profile_->SetDownloadManagerForTesting(std::move(download_manager));
 }
 
 } // namespace

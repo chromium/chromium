@@ -64,8 +64,7 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
 // is created, and cause the download request to fail. This method helps us
 // ensure that the DownloadManager will be created after profile creation.
 void GetDownloadManagerOnProfileCreation(Profile* profile) {
-  content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(profile);
+  content::DownloadManager* manager = profile->GetDownloadManager();
   DCHECK(manager);
 }
 

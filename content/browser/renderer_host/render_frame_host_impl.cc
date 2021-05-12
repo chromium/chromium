@@ -688,8 +688,7 @@ void StartDownload(
 
   BrowserContext* browser_context = render_process_host->GetBrowserContext();
 
-  DownloadManager* download_manager =
-      BrowserContext::GetDownloadManager(browser_context);
+  DownloadManager* download_manager = browser_context->GetDownloadManager();
   parameters->set_download_source(download::DownloadSource::FROM_RENDERER);
   download_manager->DownloadUrl(std::move(parameters),
                                 std::move(blob_url_loader_factory));

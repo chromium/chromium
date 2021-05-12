@@ -94,17 +94,15 @@ void HoldingSpaceDownloadsDelegate::Init() {
   }
 
   // Chrome downloads.
-  download_manager_observation_.Observe(
-      download_manager_for_testing
-          ? download_manager_for_testing
-          : content::BrowserContext::GetDownloadManager(profile()));
+  download_manager_observation_.Observe(download_manager_for_testing
+                                            ? download_manager_for_testing
+                                            : profile()->GetDownloadManager());
 }
 
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   content::DownloadManager* download_manager =
-      download_manager_for_testing
-          ? download_manager_for_testing
-          : content::BrowserContext::GetDownloadManager(profile());
+      download_manager_for_testing ? download_manager_for_testing
+                                   : profile()->GetDownloadManager();
 
   if (download_manager->IsManagerInitialized())
     OnManagerInitialized();
@@ -142,9 +140,8 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
     return;
 
   content::DownloadManager* download_manager =
-      download_manager_for_testing
-          ? download_manager_for_testing
-          : content::BrowserContext::GetDownloadManager(profile());
+      download_manager_for_testing ? download_manager_for_testing
+                                   : profile()->GetDownloadManager();
 
   DCHECK(download_manager->IsManagerInitialized());
 

@@ -149,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
-  auto* download_manager =
-      content::BrowserContext::GetDownloadManager(profile());
+  auto* download_manager = profile()->GetDownloadManager();
   content::DownloadTestObserverTerminal download_observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);

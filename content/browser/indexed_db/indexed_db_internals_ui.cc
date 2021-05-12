@@ -302,8 +302,7 @@ void IndexedDBInternalsHandler::OnDownloadDataReady(
       temp_path, callback_id, connection_count));
 
   BrowserContext* context = web_contents->GetBrowserContext();
-  BrowserContext::GetDownloadManager(context)->DownloadUrl(
-      std::move(dl_params));
+  context->GetDownloadManager()->DownloadUrl(std::move(dl_params));
 }
 
 // The entire purpose of this class is to delete the temp file after

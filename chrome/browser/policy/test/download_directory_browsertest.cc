@@ -43,7 +43,7 @@ void DownloadAndVerifyFile(Browser* browser,
   embedded_test_server.ServeFilesFromDirectory(test_data_directory);
   ASSERT_TRUE(embedded_test_server.Start());
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser->profile());
+      browser->profile()->GetDownloadManager();
   content::DownloadTestObserverTerminal observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);

@@ -177,8 +177,10 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SniffNoContentTypeNoData) {
   // Make sure no downloads start.
-  BrowserContext::GetDownloadManager(
-      shell()->web_contents()->GetBrowserContext())
+  shell()
+      ->web_contents()
+      ->GetBrowserContext()
+      ->GetDownloadManager()
       ->AddObserver(this);
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/content-sniffer-test3.html"));
@@ -243,8 +245,10 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest_Disallowed) {
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
                        MAYBE_SyncXMLHttpRequest_DuringUnload) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  BrowserContext::GetDownloadManager(
-      shell()->web_contents()->GetBrowserContext())
+  shell()
+      ->web_contents()
+      ->GetBrowserContext()
+      ->GetDownloadManager()
       ->AddObserver(this);
 
   CheckTitleTest(

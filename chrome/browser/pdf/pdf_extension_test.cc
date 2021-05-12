@@ -719,7 +719,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
                                     true);
 
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser_context);
+        browser_context->GetDownloadManager();
     download_awaiter_ = std::make_unique<DownloadAwaiter>();
     download_manager->AddObserver(download_awaiter_.get());
   }
@@ -728,7 +728,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     content::BrowserContext* browser_context =
         GetActiveWebContents()->GetBrowserContext();
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser_context);
+        browser_context->GetDownloadManager();
     download_manager->RemoveObserver(download_awaiter_.get());
 
     // Cancel all downloads to shut down cleanly.
@@ -767,7 +767,7 @@ class PDFPluginDisabledTest : public PDFExtensionTest {
     content::BrowserContext* browser_context =
         GetActiveWebContents()->GetBrowserContext();
     content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser_context);
+        browser_context->GetDownloadManager();
 
     std::vector<download::DownloadItem*> downloads;
     download_manager->GetAllDownloads(&downloads);

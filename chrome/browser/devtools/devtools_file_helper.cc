@@ -266,8 +266,9 @@ void DevToolsFileHelper::Save(const std::string& url,
       initial_path = g_last_save_path.Pointer()->DirName().AppendASCII(
           suggested_file_name);
     } else {
-      base::FilePath download_path = DownloadPrefs::FromDownloadManager(
-          BrowserContext::GetDownloadManager(profile_))->DownloadPath();
+      base::FilePath download_path =
+          DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
+              ->DownloadPath();
       initial_path = download_path.AppendASCII(suggested_file_name);
     }
   }

@@ -240,7 +240,7 @@ class DownloadFramePolicyBrowserTest
     if (num_downloads > 0) {
       download_observer_ =
           std::make_unique<content::DownloadTestObserverTerminal>(
-              content::BrowserContext::GetDownloadManager(browser()->profile()),
+              browser()->profile()->GetDownloadManager(),
               num_downloads /* wait_count */,
               content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     }
@@ -252,7 +252,7 @@ class DownloadFramePolicyBrowserTest
       download_observer_->WaitForFinished();
     std::vector<download::DownloadItem*> download_items;
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     EXPECT_EQ(expected_num_downloads_, download_items.size());
   }

@@ -34,8 +34,7 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
           base::TimeDelta::FromMilliseconds(30),
           base::BindRepeating(&DownloadShelfUI::NotifyDownloadProgress,
                               base::Unretained(this)))),
-      download_manager_(content::BrowserContext::GetDownloadManager(
-          Profile::FromWebUI(web_ui))) {
+      download_manager_(Profile::FromWebUI(web_ui)->GetDownloadManager()) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIDownloadShelfHost);
   static constexpr webui::LocalizedString kStrings[] = {

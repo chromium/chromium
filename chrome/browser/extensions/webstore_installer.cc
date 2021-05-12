@@ -589,8 +589,7 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
     return;
   }
 
-  DownloadManager* download_manager =
-      BrowserContext::GetDownloadManager(profile_);
+  DownloadManager* download_manager = profile_->GetDownloadManager();
   if (!download_manager) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;

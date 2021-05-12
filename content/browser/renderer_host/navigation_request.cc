@@ -3659,7 +3659,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       BrowserContext* browser_context =
           frame_tree_node_->navigator().controller().GetBrowserContext();
       DownloadManagerImpl* download_manager = static_cast<DownloadManagerImpl*>(
-          BrowserContext::GetDownloadManager(browser_context));
+          browser_context->GetDownloadManager());
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),
           std::move(response_body_), std::move(url_loader_client_endpoints_),

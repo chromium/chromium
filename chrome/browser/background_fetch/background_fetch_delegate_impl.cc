@@ -53,7 +53,7 @@ BackgroundFetchDelegateImpl::BackgroundFetchDelegateImpl(Profile* profile)
   if (!base::FeatureList::IsEnabled(
           download::features::
               kUseInProgressDownloadManagerForDownloadService)) {
-    content::BrowserContext::GetDownloadManager(profile_);
+    profile_->GetDownloadManager();
   }
 }
 

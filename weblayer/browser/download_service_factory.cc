@@ -69,8 +69,8 @@ class SimpleDownloadManagerCoordinatorFactory
       content::BrowserContext* context) const override {
     auto* service_instance = new download::SimpleDownloadManagerCoordinator(
         {}, !context->IsOffTheRecord());
-    service_instance->SetSimpleDownloadManager(
-        content::BrowserContext::GetDownloadManager(context), true);
+    service_instance->SetSimpleDownloadManager(context->GetDownloadManager(),
+                                               true);
     return service_instance;
   }
 

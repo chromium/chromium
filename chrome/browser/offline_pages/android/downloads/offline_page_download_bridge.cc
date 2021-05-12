@@ -277,8 +277,8 @@ content::WebContents::Getter GetWebContentsGetter(
 }
 
 void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {
-  content::DownloadManager* dlm = content::BrowserContext::GetDownloadManager(
-      web_contents->GetBrowserContext());
+  content::DownloadManager* dlm =
+      web_contents->GetBrowserContext()->GetDownloadManager();
   std::unique_ptr<download::DownloadUrlParameters> dl_params(
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
           web_contents, url,

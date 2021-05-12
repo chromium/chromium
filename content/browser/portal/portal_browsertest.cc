@@ -2353,8 +2353,9 @@ namespace {
 class DownloadObserver : public DownloadManager::Observer {
  public:
   DownloadObserver()
-      : manager_(BrowserContext::GetDownloadManager(
-            ShellContentBrowserClient::Get()->browser_context())) {
+      : manager_(ShellContentBrowserClient::Get()
+                     ->browser_context()
+                     ->GetDownloadManager()) {
     manager_->AddObserver(this);
   }
 

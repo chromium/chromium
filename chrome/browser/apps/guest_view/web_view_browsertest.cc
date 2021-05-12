@@ -2948,9 +2948,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadPermission) {
 
   std::unique_ptr<content::DownloadTestObserver> completion_observer(
       new content::DownloadTestObserverTerminal(
-          content::BrowserContext::GetDownloadManager(
-              guest_web_contents->GetBrowserContext()),
-          1, content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+          guest_web_contents->GetBrowserContext()->GetDownloadManager(), 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
 
   // Replace WebContentsDelegate with mock version so we can intercept download
   // requests.
@@ -3069,8 +3068,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_DownloadCookieIsolation) {
   ASSERT_TRUE(web_contents);
 
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(
-          web_contents->GetBrowserContext());
+      web_contents->GetBrowserContext()->GetDownloadManager();
 
   scoped_refptr<content::TestFileErrorInjector> error_injector(
       content::TestFileErrorInjector::Create(download_manager));
@@ -3156,8 +3154,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
   ASSERT_TRUE(web_contents);
 
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(
-          web_contents->GetBrowserContext());
+      web_contents->GetBrowserContext()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserver> interrupted_observer(
       new content::DownloadTestObserverInterrupted(
           download_manager, 2,
@@ -3218,7 +3215,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
   content::BrowserContext* browser_context = profile();
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser_context);
+      browser_context->GetDownloadManager();
 
   task_runner->FastForwardUntilNoTasksRemain();
   DownloadManagerWaiter waiter(download_manager);

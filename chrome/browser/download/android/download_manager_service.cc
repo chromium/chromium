@@ -730,8 +730,7 @@ content::DownloadManager* DownloadManagerService::GetDownloadManager(
       IsReducedModeProfileKey(profile_key)
           ? ProfileManager::GetActiveUserProfile()
           : ProfileManager::GetProfileFromProfileKey(profile_key);
-  content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(profile);
+  content::DownloadManager* manager = profile->GetDownloadManager();
   ResetCoordinatorIfNeeded(profile_key);
   return manager;
 }

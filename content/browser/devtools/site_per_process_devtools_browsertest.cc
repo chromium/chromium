@@ -219,8 +219,8 @@ class SitePerProcessDownloadDevToolsBrowserTest
   void SetUpOnMainThread() override {
     SitePerProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(downloads_directory_.CreateUniqueTempDir());
-    DownloadManager* download_manager = BrowserContext::GetDownloadManager(
-        shell()->web_contents()->GetBrowserContext());
+    DownloadManager* download_manager =
+        shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
     ShellDownloadManagerDelegate* download_delegate =
         static_cast<ShellDownloadManagerDelegate*>(
             download_manager->GetDelegate());

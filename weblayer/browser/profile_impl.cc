@@ -551,7 +551,7 @@ jlong ProfileImpl::GetPrerenderController(JNIEnv* env) {
 }
 
 void ProfileImpl::EnsureBrowserContextInitialized(JNIEnv* env) {
-  content::BrowserContext::GetDownloadManager(GetBrowserContext());
+  GetBrowserContext()->GetDownloadManager();
 }
 
 void ProfileImpl::SetBooleanSetting(JNIEnv* env,

@@ -291,7 +291,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
         content::SlowDownloadHttpResponse::kKnownSizeUrl);
 
     content::DownloadTestObserverInProgress observer(
-        content::BrowserContext::GetDownloadManager(browser->profile()), 1);
+        browser->profile()->GetDownloadManager(), 1);
     ui_test_utils::NavigateToURLWithDisposition(
         browser, slow_download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_NONE);
@@ -948,8 +948,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   GURL download_url(
       embedded_test_server()->GetURL("/downloads/dangerous/dangerous.swf"));
   content::DownloadTestObserverInterrupted observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()),
-      1,
+      browser()->profile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(download_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -957,10 +956,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   observer.WaitForFinished();
 
   // Check that the download manager has the expected state.
-  EXPECT_EQ(1, content::BrowserContext::GetDownloadManager(
-      browser()->profile())->InProgressCount());
-  EXPECT_EQ(0, content::BrowserContext::GetDownloadManager(
-      browser()->profile())->NonMaliciousInProgressCount());
+  EXPECT_EQ(1, browser()->profile()->GetDownloadManager()->InProgressCount());
+  EXPECT_EQ(0, browser()
+                   ->profile()
+                   ->GetDownloadManager()
+                   ->NonMaliciousInProgressCount());
 
   // Close the browser with no user action.
   TestBrowserCloseManager::AttemptClose(

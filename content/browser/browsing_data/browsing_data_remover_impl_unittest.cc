@@ -333,10 +333,9 @@ class RemoveDownloadsTester {
  public:
   explicit RemoveDownloadsTester(BrowserContext* browser_context)
       : download_manager_(new MockDownloadManager()) {
-    BrowserContext::SetDownloadManagerForTesting(
-        browser_context, base::WrapUnique(download_manager_));
-    EXPECT_EQ(download_manager_,
-              BrowserContext::GetDownloadManager(browser_context));
+    browser_context->SetDownloadManagerForTesting(
+        base::WrapUnique(download_manager_));
+    EXPECT_EQ(download_manager_, browser_context->GetDownloadManager());
     EXPECT_CALL(*download_manager_, Shutdown());
   }
 

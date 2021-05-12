@@ -1009,7 +1009,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         DownloadCoreServiceFactory::GetForBrowserContext(profiles[i]);
     DownloadManager* download_manager =
         (download_core_service->HasCreatedDownloadManager()
-             ? BrowserContext::GetDownloadManager(profiles[i])
+             ? profiles[i]->GetDownloadManager()
              : NULL);
     if (download_manager &&
         download_manager->NonMaliciousInProgressCount() > 0) {

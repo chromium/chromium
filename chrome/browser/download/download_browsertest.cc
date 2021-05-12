@@ -404,7 +404,7 @@ class DownloadsHistoryDataCollector {
 };
 
 static DownloadManager* DownloadManagerForBrowser(Browser* browser) {
-  return BrowserContext::GetDownloadManager(browser->profile());
+  return browser->profile()->GetDownloadManager();
 }
 
 bool WasAutoOpened(DownloadItem* item) {

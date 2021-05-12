@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(FtpBrowserTest, DirectoryListingNavigation) {
 
   // Navigate to file `test.html`, verify that it's downloaded.
   content::DownloadTestObserverTerminal download_test_observer_terminal(
-      content::BrowserContext::GetDownloadManager(browser()->profile()), 1,
+      browser()->profile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
 
   EXPECT_TRUE(content::ExecJs(

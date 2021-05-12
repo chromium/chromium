@@ -155,8 +155,7 @@ DownloadManagerDelegate* ShellBrowserContext::GetDownloadManagerDelegate()  {
   if (!download_manager_delegate_.get()) {
     download_manager_delegate_ =
         std::make_unique<ShellDownloadManagerDelegate>();
-    download_manager_delegate_->SetDownloadManager(
-        BrowserContext::GetDownloadManager(this));
+    download_manager_delegate_->SetDownloadManager(GetDownloadManager());
   }
 
   return download_manager_delegate_.get();

@@ -236,9 +236,8 @@ void PluginObserver::OpenPDF(const GURL& url) {
   params->set_referrer_policy(
       content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
 
-  content::BrowserContext::GetDownloadManager(
-      web_contents()->GetBrowserContext())
-      ->DownloadUrl(std::move(params));
+  web_contents()->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
+      std::move(params));
 
 #else   // !BUILDFLAG(ENABLE_PLUGINS)
   content::OpenURLParams open_url_params(

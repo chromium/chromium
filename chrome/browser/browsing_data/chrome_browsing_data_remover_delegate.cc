@@ -647,8 +647,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // DATA_TYPE_DOWNLOADS
   if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS) &&
       may_delete_history) {
-    DownloadPrefs* download_prefs = DownloadPrefs::FromDownloadManager(
-        BrowserContext::GetDownloadManager(profile_));
+    DownloadPrefs* download_prefs =
+        DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager());
     download_prefs->SetSaveFilePath(download_prefs->DownloadPath());
   }
 

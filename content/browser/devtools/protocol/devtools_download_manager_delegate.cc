@@ -25,8 +25,7 @@ const char kDevToolsDownloadManagerDelegateName[] =
 
 DevToolsDownloadManagerDelegate::DevToolsDownloadManagerDelegate(
     content::BrowserContext* browser_context) {
-  download_manager_ =
-      content::BrowserContext::GetDownloadManager(browser_context);
+  download_manager_ = browser_context->GetDownloadManager();
   DCHECK(download_manager_);
   original_download_delegate_ = download_manager_->GetDelegate();
   download_manager_->SetDelegate(this);

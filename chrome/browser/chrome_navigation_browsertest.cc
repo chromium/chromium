@@ -1376,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Ensure that no download happened.
   std::vector<download::DownloadItem*> download_items;
   content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(browser()->profile());
+      browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
   EXPECT_TRUE(download_items.empty());
 }
@@ -1413,8 +1413,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(popup));
 
   content::DownloadTestObserverInProgress observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()),
-      1 /* wait_count */);
+      browser()->profile()->GetDownloadManager(), 1 /* wait_count */);
   EXPECT_TRUE(content::ExecuteScript(
       popup,
       "window.opener.location ='data:html/text;base64,'+btoa('payload');"));
@@ -1427,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Delete any pending download.
   std::vector<download::DownloadItem*> download_items;
   content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(browser()->profile());
+      browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
   for (auto* item : download_items) {
     if (!item->IsDone())

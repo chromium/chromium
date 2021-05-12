@@ -240,7 +240,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
                                                  false);
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 
     return true;
@@ -257,7 +257,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   void CancelDownloads() {
     std::vector<DownloadItem*> download_items;
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     for (auto* item : download_items) {
       if (!item->IsDone())
@@ -268,7 +268,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   DownloadItem* GetDownload() {
     std::vector<DownloadItem*> download_items;
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     if (download_items.empty())
       DownloadItemCreatedObserver(manager).WaitForDownloadItem(&download_items);
@@ -365,7 +365,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   void TriggerDownloadViaHtml5FileApi() {
     std::vector<DownloadItem*> items;
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     content::WebContents* current_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(

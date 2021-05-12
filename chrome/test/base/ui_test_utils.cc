@@ -417,7 +417,7 @@ int FindInPage(WebContents* tab,
 
 void DownloadURL(Browser* browser, const GURL& download_url) {
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser->profile());
+      browser->profile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserver> observer(
       new content::DownloadTestObserverTerminal(
           download_manager, 1,

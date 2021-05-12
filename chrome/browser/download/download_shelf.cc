@@ -126,8 +126,7 @@ void DownloadShelf::ShowDownload(DownloadUIModel::DownloadUIModelPtr download) {
 void DownloadShelf::ShowDownloadById(
     const offline_items_collection::ContentId& id) {
   if (OfflineItemUtils::IsDownload(id)) {
-    auto* const manager =
-        content::BrowserContext::GetDownloadManager(profile());
+    auto* const manager = profile()->GetDownloadManager();
     if (manager) {
       auto* const download = manager->GetDownloadByGuid(id.id);
       if (download)

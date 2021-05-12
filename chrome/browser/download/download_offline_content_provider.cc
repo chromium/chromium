@@ -567,5 +567,5 @@ void DownloadOfflineContentProvider::CheckForExternallyRemovedDownloads() {
 
 void DownloadOfflineContentProvider::EnsureDownloadCoreServiceStarted() {
   DCHECK(profile_);
-  CHECK(content::BrowserContext::GetDownloadManager(profile_));
+  CHECK(profile_->GetDownloadManager());
 }

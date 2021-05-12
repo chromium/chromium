@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   // Need this to wait for the download to be fully cancelled to avoid a
   // confirmation prompt on quit.
   DownloadTestObserverTerminal download_test_observer_terminal(
-      BrowserContext::GetDownloadManager(browser()->profile()), 1,
+      browser()->profile()->GetDownloadManager(), 1,
       DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
 
   TestNavigationObserver navigation_observer(active_web_contents(), 1);

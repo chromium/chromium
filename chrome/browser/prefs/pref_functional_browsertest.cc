@@ -43,7 +43,7 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
       Browser* browser,
       int num_downloads) {
     DownloadManager* download_manager =
-        BrowserContext::GetDownloadManager(browser->profile());
+        browser->profile()->GetDownloadManager();
 
     content::DownloadTestObserver* downloads_observer =
          new content::DownloadTestObserverTerminal(

@@ -4691,8 +4691,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
       static_cast<RenderFrameHostImpl*>(rfh)->ComputeIsolationInfoForNavigation(
           url));
 
-  BrowserContext::GetDownloadManager(GetBrowserContext())
-      ->DownloadUrl(std::move(params));
+  GetBrowserContext()->GetDownloadManager()->DownloadUrl(std::move(params));
 }
 
 void WebContentsImpl::GenerateMHTML(

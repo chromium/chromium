@@ -96,8 +96,8 @@ class DragDownloadFile::DragDownloadFileUI
     params->set_file_path(file_path);
     params->set_file(std::move(file));  // Nulls file.
     params->set_download_source(download::DownloadSource::DRAG_AND_DROP);
-    BrowserContext::GetDownloadManager(host->GetBrowserContext())
-        ->DownloadUrl(std::move(params));
+    host->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
+        std::move(params));
   }
 
   void Cancel() {

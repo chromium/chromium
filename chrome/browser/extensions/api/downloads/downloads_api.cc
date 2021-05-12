@@ -448,11 +448,12 @@ void GetManagers(content::BrowserContext* context,
                  DownloadManager** manager,
                  DownloadManager** incognito_manager) {
   Profile* profile = Profile::FromBrowserContext(context);
-  *manager = BrowserContext::GetDownloadManager(profile->GetOriginalProfile());
+  *manager = profile->GetOriginalProfile()->GetDownloadManager();
   if (profile->HasPrimaryOTRProfile() &&
       (include_incognito || profile->IsOffTheRecord())) {
-    *incognito_manager = BrowserContext::GetDownloadManager(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    *incognito_manager =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+            ->GetDownloadManager();
   } else {
     *incognito_manager = NULL;
   }
@@ -1084,9 +1085,7 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   download_params->set_do_not_prompt_for_login(true);
   download_params->set_download_source(download::DownloadSource::EXTENSION_API);
 
-  DownloadManager* manager =
-      BrowserContext::GetDownloadManager(browser_context());
-
+  DownloadManager* manager = browser_context()->GetDownloadManager();
   manager->DownloadUrl(std::move(download_params));
   RecordApiFunctions(DOWNLOADS_FUNCTION_DOWNLOAD);
   return RespondLater();

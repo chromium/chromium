@@ -1730,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
   WebContents* popup = Shell::windows()[1]->web_contents();
   EXPECT_NE(popup, web_contents());
   DownloadTestObserverInProgress observer(
-      BrowserContext::GetDownloadManager(web_contents()->GetBrowserContext()),
+      web_contents()->GetBrowserContext()->GetDownloadManager(),
       1 /* wait_count */);
   EXPECT_TRUE(ExecJs(
       popup,

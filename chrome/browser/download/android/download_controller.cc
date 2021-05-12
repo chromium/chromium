@@ -427,8 +427,8 @@ void DownloadController::OnDangerousDownload(DownloadItem* item) {
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents) {
     auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
-        BrowserContext::GetDownloadManager(
-            content::DownloadItemUtils::GetBrowserContext(item)));
+        content::DownloadItemUtils::GetBrowserContext(item)
+            ->GetDownloadManager());
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
