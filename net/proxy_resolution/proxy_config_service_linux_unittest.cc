@@ -286,7 +286,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
     // Start the main IO thread.
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    main_thread_.StartWithOptions(options);
+    main_thread_.StartWithOptions(std::move(options));
 
     // Make sure the thread started.
     main_thread_.task_runner()->PostTask(
