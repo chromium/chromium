@@ -8,6 +8,33 @@
 
 namespace blink {
 
+namespace {
+// Returns transfer function which approximates HLG with linear range 0..1,
+// while skcms_TransferFunction_makeHLGish uses linear range 0..12.
+void MakeTransferFunctionHLG01(skcms_TransferFunction* tf) {
+  skcms_TransferFunction_makeScaledHLGish(
+      tf, 1 / 12.0f, 2.0f, 2.0f, 1 / 0.17883277f, 0.28466892f, 0.55991073f);
+}
+
+// Computes whether the transfer function from the parsed ICC profile
+// approximately matches the given parametric transfer function. Returns a
+// ColorProfile if it matches, or nullptr if not.
+std::unique_ptr<ColorProfile> ApproximatelyMatchesTF(
+    const skcms_ICCProfile* parsed,
+    const skcms_TransferFunction* tf) {
+  skcms_ICCProfile parsed_test = *parsed;
+  parsed_test.has_trc = true;
+  for (int c = 0; c < 3; c++) {
+    parsed_test.trc[c].table_entries = 0;
+    parsed_test.trc[c].parametric = *tf;
+  }
+  if (skcms_ApproximatelyEqualProfiles(parsed, &parsed_test)) {
+    return std::make_unique<ColorProfile>(parsed_test);
+  }
+  return nullptr;
+}
+}  // namespace
+
 JXLImageDecoder::JXLImageDecoder(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
@@ -158,7 +185,9 @@ void JXLImageDecoder::Decode(bool only_size) {
             transfer = SkNamedTransferFn::kPQ;
           } else if (color_encoding.transfer_function ==
                      JXL_TRANSFER_FUNCTION_HLG) {
-            transfer = SkNamedTransferFn::kHLG;
+            // Cannot use transfer = SkNamedTransferFn::kHLG directly since JXL
+            // uses the linear 0..1, not the linear 0..12, version of HLG.
+            MakeTransferFunctionHLG01(&transfer);
           } else if (color_encoding.transfer_function ==
                      JXL_TRANSFER_FUNCTION_LINEAR) {
             transfer = SkNamedTransferFn::kLinear;
@@ -209,30 +238,21 @@ void JXLImageDecoder::Decode(bool only_size) {
             // more clearly than a raw ICC profile does, so Chrome considers
             // the profile as HDR.
             const skcms_ICCProfile* parsed = profile->GetProfile();
-            skcms_ICCProfile parsed_pq = *parsed;
-            parsed_pq.has_trc = true;
-            for (int c = 0; c < 3; c++) {
-              parsed_pq.trc[c].table_entries = 0;
-              skcms_TransferFunction_makePQ(&parsed_pq.trc[c].parametric);
-            }
-            bool approx_pq =
-                skcms_ApproximatelyEqualProfiles(parsed, &parsed_pq);
 
-            skcms_ICCProfile parsed_hlg = *parsed;
-            parsed_hlg.has_trc = true;
-            for (int c = 0; c < 3; c++) {
-              parsed_hlg.trc[c].table_entries = 0;
-              skcms_TransferFunction_makeHLG(&parsed_hlg.trc[c].parametric);
-            }
-            bool approx_hlg =
-                skcms_ApproximatelyEqualProfiles(parsed, &parsed_hlg);
+            skcms_TransferFunction tf_pq;
+            skcms_TransferFunction tf_hlg01;
+            skcms_TransferFunction tf_hlg12;
+            skcms_TransferFunction_makePQ(&tf_pq);
+            MakeTransferFunctionHLG01(&tf_hlg01);
+            skcms_TransferFunction_makeHLG(&tf_hlg12);
 
-            if (approx_pq) {
-              profile = std::make_unique<ColorProfile>(parsed_pq);
-              is_hdr_ = true;
-            } else if (approx_hlg) {
-              profile = std::make_unique<ColorProfile>(parsed_hlg);
-              is_hdr_ = true;
+            for (skcms_TransferFunction tf : {tf_pq, tf_hlg01, tf_hlg12}) {
+              auto match = ApproximatelyMatchesTF(parsed, &tf);
+              if (match) {
+                is_hdr_ = true;
+                profile.swap(match);
+                break;
+              }
             }
           }
         }

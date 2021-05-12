@@ -43,6 +43,16 @@ djxl temp.jxl 3x3a_pq.png
 cjxl 3x3a_pq.png 3x3a_pq_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_pq.png 3x3a_pq_lossless.jxl -d 0
 
+cjxl 3x3.png temp.jxl -x color_space=RGB_D65_202_Rel_HLG -d 0
+djxl temp.jxl 3x3_hlg.png
+cjxl 3x3_hlg.png 3x3_hlg_lossy.jxl -d 0.1 -s 3
+cjxl 3x3_hlg.png 3x3_hlg_lossless.jxl -d 0
+
+cjxl 3x3a.png temp.jxl -x color_space=RGB_D65_202_Rel_HLG -d 0
+djxl temp.jxl 3x3a_hlg.png
+cjxl 3x3a_hlg.png 3x3a_hlg_lossy.jxl -d 0.1 -s 3
+cjxl 3x3a_hlg.png 3x3a_hlg_lossless.jxl -d 0
+
 convert icc-v2-gbr.jpg icc-v2-gbr.icc
 cjxl 3x3.png temp.jxl -x icc_pathname=icc-v2-gbr.icc -d 0
 djxl temp.jxl 3x3_gbr.png
