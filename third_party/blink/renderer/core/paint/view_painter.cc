@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"

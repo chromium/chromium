@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
+
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
