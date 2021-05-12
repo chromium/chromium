@@ -151,7 +151,9 @@ TEST_P(SpellcheckServiceUnitTest, GetDictionaries) {
   prefs()->SetString(language::prefs::kAcceptLanguages,
                      GetParam().accept_languages);
   base::ListValue spellcheck_dictionaries;
-  spellcheck_dictionaries.AppendStrings(GetParam().spellcheck_dictionaries);
+  for (const std::string& dictionary : GetParam().spellcheck_dictionaries) {
+    spellcheck_dictionaries.Append(dictionary);
+  }
   prefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                spellcheck_dictionaries);
 
