@@ -122,6 +122,9 @@ class TabStrip : public views::AccessiblePaneView,
   // while that's happening.
   bool IsTabStripEditable() const;
 
+  // Returns whether tab dragging is in progress.
+  bool CanHighlightTabs() const;
+
   // Returns information about tabs at given indices.
   bool IsTabCrashed(int tab_index) const;
   bool TabHasNetworkError(int tab_index) const;

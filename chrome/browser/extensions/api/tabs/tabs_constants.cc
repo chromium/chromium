@@ -118,6 +118,8 @@ const char kJavaScriptUrlsNotAllowedInTabsUpdate[] =
 const char kBrowserWindowNotAllowed[] = "Browser windows not allowed.";
 const char kLockedFullscreenModeNewTabError[] =
     "You cannot create new tabs while in locked fullscreen mode.";
-
+const char kCannotHighlightTabs[] =
+    "Cannot change tab highlight. This may for instance be due to user "
+    "dragging in progress.";
 }  // namespace tabs_constants
 }  // namespace extensions
