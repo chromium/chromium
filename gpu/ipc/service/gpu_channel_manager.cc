@@ -726,7 +726,9 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     // SwANGLE.
     if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
         features::IsUsingSkiaRenderer()) {
-      attribs.robust_resource_initialization = false;
+      // Not disable robust resource initialization for now, because the ANGLE has
+      // an issue for mixing using context with different settings.
+      // attribs.robust_resource_initialization = false;
     }
 
     // Only skip validation if the GLContext will be used exclusively by the
