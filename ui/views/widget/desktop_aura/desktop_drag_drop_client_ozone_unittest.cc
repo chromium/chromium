@@ -34,6 +34,22 @@ namespace {
 
 using ::ui::mojom::DragOperation;
 
+// Platforms have different approaches to handling window coordinates.  For
+// instance, Wayland doesn't use window origin (it is always zero) and treats
+// coordinates of pointer events as local ones (always within the window), but
+// X11 1) uses the origin and may adjust it so that a window gets non-zero
+// origin, see X11Window::OnConfigureEvent(), and 2) treats mouse coordinates as
+// global ones, so that the event may be considered being 'outside the window'
+// and discarded, which will make some tests in this suite failing.
+//
+// To ensure the drag to be always started within the drag widget, we choose
+// size of the drag widget and location so that the location stays within the
+// widget, even if the platform adjusts its position.
+//
+// See crbug.com/1119787
+constexpr gfx::Rect kDragWidgetBounds{200, 200};
+constexpr gfx::PointF kStartDragLocation{100, 100};
+
 class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
  public:
   FakePlatformWindow() { SetWmDragHandler(this, this); }
@@ -131,8 +147,8 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   }
 
   void ProcessDrag(std::unique_ptr<OSExchangeData> data, int operation) {
-    OnDragEnter(gfx::PointF(), std::move(data), operation);
-    int updated_operation = OnDragMotion(gfx::PointF(), operation);
+    OnDragEnter(kStartDragLocation, std::move(data), operation);
+    int updated_operation = OnDragMotion(kStartDragLocation, operation);
     OnDragDrop(nullptr);
     OnDragLeave();
     CloseDrag(ui::PreferredDragOperation(updated_operation));
@@ -258,7 +274,7 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.bounds = gfx::Rect(100, 100);
+    params.bounds = kDragWidgetBounds;
     widget_->Init(std::move(params));
     widget_->Show();
 
@@ -295,8 +311,7 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
   DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientOzoneTest);
 };
 
-// TODO(1119787): fix this.
-TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDrag) {
+TEST_F(DesktopDragDropClientOzoneTest, StartDrag) {
   // Set the operation which the destination can accept.
   dragdrop_delegate_->SetOperation(DragOperation::kCopy);
   // Start Drag and Drop with the operations suggested.
@@ -313,8 +328,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDrag) {
   EXPECT_EQ(ui::EF_NONE, dragdrop_delegate_->last_event_flags());
 }
 
-// TODO(1119787): fix this.
-TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDragCtrlPressed) {
+TEST_F(DesktopDragDropClientOzoneTest, StartDragCtrlPressed) {
   SetModifiers(ui::EF_CONTROL_DOWN);
   // Set the operation which the destination can accept.
   dragdrop_delegate_->SetOperation(DragOperation::kCopy);
@@ -347,10 +361,10 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
   // |suggested_operation|.
   int suggested_operation =
       ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE;
-  platform_window_->OnDragEnter(gfx::PointF(), std::move(data),
+  platform_window_->OnDragEnter(kStartDragLocation, std::move(data),
                                 suggested_operation);
   int updated_operation =
-      platform_window_->OnDragMotion(gfx::PointF(), suggested_operation);
+      platform_window_->OnDragMotion(kStartDragLocation, suggested_operation);
   platform_window_->OnDragDrop(nullptr);
   platform_window_->OnDragLeave();
 
@@ -383,9 +397,9 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
 
   // Simulate that the drag enter/motion/leave events happen with the
   // |suggested_operation| in the main window.
-  platform_window_->OnDragEnter(gfx::PointF(), std::move(data),
+  platform_window_->OnDragEnter(kStartDragLocation, std::move(data),
                                 suggested_operation);
-  platform_window_->OnDragMotion(gfx::PointF(), suggested_operation);
+  platform_window_->OnDragMotion(kStartDragLocation, suggested_operation);
   platform_window_->OnDragLeave();
 
   // Create another window with its own DnD facility and simulate that the drag
