@@ -201,10 +201,11 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const LayoutRect& image_rect =
-      (layout_box_->IsLayoutImage())
-          ? To<LayoutImage>(layout_box_)->ReplacedContentRect().ToLayoutRect()
-          : LayoutRect(LayoutPoint(), image_size);
+  const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
+                                     ? To<LayoutImage>(layout_box_.Get())
+                                           ->ReplacedContentRect()
+                                           .ToLayoutRect()
+                                     : LayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
@@ -491,6 +492,13 @@ FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
     result = result.TransposedPoint();
   return result;
+}
+
+// static
+ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
+  DEFINE_STATIC_LOCAL(Persistent<InfoMap>, static_info_map,
+                      (MakeGarbageCollected<InfoMap>()));
+  return *static_info_map;
 }
 
 }  // namespace blink

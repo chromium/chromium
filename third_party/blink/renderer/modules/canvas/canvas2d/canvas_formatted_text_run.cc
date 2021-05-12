@@ -16,8 +16,7 @@ CanvasFormattedTextRun::CanvasFormattedTextRun(
   // text. In the future we should handle execution_context's from worker
   // threads that do not have a document.
   auto* document = To<LocalDOMWindow>(execution_context)->document();
-  scoped_refptr<ComputedStyle> style =
-      document->GetStyleResolver().CreateComputedStyle();
+  ComputedStyle* style = document->GetStyleResolver().CreateComputedStyle();
   style->SetDisplay(EDisplay::kInline);
   layout_text_ = LayoutText::CreateAnonymous(*document, std::move(style),
                                              text.Impl(), LegacyLayout::kAuto);
@@ -31,6 +30,7 @@ void CanvasFormattedTextRun::Dispose() {
 }
 
 void CanvasFormattedTextRun::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_text_);
   ScriptWrappable::Trace(visitor);
 }
 

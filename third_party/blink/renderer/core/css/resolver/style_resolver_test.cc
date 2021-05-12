@@ -31,9 +31,9 @@ using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
  protected:
-  scoped_refptr<ComputedStyle> StyleForId(AtomicString id) {
+  ComputedStyle* StyleForId(AtomicString id) {
     Element* element = GetDocument().getElementById(id);
-    auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
+    auto* style = GetStyleEngine().GetStyleResolver().ResolveStyle(
         element, StyleRecalcContext());
     DCHECK(style);
     return style;
@@ -357,7 +357,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
 
   div->SetNeedsAnimationStyleRecalc();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  auto computed_style = StyleForId("div");
+  ComputedStyle* computed_style = StyleForId("div");
 
   EXPECT_TRUE(computed_style->HasFontRelativeUnits());
   ASSERT_TRUE(div->GetElementAnimations());
@@ -381,8 +381,9 @@ TEST_P(StyleResolverFontRelativeUnitTest,
   EXPECT_EQ("50px", ComputedValue("height", *StyleForId("div")));
 
   div->SetNeedsAnimationStyleRecalc();
+
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  auto computed_style = StyleForId("div");
+  ComputedStyle* computed_style = StyleForId("div");
 
   EXPECT_TRUE(computed_style->HasFontRelativeUnits());
   ASSERT_TRUE(div->GetElementAnimations());
@@ -588,7 +589,7 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
   )HTML");
 
   GetDocument().GetStyleEngine().UpdateActiveStyle();
-  scoped_refptr<const ComputedStyle> page_style =
+  const ComputedStyle* page_style =
       GetDocument().GetStyleResolver().StyleForPage(0, "");
   ASSERT_TRUE(page_style);
   const CSSValue* computed_value = ComputedStyleUtils::ComputedPropertyValue(
@@ -625,7 +626,7 @@ TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
   StyleRequest target_text_style_request = pseudo_style_request;
   target_text_style_request.pseudo_id = kPseudoIdTargetText;
 
-  scoped_refptr<ComputedStyle> target_text_style =
+  ComputedStyle* target_text_style =
       GetDocument().GetStyleResolver().ResolveStyle(GetDocument().body(),
                                                     StyleRecalcContext(),
                                                     target_text_style_request);
@@ -634,7 +635,7 @@ TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
   StyleRequest selection_style_style_request = pseudo_style_request;
   selection_style_style_request.pseudo_id = kPseudoIdSelection;
 
-  scoped_refptr<ComputedStyle> selection_style =
+  ComputedStyle* selection_style =
       GetDocument().GetStyleResolver().ResolveStyle(
           GetDocument().body(), StyleRecalcContext(),
           selection_style_style_request);
@@ -648,8 +649,7 @@ TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
   ASSERT_TRUE(image);
   EXPECT_TRUE(image->IsPendingImage());
 
-  for (const auto* pseudo_style :
-       {target_text_style.get(), selection_style.get()}) {
+  for (const auto* pseudo_style : {target_text_style, selection_style}) {
     // Check that the color applies.
     EXPECT_EQ(Color(0, 128, 0),
               pseudo_style->VisitedDependentColor(GetCSSPropertyColor()));

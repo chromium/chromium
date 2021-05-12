@@ -54,6 +54,13 @@ std::ostream& operator<<(std::ostream& stream, const NGLogicalLineItem& item) {
   return stream;
 }
 
+void NGLogicalLineItem::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_result);
+  visitor->Trace(layout_object);
+  visitor->Trace(out_of_flow_positioned_box);
+  visitor->Trace(unpositioned_float);
+}
+
 NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {
   for (auto& child : *this) {
     if (child.HasInFlowFragment())
@@ -104,6 +111,10 @@ void NGLogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
                                               unsigned end) {
   for (unsigned index = start; index < end; index++)
     children_[index].rect.offset.block_offset += delta;
+}
+
+void NGLogicalLineItems::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
 }
 
 }  // namespace blink

@@ -31,8 +31,8 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
       const PhysicalOffset& old_paint_offset) {
     PaintInvalidatorContext context;
     context.old_paint_offset = old_paint_offset;
-    fragment_data_.SetPaintOffset(box.FirstFragment().PaintOffset());
-    context.fragment_data = &fragment_data_;
+    fragment_data_->SetPaintOffset(box.FirstFragment().PaintOffset());
+    context.fragment_data = fragment_data_;
     return BoxPaintInvalidator(box, context).ComputePaintInvalidationReason();
   }
 
@@ -94,7 +94,8 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
   }
 
  private:
-  FragmentData fragment_data_;
+  Persistent<FragmentData> fragment_data_ =
+      MakeGarbageCollected<FragmentData>();
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BoxPaintInvalidatorTest);

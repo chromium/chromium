@@ -43,8 +43,7 @@ class HTMLPopupElement final : public HTMLElement {
   void SetNeedsRepositioningForSelectMenu(bool flag);
   bool NeedsRepositioningForSelectMenu() const;
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement*);
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) final;
+  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) final;
 
   void Trace(Visitor*) const override;
 

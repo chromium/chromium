@@ -42,9 +42,15 @@ enum MarkLineBoxes { kMarkLineBoxesDirty, kDontMarkLineBoxes };
 
 // InlineBox represents a rectangle that occurs on a line.  It corresponds to
 // some LayoutObject (i.e., it represents a portion of that LayoutObject).
-class CORE_EXPORT InlineBox : public DisplayItemClient {
+class CORE_EXPORT InlineBox : public GarbageCollected<InlineBox>,
+                              public DisplayItemClient {
  public:
-  InlineBox(LineLayoutItem obj) : line_layout_item_(obj), logical_width_() {}
+  InlineBox(LineLayoutItem obj)
+      : next_(nullptr),
+        prev_(nullptr),
+        parent_(nullptr),
+        line_layout_item_(obj),
+        logical_width_() {}
 
   InlineBox(LineLayoutItem item,
             LayoutPoint top_left,
@@ -67,7 +73,7 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
 
   InlineBox(const InlineBox&) = delete;
   InlineBox& operator=(const InlineBox&) = delete;
-  ~InlineBox() override;
+  virtual void Trace(Visitor*) const;
 
   virtual void Destroy();
 
@@ -103,10 +109,6 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
                            const PhysicalOffset& accumulated_offset,
                            LayoutUnit line_top,
                            LayoutUnit line_bottom);
-
-  // InlineBoxes are allocated out of the rendering partition.
-  void* operator new(size_t);
-  void operator delete(void*);
 
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;
@@ -195,9 +197,6 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
   LineLayoutItem GetLineLayoutItem() const { return line_layout_item_; }
 
   InlineFlowBox* Parent() const {
-#if DCHECK_IS_ON()
-    DCHECK(!has_bad_parent_);
-#endif
     return parent_;
   }
 
@@ -458,10 +457,10 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
  private:
   void SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded();
 
-  InlineBox* next_ = nullptr;  // The next element on the same line as us.
-  InlineBox* prev_ = nullptr;  // The previous element on the same line as us.
+  Member<InlineBox> next_;  // The next element on the same line as us.
+  Member<InlineBox> prev_;  // The previous element on the same line as us.
 
-  InlineFlowBox* parent_ = nullptr;  // The box that contains us.
+  Member<InlineFlowBox> parent_;  // The box that contains us.
   LineLayoutItem line_layout_item_;
 
  protected:
@@ -497,21 +496,7 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
 
  private:
   InlineBoxBitfields bitfields_;
-
-#if DCHECK_IS_ON()
-  bool has_bad_parent_ = false;
-#endif
 };
-
-#if !DCHECK_IS_ON()
-inline InlineBox::~InlineBox() {}
-#endif
-
-#if DCHECK_IS_ON()
-inline void InlineBox::SetHasBadParent() {
-  has_bad_parent_ = true;
-}
-#endif
 
 // Allow equality comparisons of InlineBox's by reference or pointer,
 // interchangeably.

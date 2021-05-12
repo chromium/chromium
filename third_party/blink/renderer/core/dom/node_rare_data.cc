@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -89,15 +90,13 @@ void NodeData::Trace(Visitor* visitor) const {
   }
 }
 
-NodeRenderingData::NodeRenderingData(
-    LayoutObject* layout_object,
-    scoped_refptr<const ComputedStyle> computed_style)
+NodeRenderingData::NodeRenderingData(LayoutObject* layout_object,
+                                     const ComputedStyle* computed_style)
     : NodeData(false, false),
       layout_object_(layout_object),
       computed_style_(computed_style) {}
 
-void NodeRenderingData::SetComputedStyle(
-    scoped_refptr<const ComputedStyle> computed_style) {
+void NodeRenderingData::SetComputedStyle(const ComputedStyle* computed_style) {
   DCHECK_NE(&SharedEmptyData(), this);
   computed_style_ = computed_style;
 }
@@ -107,6 +106,11 @@ NodeRenderingData& NodeRenderingData::SharedEmptyData() {
       Persistent<NodeRenderingData>, shared_empty_data,
       (MakeGarbageCollected<NodeRenderingData>(nullptr, nullptr)));
   return *shared_empty_data;
+}
+void NodeRenderingData::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+  visitor->Trace(computed_style_);
+  NodeData::TraceAfterDispatch(visitor);
 }
 
 void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {

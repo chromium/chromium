@@ -20,6 +20,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_CHUNK_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_CHUNK_BUILDER_H_
 
+#include "base/macros.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -47,10 +49,11 @@ class SVGTextChunkBuilder {
   SVGTextChunkBuilder(const SVGTextChunkBuilder&) = delete;
   SVGTextChunkBuilder& operator=(const SVGTextChunkBuilder&) = delete;
 
-  void ProcessTextChunks(const Vector<SVGInlineTextBox*>&);
+  void ProcessTextChunks(const HeapVector<Member<SVGInlineTextBox>>&);
 
  protected:
-  typedef Vector<SVGInlineTextBox*>::const_iterator BoxListConstIterator;
+  typedef HeapVector<Member<SVGInlineTextBox>>::const_iterator
+      BoxListConstIterator;
 
   virtual void HandleTextChunk(BoxListConstIterator box_start,
                                BoxListConstIterator box_end);

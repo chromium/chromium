@@ -317,7 +317,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
     std::sort(sorted_text_boxes_.begin(), sorted_text_boxes_.end(),
               InlineTextBox::CompareByStart);
     sorted_text_boxes_position_ = 0;
-    text_box_ = sorted_text_boxes_.IsEmpty() ? 0 : sorted_text_boxes_[0];
+    text_box_ =
+        sorted_text_boxes_.IsEmpty() ? nullptr : sorted_text_boxes_[0].Get();
   }
 
   HandleTextBox();
@@ -392,7 +393,8 @@ void TextIteratorTextNodeHandler::HandleTextBox() {
       // Check for collapsed space at the start of this run.
       InlineTextBox* first_text_box =
           layout_object->ContainsReversedText()
-              ? (sorted_text_boxes_.IsEmpty() ? 0 : sorted_text_boxes_[0])
+              ? (sorted_text_boxes_.IsEmpty() ? nullptr
+                                              : sorted_text_boxes_[0].Get())
               : layout_object->FirstTextBox();
       const bool need_space = last_text_node_ended_with_collapsed_space_ ||
                               (text_box_ == first_text_box &&

@@ -39,8 +39,7 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
 
   bool HasNonInBodyInsertionMode() const override { return true; }
   void PropagateWritingModeAndDirectionFromBody();
-  scoped_refptr<const ComputedStyle> LayoutStyleForElement(
-      scoped_refptr<const ComputedStyle> style);
+  const ComputedStyle* LayoutStyleForElement(const ComputedStyle* style);
 
  private:
   void MaybeSetupApplicationCache();

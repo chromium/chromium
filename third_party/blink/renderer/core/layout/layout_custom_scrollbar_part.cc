@@ -85,7 +85,8 @@ LayoutCustomScrollbarPart* LayoutCustomScrollbarPart::CreateAnonymous(
     CustomScrollbar* scrollbar,
     ScrollbarPart part) {
   LayoutCustomScrollbarPart* layout_object =
-      new LayoutCustomScrollbarPart(scrollable_area, scrollbar, part);
+      MakeGarbageCollected<LayoutCustomScrollbarPart>(scrollable_area,
+                                                      scrollbar, part);
   RecordScrollbarPartStats(*document, part);
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;

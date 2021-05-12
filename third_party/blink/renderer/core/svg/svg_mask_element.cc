@@ -156,7 +156,7 @@ void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGMaskElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGResourceMasker(this);
+  return MakeGarbageCollected<LayoutSVGResourceMasker>(this);
 }
 
 bool SVGMaskElement::SelfHasRelativeLengths() const {

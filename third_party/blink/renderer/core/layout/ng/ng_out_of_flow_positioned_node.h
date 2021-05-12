@@ -30,16 +30,18 @@ struct NGContainingBlock {
   // The relative offset is stored separately to ensure that it is applied after
   // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
   OffsetType relative_offset;
-  scoped_refptr<const NGPhysicalFragment> fragment;
+  Member<const NGPhysicalFragment> fragment;
 
   NGContainingBlock() : fragment(nullptr) {}
 
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
-                    scoped_refptr<const NGPhysicalFragment> fragment)
+                    const NGPhysicalFragment* fragment)
       : offset(offset),
         relative_offset(relative_offset),
         fragment(std::move(fragment)) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 };
 
 // If an out-of-flow positioned element is inside a nested fragmentation
@@ -48,7 +50,8 @@ struct NGContainingBlock {
 // needed to perform layout on the OOF descendants once they make their way to
 // the outermost context.
 template <typename OffsetType>
-struct NGMulticolWithPendingOOFs {
+struct NGMulticolWithPendingOOFs
+    : public GarbageCollected<NGMulticolWithPendingOOFs<OffsetType>> {
  public:
   // If no fixedpos containing block was found, |multicol_offset| will be
   // relative to the outer fragmentation context root. Otherwise, it will be
@@ -67,6 +70,10 @@ struct NGMulticolWithPendingOOFs {
       NGContainingBlock<OffsetType> fixedpos_containing_block)
       : multicol_offset(multicol_offset),
         fixedpos_containing_block(fixedpos_containing_block) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(fixedpos_containing_block);
+  }
 };
 
 // A physical out-of-flow positioned-node is an element with the style
@@ -88,7 +95,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
 
  public:
-  LayoutBox* box;
+  Member<LayoutBox> box;
   // Unpacked NGPhysicalStaticPosition.
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
@@ -96,7 +103,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   // Whether or not this is an NGPhysicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
   // Continuation root of the optional inline container.
-  const LayoutInline* inline_container;
+  Member<const LayoutInline> inline_container;
 
   NGPhysicalOutOfFlowPositionedNode(
       NGBlockNode node,
@@ -124,6 +131,9 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
     return {static_position, GetStaticPositionHorizontalEdge(),
             GetStaticPositionVerticalEdge()};
   }
+
+  void Trace(Visitor* visitor) const;
+  void TraceAfterDispatch(Visitor*) const;
 };
 
 // When fragmentation comes into play, we no longer place a positioned-node as
@@ -166,6 +176,8 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
         fixedpos_containing_block(fixedpos_containing_block) {
     is_for_fragmentation = true;
   }
+
+  void TraceAfterDispatch(Visitor* visitor) const;
 };
 
 // The logical version of above. It is used within a an algorithm pass (within
@@ -178,10 +190,10 @@ struct NGLogicalOutOfFlowPositionedNode final {
   DISALLOW_NEW();
 
  public:
-  LayoutBox* box;
+  Member<LayoutBox> box;
   NGLogicalStaticPosition static_position;
   // Continuation root of the optional inline container.
-  const LayoutInline* inline_container;
+  Member<const LayoutInline> inline_container;
   bool needs_block_offset_adjustment;
   const LayoutUnit fragmentainer_consumed_block_size;
   NGContainingBlock<LogicalOffset> containing_block;
@@ -211,8 +223,22 @@ struct NGLogicalOutOfFlowPositionedNode final {
   }
 
   NGBlockNode Node() const { return NGBlockNode(box); }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(box);
+    visitor->Trace(inline_container);
+    visitor->Trace(containing_block);
+    visitor->Trace(fixedpos_containing_block);
+  }
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGPhysicalOutOfFlowPositionedNode)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGPhysicalOOFNodeForFragmentation)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGLogicalOutOfFlowPositionedNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

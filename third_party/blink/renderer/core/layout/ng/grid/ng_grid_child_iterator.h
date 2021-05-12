@@ -27,23 +27,28 @@ class CORE_EXPORT NGGridChildIterator {
 
   // Returns the next block node which should be laid out.
   NGBlockNode NextChild() {
-    if (iterator_ == children_.end())
+    DCHECK(position_ <= children_.size());
+    if (position_ == children_.size())
       return nullptr;
-
-    return (*iterator_++).child;
+    return children_[position_++].child;
   }
 
   struct ChildWithOrder {
     DISALLOW_NEW();
+
+   public:
     ChildWithOrder(NGBlockNode child, int order) : child(child), order(order) {}
+    void Trace(Visitor* visitor) const { visitor->Trace(child); }
+
     NGBlockNode child;
     int order;
   };
 
  protected:
   virtual void Setup(const NGBlockNode node);
-  Vector<ChildWithOrder, 4> children_;
-  Vector<ChildWithOrder, 4>::const_iterator iterator_;
+  // |children_| cannot be modified after |Setup()|.
+  HeapVector<ChildWithOrder, 4> children_;
+  wtf_size_t position_ = 0;
 };
 
 }  // namespace blink

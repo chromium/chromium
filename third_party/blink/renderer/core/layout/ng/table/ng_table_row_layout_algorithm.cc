@@ -18,7 +18,7 @@ NGTableRowLayoutAlgorithm::NGTableRowLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   wtf_size_t row_index = ConstraintSpace().TableRowIndex();
 
@@ -94,8 +94,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
       NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
           cell, cell_index, base::nullopt, row.is_collapsed,
           &cell_location_start_column);
-      scoped_refptr<const NGLayoutResult> layout_result =
-          cell.Layout(cell_constraint_space);
+      const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
       NGBoxFragment fragment(
           table_data.table_writing_direction,
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
@@ -117,8 +116,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
         cell, cell_index, row_baseline, row.is_collapsed,
         &cell_location_start_column);
-    scoped_refptr<const NGLayoutResult> cell_result =
-        cell.Layout(cell_constraint_space);
+    const NGLayoutResult* cell_result = cell.Layout(cell_constraint_space);
     LogicalOffset cell_offset(
         table_data.column_locations[cell_location_start_column].offset -
             table_data.table_border_spacing.inline_size,

@@ -31,7 +31,7 @@ class NGSVGTextLayoutAlgorithm {
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void ApplyTextLengthAttribute(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
-  Vector<SVGTextLengthContext> CollectTextLengthAncestors(
+  HeapVector<SVGTextLengthContext> CollectTextLengthAncestors(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items,
       wtf_size_t index,
       const LayoutObject* layout_object) const;

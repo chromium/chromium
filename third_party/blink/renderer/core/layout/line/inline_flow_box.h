@@ -39,8 +39,8 @@ class VerticalPositionCache;
 
 struct GlyphOverflow;
 
-typedef HashMap<const InlineTextBox*,
-                std::pair<Vector<const SimpleFontData*>, GlyphOverflow>>
+typedef HeapHashMap<Member<const InlineTextBox>,
+                    std::pair<Vector<const SimpleFontData*>, GlyphOverflow>>
     GlyphOverflowAndFallbackFontsMap;
 
 class InlineFlowBox : public InlineBox {
@@ -61,10 +61,6 @@ class InlineFlowBox : public InlineBox {
         line_break_bidi_status_last_strong_(WTF::unicode::kLeftToRight),
         line_break_bidi_status_last_(WTF::unicode::kLeftToRight),
         is_first_after_page_break_(false)
-#if DCHECK_IS_ON()
-        ,
-        has_bad_child_list_(false)
-#endif
   {
     // Internet Explorer and Firefox always create a marker for list items, even
     // when the list-style-type is none.  We do not make a marker in the
@@ -80,8 +76,10 @@ class InlineFlowBox : public InlineBox {
     has_text_descendants_ = has_text_children_;
   }
 
+  void Trace(Visitor*) const override;
+
 #if DCHECK_IS_ON()
-  ~InlineFlowBox() override;
+  void Destroy() override;
 
   void DumpLineTreeAndMark(StringBuilder&,
                            const InlineBox* = nullptr,
@@ -469,14 +467,14 @@ class InlineFlowBox : public InlineBox {
 
   bool IsInlineFlowBox() const final { return true; }
 
-  InlineBox* first_child_;
-  InlineBox* last_child_;
+  Member<InlineBox> first_child_;
+  Member<InlineBox> last_child_;
 
   // The next/previous box that also uses our LayoutObject.
   // RootInlineBox, a subclass of this class, uses these fields for
   // next/previous RootInlineBox.
-  InlineFlowBox* prev_line_box_;
-  InlineFlowBox* next_line_box_;
+  Member<InlineFlowBox> prev_line_box_;
+  Member<InlineFlowBox> next_line_box_;
 
  private:
   unsigned include_logical_left_edge_ : 1;
@@ -504,23 +502,12 @@ class InlineFlowBox : public InlineBox {
   unsigned is_first_after_page_break_ : 1;
 
 // End of RootInlineBox-specific members.
-
-#if DCHECK_IS_ON()
- private:
-  unsigned has_bad_child_list_ : 1;
-#endif
 };
 
 template <>
 struct DowncastTraits<InlineFlowBox> {
   static bool AllowFrom(const InlineBox& box) { return box.IsInlineFlowBox(); }
 };
-
-inline void InlineFlowBox::SetHasBadChildList() {
-#if DCHECK_IS_ON()
-  has_bad_child_list_ = true;
-#endif
-}
 
 }  // namespace blink
 

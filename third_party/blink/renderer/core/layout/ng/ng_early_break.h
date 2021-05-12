@@ -13,41 +13,49 @@ namespace blink {
 // Possible early unforced breakpoint. This represents a possible (and good)
 // location to break. In cases where we run out of space at an unideal location,
 // we may want to go back and break here instead.
-class NGEarlyBreak : public RefCounted<NGEarlyBreak> {
+class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
  public:
   enum BreakType {
     kLine,  // Break before a specified line number.
     kBlock  // Break before or inside a specified child block.
   };
 
-  explicit NGEarlyBreak(
-      NGBlockNode block,
-      scoped_refptr<const NGEarlyBreak> break_inside_child = nullptr)
+  explicit NGEarlyBreak(NGBlockNode block,
+                        const NGEarlyBreak* break_inside_child = nullptr)
       : box_(block.GetLayoutBox()),
         break_inside_child_(break_inside_child),
-        type_(kBlock) {}
+        const_type_(kBlock) {}
   explicit NGEarlyBreak(int line_number)
-      : line_number_(line_number), type_(kLine) {}
+      : line_number_(line_number), const_type_(kLine) {}
 
-  BreakType Type() const { return type_; }
+  BreakType Type() const { return const_type_; }
   bool IsBreakBefore() const { return !break_inside_child_; }
   NGBlockNode BlockNode() const {
-    CHECK_EQ(type_, kBlock);
+    CHECK_EQ(const_type_, kBlock);
     return NGBlockNode(box_);
   }
   int LineNumber() const {
-    DCHECK_EQ(type_, kLine);
+    DCHECK_EQ(const_type_, kLine);
     return line_number_;
   }
-  const NGEarlyBreak* BreakInside() const { return break_inside_child_.get(); }
+  const NGEarlyBreak* BreakInside() const { return break_inside_child_; }
+
+  void Trace(Visitor* visitor) const {
+    // It is safe to check |const_type_| here because it is a const value.
+    if (const_type_ == kBlock)
+      visitor->Trace(box_);
+    visitor->Trace(break_inside_child_);
+  }
 
  private:
   union {
-    LayoutBox* box_;   // Set if type_ == kBlock
-    int line_number_;  // Set if type_ == kLine
+    GC_PLUGIN_IGNORE("1146383")
+    Member<LayoutBox> box_;  // Set if const_type_ == kBlock
+
+    int line_number_;  // Set if const_type_ == kLine
   };
-  scoped_refptr<const NGEarlyBreak> break_inside_child_;
-  BreakType type_;
+  Member<const NGEarlyBreak> break_inside_child_;
+  const BreakType const_type_;
 };
 
 }  // namespace blink

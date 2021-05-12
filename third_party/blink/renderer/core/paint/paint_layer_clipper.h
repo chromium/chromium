@@ -165,7 +165,7 @@ class CORE_EXPORT PaintLayerClipper {
   STACK_ALLOCATED();
 
  public:
-  explicit PaintLayerClipper(const PaintLayer&, bool use_geometry_mapper);
+  explicit PaintLayerClipper(const PaintLayer*, bool use_geometry_mapper);
 
   // Returns the background clip rect of the layer in the local coordinate
   // space. Only looks for clips up to the given ancestor.
@@ -220,7 +220,7 @@ class CORE_EXPORT PaintLayerClipper {
   // filter effects if needed.
   ALWAYS_INLINE PhysicalRect LocalVisualRect(const ClipRectsContext&) const;
 
-  const PaintLayer& layer_;
+  const PaintLayer* layer_;
   bool use_geometry_mapper_;
 
   friend class PaintLayerClipperTest;

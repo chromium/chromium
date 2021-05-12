@@ -29,7 +29,10 @@
 namespace blink {
 
 static DataRef<NinePieceImageData>& DefaultData() {
-  static DataRef<NinePieceImageData>* data = new DataRef<NinePieceImageData>;
+  // Use ThreadSpecific to create a ComputedStyle for each thread as this can be
+  // called on a Worker thread.
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<DataRef<NinePieceImageData>>,
+                                  data, ());
   if (!data->Get())
     data->Init();
   return *data;

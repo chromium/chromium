@@ -291,11 +291,16 @@ LocalFrameView::~LocalFrameView() {
 }
 
 void LocalFrameView::Trace(Visitor* visitor) const {
+  visitor->Trace(part_update_set_);
   visitor->Trace(frame_);
   visitor->Trace(update_plugins_timer_);
+  visitor->Trace(layout_subtree_root_list_);
+  visitor->Trace(orthogonal_writing_mode_root_list_);
   visitor->Trace(fragment_anchor_);
   visitor->Trace(scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
+  visitor->Trace(viewport_constrained_objects_);
+  visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
   visitor->Trace(plugins_);
   visitor->Trace(scrollbars_);
@@ -432,7 +437,7 @@ void LocalFrameView::Dispose() {
   // are missed. It would be good to understand how/why that happens, but in the
   // mean time, it's not safe to keep pointers around to defunct LayoutObjects.
   orthogonal_writing_mode_root_list_.Clear();
-  viewport_constrained_objects_.reset();
+  viewport_constrained_objects_.Clear();
   background_attachment_fixed_objects_.clear();
 
   // Destroy |m_autoSizeInfo| as early as possible, to avoid dereferencing
@@ -784,7 +789,7 @@ void LocalFrameView::PerformLayout() {
         analyzer_->Increment(LayoutAnalyzer::kPerformLayoutRootLayoutObjects,
                              layout_subtree_root_list_.size());
       }
-      HashSet<LayoutBlock*> fragment_tree_spines;
+      HeapHashSet<Member<LayoutBlock>> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Ordered()) {
         if (!LayoutFromRootObject(*root))
           continue;
@@ -807,7 +812,7 @@ void LocalFrameView::PerformLayout() {
       }
       layout_subtree_root_list_.Clear();
       // Ensure fragment-tree consistency after a subtree layout.
-      for (auto* cb : fragment_tree_spines)
+      for (auto cb : fragment_tree_spines)
         cb->RebuildFragmentTreeSpine();
       fragment_tree_spines.clear();
     } else {
@@ -854,7 +859,7 @@ void LocalFrameView::UpdateLayout() {
 
   base::Optional<RuntimeCallTimerScope> rcs_scope;
   probe::UpdateLayout probe(GetFrame().GetDocument());
-  Vector<LayoutObjectWithDepth> layout_roots;
+  HeapVector<LayoutObjectWithDepth> layout_roots;
 
   TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
   if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) {
@@ -1148,8 +1153,8 @@ bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
   if (background_attachment_fixed_objects_.size() > 1)
     return true;
 
-  const auto* object =
-      To<LayoutBoxModelObject>(*background_attachment_fixed_objects_.begin());
+  const auto* object = To<LayoutBoxModelObject>(
+      background_attachment_fixed_objects_.begin()->Get());
   // We should not add such object in the set.
   DCHECK(!object->BackgroundTransfersToView());
   // If the background is viewport background and it paints onto the main
@@ -1164,7 +1169,7 @@ void LocalFrameView::AddViewportConstrainedObject(
     LayoutObject& object,
     ViewportConstrainedType constrained_reason) {
   if (!viewport_constrained_objects_)
-    viewport_constrained_objects_ = std::make_unique<ObjectSet>();
+    viewport_constrained_objects_ = MakeGarbageCollected<ObjectSet>();
 
   auto result = viewport_constrained_objects_->insert(&object);
   if (constrained_reason == ViewportConstrainedType::kSticky) {
@@ -1238,9 +1243,7 @@ void LocalFrameView::MarkViewportConstrainedObjectsForLayout(
   if (!HasViewportConstrainedObjects() || !(width_changed || height_changed))
     return;
 
-  for (auto* const viewport_constrained_object :
-       *viewport_constrained_objects_) {
-    LayoutObject* layout_object = viewport_constrained_object;
+  for (const auto& layout_object : *viewport_constrained_objects_) {
     const ComputedStyle& style = layout_object->StyleRef();
     if (width_changed) {
       if (style.Width().IsFixed() &&
@@ -1272,7 +1275,7 @@ bool LocalFrameView::ShouldSetCursor() const {
 
 void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
     const LayoutObject& scrolled_object) {
-  for (auto* const layout_object : background_attachment_fixed_objects_) {
+  for (const auto& layout_object : background_attachment_fixed_objects_) {
     if (scrolled_object != GetLayoutView() &&
         !layout_object->IsDescendantOf(&scrolled_object))
       continue;
@@ -1289,13 +1292,11 @@ void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
 
 bool LocalFrameView::InvalidateViewportConstrainedObjects() {
   bool fast_path_allowed = true;
-  for (auto* const viewport_constrained_object :
-       *viewport_constrained_objects_) {
-    LayoutObject* layout_object = viewport_constrained_object;
+  for (const auto& layout_object : *viewport_constrained_objects_) {
     DCHECK(layout_object->StyleRef().HasViewportConstrainedPosition() ||
            layout_object->StyleRef().HasStickyConstrainedPosition());
     DCHECK(layout_object->HasLayer());
-    PaintLayer* layer = To<LayoutBoxModelObject>(layout_object)->Layer();
+    PaintLayer* layer = To<LayoutBoxModelObject>(layout_object.Get())->Layer();
 
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       DisableCompositingQueryAsserts disabler;
@@ -1817,10 +1818,15 @@ bool LocalFrameView::UpdatePlugins() {
 
   for (const auto& embedded_object : objects) {
     LayoutEmbeddedObject& object = *embedded_object;
+
+#if DCHECK_IS_ON()
+    if (object.is_destroyed_)
+      continue;
+#endif
+
     auto* element = To<HTMLPlugInElement>(object.GetNode());
 
-    // The object may have already been destroyed (thus node cleared),
-    // but LocalFrameView holds a manual ref, so it won't have been deleted.
+    // The object may have already been destroyed (thus node cleared).
     if (!element)
       continue;
 
@@ -1828,7 +1834,7 @@ bool LocalFrameView::UpdatePlugins() {
     if (object.ShowsUnavailablePluginIndicator())
       continue;
 
-    if (element->NeedsPluginUpdate())
+    if (element->NeedsPluginUpdate() && element->GetLayoutObject())
       element->UpdatePlugin();
     if (EmbeddedContentView* view = element->OwnedEmbeddedContentView())
       view->UpdateGeometry();

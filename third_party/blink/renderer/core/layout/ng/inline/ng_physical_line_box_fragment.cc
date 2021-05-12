@@ -26,10 +26,10 @@ ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
 
 }  // namespace
 
-scoped_refptr<const NGPhysicalLineBoxFragment>
-NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
+    NGLineBoxFragmentBuilder* builder) {
   DCHECK_EQ(builder->children_.size(), 0u);
-  return base::MakeRefCounted<NGPhysicalLineBoxFragment>(PassKey(), builder);
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
 }
 
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
@@ -118,4 +118,9 @@ bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<NGInlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
 }
+
+void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
+}
+
 }  // namespace blink

@@ -57,11 +57,16 @@ struct BidiRun final : BidiCharacterRun {
     has_hyphen_ = false;
   }
 
-  BidiRun* Next() { return static_cast<BidiRun*>(next_); }
+  BidiRun* Next() { return static_cast<BidiRun*>(next_.Get()); }
+
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(box_);
+    BidiCharacterRun::Trace(visitor);
+  }
 
  public:
   LineLayoutItem line_layout_item_;
-  InlineBox* box_;
+  Member<InlineBox> box_;
 };
 
 }  // namespace blink

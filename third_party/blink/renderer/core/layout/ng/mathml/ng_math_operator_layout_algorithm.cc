@@ -32,7 +32,7 @@ NGMathOperatorLayoutAlgorithm::NGMathOperatorLayoutAlgorithm(
       Node().IsInlineFormattingContextRoot());
 }
 
-scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   // This algorithm can only be used for operators with a single text node,
   // which itself must contain only one glyph. We ensure that the subtree is
   // properly laid out but the glyph will actually be used to determine a
@@ -49,7 +49,7 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
       To<NGInlineNode>(child), container_builder_.GetWritingDirection());
   container_builder_.SetItemsBuilder(&items_builder);
   context.SetItemsBuilder(&items_builder);
-  scoped_refptr<const NGLayoutResult> child_layout_result =
+  const NGLayoutResult* child_layout_result =
       To<NGInlineNode>(child).Layout(ConstraintSpace(), nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});
 

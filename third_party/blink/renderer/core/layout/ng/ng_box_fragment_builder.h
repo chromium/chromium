@@ -34,7 +34,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
  public:
   NGBoxFragmentBuilder(NGLayoutInputNode node,
-                       scoped_refptr<const ComputedStyle> style,
+                       const ComputedStyle* style,
                        const NGConstraintSpace* space,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(node,
@@ -47,7 +47,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Build a fragment for LayoutObject without NGLayoutInputNode. LayoutInline
   // has NGInlineItem but does not have corresponding NGLayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
-                       scoped_refptr<const ComputedStyle> style,
+                       const ComputedStyle* style,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(/* node */ nullptr,
                                    std::move(style),
@@ -218,8 +218,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
-  void AddBreakToken(scoped_refptr<const NGBreakToken>,
-                     bool is_in_parallel_flow = false);
+  void AddBreakToken(const NGBreakToken*, bool is_in_parallel_flow = false);
 
   void AddOutOfFlowLegacyCandidate(NGBlockNode,
                                    const NGLogicalStaticPosition&,
@@ -253,12 +252,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetDidBreakSelf() { did_break_self_ = true; }
 
   // Store the previous break token, if one exists.
-  void SetPreviousBreakToken(
-      scoped_refptr<const NGBlockBreakToken> break_token) {
-    previous_break_token_ = std::move(break_token);
+  void SetPreviousBreakToken(const NGBlockBreakToken* break_token) {
+    previous_break_token_ = break_token;
   }
   const NGBlockBreakToken* PreviousBreakToken() const {
-    return previous_break_token_.get();
+    return previous_break_token_;
   }
 
   // Return true if we need to break before or inside any child, doesn't matter
@@ -271,7 +269,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
-    return last_inline_break_token_.get();
+    return last_inline_break_token_;
   }
 
   // Return true if we need to break before or inside any in-flow child that
@@ -383,15 +381,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     lines_until_clamp_ = value;
   }
 
-  void SetEarlyBreak(scoped_refptr<const NGEarlyBreak> breakpoint,
-                     NGBreakAppeal appeal) {
+  void SetEarlyBreak(const NGEarlyBreak* breakpoint, NGBreakAppeal appeal) {
     early_break_ = breakpoint;
     break_appeal_ = appeal;
   }
-  bool HasEarlyBreak() const { return early_break_.get(); }
+  bool HasEarlyBreak() const { return early_break_; }
   const NGEarlyBreak& EarlyBreak() const {
-    DCHECK(early_break_.get());
-    return *early_break_.get();
+    DCHECK(early_break_);
+    return *early_break_;
   }
 
   // Set the highest break appeal found so far. This is either:
@@ -405,11 +402,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // do not provide a setter here.
 
   // Creates the fragment. Can only be called once.
-  scoped_refptr<const NGLayoutResult> ToBoxFragment() {
+  const NGLayoutResult* ToBoxFragment() {
     DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
     return ToBoxFragment(GetWritingMode());
   }
-  scoped_refptr<const NGLayoutResult> ToInlineBoxFragment() {
+  const NGLayoutResult* ToInlineBoxFragment() {
     // The logical coordinate for inline box uses line-relative writing-mode,
     // not
     // flow-relative.
@@ -417,7 +414,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return ToBoxFragment(ToLineWritingMode(GetWritingMode()));
   }
 
-  scoped_refptr<const NGLayoutResult> Abort(NGLayoutResult::EStatus);
+  const NGLayoutResult* Abort(NGLayoutResult::EStatus);
 
   NGPhysicalFragment::NGBoxType BoxType() const;
   void SetBoxType(NGPhysicalFragment::NGBoxType box_type) {
@@ -508,7 +505,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   void SetTableColumnGeometries(
-      const NGTableFragmentData::ColumnGeometries& table_column_geometries) {
+      const NGTableFragmentData::ColumnGeometries* table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }
 
@@ -556,8 +553,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   };
 
   using InlineContainingBlockMap =
-      HashMap<const LayoutObject*,
-              base::Optional<InlineContainingBlockGeometry>>;
+      HeapHashMap<Member<const LayoutObject>,
+                  base::Optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
   // |inline_containing_block_map| is a map whose keys specify which inline
@@ -607,7 +604,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     minimal_space_shortage_ = LayoutUnit::Max();
   }
 
-  scoped_refptr<const NGLayoutResult> ToBoxFragment(WritingMode);
+  const NGLayoutResult* ToBoxFragment(WritingMode);
 
   const NGFragmentGeometry* initial_fragment_geometry_ = nullptr;
   NGBoxStrut border_padding_;
@@ -657,9 +654,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Table specific types.
   base::Optional<PhysicalRect> table_grid_rect_;
-  base::Optional<NGTableFragmentData::ColumnGeometries>
-      table_column_geometries_;
-  scoped_refptr<const NGTableBorders> table_collapsed_borders_;
+  const NGTableFragmentData::ColumnGeometries* table_column_geometries_ =
+      nullptr;
+  const NGTableBorders* table_collapsed_borders_ = nullptr;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
   base::Optional<wtf_size_t> table_column_count_;
@@ -678,7 +675,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
   base::Optional<NGLayoutResult::MathData> math_data_;
 
-  scoped_refptr<const NGBlockBreakToken> previous_break_token_;
+  const NGBlockBreakToken* previous_break_token_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single

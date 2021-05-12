@@ -31,6 +31,7 @@ class NGTableFragmentData {
           inline_offset(inline_offset),
           inline_size(inline_size),
           node(node) {}
+    void Trace(Visitor* visitor) const { visitor->Trace(node); }
     wtf_size_t start_column;
     wtf_size_t span;
     LayoutUnit inline_offset;
@@ -38,7 +39,7 @@ class NGTableFragmentData {
     NGLayoutInputNode node;
   };
 
-  using ColumnGeometries = Vector<ColumnGeometry>;
+  using ColumnGeometries = HeapVector<ColumnGeometry>;
 
   // Column/row location is used for collapsed border painting.
   // Only present if borders are collapsed.

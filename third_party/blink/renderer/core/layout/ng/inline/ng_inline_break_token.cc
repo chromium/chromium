@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGInlineBreakToken : NGBreakToken {
-  scoped_refptr<const ComputedStyle> style_;
+  Member<const ComputedStyle> style_;
   unsigned numbers[2];
 };
 
@@ -34,8 +34,6 @@ NGInlineBreakToken::NGInlineBreakToken(
   flags_ = flags;
 }
 
-NGInlineBreakToken::~NGInlineBreakToken() = default;
-
 #if DCHECK_IS_ON()
 
 String NGInlineBreakToken::ToString() const {
@@ -49,5 +47,10 @@ String NGInlineBreakToken::ToString() const {
 }
 
 #endif  // DCHECK_IS_ON()
+
+void NGInlineBreakToken::Trace(Visitor* visitor) const {
+  visitor->Trace(style_);
+  NGBreakToken::Trace(visitor);
+}
 
 }  // namespace blink

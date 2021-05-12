@@ -266,7 +266,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   }
 
   static LayoutTableCell* CreateAnonymous(Document*,
-                                          scoped_refptr<ComputedStyle>,
+                                          ComputedStyle*,
                                           LegacyLayout);
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(

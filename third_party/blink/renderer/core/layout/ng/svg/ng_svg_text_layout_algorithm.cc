@@ -279,9 +279,11 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsDxDy(
 struct SVGTextLengthContext {
   DISALLOW_NEW();
   wtf_size_t start_index;
-  const LayoutObject* layout_object;
+  Member<const LayoutObject> layout_object;
   float text_length;
   SVGLengthAdjustType length_adjust;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
 };
 
 }  // namespace blink
@@ -308,7 +310,7 @@ void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
     if (last_parent == layout_object->Parent())
       continue;
     last_parent = layout_object->Parent();
-    auto text_length_ancestors =
+    HeapVector<SVGTextLengthContext> text_length_ancestors =
         CollectTextLengthAncestors(items, index, layout_object);
 
     // Find a common part of context_stack and text_length_ancestors.
@@ -343,7 +345,7 @@ void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
 // Collects ancestors with a valid textLength attribute up until the IFC.
 // The result is a list of pairs of scaled textLength value and LayoutObject
 // in the reversed order of distance from the specified |layout_object|.
-Vector<SVGTextLengthContext>
+HeapVector<SVGTextLengthContext>
 NGSVGTextLayoutAlgorithm::CollectTextLengthAncestors(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
     wtf_size_t index,

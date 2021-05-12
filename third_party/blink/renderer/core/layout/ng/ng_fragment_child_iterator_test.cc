@@ -17,8 +17,7 @@ class NGFragmentChildIteratorTest
   NGFragmentChildIteratorTest()
       : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -41,9 +40,9 @@ TEST_F(NGFragmentChildIteratorTest, Basic) {
   const LayoutObject* child2 = GetLayoutObjectByElementId("child2");
   const LayoutObject* grandchild = GetLayoutObjectByElementId("grandchild");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
   EXPECT_FALSE(iterator1.IsAtEnd());
 
   const NGPhysicalBoxFragment* fragment = iterator1->BoxFragment();
@@ -89,9 +88,9 @@ TEST_F(NGFragmentChildIteratorTest, BasicInline) {
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   const LayoutObject* float1 = GetLayoutObjectByElementId("float1");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   EXPECT_FALSE(iterator1->BoxFragment());
   const NGFragmentItem* fragment_item = iterator1->FragmentItem();
@@ -145,9 +144,9 @@ TEST_F(NGFragmentChildIteratorTest, InlineBlock) {
   const LayoutObject* inlineblock = GetLayoutObjectByElementId("inlineblock");
   const LayoutObject* float1 = GetLayoutObjectByElementId("float1");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   EXPECT_FALSE(iterator1->BoxFragment());
   const NGFragmentItem* fragment_item = iterator1->FragmentItem();
@@ -197,9 +196,9 @@ TEST_F(NGFragmentChildIteratorTest, FloatsInInline) {
   const LayoutObject* float1 = GetLayoutObjectByElementId("float1");
   const LayoutObject* child = GetLayoutObjectByElementId("child");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   const NGPhysicalBoxFragment* fragment = iterator1->BoxFragment();
   EXPECT_FALSE(fragment);
@@ -241,9 +240,9 @@ TEST_F(NGFragmentChildIteratorTest, AbsposAndLine) {
 
   const LayoutObject* abspos = GetLayoutObjectByElementId("abspos");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   const NGPhysicalBoxFragment* fragment = iterator1->BoxFragment();
   EXPECT_FALSE(fragment);
@@ -281,9 +280,9 @@ TEST_F(NGFragmentChildIteratorTest, BasicMulticol) {
   const LayoutObject* mc = GetLayoutObjectByElementId("mc");
   const LayoutObject* child = GetLayoutObjectByElementId("child");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator(*container.get());
+  NGFragmentChildIterator iterator(*container);
 
   const NGPhysicalBoxFragment* fragment = iterator->BoxFragment();
   ASSERT_TRUE(fragment);
@@ -381,9 +380,9 @@ TEST_F(NGFragmentChildIteratorTest, ColumnSpanner) {
     </div>
   )HTML");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   const LayoutObject* mc = GetLayoutObjectByElementId("mc");
   const LayoutObject* child = GetLayoutObjectByElementId("child");
@@ -561,9 +560,9 @@ TEST_F(NGFragmentChildIteratorTest, NestedWithColumnSpanner) {
     </div>
   )HTML");
 
-  scoped_refptr<const NGPhysicalBoxFragment> container =
+  const NGPhysicalBoxFragment* container =
       RunBlockLayoutAlgorithm(GetElementById("container"));
-  NGFragmentChildIterator iterator1(*container.get());
+  NGFragmentChildIterator iterator1(*container);
 
   const LayoutObject* mc1 = GetLayoutObjectByElementId("mc1");
   const LayoutObject* mc2 = GetLayoutObjectByElementId("mc2");

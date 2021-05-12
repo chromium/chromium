@@ -103,6 +103,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         const NGGridPlacement& grid_placement);
 
+    void Trace(Visitor* visitor) const;
+
     const NGBlockNode node;
     GridArea resolved_position;
 
@@ -139,8 +141,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     class Iterator
         : public std::iterator<std::input_iterator_tag, GridItemData> {
       STACK_ALLOCATED();
+
      public:
-      Iterator(Vector<GridItemData>* item_data,
+      Iterator(HeapVector<GridItemData>* item_data,
                Vector<wtf_size_t>::const_iterator current_index)
           : item_data_(item_data), current_index_(current_index) {
         DCHECK(item_data_);
@@ -167,7 +170,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       }
 
      private:
-      Vector<GridItemData>* item_data_;
+      HeapVector<GridItemData>* item_data_;
       Vector<wtf_size_t>::const_iterator current_index_;
     };
 
@@ -178,11 +181,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     bool IsEmpty() const;
 
+    void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
+
     // Grid items are appended to |item_data_| in the same order provided by
     // |NGGridChildIterator|, which iterates over its children in order-modified
     // document order; we want to keep such order since auto-placement and
     // painting order rely on it later in the algorithm.
-    Vector<GridItemData> item_data;
+    HeapVector<GridItemData> item_data;
     Vector<wtf_size_t> reordered_item_indices;
   };
 
@@ -275,7 +280,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;
 
@@ -304,7 +309,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   void ConstructAndAppendGridItems(
       GridItems* grid_items,
-      Vector<GridItemData>* out_of_flow_items = nullptr) const;
+      HeapVector<GridItemData>* out_of_flow_items = nullptr) const;
   GridItemData MeasureGridItem(const NGBlockNode node) const;
 
   void BuildBlockTrackCollections(
@@ -411,7 +416,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void PlaceOutOfFlowItems(
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
       const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      const Vector<GridItemData>& out_of_flow_items,
+      const HeapVector<GridItemData>& out_of_flow_items,
       const GridGeometry& grid_geometry,
       LayoutUnit block_size);
 
@@ -460,5 +465,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGGridLayoutAlgorithm::GridItemData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_LAYOUT_ALGORITHM_H_

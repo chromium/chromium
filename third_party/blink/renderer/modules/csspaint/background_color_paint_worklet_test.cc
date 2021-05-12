@@ -275,9 +275,8 @@ TEST_F(BackgroundColorPaintWorkletTest,
   auto* model1 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   Element* element = GetElementById("target");
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().ResolveStyle(element,
-                                                    StyleRecalcContext());
+  ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, StyleRecalcContext());
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
 
   NonThrowableExceptionState exception_state;
@@ -348,9 +347,8 @@ TEST_F(BackgroundColorPaintWorkletTest, TriggerRepaintChangedKeyframe) {
   auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   Element* element = GetElementById("target");
-  scoped_refptr<ComputedStyle> style =
-      GetDocument().GetStyleResolver().ResolveStyle(element,
-                                                    StyleRecalcContext());
+  ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, StyleRecalcContext());
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
 
   NonThrowableExceptionState exception_state;

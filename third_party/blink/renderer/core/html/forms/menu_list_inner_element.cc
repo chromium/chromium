@@ -17,10 +17,10 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
   SetHasCustomStyleCallbacks();
 }
 
-scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
+ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> style =
+  ComputedStyle* style =
       GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent_style, EDisplay::kBlock);
   style->SetFlexGrow(1);

@@ -15,9 +15,11 @@ namespace blink {
 struct SVGTextPathRange {
   DISALLOW_NEW();
 
-  const LayoutSVGTextPath* layout_svg_text_path;
+  Member<const LayoutSVGTextPath> layout_svg_text_path;
   unsigned start_index;
   unsigned end_index;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_svg_text_path); }
 };
 
 }  // namespace blink
@@ -27,9 +29,11 @@ WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SVGTextPathRange)
 namespace blink {
 
 // SVG-specific data stored in NGInlineNodeData.
-struct SVGInlineNodeData final {
+struct SVGInlineNodeData final : public GarbageCollected<SVGInlineNodeData> {
   Vector<std::pair<unsigned, NGSVGCharacterData>> character_data_list;
-  Vector<SVGTextPathRange> text_path_range_list;
+  HeapVector<SVGTextPathRange> text_path_range_list;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(text_path_range_list); }
 };
 
 }  // namespace blink

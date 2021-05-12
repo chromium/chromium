@@ -38,6 +38,7 @@ struct PatternData;
 class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
  public:
   explicit LayoutSVGResourcePattern(SVGPatternElement*);
+  void Trace(Visitor*) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -69,7 +70,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
                                    const AffineTransform&) const;
 
   mutable bool should_collect_pattern_attributes_ : 1;
-  Persistent<PatternAttributesWrapper> attributes_wrapper_;
+  Member<PatternAttributesWrapper> attributes_wrapper_;
 
   const PatternAttributes& Attributes() const {
     NOT_DESTROYED();
@@ -86,7 +87,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   // would avoid re-recording when multiple clients share the same pattern.
   using PatternMap = HeapHashMap<Member<const SVGResourceClient>,
                                  std::unique_ptr<PatternData>>;
-  Persistent<PatternMap> pattern_map_;
+  Member<PatternMap> pattern_map_;
 };
 
 }  // namespace blink

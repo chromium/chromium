@@ -73,10 +73,12 @@ class CORE_EXPORT NGOffsetMappingUnit {
 
   void AssertValid() const;
 
+  void Trace(Visitor*) const;
+
  private:
   NGOffsetMappingUnitType type_ = NGOffsetMappingUnitType::kIdentity;
 
-  const LayoutObject* layout_object_;
+  Member<const LayoutObject> layout_object_;
   // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
   // names since |layout_object_| is for generated text, these offsets are
   // offset in |LayoutText::text_| instead of DOM node.
@@ -96,13 +98,12 @@ class CORE_EXPORT NGOffsetMappingUnit {
 // object that stores the mapping information between DOM positions and offsets
 // in the text content string of the context.
 // See design doc https://goo.gl/CJbxky for details.
-class CORE_EXPORT NGOffsetMapping {
-  USING_FAST_MALLOC(NGOffsetMapping);
-
+class CORE_EXPORT NGOffsetMapping final
+    : public GarbageCollected<NGOffsetMapping> {
  public:
-  using UnitVector = Vector<NGOffsetMappingUnit>;
+  using UnitVector = HeapVector<NGOffsetMappingUnit>;
   using RangeMap =
-      HashMap<Persistent<const Node>, std::pair<unsigned, unsigned>>;
+      HeapHashMap<Member<const Node>, std::pair<unsigned, unsigned>>;
 
   NGOffsetMapping(UnitVector&&, RangeMap&&, String);
   NGOffsetMapping(const NGOffsetMapping&) = delete;
@@ -230,6 +231,11 @@ class CORE_EXPORT NGOffsetMapping {
   // control characters. Returns true otherwise.
   bool HasBidiControlCharactersOnly(unsigned start, unsigned end) const;
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(units_);
+    visitor->Trace(ranges_);
+  }
+
  private:
   // The NGOffsetMappingUnits of the inline formatting context in osrted order.
   UnitVector units_;
@@ -245,5 +251,7 @@ class CORE_EXPORT NGOffsetMapping {
 CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGOffsetMappingUnit)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_

@@ -40,7 +40,7 @@ struct NGInlineBoxState {
  public:
   unsigned fragment_start = 0;
   const NGInlineItem* item = nullptr;
-  const ComputedStyle* style = nullptr;
+  Persistent<const ComputedStyle> style;
 
   // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
   const Font* font;
@@ -273,7 +273,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
-    scoped_refptr<const NGLayoutResult> CreateBoxFragment(NGLogicalLineItems*);
+    const NGLayoutResult* CreateBoxFragment(NGLogicalLineItems*);
   };
 
   Vector<NGInlineBoxState, 4> stack_;

@@ -42,14 +42,14 @@ class CORE_EXPORT NGSimplifiedLayoutAlgorithm
   NGSimplifiedLayoutAlgorithm(const NGLayoutAlgorithmParams&,
                               const NGLayoutResult&);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override {
     NOTREACHED();
     return MinMaxSizesResult();
   }
 
-  NOINLINE scoped_refptr<const NGLayoutResult> LayoutWithItemsBuilder();
+  NOINLINE const NGLayoutResult* LayoutWithItemsBuilder();
 
  private:
   void AddChildFragment(const NGLink& old_fragment,
