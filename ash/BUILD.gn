@@ -811,6 +811,8 @@ component("ash") {
     "shelf/login_shelf_view.h",
     "shelf/scroll_arrow_view.cc",
     "shelf/scroll_arrow_view.h",
+    "shelf/scrollable_shelf_constants.cc",
+    "shelf/scrollable_shelf_constants.h",
     "shelf/scrollable_shelf_view.cc",
     "shelf/scrollable_shelf_view.h",
     "shelf/shelf.cc",
