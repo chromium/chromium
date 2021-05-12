@@ -11,6 +11,33 @@
 #include "components/full_restore/app_restore_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/throbber.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
+
+namespace {
+
+constexpr int kDiameter = 24;
+
+std::unique_ptr<views::View> GetGhostWindowContent() {
+  auto container = std::make_unique<views::View>();
+  container->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+
+  auto* throbber_layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  throbber_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  throbber_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  auto* throbber = container->AddChildView(std::make_unique<views::Throbber>());
+  throbber->SetPreferredSize({kDiameter, kDiameter});
+  throbber->Start();
+  return container;
+}
+
+}  // namespace
 
 namespace chromeos {
 namespace full_restore {
@@ -49,15 +76,12 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   DCHECK(restore_data->current_bounds.has_value());
   DCHECK(restore_data->display_id.has_value());
 
-  auto container = std::make_unique<views::View>();
-  container->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-
   session_id_to_shell_surface_.emplace(
       session_id,
       InitArcGhostWindow(
           this, app_id, session_id, restore_data->display_id.value(),
           restore_data->current_bounds.value(), restore_data->maximum_size,
-          restore_data->minimum_size, std::move(container),
+          restore_data->minimum_size, GetGhostWindowContent(),
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }
