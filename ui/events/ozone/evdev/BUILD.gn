@@ -43,8 +43,6 @@ component("evdev") {
     "event_converter_evdev.h",
     "event_converter_evdev_impl.cc",
     "event_converter_evdev_impl.h",
-    "event_device_info.cc",
-    "event_device_info.h",
     "event_factory_evdev.cc",
     "event_factory_evdev.h",
     "event_thread_evdev.cc",
@@ -106,6 +104,7 @@ component("evdev") {
   defines = [ "IS_EVDEV_IMPL" ]
 
   deps = [
+    ":event_device_info",
     "//base",
     "//build:chromeos_buildflags",
     "//ui/display",
@@ -156,6 +155,40 @@ component("evdev") {
   ]
 }
 
+source_set("event_device_info") {
+  sources = [
+    "event_device_info.cc",
+    "event_device_info.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/events/devices",
+  ]
+
+  visibility += [
+    "//chromeos/components/diagnostics_ui/backend:*",
+    "//ui/chromeos/*",
+  ]
+}
+
+source_set("event_device_info_test_utils") {
+  testonly = true
+
+  sources = [
+    "event_device_test_util.cc",
+    "event_device_test_util.h",
+  ]
+
+  deps = [
+    ":evdev",
+    ":event_device_info",
+    "//base",
+  ]
+
+  visibility += [ "//chromeos/components/diagnostics_ui/backend:unit_tests" ]
+}
+
 source_set("unittests") {
   testonly = true
 
@@ -164,8 +197,6 @@ source_set("unittests") {
     "event_converter_test_util.cc",
     "event_converter_test_util.h",
     "event_device_info_unittest.cc",
-    "event_device_test_util.cc",
-    "event_device_test_util.h",
     "event_factory_evdev_unittest.cc",
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
@@ -185,6 +216,8 @@ source_set("unittests") {
 
   deps = [
     ":evdev",
+    ":event_device_info",
+    ":event_device_info_test_utils",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",

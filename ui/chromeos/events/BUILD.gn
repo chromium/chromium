@@ -29,6 +29,7 @@ source_set("events") {
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",
     "//ui/events/ozone/evdev",
+    "//ui/events/ozone/evdev:event_device_info",
   ]
   if (ozone_platform_x11) {
     deps += [
