@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -81,8 +81,9 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   ExtendedReportingLevel extended_reporting_level_;
   bool is_enhanced_protection_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
-      download_item_observer_;
+  base::ScopedObservation<download::DownloadItem,
+                          download::DownloadItem::Observer>
+      download_item_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadUrlSBClient);
 };

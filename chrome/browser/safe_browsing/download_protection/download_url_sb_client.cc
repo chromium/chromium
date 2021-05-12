@@ -33,12 +33,11 @@ DownloadUrlSBClient::DownloadUrlSBClient(
       callback_(std::move(callback)),
       ui_manager_(ui_manager),
       start_time_(base::TimeTicks::Now()),
-      database_manager_(database_manager),
-      download_item_observer_(this) {
+      database_manager_(database_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(item_);
   DCHECK(service_);
-  download_item_observer_.Add(item_);
+  download_item_observation_.Observe(item_);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   extended_reporting_level_ =
@@ -51,7 +50,8 @@ DownloadUrlSBClient::DownloadUrlSBClient(
 // Implements DownloadItem::Observer.
 void DownloadUrlSBClient::OnDownloadDestroyed(
     download::DownloadItem* download) {
-  download_item_observer_.Remove(item_);
+  DCHECK(download_item_observation_.IsObservingSource(item_));
+  download_item_observation_.Reset();
   item_ = nullptr;
 }
 

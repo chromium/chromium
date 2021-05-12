@@ -125,9 +125,10 @@ DownloadReporter::~DownloadReporter() {
 }
 
 void DownloadReporter::OnProfileAdded(Profile* profile) {
-  observed_profiles_.Add(profile);
-  observed_coordinators_.Add(SimpleDownloadManagerCoordinatorFactory::GetForKey(
-      profile->GetProfileKey()));
+  observed_profiles_.AddObservation(profile);
+  observed_coordinators_.AddObservation(
+      SimpleDownloadManagerCoordinatorFactory::GetForKey(
+          profile->GetProfileKey()));
 }
 
 void DownloadReporter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
@@ -135,22 +136,22 @@ void DownloadReporter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
 }
 
 void DownloadReporter::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
 }
 
 void DownloadReporter::OnManagerGoingDown(
     download::SimpleDownloadManagerCoordinator* coordinator) {
-  observed_coordinators_.Remove(coordinator);
+  observed_coordinators_.RemoveObservation(coordinator);
 }
 
 void DownloadReporter::OnDownloadCreated(download::DownloadItem* download) {
   danger_types_[download] = download->GetDangerType();
-  if (!observed_downloads_.IsObserving(download))
-    observed_downloads_.Add(download);
+  if (!observed_downloads_.IsObservingSource(download))
+    observed_downloads_.AddObservation(download);
 }
 
 void DownloadReporter::OnDownloadDestroyed(download::DownloadItem* download) {
-  observed_downloads_.Remove(download);
+  observed_downloads_.RemoveObservation(download);
   danger_types_.erase(download);
 }
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_REPORTER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -45,11 +45,14 @@ class DownloadReporter
  private:
   base::flat_map<download::DownloadItem*, download::DownloadDangerType>
       danger_types_;
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
-  ScopedObserver<download::SimpleDownloadManagerCoordinator,
-                 download::SimpleDownloadManagerCoordinator::Observer>
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
+  base::ScopedMultiSourceObservation<
+      download::SimpleDownloadManagerCoordinator,
+      download::SimpleDownloadManagerCoordinator::Observer>
       observed_coordinators_{this};
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
+  base::ScopedMultiSourceObservation<download::DownloadItem,
+                                     download::DownloadItem::Observer>
       observed_downloads_{this};
 
   void AddBypassEventToPref(download::DownloadItem* download);
