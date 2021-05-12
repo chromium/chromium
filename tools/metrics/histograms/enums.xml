@@ -16250,6 +16250,15 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
 </enum>
 
+<enum name="CryptohomeAuthBlockType">
+  <int value="0" label="Pin Weaver"/>
+  <int value="1" label="Challenge Credential"/>
+  <int value="2" label="Double Wrapped Compat"/>
+  <int value="3" label="TPM Bound To Pcr"/>
+  <int value="4" label="TPM Not Bound To Pcr"/>
+  <int value="5" label="Lib Scrypt Compat"/>
+</enum>
+
 <enum name="CryptohomeChecksumStatus">
   <int value="0" label="Checksum OK"/>
   <int value="1" label="Checksum does not exist"/>

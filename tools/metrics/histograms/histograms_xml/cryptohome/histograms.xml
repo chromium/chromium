@@ -588,6 +588,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.{Action}AuthBlockType"
+    enum="CryptohomeAuthBlockType" expires_after="2021-10-14">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The type of auth block that we {Action} in cryptohome. Recorded when
+    cryptohome accesses the auth block.
+  </summary>
+  <token key="Action">
+    <variant name="Create" summary="created"/>
+    <variant name="Derive" summary="derived"/>
+  </token>
+</histogram>
+
 <histogram name="CryptohomeClient" units="ms" expires_after="2021-09-12">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
