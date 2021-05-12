@@ -967,6 +967,81 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.Shelf.WebUI.LoadCompletedTime" units="ms"
+    expires_after="M93">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the download shelf
+    WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="Download.Shelf.WebUI.LoadDocumentTime" units="ms"
+    expires_after="M93">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the download shelf WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="Download.Shelf.{Framework}.FirstDownloadPaintTime" units="ms"
+    expires_after="M93">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The amount of time it took from the moment the {Framework} download shelf
+    was called to show the first download on the shelf view to when the
+    associated download item is visible.
+  </summary>
+  <token key="Framework">
+    <variant name="Views"/>
+    <variant name="WebUI"/>
+  </token>
+</histogram>
+
+<histogram name="Download.Shelf.{Framework}.NotFirstDownloadPaintTime"
+    units="ms" expires_after="M93">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The amount of time it took from the moment the {Framework} download shelf
+    was called to show a download on the shelf view other than the first one to
+    when the associated download item is visible.
+  </summary>
+  <token key="Framework">
+    <variant name="Views"/>
+    <variant name="WebUI"/>
+  </token>
+</histogram>
+
+<histogram name="Download.Shelf.{Framework}.ShowContextMenuTime" units="ms"
+    expires_after="M93">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The amount of time it took from pressing a {Framework} download item's
+    chevron button to immediately before the context menu is shown.
+  </summary>
+  <token key="Framework">
+    <variant name="Views"/>
+    <variant name="WebUI"/>
+  </token>
+</histogram>
+
 <histogram name="Download.ShowDangerousDownloadConfirmationPrompt"
     enum="DownloadItem.DangerType" expires_after="M77">
   <owner>dtrainor@chromium.org</owner>

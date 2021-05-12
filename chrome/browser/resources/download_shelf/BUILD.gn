@@ -122,6 +122,7 @@ js_library("download_list") {
     ":download_shelf_api_proxy",
     "//ui/webui/resources/js:custom_element",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("app") {

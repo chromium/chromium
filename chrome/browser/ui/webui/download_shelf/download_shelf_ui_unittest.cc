@@ -24,8 +24,11 @@ class TestDownloadShelfHandler : public DownloadShelfHandler {
  public:
   MOCK_METHOD1(GetDownloads,
                void(download_shelf::mojom::PageHandler::GetDownloadsCallback));
-  MOCK_METHOD3(ShowContextMenu,
-               void(uint32_t download_id, int32_t client_x, int32_t client_y));
+  MOCK_METHOD4(ShowContextMenu,
+               void(uint32_t download_id,
+                    int32_t client_x,
+                    int32_t client_y,
+                    double timestamp));
   MOCK_METHOD1(DoShowDownload, void(DownloadUIModel*));
   MOCK_METHOD1(OnDownloadUpdated, void(DownloadUIModel*));
   MOCK_METHOD1(OnDownloadErased, void(uint32_t download_id));
@@ -112,7 +115,8 @@ TEST_F(DownloadShelfUITest, DownloadLifecycle) {
   DownloadUIModel::DownloadUIModelPtr download_model =
       DownloadItemModel::Wrap(download_item.get());
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
-  download_shelf_ui()->DoShowDownload(std::move(download_model));
+  download_shelf_ui()->DoShowDownload(std::move(download_model),
+                                      base::TimeTicks::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
 
   // Assert handler OnDownloadUpdated called on item progress and update
@@ -139,7 +143,8 @@ TEST_F(DownloadShelfUITest, DownloadProgress) {
   DownloadUIModel::DownloadUIModelPtr download_model =
       DownloadItemModel::Wrap(download_item.get());
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
-  download_shelf_ui()->DoShowDownload(std::move(download_model));
+  download_shelf_ui()->DoShowDownload(std::move(download_model),
+                                      base::TimeTicks::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
   ASSERT_TRUE(mock_timer_->IsRunning());
 

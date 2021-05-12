@@ -16,8 +16,10 @@ class DownloadShelfUIEmbedder {
 
   // Show the context menu for |download| at |position| in container's
   // coordinate.
-  virtual void ShowDownloadContextMenu(DownloadUIModel* download,
-                                       const gfx::Point& position) = 0;
+  virtual void ShowDownloadContextMenu(
+      DownloadUIModel* download,
+      const gfx::Point& position,
+      base::OnceClosure on_menu_will_show_callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_UI_EMBEDDER_H_

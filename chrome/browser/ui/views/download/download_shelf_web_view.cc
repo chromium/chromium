@@ -61,9 +61,11 @@ void DownloadShelfWebView::OnThemeChanged() {
 
 void DownloadShelfWebView::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download) {
+  const base::TimeTicks show_download_start_time_ticks = base::TimeTicks::Now();
   DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
   if (download_shelf_ui) {
-    download_shelf_ui->DoShowDownload(std::move(download));
+    download_shelf_ui->DoShowDownload(std::move(download),
+                                      show_download_start_time_ticks);
   }
 }
 
@@ -111,11 +113,15 @@ views::View* DownloadShelfWebView::GetView() {
   return this;
 }
 
-void DownloadShelfWebView::ShowDownloadContextMenu(DownloadUIModel* download,
-                                                   const gfx::Point& position) {
+void DownloadShelfWebView::ShowDownloadContextMenu(
+    DownloadUIModel* download,
+    const gfx::Point& position,
+    base::OnceClosure on_menu_will_show_callback) {
   gfx::Point screen_position = position;
   ConvertPointToScreen(this, &screen_position);
   context_menu_view_ = std::make_unique<DownloadShelfContextMenuView>(download);
+  context_menu_view_->SetOnMenuWillShowCallback(
+      std::move(on_menu_will_show_callback));
   context_menu_view_->Run(
       GetWidget(), gfx::Rect(screen_position, gfx::Size()),
       /* TODO(kerenzhu): Investigate if we need other MenuSourceTypes. */

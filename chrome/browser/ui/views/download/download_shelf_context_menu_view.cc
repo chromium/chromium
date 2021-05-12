@@ -52,6 +52,11 @@ void DownloadShelfContextMenuView::Run(
   menu_runner_->RunMenuAt(parent_widget, nullptr, rect, position, source_type);
 }
 
+void DownloadShelfContextMenuView::SetOnMenuWillShowCallback(
+    base::OnceClosure on_menu_will_show_callback) {
+  on_menu_will_show_callback_ = std::move(on_menu_will_show_callback);
+}
+
 void DownloadShelfContextMenuView::OnMenuClosed(
     base::RepeatingClosure on_menu_closed_callback) {
   close_time_ = base::TimeTicks::Now();
@@ -61,6 +66,11 @@ void DownloadShelfContextMenuView::OnMenuClosed(
     on_menu_closed_callback.Run();
 
   menu_runner_.reset();
+}
+
+void DownloadShelfContextMenuView::OnMenuWillShow(ui::SimpleMenuModel* source) {
+  if (on_menu_will_show_callback_)
+    std::move(on_menu_will_show_callback_).Run();
 }
 
 void DownloadShelfContextMenuView::ExecuteCommand(int command_id,

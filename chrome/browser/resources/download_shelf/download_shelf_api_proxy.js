@@ -28,8 +28,9 @@ export class DownloadShelfApiProxy {
    * @param {number} downloadId
    * @param {number} clientX
    * @param {number} clientY
+   * @param {number} timestamp
    */
-  showContextMenu(downloadId, clientX, clientY) {}
+  showContextMenu(downloadId, clientX, clientY, timestamp) {}
 }
 
 /** @implements {DownloadShelfApiProxy} */
@@ -65,8 +66,8 @@ export class DownloadShelfApiProxyImpl {
   }
 
   /** @override */
-  showContextMenu(downloadId, clientX, clientY) {
-    this.handler.showContextMenu(downloadId, clientX, clientY);
+  showContextMenu(downloadId, clientX, clientY, timestamp) {
+    this.handler.showContextMenu(downloadId, clientX, clientY, timestamp);
   }
 }
 

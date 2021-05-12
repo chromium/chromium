@@ -38,6 +38,7 @@ suite('DownloadListTest', function() {
       receivedBytes: BigInt(1),
       shouldOpenWhenComplete: false,
       shouldPromoteOrigin: false,
+      showDownloadStartTime: Date.now(),
       state: DownloadState.kComplete,
       statusText: '',
       tooltipText: '',

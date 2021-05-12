@@ -34,7 +34,10 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
           base::TimeDelta::FromMilliseconds(30),
           base::BindRepeating(&DownloadShelfUI::NotifyDownloadProgress,
                               base::Unretained(this)))),
-      download_manager_(Profile::FromWebUI(web_ui)->GetDownloadManager()) {
+      download_manager_(Profile::FromWebUI(web_ui)->GetDownloadManager()),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "Download.Shelf.WebUI.LoadDocumentTime",
+                        "Download.Shelf.WebUI.LoadCompletedTime") {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIDownloadShelfHost);
   static constexpr webui::LocalizedString kStrings[] = {
@@ -71,21 +74,27 @@ void DownloadShelfUI::CreatePageHandler(
       std::move(receiver), std::move(page), this);
 }
 
-void DownloadShelfUI::ShowContextMenu(uint32_t download_id,
-                                      int32_t client_x,
-                                      int32_t client_y) {
+void DownloadShelfUI::ShowContextMenu(
+    uint32_t download_id,
+    int32_t client_x,
+    int32_t client_y,
+    base::OnceClosure on_menu_will_show_callback) {
   DownloadUIModel* download_ui_model = FindDownloadById(download_id);
   DCHECK(download_ui_model);
 
   if (embedder()) {
     embedder()->ShowDownloadContextMenu(download_ui_model,
-                                        gfx::Point(client_x, client_y));
+                                        gfx::Point(client_x, client_y),
+                                        std::move(on_menu_will_show_callback));
   }
 }
 
 void DownloadShelfUI::DoShowDownload(
-    DownloadUIModel::DownloadUIModelPtr download_model) {
+    DownloadUIModel::DownloadUIModelPtr download_model,
+    base::TimeTicks show_download_start_time_ticks) {
   DownloadUIModel* download = AddDownload(std::move(download_model));
+  show_download_time_map_.insert_or_assign(download->download()->GetId(),
+                                           show_download_start_time_ticks);
   // Observe any changes on the download item in order to propagate such changes
   // to the UI.
   download->download()->AddObserver(this);
@@ -101,6 +110,10 @@ std::vector<DownloadUIModel*> DownloadShelfUI::GetDownloads() {
     downloads.push_back(download_entry.second.get());
 
   return downloads;
+}
+
+base::TimeTicks DownloadShelfUI::GetShowDownloadTime(uint32_t download_id) {
+  return show_download_time_map_[download_id];
 }
 
 void DownloadShelfUI::OnDownloadUpdated(DownloadItem* download) {

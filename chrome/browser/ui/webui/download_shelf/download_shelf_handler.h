@@ -18,7 +18,8 @@ class DownloadShelfHandler {
 
   virtual void ShowContextMenu(uint32_t download_id,
                                int32_t client_x,
-                               int32_t client_y) = 0;
+                               int32_t client_y,
+                               double timestamp) = 0;
 
   // Notify the view to show a new download.
   virtual void DoShowDownload(DownloadUIModel* download_model) = 0;

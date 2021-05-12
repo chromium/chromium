@@ -308,6 +308,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://download-shelf.top-chrome/*",
       "chrome://extensions/*",
       "chrome://new-tab-page/*",
       "chrome://os-settings/*",

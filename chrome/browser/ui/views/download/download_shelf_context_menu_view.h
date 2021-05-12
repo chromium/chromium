@@ -42,15 +42,20 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
            ui::MenuSourceType source_type,
            base::RepeatingClosure on_menu_closed_callback);
 
+  void SetOnMenuWillShowCallback(base::OnceClosure on_menu_will_show_callback);
+
  private:
   // Callback for MenuRunner.
   void OnMenuClosed(base::RepeatingClosure on_menu_closed_callback);
+  void OnMenuWillShow(ui::SimpleMenuModel* source) override;
 
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // Parent download item view.
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   DownloadItemView* download_item_view_ = nullptr;
+
+  base::OnceClosure on_menu_will_show_callback_;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 

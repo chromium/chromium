@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_handler.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui_embedder.h"
+#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,11 +41,14 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
-                       int32_t client_y);
+                       int32_t client_y,
+                       base::OnceClosure on_menu_will_show_callback);
 
-  void DoShowDownload(DownloadUIModel::DownloadUIModelPtr download_model);
+  void DoShowDownload(DownloadUIModel::DownloadUIModelPtr download_model,
+                      base::TimeTicks show_download_start_time_ticks);
 
   std::vector<DownloadUIModel*> GetDownloads();
+  base::TimeTicks GetShowDownloadTime(uint32_t download_id);
 
  protected:
   void SetPageHandlerForTesting(
@@ -76,6 +80,12 @@ class DownloadShelfUI : public ui::MojoWebUIController,
 
   content::DownloadManager* const download_manager_;
   DownloadShelfUIEmbedder* embedder_ = nullptr;
+  WebuiLoadTimer webui_load_timer_;
+
+  // Used to facilitate measuring the time it took from a call to the download
+  // shelf's DoShowDownload method to when the associated download item was
+  // visible to the user.
+  base::flat_map<uint32_t, base::TimeTicks> show_download_time_map_;
 
   base::flat_map<uint32_t, DownloadUIModel::DownloadUIModelPtr> items_;
 

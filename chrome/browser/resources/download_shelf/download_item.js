@@ -118,7 +118,8 @@ export class DownloadItemElement extends CustomElement {
 
   /** @param {!Event} e */
   onContextMenu_(e) {
-    this.apiProxy_.showContextMenu(this.item.id, e.clientX, e.clientY);
+    this.apiProxy_.showContextMenu(
+        this.item.id, e.clientX, e.clientY, Date.now());
   }
 
   /** @param {!Event} e */
@@ -126,7 +127,8 @@ export class DownloadItemElement extends CustomElement {
     // TODO(crbug.com/1182529): Switch to down caret icon when context menu is
     // open.
     const rect = e.target.getBoundingClientRect();
-    this.apiProxy_.showContextMenu(this.item.id, rect.left, rect.top);
+    this.apiProxy_.showContextMenu(
+        this.item.id, rect.left, rect.top, Date.now());
   }
 
   /** @param {!Event} e */

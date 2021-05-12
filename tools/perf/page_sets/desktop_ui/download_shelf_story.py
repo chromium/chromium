@@ -9,6 +9,17 @@ from page_sets.desktop_ui.webui_utils import Inspect
 
 from telemetry.internal.browser.ui_devtools import MOUSE_EVENT_BUTTON_RIGHT
 
+DOWNLOAD_SHELF_BENCHMARK_UMA = [
+    'Download.Shelf.Views.FirstDownloadPaintTime',
+    'Download.Shelf.Views.NotFirstDownloadPaintTime',
+    'Download.Shelf.Views.ShowContextMenuTime',
+    'Download.Shelf.WebUI.FirstDownloadPaintTime',
+    'Download.Shelf.WebUI.LoadCompletedTime',
+    'Download.Shelf.WebUI.LoadDocumentTime',
+    'Download.Shelf.WebUI.NotFirstDownloadPaintTime',
+    'Download.Shelf.WebUI.ShowContextMenuTime',
+]
+
 DOWNLOAD_URL = 'https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
 WEBUI_DOWNLOAD_SHELF_URL = 'chrome://download-shelf.top-chrome/'
 
@@ -56,6 +67,10 @@ class DownloadShelfStory(MultiTabStory):
         -1]  # Context menu lives in the last Window.
     PressKey(self._devtools, node_id, 'Esc')
     action_runner.Wait(1)
+
+  def WillStartTracing(self, chrome_trace_config):
+    super(DownloadShelfStory, self).WillStartTracing(chrome_trace_config)
+    chrome_trace_config.EnableUMAHistograms(*DOWNLOAD_SHELF_BENCHMARK_UMA)
 
 
 class DownloadShelfStory1File(DownloadShelfStory):

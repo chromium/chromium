@@ -11,7 +11,7 @@ import './download_item.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DownloadItem, DownloadState} from './download_shelf.mojom-webui.js';
+import {DownloadItem} from './download_shelf.mojom-webui.js';
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
 /** @type {number} */
@@ -46,7 +46,20 @@ export class DownloadListElement extends CustomElement {
 
     this.apiProxy_.getDownloads().then(({downloadItems}) => {
       this.items_ = downloadItems;
-      this.updateElements_();
+
+      if (this.items_.length !== 0) {
+        // Sort by descending show time so that the most recent download shows
+        // first on the row.
+        this.items_.sort((first, second) => {
+          return second.showDownloadStartTime - first.showDownloadStartTime;
+        });
+        this.updateElements_();
+
+        // Record the time it took to show the first download, that is, the
+        // download that has the least recent showDownloadStartTime.
+        this.recordDownloadPaintTime_(
+            this.items_[this.items_.length - 1].showDownloadStartTime, true);
+      }
     });
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
@@ -59,6 +72,8 @@ export class DownloadListElement extends CustomElement {
         callbackRouter.onNewDownload.addListener((downloadItem) => {
           this.items_.unshift(downloadItem);
           this.updateElements_();
+          this.recordDownloadPaintTime_(
+              downloadItem.showDownloadStartTime, false);
         }));
 
     this.listenerIds_.push(
@@ -79,6 +94,25 @@ export class DownloadListElement extends CustomElement {
             this.updateElements_();
           }
         }));
+  }
+
+  /**
+   * @param {number} startTime The Unix time at which DoShowDownload() was
+   *     called on the download shelf. See:
+   *     chrome/browser/ui/webui/download_shelf/download_shelf_ui.h
+   * @param {boolean} isFirstDownload
+   * @private
+   */
+  recordDownloadPaintTime_(startTime, isFirstDownload) {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const elapsedTime = Math.round(Date.now() - startTime);
+        chrome.metricsPrivate.recordTime(
+            isFirstDownload ? 'Download.Shelf.WebUI.FirstDownloadPaintTime' :
+                              'Download.Shelf.WebUI.NotFirstDownloadPaintTime',
+            elapsedTime);
+      });
+    });
   }
 
   /** @private */

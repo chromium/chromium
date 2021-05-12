@@ -32,7 +32,8 @@ class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler,
   void GetDownloads(GetDownloadsCallback callback) override;
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
-                       int32_t client_y) override;
+                       int32_t client_y,
+                       double timestamp) override;
 
   // DownloadShelfHandler:
   void DoShowDownload(DownloadUIModel* download_model) override;
@@ -40,6 +41,9 @@ class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler,
   void OnDownloadErased(uint32_t download_id) override;
 
  private:
+  download_shelf::mojom::DownloadItemPtr GetDownloadItemFromUIModel(
+      DownloadUIModel* download_model);
+
   mojo::Receiver<download_shelf::mojom::PageHandler> receiver_;
   mojo::Remote<download_shelf::mojom::Page> page_;
 

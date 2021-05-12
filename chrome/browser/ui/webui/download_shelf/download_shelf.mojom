@@ -156,6 +156,10 @@ struct DownloadItem {
   // security reasons.
   bool should_promote_origin;
 
+  // Time in milliseconds since Unix Epoch at which the download shelf was
+  // called to show the download item.
+  double show_download_start_time;
+
   // State of this download.
   DownloadState state;
 
@@ -192,9 +196,11 @@ interface PageHandler {
   GetDownloads() => (array<DownloadItem> download_items);
 
   // Show the context menu for a download item at a given position.
+  // Timestamp is in milliseconds since Unix epoch.
   // TODO(kerenzhu): Use gfx::Point from geometry.mojom. It's not
   // supported in WebUI yet.
-  ShowContextMenu(uint32 download_id, int32 client_x, int32 client_y);
+  ShowContextMenu(uint32 download_id, int32 client_x, int32 client_y,
+      double timestamp);
 };
 
 // WebUI-side handler for requests from the browser.
