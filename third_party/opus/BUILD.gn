@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/arm.gni")
-import("//build/config/python.gni")
 import("//testing/test.gni")
 
 # If fixed point implementation shall be used (otherwise float).
@@ -170,8 +169,7 @@ config("opus_test_no_nonnull_config") {
 }
 
 if (use_opus_arm_rtcd) {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action("convert_rtcd_assembler") {
+  action("convert_rtcd_assembler") {
     script = "convert_rtcd_assembler.py"
     outputs = [ "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S" ]
     args = [
