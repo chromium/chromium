@@ -547,12 +547,4 @@ Polymer({
   shouldActivationCodeInputBeInvalid_(state) {
     return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
   },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getUseCameraAgainClass_() {
-    return this.showBusy ? 'hidden' : 'blue-icon';
-  }
 });

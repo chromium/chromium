@@ -244,12 +244,15 @@
                       [[i18n('scanQrCodeInvalid')]]
                     </span>
                   </div>
-                  <cr-button id="useCameraAgainButton" class$="[[getUseCameraAgainClass_(showBusy)]]"
-                      on-click="startScanning_"
-                      disabled="[[isUiElementDisabled_(UiElement.SCAN_SUCCESS, state_, showBusy)]]">
-                    <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
-                    [[i18n('qrCodeUseCameraAgain')]]
-                  </cr-button>
+                  <template is="dom-if" restamp
+                      if="[[!isUiElementHidden_(UiElement.SCAN_INSTALL_FAILURE, state_)]]">
+                    <cr-button id="useCameraAgainButton" class="blue-icon"
+                        on-click="startScanning_">
+                      <iron-icon class="button-image" icon="cellular-setup:camera">
+                      </iron-icon>
+                      [[i18n('qrCodeUseCameraAgain')]]
+                    </cr-button>
+                  </template>
                 </div>
                 <div id="scanFailureContainer"
                     hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
