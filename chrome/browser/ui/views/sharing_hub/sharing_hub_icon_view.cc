@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -57,8 +57,7 @@ void SharingHubIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SharingHubIconView::GetVectorIcon() const {
-  // TODO(1186843): Add Share icon.
-  return kAddIcon;
+  return omnibox::kSendIcon;
 }
 
 bool SharingHubIconView::ShouldShowLabel() const {

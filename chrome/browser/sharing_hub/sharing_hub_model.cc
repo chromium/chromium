@@ -48,9 +48,8 @@ void SharingHubModel::PopulateFirstPartyActions() {
                           IDS_CONTEXT_MENU_SEND_TAB_TO_SELF, kSendTabToSelfIcon,
                           true});
 
-  // TODO(1186843): Add save page icon.
   action_list_.push_back(
-      {IDC_SAVE_PAGE, IDS_SHARING_HUB_SAVE_PAGE_LABEL, kCopyIcon, true});
+      {IDC_SAVE_PAGE, IDS_SHARING_HUB_SAVE_PAGE_LABEL, kSavePageIcon, true});
 
   if (media_router::MediaRouterEnabled(context_)) {
     action_list_.push_back({IDC_ROUTE_MEDIA, IDS_SHARING_HUB_MEDIA_ROUTER_LABEL,

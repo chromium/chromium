@@ -91,6 +91,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "remove_box.icon",
     "resize_handle.icon",
     "sad_tab.icon",
+    "save_page.icon",
     "scrolling_tabstrip_leading.icon",
     "scrolling_tabstrip_trailing.icon",
     "security.icon",

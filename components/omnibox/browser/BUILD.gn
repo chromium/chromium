@@ -61,6 +61,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "pedal.icon",
     "plus.icon",
     "product.icon",
+    "send.icon",
     "star.icon",
     "star_active.icon",
     "switch.icon",
