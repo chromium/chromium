@@ -537,7 +537,15 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
+      'Linux Tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
+      },
       'Linux Tests (dbg)(1)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux_bionic.browser_tests.filter',
+        ],
         # crbug.com/1066161
         'swarming': {
           'shards': 20,
