@@ -272,7 +272,7 @@ class AppCacheStorageImplTest : public testing::Test {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     background_thread =
         std::make_unique<base::Thread>("AppCacheTest::BackgroundThread");
-    ASSERT_TRUE(background_thread->StartWithOptions(options));
+    ASSERT_TRUE(background_thread->StartWithOptions(std::move(options)));
   }
 
   static void TearDownTestCase() {
