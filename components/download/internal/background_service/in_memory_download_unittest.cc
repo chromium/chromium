@@ -92,7 +92,7 @@ class InMemoryDownloadTest : public testing::Test {
   void SetUp() override {
     io_thread_ = std::make_unique<base::Thread>("Network and Blob IO thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    io_thread_->StartWithOptions(options);
+    io_thread_->StartWithOptions(std::move(options));
 
     base::RunLoop loop;
     io_thread_->task_runner()->PostTask(
