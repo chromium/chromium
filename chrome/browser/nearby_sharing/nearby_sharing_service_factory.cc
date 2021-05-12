@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -53,8 +54,17 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
   if (!base::FeatureList::IsEnabled(features::kNearbySharing))
     return false;
 
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return false;
+
   if (!chromeos::nearby::NearbyProcessManagerFactory::CanBeLaunchedForProfile(
-          Profile::FromBrowserContext(context))) {
+          profile)) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingChildAccounts) &&
+      profile->IsChild()) {
     return false;
   }
 
