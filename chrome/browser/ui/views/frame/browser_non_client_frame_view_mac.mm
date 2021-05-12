@@ -262,11 +262,7 @@ void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {
 // BrowserNonClientFrameViewMac, views::NonClientFrameView implementation:
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
-  gfx::Rect client_view_bounds = bounds();
-  int top_inset =
-      browser_view()->IsWindowControlsOverlayEnabled() ? 0 : GetTopInset(false);
-  client_view_bounds.Inset(0, top_inset, 0, 0);
-  return client_view_bounds;
+  return bounds();
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
