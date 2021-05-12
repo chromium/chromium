@@ -16,8 +16,6 @@ class ToggleCameraButton : public views::ImageButton {
 
   void SetCameraState(bool is_turned_on);
 
-  bool is_turned_on_for_testing() const { return is_turned_on_; }
-
  protected:
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
