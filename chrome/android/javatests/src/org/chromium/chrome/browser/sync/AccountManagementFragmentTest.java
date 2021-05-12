@@ -33,7 +33,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -94,19 +92,6 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementFragmentViewLegacy() throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_view_legacy");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementFragmentView() throws Exception {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -118,7 +103,6 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testSignedInAccountShownOnTop() throws Exception {
         mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
@@ -131,22 +115,6 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementViewForChildAccountLegacy() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
-        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
-                Profile::getLastUsedRegularProfile);
-        CriteriaHelper.pollUiThread(profile::isChild);
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_for_child_account_legacy");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementViewForChildAccount() throws Exception {
         mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -160,7 +128,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testSignOutUserWithoutShowingSignOutDialog() {
         mAccountManagerTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -176,7 +143,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void showSignOutDialogBeforeSigningUserOut() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();

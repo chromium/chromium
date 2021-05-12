@@ -1539,9 +1539,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Account management UI strings. -->
-      <message name="IDS_ACCOUNT_MANAGEMENT_ADD_ACCOUNT_TITLE" desc="Button text for opening the add account dialog to add a new account to a user's profile. [CHAR_LIMIT=20]">
-        Add account
-      </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_TITLE" desc="Header title for the account management screen. [CHAR_LIMIT=32]">
         Signed in to Google as
       </message>

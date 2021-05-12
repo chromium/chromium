@@ -22,7 +22,6 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
@@ -159,11 +158,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         mSignedInAccountName = CoreAccountInfo.getEmailFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(
-                                ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                                        ? ConsentLevel.SIGNIN
-                                        : ConsentLevel.SYNC));
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (mSignedInAccountName == null) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
@@ -195,11 +190,14 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                signOutPreference.setLayoutResource(R.layout.account_management_account_row);
-                signOutPreference.setIcon(R.drawable.ic_signout_40dp);
-            }
-            signOutPreference.setTitle(getSignOutPreferenceText());
+            signOutPreference.setLayoutResource(R.layout.account_management_account_row);
+            signOutPreference.setIcon(R.drawable.ic_signout_40dp);
+            signOutPreference.setTitle(
+                    IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .hasPrimaryAccount()
+                            ? R.string.sign_out_and_turn_off_sync
+                            : R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(preference -> {
                 if (!isVisible() || !isResumed() || mSignedInAccountName == null) {
                     return false;
@@ -273,18 +271,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         }
     }
 
-    private int getSignOutPreferenceText() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            if (!IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .hasPrimaryAccount()) {
-                // There is no syncing account.
-                return R.string.sign_out;
-            }
-        }
-        return R.string.sign_out_and_turn_off_sync;
-    }
-
     private void updateAccountsList() {
         PreferenceCategory accountsCategory =
                 (PreferenceCategory) findPreference(PREF_ACCOUNTS_CATEGORY);
@@ -294,12 +280,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
         accountsCategory.addPreference(
                 createAccountPreference(AccountUtils.createAccountFromName(mSignedInAccountName)));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            accountsCategory.addPreference(
-                    createDividerPreference(R.layout.account_divider_preference));
-            accountsCategory.addPreference(createManageYourGoogleAccountPreference());
-            accountsCategory.addPreference(createDividerPreference(R.layout.divider_preference));
-        }
+        accountsCategory.addPreference(
+                createDividerPreference(R.layout.account_divider_preference));
+        accountsCategory.addPreference(createManageYourGoogleAccountPreference());
+        accountsCategory.addPreference(createDividerPreference(R.layout.divider_preference));
 
         List<Account> accounts = AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
         for (Account account : accounts) {
@@ -349,14 +333,8 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     private ChromeBasePreference createAddAccountPreference() {
         ChromeBasePreference addAccountPreference = new ChromeBasePreference(getStyledContext());
         addAccountPreference.setLayoutResource(R.layout.account_management_account_row);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            addAccountPreference.setIcon(R.drawable.ic_person_add_40dp);
-            addAccountPreference.setTitle(R.string.signin_add_account_to_device);
-        } else {
-            addAccountPreference.setIcon(R.drawable.ic_add_circle_40dp);
-            addAccountPreference.setTitle(R.string.account_management_add_account_title);
-        }
+        addAccountPreference.setIcon(R.drawable.ic_person_add_40dp);
+        addAccountPreference.setTitle(R.string.signin_add_account_to_device);
         addAccountPreference.setOnPreferenceClickListener(preference -> {
             if (!isVisible() || !isResumed()) return false;
 
