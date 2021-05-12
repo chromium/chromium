@@ -385,7 +385,7 @@ class ChromePasswordProtectionServiceTest
   int GetSizeofUnhandledSyncPasswordReuses() {
     DictionaryPrefUpdate unhandled_sync_password_reuses(
         profile()->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-    return unhandled_sync_password_reuses->size();
+    return unhandled_sync_password_reuses->DictSize();
   }
 
   size_t GetNumberOfNavigationThrottles() {
