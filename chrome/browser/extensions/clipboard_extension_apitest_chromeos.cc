@@ -10,7 +10,9 @@
 using ClipboardExtensionApiTest = extensions::ExtensionApiTest;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(ClipboardExtensionApiTest, ClipboardDataChanged) {
+// Disable due to flaky, https://crbug.com/1206809
+IN_PROC_BROWSER_TEST_F(ClipboardExtensionApiTest,
+                       DISABLED_ClipboardDataChanged) {
   ExtensionTestMessageListener result_listener("success 2", false);
   ASSERT_TRUE(RunExtensionTest({.name = "clipboard/clipboard_data_changed",
                                 .launch_as_platform_app = true}))
