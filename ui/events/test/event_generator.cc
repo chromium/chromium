@@ -275,6 +275,7 @@ void EventGenerator::PressTouchId(
     const base::Optional<gfx::Point>& touch_location_in_screen) {
   if (touch_location_in_screen.has_value())
     current_screen_location_ = *touch_location_in_screen;
+  UpdateCurrentDispatcher(current_screen_location_);
   TestTouchEvent touchev(ui::ET_TOUCH_PRESSED, GetLocationInCurrentRoot(),
                          touch_id, flags_, ui::EventTimeForNow());
   Dispatch(&touchev);
