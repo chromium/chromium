@@ -32,6 +32,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeStubCellularNetworksProvider
   void RemoveStub(const std::string& stub_iccid,
                   const std::string& eid = std::string());
 
+  size_t stub_networks_add_count() const { return stub_networks_add_count_; }
+
  private:
   using IccidEidPair = std::pair<std::string, std::string>;
 
@@ -49,6 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeStubCellularNetworksProvider
   std::vector<IccidEidPair> GetStubsNotBackedByShill(
       const NetworkStateHandler::ManagedStateList& network_list) const;
 
+  size_t stub_networks_add_count_ = 0;
   base::flat_set<IccidEidPair> stub_iccid_and_eid_pairs_;
   base::flat_map<std::string, std::string> iccid_to_guid_map_;
 };

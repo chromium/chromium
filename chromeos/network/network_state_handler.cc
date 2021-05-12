@@ -1289,6 +1289,18 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
 
+  // Non-Shill services are added in Chrome and is not present in |entries|.
+  // Add these services back to managed_list.
+  for (auto iter = managed_map.begin(); iter != managed_map.end();) {
+    NetworkState* network = iter->second->AsNetworkState();
+    if (!network->IsNonShillCellularNetwork()) {
+      iter++;
+      continue;
+    }
+    managed_list->push_back(std::move(iter->second));
+    iter = managed_map.erase(iter);
+  }
+
   // Network list is explicitly sorted in ManagedListChanged() which is notified
   // after this method. But this ensures that any intervening calls to
   // GetNetworkList* methods will use the sorted list.

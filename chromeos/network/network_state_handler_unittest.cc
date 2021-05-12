@@ -2227,12 +2227,22 @@ TEST_F(NetworkStateHandlerTest,
   network_state_handler_->GetNetworkListByType(
       NetworkTypePattern::Cellular(), /*configured_only=*/false,
       /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(1u,
+            fake_stub_cellular_networks_provider_.stub_networks_add_count());
   EXPECT_EQ(2u, network_list.size());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
   EXPECT_EQ(0u, test_observer_->service_path_transitions().size());
 
+  // Verify that a second change in network list doesn't remove and re-add stub
+  // cellular networks.
+  service_test_->RemoveService(kShillManagerClientStubWifi2);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u,
+            fake_stub_cellular_networks_provider_.stub_networks_add_count());
+
   // Simulate a Shill-backed network replacing the stub by adding a network with
   // the same ICCID.
+  test_observer_->reset_change_counts();
   AddService(kTestCellularServicePath2, kTestCellularServiceGuid2,
              kTestCellularServiceName2, shill::kTypeCellular,
              shill::kStateIdle);
@@ -2243,7 +2253,7 @@ TEST_F(NetworkStateHandlerTest,
       NetworkTypePattern::Cellular(), /*configured_only=*/false,
       /*visible_only=*/false, /*limit=*/0, &network_list);
   EXPECT_EQ(2u, network_list.size());
-  EXPECT_EQ(2u, test_observer_->network_list_changed_count());
+  EXPECT_EQ(1u, test_observer_->network_list_changed_count());
   EXPECT_EQ(1u, test_observer_->service_path_transitions().size());
   EXPECT_EQ(GenerateStubCellularServicePath(kTestCellularServiceIccid2),
             test_observer_->service_path_transitions()[0].first);

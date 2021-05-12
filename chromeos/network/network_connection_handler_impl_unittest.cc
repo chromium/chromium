@@ -484,7 +484,6 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     helper_.service_test()->AddService(
         kTestCellularServicePath, kTestCellularGuid, kTestCellularName,
         shill::kTypeCellular, shill::kStateIdle, /*visible=*/true);
-    base::RunLoop().RunUntilIdle();
 
     if (has_eid) {
       helper_.service_test()->SetServiceProperty(
