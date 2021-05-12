@@ -8078,12 +8078,6 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
   return find_in_page_active_match_node_;
 }
 
-void Document::RegisterWillDispatchPrerenderchangeCallback(
-    base::OnceClosure closure) {
-  DCHECK(is_prerendering_);
-  will_dispatch_prerenderchange_callbacks_.push_back(std::move(closure));
-}
-
 void Document::ActivateForPrerendering() {
   DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
 
@@ -8101,12 +8095,6 @@ void Document::ActivateForPrerendering() {
 
   if (DocumentLoader* loader = Loader())
     loader->NotifyPrerenderingDocumentActivated();
-
-  Vector<base::OnceClosure> callbacks;
-  callbacks.swap(will_dispatch_prerenderchange_callbacks_);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
-  }
 
   DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
 

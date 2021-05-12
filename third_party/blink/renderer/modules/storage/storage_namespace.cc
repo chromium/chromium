@@ -100,21 +100,9 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   result = base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      origin, controller_->TaskRunner(), this,
-      /*is_session_storage_for_prerendering=*/false);
+      origin, controller_->TaskRunner(), this);
   cached_areas_.insert(std::move(origin), result);
   return result;
-}
-
-scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
-    const SecurityOrigin* origin_ptr) {
-  DCHECK((IsSessionStorage()));
-  scoped_refptr<const SecurityOrigin> origin(origin_ptr);
-  return base::MakeRefCounted<CachedStorageArea>(
-      IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
-                         : CachedStorageArea::AreaType::kLocalStorage,
-      origin, controller_->TaskRunner(), this,
-      /*is_session_storage_for_prerendering=*/true);
 }
 
 void StorageNamespace::CloneTo(const String& target) {

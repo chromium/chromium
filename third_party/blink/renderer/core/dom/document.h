@@ -323,8 +323,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
-  void RegisterWillDispatchPrerenderchangeCallback(base::OnceClosure);
-
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   bool DocumentPolicyFeatureObserved(
@@ -1839,10 +1837,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // TODO(bokan): This should eventually be based on the document loading-mode:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/prerendering-state.md#documentprerendering
   bool is_prerendering_;
-
-  // Callbacks to execute upon activation of a prerendered page, just before the
-  // prerenderchange event is dispatched.
-  Vector<base::OnceClosure> will_dispatch_prerenderchange_callbacks_;
 
   bool evaluate_media_queries_on_style_recalc_;
 

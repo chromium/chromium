@@ -90,16 +90,10 @@ StorageArea* DOMWindowStorage::sessionStorage(
       StorageNamespace::From(window->GetFrame()->GetPage());
   if (!storage_namespace)
     return nullptr;
-  scoped_refptr<CachedStorageArea> cached_storage_area;
-  if (window->document()->IsPrerendering()) {
-    cached_storage_area = storage_namespace->CreateCachedAreaForPrerender(
-        window->GetSecurityOrigin());
-  } else {
-    cached_storage_area =
-        storage_namespace->GetCachedArea(window->GetSecurityOrigin());
-  }
+  auto storage_area =
+      storage_namespace->GetCachedArea(window->GetSecurityOrigin());
   session_storage_ =
-      StorageArea::Create(window, std::move(cached_storage_area),
+      StorageArea::Create(window, std::move(storage_area),
                           StorageArea::StorageType::kSessionStorage);
 
   if (!session_storage_->CanAccessStorage()) {
