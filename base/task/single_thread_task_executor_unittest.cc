@@ -481,7 +481,7 @@ void RunTest_IOHandler() {
   Thread thread("IOHandler test");
   Thread::Options options;
   options.message_pump_type = MessagePumpType::IO;
-  ASSERT_TRUE(thread.StartWithOptions(options));
+  ASSERT_TRUE(thread.StartWithOptions(std::move(options)));
 
   TestIOHandler handler(kPipeName, callback_called.Get());
   thread.task_runner()->PostTask(
@@ -1763,7 +1763,7 @@ void RunTest_NestingDenial2(MessagePumpType message_pump_type) {
   Thread worker("NestingDenial2_worker");
   Thread::Options options;
   options.message_pump_type = message_pump_type;
-  ASSERT_EQ(true, worker.StartWithOptions(options));
+  ASSERT_EQ(true, worker.StartWithOptions(std::move(options)));
   TaskList order;
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
@@ -1813,7 +1813,7 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
   Thread worker("NestingSupport2_worker");
   Thread::Options options;
   options.message_pump_type = MessagePumpType::UI;
-  ASSERT_EQ(true, worker.StartWithOptions(options));
+  ASSERT_EQ(true, worker.StartWithOptions(std::move(options)));
   TaskList order;
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
