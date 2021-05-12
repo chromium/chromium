@@ -226,6 +226,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
  private:
   friend class BluetoothGattNotifySession;
 
+  enum class CommandType { kNone, kStart, kStop };
+
+  struct CommandStatus {
+    explicit CommandStatus(CommandType type = CommandType::kNone,
+                           base::Optional<BluetoothGattService::GattErrorCode>
+                               error_code = base::nullopt);
+    CommandStatus(CommandStatus&& other);
+
+    CommandType type;
+    base::Optional<BluetoothGattService::GattErrorCode> error_code;
+  };
+
   // Stops an active notify session for the remote characteristic. On success,
   // the characteristic removes this session from the list of active sessions.
   // If there are no more active sessions, notifications/indications are
@@ -244,10 +256,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 
   class NotifySessionCommand {
    public:
-    enum Type { COMMAND_NONE, COMMAND_START, COMMAND_STOP };
-
-    using ExecuteCallback = base::OnceCallback<
-        void(Type, base::Optional<BluetoothGattService::GattErrorCode>)>;
+    using ExecuteCallback = base::OnceCallback<void(CommandStatus)>;
 
     ExecuteCallback execute_callback_;
     base::OnceClosure cancel_callback_;
@@ -257,9 +266,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
     ~NotifySessionCommand();
 
     void Execute();
-    void Execute(Type previous_command_type,
-                 base::Optional<BluetoothGattService::GattErrorCode>
-                     previous_command_error_code);
+    void Execute(CommandStatus previous_command);
     void Cancel();
   };
 
@@ -271,20 +278,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
       const base::Optional<NotificationType>& notification_type,
       NotifySessionCallback callback,
       ErrorCallback error_callback,
-      NotifySessionCommand::Type previous_command_type,
-      base::Optional<BluetoothGattService::GattErrorCode>
-          previous_command_error_code);
+      CommandStatus previous_command);
   void CancelStartNotifySession(base::OnceClosure callback);
   void OnStartNotifySessionSuccess(NotifySessionCallback callback);
   void OnStartNotifySessionError(ErrorCallback error_callback,
                                  BluetoothGattService::GattErrorCode error);
 
-  void ExecuteStopNotifySession(
-      BluetoothGattNotifySession* session,
-      base::OnceClosure callback,
-      NotifySessionCommand::Type previous_command_type,
-      base::Optional<BluetoothGattService::GattErrorCode>
-          previous_command_error_code);
+  void ExecuteStopNotifySession(BluetoothGattNotifySession* session,
+                                base::OnceClosure callback,
+                                CommandStatus previous_command);
   void CancelStopNotifySession(base::OnceClosure callback);
   void OnStopNotifySessionSuccess(BluetoothGattNotifySession* session,
                                   base::OnceClosure callback);
