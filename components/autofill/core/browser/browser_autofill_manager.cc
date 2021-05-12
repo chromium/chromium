@@ -388,6 +388,16 @@ size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
   }
 }
 
+// Logs the reason for suppressing autofill suggestions to
+// chrome://autofill-internals.
+void LogSuppressReason(LogManager* log_manager, const std::string& reason) {
+  if (!log_manager)
+    return;
+  log_manager->Log() << LoggingScope::kFilling
+                     << LogMessage::kSuggestionSuppressed
+                     << " Reason: " << reason;
+}
+
 }  // namespace
 
 BrowserAutofillManager::FillingContext::FillingContext(
@@ -954,10 +964,14 @@ void BrowserAutofillManager::OnQueryFormFieldAutofillImpl(
         autocomplete_history_manager_->CancelPendingQueries(this);
         external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                                   autoselect_first_suggestion);
+        LogSuppressReason(log_manager(), "Ablation experiment");
         return;
 
       case SuppressReason::kInsecureForm:
+        LogSuppressReason(log_manager(), "Insecure form");
+        return;
       case SuppressReason::kAutocompleteOff:
+        LogSuppressReason(log_manager(), "autocomplete=off");
         return;
     }
 
