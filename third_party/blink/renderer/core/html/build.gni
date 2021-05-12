@@ -28,6 +28,8 @@ blink_core_sources_html = [
   "canvas/image_data.h",
   "canvas/image_element_base.cc",
   "canvas/image_element_base.h",
+  "canvas/predefined_color_space.cc",
+  "canvas/predefined_color_space.h",
   "canvas/text_metrics.cc",
   "canvas/text_metrics.h",
   "canvas/ukm_parameters.h",

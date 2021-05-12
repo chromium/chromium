@@ -29,8 +29,13 @@ void HTMLCanvasElementModule::getContext(
     return;
   }
 
+  CanvasContextCreationAttributesCore canvas_context_creation_attributes;
+  if (!ToCanvasContextCreationAttributes(
+          attributes, canvas_context_creation_attributes, exception_state)) {
+    return;
+  }
   CanvasRenderingContext* context = canvas.GetCanvasRenderingContext(
-      type, ToCanvasContextCreationAttributes(attributes));
+      type, canvas_context_creation_attributes);
   if (context)
     context->SetCanvasGetContextResult(result);
 }

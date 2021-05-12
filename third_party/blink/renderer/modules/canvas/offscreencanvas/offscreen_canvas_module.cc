@@ -24,11 +24,16 @@ void OffscreenCanvasModule::getContext(
                                       "OffscreenCanvas object is detached");
     return;
   }
+  CanvasContextCreationAttributesCore canvas_context_creation_attributes;
+  if (!ToCanvasContextCreationAttributes(
+          attributes, canvas_context_creation_attributes, exception_state)) {
+    return;
+  }
 
   // OffscreenCanvas cannot be transferred after getContext, so this execution
   // context will always be the right one from here on.
   CanvasRenderingContext* context = offscreen_canvas.GetCanvasRenderingContext(
-      execution_context, id, ToCanvasContextCreationAttributes(attributes));
+      execution_context, id, canvas_context_creation_attributes);
   if (context)
     context->SetOffscreenCanvasGetContextResult(result);
 }
