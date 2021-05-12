@@ -18,16 +18,11 @@ namespace aura {
 class Window;
 }  // namespace aura
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace ash {
 
 class HoldingSpaceItem;
 class HoldingSpaceTestApi;
 
-// TODO(crbug.com/1202947): Remove deprecated methods.
 // Base class for holding space browser tests. Subclasses
 // SystemWebAppBrowserTestBase for the ability to test with the Media App, which
 // is the default handler for files opened from the holding space.
@@ -46,23 +41,6 @@ class HoldingSpaceBrowserTestBase
 
   // Returns the currently active profile.
   Profile* GetProfile();
-
-  // DEPRECATED: Use `test_api().Show()`.
-  // Shows holding space UI. This is a no-op if it's already showing.
-  void Show();
-
-  // DEPRECATED: Use `test_api().Close()`.
-  // Closes holding space UI. This is a no-op if it's already closed.
-  void Close();
-
-  // DEPRECATED: Use `test_api().IsShowing()`.
-  // Returns true if holding space UI is showing, false otherwise.
-  bool IsShowing();
-
-  // DEPRECATED: Use `test_api().IsShowingInShelf()`.
-  // Returns true if the holding space tray is showing in the shelf, false
-  // otherwise.
-  bool IsShowingInShelf();
 
   // Adds and returns an arbitrary download file to the holding space.
   HoldingSpaceItem* AddDownloadFile();
@@ -93,39 +71,6 @@ class HoldingSpaceBrowserTestBase
   // of `.txt`. Returns the file path of the created file.
   base::FilePath CreateFile(
       const base::Optional<std::string>& extension = base::nullopt);
-
-  // DEPRECATED: Use `test_api().GetDownloadChips()`.
-  // Returns the collection of download chips in holding space UI.
-  // If holding space UI is not visible, an empty collection is returned.
-  std::vector<views::View*> GetDownloadChips();
-
-  // DEPRECATED: Use `test_api().GetPinnedFileChips()`.
-  // Returns the collection of pinned file chips in holding space UI.
-  // If holding space UI is not visible, an empty collection is returned.
-  std::vector<views::View*> GetPinnedFileChips();
-
-  // DEPRECATED: Use `test_api().GetScreenCaptureViews()`.
-  // Returns the collection of screen capture views in holding space UI.
-  // If holding space UI is not visible, an empty collection is returned.
-  std::vector<views::View*> GetScreenCaptureViews();
-
-  // DEPRECATED: Use `test_api().GetTray()`.
-  // Returns the holding space tray in the shelf.
-  views::View* GetTray();
-
-  // DEPRECATED: Use `test_api().GetTrayDropTargetOverlay()`.
-  // Returns the view drawn on top of the holding space tray to indicate that
-  // it is a drop target capable of handling the current drag payload.
-  views::View* GetTrayDropTargetOverlay();
-
-  // DEPRECATED: Use `test_api().Get[Default|Previews]TrayIcon()`.
-  // Getter for the holding space tray icons in the shelf.
-  views::View* GetDefaultTrayIcon();
-  views::View* GetPreviewsTrayIcon();
-
-  // DEPRECATED: Use `test_api().RecentFilesBubbleShown()`.
-  // Returns whether the recent files bubble is shown.
-  bool RecentFilesBubbleShown() const;
 
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();

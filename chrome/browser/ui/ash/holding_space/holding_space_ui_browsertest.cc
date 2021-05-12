@@ -504,9 +504,9 @@ class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
     // behavior since it is already asserted in ash_unittests. As a convenience,
     // add and remove a holding space item so that the holding space tray will
     // already be showing during test execution.
-    ASSERT_FALSE(IsShowingInShelf());
+    ASSERT_FALSE(test_api().IsShowingInShelf());
     RemoveItem(AddDownloadFile());
-    ASSERT_TRUE(IsShowingInShelf());
+    ASSERT_TRUE(test_api().IsShowingInShelf());
 
     // Confirm that holding space model has been emptied for test execution.
     ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
@@ -542,16 +542,17 @@ class HoldingSpaceUiDragAndDropBrowserTest
  public:
   // Asserts expectations that the holding space tray is or isn't a drop target.
   void ExpectTrayIsDropTarget(bool is_drop_target) {
-    EXPECT_EQ(GetTrayDropTargetOverlay()->layer()->GetTargetOpacity(),
-              is_drop_target ? 1.f : 0.f);
-    EXPECT_EQ(GetDefaultTrayIcon()->layer()->GetTargetOpacity(),
+    EXPECT_EQ(
+        test_api().GetTrayDropTargetOverlay()->layer()->GetTargetOpacity(),
+        is_drop_target ? 1.f : 0.f);
+    EXPECT_EQ(test_api().GetDefaultTrayIcon()->layer()->GetTargetOpacity(),
               is_drop_target ? 0.f : 1.f);
-    EXPECT_EQ(GetPreviewsTrayIcon()->layer()->GetTargetOpacity(),
+    EXPECT_EQ(test_api().GetPreviewsTrayIcon()->layer()->GetTargetOpacity(),
               is_drop_target ? 0.f : 1.f);
 
     // Cache a reference to preview layers.
     const ui::Layer* previews_container_layer =
-        GetPreviewsTrayIcon()->layer()->children()[0];
+        test_api().GetPreviewsTrayIcon()->layer()->children()[0];
     const std::vector<ui::Layer*>& preview_layers =
         previews_container_layer->children();
 
@@ -581,7 +582,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
   // space tray so as to make it present itself as a drop target.
   bool IsWithinTrayDropTargetRange(const gfx::Point& screen_location) {
     constexpr int kProximityThreshold = 20;
-    gfx::Rect screen_bounds(GetTray()->GetBoundsInScreen());
+    gfx::Rect screen_bounds(test_api().GetTray()->GetBoundsInScreen());
     screen_bounds.Inset(gfx::Insets(-kProximityThreshold));
     return screen_bounds.Contains(screen_location);
   }
@@ -671,13 +672,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   // Verify drag-and-drop of download items.
   HoldingSpaceItem* const download_file = AddDownloadFile();
 
-  Show();
-  ASSERT_TRUE(IsShowing());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
 
   // Let the message loop run so that resize of status tray takes effect.
   base::RunLoop().RunUntilIdle();
 
-  std::vector<views::View*> download_chips = GetDownloadChips();
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(1u, download_chips.size());
 
   PerformDragAndDrop(/*from=*/download_chips[0], /*to=*/target());
@@ -685,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
-  ASSERT_FALSE(IsShowing());
+  ASSERT_FALSE(test_api().IsShowing());
 
   // Verify drag-and-drop of pinned file items.
   // NOTE: Dragging a pinned file from a non-top row of the pinned files
@@ -695,10 +696,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   AddPinnedFile();
   AddPinnedFile();
 
-  Show();
-  ASSERT_TRUE(IsShowing());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
 
-  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  std::vector<views::View*> pinned_file_chips = test_api().GetPinnedFileChips();
   ASSERT_EQ(3u, pinned_file_chips.size());
 
   PerformDragAndDrop(/*from=*/pinned_file_chips.back(), /*to=*/target());
@@ -706,15 +707,16 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
-  ASSERT_FALSE(IsShowing());
+  ASSERT_FALSE(test_api().IsShowing());
 
   // Verify drag-and-drop of screenshot items.
   HoldingSpaceItem* const screenshot_file = AddScreenshotFile();
 
-  Show();
-  ASSERT_TRUE(IsShowing());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
 
-  std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+  std::vector<views::View*> screen_capture_views =
+      test_api().GetScreenCaptureViews();
   ASSERT_EQ(1u, screen_capture_views.size());
 
   PerformDragAndDrop(/*from=*/screen_capture_views[0], /*to=*/target());
@@ -722,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
-  ASSERT_FALSE(IsShowing());
+  ASSERT_FALSE(test_api().IsShowing());
 }
 
 // Verifies that drag-and-drop to pin holding space items works.
@@ -732,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
 
   // Add an item to holding space to cause the holding space tray to appear.
   AddDownloadFile();
-  ASSERT_TRUE(IsShowingInShelf());
+  ASSERT_TRUE(test_api().IsShowingInShelf());
 
   // Let the message loop run so that resize of status tray takes effect.
   base::RunLoop().RunUntilIdle();
@@ -767,7 +769,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
     // Perform and verify the ability to pin a file via drag-and-drop.
     ExpectTrayIsDropTarget(false);
     PerformDragAndDrop(
-        /*from=*/sender(), /*to=*/GetTray(),
+        /*from=*/sender(), /*to=*/test_api().GetTray(),
         /*drag_update_callback=*/
         base::BindRepeating(
             &HoldingSpaceUiDragAndDropBrowserTest::IsWithinTrayDropTargetRange,
@@ -812,7 +814,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
     // Note that any already pinned files in the drop payload are ignored.
     ExpectTrayIsDropTarget(false);
     PerformDragAndDrop(
-        /*from=*/sender(), /*to=*/GetTray(),
+        /*from=*/sender(), /*to=*/test_api().GetTray(),
         /*drag_update_callback=*/
         base::BindRepeating(
             &HoldingSpaceUiDragAndDropBrowserTest::IsWithinTrayDropTargetRange,
@@ -849,7 +851,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
     EXPECT_CALL(client, PinFiles).Times(0);
     ExpectTrayIsDropTarget(false);
     PerformDragAndDrop(
-        /*from=*/sender(), /*to=*/GetTray(),
+        /*from=*/sender(), /*to=*/test_api().GetTray(),
         /*drag_update_callback=*/
         base::BindRepeating(
             [](HoldingSpaceUiDragAndDropBrowserTest* test,
@@ -896,9 +898,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  ASSERT_TRUE(IsShowingInShelf());
+  ASSERT_TRUE(test_api().IsShowingInShelf());
   RequestAndAwaitLockScreen();
-  ASSERT_FALSE(IsShowingInShelf());
+  ASSERT_FALSE(test_api().IsShowingInShelf());
 }
 
 // Verifies that opening holding space items works.
@@ -935,9 +937,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
 
   for (auto& user_interaction : user_interactions) {
     // Show holding space UI and verify a holding space item view exists.
-    Show();
-    ASSERT_TRUE(IsShowing());
-    std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+    test_api().Show();
+    ASSERT_TRUE(test_api().IsShowing());
+    std::vector<views::View*> screen_capture_views =
+        test_api().GetScreenCaptureViews();
     ASSERT_EQ(1u, screen_capture_views.size());
 
     // Attempt to open the holding space item via user interaction on its view.
@@ -969,10 +972,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
     AddItem(GetProfile(), type, CreateFile());
 
-  Show();
-  ASSERT_TRUE(IsShowing());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
 
-  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  std::vector<views::View*> pinned_file_chips = test_api().GetPinnedFileChips();
   ASSERT_EQ(1u, pinned_file_chips.size());
 
   // Right clicking a pinned item should cause a context menu to show.
@@ -987,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
   ASSERT_FALSE(views::MenuController::GetActiveInstance());
 
-  std::vector<views::View*> download_chips = GetDownloadChips();
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
   ASSERT_GT(download_chips.size(), 1u);
 
   // Add a download item to the selection and show the context menu.
@@ -1036,11 +1039,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
     run_loop.Run();
 
     // Verify the download chip has been removed.
-    download_chips = GetDownloadChips();
+    download_chips = test_api().GetDownloadChips();
     EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips, item_id));
   }
 
-  std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+  std::vector<views::View*> screen_capture_views =
+      test_api().GetScreenCaptureViews();
   ASSERT_GT(screen_capture_views.size(), 1u);
 
   // Select a screen capture item and show the context menu.
@@ -1071,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
     run_loop.Run();
 
     // Verify the screen capture view has been removed.
-    screen_capture_views = GetScreenCaptureViews();
+    screen_capture_views = test_api().GetScreenCaptureViews();
     EXPECT_FALSE(
         test_api().GetHoldingSpaceItemView(screen_capture_views, item_id));
   }
@@ -1127,8 +1131,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
 
       // Verify all previously visible download chips and screen capture views
       // have been removed.
-      download_chips = GetDownloadChips();
-      screen_capture_views = GetScreenCaptureViews();
+      download_chips = test_api().GetDownloadChips();
+      screen_capture_views = test_api().GetScreenCaptureViews();
       for (const std::string& item_id : item_ids) {
         EXPECT_FALSE(
             test_api().GetHoldingSpaceItemView(download_chips, item_id));
@@ -1139,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   }
 
   // The recent files bubble should be empty and therefore hidden.
-  ASSERT_FALSE(RecentFilesBubbleShown());
+  ASSERT_FALSE(test_api().RecentFilesBubbleShown());
 }
 
 // Verifies that unpinning a pinned holding space item works as intended.
@@ -1152,10 +1156,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
   for (size_t i = 0; i < kNumPinnedItems; ++i)
     AddPinnedFile();
 
-  Show();
-  ASSERT_TRUE(IsShowing());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
 
-  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  std::vector<views::View*> pinned_file_chips = test_api().GetPinnedFileChips();
   ASSERT_EQ(kNumPinnedItems, pinned_file_chips.size());
 
   // Operate on the last `pinned_file_chip` as there was an easy to reproduce
@@ -1173,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
 
   Click(pin_btn);
 
-  pinned_file_chips = GetPinnedFileChips();
+  pinned_file_chips = test_api().GetPinnedFileChips();
   ASSERT_EQ(kNumPinnedItems - 1, pinned_file_chips.size());
 }
 
@@ -1182,14 +1186,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  ASSERT_TRUE(IsShowingInShelf());
+  ASSERT_TRUE(test_api().IsShowingInShelf());
 
   // Initially, the default icon should be shown.
-  auto* default_tray_icon = GetDefaultTrayIcon();
+  auto* default_tray_icon = test_api().GetDefaultTrayIcon();
   ASSERT_TRUE(default_tray_icon);
   EXPECT_TRUE(default_tray_icon->GetVisible());
 
-  auto* previews_tray_icon = GetPreviewsTrayIcon();
+  auto* previews_tray_icon = test_api().GetPreviewsTrayIcon();
   ASSERT_TRUE(previews_tray_icon);
   ASSERT_TRUE(previews_tray_icon->layer());
   ASSERT_EQ(1u, previews_tray_icon->layer()->children().size());
@@ -1281,12 +1285,12 @@ class HoldingSpaceUiScreenshotBrowserTest
 // Verifies that taking a screenshot adds a screenshot holding space item.
 IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   // Verify that no screenshots exist in holding space UI.
-  Show();
-  ASSERT_TRUE(IsShowing());
-  EXPECT_TRUE(GetScreenCaptureViews().empty());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+  EXPECT_TRUE(test_api().GetScreenCaptureViews().empty());
 
-  Close();
-  ASSERT_FALSE(IsShowing());
+  test_api().Close();
+  ASSERT_FALSE(test_api().IsShowing());
 
   // Take a screenshot using the keyboard. If `features::kCaptureMode` is
   // enabled, the screenshot will be taken using the `CaptureModeController`.
@@ -1320,9 +1324,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   run_loop.Run();
 
   // Verify that the screenshot appears in holding space UI.
-  Show();
-  ASSERT_TRUE(IsShowing());
-  EXPECT_EQ(1u, GetScreenCaptureViews().size());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+  EXPECT_EQ(1u, test_api().GetScreenCaptureViews().size());
 }
 
 // Base class for holding space UI browser tests that take screen recordings.
@@ -1342,12 +1346,12 @@ class HoldingSpaceUiScreenCaptureBrowserTest
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
                        AddScreenRecording) {
   // Verify that no screen recordings exist in holding space UI.
-  Show();
-  ASSERT_TRUE(IsShowing());
-  EXPECT_TRUE(GetScreenCaptureViews().empty());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+  EXPECT_TRUE(test_api().GetScreenCaptureViews().empty());
 
-  Close();
-  ASSERT_FALSE(IsShowing());
+  test_api().Close();
+  ASSERT_FALSE(test_api().IsShowing());
   ash::CaptureModeTestApi capture_mode_test_api;
   capture_mode_test_api.StartForFullscreen(/*for_video=*/true);
   capture_mode_test_api.PerformCapture();
@@ -1376,9 +1380,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
   wait_for_item.Run();
 
   // Verify that the screen recording appears in holding space UI.
-  Show();
-  ASSERT_TRUE(IsShowing());
-  EXPECT_EQ(1u, GetScreenCaptureViews().size());
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+  EXPECT_EQ(1u, test_api().GetScreenCaptureViews().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

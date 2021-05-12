@@ -148,22 +148,6 @@ Profile* HoldingSpaceBrowserTestBase::GetProfile() {
   return ProfileManager::GetActiveUserProfile();
 }
 
-void HoldingSpaceBrowserTestBase::Show() {
-  test_api_->Show();
-}
-
-void HoldingSpaceBrowserTestBase::Close() {
-  test_api_->Close();
-}
-
-bool HoldingSpaceBrowserTestBase::IsShowing() {
-  return test_api_->IsShowing();
-}
-
-bool HoldingSpaceBrowserTestBase::IsShowingInShelf() {
-  return test_api_->IsShowingInShelf();
-}
-
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddDownloadFile() {
   return AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload,
                  /*file_path=*/CreateTextFile(GetProfile()));
@@ -222,38 +206,6 @@ void HoldingSpaceBrowserTestBase::RemoveItem(const HoldingSpaceItem* item) {
 base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
     const base::Optional<std::string>& extension) {
   return ::ash::CreateFile(GetProfile(), extension.value_or("txt"));
-}
-
-std::vector<views::View*> HoldingSpaceBrowserTestBase::GetDownloadChips() {
-  return test_api_->GetDownloadChips();
-}
-
-std::vector<views::View*> HoldingSpaceBrowserTestBase::GetPinnedFileChips() {
-  return test_api_->GetPinnedFileChips();
-}
-
-std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenCaptureViews() {
-  return test_api_->GetScreenCaptureViews();
-}
-
-views::View* HoldingSpaceBrowserTestBase::GetTray() {
-  return test_api_->GetTray();
-}
-
-views::View* HoldingSpaceBrowserTestBase::GetTrayDropTargetOverlay() {
-  return test_api_->GetTrayDropTargetOverlay();
-}
-
-views::View* HoldingSpaceBrowserTestBase::GetDefaultTrayIcon() {
-  return test_api_->GetDefaultTrayIcon();
-}
-
-views::View* HoldingSpaceBrowserTestBase::GetPreviewsTrayIcon() {
-  return test_api_->GetPreviewsTrayIcon();
-}
-
-bool HoldingSpaceBrowserTestBase::RecentFilesBubbleShown() const {
-  return test_api_->RecentFilesBubbleShown();
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
