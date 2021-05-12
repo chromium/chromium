@@ -575,10 +575,10 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
-    public void testCustomReferer() throws Exception {
+    public void testCustomReferer_verbatim() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String refererName = "Refere";
-        String refererValue = "Referer-Value";
+        String refererName = "Referer";
+        String refererValue = "http://example.com/";
         UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
         builder.addHeader(refererName, refererValue);
@@ -586,6 +586,40 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
         assertEquals(refererValue, callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_changeToCanonical() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValueNoTrailingSlash = "http://example.com";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValueNoTrailingSlash);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValueNoTrailingSlash + "/", callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_discardInvalid() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String invalidRefererValue = "foobar";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, invalidRefererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals("Header not found. :(", callback.mResponseAsString);
     }
 
     @Test
