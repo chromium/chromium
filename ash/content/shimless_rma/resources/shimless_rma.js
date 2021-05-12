@@ -8,6 +8,9 @@ import './shimless_rma_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {CurrentState, NextState, PrevState, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js'
+
 /**
  * @typedef {{
  *  componentIs: string,
@@ -20,12 +23,11 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 let PageInfo;
 
 /**
- * // TODO(joonbug): update type to <RmaState, PageInfo> using a Map.
- * @type {!Object<number, !PageInfo>}
+ * @type {!Object<!RmaState, !PageInfo>}
  */
 const StateComponentMapping = {
-  // TODO(joonbug): Update with enum and actual componentId.
-  0: {componentIs: 'onboarding-landing-page'},
+  [RmaState.kUnknown]: {componentIs: 'badcomponent'},
+  [RmaState.kWelcomeScreen]: {componentIs: 'onboarding-landing-page'},
 };
 
 /**
@@ -52,24 +54,65 @@ export class ShimlessRmaElement extends PolymerElement {
         type: Object,
         value: {},
       },
+      /**
+       * @private
+       * @type {ShimlessRmaServiceInterface}
+       */
+      shimlessRmaService_: {
+        type: Object,
+        value: {},
+      },
     };
   }
 
   /** @override */
   ready() {
     super.ready();
+    this.shimlessRmaService_ = getShimlessRmaService();
     this.fetchState_().then((state) => this.loadState_(state));
   }
 
   /** @private */
   fetchState_() {
-    // TODO(joonbug): fetch from fake
-    return Promise.resolve(0);
+    return this.shimlessRmaService_.getCurrentState();
   }
 
   /** @private */
+  fetchNextState_() {
+    return this.shimlessRmaService_.getNextState();
+  }
+
+  /** @private */
+  fetchPrevState_() {
+    return this.shimlessRmaService_.getPrevState();
+  }
+
+  /**
+   * @private
+   * @param { !CurrentState } state
+   */
   loadState_(state) {
-    const pageInfo = StateComponentMapping[state];
+    const pageInfo = StateComponentMapping[state.currentState];
+    this.currentPage_ = pageInfo;
+    // TODO(joonbug): Load component
+  }
+
+  /**
+   * @private
+   * @param { !NextState } state
+   */
+  loadNextState_(state) {
+    const pageInfo = StateComponentMapping[state.nextState];
+    this.currentPage_ = pageInfo;
+    // TODO(joonbug): Load component
+  }
+
+  /**
+   * @private
+   * @param { !PrevState } state
+   */
+  loadPrevState_(state) {
+    const pageInfo = StateComponentMapping[state.prevState];
     this.currentPage_ = pageInfo;
     this.showComponent_(pageInfo.componentIs);
   }
@@ -129,12 +172,14 @@ export class ShimlessRmaElement extends PolymerElement {
   /** @protected */
   onBackBtnClicked_() {
     // TODO(joonbug): fill with action
+    this.fetchPrevState_().then((state) => this.loadPrevState_(state));
     return;
   }
 
   /** @protected */
   onNextBtnClicked_() {
     // TODO(joonbug): fill with action
+    this.fetchNextState_().then((state) => this.loadNextState_(state));
     return;
   }
 

@@ -12,16 +12,19 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
-  "shimless_rma.js",
-  "shimless_rma_shared_css.js",
   "base_page.js",
   "onboarding_landing_page.js",
+  "shimless_rma.js",
+  "shimless_rma_shared_css.js",
 ]
 
 generate_grd("build_grd") {
   input_files = [
-    "index.html",
     "app_icon_192.png",
+    "fake_shimless_rma_service.js",
+    "index.html",
+    "mojo_interface_provider.js",
+    "shimless_rma_types.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
@@ -35,14 +38,19 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":base_page",
+    ":fake_shimless_rma_service",
+    ":mojo_interface_provider",
     ":onboarding_landing_page",
     ":shimless_rma",
+    ":shimless_rma_types",
   ]
 }
 
 js_library("shimless_rma") {
   deps = [
+    ":mojo_interface_provider",
     ":onboarding_landing_page",
+    ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
@@ -54,10 +62,29 @@ js_library("base_page") {
   ]
 }
 
+js_library("fake_shimless_rma_service") {
+  deps = [
+    ":shimless_rma_types",
+    "//ash/content/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    ":fake_shimless_rma_service",
+    ":shimless_rma_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("onboarding_landing_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("shimless_rma_types") {
 }
 
 preprocess_if_expr("preprocess_generated") {

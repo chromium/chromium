@@ -56,6 +56,4 @@ export function fakeMethodResolverTestSuite() {
       assertEquals(second_expected, result);
     });
   });
-
-
 }
