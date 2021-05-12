@@ -772,7 +772,7 @@ DevToolsHttpHandler::DevToolsHttpHandler(
       new base::Thread(kDevToolsHandlerThreadName));
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  if (thread->StartWithOptions(options)) {
+  if (thread->StartWithOptions(std::move(options))) {
     auto task_runner = thread->task_runner();
     task_runner->PostTask(
         FROM_HERE,

@@ -59,7 +59,7 @@ class PipeIOBase {
   bool Start() {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    if (!thread_->StartWithOptions(options))
+    if (!thread_->StartWithOptions(std::move(options)))
       return false;
     StartMainLoop();
     return true;
