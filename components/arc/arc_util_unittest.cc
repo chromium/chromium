@@ -406,7 +406,6 @@ TEST_F(ArcUtilTest, ScaleFactorToDensity) {
   EXPECT_EQ(160, GetLcdDensityForDeviceScaleFactor(1.25f));
   EXPECT_EQ(213, GetLcdDensityForDeviceScaleFactor(1.6f));
   EXPECT_EQ(240, GetLcdDensityForDeviceScaleFactor(display::kDsf_1_777));
-  EXPECT_EQ(240, GetLcdDensityForDeviceScaleFactor(display::kDsf_1_8));
   EXPECT_EQ(240, GetLcdDensityForDeviceScaleFactor(2.0f));
   EXPECT_EQ(280, GetLcdDensityForDeviceScaleFactor(display::kDsf_2_252));
   EXPECT_EQ(280, GetLcdDensityForDeviceScaleFactor(2.4f));
