@@ -108,6 +108,12 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 
+void AppHistory::PopulateKeySet() {
+  DCHECK(keys_to_indices_.IsEmpty());
+  for (size_t i = 0; i < entries_.size(); i++)
+    keys_to_indices_.insert(entries_[i]->key(), i);
+}
+
 void AppHistory::InitializeForNavigation(
     HistoryItem& current,
     const WebVector<WebHistoryItem>& back_entries,
@@ -130,6 +136,7 @@ void AppHistory::InitializeForNavigation(
     entries_.emplace_back(
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), entry));
   }
+  PopulateKeySet();
 }
 
 void AppHistory::CloneFromPrevious(AppHistory& previous) {
@@ -151,6 +158,7 @@ void AppHistory::CloneFromPrevious(AppHistory& previous) {
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), new_item));
   }
   current_index_ = previous.current_index_;
+  PopulateKeySet();
 }
 
 void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
@@ -161,16 +169,11 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     return;
 
   if (type == WebFrameLoadType::kBackForward) {
-    // If this is a same-document back/forward navigation, the new current_
-    // should already be present in entries_.
-    // We just need to update current_index_ to its index, so find it.
-    size_t new_current_index = 0;
-    for (; new_current_index < entries_.size(); new_current_index++) {
-      if (entries_[new_current_index]->key() == item.GetAppHistoryKey())
-        break;
-    }
-    DCHECK_LT(new_current_index, entries_.size());
-    current_index_ = new_current_index;
+    // If this is a same-document back/forward navigation, the new current
+    // entry should already be present in entries_ and its key in
+    // keys_to_indices_.
+    DCHECK(keys_to_indices_.Contains(item.GetAppHistoryKey()));
+    current_index_ = keys_to_indices_.at(item.GetAppHistoryKey());
     return;
   }
 
@@ -178,6 +181,8 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     // For a new back/forward entry, truncate any forward entries and prepare to
     // append.
     current_index_++;
+    for (size_t i = current_index_; i < entries_.size(); i++)
+      keys_to_indices_.erase(entries_[i]->key());
     entries_.resize(current_index_ + 1);
   }
 
@@ -186,6 +191,7 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   // didn't change). Create the new current entry.
   entries_[current_index_] =
       MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
+  keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
 }
 
 AppHistoryEntry* AppHistory::current() const {

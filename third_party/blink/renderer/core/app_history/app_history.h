@@ -82,7 +82,10 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   void Trace(Visitor*) const final;
 
  private:
+  void PopulateKeySet();
+
   HeapVector<Member<AppHistoryEntry>> entries_;
+  HashMap<String, int> keys_to_indices_;
   int current_index_ = -1;
 
   Member<AppHistoryNavigateEvent> ongoing_navigate_event_;
