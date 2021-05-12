@@ -39,7 +39,7 @@ class TempFileSystem {
         origin_(url::Origin::Create(
             extensions::Extension::GetBaseURLFromExtensionId(extension_id))),
         file_system_context_(
-            GetFileSystemContextForExtensionId(profile, extension_id)) {}
+            GetFileSystemContextForSourceURL(profile, origin_.GetURL())) {}
 
   ~TempFileSystem() {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(name_);
@@ -88,7 +88,9 @@ class TempFileSystem {
 
 class FileManagerFileAPIUtilTest : public ::testing::Test {
  public:
-  FileManagerFileAPIUtilTest() {}
+  FileManagerFileAPIUtilTest()
+      : source_url_(
+            extensions::Extension::GetBaseURLFromExtensionId(extension_id_)) {}
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -109,6 +111,7 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
  protected:
   const std::string extension_id_ = "abc";
   const std::string file_system_id_ = "test-filesystem";
+  const GURL source_url_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -234,8 +237,8 @@ TEST_F(FileManagerFileAPIUtilTest,
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()},
                  y_fd = {.virtual_path = y_file_url.virtual_path()};
   ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForExtensionId(profile,
-                                                             extension_id_),
+      file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                           source_url_),
       temp_file_system.origin(), {x_fd, y_fd}, std::move(callback));
   run_loop.Run();
 }
@@ -259,8 +262,8 @@ TEST_F(FileManagerFileAPIUtilTest,
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
 
   ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForExtensionId(GetProfile(),
-                                                             extension_id_),
+      file_manager::util::GetFileSystemContextForSourceURL(GetProfile(),
+                                                           source_url_),
       temp_file_system.origin(), {x_fd}, std::move(callback));
   run_loop.Run();
 }
@@ -307,8 +310,8 @@ TEST_F(FileManagerFileAPIUtilTest,
   storage::FileSystemURL x_file_url = temp_file_system.CreateFileSystemURL(".");
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForExtensionId(GetProfile(),
-                                                             extension_id_);
+      file_manager::util::GetFileSystemContextForSourceURL(GetProfile(),
+                                                           source_url_);
 
   // Check the case where the context is not null, but is reset to null as
   // soon as function call is completed. Conversion takes place on a

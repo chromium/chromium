@@ -15,11 +15,13 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/task_util.h"
@@ -45,10 +47,9 @@ using blink::mojom::NativeFileInfo;
 namespace {
 
 GURL ConvertRelativeFilePathToFileSystemUrl(const base::FilePath& relative_path,
-                                            const std::string& extension_id) {
+                                            const GURL& source_url) {
   GURL base_url = storage::GetFileSystemRootURI(
-      extensions::Extension::GetBaseURLFromExtensionId(extension_id),
-      storage::kFileSystemTypeExternal);
+      source_url, storage::kFileSystemTypeExternal);
   return GURL(base_url.spec() +
               net::EscapeUrlEncodedData(relative_path.AsUTF8Unsafe(),
                                         false));  // Space to %20 instead of +.
@@ -446,12 +447,23 @@ EntryDefinition::EntryDefinition(const EntryDefinition& other) = default;
 
 EntryDefinition::~EntryDefinition() = default;
 
-storage::FileSystemContext* GetFileSystemContextForExtensionId(
+const GURL GetFileManagerURL() {
+  return extensions::Extension::GetBaseURLFromExtensionId(kFileManagerAppId);
+}
+
+storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile) {
+  return GetFileSystemContextForSourceURL(profile, GetFileManagerURL());
+}
+
+storage::FileSystemContext* GetFileSystemContextForSourceURL(
     Profile* profile,
-    const std::string& extension_id) {
-  return extensions::util::GetStoragePartitionForExtensionId(extension_id,
-                                                             profile)
-      ->GetFileSystemContext();
+    const GURL& source_url) {
+  content::StoragePartition* const partition =
+      content::HasWebUIScheme(source_url)
+          ? profile->GetDefaultStoragePartition()
+          : extensions::util::GetStoragePartitionForExtensionId(
+                source_url.host(), profile);
+  return partition->GetFileSystemContext();
 }
 
 storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
@@ -462,27 +474,24 @@ storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
 
 bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
                                             const base::FilePath& absolute_path,
-                                            const std::string& extension_id,
+                                            const GURL& source_url,
                                             GURL* url) {
   base::FilePath relative_path;
-  if (!ConvertAbsoluteFilePathToRelativeFileSystemPath(profile,
-                                                       extension_id,
-                                                       absolute_path,
-                                                       &relative_path)) {
+  if (!ConvertAbsoluteFilePathToRelativeFileSystemPath(
+          profile, source_url, absolute_path, &relative_path)) {
     return false;
   }
-  *url = ConvertRelativeFilePathToFileSystemUrl(relative_path, extension_id);
+  *url = ConvertRelativeFilePathToFileSystemUrl(relative_path, source_url);
   return true;
 }
 
 bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     Profile* profile,
-    const std::string& extension_id,
+    const GURL& source_url,
     const base::FilePath& absolute_path,
     base::FilePath* virtual_path) {
   storage::ExternalFileSystemBackend* backend =
-      GetFileSystemContextForExtensionId(profile, extension_id)
-          ->external_backend();
+      GetFileSystemContextForSourceURL(profile, source_url)->external_backend();
   if (!backend)
     return false;
 

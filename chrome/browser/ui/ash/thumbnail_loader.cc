@@ -25,6 +25,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -200,9 +201,11 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
                            ImageCallback callback) {
   // Get the item's last modified time - this will be used for cache lookup in
   // the image loader extension.
+  GURL source_url = extensions::Extension::GetBaseURLFromExtensionId(
+      file_manager::kImageLoaderExtensionId);
   file_manager::util::GetMetadataForPath(
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile_, file_manager::kImageLoaderExtensionId),
+      file_manager::util::GetFileSystemContextForSourceURL(profile_,
+                                                           source_url),
       request.item_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
@@ -231,7 +234,9 @@ void ThumbnailLoader::LoadForFileWithMetadata(
 
   GURL thumbnail_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile_, request.item_path, file_manager::kImageLoaderExtensionId,
+          profile_, request.item_path,
+          extensions::Extension::GetBaseURLFromExtensionId(
+              file_manager::kImageLoaderExtensionId),
           &thumbnail_url)) {
     std::move(callback).Run(/*bitmap=*/nullptr, base::File::FILE_ERROR_FAILED);
     return;

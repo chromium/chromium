@@ -56,8 +56,7 @@ void ScopedTestMountPoint::Mount(Profile* profile) {
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       name_, file_system_type_, storage::FileSystemMountOption(),
       temp_dir_.GetPath());
-  file_manager::util::GetFileSystemContextForExtensionId(
-      profile, file_manager::kFileManagerAppId)
+  file_manager::util::GetFileManagerFileSystemContext(profile)
       ->external_backend()
       ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
                                    base::FilePath(name_));

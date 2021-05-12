@@ -191,12 +191,12 @@ void SnapshotManager::CreateManagedSnapshot(
     const base::FilePath& absolute_file_path,
     LocalPathCallback callback) {
   scoped_refptr<storage::FileSystemContext> context(
-      util::GetFileSystemContextForExtensionId(profile_, kFileManagerAppId));
+      util::GetFileManagerFileSystemContext(profile_));
   DCHECK(context.get());
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile_, absolute_file_path, kFileManagerAppId, &url)) {
+          profile_, absolute_file_path, util::GetFileManagerURL(), &url)) {
     std::move(callback).Run(base::FilePath());
     return;
   }
@@ -216,7 +216,7 @@ void SnapshotManager::CreateManagedSnapshotAfterSpaceComputed(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   scoped_refptr<storage::FileSystemContext> context(
-      util::GetFileSystemContextForExtensionId(profile_, kFileManagerAppId));
+      util::GetFileManagerFileSystemContext(profile_));
   DCHECK(context.get());
 
   // Free up space if needed and start creating the snapshot.

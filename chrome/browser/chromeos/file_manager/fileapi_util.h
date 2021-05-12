@@ -88,11 +88,27 @@ typedef base::OnceCallback<void(
 typedef base::OnceCallback<void(FileChooserFileInfoList)>
     FileChooserFileInfoListCallback;
 
+// Returns the URL of the system File Manager. If you think you need to use File
+// Manager ID or URL, use this function instead. This function guarantees that
+// the correct and current URL is returned. If you need to access just the ID
+// of the system File Manager, call host() method on the returned URL.
+// TODO(crbug/1184927): Replace with dynamic listener URL.
+const GURL GetFileManagerURL();
+
+// Returns the default file system context for Files app. This is a convenience
+// method that should be used only if you are ABSOLUTELY CERTAIN that you are
+// performing some functions on the behalf of the Files app yet your code does
+// not readily have access to the system File Manager ID or URL.
+storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile);
+
 // Returns a file system context associated with the given profile and the
-// extension ID.
-storage::FileSystemContext* GetFileSystemContextForExtensionId(
+// source URL. The source URL is the URL that identifies the application, such
+// as chrome-extension://<extension-id>/ or chrome://<app-id>/. In private APIs
+// it is available as source_url(). You can also use GetFileManagerURL with this
+// call.
+storage::FileSystemContext* GetFileSystemContextForSourceURL(
     Profile* profile,
-    const std::string& extension_id);
+    const GURL& source_url);
 
 // Returns a file system context associated with the given profile and the
 // render view host.
@@ -105,7 +121,7 @@ storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
 // if |absolute_path| is not managed by the external filesystem provider.
 bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
                                             const base::FilePath& absolute_path,
-                                            const std::string& extension_id,
+                                            const GURL& source_url,
                                             GURL* url);
 
 // Converts AbsolutePath into RelativeFileSystemPath (e.g.,
@@ -113,7 +129,7 @@ bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
 // |absolute_path| is not managed by the external filesystem provider.
 bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     Profile* profile,
-    const std::string& extension_id,
+    const GURL& source_url,
     const base::FilePath& absolute_path,
     base::FilePath* relative_path);
 

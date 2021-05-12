@@ -302,14 +302,13 @@ void ArcSelectFilesHandler::FilesSelectedInternal(
   DCHECK(callback_);
 
   storage::FileSystemContext* file_system_context =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile_, file_manager::kFileManagerAppId);
+      file_manager::util::GetFileManagerFileSystemContext(profile_);
 
   std::vector<storage::FileSystemURL> file_system_urls;
   for (const base::FilePath& file_path : files) {
     GURL gurl;
     file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-        profile_, file_path, file_manager::kFileManagerAppId, &gurl);
+        profile_, file_path, file_manager::util::GetFileManagerURL(), &gurl);
     file_system_urls.push_back(file_system_context->CrackURL(gurl));
   }
 

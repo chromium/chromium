@@ -397,9 +397,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
     if (profile->IsOffTheRecord())
       continue;
     storage::FileSystemContext* const context =
-        util::GetStoragePartitionForExtensionId(extension_id_or_file_app_id(),
-                                                profile)
-            ->GetFileSystemContext();
+        file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                             source_url());
     for (const auto& url : params->entry_urls) {
       const storage::FileSystemURL file_system_url =
           context->CrackURL(GURL(url));
@@ -409,7 +408,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
           file_system_url.mount_type() != storage::kFileSystemTypeExternal) {
         continue;
       }
-      backend->GrantFileAccessToExtension(extension_id_or_file_app_id(),
+      backend->GrantFileAccessToExtension(source_url().host(),
                                           file_system_url.virtual_path());
       content::ChildProcessSecurityPolicy::GetInstance()
           ->GrantCreateReadWriteFile(render_frame_host()->GetProcess()->GetID(),
@@ -1080,7 +1079,6 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
       file_system_context->external_backend();
   DCHECK(external_backend);
 
-  const std::string& origin_id = extension_id_or_file_app_id();
   file_manager::util::FileDefinitionList file_definition_list;
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const FileSystemURL file_system_url =
@@ -1091,7 +1089,7 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
     FileDefinition file_definition;
     const bool result =
         file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            profile, origin_id, file_system_url.path(),
+            profile, source_url(), file_system_url.path(),
             &file_definition.virtual_path);
     if (!result)
       continue;
@@ -1102,8 +1100,8 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForExtensionId(profile,
-                                                             origin_id),
+      file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                           source_url()),
       url::Origin::Create(source_url().GetOrigin()),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(
@@ -1330,7 +1328,7 @@ void FileManagerPrivateSearchFilesFunction::OnSearchByPattern(
   GURL url;
   base::FilePath my_files_virtual_path;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, my_files_path, extension_id_or_file_app_id(), &url) ||
+          profile, my_files_path, source_url(), &url) ||
       !storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
           my_files_path, &my_files_virtual_path)) {
     Respond(Error("My files is not mounted"));

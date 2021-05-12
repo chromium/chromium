@@ -36,8 +36,7 @@ void FilePathValid(Profile* profile,
                    FilePathWithValidityRequirement file_path_with_requirement,
                    FilePathValidCallback callback) {
   file_manager::util::GetMetadataForPath(
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile, file_manager::kFileManagerAppId),
+      file_manager::util::GetFileManagerFileSystemContext(profile),
       file_path_with_requirement.first,
       storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(
@@ -145,7 +144,7 @@ void PartitionFilePathsByValidity(
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
   GURL file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, file_path, file_manager::kFileManagerAppId,
+          profile, file_path, file_manager::util::GetFileManagerURL(),
           &file_system_url)) {
     VLOG(2) << "Unable to convert file path to File System URL.";
   }

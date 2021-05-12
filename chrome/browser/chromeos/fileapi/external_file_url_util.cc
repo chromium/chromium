@@ -63,17 +63,14 @@ GURL CreateExternalFileURLFromPath(Profile* profile,
 
   GURL raw_file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile,
-          path,
-          file_manager::kFileManagerAppId,
+          profile, path, file_manager::util::GetFileManagerURL(),
           &raw_file_system_url)) {
     return GURL();
   }
 
   const storage::FileSystemURL file_system_url =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile, file_manager::kFileManagerAppId)
-          ->CrackURL(raw_file_system_url);
+      file_manager::util::GetFileManagerFileSystemContext(profile)->CrackURL(
+          raw_file_system_url);
   if (!file_system_url.is_valid())
     return GURL();
 

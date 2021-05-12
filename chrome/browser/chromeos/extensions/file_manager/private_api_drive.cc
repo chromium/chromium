@@ -343,8 +343,8 @@ void OnSearchDriveFs(
 
   GURL url;
   file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile, integration_service->GetMountPointPath(),
-      function->extension_id(), &url);
+      profile, integration_service->GetMountPointPath(), function->source_url(),
+      &url);
   const auto fs_root = base::StrCat({url.spec(), "/"});
   const auto fs_name =
       integration_service->GetMountPointPath().BaseName().value();

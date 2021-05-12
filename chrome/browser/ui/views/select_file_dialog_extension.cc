@@ -354,19 +354,15 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   // Convert the above absolute paths to file system URLs.
   GURL selection_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile_,
-      selection_path,
-      file_manager::kFileManagerAppId,
-      &selection_url)) {
+          profile_, selection_path, file_manager::util::GetFileManagerURL(),
+          &selection_url)) {
     // Due to the current design, an invalid temporal cache file path may passed
     // as |default_path| (crbug.com/178013 #9-#11). In such a case, we use the
     // last selected directory as a workaround. Real fix is tracked at
     // crbug.com/110119.
     if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-        profile_,
-        fallback_path.Append(default_path.BaseName()),
-        file_manager::kFileManagerAppId,
-        &selection_url)) {
+            profile_, fallback_path.Append(default_path.BaseName()),
+            file_manager::util::GetFileManagerURL(), &selection_url)) {
       DVLOG(1) << "Unable to resolve the selection URL.";
     }
   }
@@ -374,15 +370,11 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   GURL current_directory_url;
   base::FilePath current_directory_path = selection_path.DirName();
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile_,
-      current_directory_path,
-      file_manager::kFileManagerAppId,
-      &current_directory_url)) {
+          profile_, current_directory_path,
+          file_manager::util::GetFileManagerURL(), &current_directory_url)) {
     // Fallback if necessary, see the comment above.
     if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-            profile_,
-            fallback_path,
-            file_manager::kFileManagerAppId,
+            profile_, fallback_path, file_manager::util::GetFileManagerURL(),
             &current_directory_url)) {
       DVLOG(1) << "Unable to resolve the current directory URL for: "
                << fallback_path.value();

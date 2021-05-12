@@ -364,8 +364,7 @@ void SharesheetHeaderView::ResolveImages() {
 void SharesheetHeaderView::ResolveImage(size_t index) {
   base::FilePath file_path;
   storage::FileSystemContext* fs_context =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile_, file_manager::kFileManagerAppId);
+      file_manager::util::GetFileManagerFileSystemContext(profile_);
   storage::FileSystemURL fs_url =
       fs_context->CrackURL(intent_->file_urls.value()[index]);
   file_path = fs_url.path();

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -56,8 +57,9 @@ class ScopedExternalMountPoint {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         name_, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         temp_dir_.GetPath());
-    file_manager::util::GetFileSystemContextForExtensionId(
-        profile, file_manager::kImageLoaderExtensionId)
+    file_manager::util::GetFileSystemContextForSourceURL(
+        profile, extensions::Extension::GetBaseURLFromExtensionId(
+                     file_manager::kImageLoaderExtensionId))
         ->external_backend()
         ->GrantFileAccessToExtension(file_manager::kImageLoaderExtensionId,
                                      base::FilePath(name_));

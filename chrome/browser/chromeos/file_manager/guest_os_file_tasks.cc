@@ -152,7 +152,7 @@ void FindGuestOsApps(
     std::vector<guest_os::GuestOsRegistryService::VmType>* vm_types) {
   // Ensure all files can be shared with VMs.
   storage::FileSystemContext* file_system_context =
-      util::GetFileSystemContextForExtensionId(profile, kFileManagerAppId);
+      util::GetFileManagerFileSystemContext(profile);
   base::FilePath dummy_vm_mount("/");
   base::FilePath not_used;
   for (const GURL& file_url : file_urls) {

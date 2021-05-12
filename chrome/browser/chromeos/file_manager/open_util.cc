@@ -50,7 +50,7 @@ void ExecuteFileTaskForUrl(Profile* profile,
   if (!shell_operations_allowed)
     return;
   storage::FileSystemContext* file_system_context =
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId);
+      GetFileManagerFileSystemContext(profile);
 
   file_tasks::ExecuteFileTask(
       profile,
@@ -199,13 +199,13 @@ void OpenItem(Profile* profile,
   // This is unfortunately necessary as file browser handlers operate on URLs.
   GURL url;
   if (!ConvertAbsoluteFilePathToFileSystemUrl(profile, file_path,
-                                              kFileManagerAppId, &url)) {
+                                              GetFileManagerURL(), &url)) {
     std::move(callback).Run(platform_util::OPEN_FAILED_PATH_NOT_FOUND);
     return;
   }
 
   GetMetadataForPath(
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId), file_path,
+      GetFileManagerFileSystemContext(profile), file_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
       base::BindOnce(&OpenItemWithMetadata, profile, file_path, url,
                      expected_type, std::move(callback)));
@@ -218,13 +218,13 @@ void ShowItemInFolder(Profile* profile,
 
   GURL url;
   if (!ConvertAbsoluteFilePathToFileSystemUrl(profile, file_path,
-                                              kFileManagerAppId, &url)) {
+                                              GetFileManagerURL(), &url)) {
     std::move(callback).Run(platform_util::OPEN_FAILED_PATH_NOT_FOUND);
     return;
   }
 
   GetMetadataForPath(
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId), file_path,
+      GetFileManagerFileSystemContext(profile), file_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
       base::BindOnce(&ShowItemInFolderWithMetadata, profile, file_path, url,
                      std::move(callback)));

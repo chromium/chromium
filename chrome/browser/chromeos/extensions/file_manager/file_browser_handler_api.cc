@@ -346,8 +346,8 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
       render_frame_host()->GetProcess()->GetID(), full_path);
 
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      file_manager::util::GetFileSystemContextForExtensionId(profile,
-                                                             origin_id),
+      file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                           source_url()),
       url::Origin::Create(source_url().GetOrigin()), file_definition,
       base::BindOnce(
           &FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition,

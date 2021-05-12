@@ -13,8 +13,10 @@
 #include "base/test/bind.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace file_manager {
 namespace file_manager_private = extensions::api::file_manager_private;
@@ -72,8 +74,9 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
  public:
   TestDriveFsEventRouter() {
     ON_CALL(*this, IsPathWatched).WillByDefault(testing::Return(true));
-    ON_CALL(*this, GetEventListenerExtensionIds)
-        .WillByDefault(testing::Return(std::set<std::string>{"ext"}));
+    ON_CALL(*this, GetEventListenerURLs)
+        .WillByDefault(testing::Return(std::set<GURL>{
+            extensions::Extension::GetBaseURLFromExtensionId("ext")}));
   }
 
   void DispatchEventToExtension(
@@ -91,16 +94,15 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
                const base::ListValue& event));
   MOCK_METHOD(bool, IsPathWatched, (const base::FilePath&));
 
-  GURL ConvertDrivePathToFileSystemUrl(
-      const base::FilePath& file_path,
-      const std::string& extension_id) override {
-    return GURL(base::StrCat({extension_id, ":", file_path.value()}));
+  GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
+                                       const GURL& listener_url) override {
+    return GURL(base::StrCat({listener_url.host(), ":", file_path.value()}));
   }
 
   std::string GetDriveFileSystemName() override { return "drivefs"; }
 
-  MOCK_METHOD(std::set<std::string>,
-              GetEventListenerExtensionIds,
+  MOCK_METHOD(std::set<GURL>,
+              GetEventListenerURLs,
               (const std::string& event_name),
               (override));
 
@@ -884,8 +886,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
 }
 
 TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_NoListeners) {
-  EXPECT_CALL(mock(), GetEventListenerExtensionIds)
-      .WillRepeatedly(testing::Return(std::set<std::string>{}));
+  EXPECT_CALL(mock(), GetEventListenerURLs)
+      .WillRepeatedly(testing::Return(std::set<GURL>{}));
 
   drivefs::mojom::DialogReason reason;
   reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;

@@ -105,8 +105,8 @@ NavigateParams NavigateParamsForShareTarget(
       // //chrome/browser/webshare/chromeos/sharesheet_client.cc
       for (const GURL& file_url : intent.file_urls.value()) {
         storage::FileSystemContext* file_system_context =
-            file_manager::util::GetFileSystemContextForExtensionId(
-                browser->profile(), extension_misc::kFilesManagerAppId);
+            file_manager::util::GetFileManagerFileSystemContext(
+                browser->profile());
         storage::FileSystemURL file_system_url =
             file_system_context->CrackURL(file_url);
         if (!file_system_url.is_valid()) {

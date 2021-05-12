@@ -425,15 +425,14 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
 
   GURL url;
   ASSERT_TRUE(util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile, volume->mount_path().AppendASCII(kTestFile), kFileManagerAppId,
-      &url));
+      profile, volume->mount_path().AppendASCII(kTestFile),
+      util::GetFileManagerURL(), &url));
 
   // Note |url| differs slightly to the result of ToGURL() below. The colons
   // either side of `:test-image-provider-fs:` become escaped as `%3A`.
 
   storage::FileSystemURL filesystem_url =
-      util::GetFileSystemContextForExtensionId(profile, kFileManagerAppId)
-          ->CrackURL(url);
+      util::GetFileManagerFileSystemContext(profile)->CrackURL(url);
 
   std::vector<GURL> urls = {filesystem_url.ToGURL()};
   std::vector<extensions::EntryInfo> entries;

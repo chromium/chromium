@@ -44,8 +44,7 @@ void GetFileInfo(Profile* profile,
                  const base::FilePath& file_path,
                  GetFileInfoCallback callback) {
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile, file_manager::kFileManagerAppId);
+      file_manager::util::GetFileManagerFileSystemContext(profile);
   file_manager::util::GetMetadataForPath(
       file_system_context, file_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
@@ -109,8 +108,7 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
 
 base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
     const GURL& file_system_url) const {
-  return file_manager::util::GetFileSystemContextForExtensionId(
-             profile_, file_manager::kFileManagerAppId)
+  return file_manager::util::GetFileManagerFileSystemContext(profile_)
       ->CrackURL(file_system_url)
       .path();
 }
@@ -246,10 +244,8 @@ void HoldingSpaceClientImpl::PinFiles(
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const base::FilePath& file_path : file_paths) {
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileSystemContextForExtensionId(
-            profile_, file_manager::kFileManagerAppId)
-            ->CrackURL(
-                holding_space_util::ResolveFileSystemUrl(profile_, file_path));
+        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
+            holding_space_util::ResolveFileSystemUrl(profile_, file_path));
     if (!service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }
@@ -265,9 +261,8 @@ void HoldingSpaceClientImpl::PinItems(
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileSystemContextForExtensionId(
-            profile_, file_manager::kFileManagerAppId)
-            ->CrackURL(item->file_system_url());
+        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
+            item->file_system_url());
     if (!service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }
@@ -283,9 +278,8 @@ void HoldingSpaceClientImpl::UnpinItems(
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileSystemContextForExtensionId(
-            profile_, file_manager::kFileManagerAppId)
-            ->CrackURL(item->file_system_url());
+        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
+            item->file_system_url());
     if (service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }

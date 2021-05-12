@@ -839,11 +839,9 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       continue;
     }
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString("fileSystemRoot",
-                     storage::GetExternalFileSystemRootURIString(
-                         extensions::Extension::GetBaseURLFromExtensionId(
-                             extension_id_or_file_app_id()),
-                         mount_name));
+    entry->SetString(
+        "fileSystemRoot",
+        storage::GetExternalFileSystemRootURIString(source_url(), mount_name));
     entry->SetString("fileSystemName", file_system_name);
     entry->SetString("fileFullPath", full_path);
     // All shared paths should be directories.  Even if this is not true,
@@ -1077,9 +1075,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
   }
 
   model->GetRecentFiles(
-      file_system_context.get(),
-      Extension::GetBaseURLFromExtensionId(extension_id_or_file_app_id()),
-      file_type,
+      file_system_context.get(), source_url(), file_type,
       base::BindOnce(
           &FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles,
           this, params->restriction));
@@ -1090,7 +1086,6 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     api::file_manager_private::SourceRestriction restriction,
     const std::vector<chromeos::RecentFile>& files) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string& origin_id = extension_id_or_file_app_id();
   file_manager::util::FileDefinitionList file_definition_list;
   for (const auto& file : files) {
     // Filter out files from non-allowed sources.
@@ -1105,15 +1100,15 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     // Recent file system only lists regular files, not directories.
     file_definition.is_directory = false;
     if (file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            profile, origin_id, file.url().path(),
+            profile, source_url(), file.url().path(),
             &file_definition.virtual_path)) {
       file_definition_list.emplace_back(std::move(file_definition));
     }
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForExtensionId(profile,
-                                                             origin_id),
+      file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                           source_url()),
       url::Origin::Create(source_url().GetOrigin()),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(&FileManagerPrivateInternalGetRecentFilesFunction::

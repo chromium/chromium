@@ -355,14 +355,25 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       : profile_(profile), file_watchers_(file_watchers) {}
 
  private:
-  std::set<std::string> GetEventListenerExtensionIds(
-      const std::string& event_name) override {
-    return ::file_manager::GetEventListenerExtensionIds(profile_, event_name);
+  std::set<GURL> GetEventListenerURLs(const std::string& event_name) override {
+    const extensions::EventListenerMap::ListenerList& listeners =
+        extensions::EventRouter::Get(profile_)
+            ->listeners()
+            .GetEventListenersByName(event_name);
+    std::set<GURL> urls;
+    for (const auto& listener : listeners) {
+      if (!listener->extension_id().empty()) {
+        urls.insert(extensions::Extension::GetBaseURLFromExtensionId(
+            listener->extension_id()));
+      } else {
+        urls.insert(listener->listener_url());
+      }
+    }
+    return urls;
   }
 
-  GURL ConvertDrivePathToFileSystemUrl(
-      const base::FilePath& file_path,
-      const std::string& extension_id) override {
+  GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
+                                       const GURL& listener_url) override {
     GURL url;
     file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
         profile_,
@@ -370,7 +381,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
                            ->GetMountPointPath()
                            .value() +
                        file_path.value()),
-        extension_id, &url);
+        listener_url, &url);
     return url;
   }
 
@@ -735,11 +746,11 @@ void EventRouter::DispatchDirectoryChangeEventImpl(
     // API.
     file_definition.is_directory = true;
 
+    GURL listener_url =
+        extensions::Extension::GetBaseURLFromExtensionId(*extension_id);
     file_manager::util::ConvertFileDefinitionToEntryDefinition(
-        util::GetFileSystemContextForExtensionId(profile_, *extension_id),
-        url::Origin::Create(
-            extensions::Extension::GetBaseURLFromExtensionId(*extension_id)),
-        file_definition,
+        util::GetFileSystemContextForSourceURL(profile_, listener_url),
+        url::Origin::Create(listener_url), file_definition,
         base::BindOnce(
             &EventRouter::DispatchDirectoryChangeEventWithEntryDefinition,
             weak_factory_.GetWeakPtr(), base::Owned(extension_id), got_error));

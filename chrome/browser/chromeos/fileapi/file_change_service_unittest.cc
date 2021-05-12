@@ -35,8 +35,7 @@ namespace {
 
 // Returns the file system context associated with the specified `profile`.
 storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
-  return file_manager::util::GetFileSystemContextForExtensionId(
-      profile, file_manager::kFileManagerAppId);
+  return file_manager::util::GetFileManagerFileSystemContext(profile);
 }
 
 // Returns the file system operation runner associated with the specified

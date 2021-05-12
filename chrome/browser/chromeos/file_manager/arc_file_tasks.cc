@@ -322,7 +322,7 @@ void FindArcTasks(Profile* profile,
   DCHECK_EQ(entries.size(), file_urls.size());
 
   storage::FileSystemContext* file_system_context =
-      util::GetFileSystemContextForExtensionId(profile, kFileManagerAppId);
+      util::GetFileManagerFileSystemContext(profile);
 
   std::vector<storage::FileSystemURL> file_system_urls;
   for (const GURL& file_url : file_urls) {

@@ -68,12 +68,11 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   void DispatchOnFileTransfersUpdatedEvent(
       const extensions::api::file_manager_private::FileTransferStatus& status);
 
-  virtual std::set<std::string> GetEventListenerExtensionIds(
+  virtual std::set<GURL> GetEventListenerURLs(
       const std::string& event_name) = 0;
 
-  virtual GURL ConvertDrivePathToFileSystemUrl(
-      const base::FilePath& file_path,
-      const std::string& extension_id) = 0;
+  virtual GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
+                                               const GURL& listener_url) = 0;
 
   virtual std::string GetDriveFileSystemName() = 0;
 

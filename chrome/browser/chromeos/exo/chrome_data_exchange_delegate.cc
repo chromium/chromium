@@ -65,8 +65,7 @@ storage::FileSystemContext* GetFileSystemContext() {
   if (!primary_profile)
     return nullptr;
 
-  return file_manager::util::GetFileSystemContextForExtensionId(
-      primary_profile, file_manager::kFileManagerAppId);
+  return file_manager::util::GetFileManagerFileSystemContext(primary_profile);
 }
 
 void GetFileSystemUrlsFromPickle(

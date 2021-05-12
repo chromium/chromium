@@ -382,7 +382,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
                         const base::FilePath& absolute_file_path) {
     GURL file_system_url;
     EXPECT_TRUE(file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-        profile, absolute_file_path, file_manager::kFileManagerAppId,
+        profile, absolute_file_path, file_manager::util::GetFileManagerURL(),
         &file_system_url));
     return file_system_url;
   }
@@ -395,8 +395,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
       const GURL& url,
       const std::string& expected_mount_point) {
     storage::FileSystemContext* fs_context =
-        file_manager::util::GetFileSystemContextForExtensionId(
-            GetProfile(), file_manager::kFileManagerAppId);
+        file_manager::util::GetFileManagerFileSystemContext(GetProfile());
     storage::FileSystemURL fs_url = fs_context->CrackURL(url);
 
     base::RunLoop run_loop;
@@ -633,8 +632,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
 
   // Cache the file system context.
   storage::FileSystemContext* context =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          GetProfile(), file_manager::kFileManagerAppId);
+      file_manager::util::GetFileManagerFileSystemContext(GetProfile());
   ASSERT_TRUE(context);
 
   base::ListValue persisted_holding_space_items;
@@ -754,8 +752,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
 
   // Cache the file system context.
   storage::FileSystemContext* context =
-      file_manager::util::GetFileSystemContextForExtensionId(
-          GetProfile(), file_manager::kFileManagerAppId);
+      file_manager::util::GetFileManagerFileSystemContext(GetProfile());
   ASSERT_TRUE(context);
 
   struct ItemInfo {
@@ -1614,8 +1611,7 @@ class HoldingSpaceKeyedServiceAddItemTest
         break;
       case HoldingSpaceItem::Type::kPinnedFile:
         holding_space_service->AddPinnedFiles(
-            {file_manager::util::GetFileSystemContextForExtensionId(
-                 profile, file_manager::kFileManagerAppId)
+            {file_manager::util::GetFileManagerFileSystemContext(profile)
                  ->CrackURL(holding_space_util::ResolveFileSystemUrl(
                      profile, file_path))});
         break;

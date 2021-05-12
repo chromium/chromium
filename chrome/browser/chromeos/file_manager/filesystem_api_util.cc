@@ -145,12 +145,12 @@ bool IsUnderNonNativeLocalPath(Profile* profile,
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
-           profile, path, kFileManagerAppId, &url)) {
+          profile, path, util::GetFileManagerURL(), &url)) {
     return false;
   }
 
   storage::FileSystemURL filesystem_url =
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId)
+      GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
           ->CrackURL(url);
   if (!filesystem_url.is_valid())
     return false;
@@ -243,7 +243,7 @@ void IsNonNativeLocalPathDirectory(Profile* profile,
   DCHECK(IsUnderNonNativeLocalPath(profile, path));
 
   util::CheckIfDirectoryExists(
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId), path,
+      GetFileManagerFileSystemContext(profile), path,
       base::BindOnce(&BoolCallbackAsFileErrorCallback, std::move(callback)));
 }
 
@@ -256,7 +256,7 @@ void PrepareNonNativeLocalFileForWritableApp(
 
   GURL url;
   if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
-           profile, path, kFileManagerAppId, &url)) {
+          profile, path, util::GetFileManagerURL(), &url)) {
     // Posting to the current thread, so that we always call back asynchronously
     // independent from whether or not the operation succeeds.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -265,7 +265,7 @@ void PrepareNonNativeLocalFileForWritableApp(
   }
 
   scoped_refptr<storage::FileSystemContext> const file_system_context =
-      GetFileSystemContextForExtensionId(profile, kFileManagerAppId);
+      GetFileManagerFileSystemContext(profile);
   DCHECK(file_system_context);
   storage::ExternalFileSystemBackend* const backend =
       file_system_context->external_backend();
