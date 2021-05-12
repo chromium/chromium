@@ -3750,6 +3750,12 @@ crbug.com/626703 external/wpt/svg/linking/reftests/href-filter-element.html [ Fa
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/xhr/event-readystatechange-loaded.htm [ Failure Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html [ Pass Failure ]
+crbug.com/626703 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html [ Pass Failure ]
+crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html [ Pass Failure ]
+crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html [ Pass Failure ]
+crbug.com/626703 [ Linux ] virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html [ Pass Failure ]
+crbug.com/626703 [ Linux ] virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-require-corp.tentative.https.html [ Pass Failure ]
 
 # Synthetic modules report the wrong location in errors
 crbug.com/994315 virtual/json-modules/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
