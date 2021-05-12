@@ -164,4 +164,22 @@ export function fakeObservablesTestSuite() {
     observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'bar');
     return resolver.promise;
   });
+
+  test('ObservableRegisteredWithTwoParameters', () => {
+    observables.registerObservableWithArg('ObserveFoo_OnFooUpdated');
+    /** @type {!Array<!Array<string>>} */
+    const expected = [['bar', 'baz']];
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'foo', expected);
+
+    let resolver = new PromiseResolver();
+    observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo, bar) => {
+      assertEquals(expected[0][0], foo);
+      assertEquals(expected[0][1], bar);
+      resolver.resolve();
+    });
+
+    observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'foo');
+    return resolver.promise;
+  });
 }

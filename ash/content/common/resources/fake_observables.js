@@ -4,6 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+// TODO(gavindodd): Currently the addObserver and setObservableData do not
+// enforce using the same type for a given method. Revisit when TypeScript is
+// supported.
+
 /**
  * @fileoverview
  * Implements a helper class for faking asynchronous observables.
@@ -93,7 +97,11 @@ class FakeObservableState {
 
     // Fire all the callbacks that are observing this observable.
     for (const fn of this.observers_) {
-      fn(value);
+      if (Array.isArray(value)) {
+        fn.apply(null, value);
+      } else {
+        fn(value);
+      }
     }
   }
 }
@@ -159,6 +167,8 @@ export class FakeObservables {
    * Sets the data that will be produced when the observable is triggered.
    * Each observation produces the next value in the array and wraps around
    * when all observations have been produced.
+   * If the observation type T is an array it will be treated as a list of
+   * parameters to the onObservation method using apply().
    * @param {string} methodName
    * @param {!Array<!T>} observations
    */
