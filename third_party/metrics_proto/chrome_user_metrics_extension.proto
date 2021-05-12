@@ -28,7 +28,7 @@ import "translate_event.proto";
 import "user_action_event.proto";
 import "user_demographics.proto";
 
-// Next tag: 24
+// Next tag: 25
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -71,6 +71,18 @@ message ChromeUserMetricsExtension {
   // The session id is simply an integer that is incremented each time the user
   // relaunches Chrome.
   optional int32 session_id = 2;
+
+  // The id associated with a user entity that generated these events. These
+  // user IDs are only associated with users on device. Their generation is not
+  // based on any other ID.
+  //
+  // This field is not populated on non-Chrome OS platforms.
+  //
+  // For Chrome OS, this id refers to a device user entity. This field will be
+  // captured when a log is first opened. If there is no user logged in at the
+  // time the log is opened, then this field will be unset. All ephemeral (i.e.
+  // guest, kiosk) users will have this field unset.
+  optional fixed64 user_id = 24;
 
   // Information about the user's browser and system configuration.
   optional SystemProfileProto system_profile = 3;

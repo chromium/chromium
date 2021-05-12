@@ -494,6 +494,11 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
 }
 
+bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(
+    const uint64_t user_id) {
+  return true;
+}
+
 void ChromeMetricsServiceClient::SetMetricsClientId(
     const std::string& client_id) {
   crash_keys::SetMetricsClientIdFromGUID(client_id);

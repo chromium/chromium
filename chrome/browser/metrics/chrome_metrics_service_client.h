@@ -60,6 +60,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // metrics::MetricsServiceClient:
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;

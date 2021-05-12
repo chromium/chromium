@@ -58,6 +58,11 @@ ukm::UkmService* MetricsServiceClient::GetUkmService() {
   return nullptr;
 }
 
+bool MetricsServiceClient::ShouldUploadMetricsForUserId(
+    const uint64_t user_id) {
+  return true;
+}
+
 GURL MetricsServiceClient::GetMetricsServerUrl() {
   return GURL(kNewMetricsServerUrl);
 }
