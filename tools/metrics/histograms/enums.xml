@@ -7333,6 +7333,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="ESWMF_BAD_EVENT_ACK"/>
   <int value="12" label="MHVG_INVALID_PLUGIN_FRAME_ID"/>
   <int value="13" label="EMF_INVALID_CHANNEL_SOURCE_TYPE"/>
+  <int value="14" label="EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
+  <int value="15" label="EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
+  <int value="16" label="EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT"/>
+  <int value="17" label="EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

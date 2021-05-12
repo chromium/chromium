@@ -55,6 +55,10 @@ class ContentScriptsSet : public base::SupportsUserData::Data {
         static_cast<ContentScriptsSet*>(process.GetUserData(kUserDataKey));
 
     if (!self) {
+      // Create a new ContentScriptsSet if needed.  The ownership is passed to
+      // the `process` (i.e. the new ContentScriptsSet will be destroyed at the
+      // same time as the `process` - this is why we don't need to purge or
+      // destroy the set from within ContentScriptTracker).
       auto owned_self = base::WrapUnique(new ContentScriptsSet);
       self = owned_self.get();
       process.SetUserData(kUserDataKey, std::move(owned_self));
@@ -184,6 +188,12 @@ void HandleProgrammaticContentScriptInjection(
     const Extension& extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Store `extension.id()` in `content_scripts_for_process`.
+  // ContentScriptTracker never removes entries from this set - once a renderer
+  // process gains an ability to talk on behalf of a content script, it retains
+  // this ability forever.  Note that the set will be destroyed together with
+  // the RenderProcessHost (see also a comment inside
+  // ContentScriptsSet::GetOrCreate).
   ExtensionIdSet& content_scripts_for_process =
       ContentScriptsSet::GetOrCreate(*frame->GetProcess());
   content_scripts_for_process.insert(extension.id());
@@ -254,6 +264,12 @@ void ContentScriptTracker::ReadyToCommitNavigation(
     content::NavigationHandle* navigation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Store `extensions_injecting_content_scripts` in
+  // `content_scripts_for_process`.  ContentScriptTracker never removes entries
+  // from this set - once a renderer process gains an ability to talk on behalf
+  // of a content script, it retains this ability forever.  Note that the set
+  // will be destroyed together with the RenderProcessHost (see also a comment
+  // inside ContentScriptsSet::GetOrCreate).
   std::vector<const Extension*> extensions_injecting_content_scripts =
       GetExtensionsInjectingContentScripts(navigation);
   ExtensionIdSet& content_scripts_for_process = ContentScriptsSet::GetOrCreate(
