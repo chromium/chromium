@@ -2124,7 +2124,7 @@
     },
     {
       name: "UUID",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "V8IdleTasks",
