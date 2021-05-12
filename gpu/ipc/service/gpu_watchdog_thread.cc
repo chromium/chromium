@@ -133,7 +133,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
       timeout, init_factor, restart_factor, is_test_mode));
   base::Thread::Options options;
   options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-  watchdog_thread->StartWithOptions(options);
+  watchdog_thread->StartWithOptions(std::move(options));
   if (start_backgrounded)
     watchdog_thread->OnBackgrounded();
   return watchdog_thread;
