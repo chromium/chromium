@@ -39,8 +39,21 @@ void DrmDeviceConnector::OnGpuServiceLaunched(
   mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device;
   BindInterfaceDrmDevice(&drm_device);
 
-  host_drm_device_->OnGpuServiceLaunchedOnProcessThread(std::move(drm_device),
-                                                        ui_runner);
+  if (ui_runner->BelongsToCurrentThread()) {
+    // If the GpuProcessHost lives on the UI thread this method will be called
+    // before ash::Shell::Init which breaks assumptions since the displays
+    // won't be marked as dummy but we don't have the active list yet from the
+    // GPU process. Simulate the old behavior by inserting a PostTask.
+    // TODO(rjkroege): simplify this code path once GpuProcessHost always lives
+    // on the UI thread.
+    ui_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HostDrmDevice::OnGpuServiceLaunchedOnProcessThread,
+                       host_drm_device_, std::move(drm_device), ui_runner));
+  } else {
+    host_drm_device_->OnGpuServiceLaunchedOnProcessThread(std::move(drm_device),
+                                                          ui_runner);
+  }
 }
 
 void DrmDeviceConnector::BindInterfaceDrmDevice(
