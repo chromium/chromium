@@ -51,7 +51,7 @@ def fyi_goma_rbe_canary_builder(
         *,
         name,
         goma_backend = goma.backend.RBE_PROD,
-        os = os.LINUX_DEFAULT,
+        os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
         **kwargs):
     return builder(
         name = name,
