@@ -227,7 +227,7 @@ void ElementRuleCollector::CollectMatchingRules(
     bool matching_tree_boundary_rules) {
   DCHECK(match_request.rule_set);
 
-  SelectorChecker checker(style_, nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
   Element& element = context_.GetElement();
@@ -302,7 +302,7 @@ void ElementRuleCollector::CollectMatchingRules(
 
 void ElementRuleCollector::CollectMatchingShadowHostRules(
     const MatchRequest& match_request) {
-  SelectorChecker checker(style_, nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
   CollectMatchingRulesForList(match_request.rule_set->ShadowHostRules(),
@@ -314,8 +314,8 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
     PartNames& part_names,
     bool for_shadow_pseudo) {
   PartRequest request{part_names, for_shadow_pseudo};
-  SelectorChecker checker(style_, &part_names, pseudo_style_request_, mode_,
-                          matching_ua_rules_);
+  SelectorChecker checker(style_.get(), &part_names, pseudo_style_request_,
+                          mode_, matching_ua_rules_);
 
   CollectMatchingRulesForList(match_request.rule_set->PartPseudoRules(),
                               match_request, checker, &request);

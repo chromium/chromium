@@ -78,7 +78,7 @@ void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
 
   DCHECK(!IsOutOfFlowPositioned()) << "Out of flow captions are blockified.";
 
-  const NGLayoutResult* result = UpdateInFlowBlockLayout();
+  scoped_refptr<const NGLayoutResult> result = UpdateInFlowBlockLayout();
   CalculateAndSetMargins(result->GetConstraintSpaceForCaching(),
                          result->PhysicalFragment());
 

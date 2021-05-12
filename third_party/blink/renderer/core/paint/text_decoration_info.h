@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 namespace blink {
@@ -66,7 +65,7 @@ class CORE_EXPORT TextDecorationInfo {
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }
   float Baseline() const { return baseline_; }
-  const ComputedStyle& Style() const { return *style_; }
+  const ComputedStyle& Style() const { return style_; }
   const SimpleFontData* FontData() const { return font_data_; }
   ResolvedUnderlinePosition UnderlinePosition() const {
     return underline_position_;
@@ -108,7 +107,7 @@ class CORE_EXPORT TextDecorationInfo {
   FloatRect BoundsForDottedOrDashed(TextDecoration line) const;
   FloatRect BoundsForWavy(TextDecoration line) const;
 
-  const ComputedStyle* style_;
+  const ComputedStyle& style_;
   const base::Optional<AppliedTextDecoration> selection_text_decoration_;
   const FontBaseline baseline_type_;
   const LayoutUnit width_;

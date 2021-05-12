@@ -181,7 +181,7 @@ void CounterNode::AddLayoutObject(LayoutCounter* value) {
       return;
     }
   }
-  value->next_for_same_counter_ = root_layout_object_.Get();
+  value->next_for_same_counter_ = root_layout_object_;
   root_layout_object_ = value;
   if (value->counter_node_ != this) {
     if (value->counter_node_) {

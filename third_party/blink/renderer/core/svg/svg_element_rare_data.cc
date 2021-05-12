@@ -49,7 +49,7 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     needs_override_computed_style_update_ = false;
   }
   DCHECK(override_computed_style_);
-  return override_computed_style_;
+  return override_computed_style_.get();
 }
 
 void SVGElementRareData::ClearOverriddenComputedStyle() {
@@ -67,7 +67,6 @@ void SVGElementRareData::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_references_);
   visitor->Trace(incoming_references_);
   visitor->Trace(animated_smil_style_properties_);
-  visitor->Trace(override_computed_style_);
   visitor->Trace(element_instances_);
   visitor->Trace(corresponding_element_);
   visitor->Trace(resource_client_);

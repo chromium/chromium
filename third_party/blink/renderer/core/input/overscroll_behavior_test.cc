@@ -62,7 +62,7 @@ void OverscrollBehaviorTest::SetUp() {
 void OverscrollBehaviorTest::SetInnerOverscrollBehavior(EOverscrollBehavior x,
                                                         EOverscrollBehavior y) {
   Element* inner = GetDocument().getElementById("inner");
-  ComputedStyle* modified_style =
+  scoped_refptr<ComputedStyle> modified_style =
       ComputedStyle::Clone(*inner->GetComputedStyle());
   modified_style->SetOverscrollBehaviorX(x);
   modified_style->SetOverscrollBehaviorY(y);

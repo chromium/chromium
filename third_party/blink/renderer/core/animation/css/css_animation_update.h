@@ -154,12 +154,13 @@ class CORE_EXPORT CSSAnimationUpdate final {
     updated_compositor_keyframes_.push_back(animation);
   }
 
-  void StartTransition(const PropertyHandle&,
-                       const ComputedStyle* from,
-                       const ComputedStyle* to,
-                       const ComputedStyle* reversing_adjusted_start_value,
-                       double reversing_shortening_factor,
-                       const InertEffect&);
+  void StartTransition(
+      const PropertyHandle&,
+      scoped_refptr<const ComputedStyle> from,
+      scoped_refptr<const ComputedStyle> to,
+      scoped_refptr<const ComputedStyle> reversing_adjusted_start_value,
+      double reversing_shortening_factor,
+      const InertEffect&);
   void UnstartTransition(const PropertyHandle&);
   void CancelTransition(const PropertyHandle& property) {
     cancelled_transitions_.insert(property);
@@ -191,12 +192,12 @@ class CORE_EXPORT CSSAnimationUpdate final {
    public:
     NewTransition();
     virtual ~NewTransition();
-    void Trace(Visitor* visitor) const;
+    void Trace(Visitor* visitor) const { visitor->Trace(effect); }
 
     PropertyHandle property = HashTraits<blink::PropertyHandle>::EmptyValue();
-    Member<const ComputedStyle> from;
-    Member<const ComputedStyle> to;
-    Member<const ComputedStyle> reversing_adjusted_start_value;
+    scoped_refptr<const ComputedStyle> from;
+    scoped_refptr<const ComputedStyle> to;
+    scoped_refptr<const ComputedStyle> reversing_adjusted_start_value;
     double reversing_shortening_factor;
     Member<const InertEffect> effect;
   };

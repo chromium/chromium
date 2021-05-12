@@ -57,11 +57,6 @@ LayoutSVGImage::LayoutSVGImage(SVGImageElement* impl)
 
 LayoutSVGImage::~LayoutSVGImage() = default;
 
-void LayoutSVGImage::Trace(Visitor* visitor) const {
-  visitor->Trace(image_resource_);
-  LayoutSVGModelObject::Trace(visitor);
-}
-
 void LayoutSVGImage::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();

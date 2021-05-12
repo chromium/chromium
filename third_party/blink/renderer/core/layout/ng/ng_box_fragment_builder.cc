@@ -33,8 +33,7 @@ void GatherInlineContainerFragmentsFromItems(
     const Items& items,
     const PhysicalOffset& box_offset,
     NGBoxFragmentBuilder::InlineContainingBlockMap* inline_containing_block_map,
-    HeapHashMap<Member<const LayoutObject>, LineBoxPair>*
-        containing_linebox_map) {
+    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map) {
   const NGPhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
     // Track the current linebox.
@@ -146,7 +145,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
           // If there is an inline break token, it will always be the last
           // child.
           last_inline_break_token_ =
-              DynamicTo<NGInlineBreakToken>(child_tokens.back().Get());
+              DynamicTo<NGInlineBreakToken>(child_tokens.back());
           if (last_inline_break_token_)
             return;
         }
@@ -159,7 +158,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     }
     return;
   }
-  auto* token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
+  auto token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
   child_break_tokens_.push_back(token);
 }
 
@@ -327,10 +326,11 @@ void NGBoxFragmentBuilder::AddChild(
   AddChildInternal(&child, child_offset + *relative_offset);
 }
 
-void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
-                                         bool is_in_parallel_flow) {
-  DCHECK(token);
-  child_break_tokens_.push_back(token);
+void NGBoxFragmentBuilder::AddBreakToken(
+    scoped_refptr<const NGBreakToken> token,
+    bool is_in_parallel_flow) {
+  DCHECK(token.get());
+  child_break_tokens_.push_back(std::move(token));
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
@@ -438,7 +438,7 @@ void NGBoxFragmentBuilder::PropagateBreak(
     has_violating_break_ |= child_layout_result.HasViolatingBreak();
 }
 
-const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
+scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
@@ -464,18 +464,19 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
         items_builder_->HasFloatingDescendantsForPaint();
   }
 
-  const NGPhysicalBoxFragment* fragment =
+  scoped_refptr<const NGPhysicalBoxFragment> fragment =
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
-  return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGBoxFragmentBuilderPassKey(), std::move(fragment), this);
+  return base::AdoptRef(
+      new NGLayoutResult(NGLayoutResult::NGBoxFragmentBuilderPassKey(),
+                         std::move(fragment), this));
 }
 
-const NGLayoutResult* NGBoxFragmentBuilder::Abort(
+scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::Abort(
     NGLayoutResult::EStatus status) {
-  return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGBoxFragmentBuilderPassKey(), status, this);
+  return base::AdoptRef(new NGLayoutResult(
+      NGLayoutResult::NGBoxFragmentBuilderPassKey(), status, this));
 }
 
 LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
@@ -529,7 +530,7 @@ void NGBoxFragmentBuilder::ComputeInlineContainerGeometry(
     DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
 #endif
 
-  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
+  HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
 
   if (items_builder_) {
     // To access the items correctly we need to convert them to the physical
@@ -648,7 +649,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
   LayoutUnit previous_consumed_block_size =
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
-    NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
+    NGMulticolWithPendingOOFs<LogicalOffset>& value = multicol.value;
     if (!value.fixedpos_containing_block.fragment) {
       value.fixedpos_containing_block.offset.block_offset -=
           previous_consumed_block_size;

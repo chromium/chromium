@@ -34,7 +34,7 @@ SVGSwitchElement::SVGSwitchElement(Document& document)
 
 LayoutObject* SVGSwitchElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
+  return new LayoutSVGTransformableContainer(this);
 }
 
 }  // namespace blink

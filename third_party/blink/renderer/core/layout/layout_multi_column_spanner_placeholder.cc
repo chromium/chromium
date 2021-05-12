@@ -24,8 +24,7 @@ LayoutMultiColumnSpannerPlaceholder::CreateAnonymous(
     const ComputedStyle& parent_style,
     LayoutBox& layout_object_in_flow_thread) {
   LayoutMultiColumnSpannerPlaceholder* new_spanner =
-      MakeGarbageCollected<LayoutMultiColumnSpannerPlaceholder>(
-          &layout_object_in_flow_thread);
+      new LayoutMultiColumnSpannerPlaceholder(&layout_object_in_flow_thread);
   Document& document = layout_object_in_flow_thread.GetDocument();
   new_spanner->SetDocumentForAnonymous(&document);
   new_spanner->UpdateProperties(parent_style);
@@ -36,11 +35,6 @@ LayoutMultiColumnSpannerPlaceholder::LayoutMultiColumnSpannerPlaceholder(
     LayoutBox* layout_object_in_flow_thread)
     : LayoutBox(nullptr),
       layout_object_in_flow_thread_(layout_object_in_flow_thread) {}
-
-void LayoutMultiColumnSpannerPlaceholder::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object_in_flow_thread_);
-  LayoutBox::Trace(visitor);
-}
 
 void LayoutMultiColumnSpannerPlaceholder::
     LayoutObjectInFlowThreadStyleDidChange(const ComputedStyle* old_style) {
@@ -69,7 +63,7 @@ void LayoutMultiColumnSpannerPlaceholder::
 void LayoutMultiColumnSpannerPlaceholder::UpdateProperties(
     const ComputedStyle& parent_style) {
   NOT_DESTROYED();
-  ComputedStyle* new_style =
+  scoped_refptr<ComputedStyle> new_style =
       GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent_style, EDisplay::kBlock);
   CopyMarginProperties(*new_style, layout_object_in_flow_thread_->StyleRef());

@@ -395,7 +395,7 @@ bool PaintInvalidator::InvalidatePaint(
 }
 
 void PaintInvalidator::ProcessPendingDelayedPaintInvalidations() {
-  for (const auto& target : pending_delayed_paint_invalidations_)
+  for (auto* target : pending_delayed_paint_invalidations_)
     target->GetMutableForPainting().SetShouldDelayFullPaintInvalidation();
 }
 

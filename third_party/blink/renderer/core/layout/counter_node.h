@@ -23,7 +23,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COUNTER_NODE_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -118,8 +117,8 @@ class CounterNode : public RefCounted<CounterNode> {
   unsigned type_mask_;
   int value_;
   int count_in_parent_;
-  const UntracedMember<LayoutObject> owner_;
-  UntracedMember<LayoutCounter> root_layout_object_;
+  LayoutObject* const owner_;
+  LayoutCounter* root_layout_object_;
 
   CounterNode* parent_;
   CounterNode* previous_sibling_;

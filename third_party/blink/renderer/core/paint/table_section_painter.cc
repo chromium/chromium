@@ -232,10 +232,10 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
     // This path paints section with a reasonable number of overflowing cells.
     // This is the "partial paint path" for overflowing cells referred in
     // LayoutTableSection::ComputeOverflowFromDescendants().
-    HeapVector<Member<const LayoutTableCell>> cells;
+    Vector<const LayoutTableCell*> cells;
     CopyToVector(visually_overflowing_cells, cells);
 
-    HeapHashSet<Member<const LayoutTableCell>> spanning_cells;
+    HashSet<const LayoutTableCell*> spanning_cells;
     for (unsigned r = dirtied_rows.Start(); r < dirtied_rows.End(); r++) {
       const LayoutTableRow* row = layout_table_section_.RowLayoutObjectAt(r);
       // TODO(crbug.com/577282): This painting order is inconsistent with other
@@ -256,7 +256,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
 
     // Sort the dirty cells by paint order.
     std::sort(cells.begin(), cells.end(), LayoutTableCell::CompareInDOMOrder);
-    for (const auto& cell : cells)
+    for (const auto* cell : cells)
       PaintCell(*cell, paint_info_for_descendants);
   }
 }

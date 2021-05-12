@@ -16,7 +16,7 @@ HTMLRubyElement::HTMLRubyElement(Document& document)
 LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style,
                                                   LegacyLayout legacy) {
   if (style.Display() == EDisplay::kInline)
-    return MakeGarbageCollected<LayoutRubyAsInline>(this);
+    return new LayoutRubyAsInline(this);
   if (style.Display() == EDisplay::kBlock) {
     UseCounter::Count(GetDocument(), WebFeature::kRubyElementWithDisplayBlock);
     return LayoutObjectFactory::CreateRubyAsBlock(this, style, legacy);

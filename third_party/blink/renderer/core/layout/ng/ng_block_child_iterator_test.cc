@@ -15,7 +15,7 @@
 namespace blink {
 namespace {
 
-const NGBlockBreakToken* CreateBreakToken(
+scoped_refptr<const NGBlockBreakToken> CreateBreakToken(
     NGLayoutInputNode node,
     const NGBreakTokenVector* child_break_tokens = nullptr,
     bool has_seen_all_children = false) {
@@ -25,7 +25,7 @@ const NGBlockBreakToken* CreateBreakToken(
   if (has_seen_all_children)
     builder.SetHasSeenAllChildren();
   if (child_break_tokens) {
-    for (const NGBreakToken* token : *child_break_tokens)
+    for (scoped_refptr<const NGBreakToken> token : *child_break_tokens)
       builder.AddBreakToken(token);
   }
   return NGBlockBreakToken::Create(builder);
@@ -74,17 +74,17 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   NGLayoutInputNode node4 = node3.NextSibling();
 
   NGBreakTokenVector empty_tokens_list;
-  const NGBreakToken* child_token1 = CreateBreakToken(node1);
-  const NGBreakToken* child_token2 = CreateBreakToken(node2);
-  const NGBreakToken* child_token3 = CreateBreakToken(node3);
+  scoped_refptr<const NGBreakToken> child_token1 = CreateBreakToken(node1);
+  scoped_refptr<const NGBreakToken> child_token2 = CreateBreakToken(node2);
+  scoped_refptr<const NGBreakToken> child_token3 = CreateBreakToken(node3);
 
   NGBreakTokenVector child_break_tokens;
   child_break_tokens.push_back(child_token1);
-  const NGBlockBreakToken* parent_token =
+  scoped_refptr<const NGBlockBreakToken> parent_token =
       CreateBreakToken(container, &child_break_tokens);
 
-  NGBlockChildIterator iterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  NGBlockChildIterator iterator(node1, parent_token.get());
+  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1.get()),
             iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node2, nullptr), iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
@@ -97,10 +97,10 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   child_break_tokens.push_back(child_token2);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  iterator = NGBlockChildIterator(node1, parent_token.get());
+  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1.get()),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2),
+  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2.get()),
             iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
@@ -112,10 +112,10 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   child_break_tokens.push_back(child_token3);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2),
+  iterator = NGBlockChildIterator(node1, parent_token.get());
+  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2.get()),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3),
+  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3.get()),
             iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
@@ -126,10 +126,10 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   child_break_tokens.push_back(child_token3);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  iterator = NGBlockChildIterator(node1, parent_token.get());
+  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1.get()),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3),
+  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3.get()),
             iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
@@ -146,19 +146,19 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
   NGBlockNode container = NGBlockNode(GetLayoutBoxByElementId("container"));
   NGLayoutInputNode node1 = container.FirstChild();
 
-  const NGBlockBreakToken* child_token1 = CreateBreakToken(node1);
+  scoped_refptr<const NGBlockBreakToken> child_token1 = CreateBreakToken(node1);
 
   NGBreakTokenVector child_break_tokens;
   child_break_tokens.push_back(child_token1);
-  const NGBlockBreakToken* parent_token = CreateBreakToken(
+  scoped_refptr<const NGBlockBreakToken> parent_token = CreateBreakToken(
       container, &child_break_tokens, /* has_seen_all_children*/ true);
 
   // We have a break token for #child1, but have seen all children. This happens
   // e.g. when #child1 has overflow into a new fragmentainer, while #child2 was
   // finished in an earlier fragmentainer.
 
-  NGBlockChildIterator iterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  NGBlockChildIterator iterator(node1, parent_token.get());
+  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1.get()),
             iterator.NextChild());
   ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
             iterator.NextChild());
@@ -170,7 +170,7 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
   // we have a large container with fixed block-size, with empty space at the
   // end, not occupied by any children.
 
-  iterator = NGBlockChildIterator(node1, parent_token);
+  iterator = NGBlockChildIterator(node1, parent_token.get());
   ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
             iterator.NextChild());
 }

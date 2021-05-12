@@ -1666,7 +1666,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  ComputedStyle* style = ComputedStyle::Clone(target->StyleRef());
+  auto style = ComputedStyle::Clone(target->StyleRef());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   // Simulates starting a composite animation.
   style->SetHasCurrentTransformAnimation(true);

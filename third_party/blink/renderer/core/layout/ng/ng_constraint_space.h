@@ -142,8 +142,6 @@ class CORE_EXPORT NGConstraintSpace final {
       delete rare_data_;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(exclusion_space_); }
-
   // Creates NGConstraintSpace representing LayoutObject's containing block.
   // This should live on NGBlockNode or another layout bridge and probably take
   // a root NGConstraintSpace.

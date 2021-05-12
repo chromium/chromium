@@ -165,7 +165,8 @@ class CORE_EXPORT SVGElement : public Element {
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet*) override;
 
-  ComputedStyle* CustomStyleForLayoutObject(const StyleRecalcContext&) final;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) final;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
 
 #if DCHECK_IS_ON()

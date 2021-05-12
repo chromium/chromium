@@ -745,7 +745,7 @@ bool HTMLMediaElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 
 LayoutObject* HTMLMediaElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return MakeGarbageCollected<LayoutMedia>(this);
+  return new LayoutMedia(this);
 }
 
 Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(

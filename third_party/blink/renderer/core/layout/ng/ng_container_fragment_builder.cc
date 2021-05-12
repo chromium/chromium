@@ -25,11 +25,6 @@ bool IsInlineContainerForNode(const NGBlockNode& node,
 
 }  // namespace
 
-void NGContainerFragmentBuilder::ChildWithOffset::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(fragment);
-}
-
 void NGContainerFragmentBuilder::ReplaceChild(
     wtf_size_t index,
     const NGPhysicalFragment& new_child,
@@ -121,7 +116,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
 }
 
 void NGContainerFragmentBuilder::AddChildInternal(
-    const NGPhysicalFragment* child,
+    scoped_refptr<const NGPhysicalFragment> child,
     const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
   // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
@@ -201,7 +196,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowDescendant(
 }
 
 void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
-    HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates) {
+    Vector<NGLogicalOutOfFlowPositionedNode>* candidates) {
   DCHECK(candidates->IsEmpty());
   std::swap(oof_positioned_candidates_, *candidates);
 
@@ -229,7 +224,7 @@ void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
 
 void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
     const NGBlockNode& multicol,
-    NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info) {
+    NGMulticolWithPendingOOFs<LogicalOffset> multicol_info) {
   DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
   auto it = multicols_with_pending_oofs_.find(multicol.GetLayoutBox());
   if (it != multicols_with_pending_oofs_.end())
@@ -244,7 +239,7 @@ void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
 }
 
 void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
-    HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants) {
+    Vector<NGLogicalOutOfFlowPositionedNode>* descendants) {
   DCHECK(descendants->IsEmpty());
   DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
@@ -370,10 +365,10 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     for (auto& multicol : multicols_with_pending_oofs) {
       auto& multicol_info = multicol.value;
       LogicalOffset multicol_offset =
-          converter.ToLogical(multicol_info->multicol_offset, PhysicalSize());
+          converter.ToLogical(multicol_info.multicol_offset, PhysicalSize());
 
       const NGPhysicalFragment* fixedpos_containing_block_fragment =
-          multicol_info->fixedpos_containing_block.fragment;
+          multicol_info.fixedpos_containing_block.fragment.get();
       if (!fixedpos_containing_block_fragment &&
           box_fragment->GetLayoutObject() &&
           box_fragment->GetLayoutObject()->CanContainFixedPositionObjects())
@@ -387,10 +382,10 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       LogicalOffset fixedpos_containing_block_rel_offset;
       if (fixedpos_containing_block_fragment) {
         fixedpos_containing_block_offset =
-            converter.ToLogical(multicol_info->fixedpos_containing_block.offset,
+            converter.ToLogical(multicol_info.fixedpos_containing_block.offset,
                                 fixedpos_containing_block_fragment->Size());
         fixedpos_containing_block_rel_offset = converter.ToLogical(
-            multicol_info->fixedpos_containing_block.relative_offset,
+            multicol_info.fixedpos_containing_block.relative_offset,
             fixedpos_containing_block_fragment->Size());
         fixedpos_containing_block_rel_offset += relative_offset;
         // We want the fixedpos containing block offset to be the offset from
@@ -408,7 +403,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       }
       AddMulticolWithPendingOOFs(
           NGBlockNode(multicol.key),
-          MakeGarbageCollected<NGMulticolWithPendingOOFs<LogicalOffset>>(
+          NGMulticolWithPendingOOFs<LogicalOffset>(
               multicol_offset, NGContainingBlock<LogicalOffset>(
                                    fixedpos_containing_block_offset,
                                    fixedpos_containing_block_rel_offset,
@@ -430,7 +425,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
     const NGPhysicalFragment* containing_block_fragment =
-        descendant.containing_block.fragment;
+        descendant.containing_block.fragment.get();
     if (!containing_block_fragment)
       containing_block_fragment = box_fragment;
 
@@ -445,7 +440,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     containing_block_offset.block_offset += containing_block_adjustment;
 
     const NGPhysicalFragment* fixedpos_containing_block_fragment =
-        descendant.fixedpos_containing_block.fragment;
+        descendant.fixedpos_containing_block.fragment.get();
     if (!fixedpos_containing_block_fragment &&
         box_fragment->GetLayoutObject() &&
         box_fragment->GetLayoutObject()->CanContainFixedPositionObjects())
@@ -468,7 +463,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     }
 
     if (!fixedpos_containing_block_fragment && fixedpos_containing_block) {
-      fixedpos_containing_block_fragment = fixedpos_containing_block->fragment;
+      fixedpos_containing_block_fragment =
+          fixedpos_containing_block->fragment.get();
       fixedpos_containing_block_offset = fixedpos_containing_block->offset;
       fixedpos_containing_block_rel_offset =
           fixedpos_containing_block->relative_offset;

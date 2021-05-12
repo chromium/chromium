@@ -32,7 +32,6 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
  public:
   explicit LayoutSVGResourceRadialGradient(SVGRadialGradientElement*);
   ~LayoutSVGResourceRadialGradient() override;
-  void Trace(Visitor*) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -63,7 +62,7 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
   float FocalRadius(const RadialGradientAttributes&) const;
 
  private:
-  Member<RadialGradientAttributesWrapper> attributes_wrapper_;
+  Persistent<RadialGradientAttributesWrapper> attributes_wrapper_;
 
   RadialGradientAttributes& MutableAttributes() {
     NOT_DESTROYED();

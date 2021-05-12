@@ -12,13 +12,9 @@ namespace blink {
 
 class ComputedStyle;
 
-using PseudoElementStyleCache = HeapVector<Member<const ComputedStyle>, 4>;
+using PseudoElementStyleCache = Vector<scoped_refptr<const ComputedStyle>, 4>;
 
-class CORE_EXPORT StyleCachedData final
-    : public GarbageCollected<StyleCachedData> {
- public:
-  void Trace(Visitor*) const;
-
+class CORE_EXPORT StyleCachedData final {
  private:
   friend class ComputedStyle;
 
@@ -40,7 +36,7 @@ class CORE_EXPORT StyleCachedData final
   //    <script>
   //      getComputedStyle(div, "::before").color // still green.
   //    </script>
-  Member<PseudoElementStyleCache> pseudo_element_styles_;
+  std::unique_ptr<PseudoElementStyleCache> pseudo_element_styles_;
 };
 
 }  // namespace blink

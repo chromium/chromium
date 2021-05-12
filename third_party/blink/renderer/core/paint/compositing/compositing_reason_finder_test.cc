@@ -177,7 +177,8 @@ TEST_F(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
     bool supports_transform_animation) {
   auto* object = GetLayoutObjectByElementId("target");
-  ComputedStyle* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   style->SetSubtreeWillChangeContents(false);
   style->SetHasCurrentTransformAnimation(false);

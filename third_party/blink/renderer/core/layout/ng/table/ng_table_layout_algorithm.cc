@@ -58,7 +58,7 @@ void ComputeCaptionFragments(
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children,
     const LayoutUnit table_inline_size,
-    HeapVector<NGTableLayoutAlgorithm::CaptionResult>& captions,
+    Vector<NGTableLayoutAlgorithm::CaptionResult>& captions,
     LayoutUnit& captions_block_size) {
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
@@ -73,7 +73,8 @@ void ComputeCaptionFragments(
     builder.SetStretchInlineSizeIfAuto(true);
     NGConstraintSpace caption_constraint_space = builder.ToConstraintSpace();
 
-    auto* caption_result = caption.Layout(caption_constraint_space);
+    scoped_refptr<const NGLayoutResult> caption_result =
+        caption.Layout(caption_constraint_space);
     NGFragment fragment(table_constraint_space.GetWritingDirection(),
                         caption_result->PhysicalFragment());
     NGBoxStrut margins = ComputeMarginsFor(
@@ -288,7 +289,6 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
 // back to LayoutObject.
 class ColumnGeometriesBuilder {
   STACK_ALLOCATED();
-
  public:
   void VisitCol(const NGLayoutInputNode& col,
                 wtf_size_t start_column_index,
@@ -300,11 +300,10 @@ class ColumnGeometriesBuilder {
                                     column_locations[start_column_index].offset;
     col.GetLayoutBox()->SetLogicalWidth(column_inline_size);
     col.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-    column_geometries->emplace_back(
-        start_column_index, span,
-        column_locations[start_column_index].offset -
-            border_spacing.inline_size,
-        column_inline_size, col);
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   column_inline_size, col);
   }
 
   void EnterColgroup(const NGLayoutInputNode& colgroup,
@@ -322,18 +321,17 @@ class ColumnGeometriesBuilder {
                                column_locations[start_column_index].offset;
     colgroup.GetLayoutBox()->SetLogicalWidth(colgroup_size);
     colgroup.GetLayoutBox()->SetLogicalHeight(table_grid_block_size);
-    column_geometries->emplace_back(
-        start_column_index, span,
-        column_locations[start_column_index].offset -
-            border_spacing.inline_size,
-        colgroup_size, colgroup);
+    column_geometries.emplace_back(start_column_index, span,
+                                   column_locations[start_column_index].offset -
+                                       border_spacing.inline_size,
+                                   colgroup_size, colgroup);
   }
 
   void Sort() {
     // Geometries need to be sorted because this must be true:
     // - parent COLGROUP must come before child COLs.
     // - child COLs are in ascending order.
-    std::sort(column_geometries->begin(), column_geometries->end(),
+    std::sort(column_geometries.begin(), column_geometries.end(),
               [](const NGTableFragmentData::ColumnGeometry& a,
                  const NGTableFragmentData::ColumnGeometry& b) {
                 if (a.node.IsTableCol() && b.node.IsTableCol()) {
@@ -364,8 +362,7 @@ class ColumnGeometriesBuilder {
       : column_locations(column_locations),
         table_grid_block_size(table_grid_block_size),
         border_spacing(border_spacing) {}
-  NGTableFragmentData::ColumnGeometries* column_geometries =
-      MakeGarbageCollected<NGTableFragmentData::ColumnGeometries>();
+  NGTableFragmentData::ColumnGeometries column_geometries;
   const NGTableTypes::ColumnLocations& column_locations;
   const LayoutUnit table_grid_block_size;
   const LogicalSize& border_spacing;
@@ -393,7 +390,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
 
   const LogicalSize border_spacing = table.Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(table);
-  const NGTableBorders* table_borders = table.GetTableBorders();
+  scoped_refptr<const NGTableBorders> table_borders = table.GetTableBorders();
 
   // Compute min/max inline constraints.
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
@@ -438,7 +435,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize(
     const NGTableNode& node,
     const NGConstraintSpace& space,
     const LayoutUnit table_inline_size) {
-  HeapVector<NGTableLayoutAlgorithm::CaptionResult> captions;
+  Vector<NGTableLayoutAlgorithm::CaptionResult> captions;
   NGTableGroupedChildren grouped_children(node);
   LayoutUnit captions_block_size;
 
@@ -447,14 +444,15 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize(
   return captions_block_size;
 }
 
-const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
-  const NGTableBorders* table_borders = Node().GetTableBorders();
-  DCHECK(table_borders);
+  const scoped_refptr<const NGTableBorders> table_borders =
+      Node().GetTableBorders();
+  DCHECK(table_borders.get());
   const NGBoxStrut border_padding = container_builder_.BorderPadding();
 
   // Algorithm:
@@ -507,7 +505,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   //
   // The block-size taken by the captions, *subtracts* from the available
   // block-size given to the table-grid.
-  HeapVector<CaptionResult> captions;
+  Vector<CaptionResult> captions;
   LayoutUnit captions_block_size;
   ComputeCaptionFragments(ConstraintSpace(), Style(), grouped_children,
                           container_builder_.InlineSize(), captions,
@@ -572,7 +570,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
-  Node().GetTableBorders();
+  const scoped_refptr<const NGTableBorders> table_borders =
+      Node().GetTableBorders();
   const NGBoxStrut border_padding = container_builder_.BorderPadding();
 
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
@@ -744,7 +743,7 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
 // |     table border/padding       |
 // |     bottom caption fragments   |
 // +--------------------------------+
-const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
+scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
     const LayoutUnit table_inline_size,
     const LayoutUnit minimal_table_grid_block_size,
     const NGTableGroupedChildren& grouped_children,
@@ -752,7 +751,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const NGTableTypes::Rows& rows,
     const NGTableTypes::CellBlockConstraints& cell_block_constraints,
     const NGTableTypes::Sections& sections,
-    const HeapVector<CaptionResult>& captions,
+    const Vector<CaptionResult>& captions,
     const NGTableBorders& table_borders,
     const LogicalSize& border_spacing) {
   const auto table_writing_direction = Style().GetWritingDirection();
@@ -821,7 +820,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   wtf_size_t section_index = 0;
   bool needs_end_border_spacing = false;
   for (NGBlockNode section : grouped_children) {
-    const NGLayoutResult* section_result =
+    scoped_refptr<const NGLayoutResult> section_result =
         section.Layout(CreateSectionConstraintSpace(section_index++));
     const NGPhysicalBoxFragment& physical_fragment =
         To<NGPhysicalBoxFragment>(section_result->PhysicalFragment());

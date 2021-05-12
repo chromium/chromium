@@ -373,7 +373,7 @@ bool HTMLIFrameElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 
 LayoutObject* HTMLIFrameElement::CreateLayoutObject(const ComputedStyle&,
                                                     LegacyLayout) {
-  return MakeGarbageCollected<LayoutIFrame>(this);
+  return new LayoutIFrame(this);
 }
 
 Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(

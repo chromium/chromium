@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -32,7 +31,6 @@ class TableGridCell {
   // from this file due to circular includes.
   TableGridCell();
   ~TableGridCell();
-  void Trace(Visitor*) const;
 
   // This is the LayoutTableCell covering this TableGridCell that is on top of
   // the others (aka the last LayoutTableCell in DOM order for this
@@ -52,8 +50,8 @@ class TableGridCell {
 
   bool HasCells() const { return cells_.size() > 0; }
 
-  HeapVector<Member<LayoutTableCell>, 1>& Cells() { return cells_; }
-  const HeapVector<Member<LayoutTableCell>, 1>& Cells() const { return cells_; }
+  Vector<LayoutTableCell*, 1>& Cells() { return cells_; }
+  const Vector<LayoutTableCell*, 1>& Cells() const { return cells_; }
 
   bool InColSpan() const { return in_col_span_; }
   void SetInColSpan(bool in_col_span) { in_col_span_ = in_col_span; }
@@ -63,23 +61,12 @@ class TableGridCell {
   // Due to colspan / rowpsan, it is possible to have overlapping cells
   // (see class comment about an example).
   // This Vector is sorted in DOM order.
-  HeapVector<Member<LayoutTableCell>, 1> cells_;
+  Vector<LayoutTableCell*, 1> cells_;
 
   // True for columns after the first in a colspan.
   bool in_col_span_ = false;
 };
 
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct VectorTraits<blink::TableGridCell>
-    : VectorTraitsBase<blink::TableGridCell> {
-  STATIC_ONLY(VectorTraits);
-  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_GRID_CELL_H_

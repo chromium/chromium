@@ -200,7 +200,7 @@ NGSVGTextLayoutAttributesBuilder::NGSVGTextLayoutAttributesBuilder(
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 void NGSVGTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
-    const HeapVector<NGInlineItem>& items) {
+    const Vector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
   unsigned addressable_index = 0;
   bool in_text_path = false;
@@ -304,8 +304,7 @@ NGSVGTextLayoutAttributesBuilder::CharacterDataList() {
   return std::move(resolved_);
 }
 
-HeapVector<SVGTextPathRange>
-NGSVGTextLayoutAttributesBuilder::TextPathRangeList() {
+Vector<SVGTextPathRange> NGSVGTextLayoutAttributesBuilder::TextPathRangeList() {
   return std::move(text_path_range_list_);
 }
 

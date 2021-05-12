@@ -107,8 +107,7 @@ DevtoolsFlexInfo LayoutNGFlexibleBox::LayoutForDevtools() {
   NGLayoutAlgorithmParams params(node, fragment_geometry, constraint_space);
   DevtoolsFlexInfo flex_info;
   NGFlexLayoutAlgorithm flex_algorithm(params, &flex_info);
-  auto* new_result = flex_algorithm.Layout();
-  ALLOW_UNUSED_LOCAL(new_result);
+  auto new_result = flex_algorithm.Layout();
 
 #if DCHECK_IS_ON()
   MinMaxSizes new_min_max_sizes = IntrinsicLogicalWidths();

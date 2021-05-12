@@ -37,12 +37,11 @@ class LineLayoutBox;
 class NGBlockNode;
 class WordMeasurement;
 
-typedef HeapListHashSet<Member<LayoutBox>, 16> TrackedLayoutBoxListHashSet;
-typedef HeapHashMap<WeakMember<const LayoutBlock>,
-                    Member<TrackedLayoutBoxListHashSet>>
+typedef WTF::ListHashSet<LayoutBox*, 16> TrackedLayoutBoxListHashSet;
+typedef WTF::HashMap<const LayoutBlock*,
+                     std::unique_ptr<TrackedLayoutBoxListHashSet>>
     TrackedDescendantsMap;
-typedef HeapHashMap<WeakMember<const LayoutBox>, Member<LayoutBlock>>
-    TrackedContainerMap;
+typedef WTF::HashMap<const LayoutBox*, LayoutBlock*> TrackedContainerMap;
 typedef Vector<WordMeasurement, 64> WordMeasurements;
 
 enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
@@ -107,10 +106,9 @@ enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   explicit LayoutBlock(ContainerNode*);
+  ~LayoutBlock() override;
 
  public:
-  void Trace(Visitor*) const override;
-
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();
     DCHECK_EQ(Children(), VirtualChildren());

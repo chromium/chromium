@@ -311,9 +311,10 @@ void HTMLPopupElement::SetOwnerSelectMenuElement(
 
 // TODO(crbug.com/1197720): The popup position should be provided by the new
 // anchored positioning scheme.
-ComputedStyle* HTMLPopupElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> HTMLPopupElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  ComputedStyle* style = OriginalStyleForLayoutObject(style_recalc_context);
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   if (NeedsRepositioningForSelectMenu())
     AdjustPopupPositionForSelectMenu(*style);
   return style;

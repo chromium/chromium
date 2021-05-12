@@ -45,8 +45,7 @@
 
 namespace blink {
 
-typedef HeapHashMap<WeakMember<const LayoutObject>, std::unique_ptr<CounterMap>>
-    CounterMaps;
+typedef HashMap<const LayoutObject*, std::unique_ptr<CounterMap>> CounterMaps;
 
 namespace {
 
@@ -56,9 +55,8 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject&,
 
 // See class definition as to why we have this map.
 CounterMaps& GetCounterMaps() {
-  DEFINE_STATIC_LOCAL(Persistent<CounterMaps>, static_counter_maps,
-                      (MakeGarbageCollected<CounterMaps>()));
-  return *static_counter_maps;
+  DEFINE_STATIC_LOCAL(CounterMaps, static_counter_maps, ());
+  return static_counter_maps;
 }
 
 Element* AncestorStyleContainmentObject(const Element& element) {
@@ -508,12 +506,6 @@ LayoutCounter::LayoutCounter(PseudoElement& pseudo,
 }
 
 LayoutCounter::~LayoutCounter() = default;
-
-void LayoutCounter::Trace(Visitor* visitor) const {
-  visitor->Trace(counter_);
-  visitor->Trace(next_for_same_counter_);
-  LayoutText::Trace(visitor);
-}
 
 void LayoutCounter::WillBeDestroyed() {
   NOT_DESTROYED();

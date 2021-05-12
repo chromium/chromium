@@ -106,7 +106,7 @@ class CORE_EXPORT ElementAnimations final
   // change from the running animations) and use that during style recalc,
   // applying only the animation changes on top of it.
   bool animation_style_change_;
-  Member<ComputedStyle> base_computed_style_;
+  scoped_refptr<ComputedStyle> base_computed_style_;
   // Keeps track of the !important declarations used to build the base
   // computed style. These declarations must not be overwritten by animation
   // effects, hence we have to disable the base computed style optimization when

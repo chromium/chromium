@@ -1677,7 +1677,8 @@ void StyleEngine::VisionDeficiencyChanged() {
   MarkViewportStyleDirty();
 }
 
-void StyleEngine::ApplyVisionDeficiencyStyle(ComputedStyle* layout_view_style) {
+void StyleEngine::ApplyVisionDeficiencyStyle(
+    scoped_refptr<ComputedStyle> layout_view_style) {
   LoadVisionDeficiencyFilter();
   if (vision_deficiency_filter_) {
     FilterOperations ops;
@@ -2372,9 +2373,9 @@ void StyleEngine::UpdateViewportStyle() {
 
   viewport_style_dirty_ = false;
 
-  ComputedStyle* viewport_style = resolver_->StyleForViewport();
+  scoped_refptr<ComputedStyle> viewport_style = resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
-          viewport_style, GetDocument().GetLayoutView()->Style()) !=
+          viewport_style.get(), GetDocument().GetLayoutView()->Style()) !=
       ComputedStyle::Difference::kEqual) {
     GetDocument().GetLayoutView()->SetStyle(std::move(viewport_style));
   }

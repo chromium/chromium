@@ -36,7 +36,7 @@
 namespace blink {
 
 SVGTextLayoutEngine::SVGTextLayoutEngine(
-    const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes)
+    const Vector<LayoutSVGInlineText*>& descendant_text_nodes)
     : descendant_text_nodes_(descendant_text_nodes),
       current_logical_text_node_index_(0),
       logical_character_offset_(0),

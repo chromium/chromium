@@ -115,15 +115,13 @@ class CORE_EXPORT NGFragmentItemsBuilder {
     const NGFragmentItem& operator*() const { return item; }
     const NGFragmentItem* operator->() const { return &item; }
 
-    void Trace(Visitor* visitor) const { visitor->Trace(item); }
-
     NGFragmentItem item;
     LogicalOffset offset;
   };
 
   // Give an inline size, the allocation of this vector is hot. "128" is
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
-  using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
+  using ItemWithOffsetList = Vector<ItemWithOffset, 128>;
 
   // Find |LogicalOffset| of the first |NGFragmentItem| for |LayoutObject|.
   base::Optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
@@ -158,8 +156,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   NGLogicalLineItems* current_line_items_ = nullptr;
   const NGPhysicalFragment* current_line_fragment_ = nullptr;
 
-  HeapHashMap<const NGPhysicalFragment*, Member<NGLogicalLineItems>>
-      line_items_map_;
+  HashMap<const NGPhysicalFragment*, NGLogicalLineItems*> line_items_map_;
   NGLogicalLineItems* line_items_pool_ = nullptr;
 
   NGInlineNode node_;
@@ -174,8 +171,5 @@ class CORE_EXPORT NGFragmentItemsBuilder {
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGFragmentItemsBuilder::ItemWithOffset)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEMS_BUILDER_H_

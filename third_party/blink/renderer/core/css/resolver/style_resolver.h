@@ -64,20 +64,21 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ~StyleResolver();
   void Dispose();
 
-  ComputedStyle* ResolveStyle(Element*,
-                              const StyleRecalcContext&,
-                              const StyleRequest& = StyleRequest());
+  scoped_refptr<ComputedStyle> ResolveStyle(
+      Element*,
+      const StyleRecalcContext&,
+      const StyleRequest& = StyleRequest());
 
   // Return a reference to the initial style singleton.
   const ComputedStyle& InitialStyle() const;
 
   // Create a new ComputedStyle copy based on the initial style singleton.
-  ComputedStyle* CreateComputedStyle() const;
+  scoped_refptr<ComputedStyle> CreateComputedStyle() const;
 
   // Create a ComputedStyle for initial styles to be used as the basis for the
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
-  ComputedStyle* InitialStyleForElement() const;
+  scoped_refptr<ComputedStyle> InitialStyleForElement() const;
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,
@@ -87,23 +88,24 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
-  const ComputedStyle* StyleForPage(uint32_t page_index,
-                                    const AtomicString& page_name);
-  const ComputedStyle* StyleForText(Text*);
-  ComputedStyle* StyleForViewport();
+  scoped_refptr<const ComputedStyle> StyleForPage(
+      uint32_t page_index,
+      const AtomicString& page_name);
+  scoped_refptr<const ComputedStyle> StyleForText(Text*);
+  scoped_refptr<ComputedStyle> StyleForViewport();
 
   // Propagate computed values from the root or body element to the viewport
   // when specified to do so.
   void PropagateStyleToViewport();
 
   // Create ComputedStyle for anonymous boxes.
-  ComputedStyle* CreateAnonymousStyleWithDisplay(
+  scoped_refptr<ComputedStyle> CreateAnonymousStyleWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay);
 
   // Create ComputedStyle for anonymous wrappers between text boxes and
   // display:contents elements.
-  ComputedStyle* CreateInheritedDisplayContentsStyleIfNeeded(
+  scoped_refptr<ComputedStyle> CreateInheritedDisplayContentsStyleIfNeeded(
       const ComputedStyle& parent_style,
       const ComputedStyle& layout_parent_style);
 
@@ -159,15 +161,16 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                       const CSSPropertyName&,
                                       const CSSValue&);
 
-  ComputedStyle* StyleForInterpolations(Element& element,
-                                        ActiveInterpolationsMap& animations);
+  scoped_refptr<ComputedStyle> StyleForInterpolations(
+      Element& element,
+      ActiveInterpolationsMap& animations);
 
   // When updating transitions, the "before change style" is the style from
   // the previous style change with the addition of all declarative animations
   // ticked to the current time. Ticking the animations is required to ensure
   // smooth retargeting of transitions.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
-  ComputedStyle* BeforeChangeStyleForTransitionUpdate(
+  scoped_refptr<ComputedStyle> BeforeChangeStyleForTransitionUpdate(
       Element& element,
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
@@ -267,7 +270,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   MatchedPropertiesCache matched_properties_cache_;
   Member<Document> document_;
-  Member<const ComputedStyle> initial_style_;
+  scoped_refptr<const ComputedStyle> initial_style_;
   SelectorFilter selector_filter_;
 
   Member<StyleRuleUsageTracker> tracker_;

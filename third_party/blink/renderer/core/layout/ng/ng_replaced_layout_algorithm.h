@@ -23,7 +23,7 @@ class CORE_EXPORT NGReplacedLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override;
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
 };
 
 }  // namespace blink

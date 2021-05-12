@@ -514,9 +514,9 @@ LayoutObject* SVGSVGElement::CreateLayoutObject(const ComputedStyle&,
                                                 LegacyLayout) {
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutBySVG);
   if (IsOutermostSVGSVGElement())
-    return MakeGarbageCollected<LayoutSVGRoot>(this);
+    return new LayoutSVGRoot(this);
 
-  return MakeGarbageCollected<LayoutSVGViewportContainer>(this);
+  return new LayoutSVGViewportContainer(this);
 }
 
 Node::InsertionNotificationRequest SVGSVGElement::InsertedInto(

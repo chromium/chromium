@@ -38,7 +38,6 @@ class LayoutObjectChildList {
 
  public:
   LayoutObjectChildList() : first_child_(nullptr), last_child_(nullptr) {}
-  void Trace(Visitor*) const;
 
   LayoutObject* FirstChild() const { return first_child_; }
   LayoutObject* LastChild() const { return last_child_; }
@@ -61,8 +60,8 @@ class LayoutObjectChildList {
  private:
   void InvalidatePaintOnRemoval(LayoutObject& old_child);
 
-  Member<LayoutObject> first_child_;
-  Member<LayoutObject> last_child_;
+  LayoutObject* first_child_;
+  LayoutObject* last_child_;
 };
 
 }  // namespace blink

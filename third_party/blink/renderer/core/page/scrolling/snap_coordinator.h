@@ -36,7 +36,7 @@ class CORE_EXPORT SnapCoordinator final
  public:
   explicit SnapCoordinator();
   ~SnapCoordinator();
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const {}
 
   void AddSnapContainer(LayoutBox& snap_container);
   void RemoveSnapContainer(LayoutBox& snap_container);
@@ -76,7 +76,7 @@ class CORE_EXPORT SnapCoordinator final
  private:
   friend class SnapCoordinatorTest;
 
-  HeapHashSet<Member<LayoutBox>> snap_containers_;
+  HashSet<LayoutBox*> snap_containers_;
   bool any_snap_container_data_needs_update_ = true;
 
   // Used for reporting to UMA when snapping on the initial layout affects the

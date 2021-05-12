@@ -2478,7 +2478,7 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
     focused_element_->blur();
 }
 
-const ComputedStyle* Document::StyleForPage(int32_t page_index) {
+scoped_refptr<const ComputedStyle> Document::StyleForPage(uint32_t page_index) {
   UpdateDistributionForUnknownReasons();
 
   AtomicString page_name;
@@ -2513,7 +2513,7 @@ bool Document::IsPageBoxVisible(uint32_t page_index) {
 
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
-  const ComputedStyle* style = StyleForPage(page_index);
+  scoped_refptr<const ComputedStyle> style = StyleForPage(page_index);
 
   double width = description->size.Width();
   double height = description->size.Height();
@@ -2625,7 +2625,7 @@ void Document::Initialize() {
   DCHECK_EQ(lifecycle_.GetState(), DocumentLifecycle::kInactive);
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
-  layout_view_ = MakeGarbageCollected<LayoutView>(this);
+  layout_view_ = new LayoutView(this);
   SetLayoutObject(layout_view_);
 
   layout_view_->SetStyle(GetStyleResolver().StyleForViewport());
@@ -7804,7 +7804,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(did_associate_form_controls_timer_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
-  visitor->Trace(layout_view_);
   visitor->Trace(document_animations_);
   visitor->Trace(timeline_);
   visitor->Trace(pending_animations_);

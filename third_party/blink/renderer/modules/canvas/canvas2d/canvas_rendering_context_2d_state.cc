@@ -425,9 +425,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
       css_filter_value_->ReResolveUrl(style_resolution_host->GetDocument());
     }
 
-    ComputedStyle* filter_style = style_resolution_host->GetDocument()
-                                      .GetStyleResolver()
-                                      .CreateComputedStyle();
+    scoped_refptr<ComputedStyle> filter_style =
+        style_resolution_host->GetDocument()
+            .GetStyleResolver()
+            .CreateComputedStyle();
     // Must set font in case the filter uses any font-relative units (em, ex)
     // If font_for_filter_ was never set (ie frame-less documents) use base font
     if (LIKELY(font_for_filter_.GetFontSelector())) {
@@ -443,7 +444,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     }
     StyleResolverState resolver_state(style_resolution_host->GetDocument(),
                                       *style_resolution_host,
-                                      StyleRequest(filter_style));
+                                      StyleRequest(filter_style.get()));
     resolver_state.SetStyle(filter_style);
 
     StyleBuilder::ApplyProperty(
