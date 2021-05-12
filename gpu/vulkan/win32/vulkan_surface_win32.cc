@@ -148,7 +148,7 @@ class VulkanSurfaceWin32::WindowThread : public base::Thread,
     DCHECK(!g_thread);
     g_thread = this;
     base::Thread::Options options(base::MessagePumpType::UI, 0);
-    StartWithOptions(options);
+    StartWithOptions(std::move(options));
   }
 
   WindowThread(const WindowThread&) = delete;
