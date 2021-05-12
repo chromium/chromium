@@ -166,11 +166,13 @@ TEST_F(ExternalCacheImplTest, Basic) {
   // File in cache from Webstore.
   const base::DictionaryValue* entry1 = NULL;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId1, &entry1));
-  EXPECT_FALSE(
-      entry1->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(entry1->HasKey(extensions::ExternalProviderImpl::kExternalCrx));
-  EXPECT_TRUE(
-      entry1->HasKey(extensions::ExternalProviderImpl::kExternalVersion));
+  EXPECT_EQ(
+      entry1->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
+      nullptr);
+  EXPECT_NE(entry1->FindKey(extensions::ExternalProviderImpl::kExternalCrx),
+            nullptr);
+  EXPECT_NE(entry1->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
+            nullptr);
   bool from_webstore = false;
   EXPECT_TRUE(entry1->GetBoolean(
       extensions::ExternalProviderImpl::kIsFromWebstore, &from_webstore));
@@ -179,13 +181,15 @@ TEST_F(ExternalCacheImplTest, Basic) {
   // File in cache not from Webstore.
   const base::DictionaryValue* entry3 = NULL;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId3, &entry3));
-  EXPECT_FALSE(
-      entry3->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(entry3->HasKey(extensions::ExternalProviderImpl::kExternalCrx));
-  EXPECT_TRUE(
-      entry3->HasKey(extensions::ExternalProviderImpl::kExternalVersion));
-  EXPECT_FALSE(
-      entry3->HasKey(extensions::ExternalProviderImpl::kIsFromWebstore));
+  EXPECT_EQ(
+      entry3->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
+      nullptr);
+  EXPECT_NE(entry3->FindKey(extensions::ExternalProviderImpl::kExternalCrx),
+            nullptr);
+  EXPECT_NE(entry3->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
+            nullptr);
+  EXPECT_EQ(entry3->FindKey(extensions::ExternalProviderImpl::kIsFromWebstore),
+            nullptr);
 
   // Update from Webstore.
   base::FilePath temp_dir(CreateTempDir());
@@ -205,11 +209,13 @@ TEST_F(ExternalCacheImplTest, Basic) {
 
   const base::DictionaryValue* entry2 = NULL;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId2, &entry2));
-  EXPECT_FALSE(
-      entry2->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(entry2->HasKey(extensions::ExternalProviderImpl::kExternalCrx));
-  EXPECT_TRUE(
-      entry2->HasKey(extensions::ExternalProviderImpl::kExternalVersion));
+  EXPECT_EQ(
+      entry2->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
+      nullptr);
+  EXPECT_NE(entry2->FindKey(extensions::ExternalProviderImpl::kExternalCrx),
+            nullptr);
+  EXPECT_NE(entry2->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
+            nullptr);
   from_webstore = false;
   EXPECT_TRUE(entry2->GetBoolean(
       extensions::ExternalProviderImpl::kIsFromWebstore, &from_webstore));
@@ -236,13 +242,15 @@ TEST_F(ExternalCacheImplTest, Basic) {
 
   const base::DictionaryValue* entry4 = NULL;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId4, &entry4));
-  EXPECT_FALSE(
-      entry4->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(entry4->HasKey(extensions::ExternalProviderImpl::kExternalCrx));
-  EXPECT_TRUE(
-      entry4->HasKey(extensions::ExternalProviderImpl::kExternalVersion));
-  EXPECT_FALSE(
-      entry4->HasKey(extensions::ExternalProviderImpl::kIsFromWebstore));
+  EXPECT_EQ(
+      entry4->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
+      nullptr);
+  EXPECT_NE(entry4->FindKey(extensions::ExternalProviderImpl::kExternalCrx),
+            nullptr);
+  EXPECT_NE(entry4->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
+            nullptr);
+  EXPECT_EQ(entry4->FindKey(extensions::ExternalProviderImpl::kIsFromWebstore),
+            nullptr);
   EXPECT_TRUE(
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId4, "4")));
 
@@ -296,11 +304,13 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
   // provided prefs directly.
   const base::DictionaryValue* entry1 = NULL;
   ASSERT_TRUE(provided_prefs()->GetDictionary(kTestExtensionId1, &entry1));
-  EXPECT_FALSE(
-      entry1->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(entry1->HasKey(extensions::ExternalProviderImpl::kExternalCrx));
-  EXPECT_TRUE(
-      entry1->HasKey(extensions::ExternalProviderImpl::kExternalVersion));
+  EXPECT_EQ(
+      entry1->FindKey(extensions::ExternalProviderImpl::kExternalUpdateUrl),
+      nullptr);
+  EXPECT_NE(entry1->FindKey(extensions::ExternalProviderImpl::kExternalCrx),
+            nullptr);
+  EXPECT_NE(entry1->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
+            nullptr);
 }
 
 }  // namespace chromeos
