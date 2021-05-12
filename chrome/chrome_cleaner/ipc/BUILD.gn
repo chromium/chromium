@@ -100,6 +100,7 @@ source_set("unittest_sources") {
 
   deps = [
     ":chrome_prompt_ipc",
+    ":chrome_prompt_test_util",
     ":ipc_test_util",
     ":mojo_task_runner",
     ":sandbox",
@@ -132,6 +133,8 @@ source_set("chrome_prompt_test_util") {
 
   deps = [
     ":chrome_prompt_ipc",
+    "//base",
+    "//components/chrome_cleaner/public/constants",
     "//testing/gmock",
     "//testing/gtest",
   ]

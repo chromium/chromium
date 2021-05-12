@@ -7,16 +7,15 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/process/process.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
+#include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
 #include "chrome/chrome_cleaner/ipc/ipc_test_util.h"
 #include "chrome/chrome_cleaner/ipc/proto_chrome_prompt_ipc.h"
 #include "chrome/chrome_cleaner/test/child_process_logger.h"
@@ -127,117 +126,6 @@ struct TestConfig {
   ChromeDisconnectPoint expected_disconnection_point =
       ChromeDisconnectPoint::kNone;
 };
-
-enum class ServerPipeDirection {
-  kInbound,
-  kOutbound,
-};
-
-// This function is a taken from
-// https://cs.chromium.org/chromium/src/chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_channel_win.cc
-// to get the same behavior.
-std::pair<ScopedHandle, ScopedHandle> CreateMessagePipe(
-    ServerPipeDirection server_direction) {
-  SECURITY_ATTRIBUTES security_attributes = {};
-  security_attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
-  // Use this process's default access token.
-  security_attributes.lpSecurityDescriptor = nullptr;
-  // Handles to inherit will be added to the LaunchOptions explicitly.
-  security_attributes.bInheritHandle = false;
-
-  std::wstring pipe_name = base::UTF8ToWide(
-      base::StrCat({"\\\\.\\pipe\\chrome-cleaner-",
-                    base::UnguessableToken::Create().ToString()}));
-
-  // Create the server end of the pipe.
-  DWORD direction_flag = server_direction == ServerPipeDirection::kInbound
-                             ? PIPE_ACCESS_INBOUND
-                             : PIPE_ACCESS_OUTBOUND;
-  ScopedHandle server_handle(::CreateNamedPipe(
-      pipe_name.c_str(), direction_flag | FILE_FLAG_FIRST_PIPE_INSTANCE,
-      PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT |
-          PIPE_REJECT_REMOTE_CLIENTS,
-      /*nMaxInstances=*/1, /*nOutBufferSize=*/0, /*nInBufferSize=*/0,
-      /*nDefaultTimeOut=*/0, &security_attributes));
-  if (!server_handle.IsValid()) {
-    PLOG(ERROR) << "Error creating server pipe";
-    return std::make_pair(ScopedHandle(), ScopedHandle());
-  }
-
-  // The client pipe's read/write permissions are the opposite of the server's.
-  DWORD client_mode = server_direction == ServerPipeDirection::kInbound
-                          ? GENERIC_WRITE
-                          : GENERIC_READ;
-
-  // Create the client end of the pipe.
-  ScopedHandle client_handle(::CreateFile(
-      pipe_name.c_str(), client_mode, /*dwShareMode=*/0,
-      /*lpSecurityAttributes=*/nullptr, OPEN_EXISTING,
-      FILE_ATTRIBUTE_NORMAL | SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS,
-      /*hTemplateFile=*/nullptr));
-  if (!client_handle.IsValid()) {
-    PLOG(ERROR) << "Error creating client pipe";
-    return std::make_pair(ScopedHandle(), ScopedHandle());
-  }
-
-  // Wait for the client end to connect (this should return
-  // ERROR_PIPE_CONNECTED immediately since it's already connected).
-  if (::ConnectNamedPipe(server_handle.Get(), /*lpOverlapped=*/nullptr)) {
-    LOG(ERROR) << "ConnectNamedPipe got an unexpected connection";
-    return std::make_pair(ScopedHandle(), ScopedHandle());
-  }
-  const auto error = ::GetLastError();
-  if (error != ERROR_PIPE_CONNECTED) {
-    LOG(ERROR) << "ConnectNamedPipe returned unexpected error: "
-               << logging::SystemErrorCodeToString(error);
-    return std::make_pair(ScopedHandle(), ScopedHandle());
-  }
-
-  return std::make_pair(std::move(server_handle), std::move(client_handle));
-}
-
-void AppendHandleToCommandLine(base::CommandLine* command_line,
-                               const std::string& switch_string,
-                               HANDLE handle) {
-  ASSERT_NE(command_line, nullptr);
-  command_line->AppendSwitchASCII(
-      switch_string, base::NumberToString(base::win::HandleToUint32(handle)));
-}
-
-// In this test the class representing the cleaner is contained in the parent
-// process so it needs the server ends of the pipes. The class that represents
-// chrome is in the child process and gets the client end of the pipes.
-bool PrepareForCleaner(base::CommandLine* command_line,
-                       base::HandlesToInheritVector* handles_to_inherit,
-                       ScopedHandle* request_read_handle_,
-                       ScopedHandle* request_write_handle_,
-                       ScopedHandle* response_read_handle_,
-                       ScopedHandle* response_write_handle_) {
-  // Requests flow from the cleaner to Chrome.
-  std::tie(*request_write_handle_, *request_read_handle_) =
-      CreateMessagePipe(ServerPipeDirection::kOutbound);
-
-  // Responses flow from Chrome to the cleaner.
-  std::tie(*response_read_handle_, *response_write_handle_) =
-      CreateMessagePipe(ServerPipeDirection::kInbound);
-
-  if (!request_read_handle_->IsValid() || !request_write_handle_->IsValid() ||
-      !response_read_handle_->IsValid() || !response_write_handle_->IsValid()) {
-    return false;
-  }
-
-  DCHECK(command_line);
-  DCHECK(handles_to_inherit);
-  AppendHandleToCommandLine(command_line,
-                            chrome_cleaner::kChromeWriteHandleSwitch,
-                            response_write_handle_->Get());
-  handles_to_inherit->push_back(response_write_handle_->Get());
-  AppendHandleToCommandLine(command_line,
-                            chrome_cleaner::kChromeReadHandleSwitch,
-                            request_read_handle_->Get());
-  handles_to_inherit->push_back(request_read_handle_->Get());
-  return true;
-}
 
 // Provides the same kind of inputs and outputs on the pipes that Chrome would
 // during the prompt process.
@@ -585,10 +473,16 @@ class ParentProcess {
     // Inject the flags related to the the config in the command line.
     test_config_.EnhanceCommandLine(&command_line_);
 
-    return PrepareForCleaner(&command_line_,
-                             &launch_options_.handles_to_inherit,
-                             &request_read_handle_, &request_write_handle_,
-                             &response_read_handle_, &response_write_handle_);
+    ChromePromptPipeHandles pipe_handles = CreateTestChromePromptMessagePipes(
+        ChromePromptServerProcess::kCleanerIsServer, &command_line_,
+        &launch_options_.handles_to_inherit);
+    if (!pipe_handles.IsValid())
+      return false;
+    request_read_handle_ = std::move(pipe_handles.request_read_handle);
+    request_write_handle_ = std::move(pipe_handles.request_write_handle);
+    response_read_handle_ = std::move(pipe_handles.response_read_handle);
+    response_write_handle_ = std::move(pipe_handles.response_write_handle);
+    return true;
   }
 
   void ValidateAcceptance(
@@ -762,28 +656,18 @@ INSTANTIATE_TEST_SUITE_P(PromptUserResponse,
 class ProtoChromePromptSameProcessTest : public ::testing::Test {
  public:
   void SetUp() override {
+    ChromePromptPipeHandles pipe_handles = CreateTestChromePromptMessagePipes(
+        ChromePromptServerProcess::kCleanerIsServer);
+    ASSERT_TRUE(pipe_handles.IsValid());
+
     // Requests flow from the cleaner to Chrome.
-    base::win::ScopedHandle request_read_handle;
-    base::win::ScopedHandle request_write_handle;
-    std::tie(request_write_handle, request_read_handle) =
-        CreateMessagePipe(ServerPipeDirection::kOutbound);
-
     // Responses flow from Chrome to the cleaner.
-    base::win::ScopedHandle response_read_handle;
-    base::win::ScopedHandle response_write_handle;
-    std::tie(response_read_handle, response_write_handle) =
-        CreateMessagePipe(ServerPipeDirection::kInbound);
-
-    EXPECT_TRUE(request_read_handle.IsValid());
-    EXPECT_TRUE(request_write_handle.IsValid());
-    EXPECT_TRUE(response_read_handle.IsValid());
-    EXPECT_TRUE(response_write_handle.IsValid());
-
     mock_chrome_ = std::make_unique<MockChrome>(
-        std::move(request_read_handle), std::move(response_write_handle));
-
+        std::move(pipe_handles.request_read_handle),
+        std::move(pipe_handles.response_write_handle));
     chrome_prompt_ipc_ = std::make_unique<ProtoChromePromptIPC>(
-        std::move(response_read_handle), std::move(request_write_handle));
+        std::move(pipe_handles.response_read_handle),
+        std::move(pipe_handles.request_write_handle));
 
     error_handler_ = std::make_unique<ChromePromptIPCTestErrorHandler>(
         base::BindOnce(&ProtoChromePromptSameProcessTest ::ConnectionWasClosed,
