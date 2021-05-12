@@ -6,32 +6,24 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_BASE_MODEL_EXECUTOR_H_
 
 #include "components/optimization_guide/content/browser/base_model_executor_helpers.h"
-#include "components/optimization_guide/content/browser/optimization_target_model_executor.h"
+#include "components/optimization_guide/content/browser/model_executor.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
 
-// An OptimizationTargetModelExecutor that executes models with arbitrary input
-// and output types.
+// An ModelExecutor that executes models with arbitrary
+// input and output types. Note that callers will need to give an implementation
+// of this class to a |ModelHandler|, whereas the
+// handle is the actual class that calling code would own and call into.
 template <class OutputType, class... InputTypes>
-class BaseModelExecutor
-    : public OptimizationTargetModelExecutor<OutputType, InputTypes...>,
-      public InferenceDelegate<OutputType, InputTypes...> {
+class BaseModelExecutor : public ModelExecutor<OutputType, InputTypes...>,
+                          public InferenceDelegate<OutputType, InputTypes...> {
  public:
   using ModelExecutionTask =
       tflite::task::core::BaseTaskApi<OutputType, InputTypes...>;
 
-  BaseModelExecutor(OptimizationGuideDecider* decider,
-                    proto::OptimizationTarget optimization_target,
-                    const base::Optional<proto::Any>& model_metadata,
-                    const scoped_refptr<base::SequencedTaskRunner>&
-                        model_execution_task_runner)
-      : OptimizationTargetModelExecutor<OutputType, InputTypes...>(
-            decider,
-            optimization_target,
-            model_metadata,
-            model_execution_task_runner) {}
+  BaseModelExecutor() = default;
   ~BaseModelExecutor() override = default;
   BaseModelExecutor(const BaseModelExecutor&) = delete;
   BaseModelExecutor& operator=(const BaseModelExecutor&) = delete;

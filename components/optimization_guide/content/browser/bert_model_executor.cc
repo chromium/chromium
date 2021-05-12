@@ -9,24 +9,12 @@
 
 namespace optimization_guide {
 
-BertModelExecutor::BertModelExecutor(
-    OptimizationGuideDecider* decider,
-    proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
-    const scoped_refptr<base::SequencedTaskRunner>& model_execution_task_runner)
-    : OptimizationTargetModelExecutor<std::vector<tflite::task::core::Category>,
-                                      const std::string&>(
-          decider,
-          optimization_target,
-          model_metadata,
-          model_execution_task_runner) {}
-
+BertModelExecutor::BertModelExecutor() = default;
 BertModelExecutor::~BertModelExecutor() = default;
 
 base::Optional<std::vector<tflite::task::core::Category>>
-BertModelExecutor::Execute(
-    BertModelExecutor::ModelExecutionTask* execution_task,
-    const std::string& input) {
+BertModelExecutor::Execute(ModelExecutionTask* execution_task,
+                           const std::string& input) {
   return static_cast<tflite::task::text::nlclassifier::BertNLClassifier*>(
              execution_task)
       ->Classify(input);
@@ -44,5 +32,19 @@ BertModelExecutor::BuildModelExecutionTask(base::MemoryMappedFile* model_file) {
               << maybe_nl_classifier.status().ToString();
   return nullptr;
 }
+
+BertModelExecutorHandle::BertModelExecutorHandle(
+    OptimizationGuideDecider* decider,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    proto::OptimizationTarget optimization_target,
+    const base::Optional<proto::Any>& model_metadata)
+    : ModelHandler<std::vector<tflite::task::core::Category>,
+                   const std::string&>(decider,
+                                       background_task_runner,
+                                       std::make_unique<BertModelExecutor>(),
+                                       optimization_target,
+                                       model_metadata) {}
+
+BertModelExecutorHandle::~BertModelExecutorHandle() = default;
 
 }  // namespace optimization_guide

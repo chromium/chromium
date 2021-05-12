@@ -36,11 +36,12 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
       proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
   page_topics_model_metadata.SerializeToString(model_metadata.mutable_value());
 
-  page_topics_model_executor_ = std::make_unique<BertModelExecutor>(
-      optimization_guide_decider, proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
-      model_metadata,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+  page_topics_model_executor_handle_ =
+      std::make_unique<BertModelExecutorHandle>(
+          optimization_guide_decider,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
 }
 
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
@@ -49,15 +50,21 @@ PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
 void PageContentAnnotationsModelManager::Annotate(
     const std::string& text,
     PageContentAnnotatedCallback callback) {
-  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_->ParsedSupportedFeaturesForLoadedModel<
-          proto::PageTopicsModelMetadata>();
-  if (!model_metadata) {
+  if (!page_topics_model_executor_handle_->ModelAvailable()) {
     // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
     // model isn't ready, but if we call this when the model isn't ready, it
     // will just return base::nullopt for now.
     return;
   }
+
+  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
+      page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
+          proto::PageTopicsModelMetadata>();
+  if (!model_metadata) {
+    NOTREACHED();
+    return;
+  }
+
   bool has_supported_output = false;
   for (const auto supported_output : model_metadata->supported_output()) {
     if (supported_output == proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES ||
@@ -71,7 +78,7 @@ void PageContentAnnotationsModelManager::Annotate(
     // TODO(crbug/1177102): Add histogram.
     return;
   }
-  page_topics_model_executor_->ExecuteModelWithInput(
+  page_topics_model_executor_handle_->ExecuteModelWithInput(
       base::BindOnce(&PageContentAnnotationsModelManager::
                          OnPageTopicsModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -94,7 +101,7 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
 base::Optional<int64_t>
 PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
   base::Optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_->ParsedSupportedFeaturesForLoadedModel<
+      page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
           proto::PageTopicsModelMetadata>();
   if (model_metadata)
     return model_metadata->version();

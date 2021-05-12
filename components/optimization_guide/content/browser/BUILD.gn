@@ -25,7 +25,7 @@ static_library("browser") {
       "base_model_executor_helpers.h",
       "bert_model_executor.cc",
       "bert_model_executor.h",
-      "optimization_target_model_executor.h",
+      "model_executor.h",
       "page_content_annotations_model_manager.cc",
       "page_content_annotations_model_manager.h",
     ]
@@ -75,7 +75,7 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [
       "bert_model_executor_unittest.cc",
-      "optimization_target_model_executor_unittest.cc",
+      "model_executor_unittest.cc",
       "page_content_annotations_model_manager_unittest.cc",
     ]
   }
