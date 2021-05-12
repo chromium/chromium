@@ -1029,11 +1029,8 @@
       DialogType.FULL_PAGE,
     ]);
 
-    if (util.isFilesJsModulesEnabled()) {
-      ContentMetadataProvider.configure(
-          'foreground/js/metadata/metadata_dispatcher.m.js',
-          /*isModule=*/ true);
-    } else if (window.isSWA) {
+    if (window.isSWA) {
+      // TODO: Verify that SWA will work with module version for dispatcher.
       ContentMetadataProvider.configure(
           'foreground/js/metadata/metadata_dispatcher.js');
     }

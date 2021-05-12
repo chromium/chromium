@@ -515,8 +515,7 @@ ContentMetadataProvider.PROPERTY_NAMES = [
  * @const @private {string}
  */
 ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
-    'foreground/js/metadata/metadata_dispatcher.js';
+    'foreground/js/metadata/metadata_dispatcher.m.js';
 
 /**
  * Worker script URL that is overwritten by client code.
@@ -528,4 +527,4 @@ ContentMetadataProvider.workerScript_ = null;
  * Sets if the SharedWorker should start as a JS Module.
  * @private {boolean}
  */
-ContentMetadataProvider.loadAsModule_ = false;
+ContentMetadataProvider.loadAsModule_ = true;

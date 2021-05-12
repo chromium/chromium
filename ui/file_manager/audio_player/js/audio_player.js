@@ -144,9 +144,8 @@
 
       // Override metadata worker's path.
       ContentMetadataProvider.configure(
-          util.isAudioPlayerJsModulesEnabled() ? '/js/metadata_worker.m.js' :
-                                                 '/js/metadata_worker.js',
-          /*isModule=*/ util.isAudioPlayerJsModulesEnabled());
+          '/js/metadata_worker.m.js',
+          /*isModule=*/ true);
 
       this.metadataModel_ = MetadataModel.create(this.volumeManager_);
       this.resolveMetadataModel_();

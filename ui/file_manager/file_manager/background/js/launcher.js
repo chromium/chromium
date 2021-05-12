@@ -173,8 +173,7 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
     FILE_MANAGER_WINDOW_CREATE_OPTIONS.frame.color = '#ffffff';
   }
 
-  const htmlFile =
-      util.isFilesJsModulesEnabled() ? 'main_modules.html' : 'main.html';
+  const htmlFile = 'main_modules.html';
   const appWindow =
       new AppWindowWrapper(htmlFile, appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
 

@@ -19,13 +19,6 @@
 const AUDIO_PLAYER_ICON = 'icons/audio-player-192.png';
 
 /**
- * HTML source of the audio player.
- * @type {!string}
- * @const
- */
-const AUDIO_PLAYER_APP_URL = 'audio_player.html';
-
-/**
  * HTML source of the audio player as JS module.
  * @type {!string}
  * @const
@@ -84,9 +77,7 @@ window.background = new AudioPlayerBackground();
  */
 const getAudioPlayer = new Promise(async (resolve) => {
   await window.background.ready();
-  const url = util.isAudioPlayerJsModulesEnabled() ?
-      AUDIO_PLAYER_MODULE_APP_URL :
-      AUDIO_PLAYER_APP_URL;
+  const url = AUDIO_PLAYER_MODULE_APP_URL;
   resolve(new SingletonAppWindowWrapper(url, audioPlayerCreateOptions));
 });
 
@@ -148,8 +139,7 @@ const getAudioPlayer = new Promise(async (resolve) => {
 
     audioPlayer.setIcon(AUDIO_PLAYER_ICON);
     audioPlayer.rawAppWindow.focus();
-    return util.isAudioPlayerJsModulesEnabled() ? AUDIO_PLAYER_MODULE_APP_URL :
-                                                  AUDIO_PLAYER_APP_URL;
+    return AUDIO_PLAYER_MODULE_APP_URL;
   } catch (error) {
     console.error('Launch failed: ' + (error.stack || error));
     throw error;

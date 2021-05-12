@@ -19,13 +19,6 @@
 const ICON_IMAGE = 'images/icon/video-player-192.png';
 
 /**
- * HTML source of the video player.
- * @type {!string}
- * @const
- */
-const VIDEO_PLAYER_APP_URL = 'video_player.html';
-
-/**
  * HTML source of the video player as JS module.
  * @type {!string}
  * @const
@@ -96,9 +89,7 @@ const generateWindowId = (function() {
 
         // Opens the video player window.
         const urls = util.entriesToURLs(entries);
-        const videoPlayerUrl = util.isVideoPlayerJsModulesEnabled() ?
-            VIDEO_PLAYER_MODULE_APP_URL :
-            VIDEO_PLAYER_APP_URL;
+        const videoPlayerUrl = VIDEO_PLAYER_MODULE_APP_URL;
         const videoPlayer = new AppWindowWrapper(
             videoPlayerUrl, assert(windowId), windowCreateOptions);
 
