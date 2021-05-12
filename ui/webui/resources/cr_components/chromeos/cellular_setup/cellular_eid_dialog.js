@@ -43,57 +43,15 @@ Polymer({
     if (!this.euicc) {
       return;
     }
-    this.addEventListeners_();
     this.euicc.getEidQRCode().then(this.updateQRCode_.bind(this));
     this.euicc.getProperties().then(this.updateEid_.bind(this));
-  },
-  /** @override */
-  focus() {
-    this.$$('.dialog').focus();
-  },
-
-  /** @override */
-  detached() {
-    document.removeEventListener('keyup', this.onKeyup_.bind(this));
-    document.removeEventListener('click', this.onClick_.bind(this));
-  },
-
-  /** @private */
-  addEventListeners_() {
-    // Wait for all events to propagate before registering, this prevents
-    // dialog from closing right after it has been created.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      document.addEventListener('keyup', this.onKeyup_.bind(this));
-      document.addEventListener('click', this.onClick_.bind(this));
+    requestAnimationFrame(() => {
+      this.$.done.focus();
     });
   },
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyup_(e) {
-    if (e.key === 'Escape') {
-      this.onClose_();
-    }
-  },
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClick_(e) {
-    const dialogElement =
-        e.path.find(element => element.tagName === 'CELLULAR-EID-DIALOG');
-    // Only close eid dialog when click event occurs outside cellular eid
-    // dialog.
-    if (!dialogElement) {
-      this.onClose_();
-    }
-  },
-
   /**@private */
-  onClose_() {
+  onDonePressed_() {
     this.fire('close-eid-popup');
   },
 
@@ -153,5 +111,14 @@ Polymer({
    */
   setCanvasContextForTest(canvasContext) {
     this.canvasContext_ = canvasContext;
-  }
+  },
+
+  /**
+   * @param {string} eid
+   * @return {string}
+   * @private
+   */
+  getA11yLabel_(eid) {
+    return this.i18n('eidPopupA11yLabel', eid);
+  },
 });

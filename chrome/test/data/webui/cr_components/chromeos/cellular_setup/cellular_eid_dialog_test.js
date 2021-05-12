@@ -56,26 +56,14 @@ suite('CrComponentsCellularEidDialogTest', function() {
         canvasContext.getFillRectCalls(), [[20, 20, 5, 5], [25, 25, 5, 5]]);
   });
 
-  test('should close EID when escape key is pressed', async function() {
+  test('should close EID when done is pressed', async function() {
     await init();
     const closeEidPopupPromise =
         test_util.eventToPromise('close-eid-popup', eidDialog);
     // Wait for (addEventListeners_) events to register on the UI after
     // next render.
     await test_util.waitAfterNextRender(eidDialog);
-    document.dispatchEvent(new KeyboardEvent('keyup', {key: 'Escape'}));
-    await closeEidPopupPromise;
-  });
-
-  test('should close EID when document is clicked', async function() {
-    await init();
-    Polymer.dom.flush();
-    const closeEidPopupPromise =
-        test_util.eventToPromise('close-eid-popup', eidDialog);
-    // Wait for (addEventListeners_) events to register on the UI after
-    // next render.
-    await test_util.waitAfterNextRender(eidDialog);
-    document.dispatchEvent(new MouseEvent('click', {}));
+    eidDialog.$.done.click();
     await closeEidPopupPromise;
   });
 });
