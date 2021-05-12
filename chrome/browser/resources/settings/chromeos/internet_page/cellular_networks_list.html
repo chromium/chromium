@@ -3,7 +3,7 @@
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_popup.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_dialog.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_list_types.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
@@ -110,11 +110,11 @@
                     iron-icon="cr:info-outline"
                     title="$i18n{showEidPopupButtonLabel}"
                     aria-label="$i18n{showEidPopupButtonLabel}"
-                    on-click="toggleEidPopup_">
+                    on-click="toggleEidDialog_">
                 </cr-icon-button>
-                <template is="dom-if" if="[[shouldShowEidPopup_]]" restamp>
-                  <cellular-eid-popup class="eid-popup" euicc="[[euicc_]]">
-                  </cellular-eid-popup>
+                <template is="dom-if" if="[[shouldShowEidDialog_]]" restamp>
+                  <cellular-eid-dialog class="eid-dialog" euicc="[[euicc_]]">
+                  </cellular-eid-dialog>
                 </template>
               </div>
             </div>

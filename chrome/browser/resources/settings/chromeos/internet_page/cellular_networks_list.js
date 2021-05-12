@@ -116,7 +116,7 @@ Polymer({
     },
 
     /**@private */
-    shouldShowEidPopup_: {
+    shouldShowEidDialog_: {
       type: Boolean,
       value: false,
     },
@@ -176,7 +176,7 @@ Polymer({
   },
 
   listeners: {
-    'close-eid-popup': 'toggleEidPopup_',
+    'close-eid-popup': 'toggleEidDialog_',
     'install-profile': 'installProfile_',
   },
 
@@ -402,12 +402,12 @@ Polymer({
   },
 
   /** @private */
-  toggleEidPopup_() {
-    this.shouldShowEidPopup_ = !this.shouldShowEidPopup_;
+  toggleEidDialog_() {
+    this.shouldShowEidDialog_ = !this.shouldShowEidDialog_;
 
-    if (this.shouldShowEidPopup_) {
+    if (this.shouldShowEidDialog_) {
       Polymer.RenderStatus.afterNextRender(this, () => {
-        this.$$('.eid-popup').focus();
+        this.$$('.eid-dialog').focus();
       });
     }
   },

@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_popup.m.js';
+// #import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_dialog.m.js';
 
 // #import {afterNextRender, flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
@@ -15,10 +15,10 @@
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
-suite('CrComponentsCellularEidPopupTest', function() {
+suite('CrComponentsCellularEidDialogTest', function() {
   let eSimManagerRemote;
   let testEuicc;
-  let eidPopup;
+  let eidDialog;
   let canvasContext;
 
   function init(eidQRCode) {
@@ -29,11 +29,11 @@ suite('CrComponentsCellularEidPopupTest', function() {
       testEuicc.setEidQRCodeForTest(eidQRCode);
     }
 
-    eidPopup = document.createElement('cellular-eid-popup');
-    eidPopup.euicc = testEuicc;
+    eidDialog = document.createElement('cellular-eid-dialog');
+    eidDialog.euicc = testEuicc;
     canvasContext = new cellular_setup.FakeCanvasContext();
-    eidPopup.setCanvasContextForTest(canvasContext);
-    document.body.appendChild(eidPopup);
+    eidDialog.setCanvasContextForTest(canvasContext);
+    document.body.appendChild(eidDialog);
 
     // Flush and wait for next macrotask.
     Polymer.dom.flush();
@@ -43,12 +43,12 @@ suite('CrComponentsCellularEidPopupTest', function() {
   test('Should display EID', async function() {
     await init();
     assertEquals(
-        testEuicc.properties.eid, eidPopup.$$('#eid').textContent.trim());
+        testEuicc.properties.eid, eidDialog.$$('#eid').textContent.trim());
   });
 
   test('Should render EID QRCode', async function() {
     await init({size: 2, data: [1, 0, 0, 1]});
-    const qrCodeCanvas = eidPopup.$$('#qrCodeCanvas');
+    const qrCodeCanvas = eidDialog.$$('#qrCodeCanvas');
     assertEquals(qrCodeCanvas.width, 50);
     assertEquals(qrCodeCanvas.height, 50);
     assertDeepEquals(canvasContext.getClearRectCalls(), [[0, 0, 50, 50]]);
@@ -59,10 +59,10 @@ suite('CrComponentsCellularEidPopupTest', function() {
   test('should close EID when escape key is pressed', async function() {
     await init();
     const closeEidPopupPromise =
-        test_util.eventToPromise('close-eid-popup', eidPopup);
+        test_util.eventToPromise('close-eid-popup', eidDialog);
     // Wait for (addEventListeners_) events to register on the UI after
     // next render.
-    await test_util.waitAfterNextRender(eidPopup);
+    await test_util.waitAfterNextRender(eidDialog);
     document.dispatchEvent(new KeyboardEvent('keyup', {key: 'Escape'}));
     await closeEidPopupPromise;
   });
@@ -71,10 +71,10 @@ suite('CrComponentsCellularEidPopupTest', function() {
     await init();
     Polymer.dom.flush();
     const closeEidPopupPromise =
-        test_util.eventToPromise('close-eid-popup', eidPopup);
+        test_util.eventToPromise('close-eid-popup', eidDialog);
     // Wait for (addEventListeners_) events to register on the UI after
     // next render.
-    await test_util.waitAfterNextRender(eidPopup);
+    await test_util.waitAfterNextRender(eidDialog);
     document.dispatchEvent(new MouseEvent('click', {}));
     await closeEidPopupPromise;
   });

@@ -14,7 +14,7 @@ const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
 const QR_CODE_FILL_STYLE = '#000000';
 
 Polymer({
-  is: 'cellular-eid-popup',
+  is: 'cellular-eid-dialog',
 
   behaviors: [
     I18nBehavior,
@@ -22,7 +22,7 @@ Polymer({
 
   properties: {
     /**
-     * The euicc object whose EID and QRCode should be shown in the popup.
+     * The euicc object whose EID and QRCode should be shown in the dialog.
      */
     euicc: Object,
 
@@ -61,7 +61,7 @@ Polymer({
   /** @private */
   addEventListeners_() {
     // Wait for all events to propagate before registering, this prevents
-    // popup from closing right after it has been created.
+    // dialog from closing right after it has been created.
     Polymer.RenderStatus.afterNextRender(this, () => {
       document.addEventListener('keyup', this.onKeyup_.bind(this));
       document.addEventListener('click', this.onClick_.bind(this));
@@ -83,10 +83,11 @@ Polymer({
    * @private
    */
   onClick_(e) {
-    const popupElement =
-        e.path.find(element => element.tagName === 'CELLULAR-EID-POPUP');
-    // Only close eid popup when click event occurs outside cellular eid popup.
-    if (!popupElement) {
+    const dialogElement =
+        e.path.find(element => element.tagName === 'CELLULAR-EID-DIALOG');
+    // Only close eid dialog when click event occurs outside cellular eid
+    // dialog.
+    if (!dialogElement) {
       this.onClose_();
     }
   },

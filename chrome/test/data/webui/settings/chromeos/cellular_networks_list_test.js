@@ -182,21 +182,21 @@ suite('CellularNetworksList', function() {
             cellularSetup.CellularSetupPageName.ESIM_FLOW_UI);
       });
 
-  test('Show EID and QR code popup', async () => {
+  test('Show EID and QR code dialog', async () => {
     eSimManagerRemote.addEuiccForTest(1);
     init();
     addESimSlot();
     await flushAsync();
-    let eidPopup = cellularNetworkList.$$('.eid-popup');
-    assertFalse(!!eidPopup);
+    let eidDialog = cellularNetworkList.$$('.eid-dialog');
+    assertFalse(!!eidDialog);
     const eidPopupBtn = cellularNetworkList.$$('#eidPopupButton');
     assertTrue(!!eidPopupBtn);
 
     eidPopupBtn.click();
     await flushAsync();
 
-    eidPopup = cellularNetworkList.$$('.eid-popup');
-    assertTrue(!!eidPopup);
+    eidDialog = cellularNetworkList.$$('.eid-dialog');
+    assertTrue(!!eidDialog);
   });
 
   test('Install pending eSIM profile', async () => {
