@@ -1738,7 +1738,7 @@ RenderThreadImpl::GetMediaThreadTaskRunner() {
 #else
     base::Thread::Options options;
 #endif
-    media_thread_->StartWithOptions(options);
+    media_thread_->StartWithOptions(std::move(options));
   }
   return media_thread_->task_runner();
 }
