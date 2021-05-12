@@ -1607,7 +1607,7 @@ test("content_browsertests") {
       "//content/public/browser:proto",
       "//ui/base/clipboard:clipboard_test_support",
     ]
-    data += [ "//content/test/data/clipboard" ]
+    data += [ "//content/test/data/clipboard/" ]
   }
   if (is_posix) {
     deps += [ "//services/tracing:test_utils" ]
