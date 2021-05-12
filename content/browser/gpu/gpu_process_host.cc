@@ -887,7 +887,7 @@ bool GpuProcessHost::Init() {
 #endif
     if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority))
       options.priority = base::ThreadPriority::DISPLAY;
-    in_process_gpu_thread_->StartWithOptions(options);
+    in_process_gpu_thread_->StartWithOptions(std::move(options));
   } else if (!LaunchGpuProcess()) {
     return false;
   }
