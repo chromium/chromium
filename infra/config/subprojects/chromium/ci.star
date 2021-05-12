@@ -1912,6 +1912,7 @@ ci.cipd_3pp_builder(
         category = "3pp|linux",
         short_name = "amd64",
     ),
+    notifies = ["chromium-3pp-packager"],
     schedule = "with 6h interval",
     triggered_by = [],
     properties = {
