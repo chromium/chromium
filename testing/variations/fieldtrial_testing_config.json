@@ -8802,6 +8802,21 @@
             ]
         }
     ],
+    "WebViewMeasureScreenCoverage": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewMeasureScreenCoverage"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewZeroCopyVideoWithParam": [
         {
             "platforms": [
