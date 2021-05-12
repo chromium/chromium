@@ -144,17 +144,17 @@ def overwrite_guids_h(h_file, dynamic_guids):
 
 
 def get_uuid_format(guid, prefix):
-  formatted_uuid = '0x%s,0x%s,0x%s,' % (guid[0:8], guid[9:13], guid[14:18])
-  formatted_uuid += '%s0x%s,0x%s' % (prefix, guid[19:21], guid[21:23])
+  formatted_uuid = b'0x%s,0x%s,0x%s,' % (guid[0:8], guid[9:13], guid[14:18])
+  formatted_uuid += b'%s0x%s,0x%s' % (prefix, guid[19:21], guid[21:23])
   for i in range(24, len(guid), 2):
-    formatted_uuid += ',0x' + guid[i:i + 2]
+    formatted_uuid += b',0x' + guid[i:i + 2]
   return formatted_uuid
 
 
 def get_uuid_format_iid_file(guid):
   # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
   # 0xD0E1CACC,0xC63C,0x4192,0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83.
-  return get_uuid_format(guid, '')
+  return get_uuid_format(guid, b'')
 
 
 def overwrite_guids_iid(iid_file, dynamic_guids):
@@ -170,7 +170,7 @@ def overwrite_guids_iid(iid_file, dynamic_guids):
 def get_uuid_format_proxy_file(guid):
   # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
   # {0xD0E1CACC,0xC63C,0x4192,{0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83}}.
-  return get_uuid_format(guid, '{')
+  return get_uuid_format(guid, b'{')
 
 
 def overwrite_guids_proxy(proxy_file, dynamic_guids):
@@ -186,12 +186,12 @@ def overwrite_guids_proxy(proxy_file, dynamic_guids):
 def getguid(contents, offset):
   # Returns a guid string of the form "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
   g0, g1, g2, g3 = struct.unpack_from('<IHH8s', contents, offset)
-  g3 = ''.join(['%02X' % ord(g) for g in g3])
-  return '%08X-%04X-%04X-%s-%s' % (g0, g1, g2, g3[0:4], g3[4:])
+  g3 = b''.join([b'%02X' % g for g in bytearray(g3)])
+  return b'%08X-%04X-%04X-%s-%s' % (g0, g1, g2, g3[0:4], g3[4:])
 
 
 def setguid(contents, offset, guid):
-  guid = uuid.UUID(guid)
+  guid = uuid.UUID(guid.decode('utf-8'))
   struct.pack_into('<IHH8s', contents, offset,
                    *(guid.fields[0:3] + (guid.bytes[8:], )))
 
@@ -243,7 +243,7 @@ def overwrite_guids(h_file, iid_file, proxy_file, tlb_file, dynamic_guids):
 # the file. Finally, it writes the resultant output to the |idl| file.
 def generate_idl_from_template(idl_template, dynamic_guids, idl):
   contents = open(idl_template, 'rb').read()
-  contents = re.sub('PLACEHOLDER-GUID-', '', contents, flags=re.I)
+  contents = re.sub(b'PLACEHOLDER-GUID-', b'', contents, flags=re.I)
   if dynamic_guids:
     for key in dynamic_guids:
       contents = re.sub(key, dynamic_guids[key], contents, flags=re.I)
@@ -259,6 +259,7 @@ def run_midl(args, env_dict):
   try:
     popen = subprocess.Popen(args + ['/out', midl_output_dir],
                              shell=True,
+                             universal_newlines=True,
                              env=env_dict,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
@@ -270,7 +271,7 @@ def run_midl(args, env_dict):
     # to filter is pairs of lines that look like this:
     # Processing C:\Program Files (x86)\Microsoft SDKs\...\include\objidl.idl
     # objidl.idl
-    lines = out.decode('utf-8').splitlines()
+    lines = out.splitlines()
     prefixes = ('Processing ', '64 bit Processing ')
     processing = set(
         os.path.basename(x) for x in lines if x.startswith(prefixes))
@@ -310,8 +311,8 @@ def run_midl(args, env_dict):
 # which is "7B6E7538-3C38-5565-BC92-42BCEE268D76".
 def uuid5_substitutions(dynamic_guids):
   for key, value in dynamic_guids.items():
-    if value.startswith("uuid5:"):
-      name = value.split("uuid5:", 1)[1]
+    if value.startswith('uuid5:'):
+      name = value.split('uuid5:', 1)[1]
       assert name
       dynamic_guids[key] = str(uuid.uuid5(uuid.UUID(key), name)).upper()
 
@@ -390,10 +391,14 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
     dynamic_guids = dynamic_guids.split(',')
     dynamic_guids = dict(s.split('=') for s in dynamic_guids)
     uuid5_substitutions(dynamic_guids)
+    dynamic_guids_bytes = {
+        k.encode('utf-8'): v.encode('utf-8')
+        for k, v in dynamic_guids.items()
+    }
     if source_exists:
       overwrite_guids(*(os.path.join(outdir, file) if file else None
                         for file in [h, iid, proxy, tlb]),
-                      dynamic_guids=dynamic_guids)
+                      dynamic_guids=dynamic_guids_bytes)
   else:
     dynamic_guids = None
 
@@ -414,7 +419,7 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
     # |idl_template| can contain one or more occurrences of guids that are
     # substituted with |dynamic_guids|, and then MIDL is run on the substituted
     # IDL file.
-    generate_idl_from_template(idl_template, dynamic_guids, idl)
+    generate_idl_from_template(idl_template, dynamic_guids_bytes, idl)
 
   # On Windows, run midl.exe on the input and check that its outputs are
   # identical to the checked-in outputs (after replacing guids if

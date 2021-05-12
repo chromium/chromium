@@ -4,7 +4,6 @@
 
 assert(is_win)
 
-import("//build/config/python.gni")
 import("//build/config/win/visual_studio_version.gni")
 
 # This template defines a rule to invoke the MS IDL compiler. The generated
@@ -122,8 +121,7 @@ template("midl") {
 
   interface_identifier_file = "{{source_name_part}}_i.c"
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action_foreach(action_name) {
+  action_foreach(action_name) {
     visibility = [ ":$source_set_name" ]
     script = "//build/toolchain/win/midl.py"
 
