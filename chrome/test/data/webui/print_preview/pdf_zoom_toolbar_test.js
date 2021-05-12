@@ -40,7 +40,8 @@ suite(pdf_zoom_toolbar_test.suiteName, function() {
     fitButton =
         /** @type {!ViewerZoomButtonElement} */ (zoomToolbar.$['fit-button']);
     button =
-        /** @type {!CrIconButtonElement} */ (fitButton.$$('cr-icon-button'));
+        /** @type {!CrIconButtonElement} */ (
+            fitButton.shadowRoot.querySelector('cr-icon-button'));
   });
 
   /**

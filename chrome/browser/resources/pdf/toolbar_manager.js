@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {isRTL} from 'chrome://resources/js/util.m.js';
+import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 
 /**
  * Idle time in ms before the UI is hidden.

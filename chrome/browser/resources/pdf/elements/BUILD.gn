@@ -36,10 +36,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("viewer-bookmark") {
-  deps = [
-    "..:bookmark_type",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior",
-  ]
+  deps = [ "..:bookmark_type" ]
 }
 
 js_library("viewer-document-outline") {

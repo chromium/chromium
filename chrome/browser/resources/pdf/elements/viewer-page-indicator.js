@@ -4,31 +4,41 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'viewer-page-indicator',
+export class ViewerPageIndicatorElement extends PolymerElement {
+  static get is() {
+    return 'viewer-page-indicator';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    label: {type: String, value: '1'},
+  static get properties() {
+    return {
+      label: {type: String, value: '1'},
 
-    index: {type: Number, observer: 'indexChanged'},
+      index: {type: Number, observer: 'indexChanged'},
 
-    pageLabels: {type: Array, value: null, observer: 'pageLabelsChanged'}
-  },
+      pageLabels: {type: Array, value: null, observer: 'pageLabelsChanged'}
+    };
+  }
 
-  /** @type {number|undefined} */
-  timerId: undefined,
+  constructor() {
+    super();
+    /** @type {number|undefined} */
+    this.timerId = undefined;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     const callback = this.fadeIn_.bind(this);
     window.addEventListener('scroll', function() {
       requestAnimationFrame(callback);
     });
-  },
+  }
 
   /** @private */
   fadeIn_() {
@@ -58,11 +68,11 @@ Polymer({
       this.style.opacity = 0;
       this.timerId = undefined;
     }, 2000);
-  },
+  }
 
   pageLabelsChanged() {
     this.indexChanged();
-  },
+  }
 
   indexChanged() {
     if (this.pageLabels) {
@@ -71,4 +81,7 @@ Polymer({
       this.label = String(this.index + 1);
     }
   }
-});
+}
+
+customElements.define(
+    ViewerPageIndicatorElement.is, ViewerPageIndicatorElement);

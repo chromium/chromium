@@ -313,6 +313,7 @@ js_library("pdf_viewer") {
     ":pdf_scripting_api",
     ":pdf_viewer_base",
     ":pdf_viewer_utils",
+    "elements:viewer-bookmark",
     "elements:viewer-error-dialog",
     "elements:viewer-password-dialog",
     "elements:viewer-pdf-sidenav",

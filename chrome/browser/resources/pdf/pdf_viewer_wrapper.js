@@ -5,6 +5,7 @@
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 export {FittingType, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
+export {ViewerBookmarkElement} from './elements/viewer-bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer-download-controls.js';
 export {ViewerPageSelectorElement} from './elements/viewer-page-selector.js';
