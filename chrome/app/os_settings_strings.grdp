@@ -2334,13 +2334,13 @@ Press an assigned switch to remove assignment.
     Allow mobile data roaming
   </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_HOME" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to the home network.">
-    On, not roaming
+    Not currently roaming
   </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_ROAMING" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to a roaming network">
-    On, roaming
+    Currently roaming
   </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_DISABLED" desc="Settings > Internet > Network details: Toggle sublabel when roaming is not allowed.">
-    Roaming off
+    Off
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_VPN_PREFERENCES" desc="Settings > Internet > VPN: Title of preferences group.">
     VPN Preferences
