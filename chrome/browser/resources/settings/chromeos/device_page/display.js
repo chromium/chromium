@@ -1333,7 +1333,7 @@ cr.define('settings.display', function() {
      * @private
      */
     showAutoRotateOption_(selectedDisplay) {
-      return selectedDisplay.isInTabletPhysicalState;
+      return selectedDisplay.isAutoRotationAllowed;
     },
 
     /**
@@ -1344,7 +1344,7 @@ cr.define('settings.display', function() {
       const target = /** @type {!HTMLSelectElement} */ (event.target);
       const value = /** @type {number} */ (parseInt(target.value, 10));
 
-      assert(value !== -1 || this.selectedDisplay.isInTabletPhysicalState);
+      assert(value !== -1 || this.selectedDisplay.isAutoRotationAllowed);
 
       /** @type {!chrome.system.display.DisplayProperties} */ const properties =
           {rotation: value};

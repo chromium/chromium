@@ -40,16 +40,6 @@ const float kDisplayRotationStickyAngleDegrees = 60.0f;
 // to gravity, with the current value requiring at least a 25 degree rise.
 const float kMinimumAccelerationScreenRotation = 4.2f;
 
-// Return true if auto-rotation is allowed. It happens when the device is in a
-// physical tablet state or the device supports auto rotation even in clamshell.
-bool IsAutoRotationAllowed() {
-  return Shell::Get()
-             ->tablet_mode_controller()
-             ->is_in_tablet_physical_state() ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kSupportsClamshellAutoRotation);
-}
-
 OrientationLockType GetDisplayNaturalOrientation() {
   if (!display::Display::HasInternalDisplay())
     return OrientationLockType::kLandscape;
@@ -341,6 +331,14 @@ void ScreenOrientationController::SetLockToRotation(
 
 OrientationLockType ScreenOrientationController::GetCurrentOrientation() const {
   return RotationToOrientation(natural_orientation_, current_rotation_);
+}
+
+bool ScreenOrientationController::IsAutoRotationAllowed() const {
+  return Shell::Get()
+             ->tablet_mode_controller()
+             ->is_in_tablet_physical_state() ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kSupportsClamshellAutoRotation);
 }
 
 void ScreenOrientationController::OnWindowActivated(

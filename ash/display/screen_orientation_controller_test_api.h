@@ -33,6 +33,8 @@ class ScreenOrientationControllerTestApi {
 
   void UpdateNaturalOrientation();
 
+  bool IsAutoRotationAllowed() const;
+
  private:
   ScreenOrientationController* controller_;
 

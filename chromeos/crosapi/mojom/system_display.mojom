@@ -94,11 +94,11 @@ struct DisplayUnitInfo {
   // for $(ref:enableUnifiedDesktop).
   bool is_unified@8;
 
-  // Whether |is_in_tablet_physical_state| is defined.
-  bool has_is_in_tablet_physical_state@9;
+  // Whether |is_auto_rotation_allowed| is defined.
+  bool has_is_auto_rotation_allowed@9;
 
-  // Optional: True when the device is in tablet physical state.
-  bool is_in_tablet_physical_state@10;
+  // Optional: True when the auto-rotation is allowed in the device.
+  bool is_auto_rotation_allowed@10;
 
   // The number of pixels per inch along the x-axis.
   double dpi_x@11;

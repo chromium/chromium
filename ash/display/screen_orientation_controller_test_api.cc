@@ -37,4 +37,8 @@ void ScreenOrientationControllerTestApi::UpdateNaturalOrientation() {
   controller_->UpdateNaturalOrientationForTest();
 }
 
+bool ScreenOrientationControllerTestApi::IsAutoRotationAllowed() const {
+  return controller_->IsAutoRotationAllowed();
+}
+
 }  // namespace ash

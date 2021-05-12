@@ -140,6 +140,10 @@ class ASH_EXPORT ScreenOrientationController
   // Gets current screen orientation type.
   OrientationLockType GetCurrentOrientation() const;
 
+  // Returns true if auto-rotation is allowed. It happens when the device is in
+  // a physical tablet state or kSupportsClamshellAutoRotation is set.
+  bool IsAutoRotationAllowed() const;
+
   // wm::ActivationChangeObserver:
   void OnWindowActivated(
       ::wm::ActivationChangeObserver::ActivationReason reason,

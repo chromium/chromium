@@ -163,12 +163,11 @@ namespace system.display {
     // for $(ref:enableUnifiedDesktop).
     boolean isUnified;
 
-    // True when the device is in a tablet physical state (e.g. device is
-    // flipped or detached), which is independent from the state of the UI which
-    // maybe in tablet or clamshell modes.
+    // True when the auto-rotation is allowed. It happens when the device is in
+    // a tablet physical state or kSupportsClamshellAutoRotation is set.
     // Provided for ChromeOS Settings UI only. TODO(stevenjb): Remove when
     // Settings switches to a mojo API.
-    [nodoc] boolean? isInTabletPhysicalState;
+    [nodoc] boolean? isAutoRotationAllowed;
 
     // The number of pixels per inch along the x-axis.
     double dpiX;

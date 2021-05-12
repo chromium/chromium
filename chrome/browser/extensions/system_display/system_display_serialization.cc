@@ -159,9 +159,9 @@ crosapi::mojom::DisplayUnitInfoPtr SerializeDisplayUnitInfo(
   dst->is_internal = src.is_internal;
   dst->is_enabled = src.is_enabled;
   dst->is_unified = src.is_unified;
-  SerializeOptionalPrimitive<bool>(src.is_in_tablet_physical_state,
-                                   &dst->has_is_in_tablet_physical_state,
-                                   &dst->is_in_tablet_physical_state);
+  SerializeOptionalPrimitive<bool>(src.is_auto_rotation_allowed,
+                                   &dst->has_is_auto_rotation_allowed,
+                                   &dst->is_auto_rotation_allowed);
   dst->dpi_x = src.dpi_x;
   dst->dpi_y = src.dpi_y;
   dst->rotation = src.rotation;
@@ -194,9 +194,9 @@ void DeserializeDisplayUnitInfo(
   dst->is_internal = src.is_internal;
   dst->is_enabled = src.is_enabled;
   dst->is_unified = src.is_unified;
-  DeserializeOptionalPrimitive<bool>(src.has_is_in_tablet_physical_state,
-                                     src.is_in_tablet_physical_state,
-                                     &dst->is_in_tablet_physical_state);
+  DeserializeOptionalPrimitive<bool>(src.has_is_auto_rotation_allowed,
+                                     src.is_auto_rotation_allowed,
+                                     &dst->is_auto_rotation_allowed);
   dst->dpi_x = src.dpi_x;
   dst->dpi_y = src.dpi_y;
   dst->rotation = src.rotation;
