@@ -621,6 +621,23 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowState window_state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, WindowState,
+                     UNKNOWN_WINDOW_STATE, RIGHT_SNAPPED);
+  switch (window_state) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_WINDOW_STATE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NORMAL);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, MINIMIZED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, MAXIMIZED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FULLSCREEN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LEFT_SNAPPED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, RIGHT_SNAPPED);
+  }
+  NOTREACHED();
+  return "";
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

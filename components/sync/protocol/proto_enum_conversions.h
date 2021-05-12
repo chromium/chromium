@@ -12,6 +12,7 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/protocol/workspace_desk_specifics.pb.h"
 
 // Keep this file in sync with the .proto files in this directory.
 //
@@ -133,6 +134,8 @@ const char* ProtoEnumToString(
     sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::ProxyOption
         proxy_option);
 
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowState window_state);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_

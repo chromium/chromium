@@ -43,6 +43,7 @@
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/protocol/workspace_desk_specifics.pb.h"
 
 // This file implements VisitProtoFields() functions for sync protos.
 //
@@ -1172,6 +1173,58 @@ VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics& proto) {
   VISIT(proxy_configuration);
   VISIT_REP(custom_dns);
   VISIT(last_connected_timestamp);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
+  VISIT(uuid);
+  VISIT(name);
+  VISIT(created_time_usec);
+  VISIT(desk);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {
+  VISIT(window_bound);
+  VISIT_ENUM(window_state);
+  VISIT(z_index);
+  VISIT(app);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
+  VISIT(browser_app_window);
+  VISIT(chrome_app);
+  VISIT(progress_web_app);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::BrowserAppWindow& proto) {
+  VISIT_REP(tabs);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::BrowserAppWindow::BrowserAppTab&
+        proto) {
+  VISIT(url);
+  VISIT(title);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::ChromeApp& proto) {
+  VISIT(app_id);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::Desk& proto) {
+  VISIT_REP(apps);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::ProgressiveWebApp& proto) {
+  VISIT(app_id);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::WindowBound& proto) {
+  VISIT(top);
+  VISIT(left);
+  VISIT(width);
+  VISIT(height);
 }
 
 }  // namespace syncer
