@@ -166,7 +166,7 @@ void StreamFactory::CreateLoopbackStream(
     base::Thread::Options options;
     options.timer_slack = base::TIMER_SLACK_NONE;
     options.priority = base::ThreadPriority::REALTIME_AUDIO;
-    if (loopback_worker_thread_.StartWithOptions(options)) {
+    if (loopback_worker_thread_.StartWithOptions(std::move(options))) {
       task_runner = loopback_worker_thread_.task_runner();
       TRACE_EVENT_END1("audio", "Start Loopback Worker", "success", true);
     } else {
