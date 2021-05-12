@@ -11,7 +11,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/arc/arc_features_parser.h"
 #include "components/arc/mojom/webapk.mojom-forward.h"
 
 class Profile;
@@ -45,6 +47,9 @@ class WebApkInstallTask {
   const std::string& app_id() { return app_id_; }
 
  private:
+  void OnArcFeaturesLoaded(std::unique_ptr<webapk::WebApk> webapk,
+                           ResultCallback callback,
+                           base::Optional<arc::ArcFeatures> arc_features);
   void OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
                     ResultCallback callback,
                     IconPurpose purpose,

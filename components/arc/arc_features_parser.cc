@@ -27,6 +27,9 @@ constexpr const base::FilePath::CharType kArcVmFeaturesJsonFile[] =
 constexpr const base::FilePath::CharType kArcFeaturesJsonFile[] =
     FILE_PATH_LITERAL("/etc/arc/features.json");
 
+base::RepeatingCallback<base::Optional<ArcFeatures>()>*
+    g_arc_features_getter_for_testing = nullptr;
+
 base::Optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   ArcFeatures arc_features;
 
@@ -143,6 +146,11 @@ ArcFeatures& ArcFeatures::operator=(ArcFeatures&& other) = default;
 
 void ArcFeaturesParser::GetArcFeatures(
     base::OnceCallback<void(base::Optional<ArcFeatures>)> callback) {
+  if (g_arc_features_getter_for_testing) {
+    std::move(callback).Run(g_arc_features_getter_for_testing->Run());
+    return;
+  }
+
   const auto* json_file =
       arc::IsArcVmEnabled() ? kArcVmFeaturesJsonFile : kArcFeaturesJsonFile;
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -154,6 +162,11 @@ void ArcFeaturesParser::GetArcFeatures(
 base::Optional<ArcFeatures> ArcFeaturesParser::ParseFeaturesJsonForTesting(
     base::StringPiece input_json) {
   return ParseFeaturesJson(input_json);
+}
+
+void ArcFeaturesParser::SetArcFeaturesGetterForTesting(
+    base::RepeatingCallback<base::Optional<ArcFeatures>()>* getter) {
+  g_arc_features_getter_for_testing = getter;
 }
 
 }  // namespace arc

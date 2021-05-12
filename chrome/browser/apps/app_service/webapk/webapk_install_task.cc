@@ -48,6 +48,8 @@ constexpr char kProtoMimeType[] = "application/x-protobuf";
 
 constexpr char kRequesterPackageName[] = "org.chromium.arc.webapk";
 
+constexpr char kAbiListPropertyName[] = "ro.product.cpu.abilist";
+
 const char kMinimumIconSize = 64;
 
 // The seed to use when taking the murmur2 hash of the icon.
@@ -114,6 +116,17 @@ std::string AddIconDataAndSerializeProto(std::unique_ptr<webapk::WebApk> webapk,
   return serialized_proto;
 }
 
+std::string GetArcAbi(const arc::ArcFeatures& arc_features) {
+  const std::string& property =
+      arc_features.build_props.at(kAbiListPropertyName);
+  size_t separator_pos = property.find(',');
+  if (separator_pos != std::string::npos) {
+    return property.substr(0, separator_pos);
+  }
+
+  return property;
+}
+
 }  // namespace
 
 namespace apps {
@@ -141,6 +154,28 @@ void WebApkInstallTask::Start(ResultCallback callback) {
     return;
   }
 
+  std::unique_ptr<webapk::WebApk> webapk = std::make_unique<webapk::WebApk>();
+  webapk->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
+  webapk->set_requester_application_package(kRequesterPackageName);
+  webapk->set_requester_application_version(version_info::GetVersionNumber());
+  webapk->add_update_reasons(webapk::WebApk::NONE);
+
+  arc::ArcFeaturesParser::GetArcFeatures(base::BindOnce(
+      &WebApkInstallTask::OnArcFeaturesLoaded, weak_ptr_factory_.GetWeakPtr(),
+      std::move(webapk), std::move(callback)));
+}
+
+void WebApkInstallTask::OnArcFeaturesLoaded(
+    std::unique_ptr<webapk::WebApk> webapk,
+    ResultCallback callback,
+    base::Optional<arc::ArcFeatures> arc_features) {
+  if (!arc_features) {
+    LOG(ERROR) << "Could not load ArcFeatures";
+    std::move(callback).Run(false);
+    return;
+  }
+  webapk->set_android_abi(GetArcAbi(arc_features.value()));
+
   auto& icon_manager = web_app_provider_->icon_manager();
   base::Optional<web_app::AppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
@@ -156,6 +191,7 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   // sending has been resized and so doesn't exactly match any of the images in
   // the manifest. Since we can't be perfect, it's okay to be roughly correct
   // and just send any URL of the correct purpose.
+  auto& registrar = web_app_provider_->registrar();
   const auto& icon_infos = registrar.GetAppIconInfos(app_id_);
   auto it = std::find_if(
       icon_infos.begin(), icon_infos.end(),
@@ -169,14 +205,6 @@ void WebApkInstallTask::Start(ResultCallback callback) {
     return;
   }
   std::string icon_url = it->url.spec();
-
-  std::unique_ptr<webapk::WebApk> webapk = std::make_unique<webapk::WebApk>();
-  webapk->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
-  webapk->set_requester_application_package(kRequesterPackageName);
-  webapk->set_requester_application_version(version_info::GetVersionNumber());
-  // TODO(crbug.com/1198433): Fetch real Android ABI.
-  webapk->set_android_abi("x86_64");
-  webapk->add_update_reasons(webapk::WebApk::NONE);
 
   webapk::WebAppManifest* web_app_manifest = webapk->mutable_manifest();
   web_app_manifest->set_short_name(registrar.GetAppShortName(app_id_));

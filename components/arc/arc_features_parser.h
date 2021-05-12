@@ -87,6 +87,12 @@ class ArcFeaturesParser {
   static base::Optional<ArcFeatures> ParseFeaturesJsonForTesting(
       base::StringPiece input_json);
 
+  // Overrides the ArcFeatures returned by GetArcFeatures, for testing only.
+  // Does not take ownership of |getter|, it must be alive when GetArcFeatures
+  // is called.
+  static void SetArcFeaturesGetterForTesting(
+      base::RepeatingCallback<base::Optional<ArcFeatures>()>* getter);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ArcFeaturesParser);
 };

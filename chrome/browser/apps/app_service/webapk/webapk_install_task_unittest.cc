@@ -87,6 +87,13 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   return app_info;
 }
 
+base::Optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
+    const std::string& abi_list) {
+  arc::ArcFeatures arc_features;
+  arc_features.build_props["ro.product.cpu.abilist"] = abi_list;
+  return arc_features;
+}
+
 }  // namespace
 
 class WebApkInstallTaskTest : public testing::Test {
@@ -132,6 +139,11 @@ class WebApkInstallTaskTest : public testing::Test {
     GURL server_url = test_server_.GetURL(kServerPath);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kWebApkServerUrl, server_url.spec());
+
+    arc_features_getter_ =
+        base::BindRepeating(&GetArcFeaturesWithAbiList, "x86_64");
+    arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(
+        &arc_features_getter_);
   }
 
   void SetWebApkResponse(WebApkResponseBuilder builder) {
@@ -179,9 +191,15 @@ class WebApkInstallTaskTest : public testing::Test {
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   WebApkResponseBuilder webapk_response_builder_;
   std::unique_ptr<webapk::WebApk> last_webapk_request_;
+  base::RepeatingCallback<base::Optional<arc::ArcFeatures>()>
+      arc_features_getter_;
 };
 
 TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
+  auto arc_features_getter =
+      base::BindRepeating(&GetArcFeaturesWithAbiList, "arm64-v8a,armeabi-v7a");
+  arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(&arc_features_getter);
+
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
@@ -191,6 +209,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   EXPECT_TRUE(InstallWebApk(app_id));
 
   ASSERT_EQ(last_webapk_request()->manifest_url(), kTestManifestUrl);
+  ASSERT_EQ(last_webapk_request()->android_abi(), "arm64-v8a");
   const webapk::WebAppManifest& manifest = last_webapk_request()->manifest();
   EXPECT_EQ(manifest.short_name(), "Test App");
   EXPECT_EQ(manifest.start_url(), kTestAppUrl);
