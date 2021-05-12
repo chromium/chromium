@@ -25,21 +25,6 @@ namespace autofill {
 
 namespace {
 
-bool DeleteOrigin(const GURL& origin) {
-  if (origin.host() == "www.strikedhost.com") {
-    return true;
-  }
-  return false;
-}
-
-base::RepeatingCallback<bool(const GURL&)> GetDeletionFilter() {
-  return base::BindRepeating(&DeleteOrigin);
-}
-
-base::RepeatingCallback<bool(const GURL&)> GetDeletionNullFilter() {
-  return base::RepeatingCallback<bool(const GURL&)>();
-}
-
 class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
  public:
   AutofillProfileSaveStrikeDatabaseTest() = default;
@@ -76,6 +61,10 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
   std::string test_host1 = "https://www.strikedhost.com";
   std::string test_host2 = "https://www.otherhost.com";
   std::string test_host3 = "https://www.justanotherhost.com";
+
+  std::set<std::string> delete_first_host_set = {test_host1};
+  std::set<std::string> delete_all_hosts_set = {test_host1, test_host2,
+                                                test_host3};
 };
 
 TEST_F(AutofillProfileSaveStrikeDatabaseTest, AddAndRemoveStrikes) {
@@ -92,7 +81,8 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest, AddAndRemoveStrikes) {
   EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_host1));
 }
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesByOrigin) {
+TEST_F(AutofillProfileSaveStrikeDatabaseTest,
+       RemoveStrikesByOriginWithinDeletionWindow) {
   base::Time start_time = AutofillClock::Now();
   // Both strikes are added within the deletion window, but the second should
   // be ruled out by the filter.
@@ -103,33 +93,24 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesByOrigin) {
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 
-  strike_database_->RemoveStrikesByOriginAndTimeInternal(GetDeletionFilter(),
-                                                         start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_first_host_set,
+                                                        start_time, end_time);
 
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 0);
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 }
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesWithNullFilter) {
-  TestAutofillClock test_autofill_clock;
-  test_autofill_clock.SetNow(AutofillClock::Now());
-
-  base::Time start_time = AutofillClock::Now();
-
+TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesByOrigin) {
   strike_database_->AddStrike(test_host1);
   strike_database_->AddStrike(test_host2);
-
-  base::Time end_time = AutofillClock::Now();
 
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 
-  strike_database_->RemoveStrikesByOriginAndTimeInternal(
-      GetDeletionNullFilter(), start_time, end_time);
+  strike_database_->ClearStrikesByOrigin(delete_first_host_set);
 
-  // Test that all strikes are removed with a null filter.
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 0);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 0);
+  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 }
 
 TEST_F(AutofillProfileSaveStrikeDatabaseTest,
@@ -147,8 +128,8 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   // By this, the entry should not be deleted.
   strike_database_->AddStrike(test_host1);
 
-  strike_database_->RemoveStrikesByOriginAndTimeInternal(
-      GetDeletionNullFilter(), start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_all_hosts_set,
+                                                        start_time, end_time);
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 2);
 }
 
@@ -165,8 +146,8 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   test_autofill_clock.Advance(base::TimeDelta::FromMinutes(1));
   base::Time end_time = AutofillClock::Now();
 
-  strike_database_->RemoveStrikesByOriginAndTimeInternal(
-      GetDeletionNullFilter(), start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_all_hosts_set,
+                                                        start_time, end_time);
 
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
 }

@@ -21,7 +21,7 @@
 namespace autofill {
 
 StrikeDatabaseIntegratorBase::StrikeDatabaseIntegratorBase(
-    StrikeDatabase* strike_database)
+    StrikeDatabaseBase* strike_database)
     : strike_database_(strike_database) {}
 
 StrikeDatabaseIntegratorBase::~StrikeDatabaseIntegratorBase() = default;
@@ -139,7 +139,7 @@ void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
     return;
   }
   std::vector<std::string> expired_keys;
-  for (auto entry : strike_database_->strike_map_cache_) {
+  for (auto entry : strike_database_->GetStrikeCache()) {
     if (GetEntryAge(entry.second) > GetExpiryTimeDelta().value()) {
       if (strike_database_->GetStrikes(entry.first) > 0) {
         expired_keys.push_back(entry.first);

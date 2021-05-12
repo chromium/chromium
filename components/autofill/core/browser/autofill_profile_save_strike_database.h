@@ -6,25 +6,27 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_SAVE_STRIKE_DATABASE_H_
 
 #include <stdint.h>
+#include <set>
 #include <string>
 
-#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_base.h"
 #include "components/autofill/core/browser/strike_database_integrator_base.h"
-
-class GURL;
 
 namespace autofill {
 
 // Implementation of StrikeDatabaseIntegratorBase for autofill profile imports.
 class AutofillProfileSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  explicit AutofillProfileSaveStrikeDatabase(StrikeDatabase* strike_database);
+  explicit AutofillProfileSaveStrikeDatabase(
+      StrikeDatabaseBase* strike_database);
   ~AutofillProfileSaveStrikeDatabase() override;
 
-  void RemoveStrikesByOriginAndTimeInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+  void ClearStrikesByOriginAndTimeInternal(
+      const std::set<std::string>& hosts_to_delete,
       base::Time delete_begin,
       base::Time delete_end);
+
+  void ClearStrikesByOrigin(const std::set<std::string>& hosts_to_delete);
 
   base::Optional<size_t> GetMaximumEntries() const override;
   base::Optional<size_t> GetMaximumEntriesAfterCleanup() const override;

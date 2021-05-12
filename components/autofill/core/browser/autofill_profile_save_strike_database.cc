@@ -16,7 +16,7 @@ constexpr size_t kMaxStrikeEntities = 200;
 constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
 
 AutofillProfileSaveStrikeDatabase::AutofillProfileSaveStrikeDatabase(
-    StrikeDatabase* strike_database)
+    StrikeDatabaseBase* strike_database)
     : StrikeDatabaseIntegratorBase(strike_database) {
   RemoveExpiredStrikes();
 }
@@ -52,8 +52,14 @@ bool AutofillProfileSaveStrikeDatabase::UniqueIdsRequired() const {
   return true;
 }
 
-void AutofillProfileSaveStrikeDatabase::RemoveStrikesByOriginAndTimeInternal(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+void AutofillProfileSaveStrikeDatabase::ClearStrikesByOrigin(
+    const std::set<std::string>& hosts_to_delete) {
+  ClearStrikesByOriginAndTimeInternal(hosts_to_delete, base::Time::Min(),
+                                      base::Time::Max());
+}
+
+void AutofillProfileSaveStrikeDatabase::ClearStrikesByOriginAndTimeInternal(
+    const std::set<std::string>& hosts_to_delete,
     base::Time delete_begin,
     base::Time delete_end) {
   if (delete_begin.is_null()) {
@@ -73,23 +79,14 @@ void AutofillProfileSaveStrikeDatabase::RemoveStrikesByOriginAndTimeInternal(
       continue;
     }
 
-    GURL host = GURL(strike_id);
-
-    // If the id cannot be converted to a valid host delete it anyway.
-    if (!host.is_valid()) {
-      keys_to_delete.push_back(entry.first);
-      continue;
-    }
-
     base::Time last_update = base::Time::FromDeltaSinceWindowsEpoch(
         base::TimeDelta::FromMicroseconds(
             entry.second.last_update_timestamp()));
 
-    // Check if the time stamp of the record is within deletion range and if
-    // either there is no origin filter, or if the filter returns true for the
-    // host.
+    // Check if the time stamp of the record is within deletion range and if the
+    // domain is deleted.
     if (last_update >= delete_begin && last_update <= delete_end &&
-        (origin_filter.is_null() || origin_filter.Run(host))) {
+        hosts_to_delete.count(strike_id) != 0) {
       keys_to_delete.push_back(entry.first);
     }
   }

@@ -6,8 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASE_INTEGRATOR_BASE_H_
 
 #include <stdint.h>
+#include <map>
+#include <string>
+#include <vector>
 
-#include "components/autofill/core/browser/strike_database.h"
+#include "base/gtest_prod_util.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/strike_database_base.h"
 
 namespace autofill {
 
@@ -21,7 +26,7 @@ static const char kSharedId[] = "shared_id";
 // be loaded once per browser session.
 class StrikeDatabaseIntegratorBase {
  public:
-  explicit StrikeDatabaseIntegratorBase(StrikeDatabase* strike_database);
+  explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
   // Returns whether or not strike count for |id| has reached the strike limit
@@ -76,7 +81,7 @@ class StrikeDatabaseIntegratorBase {
 
   // Get a readonly reference to the cache.
   const std::map<std::string, StrikeData>& GetStrikeCache() const {
-    return strike_database_->strike_map_cache_;
+    return strike_database_->GetStrikeCache();
   }
 
   // Returns the id the key was built from with `GetKey(id)`.
@@ -106,7 +111,7 @@ class StrikeDatabaseIntegratorBase {
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
 
-  StrikeDatabase* strike_database_;
+  StrikeDatabaseBase* strike_database_;
 
   // For projects in which strikes don't have unique identifiers, the
   // id suffix is set to |kSharedId|. This makes sure that projects requiring

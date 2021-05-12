@@ -76,6 +76,23 @@ void StrikeDatabase::ClearStrikes(const std::string& key) {
   ClearAllProtoStrikesForKey(key, base::DoNothing());
 }
 
+std::map<std::string, StrikeData>& StrikeDatabase::GetStrikeCache() {
+  return strike_map_cache_;
+}
+
+void StrikeDatabase::SetStrikeData(const std::string& key, int num_strikes) {
+  if (num_strikes == 0) {
+    ClearStrikes(key);
+    return;
+  }
+  StrikeData data;
+  data.set_num_strikes(num_strikes);
+  data.set_last_update_timestamp(
+      AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  UpdateCache(key, data);
+  SetProtoStrikeData(key, data, base::DoNothing());
+}
+
 std::vector<std::string> StrikeDatabase::GetAllStrikeKeysForProject(
     const std::string& project_prefix) {
   std::vector<std::string> project_keys;
@@ -103,6 +120,10 @@ void StrikeDatabase::ClearStrikesForKeys(
 void StrikeDatabase::ClearAllStrikes() {
   strike_map_cache_.clear();
   ClearAllProtoStrikes(base::DoNothing());
+}
+
+std::string StrikeDatabase::GetPrefixFromKey(const std::string& key) const {
+  return key.substr(0, key.find(KeyDeliminator()));
 }
 
 StrikeDatabase::StrikeDatabase() : db_(nullptr) {}
@@ -133,19 +154,6 @@ void StrikeDatabase::OnDatabaseLoadKeysAndEntries(
     return;
   }
   strike_map_cache_.insert(entries->begin(), entries->end());
-}
-
-void StrikeDatabase::SetStrikeData(const std::string& key, int num_strikes) {
-  if (num_strikes == 0) {
-    ClearStrikes(key);
-    return;
-  }
-  StrikeData data;
-  data.set_num_strikes(num_strikes);
-  data.set_last_update_timestamp(
-      AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  UpdateCache(key, data);
-  SetProtoStrikeData(key, data, base::DoNothing());
 }
 
 void StrikeDatabase::GetProtoStrikes(const std::string& key,
@@ -238,10 +246,6 @@ void StrikeDatabase::LoadKeys(const LoadKeysCallback& callback) {
 void StrikeDatabase::UpdateCache(const std::string& key,
                                  const StrikeData& data) {
   strike_map_cache_[key] = data;
-}
-
-std::string StrikeDatabase::GetPrefixFromKey(const std::string& key) {
-  return key.substr(0, key.find(kKeyDeliminator));
 }
 
 }  // namespace autofill
