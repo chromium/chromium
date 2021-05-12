@@ -89,43 +89,45 @@ const CGFloat kSpinnerButtonPadding = 18;
   DCHECK(browser);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
-  if (self) {
-    _browser = browser;
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
-    self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE);
-    self.shouldHideDoneButton = YES;
+  if (!self) {
+    return nullptr;
+  }
+
+  _browser = browser;
+  _processingMessage = l10n_util::GetNSString(IDS_SYNC_LOGIN_SETTING_UP);
+  _footerMessage = l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_RECOVER);
+  self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE);
+  self.shouldHideDoneButton = YES;
+
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  syncer::SyncService* service =
+      ProfileSyncServiceFactory::GetForBrowserState(browserState);
+  // TODO(crbug.com/1208307): The reason this is an if and not a DCHECK is
+  // because SyncCreatePassphraseTableViewController inherits from this class.
+  // This should be changed, i.e. either extract the minimum common logic
+  // between the 2 to a new base class, or not share code at all.
+  if (service->IsEngineInitialized() &&
+      service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+    base::Time passphraseTime =
+        service->GetUserSettings()->GetExplicitPassphraseTime();
     NSString* userEmail =
         [AuthenticationServiceFactory::GetForBrowserState(browserState)
                 ->GetAuthenticatedIdentity() userEmail];
     DCHECK(userEmail);
-    syncer::SyncService* service =
-        ProfileSyncServiceFactory::GetForBrowserState(browserState);
-    if (service->IsEngineInitialized() &&
-        service->GetUserSettings()->IsUsingExplicitPassphrase()) {
-      base::Time passphrase_time =
-          service->GetUserSettings()->GetExplicitPassphraseTime();
-      if (!passphrase_time.is_null()) {
-        std::u16string passphrase_time_str =
-            base::TimeFormatShortDate(passphrase_time);
-        _headerMessage = l10n_util::GetNSStringF(
-            IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL_AND_DATE,
-            base::SysNSStringToUTF16(userEmail), passphrase_time_str);
-      } else {
-        _headerMessage = l10n_util::GetNSStringF(
-            IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL,
-            base::SysNSStringToUTF16(userEmail));
-      }
-    } else {
-      _headerMessage =
-          l10n_util::GetNSString(IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY);
-    }
-    _processingMessage = l10n_util::GetNSString(IDS_SYNC_LOGIN_SETTING_UP);
-    _footerMessage = l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_RECOVER);
-
-    _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            IdentityManagerFactory::GetForBrowserState(browserState), self);
+    _headerMessage =
+        passphraseTime.is_null()
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL,
+                  base::SysNSStringToUTF16(userEmail))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL_AND_DATE,
+                  base::SysNSStringToUTF16(userEmail),
+                  base::TimeFormatShortDate(passphraseTime));
   }
+
+  _identityManagerObserver =
+      std::make_unique<signin::IdentityManagerObserverBridge>(
+          IdentityManagerFactory::GetForBrowserState(browserState), self);
   return self;
 }
 

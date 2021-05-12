@@ -1734,9 +1734,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_PASSPHRASE_TYPE_KEYSTORE" desc="Option to encrypt only passwords, using your Google credentials.">
         Encrypt synced passwords with your Google Account
       </message>
-      <message name="IDS_SYNC_PASSPHRASE_TYPE_FROZEN" desc="Option to encrypt sync data, using your Google password frozen on the substituted date.">
-        Encrypt synced data with Google password as of <ph name="TIME">%1$s<ex>Oct 3, 2014</ex></ph>
-      </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_CUSTOM" desc="Option to encrypt sync data with a custom passphrase.">
         Encrypt synced data with your own sync passphrase
       </message>
@@ -1757,9 +1754,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
         Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-      </message>
-      <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
-          Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Google password<ph name="END_LINK">&lt;/learnmore&gt;</ph> as of <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
       </message>
       <message name="IDS_SYNC_ACCOUNT_INFO"  desc="The message that appears in the options dialog indicating that the user is signed in with the given email address.">
         Signed in as <ph name="USER_EMAIL_ADDRESS">%1$s<ex>foo@gmail.com</ex></ph>.

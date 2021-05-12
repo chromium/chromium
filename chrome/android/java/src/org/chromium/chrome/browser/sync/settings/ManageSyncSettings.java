@@ -473,7 +473,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         PassphraseTypeDialogFragment dialog =
                 PassphraseTypeDialogFragment.create(mProfileSyncService.getPassphraseType(),
-                        mProfileSyncService.getExplicitPassphraseTime(),
                         mProfileSyncService.isCustomPassphraseAllowed());
         dialog.show(ft, FRAGMENT_PASSPHRASE_TYPE);
         dialog.setTargetFragment(this, -1);

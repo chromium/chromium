@@ -198,11 +198,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
             int passphraseType = syncService.getPassphraseType();
             switch (passphraseType) {
                 case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                    String enterPassphraseString =
-                            getString(R.string.sync_enter_google_passphrase_body_with_date_android,
-                                    passphraseTimeString);
-                    return applyInProductHelpSpan(
-                            accountName + enterPassphraseString, syncPassphraseHelpContext);
                 case PassphraseType.CUSTOM_PASSPHRASE:
                     return applyInProductHelpSpan(accountName
                                     + getString(

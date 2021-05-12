@@ -8698,10 +8698,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Data was encrypted with your sync passphrase on
           <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
         </message>
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_GOOGLE_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          Data was encrypted with your Google password as of
-          <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
-        </message>
 
         <!-- Sync promo on chrome://apps -->
         <if expr="not chromeos">

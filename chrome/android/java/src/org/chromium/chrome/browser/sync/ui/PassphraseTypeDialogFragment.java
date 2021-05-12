@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -38,8 +37,6 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,13 +64,6 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
             case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
                 return getString(R.string.sync_passphrase_type_keystore);
             case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                @Nullable
-                Date passphraseTime = (Date) getArguments().getSerializable(ARG_PASSPHRASE_TIME);
-                DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-                // It would be best to have a dedicated string if |passphraseTime| isn't available
-                // (null), but FROZEN_IMPLICIT_PASSPHRASE is rare these days anyway.
-                return String.format(getString(R.string.sync_passphrase_type_frozen),
-                        dateFormat.format(passphraseTime != null ? passphraseTime : new Date(0)));
             case PassphraseType.CUSTOM_PASSPHRASE:
                 return getString(R.string.sync_passphrase_type_custom);
             default:
@@ -145,17 +135,14 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
      */
     private static final String ARG_CURRENT_TYPE = "arg_current_type";
 
-    private static final String ARG_PASSPHRASE_TIME = "arg_passphrase_time";
-
     private static final String ARG_IS_CUSTOM_PASSPHRASE_ALLOWED =
             "arg_is_custom_passphrase_allowed";
 
-    public static PassphraseTypeDialogFragment create(@PassphraseType int currentType,
-            @Nullable Date passphraseTime, boolean isCustomPassphraseAllowed) {
+    public static PassphraseTypeDialogFragment create(
+            @PassphraseType int currentType, boolean isCustomPassphraseAllowed) {
         PassphraseTypeDialogFragment dialog = new PassphraseTypeDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CURRENT_TYPE, currentType);
-        args.putSerializable(ARG_PASSPHRASE_TIME, passphraseTime);
         args.putBoolean(ARG_IS_CUSTOM_PASSPHRASE_ALLOWED, isCustomPassphraseAllowed);
         dialog.setArguments(args);
         return dialog;

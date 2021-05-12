@@ -118,7 +118,7 @@ public class PassphraseTypeDialogFragmentTest {
     }
 
     public void createFragment(@PassphraseType int type, boolean isCustomPassphraseAllowed) {
-        mTypeFragment = PassphraseTypeDialogFragment.create(type, null, isCustomPassphraseAllowed);
+        mTypeFragment = PassphraseTypeDialogFragment.create(type, isCustomPassphraseAllowed);
         mTypeFragment.show(mSyncTestRule.getActivity().getSupportFragmentManager(), TAG);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

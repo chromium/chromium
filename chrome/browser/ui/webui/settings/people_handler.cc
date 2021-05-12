@@ -189,12 +189,6 @@ std::u16string GetEnterPassphraseBody(syncer::PassphraseType passphrase_type,
   DCHECK(syncer::IsExplicitPassphrase(passphrase_type));
   switch (passphrase_type) {
     case syncer::PassphraseType::kFrozenImplicitPassphrase:
-      if (passphrase_time.is_null()) {
-        return GetStringUTF16(IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY);
-      }
-      return GetStringFUTF16(IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE,
-                             base::ASCIIToUTF16(chrome::kSyncErrorsHelpURL),
-                             base::TimeFormatShortDate(passphrase_time));
     case syncer::PassphraseType::kCustomPassphrase:
       if (passphrase_time.is_null()) {
         return GetStringUTF16(IDS_SYNC_ENTER_PASSPHRASE_BODY);
@@ -219,8 +213,6 @@ std::u16string GetFullEncryptionBody(syncer::PassphraseType passphrase_type,
   }
   switch (passphrase_type) {
     case syncer::PassphraseType::kFrozenImplicitPassphrase:
-      return GetStringFUTF16(IDS_SYNC_FULL_ENCRYPTION_BODY_GOOGLE_WITH_DATE,
-                             base::TimeFormatShortDate(passphrase_time));
     case syncer::PassphraseType::kCustomPassphrase:
       return GetStringFUTF16(IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE,
                              base::TimeFormatShortDate(passphrase_time));
