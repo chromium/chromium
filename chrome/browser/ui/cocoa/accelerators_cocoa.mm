@@ -104,6 +104,8 @@ const struct AcceleratorMapping {
      ui::VKEY_OEM_2},
     {IDC_TOGGLE_FULLSCREEN_TOOLBAR, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      ui::VKEY_F},
+    {IDC_FEEDBACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+     ui::VKEY_I},
 };
 
 }  // namespace
