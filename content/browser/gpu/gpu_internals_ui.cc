@@ -750,7 +750,7 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
     ok = args->Get(i, &arg);
     DCHECK(ok);
 
-    submessageArgs->Append(arg->CreateDeepCopy());
+    submessageArgs->Append(arg->Clone());
   }
 
   // call the submessage handler
