@@ -4,8 +4,6 @@
 
 """Checks Java files for illegal imports."""
 
-from __future__ import print_function
-
 import codecs
 import os
 import re
@@ -114,21 +112,21 @@ class JavaChecker(object):
 
   def _PrescanFile(self, filepath, added_classset):
     if self._verbose:
-      print('Prescanning: ' + filepath)
+      print 'Prescanning: ' + filepath
     full_class_name = self._GetClassFullName(filepath)
     if full_class_name:
       if full_class_name in self._classmap:
         if self._verbose or full_class_name in added_classset:
           if not any(re.match(i, filepath) for i in
                      self._allow_multiple_definitions):
-            print('WARNING: multiple definitions of %s:' % full_class_name)
-            print('    ' + filepath)
-            print('    ' + self._classmap[full_class_name])
-            print()
+            print 'WARNING: multiple definitions of %s:' % full_class_name
+            print '    ' + filepath
+            print '    ' + self._classmap[full_class_name]
+            print
       else:
         self._classmap[full_class_name] = filepath
     elif self._verbose:
-      print('WARNING: no package definition found in %s' % filepath)
+      print 'WARNING: no package definition found in %s' % filepath
 
   def CheckLine(self, rules, line, filepath, fail_on_temp_allow=False):
     """Checks the given line with the given rule set.
@@ -159,7 +157,7 @@ class JavaChecker(object):
 
   def CheckFile(self, rules, filepath):
     if self._verbose:
-      print('Checking: ' + filepath)
+      print 'Checking: ' + filepath
 
     dependee_status = results.DependeeStatus(filepath)
     with codecs.open(filepath, encoding='utf-8') as f:

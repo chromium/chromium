@@ -4,8 +4,6 @@
 
 """Checks protobuf files for illegal imports."""
 
-from __future__ import print_function
-
 import codecs
 import os
 import re
@@ -69,7 +67,7 @@ class ProtoChecker(object):
       # Don't fail when no directory is specified. We may want to be more
       # strict about this in the future.
       if self._verbose:
-        print(' WARNING: import specified with no directory: ' + import_path)
+        print ' WARNING: import specified with no directory: ' + import_path
       return True, None
 
     if self._resolve_dotdot and '../' in import_path:
@@ -89,7 +87,7 @@ class ProtoChecker(object):
 
   def CheckFile(self, rules, filepath):
     if self._verbose:
-      print('Checking: ' + filepath)
+      print 'Checking: ' + filepath
 
     dependee_status = results.DependeeStatus(filepath)
     last_import = 0
