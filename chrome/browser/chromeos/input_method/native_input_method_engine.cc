@@ -187,7 +187,7 @@ void NativeInputMethodEngine::Initialize(
       std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
           profile->GetPrefs(), std::move(observer),
           std::move(assistive_suggester), std::move(autocorrect_manager),
-          std::move(suggestions_collector));
+          std::move(suggestions_collector), std::make_unique<GrammarManager>());
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }
@@ -230,13 +230,15 @@ NativeInputMethodEngine::ImeObserver::ImeObserver(
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
-    std::unique_ptr<SuggestionsCollector> suggestions_collector)
+    std::unique_ptr<SuggestionsCollector> suggestions_collector,
+    std::unique_ptr<GrammarManager> grammar_manager)
     : prefs_(prefs),
       ime_base_observer_(std::move(ime_base_observer)),
       receiver_from_engine_(this),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)),
-      suggestions_collector_(std::move(suggestions_collector)) {}
+      suggestions_collector_(std::move(suggestions_collector)),
+      grammar_manager_(std::move(grammar_manager)) {}
 
 NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
 
@@ -325,6 +327,9 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     assistive_suggester_->OnFocus(context_id);
   }
   autocorrect_manager_->OnFocus(context_id);
+  if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
+    grammar_manager_->OnFocus(context_id);
+  }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
       remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
@@ -364,6 +369,11 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
     }
   }
   if (autocorrect_manager_->OnKeyEvent(event)) {
+    std::move(callback).Run(true);
+    return;
+  }
+  if (grammar_manager_->IsOnDeviceGrammarEnabled() &&
+      grammar_manager_->OnKeyEvent(event)) {
     std::move(callback).Run(true);
     return;
   }
@@ -443,6 +453,9 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
                                                    anchor_pos);
   }
   autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+  if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
+    grammar_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
+  }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
       std::vector<size_t> selection_indices = {anchor_pos, cursor_pos};

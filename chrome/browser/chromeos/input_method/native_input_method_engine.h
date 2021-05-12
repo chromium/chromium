@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
+#include "chrome/browser/chromeos/input_method/grammar_manager.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -89,7 +90,8 @@ class NativeInputMethodEngine
         std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
         std::unique_ptr<AssistiveSuggester> assistive_suggester,
         std::unique_ptr<AutocorrectManager> autocorrect_manager,
-        std::unique_ptr<SuggestionsCollector> suggestions_collector);
+        std::unique_ptr<SuggestionsCollector> suggestions_collector,
+        std::unique_ptr<GrammarManager> grammar_manager);
     ~ImeObserver() override;
 
     // InputMethodEngineBase::Observer:
@@ -196,6 +198,7 @@ class NativeInputMethodEngine
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
     std::unique_ptr<SuggestionsCollector> suggestions_collector_;
+    std::unique_ptr<GrammarManager> grammar_manager_;
 
     ui::CharacterComposer character_composer_;
   };

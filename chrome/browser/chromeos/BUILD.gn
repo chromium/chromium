@@ -2339,6 +2339,8 @@ source_set("chromeos") {
     "input_method/diacritics_insensitive_string_comparator.h",
     "input_method/emoji_suggester.cc",
     "input_method/emoji_suggester.h",
+    "input_method/grammar_manager.cc",
+    "input_method/grammar_manager.h",
     "input_method/grammar_service_client.cc",
     "input_method/grammar_service_client.h",
     "input_method/ime_service_connector.cc",
