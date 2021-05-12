@@ -178,7 +178,7 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   io_thread_ = std::make_unique<ServiceIOThread>("ServiceProcess_IO");
-  if (!io_thread_->StartWithOptions(options)) {
+  if (!io_thread_->StartWithOptions(std::move(options))) {
     NOTREACHED();
     Teardown();
     return false;

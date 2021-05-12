@@ -101,7 +101,7 @@ void ServiceIPCServerTest::SetUp() {
   base::Thread::Options options;
   mojo::MessagePipe channel;
   options.message_pump_type = base::MessagePumpType::IO;
-  ASSERT_TRUE(io_thread_.StartWithOptions(options));
+  ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
 
   server_ = std::make_unique<ServiceIPCServer>(
       &service_process_client_, io_thread_.task_runner(), &shutdown_event_);
