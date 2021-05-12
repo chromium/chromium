@@ -1477,7 +1477,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     int level,
     bool premultiply_alpha,
     bool flip_y) {
-  DCHECK(raster_context_provider);
+  if (!raster_context_provider)
+    return false;
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1181993): These formats don't work with the passthrough
   // command decoder on Android for some reason.
