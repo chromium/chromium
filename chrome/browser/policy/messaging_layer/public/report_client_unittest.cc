@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -84,6 +85,8 @@ class ReportClientTest : public testing::Test {
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
         mock_user_manager->AddPublicAccountUser(account_id);
+    chromeos::ProfileHelper::Get()->SetActiveUserIdForTesting(
+        profile_->GetProfileUserName());
     mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);

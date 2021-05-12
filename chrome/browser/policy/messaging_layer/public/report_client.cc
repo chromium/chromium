@@ -17,7 +17,9 @@
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
@@ -351,6 +353,11 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
         Status(error::FAILED_PRECONDITION, "Could not retrieve base path"));
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_data_dir = user_data_dir.Append(
+      chromeos::ProfileHelper::Get()->GetActiveUserProfileDir());
+#endif
 
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
   StorageModule::Create(
