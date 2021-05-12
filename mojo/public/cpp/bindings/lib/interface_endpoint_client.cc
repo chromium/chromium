@@ -650,7 +650,11 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
 bool InterfaceEndpointClient::HandleIncomingMessage(Message* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return dispatcher_.Accept(message);
+   if (!dispatcher_.Accept(message)) {
+      LOG(ERROR) << "Message " << message->name() << " rejected by interface " << interface_name_;
+      return false;
+    }
+    return true;
 }
 
 void InterfaceEndpointClient::NotifyError(
