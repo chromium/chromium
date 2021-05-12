@@ -67,6 +67,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
     WebRuntimeFeatures::EnableWebBluetooth(true);
     WebRuntimeFeatures::EnableWebBluetoothRemoteCharacteristicNewWriteValue(
         true);
+    WebRuntimeFeatures::EnableWebBluetoothManufacturerDataFilter(true);
   }
 #endif
 

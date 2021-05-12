@@ -71,6 +71,10 @@ void WebRuntimeFeatures::EnableWebBluetoothRemoteCharacteristicNewWriteValue(
       SetWebBluetoothRemoteCharacteristicNewWriteValueEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebBluetoothManufacturerDataFilter(bool enable) {
+  RuntimeEnabledFeatures::SetWebBluetoothManufacturerDataFilterEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableCompositeBGColorAnimation(bool enable) {
   RuntimeEnabledFeatures::SetCompositeBGColorAnimationEnabled(enable);
 }
