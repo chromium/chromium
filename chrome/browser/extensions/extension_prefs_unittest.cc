@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1168,6 +1170,45 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
 };
 
 TEST_F(ExtensionPrefsObsoletePrefRemoval, ExtensionPrefsObsoletePrefRemoval) {}
+
+// Tests the migration of renamed keys from extension pref entries.
+class ExtensionPrefsMigratedPref : public ExtensionPrefsTest {
+ public:
+  ExtensionPrefsMigratedPref() = default;
+  ~ExtensionPrefsMigratedPref() override = default;
+
+  void Initialize() override {
+    extension_ = prefs_.AddExtension("a");
+    prefs()->UpdateExtensionPref(extension_->id(),
+                                 "settings.privacy.drm_enabled",
+                                 std::make_unique<base::Value>(false));
+    bool bool_value;
+    EXPECT_TRUE(prefs()->ReadPrefAsBoolean(
+        extension_->id(), "settings.privacy.drm_enabled", &bool_value));
+    EXPECT_FALSE(bool_value);
+
+    prefs()->MigrateObsoleteExtensionPrefs();
+  }
+
+  void Verify() override {
+    int int_value;
+    bool bool_value;
+    EXPECT_FALSE(prefs()->ReadPrefAsBoolean(
+        extension_->id(), "settings.privacy.drm_enabled", &bool_value));
+    EXPECT_TRUE(prefs()->ReadPrefAsInteger(
+        extension_->id(),
+        "profile.default_content_setting_values.protected_media_identifier",
+        &int_value));
+    EXPECT_EQ(int_value, CONTENT_SETTING_BLOCK);
+  }
+
+ private:
+  scoped_refptr<const Extension> extension_;
+
+  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsMigratedPref);
+};
+
+TEST_F(ExtensionPrefsMigratedPref, ExtensionPrefsMigratedPref) {}
 
 // Tests the removal of obsolete keys from extension pref entries.
 class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {

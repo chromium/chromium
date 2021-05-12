@@ -77,32 +77,6 @@ std::set<ContentSetting> ValidSettings(ContentSetting setting1,
   return std::set<ContentSetting>(settings, settings + base::size(settings));
 }
 
-ContentSetting GetInitialDefaultContentSettingForProtectedMediaIdentifier() {
-// On Android, the default value is ALLOW or ASK depending on whether per-origin
-// provisioning is used (https://crbug.com/854737 and https://crbug.com/904883).
-// On ChromeOS the default value is always ASK. On Windows it is ALLOW.
-#if defined(OS_ANDROID)
-  return media::MediaDrmBridge::IsPerOriginProvisioningSupported()
-             ? CONTENT_SETTING_ALLOW
-             : CONTENT_SETTING_ASK;
-#elif defined(OS_WIN)
-  return CONTENT_SETTING_ALLOW;
-#else
-  return CONTENT_SETTING_ASK;
-#endif
-}
-
-std::set<ContentSetting> GetValidSettingsForProtectedMediaIdentifier() {
-// On Windows, only support ALLOW and BLOCK. On Android and Chrome OS, ASK is
-// also supported.
-#if defined(OS_WIN)
-  return ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK);
-#else
-  return ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-                       CONTENT_SETTING_ASK);
-#endif
-}
-
 }  // namespace
 
 // static
@@ -285,12 +259,28 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
+  // On Android, the default value is ALLOW or ASK depending on whether
+  // per-origin provisioning is used (https://crbug.com/854737 and
+  // https://crbug.com/904883).
+  // On ChromeOS and Windows the default value is always ALLOW.
   const auto protected_media_identifier_setting =
-      GetInitialDefaultContentSettingForProtectedMediaIdentifier();
+#if defined(OS_ANDROID)
+      media::MediaDrmBridge::IsPerOriginProvisioningSupported()
+          ? CONTENT_SETTING_ALLOW
+          : CONTENT_SETTING_ASK;
+#else
+      CONTENT_SETTING_ALLOW;
+#endif  // defined(OS_ANDROID)
+
   Register(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
            "protected-media-identifier", protected_media_identifier_setting,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
-           GetValidSettingsForProtectedMediaIdentifier(),
+#if defined(OS_ANDROID)
+           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+                         CONTENT_SETTING_ASK),
+#else   // defined(OS_ANDROID)
+           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
+#endif  // else
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::PLATFORM_ANDROID |
                WebsiteSettingsRegistry::PLATFORM_CHROMEOS |

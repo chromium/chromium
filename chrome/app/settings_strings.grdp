@@ -2860,9 +2860,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CONTENT_MORE" desc="The text on the button used to toggle the display of additional content settings.">
     Additional content settings
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SOURCE_DRM_DISABLED" desc="A label shown when the protected content / protected media identifier permission on the Site Details page is disabled because the user has turned off using unique identifiers to access protected content.">
-    To change this setting, first <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>turn on identifiers<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWLISTED" desc="A subtitle for the ‘Allowlisted’ setting, shown if a WebUI's permission is internally allowlisted by Chrome.">
     Allowlisted internally
   </message>

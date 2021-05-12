@@ -168,7 +168,7 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info = registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
-  EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
+  EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
 #if !defined(OS_IOS) && !defined(OS_ANDROID)

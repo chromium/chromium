@@ -70,11 +70,6 @@ class SiteSettingsHandler
   void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override;
   void TreeModelEndBatch(CookiesTreeModel* model) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Alert the Javascript that the |kEnableDRM| pref has changed.
-  void OnPrefEnableDrmChanged();
-#endif
-
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,

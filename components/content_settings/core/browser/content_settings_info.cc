@@ -42,14 +42,6 @@ bool ContentSettingsInfo::IsSettingValid(ContentSetting setting) const {
 // IsDefaultSettingValid.
 bool ContentSettingsInfo::IsDefaultSettingValid(ContentSetting setting) const {
   ContentSettingsType type = website_settings_info_->type();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't support ALLOW for protected media default setting until migration.
-  if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
-      setting == CONTENT_SETTING_ALLOW) {
-    return false;
-  }
-#endif
-
   // Don't support ALLOW for the default media settings.
   if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
        type == ContentSettingsType::MEDIASTREAM_MIC) &&

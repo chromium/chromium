@@ -2635,28 +2635,25 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // Permanent testing-only key.
       kFakeObsoletePrefForTesting,
 
-      // Added 2019-07.
-      "has_set_script_all_urls",
-
-      // Added 2019-07.
-      "browser_action_visible",
-
-      // Added 2019-10.
-      "user_dragged_app_ntp",
-
-      // Added 2020-01
-      "dnr_whitelisted_pages",
-
-      // Added 2020-03.
-      "dnr_ruleset_checksum",
-      "dnr_dynamic_ruleset_checksum",
-  };
+      // Added 2021-05, also used in unit test.
+      "settings.privacy.drm_enabled"};
 
   for (const auto& key_value : extensions_dictionary->DictItems()) {
     if (!crx_file::id_util::IdIsValid(key_value.first))
       continue;
     ScopedExtensionPrefUpdate update(prefs_, key_value.first);
     std::unique_ptr<prefs::DictionaryValueUpdate> inner_update = update.Get();
+
+    // Added 2021-05.
+    bool drm_enabled;
+    if (inner_update->GetBoolean("settings.privacy.drm_enabled",
+                                 &drm_enabled)) {
+      // Old value exists, migrate to the new setting.
+      inner_update->SetInteger(
+          "profile.default_content_setting_values.protected_media_identifier",
+          drm_enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+    }
+
     for (const char* key : kObsoleteKeys)
       inner_update->Remove(key, nullptr);
   }

@@ -171,7 +171,6 @@ const SiteSettingSourceStringMapping kSiteSettingSourceStringMapping[] = {
     {SiteSettingSource::kAllowlist, "allowlist"},
     {SiteSettingSource::kAdsFilterBlocklist, "ads-filter-blacklist"},
     {SiteSettingSource::kDefault, "default"},
-    {SiteSettingSource::kDrmDisabled, "drm-disabled"},
     {SiteSettingSource::kEmbargo, "embargo"},
     {SiteSettingSource::kExtension, "extension"},
     {SiteSettingSource::kInsecureOrigin, "insecure-origin"},
@@ -214,13 +213,11 @@ static_assert(base::size(kPolicyIndicatorTypeStringMapping) ==
 //    4. Enterprise policy.
 //    5. Extensions.
 //    6. Activated for ads filtering (for Ads ContentSettingsType only).
-//    7. DRM disabled (for CrOS and Windows Protected Content
-//       ContentSettingsType only).
-//    8. User-set per-origin setting.
-//    9. Embargo.
-//   10. User-set patterns.
-//   11. User-set global default for a ContentSettingsType.
-//   12. Chrome's built-in default.
+//    7. User-set per-origin setting.
+//    8. Embargo.
+//    9. User-set patterns.
+//   10. User-set global default for a ContentSettingsType.
+//   11. Chrome's built-in default.
 SiteSettingSource CalculateSiteSettingSource(
     Profile* profile,
     const ContentSettingsType content_type,
@@ -257,27 +254,21 @@ SiteSettingSource CalculateSiteSettingSource(
     }
   }
 
-  // Protected Content will be blocked if the |kEnableDRM| pref is off.
-  if (content_type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
-      !profile->GetPrefs()->GetBoolean(prefs::kEnableDRM)) {
-    return SiteSettingSource::kDrmDisabled;  // Source #7.
-  }
-
   DCHECK_NE(content_settings::SETTING_SOURCE_NONE, info.source);
   if (info.source == content_settings::SETTING_SOURCE_USER) {
     if (result.source ==
             permissions::PermissionStatusSource::MULTIPLE_DISMISSALS ||
         result.source ==
             permissions::PermissionStatusSource::MULTIPLE_IGNORES) {
-      return SiteSettingSource::kEmbargo;  // Source #9.
+      return SiteSettingSource::kEmbargo;  // Source #8.
     }
     if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
         info.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-      return SiteSettingSource::kDefault;  // Source #11, #12.
+      return SiteSettingSource::kDefault;  // Source #10, #11.
     }
 
-    // Source #8, #10. When #8 is the source, |result.source| won't be set to
-    // any of the source #8 enum values, as PermissionManager is aware of the
+    // Source #7, #9. When #7 is the source, |result.source| won't be set to
+    // any of the source #7 enum values, as PermissionManager is aware of the
     // difference between these two sources internally. The subtlety here should
     // go away when PermissionManager can handle all content settings and all
     // possible sources.

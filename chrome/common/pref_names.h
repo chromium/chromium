@@ -911,7 +911,7 @@ extern const char kAppListLocalState[];
 extern const char kAppShortcutsVersion[];
 extern const char kAppShortcutsArch[];
 
-extern const char kEnableDRM[];
+extern const char kProtectedContentDefault[];
 
 extern const char kWatchdogExtensionActive[];
 

@@ -12,7 +12,10 @@ import("../namespace_rewrites.gni")
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir"
-  in_files = [ "route_tests.js" ]
+  in_files = [
+    "privacy_page_test.js",
+    "route_tests.js",
+  ]
 }
 
 js_type_check("closure_compile") {

@@ -28,6 +28,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -100,8 +101,8 @@ const PrefMappingEntry kPrefMapping[] = {
     {"passwordSavingEnabled",
      password_manager::prefs::kCredentialsEnableService,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
-    {"protectedContentEnabled", prefs::kEnableDRM, APIPermissionID::kPrivacy,
-     APIPermissionID::kPrivacy},
+    {"protectedContentEnabled", prefs::kProtectedContentDefault,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"proxy", proxy_config::prefs::kProxy, APIPermissionID::kProxy,
      APIPermissionID::kProxy},
     {"referrersEnabled", prefs::kEnableReferrers, APIPermissionID::kPrivacy,
@@ -257,6 +258,28 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
   }
 };
 
+class ProtectedContentEnabledTransformer : public PrefTransformerInterface {
+ public:
+  std::unique_ptr<base::Value> ExtensionToBrowserPref(
+      const base::Value* extension_pref,
+      std::string* error,
+      bool* bad_message) override {
+    bool protected_identifier_allowed = extension_pref->GetBool();
+    return std::make_unique<base::Value>(
+        static_cast<int>(protected_identifier_allowed ? CONTENT_SETTING_ALLOW
+                                                      : CONTENT_SETTING_BLOCK));
+  }
+
+  std::unique_ptr<base::Value> BrowserToExtensionPref(
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override {
+    auto protected_identifier_mode =
+        static_cast<ContentSetting>(browser_pref->GetInt());
+    return std::make_unique<base::Value>(protected_identifier_mode ==
+                                         CONTENT_SETTING_ALLOW);
+  }
+};
+
 class PrefMapping {
  public:
   static PrefMapping* GetInstance() {
@@ -318,6 +341,9 @@ class PrefMapping {
                             std::make_unique<CookieControlsModeTransformer>());
     RegisterPrefTransformer(prefs::kNetworkPredictionOptions,
                             std::make_unique<NetworkPredictionTransformer>());
+    RegisterPrefTransformer(
+        prefs::kProtectedContentDefault,
+        std::make_unique<ProtectedContentEnabledTransformer>());
   }
 
   ~PrefMapping() = default;

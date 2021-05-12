@@ -376,8 +376,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kPluginsAlwaysOpenPdfExternally] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kEnableDRM] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kProtectedContentDefault] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kEnableQuietNotificationPermissionUi] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 

@@ -534,13 +534,6 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
       prefs::kCookieControlsMode,
       base::BindRepeating(&SiteSettingsHandler::SendCookieSettingDescription,
                           base::Unretained(this)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  pref_change_registrar_->Add(
-      prefs::kEnableDRM,
-      base::BindRepeating(&SiteSettingsHandler::OnPrefEnableDrmChanged,
-                          base::Unretained(this)));
-#endif
 }
 
 void SiteSettingsHandler::OnJavascriptDisallowed() {
@@ -549,9 +542,6 @@ void SiteSettingsHandler::OnJavascriptDisallowed() {
   host_zoom_map_subscription_ = {};
   pref_change_registrar_->Remove(prefs::kBlockAutoplayEnabled);
   pref_change_registrar_->Remove(prefs::kCookieControlsMode);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  pref_change_registrar_->Remove(prefs::kEnableDRM);
-#endif
   observed_profiles_.RemoveAllObservations();
 }
 
@@ -578,12 +568,6 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   FireWebUIListener("usage-total-changed", base::Value(usage_host_),
                     base::Value(usage_string), base::Value(cookie_string));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SiteSettingsHandler::OnPrefEnableDrmChanged() {
-  FireWebUIListener("prefEnableDrmChanged");
-}
-#endif
 
 void SiteSettingsHandler::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,

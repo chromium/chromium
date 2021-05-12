@@ -96,9 +96,6 @@ export const SiteSettingSource = {
   ALLOWLIST: 'allowlist',
   ADS_FILTER_BLACKLIST: 'ads-filter-blacklist',
   DEFAULT: 'default',
-  // This source is for the Protected Media Identifier / Protected Content
-  // content setting only, which is only available on ChromeOS.
-  DRM_DISABLED: 'drm-disabled',
   EMBARGO: 'embargo',
   EXTENSION: 'extension',
   INSECURE_ORIGIN: 'insecure-origin',

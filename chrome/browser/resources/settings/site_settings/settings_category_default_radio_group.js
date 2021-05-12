@@ -94,6 +94,7 @@ Polymer({
       case ContentSettingsTypes.MIXEDSCRIPT:
       case ContentSettingsTypes.PAYMENT_HANDLER:
       case ContentSettingsTypes.POPUPS:
+      case ContentSettingsTypes.PROTECTED_CONTENT:
       case ContentSettingsTypes.PROTOCOL_HANDLERS:
       case ContentSettingsTypes.SENSORS:
       case ContentSettingsTypes.SOUND:

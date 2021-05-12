@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -46,6 +47,11 @@ const char kObsoletePluginsDataDefaultPref[] =
     "profile.default_content_setting_values.flash_data";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+// This setting was moved and should be migrated on profile startup.
+const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value* initial_default = info->initial_default_value();
@@ -120,6 +126,10 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+  registry->RegisterBooleanPref(kDeprecatedEnableDRM, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
@@ -382,6 +392,22 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+  // TODO(crbug.com/1191642): Remove this migration logic in M100.
+  WebsiteSettingsRegistry* website_settings =
+      WebsiteSettingsRegistry::GetInstance();
+  const base::Value* deprecated_enable_drm_value =
+      prefs_->GetUserPrefValue(kDeprecatedEnableDRM);
+  if (deprecated_enable_drm_value) {
+    prefs_->SetInteger(
+        website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
+            ->default_value_pref_name(),
+        deprecated_enable_drm_value->GetBool() ? CONTENT_SETTING_ALLOW
+                                               : CONTENT_SETTING_BLOCK);
+  }
+  prefs_->ClearPref(kDeprecatedEnableDRM);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 }
 
 }  // namespace content_settings

@@ -2686,9 +2686,11 @@ const char kAppShortcutsVersion[] = "apps.shortcuts_version";
 // re-created.
 const char kAppShortcutsArch[] = "apps.shortcuts_arch";
 
-// A boolean pref that enables the (private) pepper GetDeviceID() call and
-// enables the use of remote attestation for content protection.
-const char kEnableDRM[] = "settings.privacy.drm_enabled";
+// This references a default content setting value which we expose through the
+// preferences extensions API and also used for migration of the old
+// |kEnableDRM| preference.
+const char kProtectedContentDefault[] =
+    "profile.default_content_setting_values.protected_media_identifier";
 
 // An integer per-profile pref that signals if the watchdog extension is
 // installed and active. We need to know if the watchdog extension active for

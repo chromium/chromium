@@ -120,11 +120,6 @@ Polymer({
         'contentSettingSitePermissionChanged',
         this.onPermissionChanged_.bind(this));
 
-    // <if expr="chromeos">
-    this.addWebUIListener(
-        'prefEnableDrmChanged', this.prefEnableDrmChanged_.bind(this));
-    // </if>
-
     // Refresh block autoplay status from the backend.
     this.browserProxy.fetchBlockAutoplayStatus();
   },
@@ -198,12 +193,6 @@ Polymer({
       this.numCookies_ = cookies;
     }
   },
-
-  // <if expr="chromeos">
-  prefEnableDrmChanged_() {
-    this.updatePermissions_([ContentSettingsTypes.PROTECTED_CONTENT]);
-  },
-  // </if>
 
   /**
    * Retrieves the permissions listed in |categoryList| from the backend for

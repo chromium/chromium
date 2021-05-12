@@ -247,24 +247,6 @@ suite('SiteDetailsPermission', function() {
     assertFalse(testElement.$.permission.disabled);
   });
 
-  test('info string correct for drm disabled source', function() {
-    const origin = 'https://www.example.com';
-    testElement.category = ContentSettingsTypes.PROTECTED_CONTENT;
-    testElement.$.details.hidden = false;
-    testElement.site = {
-      origin: origin,
-      embeddingOrigin: origin,
-      setting: ContentSetting.BLOCK,
-      source: SiteSettingSource.DRM_DISABLED,
-    };
-    assertEquals(
-        'To change this setting, first turn on identifiers' +
-            '\nAllow\nBlock\nAsk',
-        testElement.$.permissionItem.innerText.trim());
-    assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
-    assertTrue(testElement.$.permission.disabled);
-  });
-
   test('info string correct for ads', function() {
     const origin = 'https://www.example.com';
     testElement.category = ContentSettingsTypes.ADS;

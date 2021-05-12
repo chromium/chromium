@@ -1029,34 +1029,46 @@
           <div class="cr-row first two-line cr-padded-text">
             $i18n{siteSettingsProtectedContentIdentifiersExplanation}
           </div>
-          <settings-toggle-button
-              pref="{{prefs.settings.privacy.drm_enabled}}"
-              label="[[getProtectedContentIdentifiersLabel_(
-                  prefs.settings.privacy.drm_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+             <div class="radio-group">
+              <settings-category-default-radio-group
+                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                block-option-label="$i18n{siteSettingsProtectedContentBlocked}"
+                block-option-icon="settings:protected-content-off"
+                allow-option-label="$i18n{siteSettingsProtectedContentAllowed}"
+                allow-option-icon="settings:protected-content"
+                disabled$="[[isGuest_]]">
+              </settings-category-default-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-default-setting
+                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                toggle-off-label="$i18n{siteSettingsBlocked}"
+                toggle-on-label=
+                    "$i18n{siteSettingsProtectedContentEnableIdentifiers}"
+                disabled$="[[isGuest_]]">
+            </category-default-setting>
+          </template>
 </if>
 <if expr="chromeos">
-          <template is="dom-if"
-              if="[[prefs.settings.privacy.drm_enabled.value]]">
-            <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <category-setting-exceptions
-                  category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
-                  allow-header=
-                      "$i18n{siteSettingsProtectedContentAllowedExceptions}"
-                  block-header=
-                      "$i18n{siteSettingsProtectedContentBlockedExceptions}"
-                  search-filter="[[searchFilter_]]">
-              </category-setting-exceptions>
-            </template>
-            <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-              <category-setting-exceptions
-                  category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
-                  block-header="$i18n{siteSettingsBlock}"
-                  allow-header="$i18n{siteSettingsAllow}"
-                  search-filter="[[searchFilter_]]">
-              </category-setting-exceptions>
-            </template>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                allow-header=
+                    "$i18n{siteSettingsProtectedContentAllowedExceptions}"
+                block-header=
+                    "$i18n{siteSettingsProtectedContentBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
 </if>
         </settings-subpage>

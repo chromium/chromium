@@ -356,7 +356,6 @@ void PrefsTabHelper::RegisterProfilePrefs(
       prefs::kEnableReferrers,
       !base::FeatureList::IsEnabled(features::kNoReferrers));
   registry->RegisterBooleanPref(prefs::kEnableEncryptedMedia, true);
-  registry->RegisterBooleanPref(prefs::kEnableDRM, true);
   registry->RegisterBooleanPref(prefs::kScrollToTextFragmentEnabled, true);
 #if defined(OS_ANDROID)
   registry->RegisterDoublePref(prefs::kWebKitFontScaleFactor, 1.0);

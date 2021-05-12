@@ -315,14 +315,8 @@ Polymer({
 
   /** @private */
   getProtectedContentLabel_(value) {
-    return value ? this.i18n('siteSettingsProtectedContentEnable') :
-                   this.i18n('siteSettingsBlocked');
-  },
-
-  /** @private */
-  getProtectedContentIdentifiersLabel_(value) {
-    return value ? this.i18n('siteSettingsProtectedContentEnableIdentifiers') :
-                   this.i18n('siteSettingsBlocked');
+    return value ? this.i18n('siteSettingsProtectedContentAllowed') :
+                   this.i18n('siteSettingsProtectedContentBlocked');
   },
 
   /** @private */

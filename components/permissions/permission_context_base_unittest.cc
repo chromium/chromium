@@ -774,10 +774,6 @@ TEST_F(PermissionContextBaseTests, TestNonValidRequestingUrl) {
   TestRequestPermissionInvalidUrl(ContentSettingsType::GEOLOCATION);
   TestRequestPermissionInvalidUrl(ContentSettingsType::NOTIFICATIONS);
   TestRequestPermissionInvalidUrl(ContentSettingsType::MIDI_SYSEX);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestRequestPermissionInvalidUrl(
-      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
-#endif
 }
 
 // Simulates granting and revoking of permissions.

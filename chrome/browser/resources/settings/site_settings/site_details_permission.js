@@ -206,7 +206,7 @@ Polymer({
                // because there is no need to know what the information string
                // will be, just whether there is one or not.
                null, null, null, null, null, null, null, null, null, null, null,
-               null, null) !== '';
+               null) !== '';
   },
 
   /**
@@ -236,7 +236,6 @@ Polymer({
   isPermissionUserControlled_(source) {
     return !(
         source === SiteSettingSource.ALLOWLIST ||
-        source === SiteSettingSource.DRM_DISABLED ||
         source === SiteSettingSource.POLICY ||
         source === SiteSettingSource.EXTENSION ||
         source === SiteSettingSource.KILL_SWITCH ||
@@ -333,7 +332,6 @@ Polymer({
    * @param {?string} policyAllowString
    * @param {?string} policyBlockString
    * @param {?string} policyAskString
-   * @param {?string} drmDisabledString
    * @return {?string} The permission information string to display in the HTML.
    * @private
    */
@@ -341,8 +339,8 @@ Polymer({
       source, category, setting, settingDetail, allowlistString,
       adsBlacklistString, adsBlockString, embargoString, insecureOriginString,
       killSwitchString, extensionAllowString, extensionBlockString,
-      extensionAskString, policyAllowString, policyBlockString, policyAskString,
-      drmDisabledString) {
+      extensionAskString, policyAllowString, policyBlockString,
+      policyAskString) {
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return null;
@@ -379,19 +377,6 @@ Polymer({
         category === ContentSettingsTypes.ADS &&
         setting === ContentSetting.BLOCK) {
       return adsBlockString;
-    } else if (source === SiteSettingSource.DRM_DISABLED) {
-      assert(
-          ContentSetting.BLOCK === setting,
-          'If DRM is disabled, Protected Content must be blocked.');
-      assert(
-          ContentSettingsTypes.PROTECTED_CONTENT === category,
-          'The DRM disabled source only applies to Protected Content.');
-      if (!drmDisabledString) {
-        return null;
-      }
-      return sanitizeInnerHtml(loadTimeData.substituteString(
-          drmDisabledString,
-          routes.SITE_SETTINGS_PROTECTED_CONTENT.getAbsolutePath()));
     } else if (source === SiteSettingSource.EMBARGO) {
       assert(
           ContentSetting.BLOCK === setting,

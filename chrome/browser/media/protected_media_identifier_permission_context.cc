@@ -51,12 +51,7 @@ ProtectedMediaIdentifierPermissionContext::
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif
-{
-}
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia) {}
 
 ProtectedMediaIdentifierPermissionContext::
     ~ProtectedMediaIdentifierPermissionContext() {
@@ -212,10 +207,6 @@ bool ProtectedMediaIdentifierPermissionContext::
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (!profile->GetPrefs()->GetBoolean(prefs::kEnableDRM))
-    return false;
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 
   return true;

@@ -146,11 +146,19 @@ suite('PrivacyPage', function() {
     await flushTasks();
 
     assertFalse(loadTimeData.getBoolean('enableContentSettingsRedesign'));
-    // protocol handlers, pdf documents, and protected content do not use
-    // category-default-setting, resulting in the -3 below.
+    // protocol handlers, pdf documents and protected content (except chromeos
+    // and win) do not use category-default-setting, resulting in the -3 (or -2)
+    // below.
+    // <if expr="chromeos or is_win">
+    assertEquals(
+        page.root.querySelectorAll('category-default-setting').length,
+        redesignedPages.length + notRedesignedPages.length - 2);
+    // </if>
+    // <if expr="not chromeos and not is_win">
     assertEquals(
         page.root.querySelectorAll('category-default-setting').length,
         redesignedPages.length + notRedesignedPages.length - 3);
+    // </if>
     assertEquals(
         page.root.querySelectorAll('settings-category-default-radio-group')
             .length,
@@ -252,12 +260,20 @@ suite('ContentSettingsRedesign', function() {
         page.root.querySelectorAll('category-default-setting').length,
         notRedesignedPages.length);
     // All redesigned pages, except notifications, protocol handlers, pdf
-    // documents, and protected content, will use a
+    // documents and protected content (except chromeos and win), will use a
     // settings-category-default-radio-group.
+    // <if expr="chromeos or is_win">
+    assertEquals(
+        page.root.querySelectorAll('settings-category-default-radio-group')
+            .length,
+        redesignedPages.length - 3);
+    // </if>
+    // <if expr="not chromeos and not is_win">
     assertEquals(
         page.root.querySelectorAll('settings-category-default-radio-group')
             .length,
         redesignedPages.length - 4);
+    // </if>
   });
 
   test('NotificationPageRedesign', async function() {

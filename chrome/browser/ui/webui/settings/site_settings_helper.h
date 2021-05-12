@@ -74,7 +74,6 @@ enum class SiteSettingSource {
   kAllowlist,
   kAdsFilterBlocklist,
   kDefault,
-  kDrmDisabled,
   kEmbargo,
   kExtension,
   kInsecureOrigin,
