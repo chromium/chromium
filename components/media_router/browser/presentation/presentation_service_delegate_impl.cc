@@ -710,7 +710,7 @@ bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
       user_prefs::UserPrefs::Get(web_contents_->GetBrowserContext())
           ->GetList(prefs::kMediaRouterTabMirroringSources);
   return origins &&
-         origins->Find(base::Value(origin.Serialize())) != origins->end();
+         base::Contains(origins->GetList(), base::Value(origin.Serialize()));
 }
 #endif  // !defined(OS_ANDROID)
 
