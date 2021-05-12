@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace network {
 
@@ -47,6 +48,20 @@ class FirstPartySets {
   // (with more than one member), then this returns false. If `top_frame_site`
   // is nullopt, then it is ignored.
   bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const base::Optional<net::SchemefulSite>& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const;
+
+  // Computes the "type" of the context. I.e., categorizes contexts based on
+  // whether the top frame site and resource URL are same-party; whether the top
+  // frame site was ignored; whether the `party_context` is same-party with
+  // everything else; etc.
+  //
+  // Since this metric may be used to inform decisions based on actual usage
+  // patterns of sites on the web, this infers singleton sets. That is, it
+  // treats sites that do not belong to a First-Party Set as belonging to an
+  // implictly-declared singleton First-Party Set.
+  net::FirstPartySetsContextType ComputeContextType(
       const net::SchemefulSite& site,
       const base::Optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;

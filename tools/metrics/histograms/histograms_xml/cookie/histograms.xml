@@ -182,6 +182,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Number of minutes until Secure cookie expires when set.</summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySetsContextType.{AccessMedium}.{AccessType}"
+    enum="FirstPartySetsContextType" expires_after="2022-05-01">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The &quot;type&quot; of each context when cookies are {AccessType} via
+    {AccessMedium}, w.r.t. First-Party Sets.
+
+    Note that this type infers singleton sets. That is, it treats sites that are
+    not members of a First-Party Set as if they were in an implicitly-declared
+    singleton set.
+  </summary>
+  <token key="AccessMedium">
+    <variant name="HTTP" summary="HTTP"/>
+    <variant name="JS" summary="JavaScript"/>
+  </token>
+  <token key="AccessType">
+    <variant name="Read" summary="read"/>
+    <variant name="Write" summary="written"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.HeaderLength" units="bytes" expires_after="2020-09-13">
   <owner>mkwst@chromium.org</owner>
   <summary>

@@ -5,6 +5,7 @@
 #include "net/cookies/test_cookie_access_delegate.h"
 
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 
 namespace net {
@@ -38,6 +39,14 @@ bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
     const base::Optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   return false;
+}
+
+FirstPartySetsContextType
+TestCookieAccessDelegate::ComputeFirstPartySetsContextType(
+    const net::SchemefulSite& site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  return FirstPartySetsContextType::kUnknown;
 }
 
 bool TestCookieAccessDelegate::IsInNontrivialFirstPartySet(

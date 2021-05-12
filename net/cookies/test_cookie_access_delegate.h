@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/optional.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -29,6 +30,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
   bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const base::Optional<net::SchemefulSite>& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const override;
+  FirstPartySetsContextType ComputeFirstPartySetsContextType(
       const net::SchemefulSite& site,
       const base::Optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const override;

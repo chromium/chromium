@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/optional.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_constants.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -766,6 +767,79 @@ TEST_F(FirstPartySetsTest, Sets_NonEmpty) {
           Pair(SerializesTo("https://foo.test"),
                UnorderedElementsAre(SerializesTo("https://foo.test"),
                                     SerializesTo("https://member2.test")))));
+}
+
+TEST_F(FirstPartySetsTest, ComputeContextType) {
+  std::set<net::SchemefulSite> homogeneous_context({
+      net::SchemefulSite(GURL("https://example.test")),
+      net::SchemefulSite(GURL("https://member1.test")),
+  });
+  std::set<net::SchemefulSite> mixed_context({
+      net::SchemefulSite(GURL("https://example.test")),
+      net::SchemefulSite(GURL("https://nonmember.test")),
+  });
+  net::SchemefulSite singleton(GURL("https://implicit-singleton.test"));
+
+  EXPECT_EQ(
+      net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+      sets().ComputeContextType(
+          net::SchemefulSite(GURL("https://example.test")), base::nullopt, {}));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")), base::nullopt,
+                homogeneous_context));
+
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")), base::nullopt,
+                mixed_context));
+
+  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://member1.test")), {}));
+  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://member1.test")),
+                homogeneous_context));
+  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
+            sets().ComputeContextType(singleton, singleton, {singleton}));
+
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://member1.test")),
+                {net::SchemefulSite(GURL("https://foo.test"))}));
+  EXPECT_EQ(
+      net::FirstPartySetsContextType::kTopResourceMatchMixed,
+      sets().ComputeContextType(
+          net::SchemefulSite(GURL("https://example.test")),
+          net::SchemefulSite(GURL("https://member1.test")), mixed_context));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://member1.test")), {singleton}));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            sets().ComputeContextType(singleton, singleton, mixed_context));
+
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://foo.test")), {}));
+  EXPECT_EQ(
+      net::FirstPartySetsContextType::kTopResourceMismatch,
+      sets().ComputeContextType(
+          net::SchemefulSite(GURL("https://example.test")),
+          net::SchemefulSite(GURL("https://foo.test")), homogeneous_context));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::SchemefulSite(GURL("https://foo.test")), mixed_context));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            sets().ComputeContextType(
+                net::SchemefulSite(GURL("https://example.test")), singleton,
+                mixed_context));
 }
 
 }  // namespace network

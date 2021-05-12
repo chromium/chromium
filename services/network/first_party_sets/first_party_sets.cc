@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_constants.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
 namespace network {
@@ -99,6 +100,36 @@ bool FirstPartySets::IsContextSamePartyWithSite(
     return false;
 
   return base::ranges::all_of(party_context, is_owned_by_site_owner);
+}
+
+net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
+    const net::SchemefulSite& site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  const auto owner_or_site =
+      [this](const net::SchemefulSite& site) -> const net::SchemefulSite& {
+    const auto it = sets_.find(site);
+    return it == sets_.end() ? site : it->second;
+  };
+  const net::SchemefulSite& site_owner = owner_or_site(site);
+  // Note: the `party_context` consists of the intermediate frames (for frame
+  // requests) or intermediate frames and current frame for subresource
+  // requests.
+  const bool is_homogeneous = base::ranges::all_of(
+      party_context, [&](const net::SchemefulSite& middle_site) {
+        return owner_or_site(middle_site) == site_owner;
+      });
+  if (!top_frame_site.has_value()) {
+    return is_homogeneous
+               ? net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous
+               : net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
+  }
+  if (owner_or_site(*top_frame_site) != site_owner)
+    return net::FirstPartySetsContextType::kTopResourceMismatch;
+
+  return is_homogeneous
+             ? net::FirstPartySetsContextType::kHomogeneous
+             : net::FirstPartySetsContextType::kTopResourceMatchMixed;
 }
 
 bool FirstPartySets::IsInNontrivialFirstPartySet(

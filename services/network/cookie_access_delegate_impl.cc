@@ -4,6 +4,8 @@
 
 #include "services/network/cookie_access_delegate_impl.h"
 
+#include "base/optional.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/first_party_sets/first_party_sets.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -58,6 +60,16 @@ bool CookieAccessDelegateImpl::IsContextSamePartyWithSite(
     const std::set<net::SchemefulSite>& party_context) const {
   return first_party_sets_ && first_party_sets_->IsContextSamePartyWithSite(
                                   site, top_frame_site, party_context);
+}
+
+net::FirstPartySetsContextType
+CookieAccessDelegateImpl::ComputeFirstPartySetsContextType(
+    const net::SchemefulSite& site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  return first_party_sets_ ? first_party_sets_->ComputeContextType(
+                                 site, top_frame_site, party_context)
+                           : net::FirstPartySetsContextType::kUnknown;
 }
 
 bool CookieAccessDelegateImpl::IsInNontrivialFirstPartySet(

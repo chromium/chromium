@@ -50,6 +50,11 @@ class NET_EXPORT CookieAccessDelegate {
   virtual bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const = 0;
 
+  virtual FirstPartySetsContextType ComputeFirstPartySetsContextType(
+      const SchemefulSite& site,
+      const base::Optional<SchemefulSite>& top_frame_site,
+      const std::set<SchemefulSite>& party_context) const = 0;
+
   // Returns the First-Party Sets.
   virtual base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
   RetrieveFirstPartySets() const = 0;

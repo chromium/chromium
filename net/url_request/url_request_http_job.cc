@@ -45,6 +45,7 @@
 #include "net/cert/known_roots.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/filter/brotli_source_stream.h"
@@ -590,6 +591,12 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
         same_site_context, same_party_context, request_->isolation_info(),
         is_in_nontrivial_first_party_set);
 
+    UMA_HISTOGRAM_ENUMERATION(
+        "Cookie.FirstPartySetsContextType.HTTP.Read",
+        net::cookie_util::ComputeFirstPartySetsContextType(
+            request_site, request_->isolation_info(), delegate,
+            request_->force_ignore_top_frame_party_for_cookies()));
+
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
@@ -753,6 +760,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   CookieOptions options = CreateCookieOptions(
       same_site_context, same_party_context, request_->isolation_info(),
       is_in_nontrivial_first_party_set);
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Cookie.FirstPartySetsContextType.HTTP.Write",
+      net::cookie_util::ComputeFirstPartySetsContextType(
+          request_site, request_->isolation_info(), delegate,
+          request_->force_ignore_top_frame_party_for_cookies()));
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

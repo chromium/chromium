@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
@@ -250,6 +251,12 @@ NET_EXPORT bool IsFirstPartySetsEnabled();
 // will be assumed to be same-party with `request_site`, regardless of what it
 // is.
 NET_EXPORT CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
+    const SchemefulSite& request_site,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party);
+
+NET_EXPORT FirstPartySetsContextType ComputeFirstPartySetsContextType(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,

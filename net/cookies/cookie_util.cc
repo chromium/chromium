@@ -26,6 +26,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -734,6 +735,24 @@ CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
     case CookieOptions::SamePartyCookieContextType::kSameParty:
       return CookieSamePartyStatus::kEnforceSamePartyInclude;
   };
+}
+
+FirstPartySetsContextType ComputeFirstPartySetsContextType(
+    const SchemefulSite& request_site,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party) {
+  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
+      cookie_access_delegate) {
+    return cookie_access_delegate->ComputeFirstPartySetsContextType(
+        request_site,
+        force_ignore_top_frame_party
+            ? base::nullopt
+            : isolation_info.network_isolation_key().GetTopFrameSite(),
+        isolation_info.party_context().value());
+  }
+
+  return FirstPartySetsContextType::kUnknown;
 }
 
 base::OnceCallback<void(CookieAccessResult)> AdaptCookieAccessResultToBool(
