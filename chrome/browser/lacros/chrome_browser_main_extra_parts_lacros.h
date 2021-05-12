@@ -10,6 +10,7 @@
 #include <memory>
 
 class AutomationManagerLacros;
+class DownloadControllerClientLacros;
 
 namespace crosapi {
 class TaskManagerLacros;
@@ -33,6 +34,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;
+
+  // Sends lacros download information to ash.
+  std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

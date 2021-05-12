@@ -200,6 +200,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
+      Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();
   ConstructRemote<crosapi::mojom::Feedback,
                   &crosapi::mojom::Crosapi::BindFeedback,
                   Crosapi::MethodMinVersions::kBindFeedbackMinVersion>();

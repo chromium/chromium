@@ -17,6 +17,7 @@ mojom("mojom") {
     "content_protection.mojom",
     "crosapi.mojom",
     "device_attributes.mojom",
+    "download_controller.mojom",
     "feedback.mojom",
     "file_manager.mojom",
     "holding_space_service.mojom",

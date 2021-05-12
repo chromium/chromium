@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// This mirrors `download::DownloadItem::DownloadState`, anything added or
+// removed here must also be added or removed there.
+[Stable, Extensible]
+enum DownloadState {
+    [Default] kUnknown = 0,
+    kInProgress,
+    kComplete,
+    kCancelled,
+    kInterrupted
+};
+
+[Stable]
+struct DownloadEvent {
+  DownloadState state@0;
+  mojo_base.mojom.FilePath target_file_path@1;
+  bool is_from_icognito_profile@2;
+};
+
+// Allows lacros to pass download information to ash-chrome.
+// Implemented in ash-chrome.
+[Stable, Uuid="c3d8bd4b-1fc9-4529-aeb2-76770b0ad1c3"]
+interface DownloadController {
+  // Called when a download is created. Comes from `content::DownloadManager`,
+  // and will only pass events once that's initialized.
+  OnDownloadCreated@0(crosapi.mojom.DownloadEvent event);
+  // Called whenever a `download::DownloadItem` is updated.
+  OnDownloadUpdated@1(crosapi.mojom.DownloadEvent event);
+  // Called when a `download::DownloadItem` is destroyed.
+  OnDownloadDestroyed@2(crosapi.mojom.DownloadEvent event);
+};

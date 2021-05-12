@@ -13,6 +13,7 @@ import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
+import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
@@ -58,8 +59,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 28
-// Next method id: 33
+// Next version: 29
+// Next method id: 34
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -114,6 +115,12 @@ interface Crosapi {
   // Added in M89.
   [MinVersion=12] BindDeviceAttributes@17(
       pending_receiver<DeviceAttributes> receiver);
+
+  // Binds the DownloadController interface, which allows Lacros download
+  // information to be passed into Ash Chrome.
+  // Added in M92.
+  [MinVersion=28] BindDownloadController@33(
+      pending_receiver<DownloadController> receiver);
 
   // Binds the FileManager interface for showing files, folders, etc.
   // Added in M88.
