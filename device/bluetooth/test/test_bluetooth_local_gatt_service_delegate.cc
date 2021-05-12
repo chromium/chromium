@@ -85,7 +85,7 @@ void TestBluetoothLocalGattServiceDelegate::OnDescriptorReadRequest(
     ValueCallback callback) {
   EXPECT_EQ(expected_descriptor_->GetIdentifier(), descriptor->GetIdentifier());
   if (should_fail_) {
-    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
                             /*value=*/std::vector<uint8_t>());
     return;
   }

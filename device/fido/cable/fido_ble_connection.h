@@ -107,8 +107,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
 
   static void OnReadControlPointLength(
       ControlPointLengthCallback callback,
-      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-          error_code,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   std::unique_ptr<BluetoothGattConnection> connection_;

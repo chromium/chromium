@@ -428,7 +428,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         loop.Quit();
       }),
       base::BindLambdaForTesting(
-          [&](BluetoothRemoteGattService::GattErrorCode error_code) {
+          [&](BluetoothGattService::GattErrorCode error_code) {
             ADD_FAILURE() << "unexpected error: " << error_code;
             loop.Quit();
           }));
@@ -500,9 +500,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   bool read_characteristic_failed = false;
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>&) {
-        EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED, error_code);
+        EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
         read_characteristic_failed = true;
         // Retrying Read should fail:
         characteristic1_->ReadRemoteCharacteristic(
@@ -512,7 +512,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   DeleteDevice(device_);  // TODO(576906) delete only the characteristic.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(read_characteristic_failed);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 }
 
@@ -544,9 +544,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         loop.Quit();
       }),
       base::BindLambdaForTesting(
-          [&](BluetoothRemoteGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+          [&](BluetoothGattService::GattErrorCode error_code) {
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             // Retrying Write should fail:
             characteristic1_->WriteRemoteCharacteristic(
                 {} /* value */, WriteType::kWithResponse,
@@ -555,10 +554,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
                   loop.Quit();
                 }),
                 base::BindLambdaForTesting(
-                    [&](BluetoothRemoteGattService::GattErrorCode error_code) {
-                      EXPECT_EQ(
-                          BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                          error_code);
+                    [&](BluetoothGattService::GattErrorCode error_code) {
+                      EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
+                                error_code);
                       loop.Quit();
                     }));
           }));
@@ -593,9 +591,8 @@ TEST_F(
   characteristic1_->DeprecatedWriteRemoteCharacteristic(
       {} /* value */, GetCallback(Call::NOT_EXPECTED),
       base::BindLambdaForTesting(
-          [&](BluetoothRemoteGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+          [&](BluetoothGattService::GattErrorCode error_code) {
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             write_error_callback_called = true;
             // Retrying Write should fail:
             characteristic1_->DeprecatedWriteRemoteCharacteristic(
@@ -606,7 +603,7 @@ TEST_F(
   DeleteDevice(device_);  // TODO(576906) delete only the characteristic.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(write_error_callback_called);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 }
 
@@ -687,8 +684,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   SimulateDeviceBreaksConnection(adapter_->GetDevices()[0]);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
 // Dispatch read response after disconnection. See above explanation for why
 // we don't do this in macOS on WinRT.
@@ -817,9 +813,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         loop.Quit();
       }),
       base::BindLambdaForTesting(
-          [&](BluetoothRemoteGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+          [&](BluetoothGattService::GattErrorCode error_code) {
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop.Quit();
           }));
 
@@ -883,8 +878,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   SimulateDeviceBreaksConnection(adapter_->GetDevices()[0]);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
 // Dispatch write response after disconnection. See above explanation for why
 // we don't do this in macOS and WinRT.
@@ -934,7 +928,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadRemoteCharacteristic) {
 static void TestCallback(
     BluetoothRemoteGattCharacteristic::ValueCallback callback,
     const TestBluetoothAdapterObserver& callback_observer,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+    base::Optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   EXPECT_EQ(0, callback_observer.gatt_characteristic_value_changed_count());
   std::move(callback).Run(error_code, value);
@@ -1427,7 +1421,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
             .Run(error_code, data);
@@ -1589,7 +1583,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ASSERT_FALSE(error_code.has_value())
             << "unexpected error: " << error_code.value();
@@ -1647,7 +1641,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   std::vector<uint8_t> test_vector_2 = {0xf, 0xf0, 0xff};
 
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         GetReadValueCallback(Call::EXPECTED, Result::SUCCESS)
             .Run(error_code, data);
@@ -1709,8 +1703,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
         EXPECT_EQ(test_vector_1, last_write_value_);
 
         characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-            [&](base::Optional<BluetoothRemoteGattService::GattErrorCode>
-                    error_code,
+            [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
                 const std::vector<uint8_t>& data) {
               EXPECT_EQ(error_code, base::nullopt);
               EXPECT_EQ(1, gatt_read_characteristic_attempts_);
@@ -1807,11 +1800,11 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadError) {
   characteristic1_->ReadRemoteCharacteristic(
       GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
   SimulateGattCharacteristicReadError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
-  SimulateGattCharacteristicReadError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+      characteristic1_, BluetoothGattService::GATT_ERROR_INVALID_LENGTH);
+  SimulateGattCharacteristicReadError(characteristic1_,
+                                      BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
             last_gatt_error_code_);
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
 }
@@ -1843,15 +1836,15 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_WriteError) {
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH,
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
                       error_code);
             loop.Quit();
           }));
   SimulateGattCharacteristicWriteError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
+      characteristic1_, BluetoothGattService::GATT_ERROR_INVALID_LENGTH);
   // Only the error above should be reported to the caller.
-  SimulateGattCharacteristicWriteError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+  SimulateGattCharacteristicWriteError(characteristic1_,
+                                       BluetoothGattService::GATT_ERROR_FAILED);
   loop.Run();
 }
 
@@ -1878,12 +1871,12 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_DeprecatedWriteError) {
       empty_vector, GetCallback(Call::NOT_EXPECTED),
       GetGattErrorCallback(Call::EXPECTED));
   SimulateGattCharacteristicWriteError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
-  SimulateGattCharacteristicWriteError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+      characteristic1_, BluetoothGattService::GATT_ERROR_INVALID_LENGTH);
+  SimulateGattCharacteristicWriteError(characteristic1_,
+                                       BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
             last_gatt_error_code_);
 }
 
@@ -1905,8 +1898,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadSynchronousError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   // After failing once, can succeed:
   ResetEventCounts();
@@ -1941,8 +1933,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_WriteSynchronousError) {
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop1.Quit();
           }));
   loop1.Run();
@@ -1986,8 +1977,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   // After failing once, can succeed:
   ResetEventCounts();
@@ -2032,7 +2022,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial read should still succeed:
@@ -2087,8 +2077,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS, error_code);
             loop2.Quit();
           }));
 
@@ -2135,7 +2124,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial write should still succeed:
@@ -2183,10 +2172,9 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             loop1.Quit();
           }));
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
-        EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                  error_code);
+        EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS, error_code);
         loop2.Quit();
       }));
 
@@ -2232,7 +2220,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial write should still succeed:
@@ -2270,7 +2258,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop loop2;
   std::vector<uint8_t> empty_vector;
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+      [&](base::Optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         EXPECT_FALSE(error_code.has_value()) << "unexpected failure";
         loop1.Quit();
@@ -2282,8 +2270,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS, error_code);
             loop2.Quit();
           }));
   loop2.Run();
@@ -2328,7 +2315,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial read should still succeed:
@@ -2533,7 +2520,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(0, error_callback_count_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
             last_gatt_error_code_);
 }
 
@@ -2567,7 +2554,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(0, error_callback_count_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
             last_gatt_error_code_);
 }
 
@@ -2601,8 +2588,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(0, error_callback_count_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_ANDROID)
@@ -2812,14 +2798,13 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   ExpectedChangeNotifyValueAttempts(1);
   ExpectedNotifyValue(NotifyValueState::NOTIFY);
   EXPECT_EQ(0, callback_count_);
-  SimulateGattNotifySessionStartError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+  SimulateGattNotifySessionStartError(characteristic1_,
+                                      BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(2, error_callback_count_);
   ASSERT_EQ(0u, notify_sessions_.size());
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_ANDROID)
@@ -2856,8 +2841,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
   ASSERT_EQ(0u, notify_sessions_.size());
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_ANDROID) || defined(OS_MAC)
@@ -2983,8 +2967,8 @@ TEST_P(BluetoothRemoteGattCharacteristicTestWin32Only,
       BluetoothGattDescriptor::ClientCharacteristicConfigurationUuid().value());
   ASSERT_EQ(1u, characteristic1_->GetDescriptors().size());
 
-  SimulateGattNotifySessionStartError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_UNKNOWN);
+  SimulateGattNotifySessionStartError(characteristic1_,
+                                      BluetoothGattService::GATT_ERROR_UNKNOWN);
 
   characteristic1_->StartNotifySession(
       GetReentrantStartNotifySessionSuccessCallback(Call::NOT_EXPECTED,
@@ -3323,8 +3307,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_StopNotifySession_Error) {
   EXPECT_TRUE(characteristic1_->IsNotifying());
 
   notify_sessions_[0]->Stop(GetStopNotifyCallback(Call::EXPECTED));
-  SimulateGattNotifySessionStopError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_UNKNOWN);
+  SimulateGattNotifySessionStopError(characteristic1_,
+                                     BluetoothGattService::GATT_ERROR_UNKNOWN);
   base::RunLoop().RunUntilIdle();
 
   // Check that the notify session is inactive.
@@ -3809,8 +3793,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_FALSE(notify_sessions_[0]->IsActive());
   EXPECT_FALSE(characteristic1_->IsNotifying());
 
-  SimulateGattNotifySessionStartError(
-      characteristic1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+  SimulateGattNotifySessionStartError(characteristic1_,
+                                      BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, notify_sessions_.size());
   ASSERT_TRUE(notify_sessions_[0]);
@@ -4150,8 +4134,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadDuringDisconnect) {
       GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_ANDROID)
@@ -4182,8 +4165,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_WriteDuringDisconnect) {
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop.Quit();
           }));
 
@@ -4216,8 +4198,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       GetGattErrorCallback(Call::EXPECTED));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_MAC)
@@ -4256,8 +4237,7 @@ TEST_F(
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop.Quit();
           }));
   SimulateDeviceBreaksConnection(adapter_->GetDevices()[0]);
@@ -4298,8 +4278,7 @@ TEST_F(
   SimulateDeviceBreaksConnection(adapter_->GetDevices()[0]);
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 // Tests that closing the GATT connection when a characteristic value write
@@ -4335,8 +4314,7 @@ TEST_F(
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             gatt_connections_[0]->Disconnect();
             loop.Quit();
           }));
@@ -4374,8 +4352,7 @@ TEST_F(
       std::vector<uint8_t>(), GetCallback(Call::NOT_EXPECTED),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             gatt_connections_[0]->Disconnect();
             loop.Quit();
           }));
@@ -4413,8 +4390,7 @@ TEST_F(
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop.Quit();
           }));
   gatt_connections_[0]->Disconnect();
@@ -4451,8 +4427,7 @@ TEST_F(
   gatt_connections_[0]->Disconnect();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   SimulateGattDisconnection(device_);
   base::RunLoop().RunUntilIdle();
@@ -4489,8 +4464,7 @@ TEST_F(
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                      error_code);
+            EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, error_code);
             loop.Quit();
           }));
   loop.Run();
@@ -4526,8 +4500,7 @@ TEST_F(
       GetGattErrorCallback(Call::EXPECTED));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   SimulateGattDisconnection(device_);
   base::RunLoop().RunUntilIdle();
@@ -4563,8 +4536,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
                                        GetGattErrorCallback(Call::EXPECTED));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 }
 
 #if defined(OS_ANDROID)

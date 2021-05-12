@@ -307,8 +307,7 @@ void OnGattOperationError(arc::ArcBluetoothBridge::GattStatusCallback callback,
 // ReadGattDescriptor.
 void OnGattRead(
     GattReadCallback callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& result) {
   arc::mojom::BluetoothGattValuePtr gattValue =
       arc::mojom::BluetoothGattValue::New();
@@ -331,7 +330,7 @@ void OnGattServerRead(
   if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS) {
     std::move(callback).Run(/*error_code=*/base::nullopt, value);
   } else {
-    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
                             /*value=*/std::vector<uint8_t>());
   }
 }
@@ -885,7 +884,7 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), RequestGattRead);
   if (!bluetooth_instance || !IsGattOffsetValid(offset)) {
-    std::move(callback).Run(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
                             /*value=*/std::vector<uint8_t>());
     return;
   }

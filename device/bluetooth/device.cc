@@ -340,8 +340,7 @@ mojom::ServiceInfoPtr Device::ConstructServiceInfoStruct(
 
 void Device::OnReadRemoteCharacteristic(
     ReadValueForCharacteristicCallback callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     std::move(callback).Run(
@@ -365,8 +364,7 @@ void Device::OnWriteRemoteCharacteristicError(
 
 void Device::OnReadRemoteDescriptor(
     ReadValueForDescriptorCallback callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     std::move(callback).Run(

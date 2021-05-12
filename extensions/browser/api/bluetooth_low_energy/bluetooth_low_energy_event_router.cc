@@ -38,8 +38,9 @@ using content::BrowserThread;
 using device::BluetoothAdapter;
 using device::BluetoothAdapterFactory;
 using device::BluetoothDevice;
-using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothGattConnection;
+using device::BluetoothGattService;
+using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothRemoteGattDescriptor;
 using device::BluetoothRemoteGattService;
 
@@ -184,29 +185,25 @@ NotifySessionResourceManager* GetNotifySessionResourceManager(
 
 // Translates GattErrorCodes to RouterError Codes
 extensions::BluetoothLowEnergyEventRouter::Status GattErrorToRouterError(
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   extensions::BluetoothLowEnergyEventRouter::Status error_status =
       extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
-  if (error_code == BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS) {
+  if (error_code == BluetoothGattService::GATT_ERROR_IN_PROGRESS) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorInProgress;
-  } else if (error_code ==
-             BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH) {
+  } else if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorInvalidLength;
-  } else if (error_code ==
-             BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED) {
+  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_PERMITTED) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorPermissionDenied;
-  } else if (error_code ==
-             BluetoothRemoteGattService::GATT_ERROR_NOT_AUTHORIZED) {
+  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED) {
     error_status = extensions::BluetoothLowEnergyEventRouter::
         kStatusErrorInsufficientAuthorization;
-  } else if (error_code == BluetoothRemoteGattService::GATT_ERROR_NOT_PAIRED) {
+  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_PAIRED) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorHigherSecurity;
-  } else if (error_code ==
-             BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED) {
+  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_SUPPORTED) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorGattNotSupported;
   }
@@ -1605,7 +1602,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
     const std::string& characteristic_instance_id,
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+    base::Optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic value read failed.";
@@ -1624,8 +1621,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
 void BluetoothLowEnergyEventRouter::OnReadRemoteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic/descriptor value read failed.";
@@ -1682,7 +1678,7 @@ void BluetoothLowEnergyEventRouter::OnCreateGattConnection(
 
 void BluetoothLowEnergyEventRouter::OnError(
     ErrorCallback error_callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   VLOG(2) << "Remote characteristic/descriptor operation failed.";
 
   std::move(error_callback).Run(GattErrorToRouterError(error_code));
@@ -1765,7 +1761,7 @@ void BluetoothLowEnergyEventRouter::OnStartNotifySessionError(
     const std::string& extension_id,
     const std::string& characteristic_id,
     ErrorCallback error_callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   VLOG(2) << "Failed to create value update session for characteristic: "
           << characteristic_id;
 

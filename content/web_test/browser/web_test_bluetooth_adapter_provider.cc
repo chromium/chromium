@@ -34,6 +34,7 @@ using base::test::RunOnceCallback;
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
 using device::BluetoothGattCharacteristic;
+using device::BluetoothGattService;
 using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothRemoteGattDescriptor;
 using device::BluetoothRemoteGattService;
@@ -1024,10 +1025,9 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
                                        /*error_code=*/base::nullopt,
                                        std::vector<uint8_t>({1}));
             } else {
-              pending =
-                  base::BindOnce(std::move(callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                                 /*value=*/std::vector<uint8_t>());
+              pending = base::BindOnce(std::move(callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED,
+                                       /*value=*/std::vector<uint8_t>());
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1051,9 +1051,8 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
             if (succeeds) {
               pending = std::move(callback);
             } else {
-              pending =
-                  base::BindOnce(std::move(error_callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED);
+              pending = base::BindOnce(std::move(error_callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED);
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1075,9 +1074,8 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
             if (succeeds) {
               pending = std::move(callback);
             } else {
-              pending =
-                  base::BindOnce(std::move(error_callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED);
+              pending = base::BindOnce(std::move(error_callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED);
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1102,9 +1100,8 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
                   std::move(callback),
                   GetBaseGATTNotifySession(measurement_ptr->GetWeakPtr()));
             } else {
-              pending =
-                  base::BindOnce(std::move(error_callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED);
+              pending = base::BindOnce(std::move(error_callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED);
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1131,10 +1128,9 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
                                        /*error_code=*/base::nullopt,
                                        std::vector<uint8_t>({1}));
             } else {
-              pending =
-                  base::BindOnce(std::move(callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED,
-                                 /*value=*/std::vector<uint8_t>());
+              pending = base::BindOnce(std::move(callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED,
+                                       /*value=*/std::vector<uint8_t>());
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1155,9 +1151,8 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
             if (succeeds) {
               pending = std::move(callback);
             } else {
-              pending =
-                  base::BindOnce(std::move(error_callback),
-                                 BluetoothRemoteGattService::GATT_ERROR_FAILED);
+              pending = base::BindOnce(std::move(error_callback),
+                                       BluetoothGattService::GATT_ERROR_FAILED);
             }
             device_ptr->PushPendingCallback(std::move(pending));
             if (disconnect) {
@@ -1303,11 +1298,11 @@ WebTestBluetoothAdapterProvider::GetFailingGATTOperationsAdapter() {
   auto service(
       GetBaseGATTService("Errors Service", device.get(), errorsServiceUUID));
 
-  for (int error = BluetoothRemoteGattService::GATT_ERROR_UNKNOWN;
-       error <= BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED; error++) {
+  for (int error = BluetoothGattService::GATT_ERROR_UNKNOWN;
+       error <= BluetoothGattService::GATT_ERROR_NOT_SUPPORTED; error++) {
     service->AddMockCharacteristic(GetErrorCharacteristic(
         service.get(),
-        static_cast<BluetoothRemoteGattService::GattErrorCode>(error)));
+        static_cast<BluetoothGattService::GattErrorCode>(error)));
   }
 
   device->AddMockService(std::move(service));
@@ -1705,20 +1700,20 @@ WebTestBluetoothAdapterProvider::GetBaseGATTCharacteristic(
 
   ON_CALL(*characteristic, ReadRemoteCharacteristic_(_))
       .WillByDefault(RunCallbackWithResult<0>(
-          BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED,
+          BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
           /*value=*/std::vector<uint8_t>()));
 
   ON_CALL(*characteristic, WriteRemoteCharacteristic_(_, _, _, _))
       .WillByDefault(
-          RunCallback<3>(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED));
+          RunCallback<3>(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
 
   ON_CALL(*characteristic, DeprecatedWriteRemoteCharacteristic_(_, _, _))
       .WillByDefault(
-          RunCallback<2>(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED));
+          RunCallback<2>(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
 
   ON_CALL(*characteristic, StartNotifySession_(_, _))
       .WillByDefault(
-          RunCallback<1>(BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED));
+          RunCallback<1>(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
 
   return characteristic;
 }
@@ -1727,7 +1722,7 @@ WebTestBluetoothAdapterProvider::GetBaseGATTCharacteristic(
 std::unique_ptr<NiceMockBluetoothGattCharacteristic>
 WebTestBluetoothAdapterProvider::GetErrorCharacteristic(
     MockBluetoothGattService* service,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   uint32_t error_alias = error_code + 0xA1;  // Error UUIDs start at 0xA1.
   auto characteristic(GetBaseGATTCharacteristic(
       // Use the UUID to generate unique identifiers.

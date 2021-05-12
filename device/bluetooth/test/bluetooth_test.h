@@ -417,7 +417,7 @@ class BluetoothTestBase : public testing::Test {
   // RememberCCCDescriptorForSubsequentAction.
   virtual void SimulateGattNotifySessionStartError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode error_code) {}
+      BluetoothGattService::GattErrorCode error_code) {}
 
   // Simulates a Characteristic Stop Notify completed.
   // If |characteristic| is null, acts upon the characteristic & CCC
@@ -432,7 +432,7 @@ class BluetoothTestBase : public testing::Test {
   // RememberCCCDescriptorForSubsequentAction.
   virtual void SimulateGattNotifySessionStopError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode error_code) {}
+      BluetoothGattService::GattErrorCode error_code) {}
 
   // Simulates a Characteristic Set Notify operation failing synchronously once
   // for an unknown reason.
@@ -454,7 +454,7 @@ class BluetoothTestBase : public testing::Test {
   // Simulates a Characteristic Read operation failing with a GattErrorCode.
   virtual void SimulateGattCharacteristicReadError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode) {}
+      BluetoothGattService::GattErrorCode) {}
 
   // Simulates a Characteristic Read operation failing synchronously once for an
   // unknown reason.
@@ -470,7 +470,7 @@ class BluetoothTestBase : public testing::Test {
   // Simulates a Characteristic Write operation failing with a GattErrorCode.
   virtual void SimulateGattCharacteristicWriteError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode) {}
+      BluetoothGattService::GattErrorCode) {}
 
   // Simulates a Characteristic Write operation failing synchronously once for
   // an unknown reason.
@@ -558,7 +558,7 @@ class BluetoothTestBase : public testing::Test {
   // Simulates a Descriptor Read operation failing with a GattErrorCode.
   virtual void SimulateGattDescriptorReadError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode) {}
+      BluetoothGattService::GattErrorCode) {}
 
   // Simulates a Descriptor Read operation failing synchronously once for an
   // unknown reason.
@@ -574,12 +574,12 @@ class BluetoothTestBase : public testing::Test {
   // Simulates a Descriptor Write operation failing with a GattErrorCode.
   virtual void SimulateGattDescriptorWriteError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode) {}
+      BluetoothGattService::GattErrorCode) {}
 
   // Simulates a Descriptor Update operation failing with a GattErrorCode.
   virtual void SimulateGattDescriptorUpdateError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode) {}
+      BluetoothGattService::GattErrorCode) {}
 
   // Simulates a Descriptor Write operation failing synchronously once for
   // an unknown reason.
@@ -626,8 +626,7 @@ class BluetoothTestBase : public testing::Test {
                                   BluetoothAdvertisement::ErrorCode error_code);
   void ConnectErrorCallback(Call expected,
                             enum BluetoothDevice::ConnectErrorCode);
-  void GattErrorCallback(Call expected,
-                         BluetoothRemoteGattService::GattErrorCode);
+  void GattErrorCallback(Call expected, BluetoothGattService::GattErrorCode);
   void ReentrantStartNotifySessionSuccessCallback(
       Call expected,
       BluetoothRemoteGattCharacteristic* characteristic,
@@ -660,7 +659,7 @@ class BluetoothTestBase : public testing::Test {
   BluetoothAdapter::AdvertisementErrorCallback GetAdvertisementErrorCallback(
       Call expected);
   BluetoothDevice::ConnectErrorCallback GetConnectErrorCallback(Call expected);
-  base::OnceCallback<void(BluetoothRemoteGattService::GattErrorCode)>
+  base::OnceCallback<void(BluetoothGattService::GattErrorCode)>
   GetGattErrorCallback(Call expected);
   BluetoothRemoteGattCharacteristic::NotifySessionCallback
   GetReentrantStartNotifySessionSuccessCallback(
@@ -710,8 +709,8 @@ class BluetoothTestBase : public testing::Test {
   std::vector<std::unique_ptr<BluetoothGattNotifySession>> notify_sessions_;
   std::vector<uint8_t> last_read_value_;
   std::vector<uint8_t> last_write_value_;
-  BluetoothRemoteGattService::GattErrorCode last_gatt_error_code_ =
-      BluetoothRemoteGattService::GATT_ERROR_UNKNOWN;
+  BluetoothGattService::GattErrorCode last_gatt_error_code_ =
+      BluetoothGattService::GATT_ERROR_UNKNOWN;
 
   int callback_count_ = 0;
   int error_callback_count_ = 0;

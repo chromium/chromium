@@ -630,7 +630,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnNotifySessionStarted(
 }
 
 void BluetoothLowEnergyWeaveClientConnection::OnNotifySessionError(
-    device::BluetoothRemoteGattService::GattErrorCode error) {
+    device::BluetoothGattService::GattErrorCode error) {
   DCHECK(sub_status() == SubStatus::WAITING_NOTIFY_SESSION);
   RecordGattNotifySessionResult(
       BluetoothRemoteDeviceGattServiceGattErrorCodeToGattServiceOperationResult(
@@ -767,7 +767,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnRemoteCharacteristicWritten() {
 }
 
 void BluetoothLowEnergyWeaveClientConnection::OnWriteRemoteCharacteristicError(
-    device::BluetoothRemoteGattService::GattErrorCode error) {
+    device::BluetoothGattService::GattErrorCode error) {
   DCHECK(sub_status() == SubStatus::WAITING_CONNECTION_RESPONSE ||
          sub_status() == SubStatus::CONNECTED_AND_SENDING_MESSAGE);
   if (sub_status() == SubStatus::CONNECTED_AND_SENDING_MESSAGE)
@@ -1006,36 +1006,30 @@ void BluetoothLowEnergyWeaveClientConnection::
 BluetoothLowEnergyWeaveClientConnection::GattServiceOperationResult
 BluetoothLowEnergyWeaveClientConnection::
     BluetoothRemoteDeviceGattServiceGattErrorCodeToGattServiceOperationResult(
-        device::BluetoothRemoteGattService::GattErrorCode error_code) {
+        device::BluetoothGattService::GattErrorCode error_code) {
   switch (error_code) {
-    case device::BluetoothRemoteGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_UNKNOWN;
-    case device::BluetoothRemoteGattService::GattErrorCode::GATT_ERROR_FAILED:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_FAILED;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_IN_PROGRESS:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_IN_PROGRESS;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_INVALID_LENGTH:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_INVALID_LENGTH:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_INVALID_LENGTH;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_NOT_PERMITTED:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PERMITTED:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_PERMITTED;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_NOT_AUTHORIZED:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_AUTHORIZED:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_AUTHORIZED;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_NOT_PAIRED:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_PAIRED;
-    case device::BluetoothRemoteGattService::GattErrorCode::
-        GATT_ERROR_NOT_SUPPORTED:
+    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_SUPPORTED:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_SUPPORTED;
     default:

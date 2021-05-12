@@ -89,7 +89,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
       std::unique_ptr<BTH_LE_GATT_CHARACTERISTIC_VALUE> value,
       HRESULT hr);
   void OnWriteRemoteCharacteristicValueCallback(HRESULT hr);
-  BluetoothRemoteGattService::GattErrorCode HRESULTToGattErrorCode(HRESULT hr);
+  BluetoothGattService::GattErrorCode HRESULTToGattErrorCode(HRESULT hr);
   void OnGattCharacteristicValueChanged(
       std::unique_ptr<std::vector<uint8_t>> new_value);
   void GattEventRegistrationCallback(base::OnceClosure callback,

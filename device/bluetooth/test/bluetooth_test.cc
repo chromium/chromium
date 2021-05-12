@@ -377,7 +377,7 @@ void BluetoothTestBase::ConnectErrorCallback(
 
 void BluetoothTestBase::GattErrorCallback(
     Call expected,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   ++error_callback_count_;
   last_gatt_error_code_ = error_code;
 
@@ -418,7 +418,7 @@ void BluetoothTestBase::ReentrantStartNotifySessionErrorCallback(
 
   if (error_in_reentrant) {
     SimulateGattNotifySessionStartError(
-        characteristic, BluetoothRemoteGattService::GATT_ERROR_UNKNOWN);
+        characteristic, BluetoothGattService::GATT_ERROR_UNKNOWN);
     characteristic->StartNotifySession(GetNotifyCallback(Call::NOT_EXPECTED),
                                        GetGattErrorCallback(Call::EXPECTED));
   } else {
@@ -525,7 +525,7 @@ BluetoothTestBase::GetConnectErrorCallback(Call expected) {
                         weak_factory_.GetWeakPtr(), expected);
 }
 
-base::OnceCallback<void(BluetoothRemoteGattService::GattErrorCode)>
+base::OnceCallback<void(BluetoothGattService::GattErrorCode)>
 BluetoothTestBase::GetGattErrorCallback(Call expected) {
   if (expected == Call::EXPECTED)
     ++expected_error_callback_calls_;

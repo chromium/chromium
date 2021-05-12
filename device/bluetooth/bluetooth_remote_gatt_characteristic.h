@@ -247,7 +247,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
     enum Type { COMMAND_NONE, COMMAND_START, COMMAND_STOP };
 
     using ExecuteCallback = base::OnceCallback<
-        void(Type, base::Optional<BluetoothRemoteGattService::GattErrorCode>)>;
+        void(Type, base::Optional<BluetoothGattService::GattErrorCode>)>;
 
     ExecuteCallback execute_callback_;
     base::OnceClosure cancel_callback_;
@@ -258,7 +258,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 
     void Execute();
     void Execute(Type previous_command_type,
-                 base::Optional<BluetoothRemoteGattService::GattErrorCode>
+                 base::Optional<BluetoothGattService::GattErrorCode>
                      previous_command_error_code);
     void Cancel();
   };
@@ -272,27 +272,25 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
       NotifySessionCallback callback,
       ErrorCallback error_callback,
       NotifySessionCommand::Type previous_command_type,
-      base::Optional<BluetoothRemoteGattService::GattErrorCode>
+      base::Optional<BluetoothGattService::GattErrorCode>
           previous_command_error_code);
   void CancelStartNotifySession(base::OnceClosure callback);
   void OnStartNotifySessionSuccess(NotifySessionCallback callback);
-  void OnStartNotifySessionError(
-      ErrorCallback error_callback,
-      BluetoothRemoteGattService::GattErrorCode error);
+  void OnStartNotifySessionError(ErrorCallback error_callback,
+                                 BluetoothGattService::GattErrorCode error);
 
   void ExecuteStopNotifySession(
       BluetoothGattNotifySession* session,
       base::OnceClosure callback,
       NotifySessionCommand::Type previous_command_type,
-      base::Optional<BluetoothRemoteGattService::GattErrorCode>
+      base::Optional<BluetoothGattService::GattErrorCode>
           previous_command_error_code);
   void CancelStopNotifySession(base::OnceClosure callback);
   void OnStopNotifySessionSuccess(BluetoothGattNotifySession* session,
                                   base::OnceClosure callback);
-  void OnStopNotifySessionError(
-      BluetoothGattNotifySession* session,
-      base::OnceClosure callback,
-      BluetoothRemoteGattService::GattErrorCode error);
+  void OnStopNotifySessionError(BluetoothGattNotifySession* session,
+                                base::OnceClosure callback,
+                                BluetoothGattService::GattErrorCode error);
   bool IsNotificationTypeSupported(
       const base::Optional<NotificationType>& notification_type);
 

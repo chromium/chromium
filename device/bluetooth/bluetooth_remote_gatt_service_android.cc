@@ -53,11 +53,11 @@ BluetoothRemoteGattServiceAndroid::GetJavaObject() {
 }
 
 // static
-BluetoothRemoteGattService::GattErrorCode
+BluetoothGattService::GattErrorCode
 BluetoothRemoteGattServiceAndroid::GetGattErrorCode(int bluetooth_gatt_code) {
   DCHECK(bluetooth_gatt_code != 0) << "Only errors valid. 0 == GATT_SUCCESS.";
 
-  // TODO(scheib) Create new BluetoothRemoteGattService::GattErrorCode enums for
+  // TODO(scheib) Create new BluetoothGattService::GattErrorCode enums for
   // android values not yet represented. http://crbug.com/548498
   switch (bluetooth_gatt_code) {  // android.bluetooth.BluetoothGatt values:
     case 0x00000101:              // GATT_FAILURE
@@ -72,14 +72,14 @@ BluetoothRemoteGattServiceAndroid::GetGattErrorCode(int bluetooth_gatt_code) {
       return GATT_ERROR_NOT_PERMITTED;
     default:
       DVLOG(1) << "Unhandled status: " << bluetooth_gatt_code;
-      return BluetoothRemoteGattService::GATT_ERROR_UNKNOWN;
+      return BluetoothGattService::GATT_ERROR_UNKNOWN;
   }
 }
 
 // static
 int BluetoothRemoteGattServiceAndroid::GetAndroidErrorCode(
-    BluetoothRemoteGattService::GattErrorCode error_code) {
-  // TODO(scheib) Create new BluetoothRemoteGattService::GattErrorCode enums for
+    BluetoothGattService::GattErrorCode error_code) {
+  // TODO(scheib) Create new BluetoothGattService::GattErrorCode enums for
   // android values not yet represented. http://crbug.com/548498
   switch (error_code) {  // Return values from android.bluetooth.BluetoothGatt:
     case GATT_ERROR_UNKNOWN:

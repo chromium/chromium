@@ -370,7 +370,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void SendPendingWriteRequest();
   void OnRemoteCharacteristicWritten();
   void OnWriteRemoteCharacteristicError(
-      device::BluetoothRemoteGattService::GattErrorCode error);
+      device::BluetoothGattService::GattErrorCode error);
   void ClearQueueAndSendConnectionClose();
 
   void RecordBleWeaveConnectionResult(BleWeaveConnectionResult result);
@@ -381,7 +381,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void RecordGattWriteCharacteristicResult(GattServiceOperationResult result);
   GattServiceOperationResult
   BluetoothRemoteDeviceGattServiceGattErrorCodeToGattServiceOperationResult(
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Private getters for the Bluetooth classes corresponding to this connection.
   device::BluetoothRemoteGattService* GetRemoteService();

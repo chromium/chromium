@@ -89,8 +89,7 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
 
   void OnReadRemoteCharacteristic(
       ReadValueForCharacteristicCallback callback,
-      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-          error_code,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   void OnWriteRemoteCharacteristic(
@@ -102,8 +101,7 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
 
   void OnReadRemoteDescriptor(
       ReadValueForDescriptorCallback callback,
-      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-          error_code,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   void OnWriteRemoteDescriptor(WriteValueForDescriptorCallback callback);

@@ -66,24 +66,24 @@ class BluetoothTestMac : public BluetoothTestBase {
       const std::vector<uint8_t>& value) override;
   void SimulateGattCharacteristicReadError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode) override;
+      BluetoothGattService::GattErrorCode) override;
   void SimulateGattCharacteristicWrite(
       BluetoothRemoteGattCharacteristic* characteristic) override;
   void SimulateGattCharacteristicWriteError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void SimulateGattDescriptor(BluetoothRemoteGattCharacteristic* characteristic,
                               const std::string& uuid) override;
   void SimulateGattNotifySessionStarted(
       BluetoothRemoteGattCharacteristic* characteristic) override;
   void SimulateGattNotifySessionStartError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void SimulateGattNotifySessionStopped(
       BluetoothRemoteGattCharacteristic* characteristic) override;
   void SimulateGattNotifySessionStopError(
       BluetoothRemoteGattCharacteristic* characteristic,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void SimulateGattCharacteristicChanged(
       BluetoothRemoteGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value) override;
@@ -94,15 +94,15 @@ class BluetoothTestMac : public BluetoothTestBase {
                                   const std::vector<uint8_t>& value) override;
   void SimulateGattDescriptorReadError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void SimulateGattDescriptorWrite(
       BluetoothRemoteGattDescriptor* descriptor) override;
   void SimulateGattDescriptorWriteError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void SimulateGattDescriptorUpdateError(
       BluetoothRemoteGattDescriptor* descriptor,
-      BluetoothRemoteGattService::GattErrorCode error_code) override;
+      BluetoothGattService::GattErrorCode error_code) override;
   void ExpectedChangeNotifyValueAttempts(int attempts) override;
   void ExpectedNotifyValue(NotifyValueState expected_value_state) override;
 

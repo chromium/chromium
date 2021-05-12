@@ -304,8 +304,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BluetoothRemoteGattCharacteristic::ReadRemoteCharacteristic.
   void OnCharacteristicReadValue(
       RemoteCharacteristicReadValueCallback callback,
-      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-          error_code,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::WriteRemoteCharacteristic.
@@ -313,7 +312,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteCharacteristicWriteValueCallback callback);
   void OnCharacteristicWriteValueFailed(
       RemoteCharacteristicWriteValueCallback callback,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::StartNotifySession.
   void OnStartNotifySessionSuccess(
@@ -323,7 +322,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       std::unique_ptr<device::BluetoothGattNotifySession> notify_session);
   void OnStartNotifySessionFailed(
       RemoteCharacteristicStartNotificationsCallback callback,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Callback for BluetoothGattNotifySession::Stop.
   void OnStopNotifySessionComplete(
@@ -333,8 +332,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BluetoothRemoteGattDescriptor::ReadRemoteDescriptor.
   void OnDescriptorReadValue(
       RemoteDescriptorReadValueCallback callback,
-      base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-          error_code,
+      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Callbacks for BluetoothRemoteGattDescriptor::WriteRemoteDescriptor.
@@ -342,7 +340,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteDescriptorWriteValueCallback callback);
   void OnDescriptorWriteValueFailed(
       RemoteDescriptorWriteValueCallback callback,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Functions to query the platform cache for the bluetooth object.
   // result.outcome == CacheQueryOutcome::SUCCESS if the object was found in the

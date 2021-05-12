@@ -496,12 +496,12 @@ void BluetoothTestWin::SimulateGattCharacteristicRead(
 
 void BluetoothTestWin::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   win::GattCharacteristic* target_characteristic =
       GetSimulatedCharacteristic(characteristic);
   CHECK(target_characteristic);
   HRESULT hr = HRESULT_FROM_WIN32(ERROR_SEM_TIMEOUT);
-  if (error_code == BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH)
+  if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH)
     hr = E_BLUETOOTH_ATT_INVALID_ATTRIBUTE_VALUE_LENGTH;
   fake_bt_le_wrapper_->SimulateGattCharacteristicReadError(
       target_characteristic, hr);
@@ -516,12 +516,12 @@ void BluetoothTestWin::SimulateGattCharacteristicWrite(
 
 void BluetoothTestWin::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   win::GattCharacteristic* target_characteristic =
       GetSimulatedCharacteristic(characteristic);
   CHECK(target_characteristic);
   HRESULT hr = HRESULT_FROM_WIN32(ERROR_SEM_TIMEOUT);
-  if (error_code == BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH)
+  if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH)
     hr = E_BLUETOOTH_ATT_INVALID_ATTRIBUTE_VALUE_LENGTH;
   fake_bt_le_wrapper_->SimulateGattCharacteristicWriteError(
       target_characteristic, hr);
@@ -559,11 +559,11 @@ void BluetoothTestWin::SimulateGattNotifySessionStarted(
 
 void BluetoothTestWin::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   win::GattCharacteristic* simulated_characteristic =
       GetSimulatedCharacteristic(characteristic);
   DCHECK(simulated_characteristic);
-  DCHECK(error_code == BluetoothRemoteGattService::GATT_ERROR_UNKNOWN);
+  DCHECK(error_code == BluetoothGattService::GATT_ERROR_UNKNOWN);
   fake_bt_le_wrapper_->SimulateGattCharacteristicSetNotifyError(
       simulated_characteristic, E_BLUETOOTH_ATT_UNKNOWN_ERROR);
 }
@@ -1063,7 +1063,7 @@ void BluetoothTestWinrt::SimulateGattNotifySessionStarted(
 
 void BluetoothTestWinrt::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
     return BluetoothTestWin::SimulateGattNotifySessionStartError(characteristic,
                                                                  error_code);
@@ -1085,7 +1085,7 @@ void BluetoothTestWinrt::SimulateGattNotifySessionStopped(
 
 void BluetoothTestWinrt::SimulateGattNotifySessionStopError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   static_cast<FakeGattCharacteristicWinrt*>(
       static_cast<BluetoothRemoteGattCharacteristicWinrt*>(characteristic)
           ->GetCharacteristicForTesting())
@@ -1122,7 +1122,7 @@ void BluetoothTestWinrt::SimulateGattCharacteristicRead(
 
 void BluetoothTestWinrt::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
     return BluetoothTestWin::SimulateGattCharacteristicReadError(characteristic,
                                                                  error_code);
@@ -1147,7 +1147,7 @@ void BluetoothTestWinrt::SimulateGattCharacteristicWrite(
 
 void BluetoothTestWinrt::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy()) {
     return BluetoothTestWin::SimulateGattCharacteristicWriteError(
         characteristic, error_code);
@@ -1183,7 +1183,7 @@ void BluetoothTestWinrt::SimulateGattDescriptorRead(
 
 void BluetoothTestWinrt::SimulateGattDescriptorReadError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   static_cast<FakeGattDescriptorWinrt*>(
       static_cast<BluetoothRemoteGattDescriptorWinrt*>(descriptor)
           ->GetDescriptorForTesting())
@@ -1200,7 +1200,7 @@ void BluetoothTestWinrt::SimulateGattDescriptorWrite(
 
 void BluetoothTestWinrt::SimulateGattDescriptorWriteError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   static_cast<FakeGattDescriptorWinrt*>(
       static_cast<BluetoothRemoteGattDescriptorWinrt*>(descriptor)
           ->GetDescriptorForTesting())

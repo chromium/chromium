@@ -398,7 +398,7 @@ void BluetoothTestMac::SimulateGattCharacteristicRead(
 
 void BluetoothTestMac::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -414,7 +414,7 @@ void BluetoothTestMac::SimulateGattCharacteristicWrite(
 
 void BluetoothTestMac::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -444,7 +444,7 @@ void BluetoothTestMac::SimulateGattNotifySessionStarted(
 
 void BluetoothTestMac::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -460,7 +460,7 @@ void BluetoothTestMac::SimulateGattNotifySessionStopped(
 
 void BluetoothTestMac::SimulateGattNotifySessionStopError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -504,7 +504,7 @@ void BluetoothTestMac::SimulateGattDescriptorRead(
 
 void BluetoothTestMac::SimulateGattDescriptorReadError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateReadWithValue:nil error:error];
 }
@@ -516,14 +516,14 @@ void BluetoothTestMac::SimulateGattDescriptorWrite(
 
 void BluetoothTestMac::SimulateGattDescriptorWriteError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateWriteWithError:error];
 }
 
 void BluetoothTestMac::SimulateGattDescriptorUpdateError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateUpdateWithError:error];
 }

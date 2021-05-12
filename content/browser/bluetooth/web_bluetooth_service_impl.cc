@@ -54,6 +54,7 @@ using device::BluetoothDiscoverySession;
 using device::BluetoothGattCharacteristic;
 using device::BluetoothGattConnection;
 using device::BluetoothGattNotifySession;
+using device::BluetoothGattService;
 using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothRemoteGattDescriptor;
 using device::BluetoothRemoteGattService;
@@ -64,23 +65,23 @@ namespace content {
 namespace {
 
 blink::mojom::WebBluetoothResult TranslateGATTError(
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   switch (error_code) {
-    case BluetoothRemoteGattService::GATT_ERROR_UNKNOWN:
+    case BluetoothGattService::GATT_ERROR_UNKNOWN:
       return blink::mojom::WebBluetoothResult::GATT_UNKNOWN_ERROR;
-    case BluetoothRemoteGattService::GATT_ERROR_FAILED:
+    case BluetoothGattService::GATT_ERROR_FAILED:
       return blink::mojom::WebBluetoothResult::GATT_UNKNOWN_FAILURE;
-    case BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS:
+    case BluetoothGattService::GATT_ERROR_IN_PROGRESS:
       return blink::mojom::WebBluetoothResult::GATT_OPERATION_IN_PROGRESS;
-    case BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH:
+    case BluetoothGattService::GATT_ERROR_INVALID_LENGTH:
       return blink::mojom::WebBluetoothResult::GATT_INVALID_ATTRIBUTE_LENGTH;
-    case BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED:
+    case BluetoothGattService::GATT_ERROR_NOT_PERMITTED:
       return blink::mojom::WebBluetoothResult::GATT_NOT_PERMITTED;
-    case BluetoothRemoteGattService::GATT_ERROR_NOT_AUTHORIZED:
+    case BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED:
       return blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED;
-    case BluetoothRemoteGattService::GATT_ERROR_NOT_PAIRED:
+    case BluetoothGattService::GATT_ERROR_NOT_PAIRED:
       return blink::mojom::WebBluetoothResult::GATT_NOT_PAIRED;
-    case BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED:
+    case BluetoothGattService::GATT_ERROR_NOT_SUPPORTED:
       return blink::mojom::WebBluetoothResult::GATT_NOT_SUPPORTED;
   }
   NOTREACHED();
@@ -1892,7 +1893,7 @@ void WebBluetoothServiceImpl::OnCreateGATTConnectionFailed(
 
 void WebBluetoothServiceImpl::OnCharacteristicReadValue(
     RemoteCharacteristicReadValueCallback callback,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+    base::Optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
@@ -1911,7 +1912,7 @@ void WebBluetoothServiceImpl::OnCharacteristicWriteValueSuccess(
 
 void WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed(
     RemoteCharacteristicWriteValueCallback callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(TranslateGATTError(error_code));
 }
@@ -1938,7 +1939,7 @@ void WebBluetoothServiceImpl::OnStartNotifySessionSuccess(
 
 void WebBluetoothServiceImpl::OnStartNotifySessionFailed(
     RemoteCharacteristicStartNotificationsCallback callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(TranslateGATTError(error_code));
 }
@@ -1952,7 +1953,7 @@ void WebBluetoothServiceImpl::OnStopNotifySessionComplete(
 
 void WebBluetoothServiceImpl::OnDescriptorReadValue(
     RemoteDescriptorReadValueCallback callback,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode> error_code,
+    base::Optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
@@ -1972,7 +1973,7 @@ void WebBluetoothServiceImpl::OnDescriptorWriteValueSuccess(
 
 void WebBluetoothServiceImpl::OnDescriptorWriteValueFailed(
     RemoteDescriptorWriteValueCallback callback,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(TranslateGATTError(error_code));
 }

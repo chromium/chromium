@@ -612,11 +612,11 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
   descriptor1_->ReadRemoteDescriptor(
       GetReadValueCallback(Call::EXPECTED, Result::FAILURE));
   SimulateGattDescriptorReadError(
-      descriptor1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
-  SimulateGattDescriptorReadError(
-      descriptor1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+      descriptor1_, BluetoothGattService::GATT_ERROR_INVALID_LENGTH);
+  SimulateGattDescriptorReadError(descriptor1_,
+                                  BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
             last_gatt_error_code_);
 }
 
@@ -642,12 +642,12 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
                                       GetCallback(Call::NOT_EXPECTED),
                                       GetGattErrorCallback(Call::EXPECTED));
   SimulateGattDescriptorWriteError(
-      descriptor1_, BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH);
-  SimulateGattDescriptorWriteError(
-      descriptor1_, BluetoothRemoteGattService::GATT_ERROR_FAILED);
+      descriptor1_, BluetoothGattService::GATT_ERROR_INVALID_LENGTH);
+  SimulateGattDescriptorWriteError(descriptor1_,
+                                   BluetoothGattService::GATT_ERROR_FAILED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
             last_gatt_error_code_);
 }
 
@@ -673,8 +673,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadSynchronousError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   // After failing once, can succeed:
   ResetEventCounts();
@@ -712,8 +711,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteSynchronousError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
-            last_gatt_error_code_);
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_FAILED, last_gatt_error_code_);
 
   // After failing once, can succeed:
   ResetEventCounts();
@@ -755,7 +753,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial read should still succeed:
@@ -799,7 +797,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial write should still succeed:
@@ -841,7 +839,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial write should still succeed:
@@ -883,7 +881,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
+  EXPECT_EQ(BluetoothGattService::GATT_ERROR_IN_PROGRESS,
             last_gatt_error_code_);
 
   // Initial read should still succeed:

@@ -137,17 +137,16 @@ void BluetoothRemoteGattCharacteristicMac::ReadRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED,
+                       BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
                        /*value=*/std::vector<uint8_t>()));
     return;
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Characteristic read already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS,
-                       /*value=*/std::vector<uint8_t>()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  BluetoothGattService::GATT_ERROR_IN_PROGRESS,
+                                  /*value=*/std::vector<uint8_t>()));
     return;
   }
   DVLOG(1) << *this << ": Read characteristic.";
@@ -165,7 +164,7 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS));
+                       BluetoothGattService::GATT_ERROR_IN_PROGRESS));
     return;
   }
   DVLOG(1) << *this << ": Write characteristic.";
@@ -204,7 +203,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED));
+                       BluetoothGattService::GATT_ERROR_NOT_PERMITTED));
     return;
   }
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
@@ -212,7 +211,7 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS));
+                       BluetoothGattService::GATT_ERROR_IN_PROGRESS));
     return;
   }
   DVLOG(1) << *this << ": Write characteristic.";

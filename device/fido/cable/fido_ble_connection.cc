@@ -108,8 +108,7 @@ void OnWriteRemoteCharacteristicError(
 
 void OnReadServiceRevisionBitfield(
     ServiceRevisionsCallback callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     FIDO_LOG(ERROR) << "Error while reading Service Revision Bitfield: "
@@ -514,8 +513,7 @@ const BluetoothRemoteGattService* FidoBleConnection::GetFidoService() {
 // static
 void FidoBleConnection::OnReadControlPointLength(
     ControlPointLengthCallback callback,
-    base::Optional<device::BluetoothRemoteGattService::GattErrorCode>
-        error_code,
+    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     FIDO_LOG(ERROR) << "Error reading Control Point Length: "

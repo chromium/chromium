@@ -78,7 +78,7 @@ void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Execute() {
 
 void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Execute(
     Type previous_command_type,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode>
+    base::Optional<BluetoothGattService::GattErrorCode>
         previous_command_error_code) {
   std::move(execute_callback_)
       .Run(previous_command_type, previous_command_error_code);
@@ -131,7 +131,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
           &BluetoothRemoteGattCharacteristic::CancelStartNotifySession,
           GetWeakPtr(),
           base::BindOnce(repeating_error_callback,
-                         BluetoothRemoteGattService::GATT_ERROR_FAILED)));
+                         BluetoothGattService::GATT_ERROR_FAILED)));
 
   pending_notify_commands_.push(base::WrapUnique(command));
   if (pending_notify_commands_.size() == 1) {
@@ -144,7 +144,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
     NotifySessionCallback callback,
     ErrorCallback error_callback,
     NotifySessionCommand::Type previous_command_type,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode>
+    base::Optional<BluetoothGattService::GattErrorCode>
         previous_command_error_code) {
   // If the command that was resolved immediately before this command was run,
   // this command should be resolved with the same result.
@@ -178,7 +178,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
-            BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED));
+            BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
     return;
   }
 
@@ -208,8 +208,8 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
             (ccc_descriptor.size() == 0)
-                ? BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED
-                : BluetoothRemoteGattService::GATT_ERROR_FAILED));
+                ? BluetoothGattService::GATT_ERROR_NOT_SUPPORTED
+                : BluetoothGattService::GATT_ERROR_FAILED));
     return;
   }
 
@@ -259,7 +259,7 @@ void BluetoothRemoteGattCharacteristic::OnStartNotifySessionSuccess(
 
 void BluetoothRemoteGattCharacteristic::OnStartNotifySessionError(
     ErrorCallback error_callback,
-    BluetoothRemoteGattService::GattErrorCode error) {
+    BluetoothGattService::GattErrorCode error) {
   std::unique_ptr<NotifySessionCommand> command =
       std::move(pending_notify_commands_.front());
 
@@ -295,7 +295,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback,
     NotifySessionCommand::Type previous_command_type,
-    base::Optional<BluetoothRemoteGattService::GattErrorCode>
+    base::Optional<BluetoothGattService::GattErrorCode>
         previous_command_error_code) {
   auto session_iterator = notify_sessions_.find(session);
 
@@ -307,7 +307,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothRemoteGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GATT_ERROR_FAILED));
     return;
   }
 
@@ -334,7 +334,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothRemoteGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GATT_ERROR_FAILED));
     return;
   }
 
@@ -378,7 +378,7 @@ void BluetoothRemoteGattCharacteristic::OnStopNotifySessionSuccess(
 void BluetoothRemoteGattCharacteristic::OnStopNotifySessionError(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback,
-    BluetoothRemoteGattService::GattErrorCode error) {
+    BluetoothGattService::GattErrorCode error) {
   std::unique_ptr<NotifySessionCommand> command =
       std::move(pending_notify_commands_.front());
 
