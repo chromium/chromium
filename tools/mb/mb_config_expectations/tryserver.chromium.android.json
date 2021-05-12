@@ -260,6 +260,23 @@
       "use_goma": true
     }
   },
+  "android-marshmallow-x86-rel-rts": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "disable_android_lint": true,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
   "android-nougat-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
