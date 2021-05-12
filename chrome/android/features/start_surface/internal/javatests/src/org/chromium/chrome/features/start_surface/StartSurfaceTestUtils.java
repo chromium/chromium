@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -102,7 +103,7 @@ public class StartSurfaceTestUtils {
             CallbackHelper layoutChangedCallbackHelper, @LayoutType int currentlyActiveLayout) {
         if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) return;
         try {
-            layoutChangedCallbackHelper.waitForNext();
+            layoutChangedCallbackHelper.waitForNext(30L, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             assert false : "Timeout waiting for browser to enter tab switcher / start surface.";
         }

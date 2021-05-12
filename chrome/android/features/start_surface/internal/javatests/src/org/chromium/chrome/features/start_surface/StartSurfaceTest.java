@@ -52,7 +52,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -1191,15 +1190,12 @@ public class StartSurfaceTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1205218")
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonOnHomepageWithGroupTabsDialog() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1205218",
+                mUseInstantStart && mImmediateReturn);
         backButtonOnHomepageWithGroupTabsDialogImpl();
     }
 
@@ -1421,12 +1417,11 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
-    @DisableIf.Build(sdk_is_greater_than = M, supported_abis_includes = "x86",
-            message = "https://crbug.com/1170553")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface_BackButtonDeleteBlankTab() {
+        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1070553",
+                           mUseInstantStart && mImmediateReturn);
         // clang-format on
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -1558,15 +1553,11 @@ public class StartSurfaceTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1207947")
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
     public void testShow_SingleAsHomepage_ShowTabsInMRUOrder() {
-        Assume.assumeFalse("https://crbug.com/1205525",
-                mUseInstantStart && mImmediateReturn
-                        && (Build.VERSION.SDK_INT == Build.VERSION_CODES.N
-                                || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1));
+        Assume.assumeFalse("https://crbug.com/1205525, https://crbug.com/1207947",
+                mUseInstantStart && mImmediateReturn);
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -1700,7 +1691,8 @@ public class StartSurfaceTest {
     private void pressBack() {
         // ChromeTabbedActivity expects the native libraries to be loaded when back is pressed.
         mActivityTestRule.waitForActivityNativeInitializationComplete();
-        Espresso.pressBack();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onBackPressed());
     }
 
     private List<Tab> getTabsInCurrentTabModel(TabModel currentTabModel) {
