@@ -56,7 +56,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
   void SetUp() override {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    io_thread_.StartWithOptions(options);
+    io_thread_.StartWithOptions(std::move(options));
 
     HttpBridge::SetIOCapableTaskRunnerForTest(io_thread_.task_runner());
   }
