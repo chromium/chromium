@@ -163,7 +163,7 @@
     { "scenario_dir":"sign_up_pass", "site_name":"telekom" },
     { "scenario_dir":"sign_up_pass", "site_name":"typing" },
     { "scenario_dir":"sign_up_pass", "site_name":"united" },
-    { "scenario_dir":"sign_up_pass", "site_name":"upwork" },
+    { "scenario_dir":"sign_up_pass", "site_name":"upwork", "bug_number":1206492 },
     { "scenario_dir":"sign_up_pass", "site_name":"usps" },
     { "scenario_dir":"sign_up_pass", "site_name":"vodafone" },
     { "scenario_dir":"sign_up_pass", "site_name":"walmart" },
