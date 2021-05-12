@@ -36,12 +36,6 @@ class Button;
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
                                           public ui::PropertyHandler {
  public:
-  enum class CloseReason {
-    DEACTIVATION,
-    CLOSE_BUTTON,
-    UNKNOWN,
-  };
-
   BubbleDialogDelegate(
       View* anchor_view,
       BubbleBorder::Arrow arrow,
