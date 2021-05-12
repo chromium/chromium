@@ -1679,3 +1679,39 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
     input.focus();
   });
 });
+
+// Test for the issue in crbug.com/1203840. This case was causing an infinite
+// loop in ChromeVox's editable line data computation. This test ensures we
+// workaround potential infinite loops correctly, and should be removed once the
+// proper fix is implemented in blink.
+TEST_F(
+    'ChromeVoxEditingTest', 'EditableLineInfiniteLoopWorkaround', function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+    <div contenteditable="true" role="textbox">
+      <p>Start</p>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <span>
+                <span style="font-size:13.333333333333332px;">This is a test<span>&nbsp;</span></span></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <span>End</span>
+    </div>
+  `;
+      this.runWithLoadedTree(site, function(root) {
+        const input = root.find({role: RoleType.TEXT_FIELD});
+        this.listenOnce(input, 'focus', function() {
+          mockFeedback.call(this.press(KeyCode.DOWN))
+              .expectSpeech('This is a test')
+              .call(this.press(KeyCode.DOWN))
+              .expectSpeech('End')
+              .replay();
+        });
+        input.focus();
+      });
+    });
