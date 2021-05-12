@@ -22,6 +22,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
+    base::Optional<gfx::Size> maximum_size,
+    base::Optional<gfx::Size> minimum_size,
     std::unique_ptr<views::View> content,
     base::RepeatingClosure close_callback) {
   base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
@@ -41,6 +43,12 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   shell_surface->SetApplicationId(app_id.c_str());
   shell_surface->SetBounds(display_id, bounds);
+
+  if (maximum_size.has_value())
+    shell_surface->SetMaximumSize(maximum_size.value());
+
+  if (minimum_size.has_value())
+    shell_surface->SetMinimumSize(minimum_size.value());
 
   // Set frame buttons.
   constexpr uint32_t kAllButtonMask =

@@ -56,7 +56,8 @@ void ArcWindowHandler::LaunchArcGhostWindow(
       session_id,
       InitArcGhostWindow(
           this, app_id, session_id, restore_data->display_id.value(),
-          restore_data->current_bounds.value(), std::move(container),
+          restore_data->current_bounds.value(), restore_data->maximum_size,
+          restore_data->minimum_size, std::move(container),
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }
