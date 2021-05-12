@@ -107,6 +107,13 @@ class EVENTS_EXPORT GestureRecognizer {
   // and must be cleaned up appropriately by the caller.
   virtual void RemoveGestureEventHelper(GestureEventHelper* helper) = 0;
 
+  // Returns whether `consumer` has active touch or not.
+  virtual bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const = 0;
+
+  // Synthesizes gesture end events (including ET_GESTURE_END and
+  // ET_GESTURE_SCROLL_END) and send to `consumer`.
+  virtual void SendSynthesizedEndEvents(GestureConsumer* consumer) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(GestureRecognizer);
 };

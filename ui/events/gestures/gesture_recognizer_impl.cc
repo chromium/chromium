@@ -388,6 +388,21 @@ void GestureRecognizerImpl::RemoveGestureEventHelper(
     helpers_.erase(it);
 }
 
+bool GestureRecognizerImpl::DoesConsumerHaveActiveTouch(
+    GestureConsumer* consumer) const {
+  for (const auto& id_consumer_pair : touch_id_target_) {
+    if (id_consumer_pair.second == consumer)
+      return true;
+  }
+
+  return false;
+}
+
+void GestureRecognizerImpl::SendSynthesizedEndEvents(
+    GestureConsumer* consumer) {
+  GetGestureProviderForConsumer(consumer)->SendSynthesizedEndEvents();
+}
+
 void GestureRecognizerImpl::OnGestureEvent(GestureConsumer* raw_input_consumer,
                                            GestureEvent* event) {
   DispatchGestureEvent(raw_input_consumer, event);

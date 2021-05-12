@@ -1049,6 +1049,10 @@ ui::GestureRecognizer* DesktopNativeWidgetAura::GetGestureRecognizer() {
   return aura::Env::GetInstance()->gesture_recognizer();
 }
 
+ui::GestureConsumer* DesktopNativeWidgetAura::GetGestureConsumer() {
+  return content_window_;
+}
+
 void DesktopNativeWidgetAura::OnSizeConstraintsChanged() {
   NativeWidgetAura::SetResizeBehaviorFromDelegate(
       GetWidget()->widget_delegate(), content_window_);

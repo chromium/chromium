@@ -90,6 +90,8 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   bool CleanupStateForConsumer(GestureConsumer* consumer) override;
   void AddGestureEventHelper(GestureEventHelper* helper) override;
   void RemoveGestureEventHelper(GestureEventHelper* helper) override;
+  bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const override;
+  void SendSynthesizedEndEvents(GestureConsumer* consumer) override;
 
   // Overridden from GestureProviderAuraClient
   void OnGestureEvent(GestureConsumer* raw_input_consumer,

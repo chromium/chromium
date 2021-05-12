@@ -45,8 +45,17 @@ void MenuRunner::RunMenuAt(Widget* parent,
   // If we are shown on mouse press, we will eat the subsequent mouse down and
   // the parent widget will not be able to reset its state (it might have mouse
   // capture from the mouse down). So we clear its state here.
-  if (parent && parent->GetRootView())
-    parent->GetRootView()->SetMouseAndGestureHandler(nullptr);
+  if (parent && parent->GetRootView()) {
+    auto* root_view = parent->GetRootView();
+    if (run_types_ & MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER) {
+      // In this case, the menu owner instead of the menu should handle the
+      // incoming gesture events. Therefore we do not need to reset the gesture
+      // handler of `root_view`.
+      root_view->SetMouseHandler(nullptr);
+    } else {
+      root_view->SetMouseAndGestureHandler(nullptr);
+    }
+  }
 
   if (runner_handler_.get()) {
     runner_handler_->RunMenuAt(parent, button_controller, bounds, anchor,

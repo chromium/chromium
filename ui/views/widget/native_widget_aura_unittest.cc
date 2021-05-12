@@ -5,6 +5,7 @@
 #include "ui/views/widget/native_widget_aura.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -20,6 +21,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -133,6 +135,92 @@ TEST_F(NativeWidgetAuraTest, CenterWindowSmallParentNotAtOrigin) {
   // |window| should be no bigger than |parent|.
   EXPECT_EQ("20,40 480x320", window->GetNativeWindow()->bounds().ToString());
   widget->CloseNow();
+}
+
+// View which handles both mouse and gesture events.
+class EventHandlingView : public View {
+ public:
+  EventHandlingView() = default;
+  EventHandlingView(const EventHandlingView&) = delete;
+  EventHandlingView& operator=(const EventHandlingView&) = delete;
+  ~EventHandlingView() override = default;
+
+  // Returns whether an event specified by `type_to_query` has been handled.
+  bool HandledEventBefore(ui::EventType type_to_query) const {
+    return handled_gestures_set_.find(type_to_query) !=
+           handled_gestures_set_.cend();
+  }
+
+  // View:
+  const char* GetClassName() const override { return "EventHandlingView"; }
+  void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    // Record the handled gesture event.
+    const ui::EventType event_type = event->type();
+    if (handled_gestures_set_.find(event_type) ==
+        handled_gestures_set_.cend()) {
+      EXPECT_TRUE(handled_gestures_set_.insert(event->type()).second);
+    } else {
+      // Only ET_GESTURE_SCROLL_UPDATE events can be received more than once.
+      EXPECT_EQ(ui::ET_GESTURE_SCROLL_UPDATE, event->type());
+    }
+
+    event->SetHandled();
+  }
+
+ private:
+  std::set<ui::EventType> handled_gestures_set_;
+};
+
+// Verifies that when the mouse click interrupts the gesture scroll, the view
+// where the gesture scroll starts should receive the scroll end event.
+TEST_F(NativeWidgetAuraTest, MouseClickInterruptsGestureScroll) {
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = gfx::Rect(100, 100);
+  Widget widget;
+  widget.Init(std::move(init_params));
+  widget.Show();
+
+  View* contents_view = widget.SetContentsView(std::make_unique<View>());
+  View* child_view =
+      contents_view->AddChildView(std::make_unique<EventHandlingView>());
+  child_view->SetBoundsRect(gfx::Rect(gfx::Size{50, 50}));
+
+  auto scroll_callback = [](ui::test::EventGenerator* event_generator,
+                            int* step_count, ui::EventType event_type,
+                            const gfx::Vector2dF& offset) {
+    if (event_type != ui::ET_GESTURE_SCROLL_UPDATE)
+      return;
+
+    *step_count -= 1;
+    if (*step_count)
+      return;
+
+    // Do not interrupt the gesture scroll until the last gesture update event
+    // is handled.
+
+    DCHECK_EQ(0, *step_count);
+    event_generator->MoveMouseTo(event_generator->current_screen_location());
+    event_generator->ClickLeftButton();
+  };
+
+  const gfx::Point center_point = child_view->GetBoundsInScreen().CenterPoint();
+  gfx::Point target_point = center_point;
+  target_point.Offset(0, 20);
+  int step_count = 10;
+  ui::test::EventGenerator generator(widget.GetNativeView()->GetRootWindow());
+  generator.GestureScrollSequenceWithCallback(
+      center_point, target_point,
+      /*duration=*/base::TimeDelta::FromMilliseconds(100), step_count,
+      base::BindRepeating(scroll_callback, &generator, &step_count));
+
+  // Verify that `child_view` receives gesture end events.
+  EXPECT_TRUE(static_cast<EventHandlingView*>(child_view)
+                  ->HandledEventBefore(ui::ET_GESTURE_SCROLL_END));
+  EXPECT_TRUE(static_cast<EventHandlingView*>(child_view)
+                  ->HandledEventBefore(ui::ET_GESTURE_END));
 }
 
 TEST_F(NativeWidgetAuraTest, CreateMinimized) {

@@ -1366,6 +1366,11 @@ void View::SetMouseAndGestureHandler(View* new_handler) {
     parent_->SetMouseAndGestureHandler(new_handler);
 }
 
+void View::SetMouseHandler(View* new_handler) {
+  if (parent_)
+    parent_->SetMouseHandler(new_handler);
+}
+
 bool View::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }

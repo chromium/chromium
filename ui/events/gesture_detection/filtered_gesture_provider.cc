@@ -69,6 +69,10 @@ void FilteredGestureProvider::ResetGestureHandlingState() {
   gesture_filter_.ResetGestureHandlingState();
 }
 
+void FilteredGestureProvider::SendSynthesizedEndEvents() {
+  gesture_provider_->SendSynthesizedEndEvents();
+}
+
 void FilteredGestureProvider::ResetDetection() {
   gesture_provider_->ResetDetection();
 }

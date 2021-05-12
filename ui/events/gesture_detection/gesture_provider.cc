@@ -163,26 +163,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     }
   }
 
-  void Send(GestureEventData gesture) {
-    DCHECK(!gesture.time.is_null());
-    // The only valid events that should be sent without an active touch
-    // sequence are SHOW_PRESS, TAP and TAP_CANCEL, potentially triggered by
-    // the double-tap delay timing out or being cancelled.
-    DCHECK(!current_down_action_event_time_.is_null() ||
-           gesture.type() == ET_GESTURE_TAP ||
-           gesture.type() == ET_GESTURE_SHOW_PRESS ||
-           gesture.type() == ET_GESTURE_TAP_CANCEL ||
-           gesture.type() == ET_GESTURE_BEGIN ||
-           gesture.type() == ET_GESTURE_END);
-
-    if (gesture.primary_tool_type == MotionEvent::ToolType::UNKNOWN ||
-        gesture.primary_tool_type == MotionEvent::ToolType::FINGER) {
-      gesture.details.set_bounding_box(
-          ClampBoundingBox(gesture.details.bounding_box_f(),
-                           config_.min_gesture_bounds_length,
-                           config_.max_gesture_bounds_length));
-    }
-
+  void UpdateStateForEventPost(GestureEventData gesture) {
     switch (gesture.type()) {
       case ET_GESTURE_LONG_PRESS:
         DCHECK(!IsScaleGestureDetectionInProgress());
@@ -197,8 +178,6 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         break;
       case ET_GESTURE_SCROLL_END:
         DCHECK(scroll_event_sent_);
-        if (pinch_event_sent_)
-          Send(GestureEventData(ET_GESTURE_PINCH_END, gesture));
         scroll_event_sent_ = false;
         break;
       case ET_SCROLL_FLING_START:
@@ -207,10 +186,6 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         break;
       case ET_GESTURE_PINCH_BEGIN:
         DCHECK(!pinch_event_sent_);
-        if (!scroll_event_sent_ &&
-            !scale_gesture_detector_.InAnchoredScaleMode()) {
-          Send(GestureEventData(ET_GESTURE_SCROLL_BEGIN, gesture));
-        }
         pinch_event_sent_ = true;
         break;
       case ET_GESTURE_PINCH_END:
@@ -227,9 +202,77 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       default:
         break;
     };
+  }
+
+  // `should_update` indicates whether sending `gesture` should update the
+  // internal states.
+  void SendImpl(GestureEventData gesture, bool should_update) {
+    DCHECK(!gesture.time.is_null());
+    // The only valid events that should be sent without an active touch
+    // sequence are SHOW_PRESS, TAP and TAP_CANCEL, potentially triggered by
+    // the double-tap delay timing out or being cancelled.
+    DCHECK(!current_down_action_event_time_.is_null() ||
+           gesture.type() == ET_GESTURE_TAP ||
+           gesture.type() == ET_GESTURE_SHOW_PRESS ||
+           gesture.type() == ET_GESTURE_TAP_CANCEL ||
+           gesture.type() == ET_GESTURE_BEGIN ||
+           gesture.type() == ET_GESTURE_END);
+
+    if (gesture.primary_tool_type == MotionEvent::ToolType::UNKNOWN ||
+        gesture.primary_tool_type == MotionEvent::ToolType::FINGER) {
+      gesture.details.set_bounding_box(ClampBoundingBox(
+          gesture.details.bounding_box_f(), config_.min_gesture_bounds_length,
+          config_.max_gesture_bounds_length));
+    }
+
+    // Sending one gesture event may trigger propagation of another.
+    switch (gesture.type()) {
+      case ET_GESTURE_SCROLL_END:
+        DCHECK(scroll_event_sent_);
+        if (pinch_event_sent_)
+          SendImpl(GestureEventData(ET_GESTURE_PINCH_END, gesture),
+                   should_update);
+        break;
+      case ET_GESTURE_PINCH_BEGIN:
+        DCHECK(!pinch_event_sent_);
+        if (!scroll_event_sent_ &&
+            !scale_gesture_detector_.InAnchoredScaleMode()) {
+          SendImpl(GestureEventData(ET_GESTURE_SCROLL_BEGIN, gesture),
+                   should_update);
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (should_update) {
+      UpdateStateForEventPost(gesture);
+      GestureTouchUMAHistogram::RecordGestureEvent(gesture);
+    }
 
     client_->OnGestureEvent(gesture);
-    GestureTouchUMAHistogram::RecordGestureEvent(gesture);
+  }
+
+  void Send(GestureEventData gesture) {
+    SendImpl(gesture, /*should_update=*/true);
+  }
+
+  void SendSynthesizedEndEvents() {
+    MotionEventGeneric generic_cancel_event(MotionEvent::Action::CANCEL,
+                                            base::TimeTicks::Now(),
+                                            PointerProperties());
+
+    // Sending the synthesized end events should not update the internal states.
+    // Because this function may be called when a new event handler replaces the
+    // old one. In that scenario, the old event handler is informed of the
+    // gesture end through the synthesized end events while the new handler
+    // should handle the incoming gestures.
+    if (scroll_event_sent_) {
+      SendImpl(CreateGesture(ET_GESTURE_SCROLL_END, generic_cancel_event),
+               /*should_update=*/false);
+    }
+    SendImpl(CreateGesture(ET_GESTURE_END, generic_cancel_event),
+             /*should_update=*/false);
   }
 
   // ScaleGestureListener implementation.
@@ -833,6 +876,10 @@ bool GestureProvider::IsPinchInProgress() const {
 
 bool GestureProvider::IsDoubleTapInProgress() const {
   return gesture_listener_->IsDoubleTapInProgress();
+}
+
+void GestureProvider::SendSynthesizedEndEvents() {
+  gesture_listener_->SendSynthesizedEndEvents();
 }
 
 bool GestureProvider::CanHandle(const MotionEvent& event) const {

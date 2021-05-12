@@ -1093,6 +1093,10 @@ ui::GestureRecognizer* Widget::GetGestureRecognizer() {
   return native_widget_->GetGestureRecognizer();
 }
 
+ui::GestureConsumer* Widget::GetGestureConsumer() {
+  return native_widget_->GetGestureConsumer();
+}
+
 void Widget::OnSizeConstraintsChanged() {
   native_widget_->OnSizeConstraintsChanged();
   if (non_client_view_)

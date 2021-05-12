@@ -71,6 +71,10 @@ void GestureProviderAura::ResetGestureHandlingState() {
   filtered_gesture_provider_.ResetGestureHandlingState();
 }
 
+void GestureProviderAura::SendSynthesizedEndEvents() {
+  filtered_gesture_provider_.SendSynthesizedEndEvents();
+}
+
 void GestureProviderAura::OnGestureEvent(const GestureEventData& gesture) {
   std::unique_ptr<ui::GestureEvent> event(
       new ui::GestureEvent(gesture.x, gesture.y, gesture.flags,

@@ -945,6 +945,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // this.
   ui::GestureRecognizer* GetGestureRecognizer();
 
+  // Returns the associated gesture consumer.
+  ui::GestureConsumer* GetGestureConsumer();
+
   // Called when the delegate's CanResize or CanMaximize changes.
   void OnSizeConstraintsChanged();
 

@@ -228,6 +228,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
       Widget::VisibilityTransition transition) = 0;
   virtual bool IsTranslucentWindowOpacitySupported() const = 0;
   virtual ui::GestureRecognizer* GetGestureRecognizer() = 0;
+  virtual ui::GestureConsumer* GetGestureConsumer() = 0;
   virtual void OnSizeConstraintsChanged() = 0;
   // Called before and after re-parenting of this or an ancestor widget.
   virtual void OnNativeViewHierarchyWillChange() = 0;

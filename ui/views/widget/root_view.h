@@ -124,6 +124,7 @@ class VIEWS_EXPORT RootView : public View,
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void SetMouseAndGestureHandler(View* new_handler) override;
+  void SetMouseHandler(View* new_mouse_handler) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateParentLayer() override;
 
@@ -171,6 +172,10 @@ class VIEWS_EXPORT RootView : public View,
       ui::EventType type,
       View* view,
       View* sibling) WARN_UNUSED_RESULT;
+
+  // Send synthesized gesture end events to `gesture_handler` before replacement
+  // if `gesture_handler` is in progress of gesture handling.
+  void MaybeNotifyGestureHandlerBeforeReplacement();
 
   // ui::EventDispatcherDelegate:
   bool CanDispatchToTarget(ui::EventTarget* target) override;

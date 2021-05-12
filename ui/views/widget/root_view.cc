@@ -22,6 +22,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -475,7 +476,6 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     // to set the gesture handler. Therefore we should reset the gesture handler
     // when mouse is released.
     SetMouseAndGestureHandler(nullptr);
-
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
     if (dispatch_details.dispatcher_destroyed)
@@ -637,11 +637,33 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   return event.handled();
 }
 
+void RootView::MaybeNotifyGestureHandlerBeforeReplacement() {
+  ui::GestureRecognizer* gesture_recognizer =
+      (gesture_handler_ && widget_ ? widget_->GetGestureRecognizer() : nullptr);
+  if (!gesture_recognizer)
+    return;
+
+  ui::GestureConsumer* gesture_consumer = widget_->GetGestureConsumer();
+  if (!gesture_recognizer->DoesConsumerHaveActiveTouch(gesture_consumer))
+    return;
+
+  gesture_recognizer->SendSynthesizedEndEvents(gesture_consumer);
+}
+
 void RootView::SetMouseAndGestureHandler(View* new_handler) {
-  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
-  explicit_mouse_handler_ = (new_handler != nullptr);
-  mouse_pressed_handler_ = new_handler;
+  SetMouseHandler(new_handler);
+
+  if (new_handler == gesture_handler_)
+    return;
+
+  MaybeNotifyGestureHandlerBeforeReplacement();
   gesture_handler_ = new_handler;
+}
+
+void RootView::SetMouseHandler(View* new_mouse_handler) {
+  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
+  explicit_mouse_handler_ = (new_mouse_handler != nullptr);
+  mouse_pressed_handler_ = new_mouse_handler;
   drag_info_.Reset();
 }
 

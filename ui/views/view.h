@@ -1077,6 +1077,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // view hierarchy, events won't be sent.
   virtual void SetMouseAndGestureHandler(View* new_handler);
 
+  // Sets a new mouse handler.
+  virtual void SetMouseHandler(View* new_handler);
+
   // Invoked when a key is pressed or released.
   // Subclasses should return true if the event has been processed and false
   // otherwise. If the event has not been processed, the parent will be given a

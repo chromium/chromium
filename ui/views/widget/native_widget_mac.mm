@@ -798,6 +798,11 @@ ui::GestureRecognizer* NativeWidgetMac::GetGestureRecognizer() {
   return recognizer.get();
 }
 
+ui::GestureConsumer* NativeWidgetMac::GetGestureConsumer() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void NativeWidgetMac::OnSizeConstraintsChanged() {
   Widget* widget = GetWidget();
   GetNSWindowMojo()->SetSizeConstraints(

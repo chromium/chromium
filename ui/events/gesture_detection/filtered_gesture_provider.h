@@ -51,6 +51,9 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
 
   void ResetGestureHandlingState();
 
+  // Synthesizes and propagates gesture end events.
+  void SendSynthesizedEndEvents();
+
   // Methods delegated to |gesture_provider_|.
   void ResetDetection();
   void SetMultiTouchZoomSupportEnabled(bool enabled);

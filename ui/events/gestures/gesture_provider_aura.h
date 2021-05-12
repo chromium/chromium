@@ -51,6 +51,9 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
 
   void ResetGestureHandlingState();
 
+  // Synthesizes gesture end events and sends to the associated consumer.
+  void SendSynthesizedEndEvents();
+
   // GestureProviderClient implementation
   void OnGestureEvent(const GestureEventData& gesture) override;
   bool RequiresDoubleTapGestureEvents() const override;

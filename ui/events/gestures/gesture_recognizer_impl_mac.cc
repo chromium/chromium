@@ -75,4 +75,12 @@ void GestureRecognizerImplMac::AddGestureEventHelper(
 void GestureRecognizerImplMac::RemoveGestureEventHelper(
     GestureEventHelper* helper) {}
 
+bool GestureRecognizerImplMac::DoesConsumerHaveActiveTouch(
+    GestureConsumer* consumer) const {
+  return false;
+}
+
+void GestureRecognizerImplMac::SendSynthesizedEndEvents(
+    GestureConsumer* consumer) {}
+
 }  // namespace ui

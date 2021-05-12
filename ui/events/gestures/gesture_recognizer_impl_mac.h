@@ -50,6 +50,8 @@ class EVENTS_EXPORT GestureRecognizerImplMac : public GestureRecognizer {
   bool CancelActiveTouches(GestureConsumer* consumer) override;
   void AddGestureEventHelper(GestureEventHelper* helper) override;
   void RemoveGestureEventHelper(GestureEventHelper* helper) override;
+  bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const override;
+  void SendSynthesizedEndEvents(GestureConsumer* consumer) override;
 
   DISALLOW_COPY_AND_ASSIGN(GestureRecognizerImplMac);
 };
