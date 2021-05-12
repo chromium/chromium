@@ -604,9 +604,29 @@ class BrowserAutofillManagerTest : public testing::Test {
     return static_cast<CardUnmaskDelegate*>(full_card_request);
   }
 
-  void DisableCreditCardAutofill() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillCreditCardAblationExperiment);
+  void DisableCreditCardAutofillViaAblation(
+      base::test::ScopedFeatureList& scoped_feature_list) {
+    base::FieldTrialParams feature_parameters{
+        {features::kAutofillAblationStudyEnabledForAddressesParam.name,
+         "false"},
+        {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
+        {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
+         "1000"},
+    };
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillEnableAblationStudy, feature_parameters);
+  }
+
+  void DisableAddressAutofillViaAblation(
+      base::test::ScopedFeatureList& scoped_feature_list) {
+    base::FieldTrialParams feature_parameters{
+        {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
+        {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "false"},
+        {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
+         "1000"},
+    };
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillEnableAblationStudy, feature_parameters);
   }
 
   // Wrappers around the TestAutofillExternalDelegate::GetSuggestions call that
@@ -2094,12 +2114,28 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        ShouldShowAddressSuggestionsIfCreditCardAutofillDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      features::kAutofillCreditCardAblationExperiment);
+  DisableCreditCardAutofillViaAblation(features);
 
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+  FormFieldData field = form.fields[0];
+
+  GetAutofillSuggestions(form, field);
+  // Verify that suggestions are returned.
+  EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
+}
+
+TEST_P(BrowserAutofillManagerStructuredProfileTest,
+       ShouldShowCreditCardSuggestionsIfAddressAutofillDisabled) {
+  base::test::ScopedFeatureList features;
+  DisableAddressAutofillViaAblation(features);
+
+  // Set up our form data.
+  FormData form;
+  CreateTestCreditCardFormData(&form, true, false);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
   FormFieldData field = form.fields[0];
@@ -2250,11 +2286,28 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
-  DisableCreditCardAutofill();
+  DisableCreditCardAutofillViaAblation(scoped_feature_list_);
 
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  FormFieldData field = form.fields[0];
+  GetAutofillSuggestions(form, field);
+
+  // Check that credit card suggestions will not be available.
+  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       ShouldNotShowAddressSuggestionsIfAddressAutofillDisabled) {
+  DisableAddressAutofillViaAblation(scoped_feature_list_);
+
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
@@ -9129,6 +9182,22 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
   CheckSuggestionsAvailableIfScreenReaderRunning();
 }
 
+TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
+  DisableAddressAutofillViaAblation(scoped_feature_list_);
+
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  // Clear the form action.
+  form.action = GURL();
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1],
+                                                    gfx::RectF());
+  CheckNoSuggestionsAvailableOnFieldFocus();
+}
+
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {
   // Set up our form data.
   FormData form;
@@ -9160,9 +9229,7 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillCreditCardAblationExperiment);
+  DisableCreditCardAutofillViaAblation(scoped_feature_list_);
 
   // Set up our form data.
   FormData form;

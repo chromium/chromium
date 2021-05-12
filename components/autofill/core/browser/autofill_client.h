@@ -57,6 +57,7 @@ enum class Channel;
 namespace autofill {
 
 class AddressNormalizer;
+class AutofillAblationStudy;
 class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;
@@ -559,6 +560,8 @@ class AutofillClient : public RiskDataLoader {
   // Returns a LogManager instance. May be null for platforms that don't support
   // this.
   virtual LogManager* GetLogManager() const;
+
+  virtual const AutofillAblationStudy& GetAblationStudy() const;
 
 #if defined(OS_IOS)
   // Checks whether the current query is the most recent one.

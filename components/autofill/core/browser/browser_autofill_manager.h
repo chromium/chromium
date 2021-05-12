@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
@@ -414,9 +415,8 @@ class BrowserAutofillManager
   // Indicates the reason why autofill suggestions are suppressed.
   enum class SuppressReason {
     kNotSuppressed,
-    // Credit card suggestions are not shown because an ablation experiment is
-    // enabled.
-    kCreditCardsAblation,
+    // Suggestions are not shown because an ablation experiment is enabled.
+    kAblation,
     // Address suggestions are not shown because the field is annotated with
     // autocomplete=off and the directive is being observed by the browser.
     kAutocompleteOff,
@@ -437,6 +437,26 @@ class BrowserAutofillManager
     // Flag to indicate whether all suggestions come from Google Payments.
     bool should_display_gpay_logo = false;
     SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
+    // Indicates whether the form filling is under ablation, meaning that
+    // autofill popups are suppressed.
+    AblationGroup ablation_group = AblationGroup::kDefault;
+    // Indicates whether the form filling is under ablation, under the condition
+    // that the user has data to fill on file. All users that don't have data
+    // to fill are in the AbationGroup::kDefault.
+    // Note that it is possible (due to implementation details) that this is
+    // incorrectly set to kDefault: If the user has typed some characters into a
+    // text field, it may look like no suggestions are available, but in
+    // practice the suggestions are just filtered out (Autofill only suggests
+    // matches that start with the typed prefix). Any consumers of the
+    // conditional_ablation_group attribute should monitor it over time.
+    // Any transitions of conditional_ablation_group from {kAblation,
+    // kControl} to kDefault should just be ignored and the previously reported
+    // value should be used. As the ablation experience is stable within a day,
+    // such a transition typically indicates that the user has type a prefix
+    // which led to the filtering of all autofillable data. In short: once
+    // either kAblation or kControl were reported, consumers should stick to
+    // that.
+    AblationGroup conditional_ablation_group = AblationGroup::kDefault;
   };
 
   // CreditCardAccessManager::Accessor

@@ -36,9 +36,6 @@ const base::Feature kAutofillAutoTriggerManualFallbackForCards{
     "AutofillAutoTriggerManualFallbackForCards",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillCreditCardAblationExperiment{
-    "AutofillCreditCardAblationExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the use of platform authenticators through WebAuthn to retrieve
 // credit cards from Google payments.
 const base::Feature kAutofillCreditCardAuthentication{

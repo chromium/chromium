@@ -133,6 +133,11 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
       break;
   }
 
+  // Do some basic checks for plausibility. Note that for testing purposes we
+  // allow that ablation_weight == 1000. In this case 100% of forms are
+  // in the ablation case. In practice ablation_weight * 2 <= total_weight
+  // should be true to get meaningful results (have an equally sized ablation
+  // and control group).
   int ablation_weight = kAutofillAblationStudyAblationWeightPerMilleParam.Get();
   if (ablation_weight <= 0 || ablation_weight > 1000)
     return AblationGroup::kDefault;

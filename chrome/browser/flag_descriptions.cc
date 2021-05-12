@@ -610,11 +610,6 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnableAutofillCreditCardAblationExperimentDisplayName[] =
-    "Credit card autofill ablation experiment.";
-const char kEnableAutofillCreditCardAblationExperimentDescription[] =
-    "If enabled, credit card autofill suggestions will not display.";
-
 const char kEnableAutofillCreditCardAuthenticationName[] =
     "Allow using platform authenticators to retrieve server cards";
 const char kEnableAutofillCreditCardAuthenticationDescription[] =

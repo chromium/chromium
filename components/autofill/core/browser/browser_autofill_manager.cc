@@ -956,7 +956,7 @@ void BrowserAutofillManager::OnQueryFormFieldAutofillImpl(
       case SuppressReason::kNotSuppressed:
         break;
 
-      case SuppressReason::kCreditCardsAblation:
+      case SuppressReason::kAblation:
         autocomplete_history_manager_->CancelPendingQueries(this);
         external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                                   autoselect_first_suggestion);
@@ -2584,18 +2584,31 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     *suggestions =
         GetCreditCardSuggestions(field, context->focused_field->Type(),
                                  &context->should_display_gpay_logo);
-
-    // Logic for disabling/ablating credit card autofill.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillCreditCardAblationExperiment) &&
-        !suggestions->empty()) {
-      context->suppress_reason = SuppressReason::kCreditCardsAblation;
-      suggestions->clear();
-      return;
-    }
   } else {
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);
+  }
+
+  // Ablation experiment:
+  FormTypeForAblationStudy form_type = context->is_filling_credit_card
+                                           ? FormTypeForAblationStudy::kPayment
+                                           : FormTypeForAblationStudy::kAddress;
+  // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
+  // no ablation happens in the following.
+  AblationGroup ablation_group = client()->GetAblationStudy().GetAblationGroup(
+      client()->GetLastCommittedURL(), form_type);
+  context->ablation_group = ablation_group;
+  if (!suggestions->empty()) {
+    // The conditional_ablation_group only applies to situations where
+    // suggestions are available. If there are no suggestions, we stick to
+    // kDefault.
+    context->conditional_ablation_group = ablation_group;
+    // Logic for disabling/ablating autofill.
+    if (ablation_group == AblationGroup::kAblation) {
+      context->suppress_reason = SuppressReason::kAblation;
+      suggestions->clear();
+      return;
+    }
   }
 
   // Returns early if no suggestion is available or suggestions are not for

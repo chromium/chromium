@@ -18,7 +18,6 @@ namespace features {
 // All features in alphabetical order.
 extern const base::Feature kAutofillAlwaysReturnCloudTokenizedCard;
 extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
-extern const base::Feature kAutofillCreditCardAblationExperiment;
 extern const base::Feature kAutofillCreditCardAuthentication;
 extern const base::Feature kAutofillCreditCardUploadFeedback;
 extern const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo;

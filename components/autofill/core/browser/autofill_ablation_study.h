@@ -45,6 +45,8 @@ uint64_t GetAblationHash(const std::string& seed,
 // combination of [site * browsing session * day]: Different sites may have
 // ablation configurations. Restarting the browser or waiting for the next day
 // may lead to different ablation configurations as well.
+// The ablation is controlled by
+// autofill::features::kAutofillEnableAblationStudy.
 class AutofillAblationStudy {
  public:
   AutofillAblationStudy();
