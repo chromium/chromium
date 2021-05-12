@@ -88,7 +88,7 @@ void NotificationUIManagerImpl::Add(
           profile_notification->notification()));
 
   if (profile && profile->IsOffTheRecord())
-    observed_otr_profiles_.Add(profile);
+    observed_otr_profiles_.AddObservation(profile);
 }
 
 bool NotificationUIManagerImpl::Update(
@@ -217,7 +217,7 @@ void NotificationUIManagerImpl::OnNotificationRemoved(const std::string& id,
 // ProfileObserver
 
 void NotificationUIManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_otr_profiles_.Remove(profile);
+  observed_otr_profiles_.RemoveObservation(profile);
 
   // Same pattern as CancelAllBySourceOrigin.
   for (auto loopiter = profile_notifications_.begin();

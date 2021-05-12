@@ -69,12 +69,12 @@ void NotificationDisplayQueue::SetNotificationBlockers(
     NotificationBlockers blockers) {
   // Remove old blockers from the observer.
   for (auto& blocker : blockers_)
-    notification_blocker_observer_.Remove(blocker.get());
+    notification_blocker_observations_.RemoveObservation(blocker.get());
 
   // Add new blockers and observe them.
   blockers_ = std::move(blockers);
   for (auto& blocker : blockers_)
-    notification_blocker_observer_.Add(blocker.get());
+    notification_blocker_observations_.AddObservation(blocker.get());
 
   // Update new state with new blockers.
   MaybeDisplayQueuedNotifications();
@@ -82,7 +82,7 @@ void NotificationDisplayQueue::SetNotificationBlockers(
 
 void NotificationDisplayQueue::AddNotificationBlocker(
     std::unique_ptr<NotificationBlocker> blocker) {
-  notification_blocker_observer_.Add(blocker.get());
+  notification_blocker_observations_.AddObservation(blocker.get());
   blockers_.push_back(std::move(blocker));
 }
 

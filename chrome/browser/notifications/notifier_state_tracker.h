@@ -13,7 +13,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #endif
@@ -80,9 +80,9 @@ class NotifierStateTracker : public KeyedService
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // An observer to listen when extension is uninstalled.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 #endif
 };
 

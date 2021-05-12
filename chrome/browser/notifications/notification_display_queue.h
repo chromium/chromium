@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -107,8 +107,9 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   std::vector<QueuedNotification> queued_notifications_;
 
   // Observer for the list of |blockers_|.
-  ScopedObserver<NotificationBlocker, NotificationBlocker::Observer>
-      notification_blocker_observer_{this};
+  base::ScopedMultiSourceObservation<NotificationBlocker,
+                                     NotificationBlocker::Observer>
+      notification_blocker_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_QUEUE_H_

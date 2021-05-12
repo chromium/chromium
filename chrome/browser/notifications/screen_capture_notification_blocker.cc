@@ -45,9 +45,9 @@ ScreenCaptureNotificationBlocker::ScreenCaptureNotificationBlocker(
     NotificationDisplayService* notification_display_service)
     : notification_display_service_(notification_display_service) {
   DCHECK(notification_display_service_);
-  observer_.Add(MediaCaptureDevicesDispatcher::GetInstance()
-                    ->GetMediaStreamCaptureIndicator()
-                    .get());
+  observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                           ->GetMediaStreamCaptureIndicator()
+                           .get());
 }
 
 ScreenCaptureNotificationBlocker::~ScreenCaptureNotificationBlocker() = default;

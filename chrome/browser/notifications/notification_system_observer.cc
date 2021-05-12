@@ -24,7 +24,7 @@ NotificationSystemObserver::NotificationSystemObserver(
                  content::NotificationService::AllSources());
   for (auto* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    extension_registry_observer_.Add(
+    extension_registry_observations_.AddObservation(
         extensions::ExtensionRegistry::Get(profile));
   }
 }
@@ -47,8 +47,8 @@ void NotificationSystemObserver::Observe(
       // If |this| was created after the profile was created but before the
       // ADDED notification was sent, we may be already observing it. |this| is
       // created lazily so it's not easy to predict construction order.
-      if (!extension_registry_observer_.IsObserving(registry))
-        extension_registry_observer_.Add(registry);
+      if (!extension_registry_observations_.IsObservingSource(registry))
+        extension_registry_observations_.AddObservation(registry);
       break;
     }
     default:
@@ -65,5 +65,5 @@ void NotificationSystemObserver::OnExtensionUnloaded(
 
 void NotificationSystemObserver::OnShutdown(
     extensions::ExtensionRegistry* registry) {
-  extension_registry_observer_.Remove(registry);
+  extension_registry_observations_.RemoveObservation(registry);
 }

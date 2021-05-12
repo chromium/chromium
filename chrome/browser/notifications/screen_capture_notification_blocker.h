@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/muted_notification_handler.h"
@@ -87,9 +87,9 @@ class ScreenCaptureNotificationBlocker
   // owns |this| so a raw pointer is safe here.
   NotificationDisplayService* notification_display_service_;
 
-  ScopedObserver<MediaStreamCaptureIndicator,
-                 MediaStreamCaptureIndicator::Observer>
-      observer_{this};
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      observation_{this};
 
   // Storing raw pointers here is fine because MediaStreamCaptureIndicator
   // notifies us before the WebContents is destroyed.

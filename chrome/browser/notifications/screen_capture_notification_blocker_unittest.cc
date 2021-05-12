@@ -5,7 +5,7 @@
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -205,7 +205,7 @@ TEST_F(ScreenCaptureNotificationBlockerTest,
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
           .get();
-  EXPECT_TRUE(blocker().observer_.IsObserving(indicator));
+  EXPECT_TRUE(blocker().observation_.IsObservingSource(indicator));
 }
 
 TEST_F(ScreenCaptureNotificationBlockerTest, ShowsMutedNotification) {
@@ -309,9 +309,9 @@ TEST_F(ScreenCaptureNotificationBlockerTest, ShowsMutedNotificationAfterClose) {
 
 TEST_F(ScreenCaptureNotificationBlockerTest, ShowAction) {
   MockNotificationBlockerObserver observer;
-  ScopedObserver<NotificationBlocker, NotificationBlocker::Observer>
+  base::ScopedObservation<NotificationBlocker, NotificationBlocker::Observer>
       scoped_observer(&observer);
-  scoped_observer.Add(&blocker());
+  scoped_observer.Observe(&blocker());
 
   EXPECT_CALL(observer, OnBlockingStateChanged);
   blocker().OnIsCapturingDisplayChanged(

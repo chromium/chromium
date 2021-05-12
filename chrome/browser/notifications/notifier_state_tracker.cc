@@ -41,12 +41,7 @@ void NotifierStateTracker::RegisterProfilePrefs(
 }
 
 NotifierStateTracker::NotifierStateTracker(Profile* profile)
-    : profile_(profile)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      ,
-      extension_registry_observer_(this)
-#endif
-{
+    : profile_(profile) {
   OnStringListPrefChanged(
       prefs::kMessageCenterDisabledExtensionIds, &disabled_extension_ids_);
 
@@ -59,7 +54,7 @@ NotifierStateTracker::NotifierStateTracker(Profile* profile)
           base::Unretained(&disabled_extension_ids_)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 #endif
 }
