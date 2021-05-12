@@ -9,6 +9,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
+import './omnibox.mojom-lite.js';
 import './realbox.mojom-lite.js';
 
 /**

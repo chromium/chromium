@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+   <include name="IDR_LOCAL_NTP_ICONS_CALCULATOR"
+           file="resources/local_ntp/icons/calculator.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_CLOCK"
+           file="resources/local_ntp/icons/clock.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_DOCS"
+           file="resources/local_ntp/icons/drive_docs.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_FOLDER"
+           file="resources/local_ntp/icons/drive_folder.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_FORM"
+           file="resources/local_ntp/icons/drive_form.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_IMAGE"
+           file="resources/local_ntp/icons/drive_image.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_LOGO"
+           file="resources/local_ntp/icons/drive_logo.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_PDF"
+           file="resources/local_ntp/icons/drive_pdf.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_SHEETS"
+           file="resources/local_ntp/icons/drive_sheets.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_SLIDES"
+           file="resources/local_ntp/icons/drive_slides.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_DRIVE_VIDEO"
+           file="resources/local_ntp/icons/drive_video.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_EXTENSION_APP"
+           file="resources/local_ntp/icons/extension_app.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_PAGE"
+           file="resources/local_ntp/icons/page.svg" type="BINDATA" />
+   <include name="IDR_LOCAL_NTP_ICONS_TRENDING_UP"
+           file="resources/local_ntp/icons/trending_up.svg" type="BINDATA" />
+</grit-part>

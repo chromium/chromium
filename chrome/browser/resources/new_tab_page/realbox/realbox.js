@@ -156,7 +156,7 @@ class RealboxElement extends mixinBehaviors
       },
 
       /**
-       * @type {?realbox.mojom.AutocompleteResult}
+       * @type {?search.mojom.AutocompleteResult}
        * @private
        */
       result_: {
@@ -165,7 +165,7 @@ class RealboxElement extends mixinBehaviors
 
       /**
        * The currently selected match, if any.
-       * @type {?realbox.mojom.AutocompleteMatch}
+       * @type {?search.mojom.AutocompleteMatch}
        * @private
        */
       selectedMatch_: {
@@ -270,7 +270,7 @@ class RealboxElement extends mixinBehaviors
 
   /**
    * @private
-   * @param {realbox.mojom.AutocompleteResult} result
+   * @param {search.mojom.AutocompleteResult} result
    */
   onAutocompleteResultChanged_(result) {
     if (this.lastQueriedInput_ === null ||
@@ -695,7 +695,7 @@ class RealboxElement extends mixinBehaviors
   //============================================================================
 
   /**
-   * @return {?realbox.mojom.AutocompleteMatch}
+   * @return {?search.mojom.AutocompleteMatch}
    * @private
    */
   computeSelectedMatch_() {

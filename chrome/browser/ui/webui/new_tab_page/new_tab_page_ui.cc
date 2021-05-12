@@ -16,6 +16,7 @@
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/task_module/task_module_handler.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/search/omnibox_mojo_utils.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -77,6 +78,18 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
                              .GoogleBaseURLValue())
                         .spec());
   source->AddDouble("navigationStartTime", navigation_start_time.ToJsTime());
+
+  // Realbox.
+  source->AddBoolean(
+      "realboxMatchOmniboxTheme",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));
+  source->AddString(
+      "realboxDefaultIcon",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
+          ? omnibox::kGoogleGIconResourceName
+          : omnibox::kSearchIconResourceName);
+  source->AddString("realboxHint", l10n_util::GetStringUTF8(
+                                       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));
 
   source->AddBoolean(
       "handleMostVisitedNavigationExplicitly",
@@ -167,6 +180,17 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
       {"waiting", IDS_NEW_TAB_VOICE_WAITING},
 
+      // Realbox.
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
+      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
+      {"removeSuggestionA11ySuffix", IDS_ACC_REMOVE_SUGGESTION_SUFFIX},
+      {"removeSuggestionA11yPrefix", IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX},
+      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON},
+      {"hideSection", IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"showSection", IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON},
+
       // Logo/doodle.
       {"copyLink", IDS_NTP_DOODLE_SHARE_DIALOG_COPY_LABEL},
       {"doodleLink", IDS_NTP_DOODLE_SHARE_DIALOG_LINK_LABEL},
@@ -242,6 +266,29 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   };
   source->AddLocalizedStrings(kStrings);
 
+  // Register images that are purposefully not inlined in the HTML and instead
+  // are set in Javascript.
+  static constexpr webui::ResourcePath kImages[] = {
+      {omnibox::kGoogleGIconResourceName,
+       IDR_WEBUI_IMAGES_200_LOGO_GOOGLEG_PNG},
+      {omnibox::kCalculatorIconResourceName, IDR_LOCAL_NTP_ICONS_CALCULATOR},
+      {omnibox::kClockIconResourceName, IDR_LOCAL_NTP_ICONS_CLOCK},
+      {omnibox::kDriveDocsIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_DOCS},
+      {omnibox::kDriveFolderIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_FOLDER},
+      {omnibox::kDriveFormIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_FORM},
+      {omnibox::kDriveImageIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_IMAGE},
+      {omnibox::kDriveLogoIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_LOGO},
+      {omnibox::kDrivePdfIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_PDF},
+      {omnibox::kDriveSheetsIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_SHEETS},
+      {omnibox::kDriveSlidesIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_SLIDES},
+      {omnibox::kDriveVideoIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_VIDEO},
+      {omnibox::kExtensionAppIconResourceName,
+       IDR_LOCAL_NTP_ICONS_EXTENSION_APP},
+      {omnibox::kPageIconResourceName, IDR_LOCAL_NTP_ICONS_PAGE},
+      {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG},
+      {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP}};
+  source->AddResourcePaths(kImages);
+
   source->AddBoolean(
       "recipeTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule));
@@ -259,8 +306,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
           "true");
-
-  RealboxHandler::SetupWebUIDataSource(source);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),

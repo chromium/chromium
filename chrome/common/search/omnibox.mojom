@@ -1,0 +1,59 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module search.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// See components/omnibox/browser/autocomplete_match.h.
+struct ACMatchClassification {
+  uint32 offset;
+  int32 style;
+};
+
+struct AutocompleteMatch {
+  bool allowed_to_be_default_match;
+  mojo_base.mojom.String16 contents;
+  array<ACMatchClassification> contents_class;
+  mojo_base.mojom.String16 description;
+  array<ACMatchClassification> description_class;
+  // if a favicon is available for |destination_url| it is fetched in C++ and
+  // the resulting data URL is sent to JS via AutocompleteMatchImageAvailable
+  // along with the |destination_url| and the match index which are used to
+  // identify the appropriate match.
+  url.mojom.Url destination_url;
+  mojo_base.mojom.String16 inline_autocompletion;
+  mojo_base.mojom.String16 fill_into_edit;
+  // The url for the suggestion icon. This is a relative url pointing to a
+  // bundled resource and is used directly in CSS to show the icon.
+  string icon_url;
+  // Used to paint a placeholder while fetching |image_url|. These two fields
+  // are valid for entity suggestions only. Entity suggestions have a |type| of
+  // 'search-suggest-entity'.
+  string image_dominant_color;
+  // The image url for entity suggestions. |image_url| is an external url and
+  // therefore is fetched in C++ and the resulting data URL is sent to JS via
+  // AutocompleteMatchImageAvailable along with the |image_url| and the match
+  // index which are used to identify the appropriate match.
+  string image_url;
+  bool is_search_type;  // Result of AutocompleteMatch::IsSearchType().
+  string type;  // Result of AutocompleteMatchType::ToString().
+  bool swap_contents_and_description;
+  // ID of the group the suggestion belongs to. 0 if it does not belong to any.
+  int32 suggestion_group_id;
+  bool supports_deletion;
+};
+
+struct SuggestionGroup {
+  mojo_base.mojom.String16 header;  // Header for suggestion group.
+  bool hidden;  // Whether suggestion group is allowed to appear in the results.
+};
+
+struct AutocompleteResult {
+  mojo_base.mojom.String16 input;
+  // Map of suggestion group IDs to their respective info.
+  map<int32, SuggestionGroup> suggestion_groups_map;
+  array<AutocompleteMatch> matches;
+};

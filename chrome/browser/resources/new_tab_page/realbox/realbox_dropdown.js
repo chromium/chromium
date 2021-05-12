@@ -34,7 +34,7 @@ class RealboxDropdownElement extends PolymerElement {
       //========================================================================
 
       /**
-       * @type {!realbox.mojom.AutocompleteResult}
+       * @type {!search.mojom.AutocompleteResult}
        */
       result: {
         type: Object,
@@ -342,7 +342,7 @@ class RealboxDropdownElement extends PolymerElement {
 
   /**
    * @param {number} groupId
-   * @returns {!function(!realbox.mojom.AutocompleteMatch):boolean} The filter
+   * @returns {!function(!search.mojom.AutocompleteMatch):boolean} The filter
    *     function to filter matches that belong to the given suggestion group
    *     ID.
    * @private
