@@ -178,7 +178,6 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   chromeos::FakeSeneschalClient* fake_seneschal_client_;
 

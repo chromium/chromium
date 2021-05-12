@@ -269,9 +269,9 @@ class CrostiniManagerTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
+  // Owned by chromeos::DBusThreadManager
   chromeos::FakeAnomalyDetectorClient* fake_anomaly_detector_client_;
 
   std::unique_ptr<base::RunLoop>

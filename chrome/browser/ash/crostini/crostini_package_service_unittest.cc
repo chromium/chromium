@@ -357,7 +357,6 @@ class CrostiniPackageServiceTest : public testing::Test {
     fake_cicerone_client_->InstallLinuxPackageProgress(signal);
   }
 
-  // Owned by DBusThreadManager
   FakeCiceroneClient* fake_cicerone_client_ = nullptr;
   FakeSeneschalClient* fake_seneschal_client_ = nullptr;
 

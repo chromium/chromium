@@ -50,7 +50,6 @@ class BorealisLaunchWatcherTest : public testing::Test {
     profile_.reset();
   }
 
-  // Owned by DBusThreadManager
   chromeos::FakeCiceroneClient* fake_cicerone_client_ = nullptr;
 
   std::unique_ptr<TestingProfile> profile_;

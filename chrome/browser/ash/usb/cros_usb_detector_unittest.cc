@@ -280,9 +280,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   chromeos::disks::MockDiskMountManager* mock_disk_mount_manager_;
   chromeos::disks::DiskMountManager::DiskMap disks_;
 
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
+  // Owned by chromeos::DBusThreadManager
   chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;

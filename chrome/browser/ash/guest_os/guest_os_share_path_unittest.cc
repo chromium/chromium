@@ -325,7 +325,6 @@ class GuestOsSharePathTest : public testing::Test {
   base::FilePath drivefs_;
   std::unique_ptr<file_manager::Volume> volume_downloads_;
 
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeSeneschalClient* fake_seneschal_client_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
 

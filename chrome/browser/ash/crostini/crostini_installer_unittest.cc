@@ -175,7 +175,6 @@ class CrostiniInstallerTest : public testing::Test {
   // Owned by DiskMountManager
   chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
 
-  // Owned by chromeos::DBusThreadManager
   WaitingFakeConciergeClient* waiting_fake_concierge_client_ = nullptr;
 
   std::unique_ptr<TestingProfile> profile_;

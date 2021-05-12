@@ -78,9 +78,9 @@ class BorealisTasksTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BorealisContext> context_;
   content::BrowserTaskEnvironment task_environment_;
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeConciergeClient* fake_concierge_client_;
   chromeos::FakeCiceroneClient* fake_cicerone_client_;
+  // Owned by chromeos::DBusThreadManager
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
 
  private:

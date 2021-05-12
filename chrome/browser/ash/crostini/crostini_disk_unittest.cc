@@ -98,7 +98,6 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeConciergeClient* fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
