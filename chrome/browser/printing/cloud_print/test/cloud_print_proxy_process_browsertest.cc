@@ -141,7 +141,7 @@ bool TestServiceProcess::Initialize(
 
   base::Thread::Options options(base::MessagePumpType::IO, 0);
   io_thread_ = std::make_unique<base::Thread>("TestServiceProcess_IO");
-  return io_thread_->StartWithOptions(options);
+  return io_thread_->StartWithOptions(std::move(options));
 }
 
 // This mocks the service side IPC message handler, allowing us to have a
