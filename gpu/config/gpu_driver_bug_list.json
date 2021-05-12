@@ -3683,6 +3683,18 @@
       "features": [
         "disable_accelerated_vp9_profile2_decode"
       ]
+    },
+    {
+      "id": 374,
+      "cr_bugs": [1087422],
+      "description": "VP9 resilient mode causes corruptions with AMD VCN HW decoders, using DXVA",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disallow_vp9_resilient_dxva_decoding"
+      ]
     }
   ]
 }

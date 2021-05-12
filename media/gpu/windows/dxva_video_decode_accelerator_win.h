@@ -65,6 +65,7 @@ class ConfigChangeDetector {
   virtual VideoColorSpace current_color_space(
       const VideoColorSpace& container_color_space) const = 0;
   virtual bool IsYUV420() const;
+  virtual bool is_vp9_resilient_mode() const;
   bool config_changed() const { return config_changed_; }
 
  protected:
@@ -611,6 +612,8 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   // Enables hardware acceleration for VP8/VP9 video decoding.
   const bool enable_accelerated_vp8_decode_;
   const bool enable_accelerated_vp9_decode_;
+
+  const bool disallow_vp9_resilient_dxva_decoding_;
 
   // The media foundation H.264 decoder has problems handling changes like
   // resolution change, bitrate change etc. If we reinitialize the decoder
