@@ -3097,12 +3097,10 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   }
 }
 
-// Test pushState in a new window's initial empty document after it has done a
-// document.open() (inheriting the opener's URL).
-// https://crbug.com/1189026: disabled because document.open() no longer makes
-// pushState possible.
+// Test a same-document navigation in a new window's initial empty document to
+// ensure it is classified correctly.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       DISABLED_PushStateAfterDocumentOpenInNewWindow) {
+                       SameDocumentInInitialEmptyDocument) {
   GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_window_url));
 
@@ -3116,31 +3114,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FALSE(controller.GetLastCommittedEntry());
 
   {
-    // Do a document.open() on the blank window, generating a same-document
-    // navigation.
-    TestNavigationObserver nav_observer(new_contents);
-    EXPECT_TRUE(ExecJs(contents(), R"(
-          last_opened_window.document.open();
-          last_opened_window.document.write("foo");
-          last_opened_window.document.close();
-      )"));
-    nav_observer.Wait();
-
-    // The document.open() changed the window's URL to be the same as the main
-    // tab's URL, but didn't add a new entry because the navigation is
-    // ignored (see https://crbug.com/1190111).
-    EXPECT_EQ(main_window_url,
-              new_contents->GetFrameTree()->root()->current_url());
-    EXPECT_EQ(0, controller.GetEntryCount());
-  }
-
-  {
-    // Do a pushState (now that document.open has made it possible), generating
-    // a same-document navigation.
+    // Do a same-document navigation.
     LoadCommittedDetailsObserver load_details_observer(new_contents);
     FrameNavigateParamsCapturer capturer(root);
-    EXPECT_TRUE(ExecJs(contents(),
-                       "last_opened_window.history.pushState({}, '', 'foo');"));
+    EXPECT_TRUE(ExecJs(contents(), "last_opened_window.location.hash='foo';"));
     capturer.Wait();
     load_details_observer.Wait();
 
