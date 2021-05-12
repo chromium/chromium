@@ -8,7 +8,19 @@
  * guest OSes.
  */
 
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordSettingChange} from '../metrics_recorder.m.js';
+
+import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-guest-os-shared-usb-devices',
 
   behaviors: [I18nBehavior, WebUIListenerBehavior],
@@ -36,12 +48,12 @@ Polymer({
     },
   },
 
-  /** @private {settings.GuestOsBrowserProxy} */
+  /** @private {GuestOsBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.GuestOsBrowserProxyImpl.getInstance();
+    this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
     this.addWebUIListener(
         'guest-os-shared-usb-devices-changed',
         this.onGuestOsSharedUsbDevicesChanged_.bind(this));
@@ -72,7 +84,7 @@ Polymer({
     }
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), device.guid, event.target.checked);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -85,7 +97,7 @@ Polymer({
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**

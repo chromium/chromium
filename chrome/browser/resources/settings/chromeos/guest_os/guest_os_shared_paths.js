@@ -7,7 +7,20 @@
  * 'guest-os-shared-paths' is the settings shared paths subpage for guest OSes.
  */
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '../../settings_shared_css.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordSettingChange} from '../metrics_recorder.m.js';
+
+import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-guest-os-shared-paths',
 
   behaviors: [I18nBehavior],
@@ -58,7 +71,7 @@ Polymer({
         vmPaths.push(path);
       }
     }
-    settings.GuestOsBrowserProxyImpl.getInstance()
+    GuestOsBrowserProxyImpl.getInstance()
         .getGuestOsSharedPathsDisplayText(vmPaths)
         .then(text => {
           this.sharedPaths_ = vmPaths.map(
@@ -72,14 +85,14 @@ Polymer({
    */
   removeSharedPath_(path) {
     this.sharedPathWhichFailedRemoval_ = null;
-    settings.GuestOsBrowserProxyImpl.getInstance()
+    GuestOsBrowserProxyImpl.getInstance()
         .removeGuestOsSharedPath(this.vmName_(), path)
         .then(success => {
           if (!success) {
             this.sharedPathWhichFailedRemoval_ = path;
           }
         });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**

@@ -289,6 +289,8 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html",
   "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html",
   "chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_page.html",
+  "chrome/browser/resources/settings/chromeos/guest_os/guest_os_shared_paths.html",
+  "chrome/browser/resources/settings/chromeos/guest_os/guest_os_shared_usb_devices.html",
   "chrome/browser/resources/settings/chromeos/os_files_page/os_files_page.html",
   "chrome/browser/resources/settings/chromeos/os_files_page/smb_shares_page.html",
   "chrome/browser/resources/settings/chromeos/os_languages_page/add_spellcheck_languages_dialog.html",
