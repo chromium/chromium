@@ -1403,8 +1403,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // Tests that updating an unpacked extension with modified scripts works
 // properly -- we expect that the new script will execute, rather than the
 // previous one.
+//
+// Disabled because flaky: https://crbug.com/1208363
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       UpdateUnpackedExtension) {
+                       DISABLED_UpdateUnpackedExtension) {
   constexpr char kManifest1[] =
       R"({
            "name": "Test Extension",
