@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -27,6 +28,8 @@
 @property(nonatomic, strong) UIImage* selectedIdentityAvatar;
 // NO until the mediator is started.
 @property(nonatomic, assign) BOOL started;
+// Authentication service for identities.
+@property(nonatomic, assign) AuthenticationService* authenticationService;
 // Pref service to retrieve preference values.
 @property(nonatomic, assign) PrefService* prefService;
 
@@ -41,11 +44,14 @@
 
 - (instancetype)initWithUnifiedConsentViewController:
                     (UnifiedConsentViewController*)viewController
+                               authenticationService:
+                                   (AuthenticationService*)authenticationService
                                          prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _prefService = prefService;
     _unifiedConsentViewController = viewController;
+    _authenticationService = authenticationService;
     _identityServiceObserver =
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
@@ -61,13 +67,8 @@
 - (void)start {
   DCHECK(self.prefService);
 
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(self.prefService);
-  if (identities.count != 0) {
-    self.selectedIdentity = identities[0];
-  }
+  self.selectedIdentity = [self findDefaultSelectedIdentity];
+
   // Make sure the view is loaded so the mediator can set it up.
   [self.unifiedConsentViewController loadViewIfNeeded];
   self.started = YES;
@@ -94,6 +95,18 @@
 }
 
 #pragma mark - Private
+
+- (ChromeIdentity*)findDefaultSelectedIdentity {
+  if (self.authenticationService->IsAuthenticated()) {
+    return self.authenticationService->GetAuthenticatedIdentity();
+  }
+
+  NSArray* identities =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->GetAllIdentitiesSortedForDisplay(self.prefService);
+  return identities.count ? identities[0] : nil;
+}
 
 // Updates the view if the mediator has been started.
 - (void)updateViewController {

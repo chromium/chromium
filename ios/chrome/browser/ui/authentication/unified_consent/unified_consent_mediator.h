@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
 @class ChromeIdentity;
 class PrefService;
 @class UnifiedConsentMediator;
@@ -37,6 +38,8 @@ class PrefService;
 
 - (instancetype)initWithUnifiedConsentViewController:
                     (UnifiedConsentViewController*)viewController
+                               authenticationService:
+                                   (AuthenticationService*)authenticationService
                                          prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
