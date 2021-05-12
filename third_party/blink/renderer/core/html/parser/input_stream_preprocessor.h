@@ -36,6 +36,9 @@ namespace blink {
 
 const LChar kEndOfFileMarker = 0;
 
+// https://html.spec.whatwg.org/#parse-error-unexpected-null-character
+const UChar kReplacementCharacter = 0xFFFD;
+
 // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
 template <typename Tokenizer>
 class InputStreamPreprocessor {
@@ -65,10 +68,44 @@ class InputStreamPreprocessor {
     return ProcessNextInputCharacter(source, cc);
   }
 
-  bool SkipNextNewLine() const { return skip_next_new_line_; }
+  // WARNING: This does not process null characters.
+  ALWAYS_INLINE bool AdvancePastCarriageReturn(SegmentedString& source,
+                                               UChar& cc) {
+    DCHECK_EQ(cc, '\r');
+    cc = source.AdvancePastNonNewline();
+    if (source.IsEmpty()) {
+      skip_next_new_line_ = true;
+      return false;
+    }
+    // We skip if '\r\n'
+    if (cc == '\n') {
+      cc = source.AdvancePastNewlineAndUpdateLineNumber();
+      if (source.IsEmpty())
+        return false;
+    }
+    return true;
+  }
 
-  void Reset(bool skip_next_new_line = false) {
-    skip_next_new_line_ = skip_next_new_line;
+  // WARNING: This does not canonize newlines.
+  ALWAYS_INLINE bool ProcessNullCharacter(SegmentedString& source, UChar& cc) {
+    DCHECK_EQ(cc, '\0');
+    if (source.IsEmpty())
+      return false;
+    if (ShouldTreatNullAsEndOfFileMarker(source))
+      return true;
+    if (!tokenizer_->ShouldSkipNullCharacters()) {
+      cc = kReplacementCharacter;
+      return true;
+    }
+    cc = source.AdvancePastNonNewline();
+    while (cc == '\0') {
+      if (source.IsEmpty())
+        return false;
+      if (ShouldTreatNullAsEndOfFileMarker(source))
+        return true;
+      cc = source.AdvancePastNonNewline();
+    }
+    return true;
   }
 
  private:
@@ -117,7 +154,7 @@ class InputStreamPreprocessor {
             return false;
           goto ProcessAgain;
         }
-        cc = 0xFFFD;
+        cc = kReplacementCharacter;
       }
     }
     return true;

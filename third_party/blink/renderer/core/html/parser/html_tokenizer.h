@@ -195,6 +195,10 @@ class CORE_EXPORT HTMLTokenizer {
  private:
   inline bool ProcessEntity(SegmentedString&);
 
+  // Returns true if it has skipped all the whitespaces and we still have
+  // characters in the source.
+  ALWAYS_INLINE bool SkipWhitespaces(SegmentedString& source, UChar& cc);
+
   inline void ParseError();
 
   inline void BufferCharacter(UChar character) {
@@ -215,6 +219,10 @@ class CORE_EXPORT HTMLTokenizer {
     state_ = state;
     return true;
   }
+
+  ALWAYS_INLINE bool EmitData(SegmentedString& source, UChar cc);
+
+  ALWAYS_INLINE bool EmitPLAINTEXT(SegmentedString& source, UChar cc);
 
   inline bool EmitEndOfFile(SegmentedString& source) {
     if (HaveBufferedCharacterToken())
