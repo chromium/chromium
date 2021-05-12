@@ -7,6 +7,21 @@ var resultString = "";
 var javascriptDone = false;
 var initializationSteps = {load: false};
 var wouldPrompt = null;
+var progressMessages = {};
+const SINGLE_TEST_NAME = '_single_test_';
+
+// Sets a status message for the test. This message will be shown
+// alongside the test result when the test finishes. It is intended
+// to provide some context about what the test state, including
+// debugging information, without cluttering up the log.
+function updateTestProgressMessage(test, message) {
+  const name = test && test.name ? test.name : SINGLE_TEST_NAME;
+  progressMessages[name] = message;
+}
+
+function updateSingleTestProgressMessage(message) {
+  updateTestProgressMessage(null, message);
+}
 
 function finishJavaScriptStep() {
   if (javascriptDone) {
@@ -49,16 +64,21 @@ function checkResultsForFailures(tests, harness_status) {
                     (harness_status["status"] == 1 ? "error" : "timeout")
                     + ". ";
   }
-  for (var test in tests) {
-    let passed = (tests[test]["status"] == 0);
+  for (var testNum in tests) {
+    let test = tests[testNum];
+    let passed = (test["status"] == 0);
     if (!passed) {
       testPassed = false;
       resultString += "FAIL ";
     } else {
       resultString += "PASS ";
     }
-    resultString += tests[test]["name"] +
-                    (passed ? "" : (": " + tests[test]["message"])) +
+    let message = test["message"];
+    let progress =
+        progressMessages[test.name] || progressMessages[SINGLE_TEST_NAME];
+    resultString += test["name"] +
+                    (passed ? "" : (": " + message)) +
+                    (progress ? " [" + progress + "]" : "") +
                     ". ";
   }
 }

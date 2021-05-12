@@ -94,7 +94,7 @@ public class WebXrArViewportScaleTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisabledTest(message = "see crbug.com/1207613")
+    @DisabledTest(message = "see https://crbug.com/1207984")
     public void testRecommendedViewportScale() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_viewport_scale", PAGE_LOAD_TIMEOUT_S);

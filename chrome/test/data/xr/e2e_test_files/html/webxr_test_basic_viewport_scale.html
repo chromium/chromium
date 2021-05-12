@@ -39,6 +39,11 @@ Tests for WebXR dynamic viewport scaling.
             gl.clearColor(0.0, 0.0, 1.0, 0.5);
             gl.clear(gl.COLOR_BUFFER_BIT);
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' viewportPixels=' + viewportPixels +
+              ' framebufferPixels=' + framebufferPixels);
           assert_greater_than(viewportPixels, 0);
           assert_less_than_equal(viewportPixels, framebufferPixels);
           if (frameCount == 0) {
@@ -89,6 +94,11 @@ Tests for WebXR dynamic viewport scaling.
             gl.clearColor(0.0, 0.0, 1.0, 0.5);
             gl.clear(gl.COLOR_BUFFER_BIT);
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' viewportPixels=' + viewportPixels +
+              ' framebufferPixels=' + framebufferPixels);
           assert_greater_than(viewportPixels, 0);
           assert_less_than_equal(viewportPixels, framebufferPixels);
           if (frameCount == 1) {
@@ -113,6 +123,8 @@ Tests for WebXR dynamic viewport scaling.
         let gotIncreasedRecommendedViewportScale = false;
         let clearRectangleCount = 1;
         let minViewportScale = 99999;
+        let maxRectangles = 0;
+        let frameCount = 0;
 
         onARFrameCallback = (session, frame) => {
           const pose = frame.getViewerPose(referenceSpace);
@@ -151,6 +163,7 @@ Tests for WebXR dynamic viewport scaling.
             // again.
             gl.bindFramebuffer(gl.FRAMEBUFFER, baseLayer.framebuffer);
             gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            maxRectangles = Math.max(maxRectangles, clearRectangleCount);
             for (let i = 0; i < clearRectangleCount; ++i) {
               const xOffset = viewport.width * Math.random() / 2;
               const yOffset = viewport.height * Math.random() / 2;
@@ -166,13 +179,33 @@ Tests for WebXR dynamic viewport scaling.
               clearRectangleCount *= 2;
             }
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' clearRectangleCount=' + clearRectangleCount +
+              ' (max=' + maxRectangles + ')' +
+              ' gotAnyRecommendedViewportScale=' + gotAnyRecommendedViewportScale +
+              ' gotReducedRecommendedViewportScale=' + gotReducedRecommendedViewportScale +
+              ' gotIncreasedRecommendedViewportScale=' + gotIncreasedRecommendedViewportScale);
           gl.disable(gl.SCISSOR_TEST);
 
           if (gotAnyRecommendedViewportScale &&
               gotReducedRecommendedViewportScale &&
               gotIncreasedRecommendedViewportScale) {
             done();
+          } else {
+            // Check that the test finishes within a reasonable number of frames.
+            // This helps ensure that malfunctioning viewport scaling shows up
+            // as a test failure and not just a generic timeout. It's in the "else"
+            // branch here to avoid emitting errors for animation frames that are
+            // still arriving after the test ended.
+            //
+            // Since the rectangle count is doubled each frame in the load-increasing
+            // test phase, this potentially allows drawing up to 2^30 (~1 billion)
+            // rectangles followed by 20 frames of recovery which should be plenty.
+            assert_less_than(frameCount, 50, "Viewport scale didn't update within the expected number of frames.")
           }
+          ++frameCount;
         };
       }
     </script>
