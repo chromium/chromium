@@ -17,10 +17,7 @@ config("web_engine_implementation") {
 }
 
 mojom("mojom") {
-  sources = [
-    "cast_streaming_session.mojom",
-    "url_request_rewrite.mojom",
-  ]
+  sources = [ "url_request_rewrite.mojom" ]
   public_deps = [
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
@@ -105,6 +102,9 @@ component("web_engine_core") {
     "//base",
     "//base:base_static",
     "//base/util/memory_pressure",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/mojo:mojom",
+    "//components/cast_streaming/renderer",
     "//components/cdm/renderer",
     "//components/keyed_service/content",
     "//components/media_control/browser",
@@ -125,7 +125,6 @@ component("web_engine_core") {
     "//fuchsia/base:legacymetrics",
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
-    "//fuchsia/cast_streaming",
     "//google_apis",
     "//gpu/command_buffer/service",
     "//media",
@@ -166,6 +165,7 @@ component("web_engine_core") {
   # as |data_deps| causes metadata (.info) files to also be pulled-in to the
   # package.
   deps += [ ":web_engine_pak" ]
+
   data = [ "$root_gen_dir/common_resources.pak" ]
   foreach(locale, locales_with_pseudolocales) {
     deps += [ ":web_engine_locale_${locale}_pak" ]
@@ -249,10 +249,6 @@ component("web_engine_core") {
     "context_provider_main.cc",
     "context_provider_main.h",
     "features.h",
-    "renderer/cast_streaming_demuxer.cc",
-    "renderer/cast_streaming_demuxer.h",
-    "renderer/cast_streaming_receiver.cc",
-    "renderer/cast_streaming_receiver.h",
     "renderer/url_request_rules_receiver.cc",
     "renderer/url_request_rules_receiver.h",
     "renderer/web_engine_content_renderer_client.cc",
@@ -436,6 +432,8 @@ test("web_engine_browsertests") {
     ":web_engine_core",
     "//base/test:test_support",
     "//components/cast/message_port:message_port",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/browser:test_sender",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/safe_search_api:safe_search_api",
     "//components/safe_search_api:test_support",
@@ -443,8 +441,6 @@ test("web_engine_browsertests") {
     "//content/test:test_support",
     "//fuchsia/base",
     "//fuchsia/base/test:test_support",
-    "//fuchsia/cast_streaming",
-    "//fuchsia/cast_streaming:cast_streaming_test_sender",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -507,6 +503,7 @@ test("web_engine_unittests") {
     ":web_engine_core",
     ":web_engine_unittests_fake_instance_manifest",
     "//base/test:test_support",
+    "//components/cast_streaming/mojo:mojom",
     "//content/test:test_support",
     "//fuchsia/base/test:test_support",
     "//mojo/core/embedder",

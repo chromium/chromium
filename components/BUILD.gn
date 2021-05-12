@@ -344,7 +344,10 @@ test("components_unittests") {
     ]
 
     if (!is_win) {  # !iOS and !Windows
-      deps += [ "//components/cast:unit_tests" ]
+      deps += [
+        "//components/cast:unit_tests",
+        "//components/cast_streaming:unit_tests",
+      ]
     }
 
     if (!is_fuchsia) {  # !iOS and !Fuchsia

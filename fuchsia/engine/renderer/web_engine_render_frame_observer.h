@@ -6,8 +6,8 @@
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_RENDER_FRAME_OBSERVER_H_
 
 #include "base/callback.h"
+#include "components/cast_streaming/renderer/cast_streaming_receiver.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "fuchsia/engine/renderer/cast_streaming_receiver.h"
 #include "fuchsia/engine/renderer/url_request_rules_receiver.h"
 
 namespace content {
@@ -33,7 +33,7 @@ class WebEngineRenderFrameObserver : public content::RenderFrameObserver {
   UrlRequestRulesReceiver* url_request_rules_receiver() {
     return &url_request_rules_receiver_;
   }
-  CastStreamingReceiver* cast_streaming_receiver() {
+  cast_streaming::CastStreamingReceiver* cast_streaming_receiver() {
     return &cast_streaming_receiver_;
   }
 
@@ -42,7 +42,7 @@ class WebEngineRenderFrameObserver : public content::RenderFrameObserver {
   void OnDestruct() final;
 
   UrlRequestRulesReceiver url_request_rules_receiver_;
-  CastStreamingReceiver cast_streaming_receiver_;
+  cast_streaming::CastStreamingReceiver cast_streaming_receiver_;
 
   base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
 };

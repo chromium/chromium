@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/cast/message_port",
+  "+components/cast_streaming/mojo",
+  "+components/openscreen_platform",
+  "+media/base",
+  "+media/mojo",
+  "+mojo/core",
+  "+mojo/public",
+  "+net/base",
+  "+third_party/openscreen/src",
+]

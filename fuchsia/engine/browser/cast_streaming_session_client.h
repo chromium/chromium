@@ -7,13 +7,15 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "fuchsia/cast_streaming/public/cast_streaming_session.h"
-#include "fuchsia/engine/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/browser/public/cast_streaming_session.h"
+#include "components/cast_streaming/mojo/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // Owns the CastStreamingSession and sends buffers to the renderer process via
 // a Mojo service.
+//
+// TODO(crbug.com/1208194): Move this class to //components/cast_streaming,
 class CastStreamingSessionClient
     : public cast_streaming::CastStreamingSession::Client {
  public:

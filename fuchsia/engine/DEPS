@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/base/switches.h",
   "+components/cast/message_port",
+  "+components/cast_streaming",
   "+components/version_info",
   "+components/viz/common",
   "+components/media_control",
