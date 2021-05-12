@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/gpu/gpu.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -92,7 +93,7 @@ class GpuTest : public testing::Test {
   GpuTest() : io_thread_("GPUIOThread") {
     base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
     thread_options.priority = base::ThreadPriority::NORMAL;
-    CHECK(io_thread_.StartWithOptions(thread_options));
+    CHECK(io_thread_.StartWithOptions(std::move(thread_options)));
   }
   ~GpuTest() override = default;
 
