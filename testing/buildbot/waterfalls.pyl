@@ -1717,6 +1717,12 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-arm-generic-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'os_type': 'chromeos'
+      },
       'linux-ash-chromium-generator-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',

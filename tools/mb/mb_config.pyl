@@ -176,6 +176,7 @@
       'chromeos-kevin-rel': 'chromeos_kevin',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
+      'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
@@ -1784,6 +1785,10 @@
       'chromeos_device', 'arm-generic', 'debug',
     ],
 
+    'chromeos_arm-generic_lacros_rel': [
+      'chromeos_arm-generic', 'arm-lacros',
+    ],
+
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot': [
       'chromeos', 'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot',
     ],
@@ -2827,6 +2832,10 @@
       'gn_args': 'use_ozone=true ozone_platform="wayland" ozone_platform_wayland=true ozone_platform_gbm=false ozone_platform_drm=false ozone_platform_x11=false target_os="chromeos" use_evdev_gestures=false use_vaapi=false use_gtk=false use_glib=false enable_linux_installer=false rtc_use_pipewire=false use_gio=false use_v8_context_snapshot=false use_custom_libcxx=false use_pulseaudio=false use_pangocairo=false chromeos_is_browser_only=true use_system_libsync=false cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_amd64-sysroot" use_custom_libcxx_for_host=true'
     },
 
+    'arm-lacros': {
+      'gn_args': 'use_ozone=true ozone_platform="wayland" ozone_platform_wayland=true ozone_platform_gbm=false ozone_platform_drm=false ozone_platform_x11=false target_os="chromeos" use_evdev_gestures=false use_vaapi=false use_gtk=false use_glib=false enable_linux_installer=false rtc_use_pipewire=false use_gio=false use_v8_context_snapshot=false use_custom_libcxx=false use_pulseaudio=false use_pangocairo=false chromeos_is_browser_only=true use_system_libsync=false cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_i386-sysroot" use_custom_libcxx_for_host=true'
+    },
+
     # We build Android with codecs on most bots to ensure maximum test
     # coverage, but use 'android_without_codecs' on bots responsible for
     # building publicly advertised non-Official Android builds --
@@ -2968,6 +2977,10 @@
 
     'chromeos_amd64-generic': {
       'mixins': ['chromeos_device', 'amd64-generic',]
+    },
+
+    'chromeos_arm-generic': {
+      'mixins': ['chromeos_device', 'arm-generic',]
     },
 
     'chromeos_kevin': {

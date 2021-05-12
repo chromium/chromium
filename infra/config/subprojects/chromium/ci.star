@@ -1832,6 +1832,18 @@ ci.chromiumos_builder(
 )
 
 ci.chromiumos_builder(
+    name = "lacros-arm-generic-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|arm",
+        short_name = "arm",
+    ),
+    # TODO(crbug.com/1202631) Enable tree closing when stable.
+    tree_closing = False,
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+)
+
+ci.chromiumos_builder(
     name = "linux-chromeos-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
