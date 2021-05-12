@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -334,24 +335,33 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   // Move model file away from temp directory.
   base::FilePath temp_model_path = unzipped_dir_path.Append(kModelFileName);
   base::FilePath model_path = GetFilePathForModelInfo(models_dir_, model_info);
-  base::File::Error file_error;
-  if (!base::ReplaceFile(temp_model_path, model_path, &file_error)) {
-    if (file_error == base::File::FILE_ERROR_NOT_FOUND) {
-      RecordPredictionModelDownloadStatus(
-          PredictionModelDownloadStatus::kFailedModelFileNotFound);
-    } else {
-      RecordPredictionModelDownloadStatus(
-          PredictionModelDownloadStatus::kFailedModelFileOtherError);
-    }
-    return base::nullopt;
-  }
-
-  RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus::kSuccess);
 
   proto::PredictionModel model;
   *model.mutable_model_info() = model_info;
   SetFilePathInPredictionModel(model_path, &model);
-  return model;
+
+  base::File::Error file_error;
+  if (base::ReplaceFile(temp_model_path, model_path, &file_error)) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kSuccess);
+    return model;
+  }
+
+  // ReplaceFile failed, log the error code and attempt to utilize base::Move
+  // instead as the file could be on a different storage partition.
+  UMA_HISTOGRAM_ENUMERATION(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+      -file_error, -base::File::FILE_ERROR_MAX);
+
+  if (base::Move(temp_model_path, model_path)) {
+    RecordPredictionModelDownloadStatus(
+        PredictionModelDownloadStatus::kSuccess);
+    return model;
+  }
+
+  RecordPredictionModelDownloadStatus(
+      PredictionModelDownloadStatus::kFailedModelFileOtherError);
+  return base::nullopt;
 }
 
 void PredictionModelDownloadManager::NotifyModelReady(

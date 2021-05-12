@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -742,6 +743,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
 
   histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.PredictionModelPathExists", true, 1);
+  histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kFailedCrxVerification, 1);
   // An unverified file should not notify us that it's ready.
@@ -781,6 +784,10 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kSuccess, 1);
+
+  // No error when moving the file so there will be no record.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
   histogram_tester.ExpectUniqueSample(

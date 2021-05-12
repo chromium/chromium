@@ -533,7 +533,10 @@ TEST_F(PredictionModelDownloadManagerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager."
       "DownloadStatus",
-      PredictionModelDownloadStatus::kFailedModelFileNotFound, 1);
+      PredictionModelDownloadStatus::kFailedModelFileOtherError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+      -base::File::FILE_ERROR_NOT_FOUND, 1);
 }
 
 TEST_F(

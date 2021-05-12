@@ -566,6 +566,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PredictionManager.PredictionModelPathExists"
+    units="BooleanExists" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the path/directory where models are to be stored exists and
+    can be used to ultimately store models. Recorded when the model store is
+    initialized.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
     enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M94">
@@ -585,6 +596,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records whether the Download Service notified whether a model download has
     succeeded or failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError"
+    enum="PlatformFileError" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the exact error whenever writing a model file fails at the step
+    where the model is moved from the scratch directory to its final location.
+    Recorded every time a model file is downloaded and being processed for
+    storage.
   </summary>
 </histogram>
 
