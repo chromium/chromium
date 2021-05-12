@@ -164,16 +164,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
     is_padding_configured_externally_ = is_padding_configured_externally;
   }
 
-  // Size of the arrow button.
-  static int GetArrowButtonSize();
-
-  // Padding at the two ends of the shelf.
-  static constexpr int kEndPadding = 4;
-
-  // The mouse wheel event (including touchpad scrolling) with the main axis
-  // offset smaller than the threshold will be ignored.
-  static constexpr int KScrollOffsetThreshold = 20;
-
  private:
   friend class ShelfTestApi;
 
