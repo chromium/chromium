@@ -210,7 +210,7 @@ void ServiceDiscoveryClientMac::StartThreadIfNotStarted() {
         std::make_unique<base::Thread>(kServiceDiscoveryThreadName);
     // Only TYPE_UI uses an NSRunLoop.
     base::Thread::Options options(base::MessagePumpType::UI, 0);
-    service_discovery_thread_->StartWithOptions(options);
+    service_discovery_thread_->StartWithOptions(std::move(options));
   }
 }
 
