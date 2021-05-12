@@ -150,7 +150,7 @@ class CertNetFetcherURLLoaderTest : public PlatformTest {
     // Start the network thread.
     creation_thread_ = std::make_unique<base::Thread>("network thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    EXPECT_TRUE(creation_thread_->StartWithOptions(options));
+    EXPECT_TRUE(creation_thread_->StartWithOptions(std::move(options)));
   }
 
   void ResetTestUtilOnNetworkThread(base::WaitableEvent* done) {
