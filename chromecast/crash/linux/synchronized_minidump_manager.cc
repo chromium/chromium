@@ -308,7 +308,7 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
   DCHECK(metadata);
   std::string lockfile;
 
-  for (const auto& elem : *dumps) {
+  for (const auto& elem : dumps->GetList()) {
     std::string dump_info;
     bool ret = base::JSONWriter::Write(elem, &dump_info);
     RCHECK(ret, false);
@@ -375,7 +375,7 @@ void SynchronizedMinidumpManager::ReleaseLockFile() {
 std::vector<std::unique_ptr<DumpInfo>> SynchronizedMinidumpManager::GetDumps() {
   std::vector<std::unique_ptr<DumpInfo>> dumps;
 
-  for (const auto& elem : *dumps_) {
+  for (const auto& elem : dumps_->GetList()) {
     dumps.push_back(std::unique_ptr<DumpInfo>(new DumpInfo(&elem)));
   }
 
