@@ -188,7 +188,7 @@ class CertNetFetcherURLRequestTest : public PlatformTest {
     // Start the network thread.
     network_thread_ = std::make_unique<base::Thread>("network thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    EXPECT_TRUE(network_thread_->StartWithOptions(options));
+    EXPECT_TRUE(network_thread_->StartWithOptions(std::move(options)));
 
     // Initialize the URLRequestContext (and wait till it has completed).
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::MANUAL,
