@@ -467,7 +467,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
   if (watchdog_thread) {
     base::Thread::Options thread_options;
     thread_options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-    watchdog_thread->StartWithOptions(thread_options);
+    watchdog_thread->StartWithOptions(std::move(thread_options));
   }
 
   return res;
