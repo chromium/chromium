@@ -794,8 +794,8 @@ void ExtensionAppsChromeOs::UpdateAppDisabledState(
     int feature,
     const std::string& app_id,
     bool is_disabled_mode_changed) {
-  const bool is_disabled =
-      base::Contains(*disabled_system_features_pref, base::Value(feature));
+  const bool is_disabled = base::Contains(
+      disabled_system_features_pref->GetList(), base::Value(feature));
   // Sometimes the policy is updated before the app is installed, so this way
   // the disabled_apps_ is updated regardless the Publish should happen or not
   // and the app will be published with the correct readiness upon its
