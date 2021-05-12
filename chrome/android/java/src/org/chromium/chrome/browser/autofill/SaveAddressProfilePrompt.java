@@ -59,8 +59,6 @@ public class SaveAddressProfilePrompt {
                                 new SimpleModalDialogController(
                                         modalDialogManager, this::onDismiss))
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, activity.getResources(),
-                                R.string.no_thanks)
                         // TODO(crbug.com/1167061): Revisit whether the dialog should be modal.
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
@@ -113,11 +111,14 @@ public class SaveAddressProfilePrompt {
      *
      * @param title the title of the dialog.
      * @param positiveButtonText the text on the positive button.
+     * @param negativeButtonText the text on the negative button.
      */
     @CalledByNative
-    private void setDialogDetails(String title, String positiveButtonText) {
+    private void setDialogDetails(
+            String title, String positiveButtonText, String negativeButtonText) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
+        mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
     }
 
     /**

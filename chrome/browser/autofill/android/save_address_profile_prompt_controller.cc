@@ -64,6 +64,11 @@ std::u16string SaveAddressProfilePromptController::GetPositiveButtonText() {
   return original_profile_ ? u"Update" : u"Save";
 }
 
+std::u16string SaveAddressProfilePromptController::GetNegativeButtonText() {
+  // TODO(crbug.com/1167061): Replace with proper localized string.
+  return u"Cancel";
+}
+
 std::u16string SaveAddressProfilePromptController::GetAddress() {
   return GetEnvelopeStyleAddress(profile_,
                                  g_browser_process->GetApplicationLocale(),

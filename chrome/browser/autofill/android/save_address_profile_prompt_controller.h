@@ -39,6 +39,7 @@ class SaveAddressProfilePromptController {
 
   std::u16string GetTitle();
   std::u16string GetPositiveButtonText();
+  std::u16string GetNegativeButtonText();
   // For save prompt:
   std::u16string GetAddress();
   std::u16string GetEmail();

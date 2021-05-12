@@ -84,8 +84,11 @@ void SaveAddressProfilePromptViewAndroid::RefreshContent() {
   ScopedJavaLocalRef<jstring> positive_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, controller_->GetPositiveButtonText());
-  Java_SaveAddressProfilePrompt_setDialogDetails(env, java_object_, title,
-                                                 positive_button_text);
+  ScopedJavaLocalRef<jstring> negative_button_text =
+      base::android::ConvertUTF16ToJavaString(
+          env, controller_->GetNegativeButtonText());
+  Java_SaveAddressProfilePrompt_setDialogDetails(
+      env, java_object_, title, positive_button_text, negative_button_text);
 
   if (is_update_) {
     ScopedJavaLocalRef<jstring> subtitle =

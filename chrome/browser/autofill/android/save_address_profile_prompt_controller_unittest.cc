@@ -178,6 +178,7 @@ TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnDataToDisplay_Save) {
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
   EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
   EXPECT_EQ(u"Save", controller_->GetPositiveButtonText());
+  EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
@@ -190,6 +191,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   EXPECT_EQ(u"John Doe", differences.first);
   EXPECT_EQ(u"John H. Doe\n16502111111", differences.second);
   EXPECT_EQ(u"Update", controller_->GetPositiveButtonText());
+  EXPECT_EQ(u"Cancel", controller_->GetNegativeButtonText());
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
