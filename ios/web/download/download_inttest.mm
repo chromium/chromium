@@ -58,7 +58,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetDownloadResponse(
 // DownloadTask integration tests.
 class DownloadTest : public WebTestWithWebState {
  protected:
-  DownloadTest() : delegate_(download_controller()) {
+  DownloadTest() = default;
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+    delegate_ =
+        std::make_unique<FakeDownloadControllerDelegate>(download_controller());
     server_.RegisterRequestHandler(base::BindRepeating(&GetDownloadResponse));
   }
 
@@ -68,7 +73,7 @@ class DownloadTest : public WebTestWithWebState {
 
  protected:
   net::EmbeddedTestServer server_;
-  FakeDownloadControllerDelegate delegate_;
+  std::unique_ptr<FakeDownloadControllerDelegate> delegate_;
 };
 
 // Tests sucessfull download flow.
@@ -80,12 +85,12 @@ TEST_F(DownloadTest, SucessfullDownload) {
 
   // Wait until download task is created.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    return !delegate_.alive_download_tasks().empty();
+    return !delegate_->alive_download_tasks().empty();
   }));
-  ASSERT_EQ(1U, delegate_.alive_download_tasks().size());
+  ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
 
   // Verify the initial state of the download task.
-  DownloadTask* task = delegate_.alive_download_tasks()[0].second.get();
+  DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetIndentifier());
   EXPECT_EQ(url, task->GetOriginalUrl());

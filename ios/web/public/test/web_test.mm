@@ -35,10 +35,21 @@ WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
                  WebTaskEnvironment::Options options)
     : web_client_(std::move(web_client)),
       task_environment_(options),
-      browser_state_(std::make_unique<FakeBrowserState>()),
       crash_observer_(std::make_unique<WebTestRenderProcessCrashObserver>()) {}
 
 WebTest::~WebTest() {}
+
+void WebTest::SetUp() {
+  PlatformTest::SetUp();
+
+  DCHECK(!browser_state_);
+  browser_state_ = CreateBrowserState();
+  DCHECK(browser_state_);
+}
+
+std::unique_ptr<BrowserState> WebTest::CreateBrowserState() {
+  return std::make_unique<FakeBrowserState>();
+}
 
 void WebTest::OverrideJavaScriptFeatures(
     std::vector<JavaScriptFeature*> features) {

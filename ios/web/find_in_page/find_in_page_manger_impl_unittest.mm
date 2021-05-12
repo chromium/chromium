@@ -33,16 +33,16 @@ namespace web {
 // FindInPageManagerDelegate is correct depending on what web frames return.
 class FindInPageManagerImplTest : public WebTest {
  protected:
-  FindInPageManagerImplTest() : WebTest(std::make_unique<FakeWebClient>()) {
+  FindInPageManagerImplTest() : WebTest(std::make_unique<FakeWebClient>()) {}
+
+  void SetUp() override {
+    WebTest::SetUp();
+
     fake_web_state_ = std::make_unique<FakeWebState>();
     fake_web_state_->SetBrowserState(GetBrowserState());
     auto frames_manager = std::make_unique<FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
     fake_web_state_->SetWebFramesManager(std::move(frames_manager));
-  }
-
-  void SetUp() override {
-    WebTest::SetUp();
 
     JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
         ->ConfigureFeatures({FindInPageJavaScriptFeature::GetInstance()});
