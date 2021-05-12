@@ -745,7 +745,6 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(tablet_mode)
   PRINT_IF_NOT_DEFAULT(zip)
   PRINT_IF_NOT_DEFAULT(zip_no_nacl)
-  PRINT_IF_NOT_DEFAULT(enable_js_modules)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1715,12 +1714,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(chromeos::features::kFilesTrash);
   } else {
     disabled_features.push_back(chromeos::features::kFilesTrash);
-  }
-
-  if (options.enable_js_modules) {
-    enabled_features.push_back(chromeos::features::kFilesJsModules);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesJsModules);
   }
 
   if (command_line->HasSwitch("devtools-code-coverage") &&

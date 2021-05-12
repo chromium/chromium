@@ -4466,18 +4466,6 @@ const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";
 
-const char kFilesJsModulesName[] = "Enable JS Modules for Files app";
-const char kFilesJsModulesDescription[] =
-    "Enable running Files app using JS Modules.";
-
-const char kAudioPlayerJsModulesName[] = "Enable JS Modules for Audio Player";
-const char kAudioPlayerJsModulesDescription[] =
-    "Enable running Audio Player app using JS Modules.";
-
-const char kVideoPlayerJsModulesName[] = "Enable JS Modules for Video Player";
-const char kVideoPlayerJsModulesDescription[] =
-    "Enable running Video Player app using JS Modules.";
-
 const char kFilesNGName[] = "Enable Files App. NG.";
 const char kFilesNGDescription[] =
     "Enable the next generation UI style of the file manager.";

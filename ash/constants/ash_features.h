@@ -157,11 +157,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kExoLockNotification;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesJsModules;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kAudioPlayerJsModules;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kVideoPlayerJsModules;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVideoPlayerAppHidden;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesNG;

@@ -143,11 +143,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& DisableJsModules() {
-    options.enable_js_modules = false;
-    return *this;
-  }
-
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -180,9 +175,6 @@ struct TestCase {
 
     if (options.single_partition_format)
       full_name += "_SinglePartitionFormat";
-
-    if (!options.enable_js_modules)
-      full_name += "_NonJsModule";
 
     if (options.enable_trash)
       full_name += "_Trash";
@@ -278,20 +270,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("fileDisplayDownloads"),
-        TestCase("fileDisplayDownloads").DisableJsModules(),
         TestCase("fileDisplayDownloads").InGuestMode(),
         TestCase("fileDisplayDownloads").TabletMode(),
         TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks(),
         TestCase("fileDisplayDrive").TabletMode(),
         TestCase("fileDisplayDrive"),
-        TestCase("fileDisplayDrive").DisableJsModules(),
         TestCase("fileDisplayDriveOffline").Offline(),
         TestCase("fileDisplayDriveOnline"),
         TestCase("fileDisplayComputers"),
         TestCase("fileDisplayMtp"),
         TestCase("fileDisplayUsb"),
-        TestCase("fileDisplayUsb").DisableJsModules(),
         TestCase("fileDisplayUsbPartition"),
         TestCase("fileDisplayUsbPartition").EnableSinglePartitionFormat(),
         TestCase("fileDisplayUsbPartitionSort"),
@@ -334,7 +323,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("audioOpenCloseDrive"),
                       TestCase("audioOpenDownloads").InGuestMode(),
                       TestCase("audioOpenDownloads"),
-                      TestCase("audioOpenDownloads").DisableJsModules(),
                       TestCase("audioOpenDrive"),
                       TestCase("audioAutoAdvanceDrive"),
                       TestCase("audioRepeatAllModeSingleFileDrive"),
@@ -349,7 +337,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("imageOpenMediaAppDownloads").MediaSwa().InGuestMode(),
-        TestCase("imageOpenMediaAppDownloads").MediaSwa().DisableJsModules(),
         TestCase("imageOpenMediaAppDownloads").MediaSwa(),
         TestCase("imageOpenMediaAppDrive").MediaSwa()));
 
@@ -393,7 +380,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("selectCreateFolderDownloads"),
                       TestCase("createFolderDownloads").InGuestMode(),
                       TestCase("createFolderDownloads"),
-                      TestCase("createFolderDownloads").DisableJsModules(),
                       TestCase("createFolderNestedDownloads"),
                       TestCase("createFolderDrive")));
 
@@ -403,7 +389,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("keyboardDeleteDownloads").InGuestMode(),
         TestCase("keyboardDeleteDownloads"),
-        TestCase("keyboardDeleteDownloads").DisableJsModules(),
         TestCase("keyboardDeleteDownloads").EnableTrash(),
         TestCase("keyboardDeleteDrive"),
         TestCase("keyboardDeleteDrive").EnableTrash(),
@@ -493,7 +478,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarDeleteButtonKeepFocus"),
         TestCase("toolbarDeleteEntry").InGuestMode(),
         TestCase("toolbarDeleteEntry"),
-        TestCase("toolbarDeleteEntry").DisableJsModules(),
         TestCase("toolbarDeleteEntry").EnableTrash(),
         TestCase("toolbarRefreshButtonWithSelection")
             .EnableGenericDocumentsProvider(),
@@ -510,7 +494,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("openQuickView"),
-        TestCase("openQuickView").DisableJsModules(),
         TestCase("openQuickViewDialog"),
         TestCase("openQuickViewAndEscape"),
         TestCase("openQuickView").InGuestMode(),
@@ -713,7 +696,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("transferFromDriveToDownloads"),
-        TestCase("transferFromDriveToDownloads").DisableJsModules(),
         TestCase("transferFromDownloadsToMyFiles"),
         TestCase("transferFromDownloadsToMyFilesMove"),
         TestCase("transferFromDownloadsToDrive"),
@@ -797,7 +779,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("executeDefaultTaskDownloads"),
         TestCase("executeDefaultTaskDownloads").InGuestMode(),
-        TestCase("executeDefaultTaskDownloads").DisableJsModules(),
         TestCase("executeDefaultTaskDrive"),
         TestCase("defaultTaskForPdf"),
         TestCase("defaultTaskForTextPlain"),
@@ -846,14 +827,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("openFileDialogUnload").WithBrowser(),
         TestCase("openFileDialogDownloads").WithBrowser(),
-        TestCase("openFileDialogDownloads").WithBrowser().DisableJsModules(),
         TestCase("openFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("openFileDialogDownloads").WithBrowser().InIncognito(),
         TestCase("openFileDialogPanelsDisabled").WithBrowser(),
         TestCase("openFileDialogAriaMultipleSelect").WithBrowser(),
         TestCase("saveFileDialogAriaSingleSelect").WithBrowser(),
         TestCase("saveFileDialogDownloads").WithBrowser(),
-        TestCase("saveFileDialogDownloads").WithBrowser().DisableJsModules(),
         TestCase("saveFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
         TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
@@ -891,7 +870,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("copyBetweenWindowsLocalToDrive"),
         TestCase("copyBetweenWindowsLocalToUsb"),
-        TestCase("copyBetweenWindowsLocalToUsb").DisableJsModules(),
         TestCase("copyBetweenWindowsUsbToDrive"),
         TestCase("copyBetweenWindowsDriveToLocal"),
         TestCase("copyBetweenWindowsDriveToUsb"),
@@ -902,7 +880,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("showGridViewDownloads").InGuestMode(),
                       TestCase("showGridViewDownloads"),
-                      TestCase("showGridViewDownloads").DisableJsModules(),
                       TestCase("showGridViewDrive"),
                       TestCase("showGridViewButtonSwitches"),
                       TestCase("showGridViewKeyboardSelectionA11y"),
@@ -916,7 +893,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ExtendedFilesAppBrowserTest,
     ::testing::Values(TestCase("requestMount"),
                       TestCase("requestMount").DisableNativeSmb(),
-                      TestCase("requestMount").DisableJsModules(),
                       TestCase("requestMountMultipleMounts"),
                       TestCase("requestMountMultipleMounts").DisableNativeSmb(),
                       TestCase("requestMountSourceDevice"),
@@ -1014,7 +990,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("launcherOpenSearchResult").MediaSwa(),
                       TestCase("launcherSearch"),
-                      TestCase("launcherSearch").DisableJsModules(),
                       TestCase("launcherSearchOffline").Offline()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
@@ -1048,7 +1023,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Search, /* search.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("searchDownloadsWithResults"),
-                      TestCase("searchDownloadsWithResults").DisableJsModules(),
                       TestCase("searchDownloadsWithNoResults"),
                       TestCase("searchDownloadsClearSearchKeyDown"),
                       TestCase("searchDownloadsClearSearch"),
@@ -1066,7 +1040,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("breadcrumbsNavigate"),
-                      TestCase("breadcrumbsNavigate").DisableJsModules(),
                       TestCase("breadcrumbsDownloadsTranslation"),
                       TestCase("breadcrumbsRenderShortPath"),
                       TestCase("breadcrumbsEliderButtonHidden"),
@@ -1085,7 +1058,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("formatDialog"),
-        TestCase("formatDialog").DisableJsModules(),
         TestCase("formatDialogIsModal"),
         TestCase("formatDialogEmpty"),
         TestCase("formatDialogCancel"),

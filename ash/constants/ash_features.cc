@@ -336,18 +336,6 @@ const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
 // Enables the next generation file manager.
 const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables JS modules for Files app.
-const base::Feature kFilesJsModules{"FilesJsModules",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables JS modules for Audio Player.
-const base::Feature kAudioPlayerJsModules{"AudioPlayerJsModules",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables JS modules for Video Player.
-const base::Feature kVideoPlayerJsModules{"VideoPlayerJsModules",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether to "hide" the legacy video player chrome app. Videos will instead be
 // handled by the media app. See https://crbug.com/1158531.
 const base::Feature kVideoPlayerAppHidden{"VideoPlayerAppHidden",
