@@ -36,7 +36,6 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/discardable_memory_utils.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
@@ -126,8 +125,7 @@ class CONTENT_EXPORT RenderThreadImpl
     : public RenderThread,
       public ChildThreadImpl,
       public mojom::Renderer,
-      public viz::mojom::CompositingModeWatcher,
-      public CompositorDependencies {
+      public viz::mojom::CompositingModeWatcher {
  public:
   static RenderThreadImpl* current();
   static mojom::RenderMessageFilter* current_render_message_filter();
@@ -197,9 +195,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // ChildThread implementation via ChildThreadImpl:
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
-
-  // CompositorDependencies implementation.
-  bool IsUseZoomForDSFEnabled() override;
 
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler();
   cc::TaskGraphRunner* GetTaskGraphRunner();

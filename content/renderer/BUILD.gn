@@ -56,7 +56,6 @@ target(link_target_type, "renderer") {
     "browser_exposed_renderer_interfaces.h",
     "categorized_worker_pool.cc",
     "categorized_worker_pool.h",
-    "compositor/compositor_dependencies.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
     "discardable_memory_utils.cc",

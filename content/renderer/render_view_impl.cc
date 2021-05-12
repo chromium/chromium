@@ -106,19 +106,16 @@ content::mojom::WindowContainerType WindowFeaturesToContainerType(
 }  // namespace
 
 RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
-                               CompositorDependencies* compositor_deps,
                                const mojom::CreateViewParams& params)
     : routing_id_(params.view_id),
       renderer_wide_named_frame_lookup_(
           params.renderer_wide_named_frame_lookup),
       widgets_never_composited_(params.never_composited),
-      compositor_deps_(compositor_deps),
       agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
 
 void RenderViewImpl::Initialize(
-    CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
     bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -228,7 +225,6 @@ void RenderView::ForEach(RenderViewVisitor* visitor) {
 /*static*/
 RenderViewImpl* RenderViewImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
-    CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
     bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -237,9 +233,9 @@ RenderViewImpl* RenderViewImpl::Create(
       << "Session storage namespace must be populated.";
 
   RenderViewImpl* render_view =
-      new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
-  render_view->Initialize(compositor_deps, std::move(params),
-                          was_created_by_renderer, std::move(task_runner));
+      new RenderViewImpl(agent_scheduling_group, *params);
+  render_view->Initialize(std::move(params), was_created_by_renderer,
+                          std::move(task_runner));
   return render_view;
 }
 
@@ -400,7 +396,7 @@ WebView* RenderViewImpl::CreateView(
   view_params->never_composited = never_composited;
 
   RenderViewImpl* view = RenderViewImpl::Create(
-      agent_scheduling_group_, compositor_deps_, std::move(view_params),
+      agent_scheduling_group_, std::move(view_params),
       /*was_created_by_renderer=*/true,
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
 

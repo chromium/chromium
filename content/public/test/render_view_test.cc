@@ -36,7 +36,6 @@
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
-#include "content/test/fake_compositor_dependencies.h"
 #include "content/test/test_content_client.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -491,7 +490,6 @@ void RenderViewTest::SetUp() {
         "en-US", nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   }
 
-  compositor_deps_ = CreateCompositorDependencies();
   process_ = std::make_unique<RenderProcess>();
 
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
@@ -532,7 +530,7 @@ void RenderViewTest::SetUp() {
   view_params->never_composited = false;
 
   RenderViewImpl* view = RenderViewImpl::Create(
-      *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),
+      *agent_scheduling_group_, std::move(view_params),
       /*was_created_by_renderer=*/false, base::ThreadTaskRunnerHandle::Get());
 
   RenderFrameWasShownWaiter waiter(view->GetMainRenderFrame());
@@ -884,13 +882,6 @@ blink::VisualProperties RenderViewTest::InitialVisualProperties() {
   initial_visual_properties.new_size = gfx::Size(400, 300);
   initial_visual_properties.visible_viewport_size = gfx::Size(400, 300);
   return initial_visual_properties;
-}
-
-std::unique_ptr<CompositorDependencies>
-RenderViewTest::CreateCompositorDependencies() {
-  auto deps = std::make_unique<FakeCompositorDependencies>();
-  deps->set_use_zoom_for_dsf_enabled(render_thread_->IsUseZoomForDSF());
-  return deps;
 }
 
 void RenderViewTest::GoToOffset(int offset,

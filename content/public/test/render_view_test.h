@@ -46,7 +46,6 @@ class AgentSchedulingGroup;
 class ContentBrowserClient;
 class ContentClient;
 class ContentRendererClient;
-class CompositorDependencies;
 class FakeRenderWidgetHost;
 class RendererMainPlatformDelegate;
 class RendererBlinkPlatformImpl;
@@ -201,10 +200,6 @@ class RenderViewTest : public testing::Test {
   // Allows a subclass to customize the initial size of the RenderView.
   virtual blink::VisualProperties InitialVisualProperties();
 
-  // Override this to change the CompositorDependencies for the test.
-  virtual std::unique_ptr<CompositorDependencies>
-  CreateCompositorDependencies();
-
   // testing::Test
   void SetUp() override;
 
@@ -215,7 +210,6 @@ class RenderViewTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<CompositorDependencies> compositor_deps_;
   std::unique_ptr<RenderProcess> process_;
   // We use a naked pointer because we don't want to expose RenderViewImpl in
   // the embedder's namespace.

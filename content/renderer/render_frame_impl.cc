@@ -4560,7 +4560,7 @@ void RenderFrameImpl::UpdateStateForCommit(
     //     IFrameZoomBrowserTest.SubframesDontZoomIndependently (and the whole
     //     suite).
     render_view_->PropagatePageZoomToNewlyAttachedFrame(
-        render_view_->compositor_deps()->IsUseZoomForDSFEnabled(),
+        RenderThread::Get()->IsUseZoomForDSF(),
         GetLocalRootWebFrameWidget()->GetScreenInfo().device_scale_factor);
   }
 

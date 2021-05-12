@@ -8,7 +8,6 @@
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_features.h"
-#include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -183,7 +182,7 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   renderer.SetScrollAnimatorEnabled(
       params->web_preferences.enable_scroll_animator, PassKey());
 
-  RenderViewImpl::Create(*this, &renderer, std::move(params),
+  RenderViewImpl::Create(*this, std::move(params),
                          /*was_created_by_renderer=*/false,
                          agent_group_scheduler_->DefaultTaskRunner());
 }

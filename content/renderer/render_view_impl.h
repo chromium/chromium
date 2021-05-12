@@ -60,7 +60,6 @@ struct WebWindowFeatures;
 
 namespace content {
 class AgentSchedulingGroup;
-class CompositorDependencies;
 class RenderViewImplTest;
 class RenderViewTest;
 
@@ -93,7 +92,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // to send an additional IPC to finish making this view visible.
   static RenderViewImpl* Create(
       AgentSchedulingGroup& agent_scheduling_group,
-      CompositorDependencies* compositor_deps,
       mojom::CreateViewParamsPtr params,
       bool was_created_by_renderer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -119,8 +117,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void set_send_content_state_immediately(bool value) {
     send_content_state_immediately_ = value;
   }
-
-  CompositorDependencies* compositor_deps() const { return compositor_deps_; }
 
   // Passes along the page zoom to the WebView to set it on a newly attached
   // LocalFrame.
@@ -174,7 +170,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
  protected:
   RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
-                 CompositorDependencies* compositor_deps,
                  const mojom::CreateViewParams& params);
   ~RenderViewImpl() override;
 
@@ -192,8 +187,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // to accidentally call virtual functions. All RenderViewImpl creation is
   // fronted by the Create() method which ensures Initialize() is always called
   // before any other code can interact with instances of this call.
-  void Initialize(CompositorDependencies* compositor_deps,
-                  mojom::CreateViewParamsPtr params,
+  void Initialize(mojom::CreateViewParamsPtr params,
                   bool was_created_by_renderer,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -232,10 +226,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // to user-visibility and whether the tab needs to produce pixels to put on
   // the screen at some point or not.
   const bool widgets_never_composited_;
-
-  // Dependency injection for RenderWidget and compositing to inject behaviour
-  // and not depend on RenderThreadImpl in tests.
-  CompositorDependencies* const compositor_deps_;
 
   // Settings ------------------------------------------------------------------
 

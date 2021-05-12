@@ -1228,7 +1228,7 @@ const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
 }
 
 bool RenderThreadImpl::IsUseZoomForDSF() {
-  return IsUseZoomForDSFEnabled();
+  return is_zoom_for_dsf_enabled_;
 }
 
 void RenderThreadImpl::OnAssociatedInterfaceRequest(
@@ -1249,10 +1249,6 @@ bool RenderThreadImpl::IsLcdTextEnabled() {
 
 bool RenderThreadImpl::IsElasticOverscrollEnabled() {
   return is_elastic_overscroll_enabled_;
-}
-
-bool RenderThreadImpl::IsUseZoomForDSFEnabled() {
-  return is_zoom_for_dsf_enabled_;
 }
 
 gpu::GpuMemoryBufferManager* RenderThreadImpl::GetGpuMemoryBufferManager() {

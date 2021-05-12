@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
