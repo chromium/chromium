@@ -235,9 +235,43 @@ mojom("gpu_channel_mojom") {
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gl/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   mojom_source_deps = [ ":interfaces" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.ContextColorspace"
+          cpp = "::gpu::ColorSpace"
+        },
+        {
+          mojom = "gpu.mojom.ContextCreationAttribs"
+          cpp = "::gpu::ContextCreationAttribs"
+        },
+        {
+          mojom = "gpu.mojom.ContextType"
+          cpp = "::gpu::ContextType"
+        },
+      ]
+      traits_headers = [ "context_creation_attribs_mojom_traits.h" ]
+      traits_sources = [ "context_creation_attribs_mojom_traits.cc" ]
+      traits_public_deps = [ "//gpu/command_buffer/common:common_base_sources" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SchedulingPriority"
+          cpp = "::gpu::SchedulingPriority"
+        },
+      ]
+      traits_headers = [ "scheduling_priority_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu/command_buffer/common:common_base_sources" ]
+    },
+  ]
 
   # Unlike some definitions in ":interfaces_mojom", these bindings are never
   # used in Blink. We disable variants to simplify the dependency graph.
@@ -691,7 +725,7 @@ source_set("test_support") {
     "mock_gpu_channel.h",
   ]
   public_deps = [
-    ":interfaces",
+    ":common",
     "//testing/gmock",
   ]
 }

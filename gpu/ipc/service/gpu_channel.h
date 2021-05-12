@@ -21,8 +21,10 @@
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/shared_image_stub.h"
@@ -33,8 +35,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gpu_preference.h"
-
-struct GPUCreateCommandBufferConfig;
 
 namespace base {
 class WaitableEvent;
@@ -181,6 +181,14 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
     return shared_image_stub_.get();
   }
 
+  void CreateCommandBuffer(
+      mojom::CreateCommandBufferParamsPtr init_params,
+      int32_t routing_id,
+      base::UnsafeSharedMemoryRegion shared_state_shm,
+      mojom::GpuChannel::CreateCommandBufferCallback callback);
+  void DestroyCommandBuffer(int32_t routing_id);
+  bool CreateStreamTexture(int32_t stream_id);
+
  private:
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,
@@ -194,18 +202,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              bool is_gpu_host,
              ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
 
-  bool OnControlMessageReceived(const IPC::Message& msg);
+  void OnDestroyCommandBuffer(int32_t route_id);
 
   void HandleMessageHelper(const IPC::Message& msg);
 
   // Message handlers for control messages.
-  void OnCreateCommandBuffer(const GPUCreateCommandBufferConfig& init_params,
-                             int32_t route_id,
-                             base::UnsafeSharedMemoryRegion shared_state_shm,
-                             gpu::ContextResult* result,
-                             gpu::Capabilities* capabilities);
-  void OnDestroyCommandBuffer(int32_t route_id);
-  void OnCreateStreamTexture(int32_t stream_id, bool* succeeded);
   bool CreateSharedImageStub();
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.

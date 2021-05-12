@@ -20,10 +20,26 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD0(TerminateForTesting, void());
   MOCK_METHOD0(Flush, bool());
   MOCK_METHOD1(Flush, void(FlushCallback));
+  MOCK_METHOD4(CreateCommandBuffer,
+               void(mojom::CreateCommandBufferParamsPtr,
+                    int32_t,
+                    base::UnsafeSharedMemoryRegion,
+                    CreateCommandBufferCallback));
+  MOCK_METHOD5(CreateCommandBuffer,
+               bool(mojom::CreateCommandBufferParamsPtr,
+                    int32_t,
+                    base::UnsafeSharedMemoryRegion,
+                    ContextResult*,
+                    Capabilities*));
+  MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));
+  MOCK_METHOD2(DestroyCommandBuffer,
+               void(int32_t, DestroyCommandBufferCallback));
   MOCK_METHOD2(ScheduleImageDecode,
                void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD1(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>));
+  MOCK_METHOD2(CreateStreamTexture, bool(int32_t, bool*));
+  MOCK_METHOD2(CreateStreamTexture, void(int32_t, CreateStreamTextureCallback));
 };
 
 }  // namespace gpu

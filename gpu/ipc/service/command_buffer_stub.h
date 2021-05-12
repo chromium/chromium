@@ -41,8 +41,6 @@
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
-struct GPUCreateCommandBufferConfig;
-
 namespace gpu {
 class DecoderContext;
 class MemoryTracker;
@@ -70,7 +68,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   };
 
   CommandBufferStub(GpuChannel* channel,
-                    const GPUCreateCommandBufferConfig& init_params,
+                    const mojom::CreateCommandBufferParams& init_params,
                     CommandBufferId command_buffer_id,
                     SequenceId sequence_id,
                     int32_t stream_id,
@@ -83,7 +81,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // the gpu::Capabilities.
   virtual gpu::ContextResult Initialize(
       CommandBufferStub* share_group,
-      const GPUCreateCommandBufferConfig& init_params,
+      const mojom::CreateCommandBufferParams& params,
       base::UnsafeSharedMemoryRegion shared_state_shm) = 0;
 
   MemoryTracker* GetMemoryTracker() const;

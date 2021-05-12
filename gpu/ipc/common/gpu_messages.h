@@ -63,15 +63,6 @@ IPC_STRUCT_BEGIN(GPUCommandBufferConsoleMessage)
   IPC_STRUCT_MEMBER(std::string, message)
 IPC_STRUCT_END()
 
-IPC_STRUCT_BEGIN(GPUCreateCommandBufferConfig)
-  IPC_STRUCT_MEMBER(gpu::SurfaceHandle, surface_handle)
-  IPC_STRUCT_MEMBER(int32_t, share_group_id)
-  IPC_STRUCT_MEMBER(int32_t, stream_id)
-  IPC_STRUCT_MEMBER(gpu::SchedulingPriority, stream_priority)
-  IPC_STRUCT_MEMBER(gpu::ContextCreationAttribs, attribs)
-  IPC_STRUCT_MEMBER(GURL, active_url)
-IPC_STRUCT_END()
-
 IPC_STRUCT_BEGIN(GpuCommandBufferMsg_CreateImage_Params)
   IPC_STRUCT_MEMBER(int32_t, id)
   IPC_STRUCT_MEMBER(gfx::GpuMemoryBufferHandle, gpu_memory_buffer)
@@ -100,24 +91,6 @@ IPC_STRUCT_END()
 // GPU Channel Messages
 // These are messages from a renderer process to the GPU process.
 
-// Tells the GPU process to create a new command buffer. A corresponding
-// CommandBufferStub is created.  If |surface_handle| is non-null, |size|
-// is ignored, and it will render directly to the native surface (only the
-// browser process is allowed to create those). Otherwise it will create an
-// offscreen backbuffer of dimensions |size|.
-IPC_SYNC_MESSAGE_CONTROL3_2(GpuChannelMsg_CreateCommandBuffer,
-                            GPUCreateCommandBufferConfig /* init_params */,
-                            int32_t /* route_id */,
-                            base::UnsafeSharedMemoryRegion /* shared_state */,
-                            gpu::ContextResult,
-                            gpu::Capabilities /* capabilities */)
-
-// The CommandBufferProxy sends this to the CommandBufferStub in its
-// destructor, so that the stub deletes the actual CommandBufferService
-// object that it's hosting.
-IPC_SYNC_MESSAGE_CONTROL1_0(GpuChannelMsg_DestroyCommandBuffer,
-                            int32_t /* instance_id */)
-
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateGMBSharedImage,
                     GpuChannelMsg_CreateGMBSharedImage_Params /* params */)
 
@@ -133,11 +106,6 @@ IPC_MESSAGE_ROUTED1(GpuChannelMsg_ReleaseSysmemBufferCollection,
 #endif  // OS_FUCHSIA
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
                     base::ReadOnlySharedMemoryRegion /* shm */)
-
-// Creates a StreamTexture attached to the provided |stream_id|.
-IPC_SYNC_MESSAGE_CONTROL1_1(GpuChannelMsg_CreateStreamTexture,
-                            int32_t, /* stream_id */
-                            bool /* succeeded */)
 
 #if defined(OS_ANDROID)
 //------------------------------------------------------------------------------
