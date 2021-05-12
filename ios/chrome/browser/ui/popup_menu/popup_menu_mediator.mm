@@ -804,10 +804,17 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   for (web::NavigationItem* navigationItem : navigationItems) {
     PopupMenuNavigationItem* item =
         [[PopupMenuNavigationItem alloc] initWithType:kItemTypeEnumZero];
-    item.title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-    const gfx::Image& image = navigationItem->GetFavicon().image;
-    if (!image.IsEmpty())
-      item.favicon = image.ToUIImage();
+    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
+                                                       ->GetVirtualURL()]) {
+      item.title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
+      item.favicon = [UIImage imageNamed:@"incognito_badge"];
+    } else {
+      item.title =
+          base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
+      const gfx::Image& image = navigationItem->GetFavicon().image;
+      if (!image.IsEmpty())
+        item.favicon = image.ToUIImage();
+    }
     item.actionIdentifier = PopupMenuActionNavigate;
     item.navigationItem = navigationItem;
     [items addObject:item];
@@ -1155,6 +1162,13 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 - (BOOL)isEditBookmarksEnabled {
     return self.prefService->GetBoolean(
         bookmarks::prefs::kEditBookmarksEnabled);
+}
+
+// Returns YES if incognito NTP title and image should be used for back/forward
+// item associated with |URL|.
+- (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
+  return URL.GetOrigin() == kChromeUINewTabURL && self.isIncognito &&
+         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
 }
 
 @end
