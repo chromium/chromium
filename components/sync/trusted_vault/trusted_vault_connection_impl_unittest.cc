@@ -210,10 +210,9 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
                   key_pair->private_key(),
                   /*wrapped_key=*/ProtoStringToBytes(shared_key.wrapped_key())),
               Eq(kTrustedVaultKeyAndVersion.key));
-  EXPECT_TRUE(VerifyTrustedVaultHMAC(
-      /*key=*/kTrustedVaultKeyAndVersion.key,
-      /*data=*/key_pair->public_key().ExportToBytes(),
-      /*digest=*/ProtoStringToBytes(shared_key.member_proof())));
+  EXPECT_TRUE(VerifyMemberProof(key_pair->public_key(),
+                                kTrustedVaultKeyAndVersion.key,
+                                ProtoStringToBytes(shared_key.member_proof())));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
@@ -268,10 +267,9 @@ TEST_F(TrustedVaultConnectionImplTest,
                   key_pair->private_key(),
                   /*wrapped_key=*/ProtoStringToBytes(shared_key.wrapped_key())),
               Eq(GetConstantTrustedVaultKey()));
-  EXPECT_TRUE(VerifyTrustedVaultHMAC(
-      /*key=*/GetConstantTrustedVaultKey(),
-      /*data=*/key_pair->public_key().ExportToBytes(),
-      /*digest=*/ProtoStringToBytes(shared_key.member_proof())));
+  EXPECT_TRUE(VerifyMemberProof(key_pair->public_key(),
+                                GetConstantTrustedVaultKey(),
+                                ProtoStringToBytes(shared_key.member_proof())));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,

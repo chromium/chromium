@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/optional.h"
+#include "components/sync/trusted_vault/securebox.h"
 
 namespace syncer {
 
@@ -26,14 +27,27 @@ std::vector<uint8_t> ComputeTrustedVaultWrappedKey(
     const SecureBoxPublicKey& public_key,
     base::span<const uint8_t> trusted_vault_key);
 
-// Computes HMAC digest using SHA-256.
-std::vector<uint8_t> ComputeTrustedVaultHMAC(base::span<const uint8_t> key,
-                                             base::span<const uint8_t> data);
+// Signs |key| with |trusted_vault_key| using HMAC-SHA-256.
+std::vector<uint8_t> ComputeMemberProof(
+    const SecureBoxPublicKey& key,
+    const std::vector<uint8_t>& trusted_vault_key);
 
-// Returns true if |digest| is a valid HMAC SHA-256 digest of |data| and |key|.
-bool VerifyTrustedVaultHMAC(base::span<const uint8_t> key,
-                            base::span<const uint8_t> data,
-                            base::span<const uint8_t> digest);
+// Returns whether |member_proof| is |key| signed with |trusted_vault_key|.
+bool VerifyMemberProof(const SecureBoxPublicKey& key,
+                       const std::vector<uint8_t>& trusted_vault_key,
+                       const std::vector<uint8_t>& member_proof);
+
+// Signs |trusted_vault_key| with |prev_trusted_vault_key| using SecureBox
+// symmetric encryption.
+std::vector<uint8_t> ComputeRotationProof(
+    const std::vector<uint8_t>& trusted_vault_key,
+    const std::vector<uint8_t>& prev_trusted_vault_key);
+
+// Returns whether |rotation_proof| is |trusted_vault_key| signed with
+// |prev_trusted_vault_key|.
+bool VerifyRotationProof(const std::vector<uint8_t>& trusted_vault_key,
+                         const std::vector<uint8_t>& prev_trusted_vault_key,
+                         const std::vector<uint8_t>& rotation_proof);
 
 }  // namespace syncer
 

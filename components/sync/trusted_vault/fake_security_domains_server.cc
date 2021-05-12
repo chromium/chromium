@@ -53,6 +53,13 @@ bool ValidateJoinSecurityDomainsRequest(
     return false;
   }
 
+  if (!SecureBoxPublicKey::CreateByImport(
+          ProtoStringToBytes(member.public_key()))) {
+    DVLOG(1) << "JoinSecurityDomains request has invalid public key: "
+             << member.public_key();
+    return false;
+  }
+
   const sync_pb::SharedMemberKey& shared_key = request.shared_member_key();
   if (shared_key.wrapped_key().empty()) {
     DVLOG(1)
@@ -166,17 +173,15 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
                                  *member_public_key, new_trusted_vault_key),
                              new_shared_key.mutable_wrapped_key());
     AssignBytesToProtoString(
-        ComputeTrustedVaultHMAC(
-            /*key=*/new_trusted_vault_key,
-            /*data=*/ProtoStringToBytes(member_and_shared_key.first)),
+        ComputeMemberProof(*member_public_key, new_trusted_vault_key),
         new_shared_key.mutable_member_proof());
     member_and_shared_key.second.push_back(new_shared_key);
 
     sync_pb::RotationProof rotation_proof;
     rotation_proof.set_new_epoch(state_.current_epoch);
     AssignBytesToProtoString(
-        ComputeTrustedVaultHMAC(/*key=*/last_trusted_vault_key,
-                                /*data=*/new_trusted_vault_key),
+        ComputeRotationProof(/*trusted_vault_key=*/new_trusted_vault_key,
+                             /*prev_trusted_vault_key=*/last_trusted_vault_key),
         rotation_proof.mutable_rotation_proof());
     state_.public_key_to_rotation_proofs[member_and_shared_key.first].push_back(
         rotation_proof);
@@ -196,13 +201,17 @@ bool FakeSecurityDomainsServer::AllMembersHaveKey(
   for (const auto& public_key_and_shared_keys :
        state_.public_key_to_shared_keys) {
     bool member_has_key = false;
+
+    std::unique_ptr<SecureBoxPublicKey> member_public_key =
+        SecureBoxPublicKey::CreateByImport(
+            ProtoStringToBytes(public_key_and_shared_keys.first));
+    DCHECK(member_public_key);
+
     for (const auto& shared_key : public_key_and_shared_keys.second) {
       // Member has |trusted_vault_key| if there is a member proof signed by
       // |trusted_vault_key|.
-      if (VerifyTrustedVaultHMAC(
-              /*key=*/trusted_vault_key,
-              /*data=*/ProtoStringToBytes(public_key_and_shared_keys.first),
-              /*digest=*/ProtoStringToBytes(shared_key.member_proof()))) {
+      if (VerifyMemberProof(*member_public_key, trusted_vault_key,
+                            ProtoStringToBytes(shared_key.member_proof()))) {
         member_has_key = true;
         break;
       }
@@ -269,11 +278,12 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     return response;
   }
 
+  std::unique_ptr<SecureBoxPublicKey> member_public_key =
+      SecureBoxPublicKey::CreateByImport(
+          ProtoStringToBytes(member.public_key()));
   if (!state_.constant_key_allowed ||
-      !VerifyTrustedVaultHMAC(
-          /*key=*/GetConstantTrustedVaultKey(),
-          /*data=*/ProtoStringToBytes(member.public_key()),
-          /*digest=*/ProtoStringToBytes(shared_key.member_proof()))) {
+      !VerifyMemberProof(*member_public_key, GetConstantTrustedVaultKey(),
+                         ProtoStringToBytes(shared_key.member_proof()))) {
     // Either constant key is not allowed, or request uses the real key without
     // populating the epoch.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

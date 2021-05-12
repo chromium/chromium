@@ -41,10 +41,8 @@ sync_pb::SharedMemberKey CreateSharedMemberKey(
   AssignBytesToProtoString(
       ComputeTrustedVaultWrappedKey(public_key, trusted_vault_key),
       shared_member_key.mutable_wrapped_key());
-  AssignBytesToProtoString(
-      ComputeTrustedVaultHMAC(
-          /*key=*/trusted_vault_key, /*data=*/public_key.ExportToBytes()),
-      shared_member_key.mutable_member_proof());
+  AssignBytesToProtoString(ComputeMemberProof(public_key, trusted_vault_key),
+                           shared_member_key.mutable_member_proof());
   return shared_member_key;
 }
 

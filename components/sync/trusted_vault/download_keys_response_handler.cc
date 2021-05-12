@@ -114,8 +114,9 @@ bool IsValidKeyChain(
       return false;
     }
 
-    if (!VerifyTrustedVaultHMAC(last_valid_key, next_key.trusted_vault_key,
-                                next_key.rotation_proof)) {
+    if (!VerifyRotationProof(/*trusted_vault_key=*/next_key.trusted_vault_key,
+                             /*prev_trusted_vault_key=*/last_valid_key,
+                             next_key.rotation_proof)) {
       // |rotation_proof| isn't valid.
       return false;
     }
