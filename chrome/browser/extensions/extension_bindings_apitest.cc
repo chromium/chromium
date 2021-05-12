@@ -149,14 +149,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 // Tests that we don't override events when bindings are re-injected.
 // Regression test for http://crbug.com/269149.
 // Regression test for http://crbug.com/436593.
-// Flaky on Mac. http://crbug.com/733064.
-// Flaky on Chrome OS. http://crbug.com/1181768
-#if (defined(OS_MAC) || defined(OS_CHROMEOS))
-#define MAYBE_EventOverriding DISABLED_EventOverriding
-#else
-#define MAYBE_EventOverriding EventOverriding
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, MAYBE_EventOverriding) {
+// Flaky http://crbug.com/733064.
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, DISABLED_EventOverriding) {
   ASSERT_TRUE(RunExtensionTest("bindings/event_overriding")) << message_;
   // The extension test removes a window and, during window removal, sends the
   // success message. Make sure we flush all pending tasks.
