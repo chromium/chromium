@@ -569,6 +569,19 @@
       "use_ozone": true
     }
   },
+  "linux-lacros-version-skew-fyi": {
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "ozone_platform": "wayland",
+      "ozone_platform_wayland": true,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true
+    }
+  },
   "linux-layout-tests-edit-ng": {
     "gn_args": {
       "dcheck_always_on": true,

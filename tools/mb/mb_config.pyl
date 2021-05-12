@@ -1028,6 +1028,7 @@
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
+      'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
