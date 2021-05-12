@@ -10,6 +10,7 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
+import "action_value.proto";
 import "model.proto";
 import "view_layout.proto";
 
@@ -203,13 +204,15 @@ message AutofillFormatProto {
     ADDRESS_HOME_STATE_NAME = -6;
     CREDIT_CARD_NON_PADDED_EXP_MONTH = -7;
   }
-  // The format string to use. May contain one or multiple "${key}"
+  // The format string to use. May contain one or multiple key
   // placeholders, where the key is an integer corresponding to
   // entries from field_types.h or AutofillAssistantCustomField.
-  optional string pattern = 1;
+  optional ValueExpression value_expression = 3;
   // The locale to use when stringifying data. Invalid locales will
   // automatically default to "en-US".
   optional string locale = 2;
+
+  reserved 1;
 }
 
 // A comparison of two values in the form |value_a| <mode> |value_b|. EQUAL and

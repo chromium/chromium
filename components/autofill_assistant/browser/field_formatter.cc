@@ -21,7 +21,7 @@ namespace {
 // Regex to find placeholders of the form ${key}, where key is an arbitrary
 // string that does not contain curly braces. The first capture group is for
 // the prefix before the key, the second for the key itself.
-const char kPlaceholderExtractor[] = R"re(([^$]*)\$\{([^{}]+)\})re";
+const char kPlaceholderExtractor[] = R"re((.*?)\$\{([^{}]+)\})re";
 
 base::Optional<std::string> GetFieldValue(
     const std::map<std::string, std::string>& mappings,
@@ -116,6 +116,25 @@ ClientStatus FormatExpression(
   return OkClientStatus();
 }
 
+std::string GetHumanReadableValueExpression(
+    const ValueExpression& value_expression) {
+  std::string out;
+  for (const auto& chunk : value_expression.chunk()) {
+    switch (chunk.chunk_case()) {
+      case ValueExpression::Chunk::kText:
+        out += chunk.text();
+        break;
+      case ValueExpression::Chunk::kKey:
+        out += "${" + base::NumberToString(chunk.key()) + "}";
+        break;
+      case ValueExpression::Chunk::CHUNK_NOT_SET:
+        out += "<CHUNK_NOT_SET>";
+        break;
+    }
+  }
+  return out;
+}
+
 template <>
 std::map<std::string, std::string>
 CreateAutofillMappings<autofill::AutofillProfile>(
@@ -188,4 +207,11 @@ std::map<std::string, std::string> CreateAutofillMappings<autofill::CreditCard>(
 }
 
 }  // namespace field_formatter
+
+std::ostream& operator<<(std::ostream& out,
+                         const ValueExpression& value_expression) {
+  return out << field_formatter::GetHumanReadableValueExpression(
+             value_expression);
+}
+
 }  // namespace autofill_assistant

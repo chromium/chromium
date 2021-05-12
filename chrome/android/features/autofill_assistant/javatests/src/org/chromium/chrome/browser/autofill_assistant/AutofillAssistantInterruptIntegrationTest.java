@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ToStringProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionList;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueReferenceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
@@ -518,20 +520,18 @@ public class AutofillAssistantInterruptIntegrationTest {
 
         // This interaction sets the first cards's cardholder name in the textView whenever a change
         // to the cards list is registered.
+        ToStringProto.Builder toString =
+                ToStringProto.newBuilder()
+                        .setValue(ValueReferenceProto.newBuilder().setModelIdentifier(
+                                "credit_cards[0]"))
+                        .setAutofillFormat(AutofillFormatProto.newBuilder().setValueExpression(
+                                ValueExpression.newBuilder().addChunk(
+                                        Chunk.newBuilder().setKey(51))));
         CallbackProto autofillFormatCallback =
                 (CallbackProto) CallbackProto.newBuilder()
-                        .setComputeValue(
-                                ComputeValueProto.newBuilder()
-                                        .setResultModelIdentifier("text")
-                                        .setToString(
-                                                ToStringProto.newBuilder()
-                                                        .setValue(
-                                                                ValueReferenceProto.newBuilder()
-                                                                        .setModelIdentifier(
-                                                                                "credit_cards[0]"))
-                                                        .setAutofillFormat(
-                                                                AutofillFormatProto.newBuilder()
-                                                                        .setPattern("${51}"))))
+                        .setComputeValue(ComputeValueProto.newBuilder()
+                                                 .setResultModelIdentifier("text")
+                                                 .setToString(toString))
                         .build();
         interactions.add(
                 (InteractionProto) InteractionProto.newBuilder()

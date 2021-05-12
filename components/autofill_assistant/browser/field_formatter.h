@@ -35,6 +35,11 @@ ClientStatus FormatExpression(
     bool quote_meta,
     std::string* out_value);
 
+// Returns a human-readable string representation of |value_expression| for
+// use in logging and error reporting.
+std::string GetHumanReadableValueExpression(
+    const ValueExpression& value_expression);
+
 // Creates a lookup map for all non-empty autofill and custom
 // AutofillFormatProto::AutofillAssistantCustomField field types in
 // |autofill_data_model|.
@@ -45,6 +50,12 @@ std::map<std::string, std::string> CreateAutofillMappings(
     const std::string& locale);
 
 }  // namespace field_formatter
+
+// Debug output operator for value expressions. The output is only useful in
+// debug builds.
+std::ostream& operator<<(std::ostream& out,
+                         const ValueExpression& value_expression);
+
 }  // namespace autofill_assistant
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FIELD_FORMATTER_H_

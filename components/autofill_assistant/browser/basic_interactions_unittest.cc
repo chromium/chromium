@@ -8,6 +8,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
@@ -242,12 +243,24 @@ TEST_F(BasicInteractionsTest, ComputeValueToString) {
   credit_cards_value.mutable_credit_cards()->add_values()->set_guid(
       credit_card_b.guid());
   user_model_.SetValue("value", credit_cards_value);
-  // Formatting credit cards fails if pattern or locale are not set.
+  // Formatting credit cards fails if value_expression or locale are not set.
   proto.mutable_to_string()->mutable_autofill_format()->set_locale("en-US");
   EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
   // {name} {network} **** {last-4-digits} ({month/year})
-  proto.mutable_to_string()->mutable_autofill_format()->set_pattern(
-      "${51}. ${-5} **** ${-4} (${53}/${54})");
+  *proto.mutable_to_string()
+       ->mutable_autofill_format()
+       ->mutable_value_expression() = test_util::ValueExpressionBuilder()
+                                          .addChunk(51)
+                                          .addChunk(". ")
+                                          .addChunk(-5)
+                                          .addChunk(" **** ")
+                                          .addChunk(-4)
+                                          .addChunk(" (")
+                                          .addChunk(53)
+                                          .addChunk("/")
+                                          .addChunk(54)
+                                          .addChunk(")")
+                                          .toProto();
   EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
   ValueProto expected_result;
   expected_result.mutable_strings()->add_values(
@@ -279,11 +292,24 @@ TEST_F(BasicInteractionsTest, ComputeValueToString) {
   profiles_value.mutable_profiles()->add_values()->set_guid(profile_a.guid());
   profiles_value.mutable_profiles()->add_values()->set_guid(profile_b.guid());
   user_model_.SetValue("value", profiles_value);
-  // Formatting profiles fails if pattern is not set.
+  // Formatting profiles fails if value_expression is empty.
   EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
   // {name_full}, {address_line_1} {address_line_2} {zip code} {city} {country}
-  proto.mutable_to_string()->mutable_autofill_format()->set_pattern(
-      "${7} ${30} ${31} ${35} ${33} ${36}");
+  *proto.mutable_to_string()
+       ->mutable_autofill_format()
+       ->mutable_value_expression() = test_util::ValueExpressionBuilder()
+                                          .addChunk(7)
+                                          .addChunk(" ")
+                                          .addChunk(30)
+                                          .addChunk(" ")
+                                          .addChunk(31)
+                                          .addChunk(" ")
+                                          .addChunk(35)
+                                          .addChunk(" ")
+                                          .addChunk(33)
+                                          .addChunk(" ")
+                                          .addChunk(36)
+                                          .toProto();
   EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
   expected_result.Clear();
   expected_result.mutable_strings()->add_values(

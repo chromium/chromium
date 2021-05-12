@@ -156,7 +156,7 @@ bool ValueToString(UserModel* user_model,
         break;
       }
       case ValueProto::kCreditCards: {
-        if (proto.autofill_format().pattern().empty()) {
+        if (proto.autofill_format().value_expression().chunk().empty()) {
           DVLOG(2) << "Error evaluating " << __func__ << ": pattern not set";
           return false;
         }
@@ -167,21 +167,23 @@ bool ValueToString(UserModel* user_model,
                    << ": credit card not found";
           return false;
         }
-        auto formatted_string = field_formatter::FormatString(
-            proto.autofill_format().pattern(),
+        std::string formatted_string;
+        auto format_status = field_formatter::FormatExpression(
+            proto.autofill_format().value_expression(),
             field_formatter::CreateAutofillMappings(
-                *credit_card, proto.autofill_format().locale()));
-        if (!formatted_string.has_value()) {
+                *credit_card, proto.autofill_format().locale()),
+            /* quote_meta= */ false, &formatted_string);
+        if (!format_status.ok()) {
           DVLOG(2) << "Error evaluating " << __func__
                    << ": error formatting pattern '"
-                   << proto.autofill_format().pattern() << "'";
+                   << proto.autofill_format().value_expression() << "'";
           return false;
         }
-        result.mutable_strings()->add_values(*formatted_string);
+        result.mutable_strings()->add_values(formatted_string);
         break;
       }
       case ValueProto::kProfiles: {
-        if (proto.autofill_format().pattern().empty()) {
+        if (proto.autofill_format().value_expression().chunk().empty()) {
           DVLOG(2) << "Error evaluating " << __func__ << ": pattern not set";
           return false;
         }
@@ -191,17 +193,19 @@ bool ValueToString(UserModel* user_model,
           DVLOG(2) << "Error evaluating " << __func__ << ": profile not found";
           return false;
         }
-        auto formatted_string = field_formatter::FormatString(
-            proto.autofill_format().pattern(),
+        std::string formatted_string;
+        auto format_status = field_formatter::FormatExpression(
+            proto.autofill_format().value_expression(),
             field_formatter::CreateAutofillMappings(
-                *profile, proto.autofill_format().locale()));
-        if (!formatted_string.has_value()) {
+                *profile, proto.autofill_format().locale()),
+            /* quote_meta= */ false, &formatted_string);
+        if (!format_status.ok()) {
           DVLOG(2) << "Error evaluating " << __func__
                    << ": error formatting pattern '"
-                   << proto.autofill_format().pattern() << "'";
+                   << proto.autofill_format().value_expression() << "'";
           return false;
         }
-        result.mutable_strings()->add_values(*formatted_string);
+        result.mutable_strings()->add_values(formatted_string);
         break;
       }
       case ValueProto::kUserActions:

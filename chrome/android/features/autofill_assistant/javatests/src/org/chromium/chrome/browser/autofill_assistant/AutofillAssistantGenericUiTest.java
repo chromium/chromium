@@ -139,6 +139,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ToggleUserActionProt
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionList;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueComparisonProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
+import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueReferenceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.VerticalExpanderAccordionProto;
@@ -285,8 +287,8 @@ public class AutofillAssistantGenericUiTest {
                 .build();
     }
 
-    private CallbackProto createAutofillToStringCallback(
-            String inputModelIdentifier, String resultModelIdentifier, String autofillFormat) {
+    private CallbackProto createAutofillToStringCallback(String inputModelIdentifier,
+            String resultModelIdentifier, ValueExpression.Builder valueExpression) {
         return (CallbackProto) CallbackProto.newBuilder()
                 .setComputeValue(
                         ComputeValueProto.newBuilder()
@@ -297,8 +299,9 @@ public class AutofillAssistantGenericUiTest {
                                                                   .setModelIdentifier(
                                                                           inputModelIdentifier))
                                                 .setAutofillFormat(
-                                                        AutofillFormatProto.newBuilder().setPattern(
-                                                                autofillFormat))))
+                                                        AutofillFormatProto.newBuilder()
+                                                                .setValueExpression(
+                                                                        valueExpression))))
                 .build();
     }
 
@@ -3094,12 +3097,16 @@ public class AutofillAssistantGenericUiTest {
                                 ForEachProto.newBuilder()
                                         .setLoopCounter("i")
                                         .setLoopValueModelIdentifier("credit_cards")
-                                        .addCallbacks(
-                                                createAutofillToStringCallback("credit_cards[${i}]",
-                                                        "card_holder_name_${i}", "${51}"))
-                                        .addCallbacks(
-                                                createAutofillToStringCallback("credit_cards[${i}]",
-                                                        "obfuscated_number_${i}", "•••• ${-4}"))
+                                        .addCallbacks(createAutofillToStringCallback(
+                                                "credit_cards[${i}]", "card_holder_name_${i}",
+                                                ValueExpression.newBuilder().addChunk(
+                                                        Chunk.newBuilder().setKey(51))))
+                                        .addCallbacks(createAutofillToStringCallback(
+                                                "credit_cards[${i}]", "obfuscated_number_${i}",
+                                                ValueExpression.newBuilder()
+                                                        .addChunk(
+                                                                Chunk.newBuilder().setText("•••• "))
+                                                        .addChunk(Chunk.newBuilder().setKey(-4))))
                                         .addCallbacks(CallbackProto.newBuilder().setCreateNestedUi(
                                                 CreateNestedGenericUiProto.newBuilder()
                                                         .setGenericUiIdentifier("nested_ui_${i}")

@@ -22,23 +22,30 @@ using ::testing::Eq;
 using ::testing::IsSupersetOf;
 
 TEST(FieldFormatterTest, FormatString) {
-  std::map<std::string, std::string> mappings = {
-      {"keyA", "valueA"}, {"keyB", "valueB"}, {"keyC", "valueC"}};
+  std::map<std::string, std::string> mappings = {{"keyA", "valueA"},
+                                                 {"keyB", "valueB"},
+                                                 {"keyC", "valueC"},
+                                                 {"keyD", "$30.5"},
+                                                 {"keyE", "30.5$"}
+                                                 /* keyF does not exist */};
 
-  EXPECT_EQ(FormatString("", mappings), "");
-  EXPECT_EQ(FormatString("input", mappings), "input");
-  EXPECT_EQ(FormatString("prefix ${keyA}", mappings), "prefix valueA");
-  EXPECT_EQ(FormatString("prefix ${keyA}${keyB}${keyC} suffix", mappings),
+  EXPECT_EQ(*FormatString("", mappings), "");
+  EXPECT_EQ(*FormatString("input", mappings), "input");
+  EXPECT_EQ(*FormatString("prefix ${keyA}", mappings), "prefix valueA");
+  EXPECT_EQ(*FormatString("prefix ${keyA}${keyB}${keyC} suffix", mappings),
             "prefix valueAvalueBvalueC suffix");
-  EXPECT_EQ(FormatString("keyA = ${keyA}", mappings), "keyA = valueA");
-  EXPECT_EQ(FormatString("${keyD}", mappings), base::nullopt);
-  EXPECT_EQ(FormatString("${keyA}${keyD}", mappings), base::nullopt);
+  EXPECT_EQ(*FormatString("keyA = ${keyA}", mappings), "keyA = valueA");
+  EXPECT_EQ(*FormatString("Price: $${keyA}", mappings), "Price: $valueA");
+  EXPECT_EQ(*FormatString("Price: ${keyD}", mappings), "Price: $30.5");
+  EXPECT_EQ(*FormatString("Price: ${keyE}", mappings), "Price: 30.5$");
+  EXPECT_EQ(FormatString("${keyF}", mappings), base::nullopt);
+  EXPECT_EQ(FormatString("${keyA}${keyF}", mappings), base::nullopt);
 
-  EXPECT_EQ(FormatString("${keyD}", mappings, /*strict = */ false), "${keyD}");
-  EXPECT_EQ(FormatString("${keyA}${keyD}", mappings, /*strict = */ false),
-            "valueA${keyD}");
-  EXPECT_EQ(FormatString("${keyD}${keyA}", mappings, /*strict = */ false),
-            "${keyD}valueA");
+  EXPECT_EQ(*FormatString("${keyF}", mappings, /*strict = */ false), "${keyF}");
+  EXPECT_EQ(*FormatString("${keyA}${keyF}", mappings, /*strict = */ false),
+            "valueA${keyF}");
+  EXPECT_EQ(*FormatString("${keyF}${keyA}", mappings, /*strict = */ false),
+            "${keyF}valueA");
 }
 
 TEST(FieldFormatterTest, FormatExpression) {
@@ -80,6 +87,13 @@ TEST(FieldFormatterTest, FormatExpression) {
                                              /* quote_meta= */ false, &result)
                                 .proto_status());
   EXPECT_EQ(std::string(), result);
+}
+
+TEST(FieldFormatterTest, GetHumanReadableValueExpression) {
+  ValueExpression value_expression;
+  value_expression.add_chunk()->set_text("+");
+  value_expression.add_chunk()->set_key(1);
+  EXPECT_EQ(GetHumanReadableValueExpression(value_expression), "+${1}");
 }
 
 TEST(FieldFormatterTest, AutofillProfile) {

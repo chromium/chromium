@@ -24,27 +24,6 @@ namespace {
 
 const char kSelectElementTag[] = "SELECT";
 
-// Returns a human-readable string representation of |value_expression| for
-// use in logging and error reporting.
-std::string GetHumanReadableValueExpression(
-    const ValueExpression& value_expression) {
-  std::string out;
-  for (const auto& chunk : value_expression.chunk()) {
-    switch (chunk.chunk_case()) {
-      case ValueExpression::Chunk::kText:
-        out += chunk.text();
-        break;
-      case ValueExpression::Chunk::kKey:
-        out += "${" + base::NumberToString(chunk.key()) + "}";
-        break;
-      case ValueExpression::Chunk::CHUNK_NOT_SET:
-        out += "<CHUNK_NOT_SET>";
-        break;
-    }
-  }
-  return out;
-}
-
 AutofillErrorInfoProto::AutofillFieldError* AddAutofillError(
     const RequiredField& required_field,
     ClientStatus* client_status) {
@@ -53,7 +32,8 @@ AutofillErrorInfoProto::AutofillFieldError* AddAutofillError(
                           ->add_autofill_field_error();
   *field_error->mutable_field() = required_field.selector.proto;
   field_error->set_value_expression(
-      GetHumanReadableValueExpression(required_field.value_expression));
+      field_formatter::GetHumanReadableValueExpression(
+          required_field.value_expression));
   return field_error;
 }
 
@@ -215,9 +195,7 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
                                            /* quote_meta= */ false, &tmp)
              .ok()) {
       DVLOG(3) << "Field has no fallback data: " << required_field.selector
-               << " "
-               << GetHumanReadableValueExpression(
-                      required_field.value_expression);
+               << " " << required_field.value_expression;
       FillStatusDetailsWithMissingFallbackData(required_field, &client_status_);
     }
   }
