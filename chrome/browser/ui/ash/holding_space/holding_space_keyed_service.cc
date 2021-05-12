@@ -126,6 +126,16 @@ void HoldingSpaceKeyedService::RegisterProfilePrefs(
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }
 
+void HoldingSpaceKeyedService::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
+void HoldingSpaceKeyedService::AddPrintedPdf(
+    const base::FilePath& printed_pdf_path) {
+  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
+}
+
 void HoldingSpaceKeyedService::AddPinnedFiles(
     const std::vector<storage::FileSystemURL>& file_system_urls) {
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
@@ -226,11 +236,6 @@ void HoldingSpaceKeyedService::AddDownload(
 void HoldingSpaceKeyedService::AddNearbyShare(
     const base::FilePath& nearby_share_path) {
   AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
-}
-
-void HoldingSpaceKeyedService::AddPrintedPdf(
-    const base::FilePath& printed_pdf_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
 }
 
 void HoldingSpaceKeyedService::AddScreenRecording(

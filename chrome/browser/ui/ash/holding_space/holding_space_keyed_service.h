@@ -15,9 +15,12 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -41,7 +44,8 @@ class HoldingSpaceKeyedServiceDelegate;
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
-class HoldingSpaceKeyedService : public KeyedService,
+class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
+                                 public KeyedService,
                                  public ProfileManagerObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
@@ -53,6 +57,13 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Binds the holding space service to the specified pending `receiver`.
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver);
+
+  // crosapi::mojom::HoldingSpaceKeyedService:
+  void AddPrintedPdf(const base::FilePath& printed_pdf_path) override;
 
   // Adds multiple pinned file items identified by the provided file system
   // URLs.
@@ -82,9 +93,6 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
-
-  // Adds a printed PDF item backed by the provided absolute file path.
-  void AddPrintedPdf(const base::FilePath& printed_pdf_path);
 
   // Adds a screen recording item backed by the provided absolute file path.
   void AddScreenRecording(const base::FilePath& screen_recording_path);
@@ -160,6 +168,10 @@ class HoldingSpaceKeyedService : public KeyedService,
   // each tasked with an independent area of responsibility on behalf of the
   // service. They operate autonomously of one another.
   std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
+
+  // This class supports any number of connections. This allows the client to
+  // have multiple, potentially thread-affine, remotes.
+  mojo::ReceiverSet<crosapi::mojom::HoldingSpaceService> receivers_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

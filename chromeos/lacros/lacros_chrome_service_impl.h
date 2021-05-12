@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return base::Contains(interfaces_, CrosapiInterface::Uuid_);
   }
 
-  // Gaurds usage to the corresponding crosapi interface. Can only be used with
+  // Guards usage to the corresponding crosapi interface. Can only be used with
   // automatically registered interfaces. See IsRegistered().
   template <typename CrosapiInterface>
   bool IsAvailable() const {

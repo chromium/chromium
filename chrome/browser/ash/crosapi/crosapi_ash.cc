@@ -11,6 +11,7 @@
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "base/dcheck_is_on.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
@@ -41,6 +42,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
@@ -57,6 +60,26 @@
 #include "content/public/browser/media_session_service.h"
 
 namespace crosapi {
+namespace {
+
+// Assumptions:
+// 1. TODO(crbug.com/1102768): Multi-Signin / Fast-User-Switching is disabled.
+// 2. ash-chrome has 1 and only 1 "regular" `Profile`.
+Profile* GetAshProfile() {
+#if DCHECK_IS_ON()
+  int num_regular_profiles = 0;
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    if (ash::ProfileHelper::IsRegularProfile(profile))
+      ++num_regular_profiles;
+  }
+  DCHECK_EQ(1, num_regular_profiles);
+#endif  // DCHECK_IS_ON()
+  return ash::ProfileHelper::Get()->GetProfileByUser(
+      user_manager::UserManager::Get()->GetActiveUser());
+}
+
+}  // namespace
 
 CrosapiAsh::CrosapiAsh()
     : automation_ash_(std::make_unique<AutomationAsh>()),
@@ -116,31 +139,14 @@ void CrosapiAsh::BindAutomationFactory(
 
 void CrosapiAsh::BindAccountManager(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
-  // Assumptions:
-  // 1. TODO(https://crbug.com/1102768): Multi-Signin / Fast-User-Switching is
-  // disabled.
-  // 2. ash-chrome has 1 and only 1 "regular" |Profile|.
-#if DCHECK_IS_ON()
-  int num_regular_profiles = 0;
-  for (const Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (chromeos::ProfileHelper::IsRegularProfile(profile))
-      num_regular_profiles++;
-  }
-  DCHECK_EQ(1, num_regular_profiles);
-#endif  // DCHECK_IS_ON()
-  // Given these assumptions, there is 1 and only 1 AccountManagerAsh that
-  // can/should be contacted - the one attached to the regular |Profile| in
-  // ash-chrome, for the current |User|.
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  const Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  // Given `GetAshProfile()` assumptions, there is 1 and only 1
+  // `AccountManagerAsh` that can/should be contacted - the one attached to the
+  // regular `Profile` in ash-chrome for the active `User`.
   crosapi::AccountManagerAsh* const account_manager_ash =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
           ->GetAccountManagerAsh(
-              /* profile_path = */ profile->GetPath().value());
+              /*profile_path=*/GetAshProfile()->GetPath().value());
   account_manager_ash->BindReceiver(std::move(receiver));
 }
 
@@ -153,6 +159,18 @@ void CrosapiAsh::BindBrowserServiceHost(
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindHoldingSpaceService(
+    mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) {
+  // Given `GetAshProfile()` assumptions, there is 1 and only 1
+  // `HoldingSpaceKeyedService` that can/should be contacted - the one attached
+  // to the regular `Profile` in ash-chrome for the active `User`.
+  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
+      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          GetAshProfile());
+  if (holding_space_keyed_service)
+    holding_space_keyed_service->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindIdleService(

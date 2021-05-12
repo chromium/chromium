@@ -56,6 +56,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace printing {
@@ -160,7 +163,6 @@ void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
 }
 
 // Callback that runs after `PrintToPdfCallback()` returns.
-// TODO(crbug.com/1184422): Add printed pdf to holding space in Lacros.
 void OnPdfPrintedCallback(const AccountId& account_id,
                           const base::FilePath& path,
                           base::OnceClosure pdf_file_saved_closure) {
@@ -173,6 +175,12 @@ void OnPdfPrintedCallback(const AccountId& account_id,
             profile);
     if (holding_space_keyed_service)
       holding_space_keyed_service->AddPrintedPdf(path);
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  if (service && service->IsAvailable<crosapi::mojom::HoldingSpaceService>()) {
+    service->GetRemote<crosapi::mojom::HoldingSpaceService>()->AddPrintedPdf(
+        path);
   }
 #endif
   if (!pdf_file_saved_closure.is_null())

@@ -19,6 +19,7 @@ mojom("mojom") {
     "device_attributes.mojom",
     "feedback.mojom",
     "file_manager.mojom",
+    "holding_space_service.mojom",
     "idle_service.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
