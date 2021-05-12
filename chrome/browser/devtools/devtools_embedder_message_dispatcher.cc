@@ -14,7 +14,11 @@ namespace {
 using DispatchCallback = DevToolsEmbedderMessageDispatcher::DispatchCallback;
 
 bool GetValue(const base::Value& value, std::string* result) {
-  return value.GetAsString(result);
+  if (result && value.is_string()) {
+    *result = value.GetString();
+    return true;
+  }
+  return value.is_string();
 }
 
 bool GetValue(const base::Value& value, int* result) {
@@ -26,11 +30,19 @@ bool GetValue(const base::Value& value, int* result) {
 }
 
 bool GetValue(const base::Value& value, double* result) {
-  return value.GetAsDouble(result);
+  if (result && (value.is_double() || value.is_int())) {
+    *result = value.GetDouble();
+    return true;
+  }
+  return value.is_double() || value.is_int();
 }
 
 bool GetValue(const base::Value& value, bool* result) {
-  return value.GetAsBoolean(result);
+  if (result && value.is_bool()) {
+    *result = value.GetBool();
+    return true;
+  }
+  return value.is_bool();
 }
 
 bool GetValue(const base::Value& value, gfx::Rect* rect) {

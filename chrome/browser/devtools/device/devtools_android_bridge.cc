@@ -385,8 +385,7 @@ void DevToolsAndroidBridge::CreateDeviceProviders() {
       service->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled);
   const base::Value* pref_value = pref->GetValue();
 
-  bool enabled;
-  if (pref_value->GetAsBoolean(&enabled) && enabled) {
+  if (pref_value->is_bool() && pref_value->GetBool()) {
     device_providers.push_back(new UsbDeviceProvider(profile_));
   }
 
