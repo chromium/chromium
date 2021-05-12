@@ -138,7 +138,7 @@ TEST(BusTest, RemoveObjectProxy) {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
-  dbus_thread.StartWithOptions(thread_options);
+  dbus_thread.StartWithOptions(std::move(thread_options));
 
   // Create the bus.
   Bus::Options options;
@@ -216,7 +216,7 @@ TEST(BusTest, UnregisterExportedObject) {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
-  dbus_thread.StartWithOptions(thread_options);
+  dbus_thread.StartWithOptions(std::move(thread_options));
 
   // Create the bus.
   Bus::Options options;
@@ -266,7 +266,7 @@ TEST(BusTest, ShutdownAndBlockWithDBusThread) {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
-  dbus_thread.StartWithOptions(thread_options);
+  dbus_thread.StartWithOptions(std::move(thread_options));
 
   // Create the bus.
   Bus::Options options;

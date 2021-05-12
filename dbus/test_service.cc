@@ -61,7 +61,7 @@ TestService::~TestService() {
 bool TestService::StartService() {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
-  return StartWithOptions(thread_options);
+  return StartWithOptions(std::move(thread_options));
 }
 
 void TestService::WaitUntilServiceIsStarted() {

@@ -48,7 +48,7 @@ class EndToEndAsyncTest : public testing::Test {
     dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
-    ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
+    ASSERT_TRUE(dbus_thread_->StartWithOptions(std::move(thread_options)));
 
     // Start the test service, using the D-Bus thread.
     TestService::Options options;
