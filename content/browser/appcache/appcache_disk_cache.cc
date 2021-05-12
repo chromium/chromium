@@ -366,19 +366,19 @@ void AppCacheDiskCache::OnCreateBackendComplete(int return_value) {
 
   // Service pending calls that were queued up while we were initializing.
   for (auto& call : pending_calls_) {
-    // This is safe, because the callback will only be called once.
-    net::CompletionRepeatingCallback copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(call.callback));
+    auto split_callback = base::SplitOnceCallback(std::move(call.callback));
     return_value = net::ERR_FAILED;
     switch (call.call_type) {
       case CREATE:
-        return_value = CreateEntry(call.key, call.entry, copyable_callback);
+        return_value =
+            CreateEntry(call.key, call.entry, std::move(split_callback.first));
         break;
       case OPEN:
-        return_value = OpenEntry(call.key, call.entry, copyable_callback);
+        return_value =
+            OpenEntry(call.key, call.entry, std::move(split_callback.first));
         break;
       case DOOM:
-        return_value = DoomEntry(call.key, copyable_callback);
+        return_value = DoomEntry(call.key, std::move(split_callback.first));
         break;
     }
 
@@ -388,7 +388,7 @@ void AppCacheDiskCache::OnCreateBackendComplete(int return_value) {
     // net::ERR_IO_PENDING as it queued up the pending call. To follow the
     // disk_cache API contract, we need to call the callback ourselves here.
     if (return_value != net::ERR_IO_PENDING)
-      copyable_callback.Run(return_value);
+      std::move(split_callback.second).Run(return_value);
   }
   pending_calls_.clear();
 }
