@@ -81,10 +81,6 @@ Polymer({
       value: UiElement,
     },
 
-    showNoProfilesMessage: {
-      type: Boolean,
-    },
-
     /**
      * @type {!PageState}
      * @private
@@ -540,8 +536,7 @@ Polymer({
     if (!this.isScanningAvailable_()) {
       return this.i18n('scanQRCodeEnterActivationCode');
     }
-    return this.showNoProfilesMessage ? this.i18n('scanQRCodeNoProfiles') :
-                                        this.i18n('scanQRCode');
+    return this.i18n('scanQRCode');
   },
 
   /**

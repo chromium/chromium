@@ -319,10 +319,7 @@
     We've found multiple profiles available to download. Select the ones you would like to download before proceeding.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
-    Scan QR code using device camera or enter activation code provided by your carrier.
-  </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES" desc="Label for informing the user on ways to retrieve an eSIM profile after no eSIM profiles have been found.">
-    No profiles were discovered. To set up a new network, scan QR code using device camera or enter activation code provided by your carrier.
+    Scan a QR code using your device camera or enter the activation code provided by your carrier
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_ENTER_ACTIVATION_CODE" desc="Label for informing the user to enter activation code when no media devices have been found">
     Please enter your activation code

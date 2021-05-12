@@ -639,11 +639,6 @@ cr.define('cellular_setup', function() {
       }
     },
 
-    /** @private */
-    getShowNoProfilesMessage_() {
-      return !(this.pendingProfiles_ && this.pendingProfiles_.length > 0);
-    },
-
     /** NetworkListenerBehavior override */
     onNetworkStateListChanged() {
       hasActiveCellularNetwork().then((hasActive) => {

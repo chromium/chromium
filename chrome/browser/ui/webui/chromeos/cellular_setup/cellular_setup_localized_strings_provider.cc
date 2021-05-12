@@ -58,8 +58,6 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_MESSAGE},
     {"eSimConnectionWarning", IDS_CELLULAR_SETUP_ESIM_CONNECTION_WARNING},
     {"scanQRCode", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE},
-    {"scanQRCodeNoProfiles",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES},
     {"scanQRCodeEnterActivationCode",
      IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_ENTER_ACTIVATION_CODE},
     {"switchCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA},
