@@ -425,15 +425,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)loadModel {
   [super loadModel];
 
-  TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-  [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
-
-  [self addPromoToSigninSection];
-  [self addAccountProfileToAccountSection];
-  [self addSyncAndGoogleServicesToAccountSection];
+  // Sign-in section.
+  [self updateSigninSection];
 
   // Defaults section.
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
   if (@available(iOS 14, *)) {
     if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
       [model addSectionWithIdentifier:SettingsSectionIdentifierDefaults];
@@ -518,12 +514,39 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 }
 
+- (void)updateSigninSection {
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn]) {
+    [model removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  }
+  if ([model hasSectionForSectionIdentifier:SettingsSectionIdentifierAccount]) {
+    [model removeSectionWithIdentifier:SettingsSectionIdentifierAccount];
+  }
+
+  [model insertSectionWithIdentifier:SettingsSectionIdentifierAccount
+                             atIndex:0];
+  [self addAccountToSigninSection];
+
+  // Temporarily place this in the first index position in case it is populated.
+  // If this is not the case SettingsSectionIdentifierAccount will remain at
+  // index 0.
+  [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn atIndex:0];
+  [self addPromoToSigninSection];
+}
+
 // Adds the identity promo to promote the sign-in or sync state.
 - (void)addPromoToSigninSection {
-  TableViewModel<TableViewItem*>* model = self.tableViewModel;
+  TableViewItem* item = nil;
+
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (self.shouldDisplaySyncPromo || self.shouldDisplaySigninPromo) {
+  // If sign-in is disabled there should not be a sign-in promo.
+  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
+    item = signin::IsSigninAllowedByPolicy()
+               ? [self signinDisabledTextItem]
+               : [self signinDisabledByPolicyTextItem];
+  } else if (self.shouldDisplaySyncPromo || self.shouldDisplaySigninPromo) {
+    // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
           initWithBrowserState:_browserState
@@ -532,7 +555,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                      presenter:self /* id<SigninPresenter> */];
       _signinPromoViewMediator.consumer = self;
     }
-
     TableViewSigninPromoItem* signinPromoItem =
         [[TableViewSigninPromoItem alloc]
             initWithType:SettingsItemTypeSigninPromo];
@@ -543,9 +565,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     signinPromoItem.delegate = _signinPromoViewMediator;
     [_signinPromoViewMediator signinPromoViewIsVisible];
 
-    [model addItem:signinPromoItem
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    item = signinPromoItem;
   } else if (!authService->IsAuthenticated()) {
+    AccountSignInItem* signInTextItem =
+        [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
+    signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
+    signInTextItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
+
+    item = signInTextItem;
+  } else {
+    [self.tableViewModel
+        removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
     [_signinPromoViewMediator signinPromoViewIsRemoved];
     // Make sure we don't receive any notification.
     _signinPromoViewMediator.consumer = nil;
@@ -558,21 +589,19 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
       _hasRecordedSigninImpression = YES;
     }
-  }
-}
 
-// Adds the account profile to the Account section if the user is signed in.
-- (void)addAccountProfileToAccountSection {
-  TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
-    TableViewItem* item = signin::IsSigninAllowedByPolicy()
-                              ? [self signinDisabledTextItem]
-                              : [self signinDisabledByPolicyTextItem];
-    [model addItem:item
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    // The user is signed-in and syncing, exit early since the promo is not
+    // required.
     return;
   }
 
+  [self.tableViewModel addItem:item
+       toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+}
+
+// Adds the account profile to the Account section if the user is signed in.
+- (void)addAccountToSigninSection {
+  TableViewModel<TableViewItem*>* model = self.tableViewModel;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   if (authService->IsAuthenticated()) {
@@ -580,32 +609,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     [model addItem:[self accountCellItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
     _hasRecordedSigninImpression = NO;
-  } else if (!authService->IsAuthenticated() &&
-             !self.shouldDisplaySigninPromo && !self.shouldDisplaySyncPromo) {
-    // Signed-out default
-    AccountSignInItem* signInTextItem =
-        [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
-    signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
-    [model addItem:signInTextItem
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-  }
-}
-
-// Adds the Sync & Google Services options to the Identity section.
-- (void)addSyncAndGoogleServicesToAccountSection {
-  // Add the Account section for the Sync & Google services cell, if the
-  // user is signed-out.
-  TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  if (![model
-          hasSectionForSectionIdentifier:SettingsSectionIdentifierAccount]) {
-    [model addSectionWithIdentifier:SettingsSectionIdentifierAccount];
   }
 
+  // Add Sync & Google Services cell.
   if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(_browserState);
     // Sync item.
     if (authService->IsAuthenticated()) {
       [model addItem:[self googleSyncDetailItem]
@@ -1498,33 +1505,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   identityAccountItem.detailText = _identity.userEmail;
 }
 
-- (void)reloadSigninDisabledCell {
-  if (![self.tableViewModel
-          hasItemForItemType:SettingsItemTypeSigninDisabled
-           sectionIdentifier:SettingsSectionIdentifierSignIn]) {
-    return;
-  }
-  NSIndexPath* accountCellIndexPath = [self.tableViewModel
-      indexPathForItemType:SettingsItemTypeSigninDisabled
-         sectionIdentifier:SettingsSectionIdentifierSignIn];
-  TableViewItem* identityAccountItem = base::mac::ObjCCast<TableViewItem>(
-      [self.tableViewModel itemAtIndexPath:accountCellIndexPath]);
-  DCHECK(identityAccountItem);
-  if (signin::IsSigninAllowed(_browserState->GetPrefs())) {
-    [self.tableViewModel removeItemWithType:SettingsItemTypeSigninDisabled
-                  fromSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-  } else {
-    identityAccountItem = signin::IsSigninAllowedByPolicy()
-                              ? [self signinDisabledTextItem]
-                              : [self signinDisabledByPolicyTextItem];
-  }
-  // Update the table view.
-  NSUInteger index = [self.tableViewModel
-      sectionForSectionIdentifier:SettingsSectionIdentifierSignIn];
-  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                withRowAnimation:UITableViewRowAnimationNone];
-}
-
 - (void)reloadAccountCell {
   if (![self.tableViewModel
           hasItemForItemType:SettingsItemTypeAccount
@@ -1545,20 +1525,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Reloads all sign-in promos and default buttons.
 - (void)reloadSigninSection {
-  if ([self.tableViewModel
-          hasItemForItemType:SettingsItemTypeSigninPromo
-           sectionIdentifier:SettingsSectionIdentifierSignIn] &&
-      _signinPromoViewMediator) {
-    [self configureSigninPromoWithConfigurator:[_signinPromoViewMediator
-                                                   createConfigurator]
-                               identityChanged:YES];
-  } else {
-    [self addPromoToSigninSection];
-  }
+  [self updateSigninSection];
 
-  [self reloadSigninDisabledCell];
-  [self reloadAccountCell];
-  [self reloadSyncAndGoogleServicesCell];
+  NSUInteger index = [self.tableViewModel
+      sectionForSectionIdentifier:SettingsSectionIdentifierAccount];
+  NSIndexSet* indexSet =
+      [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, index + 1)];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 // Updates the Sync & Google services item to display the right icon and status

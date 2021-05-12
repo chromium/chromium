@@ -64,9 +64,9 @@ void DismissSignOut() {
   return config;
 }
 
-// Tests that enabling the "Allow Chrome sign-in" option blocks the user
-// from signing in to Chrome.
-- (void)testToggleAllowChromeSignin {
+// Tests that disabling the "Allow Chrome sign-in" option blocks the user
+// from signing in to Chrome through the promo sign-in until it is re-enabled.
+- (void)testToggleAllowChromeSigninWithPromoSignin {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
@@ -112,6 +112,54 @@ void DismissSignOut() {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that disabling the "Allow Chrome sign-in" option blocks the user
+// from signing in to Chrome through the default sign-in until it is re-enabled.
+- (void)testToggleAllowChromeSigninWithDefaultSignin {
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Close the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kSigninPromoCloseButtonId),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+
+  // Turn off "Allow Chrome Sign-in" feature.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Verify that the user is signed out and sign-in is disabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:StaticTextWithAccessibilityLabelId(
+                                          IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGrey verifySignedOut];
+
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+
+  // Turn on "Allow Chrome Sign-in" feature.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/NO,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Verify that the user is signed out and sign-in is enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

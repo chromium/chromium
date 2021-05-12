@@ -206,10 +206,9 @@ TEST_F(SettingsTableViewControllerMICETest, SyncPasswordError) {
   ASSERT_EQ(UILayoutConstraintAxisVertical, sync_item.textLayoutConstraintAxis);
 
   // Check that there is no sign-in promo when there is a sync error.
-  NSArray* identity_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierSignIn];
-  ASSERT_EQ(0U, identity_items.count);
+  ASSERT_FALSE([controller().tableViewModel
+      hasSectionForSectionIdentifier:SettingsSectionIdentifier::
+                                         SettingsSectionIdentifierSignIn]);
 }
 
 // Verifies that the Sync icon displays the off state when the user has
