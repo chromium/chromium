@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
+  bool ClearGrammarFragments(const gfx::Range& range) override;
+  bool AddGrammarFragments(
+      const std::vector<GrammarFragment>& fragments) override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
   void DeleteSurroundingText(int32_t offset, uint32_t length) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
@@ -60,6 +63,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   InputMethod* GetInputMethod() override;
   void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
   bool HasCompositionText() override;
+
+  std::vector<GrammarFragment> get_grammar_fragments() const {
+    return grammar_fragments_;
+  }
 
   int commit_text_call_count() const { return commit_text_call_count_; }
   int set_selection_range_call_count() const {
@@ -102,6 +109,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   UpdateCompositionTextArg last_update_composition_arg_;
   DeleteSurroundingTextArg last_delete_surrounding_text_arg_;
   gfx::Range autocorrect_range_;
+  std::vector<GrammarFragment> grammar_fragments_;
 };
 }  // namespace ui
 

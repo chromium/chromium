@@ -1328,4 +1328,15 @@ TEST_F(InputMethodChromeOSTest, CommitTextThenKeyEventOnlyInsertsOnce) {
   EXPECT_EQ(fake_text_input_client.text(), u"a");
 }
 
+TEST_F(InputMethodChromeOSTest, AddsAndClearsGrammarFragments) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  std::vector<GrammarFragment> fragments;
+  fragments.emplace_back(gfx::Range(0, 1), "fake");
+  fragments.emplace_back(gfx::Range(3, 10), "test");
+  ime_->AddGrammarFragments(fragments);
+  EXPECT_EQ(get_grammar_fragments(), fragments);
+  ime_->ClearGrammarFragments(gfx::Range(0, 10));
+  EXPECT_EQ(get_grammar_fragments().size(), 0u);
+}
+
 }  // namespace ui

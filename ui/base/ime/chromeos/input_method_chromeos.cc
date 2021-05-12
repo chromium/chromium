@@ -430,6 +430,19 @@ bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
   }
 }
 
+bool InputMethodChromeOS::ClearGrammarFragments(const gfx::Range& range) {
+  if (IsTextInputTypeNone())
+    return false;
+  return GetTextInputClient()->ClearGrammarFragments(range);
+}
+
+bool InputMethodChromeOS::AddGrammarFragments(
+    const std::vector<GrammarFragment>& fragments) {
+  if (IsTextInputTypeNone())
+    return false;
+  return GetTextInputClient()->AddGrammarFragments(fragments);
+}
+
 bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
   if (IsTextInputTypeNone())
     return false;

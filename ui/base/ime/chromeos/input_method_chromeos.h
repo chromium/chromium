@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
+  bool ClearGrammarFragments(const gfx::Range& range) override;
+  bool AddGrammarFragments(
+      const std::vector<GrammarFragment>& fragments) override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,

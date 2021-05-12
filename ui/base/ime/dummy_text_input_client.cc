@@ -177,6 +177,17 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return true;
 }
 
+bool DummyTextInputClient::ClearGrammarFragments(const gfx::Range& range) {
+  grammar_fragments_.clear();
+  return true;
+}
+
+bool DummyTextInputClient::AddGrammarFragments(
+    const std::vector<GrammarFragment>& fragments) {
+  grammar_fragments_.insert(grammar_fragments_.end(), fragments.begin(),
+                            fragments.end());
+  return true;
+}
 #endif
 
 #if defined(OS_WIN)
