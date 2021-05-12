@@ -173,12 +173,6 @@ void FakeLocalFrameHost::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {}
 
-void FakeLocalFrameHost::CreateNewPopupWidget(
-    mojo::PendingAssociatedReceiver<mojom::blink::PopupWidgetHost>
-        popup_widget_host,
-    mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> widget_host,
-    mojo::PendingAssociatedRemote<mojom::blink::Widget> widget) {}
-
 void FakeLocalFrameHost::ShowContextMenu(
     mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient>
         context_menu_client,

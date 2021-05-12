@@ -956,47 +956,15 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   CancelPagePopup();
   DCHECK(!page_popup_);
 
-  LocalFrame* opener_frame = client->OwnerElement().GetDocument().GetFrame();
-  WebLocalFrameImpl* web_opener_frame =
-      WebLocalFrameImpl::FromFrame(opener_frame);
-
-  mojo::PendingAssociatedRemote<mojom::blink::Widget> widget;
-  mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<mojom::blink::WidgetHost> widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>
-      widget_host_receiver = widget_host.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<mojom::blink::PopupWidgetHost>
-      popup_widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::PopupWidgetHost>
-      popup_widget_host_receiver =
-          popup_widget_host.InitWithNewEndpointAndPassReceiver();
-
-  opener_frame->GetLocalFrameHostRemote().CreateNewPopupWidget(
-      std::move(popup_widget_host_receiver), std::move(widget_host_receiver),
-      std::move(widget));
-  WebFrameWidgetImpl* opener_widget = web_opener_frame->LocalRootFrameWidget();
-
-  scheduler::WebAgentGroupScheduler& agent_group_scheduler =
-      opener_frame->GetPage()->GetPageScheduler()->GetAgentGroupScheduler();
-  // The returned WebPagePopup is self-referencing, so the pointer here is not
-  // an owning pointer. It is de-referenced by the PopupWidgetHost disconnecting
-  // and calling Close().
-  WebPagePopup* popup_widget = WebPagePopup::Create(
-      std::move(popup_widget_host), std::move(widget_host),
-      std::move(widget_receiver), agent_group_scheduler.DefaultTaskRunner());
-  popup_widget->InitializeCompositing(agent_group_scheduler,
-                                      opener_widget->GetOriginalScreenInfos(),
-                                      /*settings=*/nullptr);
-
+  WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(
+      client->OwnerElement().GetDocument().GetFrame()->LocalFrameRoot());
+  WebPagePopup* popup_widget = web_view_client_->CreatePopup(frame);
   // CreatePopup returns nullptr if this renderer process is about to die.
   if (!popup_widget)
     return nullptr;
   page_popup_ = To<WebPagePopupImpl>(popup_widget);
   page_popup_->Initialize(this, client);
-  EnablePopupMouseWheelEventListener(web_opener_frame->LocalRoot());
+  EnablePopupMouseWheelEventListener(frame);
   return page_popup_.get();
 }
 

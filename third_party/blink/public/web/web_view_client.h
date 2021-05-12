@@ -47,6 +47,7 @@
 
 namespace blink {
 
+class WebPagePopup;
 class WebURLRequest;
 class WebView;
 struct WebWindowFeatures;
@@ -75,6 +76,9 @@ class WebViewClient {
       const base::Optional<WebImpression>&) {
     return nullptr;
   }
+
+  // Create a new popup WebWidget.
+  virtual WebPagePopup* CreatePopup(WebLocalFrame*) { return nullptr; }
 
   // Misc ----------------------------------------------------------------
 
