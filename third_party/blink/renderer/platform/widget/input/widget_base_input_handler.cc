@@ -384,8 +384,8 @@ void WidgetBaseInputHandler::HandleInputEvent(
     }
   }
 
-  if (WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
 #if defined(OS_ANDROID)
+  if (WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
     // The DPAD_CENTER key on Android has a dual semantic: (1) in the general
     // case it should behave like a select key (i.e. causing a click if a button
     // is focused). However, if a text field is focused (2), its intended
@@ -409,8 +409,8 @@ void WidgetBaseInputHandler::HandleInputEvent(
       // DPAD_CENTER is also used as a "confirm" button).
       prevent_default = true;
     }
-#endif
   }
+#endif
 
   if (WebInputEvent::IsGestureEventType(input_event.GetType())) {
     const WebGestureEvent& gesture_event =
