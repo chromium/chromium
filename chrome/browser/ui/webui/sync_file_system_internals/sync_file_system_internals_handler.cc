@@ -107,7 +107,9 @@ void SyncFileSystemInternalsHandler::OnLogRecorded(
   dict.SetString("result_description", task_log.result_description);
 
   std::unique_ptr<base::ListValue> details(new base::ListValue);
-  details->AppendStrings(task_log.details);
+  for (const std::string& detail : task_log.details) {
+    details->Append(detail);
+  }
   dict.Set("details", std::move(details));
   FireWebUIListener("task-log-recorded", dict);
 }
