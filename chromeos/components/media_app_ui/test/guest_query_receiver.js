@@ -68,16 +68,23 @@ async function runTestQuery(data) {
     } else {
       result = 'nothing called';
     }
-  } else if (data.overwriteLastFile) {
+  } else if (data.overwriteLastFile !== undefined) {
     // Simulate a user overwriting the currently open file.
     const testBlob = new Blob([data.overwriteLastFile]);
     const file = currentFile();
-    await assertCast(file.overwriteOriginal).call(file, testBlob);
+    try {
+      await assertCast(file.overwriteOriginal).call(file, testBlob);
+      result = 'overwriteOriginal resolved';
+    } catch (/** @type{!Error} */ error) {
+      result = `overwriteOriginal failed Error: ${error}`;
+      if (data.rethrow) {
+        throw error;
+      }
+    }
     extraResultData = {
       receiverFileName: file.name,
       receiverErrorName: file.error
     };
-    result = 'overwriteOriginal resolved';
   } else if (data.deleteLastFile) {
     // Simulate a user deleting the currently open file.
     try {

@@ -20,6 +20,7 @@ let TestMessageResponseData;
  *     navigate: ({direction: string, token: number}|undefined),
  *     openFile: (boolean|undefined),
  *     overwriteLastFile: (string|undefined),
+ *     rethrow: (boolean|undefined),
  *     pathToRoot: (!Array<string>|undefined),
  *     property: (string|undefined),
  *     renameLastFile: (string|undefined),

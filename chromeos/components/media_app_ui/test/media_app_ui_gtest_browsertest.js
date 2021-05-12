@@ -166,6 +166,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'OverwriteOriginalIPC', () => {
   runMediaAppTest('OverwriteOriginalIPC');
 });
 
+TEST_F('MediaAppUIGtestBrowserTest', 'RejectZeroByteWrites', () => {
+  runMediaAppTest('RejectZeroByteWrites');
+});
+
 TEST_F('MediaAppUIGtestBrowserTest', 'OverwriteOriginalPickerFallback', () => {
   runMediaAppTest('OverwriteOriginalPickerFallback');
 });

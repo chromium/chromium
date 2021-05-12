@@ -575,6 +575,22 @@ MediaAppUIBrowserTest.OverwriteOriginalIPC = async () => {
       handle.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
 };
 
+MediaAppUIBrowserTest.RejectZeroByteWrites = async () => {
+  const directory = await launchWithFiles([await createTestImageFile()]);
+  const handle = directory.files[0];
+
+  const EMPTY_DATA = '';
+  const message = {overwriteLastFile: EMPTY_DATA};
+  const testResponse = await sendTestMessage(message);
+
+  assertEquals(
+      testResponse.testQueryResult,
+      'overwriteOriginal failed Error:' +
+          ' EmptyWriteError: overwrite-file: saveBlobToFile():' +
+          ' Refusing to write zero bytes.');
+  assertEquals(handle.lastWritable.writes.length, 0);
+};
+
 // Tests that OverwriteOriginal shows a file picker (and writes to that file) if
 // the write attempt to the original file fails.
 MediaAppUIBrowserTest.OverwriteOriginalPickerFallback = async () => {
@@ -656,7 +672,7 @@ MediaAppUIBrowserTest.CrossContextErrors = async () => {
   let caughtError = {};
 
   try {
-    const message = {overwriteLastFile: 'Foo'};
+    const message = {overwriteLastFile: 'Foo', rethrow: true};
     await sendTestMessage(message);
   } catch (e) {
     caughtError = e;
