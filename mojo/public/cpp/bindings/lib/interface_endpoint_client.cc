@@ -506,7 +506,8 @@ void InterfaceEndpointClient::OnAssociationEvent(
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
   DCHECK_EQ(handle_.id(), message->interface_id());
 
-  recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage Start");
+  recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage Start %lu",
+                       recordreplay::PointerId(this));
 
   if (encountered_error_) {
     // This message is received after error has been encountered. For associated
