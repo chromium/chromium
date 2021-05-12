@@ -19,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsMediator.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsStorageFactory.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantViewerConfig.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/RatingStarSpan.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
@@ -76,6 +77,7 @@ java_library("junit") {
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCallbackHelper.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsDataProviderTest.java",
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsMediatorTest.java",
+    "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsStorageFactoryTest.java",
   ]
 
   deps = [
