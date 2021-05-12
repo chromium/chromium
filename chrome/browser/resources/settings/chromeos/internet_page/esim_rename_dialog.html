@@ -29,7 +29,16 @@
       }
 
       #warningMessage iron-icon {
+        float: left;
         padding-inline-end: 4px;
+      }
+
+      :host-context([dir='rtl']) #warningMessage iron-icon {
+        float: right;
+      }
+
+      #warningMessage div {
+        overflow: hidden;
       }
 
       #inputInfo {
@@ -59,6 +68,11 @@
         top: 0;
       }
 
+      :host-context([dir='rtl']) #inputCount {
+        left: 0;
+        right: auto;
+      }
+
       #cancel {
         margin-inline-end: 8px;
       }
@@ -68,7 +82,7 @@
       <div id="body" slot="body">
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
-          $i18n{eSimDialogConnectionWarning}
+          <div>$i18n{eSimDialogConnectionWarning}</div>
         </div>
         <template is="dom-if" if="[[!errorMessage_]]" restamp>
           <div class="relative">

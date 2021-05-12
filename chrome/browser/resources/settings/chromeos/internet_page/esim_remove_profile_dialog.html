@@ -29,7 +29,16 @@
       }
 
       #warningMessage iron-icon {
+        float: left;
         padding-inline-end: 4px;
+      }
+
+      :host-context([dir='rtl']) #warningMessage iron-icon {
+        float: right;
+      }
+
+      #warningMessage div {
+        overflow: hidden;
       }
 
       #cancel {
@@ -44,7 +53,7 @@
         <div id="description">$i18n{eSimRemoveProfileDialogDescription}</div>
         <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
-          $i18n{eSimDialogConnectionWarning}
+          <div>$i18n{eSimDialogConnectionWarning}</div>
         </div>
       </div>
       <div slot="button-container">
