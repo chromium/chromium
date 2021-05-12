@@ -110,7 +110,7 @@ class FakePropertyProviderAsync {
           provider_request)
       : thread_("Property Provider Thread") {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    CHECK(thread_.StartWithOptions(options));
+    CHECK(thread_.StartWithOptions(std::move(options)));
     property_provider_ = base::SequenceBound<FakePropertyProvider>(
         thread_.task_runner(), std::move(provider_request));
   }
