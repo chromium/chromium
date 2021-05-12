@@ -9,10 +9,13 @@ a dependency rule table to be used by subclasses.
 See README.md for the format of the deps file.
 """
 
+from __future__ import print_function
+
 import copy
 import os.path
 import posixpath
 import subprocess
+import sys
 
 from rules import Rule, Rules
 
@@ -180,7 +183,7 @@ class DepsBuilder(object):
     if self._ignore_specific_rules:
       return rules
 
-    for regexp, specific_rules in specific_includes.iteritems():
+    for regexp, specific_rules in specific_includes.items():
       for rule_str in specific_rules:
         ApplyOneRule(rule_str, regexp)
 
@@ -210,7 +213,7 @@ class DepsBuilder(object):
 
     # Check the DEPS file in this directory.
     if self.verbose:
-      print 'Applying rules from', dir_path_local_abs
+      print('Applying rules from', dir_path_local_abs)
     def FromImpl(*_):
       pass  # NOP function so "From" doesn't fail.
 
@@ -248,9 +251,12 @@ class DepsBuilder(object):
     if os.path.isfile(deps_file_path) and not (
         self._under_test and
         os.path.basename(dir_path_local_abs) == 'checkdeps'):
-      execfile(deps_file_path, global_scope, local_scope)
+      if sys.version_info.major == 2:
+        execfile(deps_file_path, global_scope, local_scope)
+      else:
+        exec(open(deps_file_path).read(), global_scope, local_scope)
     elif self.verbose:
-      print '  No deps file found in', dir_path_local_abs
+      print('  No deps file found in', dir_path_local_abs)
 
     # Even if a DEPS file does not exist we still invoke ApplyRules
     # to apply the implicit "allow" rule for the current directory
