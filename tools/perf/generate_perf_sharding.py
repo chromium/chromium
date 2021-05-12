@@ -15,6 +15,7 @@ import shutil
 import sys
 import tempfile
 import textwrap
+import six
 from six.moves import input  # pylint: disable=redefined-builtin
 
 import cross_device_test_config
@@ -46,7 +47,14 @@ files may not match with the true state of world.
 def GetParser():
   parser = argparse.ArgumentParser(
       description=_SCRIPT_USAGE, formatter_class=argparse.RawTextHelpFormatter)
-  subparsers = parser.add_subparsers()
+
+  if six.PY2:
+    subparsers = parser.add_subparsers()
+  else:
+    # Python 3 needs required=True in order to issue an error when subcommand is
+    # missing. Without metavar, argparse would crash while issuing error (bug?).
+    subparsers = parser.add_subparsers(
+        required=True, metavar='{update,update-timing,deschedule,validate}')
 
   parser_update = subparsers.add_parser(
       'update',
@@ -120,10 +128,10 @@ def _LoadTimingData(args):
   data = retrieve_story_timing.FetchAverageStoryTimingData(
       configurations=[builder.name], num_last_days=5)
   for executable in builder.executables:
-    data.append({unicode('duration'): unicode(
-                    float(executable.estimated_runtime)),
-                 unicode('name'): unicode(
-                     executable.name + '/' + bot_platforms.GTEST_STORY_NAME)})
+    data.append({
+        'duration': str(float(executable.estimated_runtime)),
+        'name': executable.name + '/' + bot_platforms.GTEST_STORY_NAME
+    })
   _DumpJson(data, timing_file_path)
   print('Finished retrieving story timing data for %s' % repr(builder.name))
 
