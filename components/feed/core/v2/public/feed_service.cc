@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/hash/hash.h"
-#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -234,7 +233,6 @@ FeedService::FeedService(
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
       image_fetcher_.get(), store_.get(), persistent_key_value_store_.get(),
       chrome_info);
-  api_ = stream_.get();
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(
       history_service, static_cast<FeedStream*>(stream_.get()),
@@ -254,19 +252,10 @@ FeedService::FeedService(
 #endif
 }
 
-FeedService::FeedService() = default;
-
-// static
-std::unique_ptr<FeedService> FeedService::CreateForTesting(FeedApi* api) {
-  auto result = base::WrapUnique(new FeedService());
-  result->api_ = api;
-  return result;
-}
-
 FeedService::~FeedService() = default;
 
 FeedApi* FeedService::GetStream() {
-  return api_;
+  return stream_.get();
 }
 
 void FeedService::ClearCachedData() {

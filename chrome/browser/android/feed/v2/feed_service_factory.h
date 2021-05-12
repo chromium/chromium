@@ -24,6 +24,7 @@ class FeedServiceFactory : public BrowserContextKeyedServiceFactory {
   FeedServiceFactory& operator=(const FeedServiceFactory&) = delete;
 
   static FeedService* GetForBrowserContext(content::BrowserContext* context);
+
   static FeedServiceFactory* GetInstance();
 
  private:

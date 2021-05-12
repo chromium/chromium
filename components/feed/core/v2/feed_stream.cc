@@ -53,7 +53,6 @@
 
 namespace feed {
 namespace {
-constexpr size_t kMaxRecentFeedNavigations = 10;
 
 void UpdateDebugStreamData(
     const UploadActionsTask::Result& upload_actions_result,
@@ -533,12 +532,6 @@ void FeedStream::UploadActionsComplete(UploadActionsTask::Result result) {
   PopulateDebugStreamData(result, *profile_prefs_);
 }
 
-bool FeedStream::WasUrlRecentlyNavigatedFromFeed(const GURL& url) {
-  return std::find(recent_feed_navigations_.begin(),
-                   recent_feed_navigations_.end(),
-                   url) != recent_feed_navigations_.end();
-}
-
 DebugStreamData FeedStream::GetDebugStreamData() {
   return ::feed::prefs::GetDebugStreamData(*profile_prefs_);
 }
@@ -989,13 +982,8 @@ void FeedStream::UnloadModels() {
   }
 }
 
-void FeedStream::ReportOpenAction(const GURL& url,
-                                  const StreamType& stream_type,
+void FeedStream::ReportOpenAction(const StreamType& stream_type,
                                   const std::string& slice_id) {
-  recent_feed_navigations_.insert(recent_feed_navigations_.begin(), url);
-  recent_feed_navigations_.resize(
-      std::min(kMaxRecentFeedNavigations, recent_feed_navigations_.size()));
-
   Stream& stream = GetStream(stream_type);
 
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
@@ -1011,13 +999,8 @@ void FeedStream::ReportOpenAction(const GURL& url,
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
 }
-void FeedStream::ReportOpenInNewTabAction(const GURL& url,
-                                          const StreamType& stream_type,
+void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
                                           const std::string& slice_id) {
-  recent_feed_navigations_.insert(recent_feed_navigations_.begin(), url);
-  recent_feed_navigations_.resize(
-      std::min(kMaxRecentFeedNavigations, recent_feed_navigations_.size()));
-
   Stream& stream = GetStream(stream_type);
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
