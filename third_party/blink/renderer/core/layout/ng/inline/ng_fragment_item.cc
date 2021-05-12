@@ -322,18 +322,12 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
-void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
-                                      const FloatRect& scaled_rect,
-                                      float length_adjust_scale,
-                                      float angle) {
+void NGFragmentItem::ConvertToSVGText(std::unique_ptr<NGSVGFragmentData> data,
+                                      const PhysicalRect& unscaled_rect,
+                                      bool is_hidden) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
-  auto data = std::make_unique<NGSVGFragmentData>();
-  data->shape_result = std::move(text_.shape_result);
-  data->text_offset = std::move(text_.text_offset);
-  data->rect = scaled_rect;
-  data->length_adjust_scale = length_adjust_scale;
-  data->angle = angle;
+  is_hidden_for_paint_ = is_hidden;
   text_.~TextItem();
   new (&svg_text_) SVGTextItem();
   svg_text_.data = std::move(data);
@@ -566,18 +560,36 @@ AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
   DCHECK_EQ(Type(), kSVGText);
   const NGSVGFragmentData& svg_data = *svg_text_.data;
   AffineTransform transform;
-  if (svg_data.angle != 0.0f) {
+  if (svg_data.angle == 0.0f)
+    return transform;
+  transform.Rotate(svg_data.angle);
+  const SimpleFontData* font_data =
+      To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+  if (svg_data.in_text_path) {
+    // https://svgwg.org/svg2-draft/text.html#TextpathLayoutRules
+    // The rotation should be about the center of the baseline.
+    const auto font_baseline = Style().GetFontBaseline();
+    float ascent =
+        font_data
+            ? font_data->GetFontMetrics().FixedAscent(font_baseline).ToFloat()
+            : 0.0f;
+    // |x| points the center of the baseline.  See |NGSVGTextLayoutAlgorithm::
+    // PositionOnPath()|.
+    float x = svg_data.rect.X();
+    float y = svg_data.rect.Y() + ascent;
+    transform.Translate(-svg_data.rect.Width() / 2, svg_data.baseline_shift);
+    transform.SetE(transform.E() + x);
+    transform.SetF(transform.F() + y);
+    transform.Translate(-x, -y);
+  } else {
     // https://svgwg.org/svg2-draft/text.html#TextElementRotateAttribute
     // > The supplemental rotation, in degrees, about the current text position
     //
     // TODO(crbug.com/1179585): The following code is equivalent to the legacy
     // SVG. That is to say, rotation around the left edge of the baseline.
     // However it doesn't look correct for RTL and vertical text.
-    const SimpleFontData* font_data =
-        To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
     float ascent =
         font_data ? font_data->GetFontMetrics().FixedAscent().ToFloat() : 0.0f;
-    transform.Rotate(svg_data.angle);
     float y = svg_data.rect.Y() + ascent;
     transform.SetE(transform.E() + svg_data.rect.X());
     transform.SetF(transform.F() + y);

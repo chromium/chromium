@@ -33,6 +33,8 @@ struct NGSVGFragmentData {
   FloatRect rect;
   float length_adjust_scale;
   float angle;
+  float baseline_shift;
+  bool in_text_path;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -121,10 +123,9 @@ class CORE_EXPORT NGFragmentItem final {
   bool IsListMarker() const;
 
   // Make this kSVGText type. |this| type must be kText.
-  void ConvertToSVGText(const PhysicalRect& unscaled_rect,
-                        const FloatRect& scaled_rect,
-                        float length_adjust_scale,
-                        float angle);
+  void ConvertToSVGText(std::unique_ptr<NGSVGFragmentData> data,
+                        const PhysicalRect& unscaled_rect,
+                        bool is_hidden);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.

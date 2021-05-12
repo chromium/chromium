@@ -123,7 +123,7 @@ void NGSVGTextLayoutAlgorithm::Layout(
   ApplyAnchoring(items);
 
   // 8. Position on path
-  PositionOnPath();
+  PositionOnPath(items);
 
   // Write back the result to NGFragmentItems.
   for (const NGSVGPerCharacterInfo& info : result_) {
@@ -146,9 +146,15 @@ void NGSVGTextLayoutAlgorithm::Layout(
                                LayoutUnit((*info.y - ascent) / scaling_factor),
                                LayoutUnit(width / scaling_factor),
                                LayoutUnit(height / scaling_factor));
-    item.item.ConvertToSVGText(unscaled_rect, scaled_rect,
-                               info.length_adjust_scale,
-                               info.rotate.value_or(0.0f));
+    auto data = std::make_unique<NGSVGFragmentData>();
+    data->shape_result = item->TextShapeResult();
+    data->text_offset = item->TextOffset();
+    data->rect = scaled_rect;
+    data->length_adjust_scale = info.length_adjust_scale;
+    data->angle = info.rotate.value_or(0.0f);
+    data->baseline_shift = info.baseline_shift;
+    data->in_text_path = info.in_text_path;
+    item.item.ConvertToSVGText(std::move(data), unscaled_rect, info.hidden);
   }
 }
 
@@ -561,6 +567,22 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
                      [](const auto& info) { return info.anchored_chunk; });
     wtf_size_t j = std::distance(result_.begin(), next_anchor) - 1;
 
+    const auto& text_path_ranges = inline_node_.SVGTextPathRangeList();
+    const auto* text_path_iter =
+        std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
+                     [i](const auto& range) {
+                       return range.start_index <= i && i <= range.end_index;
+                     });
+    bool in_text_path = false;
+    if (text_path_iter != text_path_ranges.end()) {
+      in_text_path = true;
+      // Anchoring should be scoped within the <textPath>.
+      // Non-anchored text following <textPath> will be handled in
+      // PositionOnPath().
+      // This affects the third test in svg/batik/text/textOnPath2.svg.
+      j = std::min(j, text_path_iter->end_index);
+    }
+
     // 1.1. Let a = +Infinity and b = −Infinity.
     // ==> 'a' is left/top of characters. 'b' is right/top of characters.
     float a = std::numeric_limits<float>::infinity();
@@ -585,6 +607,15 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
       // 1.3.1. Let shift be the x coordinate of result[i], if the "horizontal"
       // flag is true, and the y coordinate otherwise.
       float shift = horizontal_ ? *result_[i].x : *result_[i].y;
+
+      if (in_text_path) {
+        const NGSVGCharacterData& resolve =
+            ResolvedIterator(inline_node_.SVGCharacterDataList()).AdvanceTo(i);
+        if (!((horizontal_ && resolve.HasX()) ||
+              (!horizontal_ && resolve.HasY())))
+          shift = 0.0f;
+      }
+
       // 1.3.2. Adjust shift based on the value of text-anchor and direction
       // of the element the character at index i is in:
       //  -> (start, ltr) or (end, rtl)
@@ -624,12 +655,218 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
   }
 }
 
-void NGSVGTextLayoutAlgorithm::PositionOnPath() {
+void NGSVGTextLayoutAlgorithm::PositionOnPath(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   const auto& ranges = inline_node_.SVGTextPathRangeList();
   if (ranges.IsEmpty())
     return;
 
-  // TODO(tkent): Implement this step.
+  wtf_size_t range_index = 0;
+  std::unique_ptr<PathPositionMapper> path_mapper;
+
+  // 2. Set the "in path" flag to false.
+  bool in_path = false;
+  // 3. Set the "after path" flag to false.
+  bool after_path = false;
+  // 4. Let path_end be an offset for characters that follow a ‘textPath’
+  // element. Set path_end to (0,0).
+  float path_end_x = 0.0f;
+  float path_end_y = 0.0f;
+  // 1. Set index = 0.
+  // 5. While index < count:
+  // 5.3. Set index = index + 1.
+  for (unsigned index = 0; index < result_.size(); ++index) {
+    auto& info = result_[index];
+    // 5.1. If the character at index i is within a ‘textPath’ element and
+    // corresponds to a typographic character, then:
+    if (range_index < ranges.size() &&
+        index >= ranges[range_index].start_index &&
+        index <= ranges[range_index].end_index) {
+      if (!in_path)
+        path_mapper = ranges[range_index].layout_svg_text_path->LayoutPath();
+      // 5.1.1. Set "in path" flag to true.
+      in_path = true;
+      info.in_text_path = true;
+      // 5.1.2. If the "middle" flag of result[index] is false, then:
+      if (!info.middle) {
+        const float scaling_factor = ScalingFactorAt(items, index);
+        // 5.1.2.1. Let path be the equivalent path of the basic shape element
+        // referenced by the ‘textPath’ element, or an empty path if the
+        // reference is invalid.
+        if (!path_mapper) {
+          info.hidden = true;
+        } else {
+          // 5.1.2.2. If the ‘side’ attribute of the ‘textPath’ element is
+          // 'right', then reverse path.
+          // ==> We don't support 'side' attribute yet.
+
+          // 5.1.2.3. Let length be the length of path.
+          const float length = path_mapper->length();
+
+          // 5.1.2.4. Let offset be the value of the ‘textPath’ element's
+          // ‘startOffset’ attribute, adjusted due to any ‘pathLength’
+          // attribute on the referenced element.
+          const float offset = path_mapper->StartOffset();
+
+          // 5.1.2.5. Let advance = the advance of the typographic character
+          // corresponding to character k.
+          // 5.1.2.6. Let (x, y) and angle be the position and angle in
+          // result[index].
+          // 5.1.2.7. Let mid be a coordinate value depending on the value of
+          // the "horizontal" flag:
+          //   -> true
+          //      mid is x + advance / 2 + offset
+          //   -> false
+          //      mid is y + advance / 2 + offset
+          const float mid =
+              ((horizontal_ ? *info.x : *info.y) + info.inline_size / 2) /
+                  scaling_factor +
+              offset;
+
+          // 5.1.2.9. If path is a closed subpath depending on the values of
+          // text-anchor and direction of the element the character at index is
+          // in:
+          //   -> (start, ltr) or (end, rtl)
+          //      If mid−offset < 0 or mid−offset > length, set the "hidden"
+          //      flag of result[index] to true.
+          //   -> (middle, ltr) or (middle, rtl)
+          //      If mid−offset < −length/2 or mid−offset > length/2, set the
+          //      "hidden" flag of result[index] to true.
+          //   -> (start, rtl) or (end, ltr)
+          //      If mid−offset < −length or mid−offset > 0, set the "hidden"
+          //      flag of result[index] to true.
+          const ComputedStyle& style =
+              items[result_[index].item_index]->Style();
+          const bool is_ltr = style.IsLeftToRightDirection();
+          const float mid_offset = mid - offset;
+          switch (style.TextAnchor()) {
+            default:
+              NOTREACHED();
+              FALLTHROUGH;
+            case ETextAnchor::kStart:
+              if (is_ltr) {
+                info.hidden = mid_offset < 0 || mid_offset > length;
+              } else {
+                info.hidden = mid_offset < -length || mid_offset > 0;
+              }
+              break;
+            case ETextAnchor::kEnd:
+              if (is_ltr) {
+                info.hidden = mid_offset < -length || mid_offset > 0;
+              } else {
+                info.hidden = mid_offset < 0 || mid_offset > length;
+              }
+              break;
+            case ETextAnchor::kMiddle:
+              info.hidden = mid_offset < -length / 2 || mid_offset > length / 2;
+              break;
+          }
+
+          // 5.1.2.10. If the hidden flag is false:
+          if (!info.hidden) {
+            PointAndTangent point_tangent;
+            PathPositionMapper::PositionType position_type =
+                path_mapper->PointAndNormalAtLength(mid, point_tangent);
+            if (position_type != PathPositionMapper::kOnPath)
+              info.hidden = true;
+            point_tangent.tangent_in_degrees += info.rotate.value_or(0.0f);
+            info.rotate = point_tangent.tangent_in_degrees;
+            if (*info.rotate == 0.0f) {
+              if (horizontal_) {
+                info.x = point_tangent.point.X() * scaling_factor -
+                         info.inline_size / 2;
+                info.y = point_tangent.point.Y() * scaling_factor + *info.y;
+              } else {
+                info.x = point_tangent.point.X() * scaling_factor + *info.x;
+                info.y = point_tangent.point.Y() * scaling_factor -
+                         info.inline_size / 2;
+              }
+            } else {
+              // Unlike the specification, we just set result[index].x/y to the
+              // point along the path. The character is moved by an
+              // AffineTransform produced from baseline_shift and inline_size/2.
+              // See |NGFragmentItem::BuildSVGTransformForBoundingBox()|.
+              info.baseline_shift = horizontal_ ? *info.y : *info.x;
+              info.x = point_tangent.point.X() * scaling_factor;
+              info.y = point_tangent.point.Y() * scaling_factor;
+            }
+          }
+        }
+      } else {
+        // 5.1.3. Otherwise, the "middle" flag of result[index] is true:
+        // 5.1.3.1. Set the position and angle values of result[index] to those
+        // in result[index − 1].
+        info.x = *result_[index - 1].x;
+        info.y = *result_[index - 1].y;
+        info.rotate = *result_[index - 1].rotate;
+      }
+    } else {
+      // 5.2. If the character at index i is not within a ‘textPath’ element
+      // and corresponds to a typographic character, then:
+      // 5.2.1. If the "in path" flag is true:
+      if (in_path) {
+        // 5.2.1.1. Set the "in path" flag to false.
+        in_path = false;
+        // 5.2.1.2. Set the "after path" flag to true.
+        after_path = true;
+        // 5.2.1.3. Set path_end equal to the end point of the path referenced
+        // by ‘textPath’ − the position of result[index].
+        //
+        // ==> This is not compatible with the legacy layout, in which text
+        // following <textPath> is placed on the end of the last character
+        // in the <textPath>. However, the specification asks the new behavior
+        // explicitly. See the figure before
+        // https://svgwg.org/svg2-draft/text.html#TextRenderingOrder .
+        // This affects svg/batik/text/{textOnPath,textOnPath2}.svg.
+        if (path_mapper) {
+          const float scaling_factor = ScalingFactorAt(items, index);
+          PointAndTangent point_tangent;
+          path_mapper->PointAndNormalAtLength(path_mapper->length(),
+                                              point_tangent);
+          path_end_x = point_tangent.point.X() * scaling_factor - *info.x;
+          path_end_y = point_tangent.point.Y() * scaling_factor - *info.y;
+        } else {
+          // The 'current text position' should be at the next to the last
+          // drawn character.
+          const auto rbegin =
+              std::make_reverse_iterator(result_.begin() + index);
+          const auto rend = std::make_reverse_iterator(result_.begin());
+          const auto iter = std::find_if(rbegin, rend, [](const auto& info) {
+            return !info.hidden && !info.middle;
+          });
+          if (iter != rend) {
+            if (horizontal_) {
+              path_end_x = *iter->x + iter->inline_size;
+              path_end_y = *iter->y;
+            } else {
+              path_end_x = *iter->x;
+              path_end_y = *iter->y + iter->inline_size;
+            }
+          } else {
+            path_end_x = 0.0f;
+            path_end_y = 0.0f;
+          }
+          path_end_x -= *info.x;
+          path_end_y -= *info.y;
+        }
+      }
+      // 5.2.2. If the "after path" is true.
+      if (after_path) {
+        // 5.2.2.1. If anchored chunk of result[index] is true, set the
+        // "after path" flag to false.
+        if (info.anchored_chunk) {
+          after_path = false;
+        } else {
+          // 5.2.2.2. Else, let result.x[index] = result.x[index] + path_end.x
+          // and result.y[index] = result.y[index] + path_end.y.
+          *info.x += path_end_x;
+          *info.y += path_end_y;
+        }
+      }
+    }
+    if (range_index < ranges.size() && index == ranges[range_index].end_index)
+      ++range_index;
+  }
 }
 
 float NGSVGTextLayoutAlgorithm::ScalingFactorAt(
