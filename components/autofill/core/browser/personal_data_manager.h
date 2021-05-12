@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -30,6 +31,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/strike_database_base.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -99,6 +101,7 @@ class PersonalDataManager : public KeyedService,
             signin::IdentityManager* identity_manager,
             AutofillProfileValidator* client_profile_validator,
             history::HistoryService* history_service,
+            StrikeDatabaseBase* strike_database,
             bool is_off_the_record);
 
   // KeyedService:
@@ -443,6 +446,21 @@ class PersonalDataManager : public KeyedService,
   // be updated at the end of the function, since some tasks cannot tolerate
   // database delays.
   virtual void SetProfiles(std::vector<AutofillProfile>* profiles);
+
+  // Returns true if the import of new profiles should be blocked on `url`.
+  // Returns false if the strike database is not available, the `url` is not
+  // valid or has no host.
+  bool IsNewProfileImportBlockedForDomain(const GURL& url) const;
+
+  // Add a strike for blocking the import of new profiles on `url`.
+  // Does nothing if the strike database is not available, the `url` is not
+  // valid or has no host.
+  void AddStrikeToBlockNewProfileImportForDomain(const GURL& url);
+
+  // Removes potential strikes for the import of new profiles from `url`.
+  // Does nothing if the strike database is not available, the `url` is not
+  // valid or has no host.
+  void RemoveStrikesToBlockNewProfileImportForDomain(const GURL& url);
 
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
@@ -822,6 +840,11 @@ class PersonalDataManager : public KeyedService,
 
   // An observer to listen for changes to prefs::kAutofillWalletImportEnabled.
   std::unique_ptr<BooleanPrefMember> wallet_enabled_pref_;
+
+  // The database that is used to count domain-keyed strikes to suppress the
+  // import of new profiles.
+  std::unique_ptr<AutofillProfileSaveStrikeDatabase>
+      profile_save_strike_database_;
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;

@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -273,6 +274,7 @@ void PersonalDataManager::Init(
     signin::IdentityManager* identity_manager,
     AutofillProfileValidator* client_profile_validator,
     history::HistoryService* history_service,
+    StrikeDatabaseBase* strike_database,
     bool is_off_the_record) {
   CountryNames::SetLocaleString(app_locale_);
   database_helper_->Init(profile_database, account_database);
@@ -311,6 +313,11 @@ void PersonalDataManager::Init(
   }
 
   client_profile_validator_ = client_profile_validator;
+
+  if (strike_database) {
+    profile_save_strike_database_ =
+        std::make_unique<AutofillProfileSaveStrikeDatabase>(strike_database);
+  }
 
   // WebDataService may not be available in tests.
   if (!database_helper_->GetLocalDatabase()) {
@@ -391,6 +398,26 @@ void PersonalDataManager::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {
     AutofillDownloadManager::ClearUploadHistory(pref_service_);
+  }
+
+  if (profile_save_strike_database_) {
+    if (deletion_info.IsAllHistory()) {
+      // If the whole history is deleted, clear all strikes.
+      profile_save_strike_database_->ClearAllStrikes();
+    } else {
+      std::set<std::string> deleted_hosts;
+      for (const auto& url_row : deletion_info.deleted_rows()) {
+        deleted_hosts.insert(url_row.url().host());
+      }
+      if (deletion_info.time_range().IsValid() &&
+          !deletion_info.time_range().IsAllTime()) {
+        profile_save_strike_database_->ClearStrikesByOriginAndTimeInternal(
+            deleted_hosts, deletion_info.time_range().begin(),
+            deletion_info.time_range().end());
+      } else {
+        profile_save_strike_database_->ClearStrikesByOrigin(deleted_hosts);
+      }
+    }
   }
 }
 
@@ -1592,6 +1619,30 @@ void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
     // Otherwise, we need to stop them by calling the function directly.
     NotifyPersonalDataObserver();
   }
+}
+
+bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
+    const GURL& url) const {
+  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+    return false;
+  }
+  return profile_save_strike_database_->IsMaxStrikesLimitReached(url.host());
+}
+
+void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
+    const GURL& url) {
+  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+    return;
+  }
+  profile_save_strike_database_->AddStrike(url.host());
+}
+
+void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
+    const GURL& url) {
+  if (!profile_save_strike_database_ || !url.is_valid() || !url.has_host()) {
+    return;
+  }
+  profile_save_strike_database_->ClearStrikes(url.host());
 }
 
 void PersonalDataManager::SetCreditCards(

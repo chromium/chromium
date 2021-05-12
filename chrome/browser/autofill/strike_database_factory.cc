@@ -30,7 +30,7 @@ StrikeDatabaseFactory::StrikeDatabaseFactory()
           BrowserContextDependencyManager::GetInstance()) {
 }
 
-StrikeDatabaseFactory::~StrikeDatabaseFactory() {}
+StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
 
 KeyedService* StrikeDatabaseFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

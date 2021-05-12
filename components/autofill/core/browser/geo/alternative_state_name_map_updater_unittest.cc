@@ -66,6 +66,7 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
                                 /*identity_manager=*/nullptr,
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
+                                /*strike_database=*/nullptr,
                                 /*is_off_the_record=*/false);
     alternative_state_name_map_updater_ =
         std::make_unique<AlternativeStateNameMapUpdater>(

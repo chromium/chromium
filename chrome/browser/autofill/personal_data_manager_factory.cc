@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -61,8 +63,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
 }
 
-PersonalDataManagerFactory::~PersonalDataManagerFactory() {
-}
+PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 
 KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
     autofill::AutofillProfileValidator* autofill_validator,
@@ -77,10 +78,13 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
+  auto* strike_database = StrikeDatabaseFactory::GetForProfile(profile);
+
   service->Init(local_storage, account_storage, profile->GetPrefs(),
                 g_browser_process->local_state(),
                 IdentityManagerFactory::GetForProfile(profile),
-                autofill_validator, history_service, profile->IsOffTheRecord());
+                autofill_validator, history_service, strike_database,
+                profile->IsOffTheRecord());
   return service;
 }
 

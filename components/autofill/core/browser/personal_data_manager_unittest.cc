@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_profile_validator.h"
+#include "components/autofill/core/browser/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -94,8 +95,8 @@ ACTION_P(QuitMessageLoop, loop) {
 
 class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
  public:
-  PersonalDataLoadedObserverMock() {}
-  ~PersonalDataLoadedObserverMock() override {}
+  PersonalDataLoadedObserverMock() = default;
+  ~PersonalDataLoadedObserverMock() override = default;
 
   MOCK_METHOD0(OnPersonalDataChanged, void());
   MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
@@ -177,7 +178,7 @@ class PersonalDataManagerTestBase {
   PersonalDataManagerTestBase()
       : scoped_features_(
             PersonalDataManagerTestBase::GetDefaultEnabledFeatures(),
-            /*additioanal_enabled_features=*/{}),
+            /*additional_enabled_features=*/{}),
         identity_test_env_(&test_url_loader_factory_) {}
 
   explicit PersonalDataManagerTestBase(
@@ -218,6 +219,8 @@ class PersonalDataManagerTestBase {
         base::ThreadTaskRunnerHandle::Get());
     account_database_service_->Init(base::NullCallback());
 
+    strike_database_.reset(new TestInMemoryStrikeDatabase());
+
     test::DisableSystemServices(prefs_.get());
   }
 
@@ -241,7 +244,7 @@ class PersonalDataManagerTestBase {
             : nullptr,
         prefs_.get(), prefs_.get(), identity_test_env_.identity_manager(),
         TestAutofillProfileValidator::GetInstance(),
-        /*history_service=*/nullptr, is_incognito);
+        /*history_service=*/nullptr, strike_database_.get(), is_incognito);
 
     personal_data->AddObserver(&personal_data_observer_);
     AccountInfo account_info;
@@ -318,9 +321,7 @@ class PersonalDataManagerTestBase {
     sync_service_.SetIsAuthenticatedAccountPrimary(false);
     return account_info;
   }
-
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
   ScopedFeatureListWrapper scoped_features_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -332,6 +333,7 @@ class PersonalDataManagerTestBase {
   scoped_refptr<WebDatabaseService> account_web_database_;
   AutofillTable* profile_autofill_table_;  // weak ref
   AutofillTable* account_autofill_table_;  // weak ref
+  std::unique_ptr<StrikeDatabaseBase> strike_database_;
   PersonalDataLoadedObserverMock personal_data_observer_;
 };
 
@@ -615,7 +617,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     personal_data_ =
         std::make_unique<PersonalDataManagerMock>("en", std::string());
     PersonalDataManagerTestBase::ResetPersonalDataManager(
-        user_mode, /*use_account_server_storage=*/true, personal_data_.get());
+        user_mode, /*use_sync_transport_mode=*/true, personal_data_.get());
   }
 
   bool TurnOnSyncFeature() {
@@ -2574,8 +2576,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
 
   // Add a different server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
                        "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
                        "77401", "US", "");
@@ -2620,8 +2622,8 @@ TEST_F(PersonalDataManagerTest,
 
   // Add a different server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
                        "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
                        "77401", "US", "");
@@ -2992,7 +2994,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "2110" /* last 4 digits */, "12", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -3012,7 +3014,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesFullServerCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "4234567890122110" /* Visa */, "12", "2999", "1");
 
@@ -3085,7 +3087,7 @@ TEST_F(PersonalDataManagerTest, IsKnownCard_LastFourDoesNotMatch) {
 TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfFullServerCard) {
   // Add a full server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "4234567890122110" /* Visa */, "12", "2999", "1");
 
@@ -3112,7 +3114,7 @@ TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfFullServerCard) {
 TEST_F(PersonalDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
   // Add a masked server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton",
                           "2110" /* last 4 digits */, "12", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -3234,7 +3236,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
@@ -3242,7 +3244,7 @@ TEST_F(PersonalDataManagerTest,
                                    base::TimeDelta::FromDays(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "b460"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3279,7 +3281,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
@@ -3287,7 +3289,7 @@ TEST_F(PersonalDataManagerTest,
                                    base::TimeDelta::FromDays(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "b460"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3325,7 +3327,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Add some server cards.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b459"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
@@ -3333,7 +3335,7 @@ TEST_F(PersonalDataManagerTest,
                                    base::TimeDelta::FromDays(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "b460"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
@@ -3638,7 +3640,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
   // This server card matches a local card, except the local card is missing the
   // number. This should count as a dupe and thus not be shown in the
   // suggestions since the locally saved card takes precedence.
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "3456" /* Visa */, "01", "2999", "1");
   server_cards.back().set_use_count(2);
@@ -3649,7 +3651,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
   // This unmasked server card is an exact dupe of a local card. Therefore only
   // this card should appear in the suggestions as full server cards have
   // precedence over local cards.
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3698,7 +3700,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<CreditCard> server_cards;
   // This unmasked server card is an exact dupe of a local card. Therefore only
   // the local card should appear in the suggestions.
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -3934,7 +3936,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
 TEST_F(PersonalDataManagerTest, ClearAllServerData) {
   // Add a server card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "3456" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -5698,8 +5700,8 @@ TEST_F(PersonalDataManagerTest,
 
   // Add a different server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "", "Fox",
                        "1212 Center", "Bld. 5", "Orlando", "FL", "", "US", "");
   // Wallet only provides a full name, so the above first and last names
@@ -5719,8 +5721,7 @@ TEST_F(PersonalDataManagerTest,
   personal_data_->AddCreditCard(local_card);
 
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_card1"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "server_card1");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -5833,8 +5834,8 @@ TEST_F(
 
   // Add a server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "", "",
                        "1212 Center", "Bld. 5", "Orlando", "FL", "32801", "US",
                        "");
@@ -5848,8 +5849,8 @@ TEST_F(
   server_profiles.back().set_use_count(100);
 
   // Add a similar server profile.
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId2));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId2);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe",
                        "john@doe.com", "Fox", "1212 Center", "Bld. 5",
                        "Orlando", "FL", "", "US", "");
@@ -5871,8 +5872,7 @@ TEST_F(
   WaitForOnPersonalDataChanged();
 
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_card1"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "server_card1");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -5943,8 +5943,8 @@ TEST_F(
 
   // Add a server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "", "Fox",
                        "1212 Center", "Bld. 5", "Orlando", "FL", "", "US", "");
   // Wallet only provides a full name, so the above first and last names
@@ -5955,8 +5955,7 @@ TEST_F(
 
   // Add a server card that have the server address as billing address.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_card1"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "server_card1");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -5986,8 +5985,7 @@ TEST_F(
             personal_data_->GetCreditCards()[0]->billing_address_id());
 
   // Add a new server card that has the same billing address as the old one.
-  server_cards.push_back(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_card2"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "server_card2");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1112" /* Visa */, "01", "2888", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -6028,7 +6026,7 @@ TEST_F(PersonalDataManagerTest, DoNotConvertWalletAddressesInEphemeralStorage) {
   // Setup.
   ///////////////////////////////////////////////////////////////////////
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/true);
+                           /*use_account_server_storage=*/true);
   ASSERT_FALSE(personal_data_->IsSyncFeatureEnabled());
 
   // Add a local profile.
@@ -6040,15 +6038,15 @@ TEST_F(PersonalDataManagerTest, DoNotConvertWalletAddressesInEphemeralStorage) {
   // Add two server profiles: The first is unique, the second is similar to the
   // local one but has some additional info.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, "server_address1"));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               "server_address1");
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "", "",
                        "1212 Center", "Bld. 5", "Orlando", "FL", "32801", "US",
                        "");
   server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
 
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, "server_address2"));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               "server_address2");
   test::SetProfileInfo(&server_profiles.back(), "Josephine", "Alicia", "Saenz",
                        "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
                        "Orlando", "FL", "32801", "US", "19482937549");
@@ -6629,7 +6627,7 @@ TEST_F(PersonalDataManagerTest, ExcludeServerSideCards) {
 TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode) {
   // Set up PersonalDataManager in transport mode.
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/true);
+                           /*use_account_server_storage=*/true);
   SetUpThreeCardTypes();
   AccountInfo active_info = SetActiveSecondaryAccount();
 
@@ -6662,7 +6660,7 @@ TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode) {
 TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode_NeedOptIn) {
   // Set up PersonalDataManager in transport mode.
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/true);
+                           /*use_account_server_storage=*/true);
   SetUpThreeCardTypes();
   AccountInfo active_info = SetActiveSecondaryAccount();
 
@@ -6873,7 +6871,7 @@ TEST_F(
 // cards still works.
 TEST_F(PersonalDataManagerTest, UsePersistentServerStorage) {
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/false);
+                           /*use_account_server_storage=*/false);
   SetUpThreeCardTypes();
 
   // include_server_cards is set to false, therefore no server cards should be
@@ -6891,7 +6889,7 @@ TEST_F(PersonalDataManagerTest, UsePersistentServerStorage) {
 TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
   // Start with account storage.
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/true);
+                           /*use_account_server_storage=*/true);
   SetUpThreeCardTypes();
 
   // Check that we do have 2 server cards, as expected.
@@ -6928,7 +6926,7 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
 // cards still works.
 TEST_F(PersonalDataManagerTest, UseCorrectStorageForDifferentCards) {
   ResetPersonalDataManager(USER_MODE_NORMAL,
-                           /*use_sync_transport_mode=*/true);
+                           /*use_account_server_storage=*/true);
 
   // Add a server card.
   CreditCard server_card;
@@ -7391,6 +7389,108 @@ TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
       prefs_->GetDictionary(prefs::kAutofillSyncTransportOptIn)->DictEmpty());
 }
 
+TEST_F(PersonalDataManagerTest, SaveProfileStrikes) {
+  GURL domain("https://www.block.me/index.html");
+
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+
+  // After the third strike, the domain should be blocked.
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+
+  // Until the strikes are removed again.
+  personal_data_->RemoveStrikesToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+}
+
+TEST_F(PersonalDataManagerTest, ClearFullBrowsingHistory) {
+  GURL domain("https://www.block.me/index.html");
+
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForAllHistory();
+
+  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+}
+
+TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistory) {
+  GURL first_url("https://www.block.me/index.html");
+  GURL second_url("https://www.block.too/index.html");
+
+  // Add strikes to block both domains.
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+
+  history::URLRows deleted_urls = {history::URLRow(first_url)};
+
+  history::DeletionInfo deletion_info =
+      history::DeletionInfo::ForUrls(deleted_urls, {});
+
+  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+
+  // The strikes for `domain` should be deleted, but the strikes for
+  // `another_domain` should not.
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+}
+
+TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
+  GURL first_url("https://www.block.me/index.html");
+  GURL second_url("https://www.block.too/index.html");
+
+  TestAutofillClock test_clock;
+
+  // Add strikes to block both domains.
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+
+  test_clock.Advance(base::TimeDelta::FromHours(1));
+  base::Time end_of_deletion = AutofillClock::Now();
+  test_clock.Advance(base::TimeDelta::FromHours(1));
+
+  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+
+  history::URLRows deleted_urls = {history::URLRow(first_url),
+                                   history::URLRow(second_url)};
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(base::Time::Min(), end_of_deletion), false,
+      deleted_urls, {},
+      base::make_optional<std::set<GURL>>({first_url, second_url}));
+
+  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+
+  // The strikes for `first_url` should be deleted because the strikes have been
+  // added within the deletion time range.
+  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+  // The last strike for 'second_url' was collected after the deletion time
+  // range and therefore, the blocking should prevail.
+  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+}
+
 // On mobile, no dedicated opt-in is required for WalletSyncTransport - the
 // user is always considered opted-in and thus this test doesn't make sense.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -7425,7 +7525,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   // independently, one by one.
 
   // Set everything up so that the proposition should be shown.
-  // Set an an active secondary account.
+  // Set an active secondary account.
   AccountInfo active_info;
   active_info.email = kPrimaryAccountEmail;
   active_info.account_id = CoreAccountId("account_id");
@@ -7434,7 +7534,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(CreditCard(CreditCard::FULL_SERVER_CARD, "c789"));
+  server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "c789");
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
