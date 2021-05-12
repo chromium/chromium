@@ -142,8 +142,11 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
 
     if (crtc_request.should_enable()) {
       DCHECK(crtc_request.plane_list());
-      status &= AssignOverlayPlanes(crtc_request.plane_list(),
-                                    crtc_request.overlays(), crtc_id);
+      if (!AssignOverlayPlanes(crtc_request.plane_list(),
+                               crtc_request.overlays(), crtc_id)) {
+        LOG_IF(ERROR, !is_testing) << "Failed to Assign Overlay Planes";
+        status = false;
+      }
       enable_planes_lists.insert(crtc_request.plane_list());
     }
   }
@@ -365,7 +368,7 @@ void HardwareDisplayPlaneManagerAtomic::RequestPlanesReadyCallback(
 }
 
 bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
-    HardwareDisplayPlaneList* plane_list,
+    HardwareDisplayPlaneList*,
     HardwareDisplayPlane* hw_plane,
     const DrmOverlayPlane& overlay,
     uint32_t crtc_id,

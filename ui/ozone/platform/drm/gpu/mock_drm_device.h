@@ -92,10 +92,17 @@ class MockDrmDevice : public DrmDevice {
     legacy_gamma_ramp_expectation_ = state;
   }
   void set_commit_expectation(bool state) { commit_expectation_ = state; }
+  void set_overlay_modeset_expecation(bool state) {
+    modeset_with_overlays_expectation_ = state;
+  }
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
   const std::vector<sk_sp<SkSurface>> buffers() const { return buffers_; }
+
+  int last_planes_committed_count() const {
+    return last_planes_committed_count_;
+  }
 
   uint32_t get_cursor_handle_for_crtc(uint32_t crtc) const {
     const auto it = crtc_cursor_map_.find(crtc);
@@ -224,6 +231,7 @@ class MockDrmDevice : public DrmDevice {
   int commit_count_ = 0;
   int set_object_property_count_ = 0;
   int set_gamma_ramp_count_ = 0;
+  int last_planes_committed_count_ = 0;
 
   bool set_crtc_expectation_;
   bool add_framebuffer_expectation_;
@@ -231,8 +239,10 @@ class MockDrmDevice : public DrmDevice {
   bool create_dumb_buffer_expectation_;
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
+  bool modeset_with_overlays_expectation_ = true;
 
   uint32_t current_framebuffer_;
+  uint32_t plane_crtc_id_prop_id_ = 0;
 
   std::vector<sk_sp<SkSurface>> buffers_;
 
