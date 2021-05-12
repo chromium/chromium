@@ -858,7 +858,7 @@ void LocalFrameView::UpdateLayout() {
   Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
 
   base::Optional<RuntimeCallTimerScope> rcs_scope;
-  base::Optional<probe::UpdateLayout> probe;
+  probe::UpdateLayout probe(GetFrame().GetDocument());
   HeapVector<LayoutObjectWithDepth> layout_roots;
 
   TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
@@ -867,7 +867,6 @@ void LocalFrameView::UpdateLayout() {
         RuntimeCallStats::From(V8PerIsolateData::MainThreadIsolate()),
         RuntimeCallStats::CounterId::kUpdateLayout);
   }
-  probe.emplace(GetFrame().GetDocument());
   layout_roots = layout_subtree_root_list_.Ordered();
   if (layout_roots.IsEmpty())
     layout_roots.push_back(LayoutObjectWithDepth(GetLayoutView()));
@@ -877,24 +876,8 @@ void LocalFrameView::UpdateLayout() {
                                                          this);
                      });
 
-  VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
-  DoubleSize visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
-                                  visual_viewport.VisibleHeightCSSPx());
-
   PerformLayout();
-
-  DocumentLifecycle::Scope lifecycle_scope(Lifecycle(),
-                                           DocumentLifecycle::kLayoutClean);
-
-  bool visual_viewport_size_changed = false;
-  if (frame_->IsMainFrame()) {
-    // Scrollbars changing state can cause a visual viewport size change.
-    DoubleSize new_viewport_size(visual_viewport.VisibleWidthCSSPx(),
-                                 visual_viewport.VisibleHeightCSSPx());
-    visual_viewport_size_changed = (new_viewport_size != visual_viewport_size);
-  }
-  SetNeedsUpdateGeometries();
-  PerformPostLayoutTasks(visual_viewport_size_changed);
+  Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
 
   TRACE_EVENT_END0("blink,benchmark", "LocalFrameView::layout");
 
@@ -904,8 +887,6 @@ void LocalFrameView::UpdateLayout() {
                                                      layout_roots);
                    });
   probe::DidChangeViewport(frame_.Get());
-
-  GetFrame().GetDocument()->LayoutUpdated();
 }
 
 void LocalFrameView::WillStartForcedLayout() {
@@ -3226,6 +3207,10 @@ void LocalFrameView::UpdateStyleAndLayout() {
     return;
   }
 
+  VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
+  DoubleSize visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
+                                  visual_viewport.VisibleHeightCSSPx());
+
   bool did_layout = UpdateStyleAndLayoutInternal();
 
   // Second pass: run autosize until it stabilizes
@@ -3251,6 +3236,21 @@ void LocalFrameView::UpdateStyleAndLayout() {
       GetLayoutView()->AssertSubtreeIsLaidOut();
   }
 #endif
+
+  if (did_layout) {
+    bool visual_viewport_size_changed = false;
+    if (frame_->IsMainFrame()) {
+      // Scrollbars changing state can cause a visual viewport size change.
+      DoubleSize new_viewport_size(visual_viewport.VisibleWidthCSSPx(),
+                                   visual_viewport.VisibleHeightCSSPx());
+      visual_viewport_size_changed =
+          (new_viewport_size != visual_viewport_size);
+    }
+    SetNeedsUpdateGeometries();
+    PerformPostLayoutTasks(visual_viewport_size_changed);
+    GetFrame().GetDocument()->LayoutUpdated();
+  }
+  UpdateGeometriesIfNeeded();
 }
 
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
@@ -3275,7 +3275,6 @@ bool LocalFrameView::UpdateStyleAndLayoutInternal() {
     UpdateLayout();
     return true;
   }
-  UpdateGeometriesIfNeeded();
   return false;
 }
 
