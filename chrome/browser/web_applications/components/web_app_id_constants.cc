@@ -25,8 +25,8 @@ const char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 const char kDiagnosticsAppId[] = "keejpcfcpecjhmepmpcfgjemkmlicpam";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
-//     "https://mail.google.com/?usp=installed_webapp"))
-const char kGmailAppId[] = "fpgpbaljnbnpjbpnlnjjhfeigfpemdda";
+//     "https://mail.google.com/mail/?usp=installed_webapp"))
+const char kGmailAppId[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://calendar.google.com/calendar/r"))

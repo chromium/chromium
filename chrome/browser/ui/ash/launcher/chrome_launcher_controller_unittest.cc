@@ -1022,7 +1022,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     if (web_app_id == web_app::kGmailAppId) {
       web_app_info->start_url =
-          GURL("https://mail.google.com/?usp=installed_webapp");
+          GURL("https://mail.google.com/mail/?usp=installed_webapp");
     } else if (web_app_id == web_app::kGoogleCalendarAppId) {
       web_app_info->start_url = GURL("https://calendar.google.com/calendar/r");
     } else if (web_app_id == web_app::kGoogleDocsAppId) {
