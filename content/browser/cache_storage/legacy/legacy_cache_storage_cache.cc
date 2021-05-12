@@ -339,19 +339,15 @@ void ReadMetadata(disk_cache::Entry* entry, MetadataCallback callback) {
       base::MakeRefCounted<net::IOBufferWithSize>(
           entry->GetDataSize(LegacyCacheStorageCache::INDEX_HEADERS));
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |callback| is not
-  // copyable.
-  net::CompletionRepeatingCallback read_header_callback =
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          ReadMetadataDidReadMetadata, entry, std::move(callback), buffer));
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
+      ReadMetadataDidReadMetadata, entry, std::move(callback), buffer));
 
   int read_rv =
       entry->ReadData(LegacyCacheStorageCache::INDEX_HEADERS, 0, buffer.get(),
-                      buffer->size(), read_header_callback);
+                      buffer->size(), std::move(split_callback.first));
 
   if (read_rv != net::ERR_IO_PENDING)
-    std::move(read_header_callback).Run(read_rv);
+    std::move(split_callback.second).Run(read_rv);
 }
 
 void ReadMetadataDidReadMetadata(disk_cache::Entry* entry,
@@ -1096,17 +1092,15 @@ void LegacyCacheStorageCache::QueryCache(
     // There is no need to scan the entire backend, just open the exact
     // URL.
 
-    // Create a callback that is copyable, even though it can only be called
-    // once. BindRepeating() cannot be used directly because
-    // |query_cache_context| is not copyable.
-    auto open_entry_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+    auto split_callback = base::SplitOnceCallback(base::BindOnce(
         &LegacyCacheStorageCache::QueryCacheDidOpenFastPath,
         weak_ptr_factory_.GetWeakPtr(), std::move(query_cache_context)));
 
-    disk_cache::EntryResult result = backend_->OpenEntry(
-        request_url, GetDiskCachePriority(priority), open_entry_callback);
+    disk_cache::EntryResult result =
+        backend_->OpenEntry(request_url, GetDiskCachePriority(priority),
+                            std::move(split_callback.first));
     if (result.net_error() != net::ERR_IO_PENDING)
-      std::move(open_entry_callback).Run(std::move(result));
+      std::move(split_callback.second).Run(std::move(result));
     return;
   }
 
@@ -1154,14 +1148,12 @@ void LegacyCacheStorageCache::QueryCacheOpenNextEntry(
   disk_cache::Backend::Iterator& iterator =
       *query_cache_context->backend_iterator;
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |query_cache_context| is
-  // not copyable.
-  auto open_entry_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &LegacyCacheStorageCache::QueryCacheFilterEntry,
       weak_ptr_factory_.GetWeakPtr(), std::move(query_cache_context)));
 
-  disk_cache::EntryResult result = iterator.OpenNextEntry(open_entry_callback);
+  disk_cache::EntryResult result =
+      iterator.OpenNextEntry(std::move(split_callback.first));
 
   if (result.net_error() == net::ERR_IO_PENDING)
     return;
@@ -1171,13 +1163,13 @@ void LegacyCacheStorageCache::QueryCacheOpenNextEntry(
   // when iterating a large cache.  Only invoke the callback synchronously
   // if we have not recursed past a threshold depth.
   if (query_cache_recursive_depth_ <= kMaxQueryCacheRecursiveDepth) {
-    std::move(open_entry_callback).Run(std::move(result));
+    std::move(split_callback.second).Run(std::move(result));
     return;
   }
 
   scheduler_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(open_entry_callback), std::move(result)));
+      base::BindOnce(std::move(split_callback.second), std::move(result)));
 }
 
 void LegacyCacheStorageCache::QueryCacheFilterEntry(
@@ -1520,17 +1512,16 @@ void LegacyCacheStorageCache::WriteMetadata(
       },
       std::move(callback), buffer->size());
 
-  // Create a callback that is copyable, even though it can only be called once.
-  net::CompletionRepeatingCallback adapted_callback =
-      base::AdaptCallbackForRepeating(std::move(callback_with_expected_bytes));
+  auto split_callback =
+      base::SplitOnceCallback(std::move(callback_with_expected_bytes));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
-  int rv =
-      entry->WriteData(INDEX_HEADERS, /*offset=*/0, buffer.get(),
-                       buffer->size(), adapted_callback, /*truncate=*/true);
+  int rv = entry->WriteData(INDEX_HEADERS, /*offset=*/0, buffer.get(),
+                            buffer->size(), std::move(split_callback.first),
+                            /*truncate=*/true);
 
   if (rv != net::ERR_IO_PENDING)
-    std::move(adapted_callback).Run(rv);
+    std::move(split_callback.second).Run(rv);
 }
 
 void LegacyCacheStorageCache::WriteSideDataDidGetQuota(
@@ -1589,9 +1580,7 @@ void LegacyCacheStorageCache::WriteSideDataImpl(
   // disk_cache backend.
   callback = WrapCallbackWithHandle(std::move(callback));
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |callback| is not copyable.
-  auto open_entry_callback = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&LegacyCacheStorageCache::WriteSideDataDidOpenEntry,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      expected_response_time, trace_id, buffer, buf_len));
@@ -1599,10 +1588,10 @@ void LegacyCacheStorageCache::WriteSideDataImpl(
   // Note, the simple disk_cache priority is not important here because we
   // only allow one write operation at a time.  Therefore there will be no
   // competing operations in the disk_cache queue.
-  disk_cache::EntryResult result =
-      backend_->OpenEntry(url.spec(), net::MEDIUM, open_entry_callback);
+  disk_cache::EntryResult result = backend_->OpenEntry(
+      url.spec(), net::MEDIUM, std::move(split_callback.first));
   if (result.net_error() != net::ERR_IO_PENDING)
-    std::move(open_entry_callback).Run(std::move(result));
+    std::move(split_callback.second).Run(std::move(result));
 }
 
 void LegacyCacheStorageCache::WriteSideDataDidOpenEntry(
@@ -1661,19 +1650,18 @@ void LegacyCacheStorageCache::WriteSideDataDidReadMetaData(
   // Create a callback that is copyable, even though it can only be called once.
   // BindRepeating() cannot be used directly because |callback|, |entry| and
   // |response| are not copyable.
-  net::CompletionRepeatingCallback write_side_data_callback =
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &LegacyCacheStorageCache::WriteSideDataDidWrite,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(entry),
-          buf_len, std::move(headers), trace_id));
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&LegacyCacheStorageCache::WriteSideDataDidWrite,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(entry), buf_len, std::move(headers), trace_id));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
   int rv = temp_entry_ptr->WriteData(
       INDEX_SIDE_DATA, 0 /* offset */, buffer.get(), buf_len,
-      write_side_data_callback, true /* truncate */);
+      std::move(split_callback.first), true /* truncate */);
 
   if (rv != net::ERR_IO_PENDING)
-    std::move(write_side_data_callback).Run(rv);
+    std::move(split_callback.second).Run(rv);
 }
 
 void LegacyCacheStorageCache::WriteSideDataDidWrite(
@@ -1858,19 +1846,16 @@ void LegacyCacheStorageCache::PutDidDeleteEntry(
   const blink::mojom::FetchAPIRequest& request_ = *(put_context->request);
   disk_cache::Backend* backend_ptr = backend_.get();
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |put_context| is not
-  // copyable.
-  auto create_entry_callback = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&LegacyCacheStorageCache::PutDidCreateEntry,
                      weak_ptr_factory_.GetWeakPtr(), std::move(put_context)));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
   disk_cache::EntryResult result = backend_ptr->OpenOrCreateEntry(
-      request_.url.spec(), net::MEDIUM, create_entry_callback);
+      request_.url.spec(), net::MEDIUM, std::move(split_callback.first));
 
   if (result.net_error() != net::ERR_IO_PENDING)
-    std::move(create_entry_callback).Run(std::move(result));
+    std::move(split_callback.second).Run(std::move(result));
 }
 
 void LegacyCacheStorageCache::PutDidCreateEntry(
@@ -2028,11 +2013,10 @@ void LegacyCacheStorageCache::PutWriteBlobToCache(
   if (!blob) {
     disk_cache::Entry* temp_entry_ptr = entry.get();
 
-    net::CompletionRepeatingCallback clear_callback =
-        base::AdaptCallbackForRepeating(base::BindOnce(
-            &LegacyCacheStorageCache::PutWriteBlobToCacheComplete,
-            weak_ptr_factory_.GetWeakPtr(), std::move(put_context),
-            disk_cache_body_index, std::move(entry)));
+    auto clear_callback =
+        base::BindOnce(&LegacyCacheStorageCache::PutWriteBlobToCacheComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(put_context),
+                       disk_cache_body_index, std::move(entry));
 
     // If there is no pre-existing data, then proceed to the next
     // step immediately.
@@ -2041,13 +2025,16 @@ void LegacyCacheStorageCache::PutWriteBlobToCache(
       return;
     }
 
+    auto split_callback = base::SplitOnceCallback(std::move(clear_callback));
+
     // There is pre-existing data and we need to truncate it.
     int rv = temp_entry_ptr->WriteData(
         disk_cache_body_index, /* offset = */ 0, /* buf = */ nullptr,
-        /* buf_len = */ 0, clear_callback, /* truncate = */ true);
+        /* buf_len = */ 0, std::move(split_callback.first),
+        /* truncate = */ true);
 
     if (rv != net::ERR_IO_PENDING)
-      std::move(clear_callback).Run(rv);
+      std::move(split_callback.second).Run(rv);
 
     return;
   }
@@ -2129,17 +2116,14 @@ void LegacyCacheStorageCache::PutComplete(
 
 void LegacyCacheStorageCache::CalculateCacheSizePadding(
     SizePaddingCallback got_sizes_callback) {
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |got_sizes_callback| is not
-  // copyable.
-  net::Int64CompletionRepeatingCallback got_size_callback =
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &LegacyCacheStorageCache::CalculateCacheSizePaddingGotSize,
-          weak_ptr_factory_.GetWeakPtr(), std::move(got_sizes_callback)));
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
+      &LegacyCacheStorageCache::CalculateCacheSizePaddingGotSize,
+      weak_ptr_factory_.GetWeakPtr(), std::move(got_sizes_callback)));
 
-  int64_t rv = backend_->CalculateSizeOfAllEntries(got_size_callback);
+  int64_t rv =
+      backend_->CalculateSizeOfAllEntries(std::move(split_callback.first));
   if (rv != net::ERR_IO_PENDING)
-    std::move(got_size_callback).Run(rv);
+    std::move(split_callback.second).Run(rv);
 }
 
 void LegacyCacheStorageCache::CalculateCacheSizePaddingGotSize(
@@ -2180,11 +2164,11 @@ void LegacyCacheStorageCache::PaddingDidQueryCache(
 void LegacyCacheStorageCache::CalculateCacheSize(
     net::Int64CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  net::Int64CompletionRepeatingCallback got_size_callback =
-      AdaptCallbackForRepeating(std::move(callback));
-  int64_t rv = backend_->CalculateSizeOfAllEntries(got_size_callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int64_t rv =
+      backend_->CalculateSizeOfAllEntries(std::move(split_callback.first));
   if (rv != net::ERR_IO_PENDING)
-    got_size_callback.Run(rv);
+    std::move(split_callback.second).Run(rv);
 }
 
 void LegacyCacheStorageCache::UpdateCacheSize(base::OnceClosure callback) {
@@ -2500,14 +2484,10 @@ void LegacyCacheStorageCache::CreateBackend(ErrorCallback callback) {
   // Temporary pointer so that backend_ptr can be Pass()'d in Bind below.
   ScopedBackendPtr* backend = backend_ptr.get();
 
-  // Create a callback that is copyable, even though it can only be called once.
-  // BindRepeating() cannot be used directly because |callback| and
-  // |backend_ptr| are not copyable.
-  net::CompletionRepeatingCallback create_cache_callback =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&LegacyCacheStorageCache::CreateBackendDidCreate,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                         std::move(backend_ptr)));
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&LegacyCacheStorageCache::CreateBackendDidCreate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(backend_ptr)));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
   int rv = disk_cache::CreateCacheBackend(
@@ -2515,9 +2495,9 @@ void LegacyCacheStorageCache::CreateBackend(ErrorCallback callback) {
       disk_cache::ResetHandling::kNeverReset, nullptr, backend,
       base::BindOnce(&LegacyCacheStorageCache::DeleteBackendCompletedIO,
                      weak_ptr_factory_.GetWeakPtr()),
-      create_cache_callback);
+      std::move(split_callback.first));
   if (rv != net::ERR_IO_PENDING)
-    std::move(create_cache_callback).Run(rv);
+    std::move(split_callback.second).Run(rv);
 }
 
 void LegacyCacheStorageCache::CreateBackendDidCreate(
@@ -2562,16 +2542,14 @@ void LegacyCacheStorageCache::InitDidCreateBackend(
     return;
   }
 
-  auto calculate_size_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   int64_t rv = backend_->CalculateSizeOfAllEntries(
       base::BindOnce(&LegacyCacheStorageCache::InitGotCacheSize,
-                     weak_ptr_factory_.GetWeakPtr(), calculate_size_callback,
-                     cache_create_error));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first), cache_create_error));
 
   if (rv != net::ERR_IO_PENDING)
-    InitGotCacheSize(std::move(calculate_size_callback), cache_create_error,
-                     rv);
+    InitGotCacheSize(std::move(split_callback.second), cache_create_error, rv);
 }
 
 void LegacyCacheStorageCache::InitGotCacheSize(

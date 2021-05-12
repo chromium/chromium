@@ -140,11 +140,7 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
         reinterpret_cast<char*>(output_buf.data()));
 
-    // Because net-style functions do not call their callback if they
-    // complete synchronously, we have to wrap the ReadSideDataCallback into a
-    // repeating callback.  It may be called asynchronously by Read or if Read
-    // succeeds or fails synchronously, we will call it manually ourselves.
-    auto read_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+    auto split_callback = base::SplitOnceCallback(base::BindOnce(
         [](mojo_base::BigBuffer output_buf, ReadSideDataCallback callback,
            int result) {
           std::move(callback).Run(result, std::move(output_buf));
@@ -154,11 +150,11 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     uint64_t offset = 0;
     int result =
         blob_entry_->Read(std::move(wrapped_buf), side_data_disk_cache_index_,
-                          offset, length, read_callback);
+                          offset, length, std::move(split_callback.first));
 
     if (result == net::ERR_IO_PENDING)
       return;
-    read_callback.Run(result);
+    std::move(split_callback.second).Run(result);
   }
 
  private:

@@ -190,12 +190,11 @@ class DelayableBackend : public disk_cache::Backend {
  private:
   void OpenEntryDelayedImpl(const std::string& key,
                             EntryResultCallback callback) {
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     EntryResult result =
-        backend_->OpenEntry(key, net::HIGHEST, copyable_callback);
+        backend_->OpenEntry(key, net::HIGHEST, std::move(split_callback.first));
     if (result.net_error() != net::ERR_IO_PENDING)
-      copyable_callback.Run(std::move(result));
+      std::move(split_callback.second).Run(std::move(result));
   }
 
   std::unique_ptr<disk_cache::Backend> backend_;
