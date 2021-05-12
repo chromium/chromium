@@ -9,7 +9,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace crostini {
