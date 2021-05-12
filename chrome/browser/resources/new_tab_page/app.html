@@ -37,32 +37,15 @@
     width: 100%;
   }
 
-  #oneGoogleBarOverlayBackdrop {
-    background: rgba(0, 0, 0, .6);
-    display: none;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 999;
-  }
-
-  #oneGoogleBarOverlayBackdrop[show] {
-    display: block;
-  }
-
   #content {
     align-items: center;
     display: flex;
     flex-direction: column;
     height: calc(100vh - var(--ntp-one-google-bar-height));
     min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
+    padding-top: var(--ntp-one-google-bar-height);
     position: relative;
     z-index: 1;
-  }
-
-  #content {
-    padding-top: var(--ntp-one-google-bar-height);
   }
 
   #logo {
@@ -338,7 +321,6 @@
       selected-page="[[selectedCustomizeDialogPage_]]">
   </ntp-customize-dialog>
 </template>
-<div id="oneGoogleBarOverlayBackdrop"></div>
 <svg>
   <defs>
     <clipPath id="oneGoogleBarClipPath">
