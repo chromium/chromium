@@ -346,13 +346,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=91',
     ],
-    'identifier': 'Implementation Library Skew Tests For 91.0.4472.54',
+    'identifier': 'Implementation Library Skew Tests For 91.0.4472.60',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M91',
-          'revision': 'version:91.0.4472.54',
+          'revision': 'version:91.0.4472.60',
         }
       ],
     },
@@ -418,13 +418,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=91',
     ],
-    'identifier': 'Implementation Library Skew Tests For 91.0.4472.54',
+    'identifier': 'Implementation Library Skew Tests For 91.0.4472.60',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M91',
-          'revision': 'version:91.0.4472.54',
+          'revision': 'version:91.0.4472.60',
         }
       ],
     },
@@ -490,13 +490,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=91',
     ],
-    'identifier': 'Client Library Skew Tests For 91.0.4472.54',
+    'identifier': 'Client Library Skew Tests For 91.0.4472.60',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M91',
-          'revision': 'version:91.0.4472.54',
+          'revision': 'version:91.0.4472.60',
         }
       ],
     },
