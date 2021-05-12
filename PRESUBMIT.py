@@ -4345,7 +4345,7 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
 
 def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
   stl_include_re = input_api.re.compile(
-      r'^#include\s+<'
+      r'^#include\s+<('
       r'algorithm|'
       r'array|'
       r'limits|'
@@ -4358,7 +4358,7 @@ def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
       r'unordered_map|'
       r'unordered_set|'
       r'utility|'
-      r'vector>')
+      r'vector)>')
   std_namespace_re = input_api.re.compile(r'std::')
   errors = []
   for f in input_api.AffectedFiles():

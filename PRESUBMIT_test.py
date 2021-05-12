@@ -95,6 +95,9 @@ class CheckForSuperfluousStlIncludesInHeadersTest(unittest.TestCase):
       MockFile('other/path/qux.h',
                ['#include "base/stl_util.h"',
                 'foobar']),
+      MockFile('other/path/baz.h',
+               ['#include "set/vector.h"',
+                'bazzab']),
       # The check is only for header files.
       MockFile('other/path/not_checked.cc',
                ['#include <vector>',
