@@ -88,12 +88,14 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   // Should be called when a frame is skipped. |frame_completed| should be true
   // if the frame production resulted in no visible updates and was completed on
   // time. In other cases (e.g. if the deadline was missed and frame production
-  // continues for the next vsync), it should be false.
-  void OnFrameSkipped(bool frame_completed);
+  // continues for the next vsync), it should be false. |waiting_on_main| should
+  // be true if the frame was not completed because the main thread's frame
+  // production was not finished on time for the deadline.
+  void OnFrameSkipped(bool frame_completed, bool waiting_on_main);
 
  private:
   std::unique_ptr<PowerModeVoter> voter_;
-  int consecutive_frames_skipped = 0;
+  int consecutive_frames_skipped_ = 0;
 };
 
 }  // namespace power_scheduler

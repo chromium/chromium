@@ -100,7 +100,7 @@ PowerModeArbiter::~PowerModeArbiter() {
 
 void PowerModeArbiter::OnThreadPoolAvailable() {
   int sequence_number = 0;
-  scoped_refptr<base::TaskRunner> task_runner;
+  scoped_refptr<base::SequencedTaskRunner> task_runner;
   {
     base::AutoLock lock(lock_);
 
@@ -116,10 +116,30 @@ void PowerModeArbiter::OnThreadPoolAvailable() {
 
     // Acquire the current sequence number in case it was previously incremented
     // by RemoveObserver(). It will be incremented by UpdatePendingResets()
-    // below.
+    // in OnTaskRunnerAvailable().
     sequence_number = update_task_sequence_number_;
   }
 
+  OnTaskRunnerAvailable(task_runner, sequence_number);
+}
+
+void PowerModeArbiter::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  int sequence_number = 0;
+  {
+    base::AutoLock lock(lock_);
+
+    DCHECK(!task_runner_);
+    task_runner_ = task_runner;
+    sequence_number = update_task_sequence_number_;
+  }
+
+  OnTaskRunnerAvailable(task_runner, sequence_number);
+}
+
+void PowerModeArbiter::OnTaskRunnerAvailable(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    int sequence_number) {
   // Check if there are any actionable resets and post another task to handle
   // future ones if necessary. If sequence_number is changed concurrently by
   // RemoveObserver() or ResetVoteAfterTimeout(), this has call has no effect,

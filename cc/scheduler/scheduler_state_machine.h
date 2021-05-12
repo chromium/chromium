@@ -349,6 +349,10 @@ class CC_EXPORT SchedulerStateMachine {
   }
   bool did_commit_during_frame() const { return did_commit_during_frame_; }
 
+  int aborted_begin_main_frame_count() const {
+    return aborted_begin_main_frame_count_;
+  }
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
@@ -480,6 +484,9 @@ class CC_EXPORT SchedulerStateMachine {
   // If set to true, the pending tree must be drawn at least once after
   // activation before a new tree can be activated.
   bool pending_tree_needs_first_draw_on_activation_ = false;
+
+  // Number of consecutive BeginMainFrames that were aborted without updates.
+  int aborted_begin_main_frame_count_ = 0;
 };
 
 }  // namespace cc

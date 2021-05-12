@@ -141,7 +141,8 @@ TestScheduler::TestScheduler(
     int layer_tree_host_id,
     base::SingleThreadTaskRunner* task_runner,
     std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
-    CompositorFrameReportingController* compositor_frame_reporting_controller)
+    CompositorFrameReportingController* compositor_frame_reporting_controller,
+    power_scheduler::PowerModeArbiter* power_mode_arbiter)
     : Scheduler(client,
                 scheduler_settings,
                 layer_tree_host_id,
@@ -149,7 +150,8 @@ TestScheduler::TestScheduler(
                 std::move(compositor_timing_history),
                 nullptr,
                 nullptr,
-                compositor_frame_reporting_controller),
+                compositor_frame_reporting_controller,
+                power_mode_arbiter),
       now_src_(now_src) {}
 
 base::TimeTicks TestScheduler::Now() const {

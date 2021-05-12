@@ -19,6 +19,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/compositor_timing_history.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
@@ -40,7 +41,8 @@ Scheduler::Scheduler(
     std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
     gfx::RenderingPipeline* main_thread_pipeline,
     gfx::RenderingPipeline* compositor_thread_pipeline,
-    CompositorFrameReportingController* compositor_frame_reporting_controller)
+    CompositorFrameReportingController* compositor_frame_reporting_controller,
+    power_scheduler::PowerModeArbiter* power_mode_arbiter)
     : settings_(settings),
       client_(client),
       layer_tree_host_id_(layer_tree_host_id),
@@ -51,7 +53,9 @@ Scheduler::Scheduler(
       begin_impl_frame_tracker_(FROM_HERE),
       state_machine_(settings),
       main_thread_pipeline_(main_thread_pipeline),
-      compositor_thread_pipeline_(compositor_thread_pipeline) {
+      compositor_thread_pipeline_(compositor_thread_pipeline),
+      power_mode_voter_(
+          power_mode_arbiter->NewVoter("PowerModeVoter.MainThreadAnimation")) {
   TRACE_EVENT1("cc", "Scheduler::Scheduler", "settings", settings_.AsValue());
   DCHECK(client_);
   DCHECK(!state_machine_.BeginFrameNeeded());
@@ -948,6 +952,7 @@ void Scheduler::ProcessScheduledActions() {
 
   PostPendingBeginFrameTask();
   StartOrStopBeginFrames();
+  UpdatePowerModeVote();
 }
 
 void Scheduler::AsProtozeroInto(
@@ -1093,6 +1098,36 @@ void Scheduler::ClearHistory() {
   state_machine_.SetSkipNextBeginMainFrameToReduceLatency(false);
   compositor_timing_history_->ClearHistory();
   ProcessScheduledActions();
+}
+
+void Scheduler::UpdatePowerModeVote() {
+  // After three aborted BeginMainFrames, consider the main thread's involvement
+  // in frame production unimportant. PowerMode detection for compositor-driven
+  // animation or no-op animation relies on the voter in the frame sink in this
+  // case.
+  constexpr int kMaxAbortedBeginMainFrames = 2;
+
+  bool main_thread_animation =
+      observing_begin_frame_source_ &&
+      (state_machine_.needs_begin_main_frame() ||
+       state_machine_.CommitPending() || state_machine_.has_pending_tree()) &&
+      state_machine_.aborted_begin_main_frame_count() <=
+          kMaxAbortedBeginMainFrames;
+
+  power_scheduler::PowerMode vote =
+      main_thread_animation ? power_scheduler::PowerMode::kMainThreadAnimation
+                            : power_scheduler::PowerMode::kIdle;
+
+  if (last_power_mode_vote_ == vote)
+    return;
+
+  last_power_mode_vote_ = vote;
+  if (vote == power_scheduler::PowerMode::kIdle) {
+    power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kAnimationTimeout);
+  } else {
+    power_mode_voter_->VoteFor(vote);
+  }
 }
 
 }  // namespace cc

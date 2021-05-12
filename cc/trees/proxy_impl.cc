@@ -31,6 +31,7 @@
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/task_runner_provider.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -95,7 +96,8 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
       task_runner_provider_->ImplThreadTaskRunner(),
       std::move(compositor_timing_history), layer_tree_host->TakeMainPipeline(),
       layer_tree_host->TakeCompositorPipeline(),
-      host_impl_->compositor_frame_reporting_controller());
+      host_impl_->compositor_frame_reporting_controller(),
+      power_scheduler::PowerModeArbiter::GetInstance());
 
   DCHECK_EQ(scheduler_->visible(), host_impl_->visible());
 }

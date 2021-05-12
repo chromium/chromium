@@ -43,6 +43,11 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
     virtual void OnPowerModeChanged(PowerMode old_mode, PowerMode new_mode) = 0;
   };
 
+  // Limits the frequency at which we can run the UpdatePendingResets() task.
+  // All pending resets are aligned to this time resolution. Public for testing.
+  static constexpr base::TimeDelta kResetVoteTimeResolution =
+      base::TimeDelta::FromMilliseconds(100);
+
   static PowerModeArbiter* GetInstance();
 
   // Public for testing.
@@ -66,24 +71,25 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   // pool is available.
   void OnThreadPoolAvailable();
 
+  // Provide a custom task runner for unit tests. Replaces a call to
+  // OnThreadPoolAvailable().
+  void SetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
+
   PowerMode GetActiveModeForTesting();
   void SetOnBatteryPowerForTesting(bool on_battery_power);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ResetVoteAfterTimeout);
   FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ObserverEnablesResetTasks);
 
   class ChargingPowerModeVoter;
-
-  // Limits the frequency at which we can run the UpdatePendingResets() task.
-  // All pending resets are aligned to this time resolution.
-  static constexpr base::TimeDelta kResetVoteTimeResolution =
-      base::TimeDelta::FromMilliseconds(100);
 
   // PowerModeVoter::Delegate implementation:
   void OnVoterDestroyed(PowerModeVoter*) override;
   void SetVote(PowerModeVoter*, PowerMode) override;
   void ResetVoteAfterTimeout(PowerModeVoter*, base::TimeDelta timeout) override;
+
+  void OnTaskRunnerAvailable(scoped_refptr<base::SequencedTaskRunner>,
+                             int sequence_number);
 
   void UpdatePendingResets(int sequence_number);
   void OnVotesUpdated();
@@ -99,7 +105,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   std::unique_ptr<Observer> trace_observer_;
 
   base::Lock lock_;  // Protects subsequent members.
-  scoped_refptr<base::TaskRunner> task_runner_ GUARDED_BY(lock_);
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ GUARDED_BY(lock_);
   std::map<PowerModeVoter*, TracedPowerMode> votes_ GUARDED_BY(lock_);
   std::map<PowerModeVoter*, base::TimeTicks /*effective_time*/> pending_resets_
       GUARDED_BY(lock_);

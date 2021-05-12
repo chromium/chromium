@@ -215,7 +215,8 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "step", "DidNotProduceFrame", "reason", reason);
   bool frame_completed = reason == FrameSkippedReason::kNoDamage;
-  power_mode_voter_.OnFrameSkipped(frame_completed);
+  bool waiting_on_main = reason == FrameSkippedReason::kWaitingOnMain;
+  power_mode_voter_.OnFrameSkipped(frame_completed, waiting_on_main);
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
 }
 

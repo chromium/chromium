@@ -28,6 +28,11 @@ enum class PowerMode {
   // A video is playing in the process and producing frames.
   kVideoPlayback,
 
+  // The main thread is producing frames. This is broken out into a separate
+  // PowerMode to override kNopAnimation votes in cases where the main thread
+  // takes a long time to produce a new frame.
+  kMainThreadAnimation,
+
   // A page or tab associated with the process is loading.
   kLoading,
 

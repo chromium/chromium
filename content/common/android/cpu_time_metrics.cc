@@ -142,7 +142,8 @@ enum class PowerModeForUma {
   kNopAnimation = 8,
   kVideoPlayback = 9,
   kLoadingAnimation = 10,
-  kMaxValue = kLoadingAnimation,
+  kMainThreadAnimation = 11,
+  kMaxValue = kMainThreadAnimation,
 };
 
 PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
@@ -155,6 +156,8 @@ PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
       return PowerModeForUma::kAudible;
     case power_scheduler::PowerMode::kVideoPlayback:
       return PowerModeForUma::kVideoPlayback;
+    case power_scheduler::PowerMode::kMainThreadAnimation:
+      return PowerModeForUma::kMainThreadAnimation;
     case power_scheduler::PowerMode::kLoading:
       return PowerModeForUma::kLoading;
     case power_scheduler::PowerMode::kAnimation:

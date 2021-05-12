@@ -29,6 +29,7 @@
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -92,7 +93,8 @@ void SingleThreadProxy::Start() {
         std::move(compositor_timing_history),
         layer_tree_host_->TakeMainPipeline(),
         layer_tree_host_->TakeCompositorPipeline(),
-        host_impl_->compositor_frame_reporting_controller());
+        host_impl_->compositor_frame_reporting_controller(),
+        power_scheduler::PowerModeArbiter::GetInstance());
   }
 }
 
