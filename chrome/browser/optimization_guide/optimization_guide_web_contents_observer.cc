@@ -140,21 +140,13 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
     // The current web contents isn't for the main frame that reached onload.
     return;
   }
-  // NavigationPredictor currently sends predictions just after onload. This
-  // will soon change, but in the meantime, give it 200 ms to report predictions
-  // before fetching them.
-  // TODO(spelchat): avoid posting a task and just inline FetchHints here
-  // once NavigationPredictor starts streaming predictions rather than sending
-  // them just after onload.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&OptimizationGuideWebContentsObserver::FetchHints,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(200));
-}
 
-void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
-    OptimizationGuideHintsManager* hints_manager) {
+  if (!optimization_guide_keyed_service_) {
+    return;
+  }
+
+  OptimizationGuideHintsManager* hints_manager =
+      optimization_guide_keyed_service_->GetHintsManager();
   DCHECK(hints_manager);
   sent_batched_hints_request_ = true;
   hints_manager->FetchHintsForPredictions(
@@ -162,13 +154,8 @@ void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
   hints_target_urls_.clear();
 }
 
-void OptimizationGuideWebContentsObserver::FetchHints() {
-  if (!optimization_guide_keyed_service_) {
-    return;
-  }
-
-  OptimizationGuideHintsManager* hints_manager =
-      optimization_guide_keyed_service_->GetHintsManager();
+void OptimizationGuideWebContentsObserver::FetchHintsUsingManagerForTesting(
+    OptimizationGuideHintsManager* hints_manager) {
   DCHECK(hints_manager);
   sent_batched_hints_request_ = true;
   hints_manager->FetchHintsForPredictions(

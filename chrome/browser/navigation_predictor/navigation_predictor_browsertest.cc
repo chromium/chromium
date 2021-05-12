@@ -463,8 +463,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   EXPECT_EQ(1, get_metric(UkmEntry::kNumberOfAnchors_URLIncrementedName));
 }
 
-// Test that anchors entering the viewport are dispatched to the single
-// observer.
+// Test that anchors are dispated to the single observer, except for anchors
+// linking to the same page (e.g. fragment links).
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
   TestObserver observer;
 
@@ -486,6 +486,41 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
   EXPECT_THAT(observer.last_prediction()->sorted_predicted_urls(),
               ::testing::UnorderedElementsAre("https://google.com/",
                                               "https://example.com/"));
+
+  // Doing another navigation after removing the observer should not cause a
+  // crash.
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitLinkEnteredViewport(1);
+  EXPECT_EQ(1u, observer.count_predictions());
+}
+
+// Test that anchors are dispatched to the single observer, including
+// anchors outside the viewport. Reactive prefetch relies on anchors from
+// outside the viewport to be included since hints are only requested at onload
+// predictions after that point are ignored.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
+                       SingleObserverPastViewport) {
+  TestObserver observer;
+
+  NavigationPredictorKeyedService* service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          browser()->profile());
+  EXPECT_NE(nullptr, service);
+  service->AddObserver(&observer);
+
+  const GURL& url = GetTestURL("/long_page_with_anchors-1.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitLinkEnteredViewport(1);
+  observer.WaitUntilNotificationsCountReached(1);
+
+  service->RemoveObserver(&observer);
+
+  EXPECT_EQ(1u, observer.count_predictions());
+  EXPECT_EQ(url, observer.last_prediction()->source_document_url());
+  EXPECT_THAT(observer.last_prediction()->sorted_predicted_urls(),
+              ::testing::UnorderedElementsAre(
+                  "https://google.com/", "https://example2.com/",
+                  GetTestURL("/long_page_with_anchors-2.html")));
 
   // Doing another navigation after removing the observer should not cause a
   // crash.

@@ -104,6 +104,8 @@ void NavigationPredictor::ReportNewAnchorElements(
   PageAnchorsMetricsObserver::AnchorsData* data =
       PageAnchorsMetricsObserver::AnchorsData::FromWebContents(web_contents);
   DCHECK(data);
+  GURL document_url;
+  std::vector<GURL> new_predictions;
   for (auto& element : elements) {
     uint32_t anchor_id = element->anchor_id;
     if (anchors_.find(anchor_id) != anchors_.end()) {
@@ -128,6 +130,17 @@ void NavigationPredictor::ReportNewAnchorElements(
     data->total_clickable_space_ += element->ratio_area * 100;
     data->link_locations_.push_back(element->ratio_distance_top_to_visible_top);
 
+    // Collect the target URL if it is new, without ref (# fragment).
+    url::Replacements<char> replacements;
+    replacements.ClearRef();
+    document_url = element->source_url.ReplaceComponents(replacements);
+    GURL target_url = element->target_url.ReplaceComponents(replacements);
+    if (target_url != document_url &&
+        predicted_urls_.find(target_url) == predicted_urls_.end()) {
+      predicted_urls_.insert(target_url);
+      new_predictions.push_back(target_url);
+    }
+
     anchors_.emplace(anchor_id, std::move(element));
 
     int sampling_period = base::GetFieldTrialParamByFeatureAsInt(
@@ -140,6 +153,17 @@ void NavigationPredictor::ReportNewAnchorElements(
     }
     tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
   }
+
+  NavigationPredictorKeyedService* service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              render_frame_host()->GetBrowserContext()));
+  DCHECK(service);
+  service->OnPredictionUpdated(
+      web_contents, document_url,
+      NavigationPredictorKeyedService::PredictionSource::
+          kAnchorElementsParsedFromWebPage,
+      new_predictions);
 }
 
 void NavigationPredictor::ReportAnchorElementClick(
@@ -181,8 +205,6 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     return;
   }
 
-  GURL document_url;
-  std::vector<GURL> new_predictions;
   for (const auto& element : elements) {
     if (anchors_.find(element->anchor_id) == anchors_.end()) {
       // We don't know about this anchor, likely because at its first paint,
@@ -195,15 +217,11 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     // Collect the target URL if it is new, without ref (# fragment).
     url::Replacements<char> replacements;
     replacements.ClearRef();
-    document_url = anchor->source_url.ReplaceComponents(replacements);
+    GURL document_url = anchor->source_url.ReplaceComponents(replacements);
     GURL target_url = anchor->target_url.ReplaceComponents(replacements);
     if (target_url == document_url) {
       // Ignore anchors pointing to the same document.
       continue;
-    }
-    if (predicted_urls_.find(target_url) == predicted_urls_.end()) {
-      predicted_urls_.insert(target_url);
-      new_predictions.push_back(target_url);
     }
 
     if (!ukm_recorder_) {
@@ -238,16 +256,4 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
 
     anchor_element_builder.Record(ukm_recorder_);
   }
-  NavigationPredictorKeyedService* service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(
-              render_frame_host()->GetBrowserContext()));
-  DCHECK(service);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
-  service->OnPredictionUpdated(
-      web_contents, document_url,
-      NavigationPredictorKeyedService::PredictionSource::
-          kAnchorElementsParsedFromWebPage,
-      new_predictions);
 }
