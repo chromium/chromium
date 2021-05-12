@@ -215,6 +215,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "external_app_install_features_unittest.cc",
     "file_handler_manager_unittest.cc",
     "install_finalizer_unittest.cc",
     "os_integration_manager_unittest.cc",
