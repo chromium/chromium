@@ -279,6 +279,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   //       InitializeAudio()
   // PreMainMessageLoopRun()
   // MainMessageLoopRun()
+  //   OnFirstIdle()
 
   // Members initialized on construction ---------------------------------------
   const MainFunctionParams& parameters_;
@@ -306,28 +307,28 @@ class CONTENT_EXPORT BrowserMainLoop {
   // Unregister UI thread from hang watching on destruction.
   base::ScopedClosureRunner unregister_thread_closure_;
 
-  // Members initialized in |PostMainMessageLoopStart()| -----------------------
-  std::unique_ptr<BrowserProcessIOThread> io_thread_;
-  std::unique_ptr<base::SystemMonitor> system_monitor_;
-  std::unique_ptr<base::HighResolutionTimerManager> hi_res_timer_manager_;
-  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
-  std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
+  // Members initialized in |Init()| -------------------------------------------
+  std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
 
-  // Per-process listener for online state changes.
-  std::unique_ptr<BrowserOnlineStateObserver> online_state_observer_;
-
+  // Members initialized in |InitializeToolkit()| ------------------------------
 #if defined(USE_AURA)
   std::unique_ptr<aura::Env> env_;
 #endif
 
+  // Members initialized in |PostMainMessageLoopStart()| -----------------------
+  std::unique_ptr<base::SystemMonitor> system_monitor_;
+  std::unique_ptr<base::HighResolutionTimerManager> hi_res_timer_manager_;
+  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
+  std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
+  // Per-process listener for online state changes.
+  std::unique_ptr<BrowserOnlineStateObserver> online_state_observer_;
 #if defined(OS_ANDROID)
   // Android implementation of ScreenOrientationDelegate
   std::unique_ptr<ScreenOrientationDelegate> screen_orientation_delegate_;
 #endif
 
-  // Members initialized in |Init()| -------------------------------------------
-  // Destroy |parts_| before |main_message_loop_| (required) and before other
-  // classes constructed in content (but after |main_thread_|).
+  // Destroy |parts_| before above members (except the ones that are explicitly
+  // reset() on shutdown) but after |main_thread_| and services below.
   std::unique_ptr<BrowserMainParts> parts_;
 
   // Members initialized in |MainMessageLoopStart()| ---------------------------
@@ -345,8 +346,11 @@ class CONTENT_EXPORT BrowserMainLoop {
       gpu_data_manager_visual_proxy_;
 #endif
 
-  // Members initialized in |BrowserThreadsStarted()| --------------------------
-  std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
+  // Members initialized in |CreateThreads()| ----------------------------------
+  std::unique_ptr<BrowserProcessIOThread> io_thread_;
+
+  // BEGIN Members initialized in |PostCreateThreads()| ------------------------
+  // ***************************************************************************
   std::unique_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
 
   // |user_input_monitor_| has to outlive |audio_manager_|, so declared first.
@@ -361,16 +365,10 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  KeyboardMicRegistration keyboard_mic_registration_;
-#endif
-
   std::unique_ptr<midi::MidiService> midi_service_;
 
   // Must be deleted on the IO thread.
   std::unique_ptr<SpeechRecognitionManagerImpl> speech_recognition_manager_;
-
-  std::unique_ptr<SmsProvider> sms_provider_;
 
 #if defined(OS_WIN)
   std::unique_ptr<media::SystemMessageWindowWin> system_message_window_;
@@ -383,7 +381,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
   scoped_refptr<SaveFileManager> save_file_manager_;
   std::unique_ptr<content::TracingControllerImpl> tracing_controller_;
-  scoped_refptr<responsiveness::Watcher> responsiveness_watcher_;
 #if !defined(OS_ANDROID)
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
@@ -393,6 +390,17 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<viz::CompositingModeReporterImpl>
       compositing_mode_reporter_impl_;
 #endif
+  // ***************************************************************************
+  // END Members initialized in |PostCreateThreads()| --------------------------
+
+  // Members initialized in |PreMainMessageLoopRun()| --------------------------
+  scoped_refptr<responsiveness::Watcher> responsiveness_watcher_;
+
+  // Members not associated with a specific phase.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  KeyboardMicRegistration keyboard_mic_registration_;
+#endif
+  std::unique_ptr<SmsProvider> sms_provider_;
 
   // DO NOT add members here. Add them to the right categories above.
 
