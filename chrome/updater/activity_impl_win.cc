@@ -22,48 +22,77 @@ std::wstring GetAppClientStateKey(const std::string& id) {
   return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
 }
 
+bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
+  base::win::RegKey key;
+  if (key.Open(rootkey, key_name.c_str(), KEY_READ | KEY_WOW64_32KEY) ==
+      ERROR_SUCCESS) {
+    std::wstring value;
+    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS && value == L"1")
+      return true;
+  }
+  return false;
+}
+
+bool GetMachineActiveBit(const std::string& id) {
+  // Read the active bit under each user in HKU\<sid>.
+  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    std::wstring user_state_key_name =
+        std::wstring(it.Name()).append(L"\\").append(GetAppClientStateKey(id));
+    if (GetActiveBitUnderKey(HKEY_USERS, user_state_key_name))
+      return true;
+  }
+
+  return false;
+}
+
+void ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
+  base::win::RegKey key;
+  if (key.Open(rootkey, key_name.c_str(), KEY_WRITE | KEY_WOW64_32KEY) !=
+      ERROR_SUCCESS) {
+    VLOG(2) << "Failed to open activity key with write for " << key_name;
+    return;
+  }
+
+  const LONG result = key.WriteValue(kDidRun, L"0");
+  VLOG_IF(2, result) << "Failed to clear activity key for " << key_name << ": "
+                     << result;
+}
+
+void ClearMachineActiveBit(const std::string& id) {
+  // Clear the active bit under each user in HKU\<sid>.
+  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    std::wstring user_state_key_name =
+        std::wstring(it.Name()).append(L"\\").append(GetAppClientStateKey(id));
+    ClearActiveBitUnderKey(HKEY_USERS, user_state_key_name);
+  }
+}
+
 }  // namespace
 
 bool GetActiveBit(UpdaterScope scope, const std::string& id) {
   switch (scope) {
-    case UpdaterScope::kUser: {
+    case UpdaterScope::kUser:
       // TODO(crbug/1159498): Standardize registry access.
-      base::win::RegKey key;
-      if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
-                   KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-        std::wstring value;
-        if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS && value == L"1")
-          return true;
-      }
-      return false;
-    }
+      return GetActiveBitUnderKey(HKEY_CURRENT_USER,
+                                  GetAppClientStateKey(id).c_str());
+
     case UpdaterScope::kSystem:
-      // TODO(crbug.com/1096654): Add support for the machine case. Machine
-      // installs must look for values under HKLM and under every HKU\<sid>.
-      return false;
+      return GetMachineActiveBit(id);
   }
 }
 
 void ClearActiveBit(UpdaterScope scope, const std::string& id) {
   switch (scope) {
-    case UpdaterScope::kUser: {
+    case UpdaterScope::kUser:
       // TODO(crbug/1159498): Standardize registry access.
-      base::win::RegKey key;
-      if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
-                   KEY_WRITE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-        const LONG result = key.WriteValue(kDidRun, L"0");
-        if (result) {
-          VLOG(2) << "Failed to clear HKCU activity key for " << id << ": "
-                  << result;
-        }
-      } else {
-        VLOG(2) << "Failed to open HKCU activity key with write for " << id;
-      }
+      ClearActiveBitUnderKey(HKEY_CURRENT_USER,
+                             GetAppClientStateKey(id).c_str());
       break;
-    }
+
     case UpdaterScope::kSystem:
-      // TODO(crbug.com/1096654): Add support for the machine case. Machine
-      // installs must clear values under HKLM and under every HKU\<sid>.
+      ClearMachineActiveBit(id);
       break;
   }
 }
