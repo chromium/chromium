@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_image_burner_client.h"
 #include "chromeos/disks/disk.h"
@@ -245,7 +244,6 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   if (!chromeos::DBusThreadManager::IsInitialized()) {
     std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
         chromeos::DBusThreadManager::GetSetterForTesting();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     std::unique_ptr<chromeos::ImageBurnerClient> image_burner_fake(
         new ImageWriterFakeImageBurnerClient());
     dbus_setter->SetImageBurnerClient(std::move(image_burner_fake));
@@ -271,7 +269,6 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
 void ImageWriterTestUtils::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::DBusThreadManager::IsInitialized()) {
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
   chromeos::disks::DiskMountManager::Shutdown();

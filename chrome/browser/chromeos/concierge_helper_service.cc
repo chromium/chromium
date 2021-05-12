@@ -30,7 +30,7 @@ void OnSetVmCpuRestriction(
 // If the service is already available, runs the callback immediately.
 void WaitForConciergeToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
-  auto* client = ConciergeClient::Get();
+  auto* client = DBusThreadManager::Get()->GetConciergeClient();
   if (!client) {
     LOG(WARNING) << "ConciergeClient is not available";
     std::move(callback).Run(false);
@@ -47,7 +47,7 @@ void SetVmCpuRestriction(
     return;
   }
 
-  auto* client = ConciergeClient::Get();
+  auto* client = DBusThreadManager::Get()->GetConciergeClient();
   if (!client) {
     LOG(WARNING) << "ConciergeClient is not available";
     OnSetVmCpuRestriction(base::nullopt);

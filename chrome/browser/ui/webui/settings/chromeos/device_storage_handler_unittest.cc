@@ -23,7 +23,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/test/fake_arc_session.h"
@@ -59,8 +58,6 @@ class StorageHandlerTest : public testing::Test {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
     chromeos::disks::DiskMountManager::InitializeForTesting(
@@ -125,7 +122,6 @@ class StorageHandlerTest : public testing::Test {
     arc_service_manager_.reset();
     chromeos::disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

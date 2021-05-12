@@ -9,7 +9,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_gnubby_client.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,11 +22,10 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
   ~GnubbyNotificationTest() override {}
 
   void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
     DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(
         std::unique_ptr<chromeos::GnubbyClient>(
             new chromeos::FakeGnubbyClient));
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    BrowserWithTestWindowTest::SetUp();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -46,9 +44,8 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     gnubby_notification_.reset();
     tester_.reset();
-    BrowserWithTestWindowTest::TearDown();
-    chromeos::ConciergeClient::Shutdown();
     DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(nullptr);
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void OnNotificationAdded() { notification_count_++; }

@@ -6,7 +6,6 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -42,7 +41,6 @@ class AboutHandlerTest : public testing::Test {
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
     DBusThreadManager::Initialize();
-    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     handler_ = std::make_unique<TestAboutHandler>(&profile_);
     handler_->set_web_ui(&web_ui_);
@@ -56,8 +54,6 @@ class AboutHandlerTest : public testing::Test {
   void TearDown() override {
     handler_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    ConciergeClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   const content::TestWebUI::CallData& CallDataAtIndex(size_t index) {

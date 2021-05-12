@@ -31,7 +31,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_session.h"
@@ -147,8 +146,6 @@ class LockScreenAppManagerImplTest
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
     // Initialize command line so chromeos::NoteTakingHelper thinks note taking
     // on lock screen is enabled.
     command_line_ = std::make_unique<base::test::ScopedCommandLine>();
@@ -188,8 +185,6 @@ class LockScreenAppManagerImplTest
     chromeos::NoteTakingHelper::Shutdown();
     arc_session_manager_.reset();
     extensions::ExtensionSystem::Get(profile())->Shutdown();
-
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

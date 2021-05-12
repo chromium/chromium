@@ -354,7 +354,7 @@ void PluginVmManagerImpl::OnVmStateChanged(
     vm_tools::concierge::GetVmInfoRequest concierge_request;
     concierge_request.set_owner_id(owner_id_);
     concierge_request.set_name(kPluginVmName);
-    chromeos::ConciergeClient::Get()->GetVmInfo(
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->GetVmInfo(
         std::move(concierge_request),
         base::BindOnce(&PluginVmManagerImpl::OnGetVmInfoForSharing,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -731,7 +731,7 @@ void PluginVmManagerImpl::DestroyDiskImage() {
   request.set_cryptohome_id(owner_id_);
   request.set_disk_path(kPluginVmName);
 
-  chromeos::ConciergeClient::Get()->DestroyDiskImage(
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->DestroyDiskImage(
       std::move(request),
       base::BindOnce(&PluginVmManagerImpl::OnDestroyDiskImage,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -15,7 +15,8 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
       cicerone_observer_(this),
       seneschal_observer_(this),
       chunneld_observer_(this) {
-  auto* concierge_client = chromeos::ConciergeClient::Get();
+  auto* concierge_client =
+      chromeos::DBusThreadManager::Get()->GetConciergeClient();
   DCHECK(concierge_client);
   concierge_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::ConciergeStarted,
@@ -47,7 +48,8 @@ GuestOsStabilityMonitor::~GuestOsStabilityMonitor() {}
 void GuestOsStabilityMonitor::ConciergeStarted(bool is_available) {
   DCHECK(is_available);
 
-  auto* concierge_client = chromeos::ConciergeClient::Get();
+  auto* concierge_client =
+      chromeos::DBusThreadManager::Get()->GetConciergeClient();
   DCHECK(concierge_client);
   concierge_observer_.Observe(concierge_client);
 }

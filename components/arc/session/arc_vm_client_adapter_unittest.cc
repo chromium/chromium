@@ -130,7 +130,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 // TODO(yusukes): Merge the feature to FakeConciergeClient.
 class TestConciergeClient : public chromeos::FakeConciergeClient {
  public:
-  static void Initialize() { new TestConciergeClient(); }
+  TestConciergeClient() = default;
   ~TestConciergeClient() override = default;
 
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
@@ -169,9 +169,6 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
   }
 
  private:
-  TestConciergeClient()
-      : chromeos::FakeConciergeClient(/*fake_cicerone_client=*/nullptr) {}
-
   int stop_vm_call_count_ = 0;
   // When callback_count_ == 0, the on_stop_vm_callback_ is not run.
   int callback_count_ = 0;
@@ -295,12 +292,14 @@ class ArcVmClientAdapterTest : public testing::Test,
     // Create and set new fake clients every time to reset clients' status.
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::make_unique<TestDebugDaemonClient>());
-    TestConciergeClient::Initialize();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
+        std::make_unique<TestConciergeClient>());
     chromeos::UpstartClient::InitializeFake();
   }
 
   ~ArcVmClientAdapterTest() override {
-    chromeos::ConciergeClient::Shutdown();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
+        nullptr);
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         nullptr);
   }
@@ -559,7 +558,8 @@ class ArcVmClientAdapterTest : public testing::Test,
     return upstart_operations_;
   }
   TestConciergeClient* GetTestConciergeClient() {
-    return static_cast<TestConciergeClient*>(chromeos::ConciergeClient::Get());
+    return static_cast<TestConciergeClient*>(
+        chromeos::DBusThreadManager::Get()->GetConciergeClient());
   }
 
   TestDebugDaemonClient* GetTestDebugDaemonClient() {

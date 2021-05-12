@@ -58,7 +58,7 @@ constexpr char kSetupTimeHistogram[] = "PluginVm.SetupTime";
 constexpr char kHomeDirectory[] = "/home";
 
 chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+  return chromeos::DBusThreadManager::Get()->GetConciergeClient();
 }
 
 constexpr char kIsoSignature[] = "CD001";

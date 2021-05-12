@@ -17,7 +17,6 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -187,14 +186,14 @@ class CupsPrintersHandlerTest : public testing::Test {
  public:
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        profile_(std::make_unique<TestingProfile>()),
+        profile_(),
         web_ui_(),
         printers_handler_() {}
   ~CupsPrintersHandlerTest() override = default;
 
   void SetUp() override {
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
-        profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
+        &profile_, base::MakeRefCounted<FakePpdProvider>(),
         std::make_unique<StubPrinterConfigurer>(), &printers_manager_);
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();
@@ -203,7 +202,7 @@ class CupsPrintersHandlerTest : public testing::Test {
  protected:
   // Must outlive |profile_|.
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;
   TestCupsPrintersManager printers_manager_;
@@ -211,9 +210,6 @@ class CupsPrintersHandlerTest : public testing::Test {
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   DBusThreadManager::Initialize();
-  chromeos::ConciergeClient::InitializeFake(
-      /*fake_cicerone_client=*/nullptr);
-
   DebugDaemonClient* client = DBusThreadManager::Get()->GetDebugDaemonClient();
   client->CupsAddAutoConfiguredPrinter("testprinter1", "fakeuri",
                                        base::BindOnce(&AddedPrinter));
@@ -238,16 +234,12 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
       base::DoNothing());
   run_loop.Run();
   EXPECT_FALSE(expected);
-
-  profile_.reset();
-  chromeos::ConciergeClient::Shutdown();
-  DBusThreadManager::Shutdown();
 }
 
 TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
-  DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
+  DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
       ->SetDownloadManagerDelegateForTesting(
-          std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
+          std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
 
   ui::SelectFileDialog::FileTypeInfo expected_file_type_info;
   // We only allow .ppd and .ppd.gz file extensions for our file select dialog.

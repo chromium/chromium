@@ -8,9 +8,9 @@
 
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/arc_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,11 +32,13 @@ class ArcClientAdapterTest : public testing::Test,
   void SetUp() override {
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         std::make_unique<chromeos::FakeDebugDaemonClient>());
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
+        std::make_unique<chromeos::FakeConciergeClient>());
     chromeos::UpstartClient::InitializeFake();
   }
   void TearDown() override {
-    chromeos::ConciergeClient::Shutdown();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
+        nullptr);
     chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
         nullptr);
   }

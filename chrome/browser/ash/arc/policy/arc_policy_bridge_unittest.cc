@@ -27,7 +27,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/arc_features.h"
@@ -740,7 +739,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   constexpr char kTrue[] = "true";
 
   chromeos::DBusThreadManager::Initialize();
-  chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
   auto upstart_client = std::make_unique<chromeos::FakeUpstartClient>();
   arc::prefs::RegisterLocalStatePrefs(
@@ -774,7 +772,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   manager.reset();
   upstart_client.reset();
   arc_session_manager.reset();
-  chromeos::ConciergeClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 

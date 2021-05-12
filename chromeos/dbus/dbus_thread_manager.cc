@@ -152,6 +152,10 @@ CiceroneClient* DBusThreadManager::GetCiceroneClient() {
   return clients_browser_ ? clients_browser_->cicerone_client_.get() : nullptr;
 }
 
+ConciergeClient* DBusThreadManager::GetConciergeClient() {
+  return clients_browser_ ? clients_browser_->concierge_client_.get() : nullptr;
+}
+
 CrosDisksClient* DBusThreadManager::GetCrosDisksClient() {
   return clients_browser_ ? clients_browser_->cros_disks_client_.get()
                           : nullptr;
@@ -352,6 +356,12 @@ void DBusThreadManagerSetter::SetChunneldClient(
 void DBusThreadManagerSetter::SetCiceroneClient(
     std::unique_ptr<CiceroneClient> client) {
   DBusThreadManager::Get()->clients_browser_->cicerone_client_ =
+      std::move(client);
+}
+
+void DBusThreadManagerSetter::SetConciergeClient(
+    std::unique_ptr<ConciergeClient> client) {
+  DBusThreadManager::Get()->clients_browser_->concierge_client_ =
       std::move(client);
 }
 

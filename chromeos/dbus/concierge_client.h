@@ -17,8 +17,6 @@
 
 namespace chromeos {
 
-class FakeCiceroneClient;
-
 // ConciergeClient is used to communicate with Concierge, which is used to
 // start and stop VMs, as well as for disk image management.
 class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
@@ -267,30 +265,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
           callback) = 0;
 
-  // Creates and initializes the global instance. |bus| must not be null.
-  static void Initialize(dbus::Bus* bus);
-
-  // Creates and initializes a fake global instance if not already created.
-  // FakeCiceroneClient must have already been initialized before calling
-  // this function.
-  static void InitializeFake();
-
-  // Creates and initializes a fake global instance if not already created.
-  // |fake_cicerone_client| must outlive the fake concierge client when it is
-  // not null. When |fake_cicerone_client| is null, FakeConciergeClient won't
-  // notify FakeCiceroneClient at all.
-  static void InitializeFake(FakeCiceroneClient* fake_cicerone_client);
-
-  // Destroys the global instance if it has been initialized.
-  static void Shutdown();
-
-  // Returns the global instance if initialized. May return null.
-  static ConciergeClient* Get();
+  // Creates an instance of ConciergeClient.
+  static std::unique_ptr<ConciergeClient> Create();
 
   ~ConciergeClient() override;
 
  protected:
-  // Initialize() should be used instead.
+  // Create() should be used instead.
   ConciergeClient();
 
  private:

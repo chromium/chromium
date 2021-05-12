@@ -21,7 +21,7 @@ namespace chromeos {
 
 class TestConciergeClient : public FakeConciergeClient {
  public:
-  static void Initialize() { new TestConciergeClient(); }
+  TestConciergeClient() = default;
   ~TestConciergeClient() override = default;
 
   void SetVmCpuRestriction(
@@ -61,9 +61,6 @@ class TestConciergeClient : public FakeConciergeClient {
   }
 
  private:
-  TestConciergeClient()
-      : FakeConciergeClient(/*fake_cicerone_client=*/nullptr) {}
-
   std::vector<vm_tools::concierge::SetVmCpuRestrictionRequest> requests_;
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
       callbacks_;
@@ -79,21 +76,19 @@ class ConciergeHelperServiceTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    DBusThreadManager::GetSetterForTesting();
-    TestConciergeClient::Initialize();
+    auto setter = DBusThreadManager::GetSetterForTesting();
+    setter->SetConciergeClient(std::make_unique<TestConciergeClient>());
     service_ = ConciergeHelperService::GetForBrowserContext(&profile_);
   }
 
-  void TearDown() override {
-    ConciergeClient::Shutdown();  // deletes the client created in SetUp().
-    DBusThreadManager::Shutdown();
-  }
+  void TearDown() override { DBusThreadManager::Shutdown(); }
 
  protected:
   ConciergeHelperService* service() { return service_; }
 
   TestConciergeClient* fake_concierge_client() {
-    return static_cast<TestConciergeClient*>(ConciergeClient::Get());
+    return static_cast<TestConciergeClient*>(
+        DBusThreadManager::Get()->GetConciergeClient());
   }
 
   content::BrowserTaskEnvironment* task_environment() {

@@ -381,7 +381,7 @@ CrosUsbDetector::CrosUsbDetector() {
   fastboot_device_filter_->has_protocol_code = true;
   fastboot_device_filter_->protocol_code = kFastbootProtocol;
 
-  chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->AddVmObserver(this);
   chromeos::DBusThreadManager::Get()
       ->GetVmPluginDispatcherClient()
       ->AddObserver(this);
@@ -391,7 +391,8 @@ CrosUsbDetector::CrosUsbDetector() {
 CrosUsbDetector::~CrosUsbDetector() {
   DCHECK_EQ(this, g_cros_usb_detector);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
-  chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->RemoveVmObserver(
+      this);
   chromeos::DBusThreadManager::Get()
       ->GetVmPluginDispatcherClient()
       ->RemoveObserver(this);
@@ -722,7 +723,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
   request.set_guest_port(*device.guest_port);
 
-  chromeos::ConciergeClient::Get()->DetachUsbDevice(
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->DetachUsbDevice(
       std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceDetachFinished,
                      weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
@@ -892,7 +893,7 @@ void CrosUsbDetector::DoVmAttach(
   request.set_vendor_id(device_info->vendor_id);
   request.set_product_id(device_info->product_id);
 
-  chromeos::ConciergeClient::Get()->AttachUsbDevice(
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->AttachUsbDevice(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
                      weak_ptr_factory_.GetWeakPtr(), vm_name, device_info->guid,

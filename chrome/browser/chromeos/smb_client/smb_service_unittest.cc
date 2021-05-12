@@ -41,7 +41,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/components/smbfs/smbfs_mounter.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_smb_provider_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -173,7 +172,6 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     // This isn't used, but still needs to exist.
     chromeos::DBusThreadManager::GetSetterForTesting()->SetSmbProviderClient(
         std::make_unique<FakeSmbProviderClient>());
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     // Takes ownership of |disk_mount_manager_|.
     chromeos::disks::DiskMountManager::InitializeForTesting(
@@ -182,9 +180,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     mount_options_.display_name = kDisplayName;
   }
 
-  ~SmbServiceWithSmbfsTest() override {
-    // TODO(crbug.com/1208030): Shut down DBus clients.
-  }
+  ~SmbServiceWithSmbfsTest() override {}
 
   void CreateService(TestingProfile* profile) {
     SmbService::DisableShareDiscoveryForTesting();

@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/pref_service.h"
@@ -29,15 +28,8 @@ class PluginVmUtilTest : public testing::Test {
 
  protected:
   struct ScopedDBusThreadManager {
-    ScopedDBusThreadManager() {
-      chromeos::DBusThreadManager::Initialize();
-      chromeos::ConciergeClient::InitializeFake(
-          /*fake_cicerone_client=*/nullptr);
-    }
-    ~ScopedDBusThreadManager() {
-      chromeos::ConciergeClient::Shutdown();
-      chromeos::DBusThreadManager::Shutdown();
-    }
+    ScopedDBusThreadManager() { chromeos::DBusThreadManager::Initialize(); }
+    ~ScopedDBusThreadManager() { chromeos::DBusThreadManager::Shutdown(); }
   } dbus_thread_manager_;
 
   content::BrowserTaskEnvironment task_environment_;

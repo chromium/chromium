@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
@@ -160,7 +159,6 @@ class PluginVmInstallerTestBase : public testing::Test {
  protected:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     ASSERT_TRUE(profiles_dir_.CreateUniqueTempDir());
     CreateProfile();
@@ -178,7 +176,8 @@ class PluginVmInstallerTestBase : public testing::Test {
 
     SetDefaultExpectations();
 
-    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
+    fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
+        chromeos::DBusThreadManager::Get()->GetConciergeClient());
 
     chromeos::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
@@ -191,7 +190,6 @@ class PluginVmInstallerTestBase : public testing::Test {
     profile_.reset();
     observer_.reset();
 
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
   }
@@ -266,10 +264,8 @@ class PluginVmInstallerTestBase : public testing::Test {
   PluginVmInstaller* installer_;
   std::unique_ptr<MockObserver> observer_;
 
-  // A pointer to a singleton object which is valid until
-  // ConciergeClient::Shutdown() is called.
-  chromeos::FakeConciergeClient* fake_concierge_client_;
   // Owned by chromeos::DBusThreadManager
+  chromeos::FakeConciergeClient* fake_concierge_client_;
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
 
  private:

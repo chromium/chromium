@@ -87,7 +87,8 @@ BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
   // DBusThreadManager may not be initialized in tests.
   if (chromeos::DBusThreadManager::IsInitialized()) {
     ShutDownBorealisIfChromeCrashed();
-    chromeos::ConciergeClient::Get()->AddVmObserver(this);
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->AddVmObserver(
+        this);
   }
 }
 
@@ -97,7 +98,8 @@ BorealisContextManagerImpl::~BorealisContextManagerImpl() {
   // keep a pointer to the observed ConciergeClient, either directly or via
   // ScopedObservation or similar.
   if (chromeos::DBusThreadManager::IsInitialized()) {
-    chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->RemoveVmObserver(
+        this);
   }
 }
 
@@ -110,7 +112,7 @@ void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
   request.set_owner_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(kBorealisVmName);
-  chromeos::ConciergeClient::Get()->GetVmInfo(
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->GetVmInfo(
       std::move(request),
       base::BindOnce(
           [](base::WeakPtr<BorealisContextManagerImpl> weak_this,
@@ -132,7 +134,7 @@ void BorealisContextManagerImpl::SendShutdownRequest(
   request.set_owner_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(vm_name);
-  chromeos::ConciergeClient::Get()->StopVm(
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->StopVm(
       std::move(request),
       base::BindOnce(
           [](base::OnceCallback<void(BorealisShutdownResult)>

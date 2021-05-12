@@ -23,7 +23,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
@@ -63,9 +62,6 @@ class CrostiniInstallerTest : public testing::Test {
 
   class WaitingFakeConciergeClient : public chromeos::FakeConciergeClient {
    public:
-    explicit WaitingFakeConciergeClient(chromeos::FakeCiceroneClient* client)
-        : chromeos::FakeConciergeClient(client) {}
-
     void StartTerminaVm(
         const vm_tools::concierge::StartVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
@@ -106,10 +102,9 @@ class CrostiniInstallerTest : public testing::Test {
     browser_part_.InitializeCrosComponentManager(component_manager_);
 
     chromeos::DlcserviceClient::InitializeFake();
-    chromeos::DBusThreadManager::GetSetterForTesting();
-    waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(
-        reinterpret_cast<chromeos::FakeCiceroneClient*>(
-            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
+    waiting_fake_concierge_client_ = new WaitingFakeConciergeClient;
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
+        base::WrapUnique(waiting_fake_concierge_client_));
     chromeos::SeneschalClient::InitializeFake();
 
     disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
@@ -138,7 +133,6 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::disks::MockDiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
 

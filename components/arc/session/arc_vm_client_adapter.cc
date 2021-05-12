@@ -100,7 +100,7 @@ base::Optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
 base::Optional<int> g_boot_notification_server_fd;
 
 chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::ConciergeClient::Get();
+  return chromeos::DBusThreadManager::Get()->GetConciergeClient();
 }
 
 chromeos::DebugDaemonClient* GetDebugDaemonClient() {

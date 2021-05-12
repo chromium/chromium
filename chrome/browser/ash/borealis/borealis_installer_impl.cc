@@ -155,7 +155,7 @@ class BorealisInstallerImpl::Uninstallation
     request.set_cryptohome_id(
         chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_disk_path(uninstall_info_->vm_name);
-    chromeos::ConciergeClient::Get()->DestroyDiskImage(
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->DestroyDiskImage(
         std::move(request), base::BindOnce(&Uninstallation::OnDiskRemoved,
                                            weak_factory_.GetWeakPtr()));
   }

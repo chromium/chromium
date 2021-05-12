@@ -8,13 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_concierge_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -22,17 +18,15 @@
 
 namespace concierge = vm_tools::concierge;
 
-namespace chromeos {
-
 namespace {
-
-ConciergeClient* g_instance = nullptr;
 
 // TODO(nverne): revert to TIMEOUT_USE_DEFAULT when StartVm no longer requires
 // unnecessary long running crypto calculations.
 constexpr int kConciergeDBusTimeoutMs = 160 * 1000;
 
 }  // namespace
+
+namespace chromeos {
 
 class ConciergeClientImpl : public ConciergeClient {
  public:
@@ -251,6 +245,7 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kReclaimVmMemoryMethod, request, std::move(callback));
   }
 
+ protected:
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,
@@ -459,44 +454,12 @@ class ConciergeClientImpl : public ConciergeClient {
   DISALLOW_COPY_AND_ASSIGN(ConciergeClientImpl);
 };
 
-ConciergeClient::ConciergeClient() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
+ConciergeClient::ConciergeClient() = default;
 
-ConciergeClient::~ConciergeClient() {
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
+ConciergeClient::~ConciergeClient() = default;
 
-// static
-void ConciergeClient::Initialize(dbus::Bus* bus) {
-  DCHECK(bus);
-  (new ConciergeClientImpl())->Init(bus);
-}
-
-// static
-void ConciergeClient::InitializeFake() {
-  InitializeFake(static_cast<FakeCiceroneClient*>(
-      DBusThreadManager::Get()->GetCiceroneClient()));
-}
-
-// static
-void ConciergeClient::InitializeFake(FakeCiceroneClient* fake_cicerone_client) {
-  // Do not create a new fake if it was initialized early in a browser test to
-  // allow the test to set its own client.
-  if (!FakeConciergeClient::Get())
-    new FakeConciergeClient(fake_cicerone_client);
-}
-
-// static
-void ConciergeClient::Shutdown() {
-  delete g_instance;
-}
-
-// static
-ConciergeClient* ConciergeClient::Get() {
-  return g_instance;
+std::unique_ptr<ConciergeClient> ConciergeClient::Create() {
+  return std::make_unique<ConciergeClientImpl>();
 }
 
 }  // namespace chromeos

@@ -499,13 +499,14 @@ ArcSessionManager::ArcSessionManager(
   if (chromeos::SessionManagerClient::Get())
     chromeos::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
-  chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->AddVmObserver(this);
 }
 
 ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
+  chromeos::DBusThreadManager::Get()->GetConciergeClient()->RemoveVmObserver(
+      this);
 
   if (chromeos::SessionManagerClient::Get())
     chromeos::SessionManagerClient::Get()->RemoveObserver(this);

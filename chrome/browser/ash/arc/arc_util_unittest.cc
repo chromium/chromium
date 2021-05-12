@@ -30,7 +30,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_oobe_configuration_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
@@ -760,7 +759,6 @@ class ArcOobeTest : public ChromeArcUtilTest {
  public:
   ArcOobeTest() {
     chromeos::DBusThreadManager::GetSetterForTesting();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     oobe_configuration_ = std::make_unique<chromeos::OobeConfiguration>();
   }
 
@@ -769,7 +767,6 @@ class ArcOobeTest : public ChromeArcUtilTest {
     // configuration.
     fake_login_display_host_.reset();
     oobe_configuration_.reset();
-    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
