@@ -1789,6 +1789,32 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   // Ignore return value as these controls are optional.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG, std::move(h264_ctrls));
 
+  // H264 coding tools parameter. Since a driver may not support some of them,
+  // EXT_S_CTRLS is called to each of them to enable as many coding tools as
+  // possible.
+  // Don't produce Intra-only frame.
+  device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_I_PERIOD, 0)});
+  // Enable deblocking filter.
+  device_->SetExtCtrls(
+      V4L2_CTRL_CLASS_MPEG,
+      {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_MODE,
+                   V4L2_MPEG_VIDEO_H264_LOOP_FILTER_MODE_ENABLED)});
+  // Use CABAC in Main and High profiles.
+  if (config.output_profile == H264PROFILE_MAIN ||
+      config.output_profile == H264PROFILE_HIGH) {
+    device_->SetExtCtrls(
+        V4L2_CTRL_CLASS_MPEG,
+        {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_ENTROPY_MODE,
+                     V4L2_MPEG_VIDEO_H264_ENTROPY_MODE_CABAC)});
+  }
+  // Use 8x8 transform in High profile.
+  if (config.output_profile == H264PROFILE_HIGH) {
+    device_->SetExtCtrls(
+        V4L2_CTRL_CLASS_MPEG,
+        {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM, true)});
+  }
+
   // Quantization parameter. The h264 qp range is 0-51.
   // Note: Webrtc default values are 24 and 37 respectively, see
   // h264_encoder_impl.cc.
