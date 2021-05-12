@@ -42,10 +42,13 @@ class TrayRadioButton : public views::RadioButton {
   // views::RadioButton:
   void OnThemeChanged() override {
     views::RadioButton::OnThemeChanged();
-    SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
+    auto* color_provider = AshColorProvider::Get();
+    SetEnabledTextColors(color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(label(),
                                      TrayPopupUtils::FontStyle::kSmallTitle);
+    focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 };
 

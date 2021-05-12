@@ -99,6 +99,7 @@ NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
           kColorDropdownForegroundSelected},
         {NTCID::kColorId_EnabledMenuItemForegroundColor,
           kColorMenuItemForeground},
+        {NTCID::kColorId_FocusAuraColor, kColorFocusAura},
         {NTCID::kColorId_FocusedBorderColor, kColorFocusableBorderFocused},
         {NTCID::kColorId_FocusedMenuItemBackgroundColor,
           kColorMenuItemBackgroundSelected},
