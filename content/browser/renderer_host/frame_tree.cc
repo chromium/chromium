@@ -728,8 +728,6 @@ void FrameTree::Shutdown() {
   root_manager->current_frame_host()->ResetChildren();
   root_manager->ResetProxyHosts();
 
-  controller().GetBackForwardCache().Shutdown();
-
   // Manually call the observer methods for the root FrameTreeNode. It is
   // necessary to manually delete all objects tracking navigations
   // (NavigationHandle, NavigationRequest) for observers to be properly
@@ -748,6 +746,11 @@ void FrameTree::Shutdown() {
     root_manager->speculative_frame_host()->RenderFrameDeleted();
     root_manager->speculative_frame_host()->ResetNavigationRequests();
   }
+
+  // NavigationRequests restoring the page from bfcache have a reference to the
+  // RFHs stored in the cache, so the cache should be cleared after the
+  // navigation request is reset.
+  controller().GetBackForwardCache().Shutdown();
 
   manager_delegate_->OnFrameTreeNodeDestroyed(root_);
   render_view_delegate_->RenderViewDeleted(

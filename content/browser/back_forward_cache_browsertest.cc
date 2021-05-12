@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
@@ -72,6 +73,7 @@
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/echo.test-mojom.h"
+#include "content/test/web_contents_observer_test_utils.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "media/base/media_switches.h"
@@ -10937,6 +10939,41 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     EXPECT_EQ(user_agent_override_2,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WebContentsDestroyedWhileRestoringThePageFromBFCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Shell* shell = CreateBrowser();
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell, url_a));
+
+  // 2) Navigate to another page.
+  EXPECT_TRUE(NavigateToURL(shell, url_b));
+
+  // 3) Start navigating back.
+  TestNavigationManager nav_manager(shell->web_contents(), url_a);
+  shell->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
+  EXPECT_CALL(observer, DidFinishNavigation(_))
+      .WillOnce(testing::Invoke([](NavigationHandle* handle) {
+        EXPECT_FALSE(handle->HasCommitted());
+        EXPECT_TRUE(handle->IsServedFromBackForwardCache());
+        // This call checks that |rfh_restored_from_back_forward_cache| is not
+        // deleted and the virtual |GetRoutingID| does not crash.
+        EXPECT_TRUE(NavigationRequest::From(handle)
+                        ->rfh_restored_from_back_forward_cache()
+                        ->GetRoutingID());
+      }));
+
+  shell->Close();
 }
 
 class BackForwardCacheBrowserTestWithMediaSession
