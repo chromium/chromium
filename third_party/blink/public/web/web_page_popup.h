@@ -39,7 +39,6 @@
 namespace blink {
 
 class WebDocument;
-class WebView;
 
 class WebPagePopup : public WebWidget {
  public:
@@ -60,10 +59,6 @@ class WebPagePopup : public WebWidget {
   // accessibility tree. Access to the popup document is needed to ensure the
   // popup's layout is clean before serializing the combined tree.
   virtual WebDocument GetDocument() = 0;
-
-  // Initialization is typically done after creation inside blink, but some
-  // content tests call Create directly so we expose an initialization.
-  virtual void InitializeForTesting(WebView* view) = 0;
 };
 
 }  // namespace blink

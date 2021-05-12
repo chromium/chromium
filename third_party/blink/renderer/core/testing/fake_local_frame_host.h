@@ -112,6 +112,11 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       Vector<mojom::blink::MenuItemPtr> menu_items,
       bool right_aligned,
       bool allow_multiple_selection) override;
+  void CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<mojom::blink::PopupWidgetHost>
+          popup_widget_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> widget_host,
+      mojo::PendingAssociatedRemote<mojom::blink::Widget> widget) override;
   void ShowContextMenu(
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient>
           context_menu_client,

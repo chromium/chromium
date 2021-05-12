@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -107,7 +108,9 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -116,6 +119,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -123,6 +127,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
+#include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -6088,6 +6093,124 @@ TEST_F(WebViewTest, SetHistoryLengthAndOffset) {
   EXPECT_EQ(2, web_view_impl->HistoryBackListCount() +
                    web_view_impl->HistoryForwardListCount() + 1);
   EXPECT_EQ(1, web_view_impl->HistoryBackListCount());
+}
+
+// PopupWidgetImpl should inherit emulation params from the parent.
+TEST_F(WebViewTest, EmulatingPopupRect) {
+  // Some platforms don't support PagePopups so just return.
+  if (!RuntimeEnabledFeatures::PagePopupEnabled())
+    return;
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
+                                     "<html><div id=\"container\">"
+                                     "   <select id=\"select\">"
+                                     "     <option>1</option>"
+                                     "     <option>2</option>"
+                                     "   </select></div>"
+                                     "</html>",
+                                     base_url);
+
+  LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
+  auto* select =
+      To<HTMLSelectElement>(frame->GetDocument()->getElementById("select"));
+  ASSERT_TRUE(select);
+
+  // Real screen rect set to 800x600.
+  gfx::Rect screen_rect(800, 600);
+  // Real widget and window screen rects.
+  gfx::Rect window_screen_rect(1, 2, 137, 139);
+  gfx::Rect widget_screen_rect(5, 7, 57, 59);
+
+  blink::VisualProperties visual_properties;
+  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
+  visual_properties.new_size = gfx::Size(400, 300);
+  visual_properties.visible_viewport_size = gfx::Size(400, 300);
+  visual_properties.screen_infos.mutable_current().rect = gfx::Rect(800, 600);
+
+  web_view->MainFrameWidget()->ApplyVisualProperties(visual_properties);
+
+  // Verify screen rect will be set.
+  EXPECT_EQ(gfx::Rect(web_view->MainFrameWidget()->GetScreenInfo().rect),
+            screen_rect);
+
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      MakeGarbageCollected<EmptyChromeClient>(), *select);
+  {
+    // Make a popup widget.
+    WebPagePopup* popup = web_view->OpenPagePopup(menu);
+
+    // Fake that the browser showed it.
+    static_cast<WebPagePopupImpl*>(popup)->DidShowPopup();
+
+    // Set its size.
+    popup->SetScreenRects(widget_screen_rect, window_screen_rect);
+
+    // The WindowScreenRect, WidgetScreenRect, and ScreenRect are all available
+    // to the popup.
+    EXPECT_EQ(window_screen_rect, gfx::Rect(popup->WindowRect()));
+    EXPECT_EQ(widget_screen_rect, gfx::Rect(popup->ViewRect()));
+    EXPECT_EQ(screen_rect, gfx::Rect(popup->GetScreenInfo().rect));
+
+    static_cast<WebPagePopupImpl*>(popup)->ClosePopup();
+  }
+
+  // Enable device emulation on the parent widget.
+  DeviceEmulationParams emulation_params;
+  gfx::Rect emulated_widget_rect(150, 160, 980, 1200);
+  // In mobile emulation the WindowScreenRect and ScreenRect are both set to
+  // match the WidgetScreenRect, which we set here.
+  emulation_params.screen_type = mojom::EmulatedScreenType::kMobile;
+  emulation_params.view_size = emulated_widget_rect.size();
+  emulation_params.view_position = emulated_widget_rect.origin();
+  web_view->EnableDeviceEmulation(emulation_params);
+
+  {
+    // Make a popup again. It should inherit device emulation params.
+    WebPagePopup* popup = web_view->OpenPagePopup(menu);
+
+    // Fake that the browser showed it.
+    static_cast<WebPagePopupImpl*>(popup)->DidShowPopup();
+
+    // Set its size again.
+    popup->SetScreenRects(widget_screen_rect, window_screen_rect);
+
+    // This time, the position of the WidgetScreenRect and WindowScreenRect
+    // should be affected by emulation params.
+    // TODO(danakj): This means the popup sees the top level widget at the
+    // emulated position *plus* the real position. Whereas the top level
+    // widget will see itself at the emulation position. Why this inconsistency?
+    int window_x = emulated_widget_rect.x() + window_screen_rect.x();
+    int window_y = emulated_widget_rect.y() + window_screen_rect.y();
+    EXPECT_EQ(window_x, popup->WindowRect().x());
+    EXPECT_EQ(window_y, popup->WindowRect().y());
+
+    int widget_x = emulated_widget_rect.x() + widget_screen_rect.x();
+    int widget_y = emulated_widget_rect.y() + widget_screen_rect.y();
+    EXPECT_EQ(widget_x, popup->ViewRect().x());
+    EXPECT_EQ(widget_y, popup->ViewRect().y());
+
+    // TODO(danakj): Why don't the sizes get changed by emulation? The comments
+    // that used to be in this test suggest that the sizes used to change, and
+    // we were testing for that. But now we only test for positions changing?
+    EXPECT_EQ(window_screen_rect.width(), popup->WindowRect().width());
+    EXPECT_EQ(window_screen_rect.height(), popup->WindowRect().height());
+    EXPECT_EQ(widget_screen_rect.width(), popup->ViewRect().width());
+    EXPECT_EQ(widget_screen_rect.height(), popup->ViewRect().height());
+    EXPECT_EQ(emulated_widget_rect,
+              gfx::Rect(web_view->MainFrameWidget()->ViewRect()));
+    EXPECT_EQ(emulated_widget_rect,
+              gfx::Rect(web_view->MainFrameWidget()->WindowRect()));
+
+    // TODO(danakj): Why isn't the ScreenRect visible to the popup an emulated
+    // value? The ScreenRect has been changed by emulation as demonstrated
+    // below.
+    EXPECT_EQ(gfx::Rect(800, 600), gfx::Rect(popup->GetScreenInfo().rect));
+    EXPECT_EQ(emulated_widget_rect,
+              gfx::Rect(web_view->MainFrameWidget()->GetScreenInfo().rect));
+
+    static_cast<WebPagePopupImpl*>(popup)->ClosePopup();
+  }
 }
 
 }  // namespace blink

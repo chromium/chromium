@@ -55,6 +55,7 @@ import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/modal_close_watcher/modal_close_listener.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -441,6 +442,16 @@ interface LocalFrameHost {
                 array<MenuItem> menu_items,
                 bool right_aligned,
                 bool allow_multiple_selection);
+
+  // Similar to content.mojom.FrameHost::CreateNewWindow, except used for
+  // sub-widgets, like <select> dropdowns. Upon return, the renderer side popup
+  // will be live until the PopupWidgetHost is disconnected by the browser.
+  // This is used on platforms that do not use the native controls via
+  // ShowPopupMenu, OpenDateTimeDialog, or OpenColorChooser.
+  CreateNewPopupWidget(
+         pending_associated_receiver<PopupWidgetHost> popup_host,
+         pending_associated_receiver<WidgetHost> blink_widget_host,
+         pending_associated_remote<Widget> blink_widget);
 
   // Used to tell the parent that the user right clicked on an area of the
   // content area, and a context menu should be shown for it. The params

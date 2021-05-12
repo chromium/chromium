@@ -105,7 +105,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // WebPagePopup implementation.
   WebDocument GetDocument() override;
-  void InitializeForTesting(WebView* view) override;
 
   // PagePopup implementation.
   void PostMessageToPopup(const String& message) override;
@@ -116,6 +115,9 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // Return the LayerTreeHost backing this popup widget.
   cc::LayerTreeHost* LayerTreeHostForTesting();
+
+  // Called when the browser has shown the popup.
+  void DidShowPopup();
 
  private:
   // WidgetBaseClient overrides:
@@ -228,7 +230,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
                                 WebInputEvent::Type injected_type);
 
   void WidgetHostDisconnected();
-  void DidShowPopup();
   void DidSetBounds();
 
   // This is the WebView that opened the popup.
