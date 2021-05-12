@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"

@@ -5,6 +5,7 @@
 #include "device/bluetooth/adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"

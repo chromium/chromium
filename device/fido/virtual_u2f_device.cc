@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"

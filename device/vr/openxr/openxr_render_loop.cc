@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
-
-#include "base/callback_helpers.h"
 #include "device/vr/openxr/openxr_render_loop.h"
 
 #include <d3d11_4.h>
 
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/optional.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"

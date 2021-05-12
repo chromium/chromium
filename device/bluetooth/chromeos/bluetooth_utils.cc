@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"

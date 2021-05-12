@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"

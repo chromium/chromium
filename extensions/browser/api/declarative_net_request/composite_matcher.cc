@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"

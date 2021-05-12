@@ -4,6 +4,7 @@
 
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 
+#include "base/containers/contains.h"
 #include "device/vr/android/arcore/type_converters.h"
 
 namespace device {

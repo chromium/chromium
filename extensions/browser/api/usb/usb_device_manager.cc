@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"

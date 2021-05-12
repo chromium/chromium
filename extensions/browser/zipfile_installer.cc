@@ -5,6 +5,7 @@
 #include "extensions/browser/zipfile_installer.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

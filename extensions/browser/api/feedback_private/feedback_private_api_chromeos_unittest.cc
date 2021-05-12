@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

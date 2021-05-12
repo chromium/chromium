@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"

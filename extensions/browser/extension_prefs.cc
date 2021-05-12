@@ -10,6 +10,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"

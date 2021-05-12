@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"

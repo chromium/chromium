@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

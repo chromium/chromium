@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"

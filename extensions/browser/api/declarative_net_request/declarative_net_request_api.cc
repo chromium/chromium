@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"

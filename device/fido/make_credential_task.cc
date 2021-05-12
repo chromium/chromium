@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/pin.h"

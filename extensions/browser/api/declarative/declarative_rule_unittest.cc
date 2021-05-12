@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"

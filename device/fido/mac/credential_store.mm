@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"

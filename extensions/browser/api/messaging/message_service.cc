@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"

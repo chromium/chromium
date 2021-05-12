@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/requirements.h"

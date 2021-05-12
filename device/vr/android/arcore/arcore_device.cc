@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/numerics/math_constants.h"
 #include "base/optional.h"
 #include "base/task/post_task.h"

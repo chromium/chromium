@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/stl_util.h"

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"

@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"

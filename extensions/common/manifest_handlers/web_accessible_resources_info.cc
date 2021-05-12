@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

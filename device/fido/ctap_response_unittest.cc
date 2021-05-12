@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"

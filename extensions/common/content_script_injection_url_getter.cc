@@ -4,6 +4,7 @@
 
 #include "extensions/common/content_script_injection_url_getter.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "url/scheme_host_port.h"

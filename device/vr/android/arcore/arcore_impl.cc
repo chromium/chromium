@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"

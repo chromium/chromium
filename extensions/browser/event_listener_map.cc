@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/render_process_host.h"

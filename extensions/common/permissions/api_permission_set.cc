@@ -4,6 +4,7 @@
 
 #include "extensions/common/permissions/api_permission_set.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
