@@ -118,7 +118,7 @@ enum DuplexModeRestriction {
   kDuplex = 0x6,
 };
 
-// Allowed PIN printing modes as a bitmask.
+// Allowed PIN printing modes.
 // This is used in pref file and should never change.
 [Stable, Extensible, EnableIf=is_chromeos]
 enum PinModeRestriction {

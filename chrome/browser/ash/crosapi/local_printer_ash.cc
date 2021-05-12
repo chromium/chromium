@@ -153,13 +153,15 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
       PrinterToMojom(printer), printer.HasSecureProtocol(), caps,
       prefs->GetInteger(prefs::kPrintingAllowedColorModes),
       prefs->GetInteger(prefs::kPrintingAllowedDuplexModes),
-      prefs->GetInteger(prefs::kPrintingAllowedPinModes),
+      static_cast<printing::mojom::PinModeRestriction>(
+          prefs->GetInteger(prefs::kPrintingAllowedPinModes)),
       static_cast<printing::mojom::ColorModeRestriction>(
           prefs->GetInteger(prefs::kPrintingColorDefault)),
       static_cast<printing::mojom::DuplexModeRestriction>(
           prefs->GetInteger(prefs::kPrintingDuplexDefault)),
       static_cast<printing::mojom::PinModeRestriction>(
-          prefs->GetInteger(prefs::kPrintingPinDefault)));
+          prefs->GetInteger(prefs::kPrintingPinDefault)),
+      0);  // deprecated
 }
 
 }  // namespace

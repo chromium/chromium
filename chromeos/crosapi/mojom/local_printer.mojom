@@ -176,11 +176,12 @@ struct CapabilitiesResponse {
   uint32 allowed_color_modes@3;
   // Bitmask of allowed duplex modes.
   uint32 allowed_duplex_modes@4;
-  // Bitmask of allowed pin modes.
-  uint32 allowed_pin_modes@5;
+  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes@9;
   printing.mojom.ColorModeRestriction default_color_mode@6;
   printing.mojom.DuplexModeRestriction default_duplex_mode@7;
   printing.mojom.PinModeRestriction default_pin_mode@8;
+  // No longer used.
+  uint32 allowed_pin_modes_deprecated@5;
 };
 
 // Global print policies that are not printer specific.

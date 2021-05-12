@@ -57,7 +57,8 @@ base::Value CapabilityToValue(crosapi::mojom::CapabilitiesResponsePtr ptr) {
   base::Value policies(base::Value::Type::DICTIONARY);
   policies.SetIntKey(kAllowedColorModes, ptr->allowed_color_modes);
   policies.SetIntKey(kAllowedDuplexModes, ptr->allowed_duplex_modes);
-  policies.SetIntKey(kAllowedPinModes, ptr->allowed_pin_modes);
+  policies.SetIntKey(kAllowedPinModes,
+                     static_cast<int>(ptr->allowed_pin_modes));
   policies.SetIntKey(kDefaultColorMode,
                      static_cast<int>(ptr->default_color_mode));
   policies.SetIntKey(kDefaultDuplexMode,
