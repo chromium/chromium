@@ -6,23 +6,27 @@
 
 #include <GLES3/gl3.h>
 
+#include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
 
 namespace {
 
-viz::ResourceFormat PlaneResourceFormat(int num_channels) {
+viz::ResourceFormat PlaneResourceFormat(int num_channels, bool for_surface) {
   switch (num_channels) {
     case 1:
-      return viz::LUMINANCE_8;
+      return for_surface ? viz::RED_8 : viz::LUMINANCE_8;
     case 2:
       return viz::RG_88;
     case 3:
@@ -34,8 +38,9 @@ viz::ResourceFormat PlaneResourceFormat(int num_channels) {
   return viz::RGBA_8888;
 }
 
-GLenum PlaneGLFormat(int num_channels) {
-  return viz::TextureStorageFormat(PlaneResourceFormat(num_channels));
+GLenum PlaneGLFormat(int num_channels, bool for_surface) {
+  return viz::TextureStorageFormat(
+      PlaneResourceFormat(num_channels, for_surface));
 }
 
 }  // namespace
@@ -119,7 +124,7 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
         gfx::Size tex_size = {plane_sizes_[plane].width(),
                               plane_sizes_[plane].height()};
         int num_channels = yuva_info_.numChannelsInPlane(plane);
-        viz::ResourceFormat format = PlaneResourceFormat(num_channels);
+        viz::ResourceFormat format = PlaneResourceFormat(num_channels, false);
         holders_[plane].mailbox = sii->CreateSharedImage(
             format, tex_size, video_frame->ColorSpace(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, mailbox_usage,
@@ -156,10 +161,11 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
 
 GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
     const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider) {
+    viz::RasterContextProvider* raster_context_provider,
+    bool for_surface) {
   gpu::Mailbox mailboxes[kMaxPlanes];
   VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes);
-  ImportTextures();
+  ImportTextures(for_surface);
   GrBackendTexture backend_textures[SkYUVAInfo::kMaxPlanes];
   for (size_t plane = 0; plane < num_planes_; ++plane) {
     backend_textures[plane] = {plane_sizes_[plane].width(),
@@ -168,6 +174,68 @@ GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
   }
   return GrYUVABackendTextures(yuva_info_, backend_textures,
                                kTopLeft_GrSurfaceOrigin);
+}
+
+sk_sp<SkImage> VideoFrameYUVMailboxesHolder::VideoFrameToSkImage(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider) {
+  GrDirectContext* gr_context = raster_context_provider->GrContext();
+  DCHECK(gr_context);
+
+  GrYUVABackendTextures yuva_backend_textures =
+      VideoFrameToSkiaTextures(video_frame, raster_context_provider, false);
+
+  DCHECK(yuva_backend_textures.isValid());
+  auto result = SkImage::MakeFromYUVATextures(gr_context, yuva_backend_textures,
+                                              SkColorSpace::MakeSRGB());
+  DCHECK(result);
+  return result;
+}
+
+bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider,
+    sk_sp<SkSurface> surfaces[SkYUVAInfo::kMaxPlanes]) {
+  for (size_t plane = 0; plane < SkYUVAInfo::kMaxPlanes; ++plane)
+    surfaces[plane] = nullptr;
+
+  if (!video_frame->HasTextures()) {
+    // The below call to VideoFrameToSkiaTextures would blit |video_frame| into
+    // a temporary SharedImage, which would be exposed as a SkSurface. That is
+    // probably undesirable (it has no current use cases), so just return an
+    // error.
+    DLOG(ERROR) << "VideoFrameToPlaneSkSurfaces requires texture backing.";
+    return false;
+  }
+
+  GrDirectContext* gr_context = raster_context_provider->GrContext();
+  DCHECK(gr_context);
+  GrYUVABackendTextures yuva_backend_textures =
+      VideoFrameToSkiaTextures(video_frame, raster_context_provider, true);
+
+  bool result = true;
+  for (size_t plane = 0; plane < num_planes_; ++plane) {
+    const int num_channels = yuva_info_.numChannelsInPlane(plane);
+    SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
+        SkYUVAPixmaps::DataType::kUnorm8, num_channels);
+    // Gray is not renderable.
+    if (color_type == kGray_8_SkColorType)
+      color_type = kAlpha_8_SkColorType;
+
+    const int sample_count = 1;
+    auto surface = SkSurface::MakeFromBackendTexture(
+        gr_context, yuva_backend_textures.texture(plane),
+        kTopLeft_GrSurfaceOrigin, sample_count, color_type,
+        SkColorSpace::MakeSRGB(), nullptr);
+    if (!surface) {
+      DLOG(ERROR)
+          << "VideoFrameToPlaneSkSurfaces failed to make surface for plane "
+          << plane << " of " << num_planes_ << ".";
+      result = false;
+    }
+    surfaces[plane] = surface;
+  }
+  return result;
 }
 
 SkYUVAPixmaps VideoFrameYUVMailboxesHolder::VideoFrameToSkiaPixmaps(
@@ -194,7 +262,7 @@ SkYUVAPixmaps VideoFrameYUVMailboxesHolder::VideoFrameToSkiaPixmaps(
   return SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
 }
 
-void VideoFrameYUVMailboxesHolder::ImportTextures() {
+void VideoFrameYUVMailboxesHolder::ImportTextures(bool for_surface) {
   DCHECK(!imported_textures_)
       << "Textures should always be released after converting video frame. "
          "Call ReleaseTextures() for each call to VideoFrameToSkiaTextures()";
@@ -207,12 +275,15 @@ void VideoFrameYUVMailboxesHolder::ImportTextures() {
       textures_[plane].is_shared_image = true;
       ri->BeginSharedImageAccessDirectCHROMIUM(
           textures_[plane].texture.fID,
-          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+          for_surface ? GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM
+                      : GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    } else {
+      textures_[plane].is_shared_image = false;
     }
 
     int num_channels = yuva_info_.numChannelsInPlane(plane);
     textures_[plane].texture.fTarget = holders_[plane].texture_target;
-    textures_[plane].texture.fFormat = PlaneGLFormat(num_channels);
+    textures_[plane].texture.fFormat = PlaneGLFormat(num_channels, for_surface);
   }
 
   imported_textures_ = true;

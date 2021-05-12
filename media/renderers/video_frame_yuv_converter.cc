@@ -89,22 +89,6 @@ bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
   return true;
 }
 
-bool YUVGrBackendTexturesToSkSurface(
-    GrDirectContext* gr_context,
-    const VideoFrame* video_frame,
-    const GrYUVABackendTextures& yuva_backend_textures,
-    sk_sp<SkSurface> surface,
-    bool use_visible_rect) {
-  auto image = SkImage::MakeFromYUVATextures(gr_context, yuva_backend_textures,
-                                             SkColorSpace::MakeSRGB());
-
-  if (!image) {
-    return false;
-  }
-
-  return DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
-}
-
 bool YUVPixmapsToSkSurface(GrDirectContext* gr_context,
                            const VideoFrame* video_frame,
                            const SkYUVAPixmaps yuva_pixmaps,
@@ -284,13 +268,11 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
     result = YUVPixmapsToSkSurface(gr_context, video_frame, yuva_pixmaps,
                                    surface, use_visible_rect);
   } else {
-    GrYUVABackendTextures yuva_backend_textures =
-        holder_->VideoFrameToSkiaTextures(video_frame, raster_context_provider);
-    DCHECK(yuva_backend_textures.isValid());
+    auto image =
+        holder_->VideoFrameToSkImage(video_frame, raster_context_provider);
+    result =
+        DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
 
-    result = YUVGrBackendTexturesToSkSurface(gr_context, video_frame,
-                                             yuva_backend_textures, surface,
-                                             use_visible_rect);
     // Release textures to guarantee |holder_| doesn't hold read access on
     // textures it doesn't own.
     holder_->ReleaseTextures();

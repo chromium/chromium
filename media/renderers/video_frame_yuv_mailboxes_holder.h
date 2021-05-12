@@ -5,6 +5,7 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_YUV_MAILBOXES_HOLDER_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_YUV_MAILBOXES_HOLDER_H_
 
+#include "media/base/media_export.h"
 #include "media/base/video_frame.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
@@ -16,7 +17,7 @@ class RasterContextProvider;
 
 namespace media {
 
-class VideoFrameYUVMailboxesHolder {
+class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
  public:
   VideoFrameYUVMailboxesHolder();
   ~VideoFrameYUVMailboxesHolder();
@@ -33,11 +34,17 @@ class VideoFrameYUVMailboxesHolder {
       viz::RasterContextProvider* raster_context_provider,
       gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]);
 
-  // Like VideoFrameToMailboxes but imports the textures from the mailboxes and
-  // returns the planes as a set of YUVA GrBackendTextures.
-  GrYUVABackendTextures VideoFrameToSkiaTextures(
+  // Returns a YUV SkImage for the specified video frame.
+  sk_sp<SkImage> VideoFrameToSkImage(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider);
+
+  // Creates SkSurfaces for each plane for the specified video frame. Returns
+  // true only if surfaces for all planes were created.
+  bool VideoFrameToPlaneSkSurfaces(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      sk_sp<SkSurface> surfaces[SkYUVAInfo::kMaxPlanes]);
 
   SkYUVAPixmaps VideoFrameToSkiaPixmaps(const VideoFrame* video_frame);
 
@@ -64,7 +71,16 @@ class VideoFrameYUVMailboxesHolder {
   static constexpr size_t kMaxPlanes =
       static_cast<size_t>(SkYUVAInfo::kMaxPlanes);
 
-  void ImportTextures();
+  // Like VideoFrameToMailboxes but imports the textures from the mailboxes and
+  // returns the planes as a set of YUVA GrBackendTextures. If |for_surface| is
+  // true, then select color types and pixel formats that are renderable as
+  // SkSurfaces.
+  GrYUVABackendTextures VideoFrameToSkiaTextures(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      bool for_surface);
+
+  void ImportTextures(bool for_surface);
 
   scoped_refptr<viz::RasterContextProvider> provider_;
   bool imported_textures_ = false;
