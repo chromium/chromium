@@ -17,6 +17,10 @@
     flex: 1;
   }
 
+  .label-wrapper {
+    display: block;
+  }
+
   .secondary {
     color: var(--cr-secondary-text-color);
     font-weight: 400;
@@ -32,6 +36,10 @@
     outline: none;
     padding-bottom: 4px;
     padding-top: 8px;
+  }
+
+  #flocCard {
+    margin-top: var(--cr-section-vertical-margin);
   }
 
   #overscroll {
@@ -101,5 +109,35 @@
       </cr-button>
     </div>
   </div>
+  <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
+    <div class="card" id="flocCard">
+      <settings-toggle-button class="hr"
+          pref="{{prefs.privacy_sandbox.floc_enabled}}"
+          label="$i18n{privacySandboxPageFlocHeading}">
+      </settings-toggle-button>
+      <div class="cr-row continuation">
+        <div class="secondary">$i18n{privacySandboxPageFlocExplanation}</div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="label-wrapper">
+          <div>$i18n{privacySandboxPageFlocCohort}</div>
+          <div class="cr-secondary-text">123 abc</div>
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="label-wrapper">
+          <div>$i18n{privacySandboxPageFlocCohortUpdated}</div>
+          <div class="cr-secondary-text">May 4th</div>
+        </div>
+      </div>
+    <div class="cr-row continuation">
+      <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
+    </div>
+    <div class="cr-row continuation box-last">
+      <cr-button class="cr-button" role="button">
+        $i18n{privacySandboxPageFlocResetCohort}
+      </cr-button>
+    </div>
+  </template>
 </div>
 <div id="overscroll"></div>

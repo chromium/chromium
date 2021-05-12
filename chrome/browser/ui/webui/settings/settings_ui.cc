@@ -378,6 +378,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   if (sandbox_enabled) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
+    html_source->AddBoolean(
+        "privacySandboxSettings2Enabled",
+        base::FeatureList::IsEnabled(features::kPrivacySandboxSettings2));
   }
 
   TryShowHatsSurveyWithTimeout();

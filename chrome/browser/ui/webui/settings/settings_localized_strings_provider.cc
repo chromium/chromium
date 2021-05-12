@@ -1497,6 +1497,18 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3},
         {"privacySandboxPageDetails",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS},
+        {"privacySandboxPageFlocHeading",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_HEADING},
+        {"privacySandboxPageFlocExplanation",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION},
+        {"privacySandboxPageFlocCohort",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT},
+        {"privacySandboxPageFlocCohortUpdated",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_UPDATED},
+        {"privacySandboxPageFlocResetCohort",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_COHORT},
+        {"privacySandboxPageFlocResetExplanation",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_EXPLANATION},
     };
     html_source->AddLocalizedStrings(kLocalizedStringsBehindFlag);
 

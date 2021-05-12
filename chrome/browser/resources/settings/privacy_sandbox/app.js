@@ -22,6 +22,14 @@ Polymer({
     PrefsBehavior,
   ],
 
+  properties: {
+    /** @private */
+    privacySandboxSettings2Enabled_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('privacySandboxSettings2Enabled'),
+    },
+  },
+
   /** @private {?MetricsBrowserProxy} */
   metricsBrowserProxy_: null,
 

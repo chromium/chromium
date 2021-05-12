@@ -1260,6 +1260,24 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are disabled.">
     Trial features are off
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_HEADING" desc="The heading of the card which displays the user's Federated Learning of Cohorts (FLoC) settings">
+    Federated Learning of Cohorts
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_EXPLANATION" desc="Explanation of Federated Learning of Cohorts (FLoC) which appears at the top of the FLoC settings card">
+    FLoC provides a privacy-preserving mechanism for interest-based ad selection.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT" desc="The text used to label the user's current Federated Learning of Cohorts (FLoC) cohort">
+    FLoC ID
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_UPDATED" desc="The text used to label when the user's current Federated Learning of Cohorts (FLoC) cohort was last updated">
+    Updated
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_COHORT" desc="The text used to label the button which allows a user to reset their Federated Learning of Cohorts (FLoC) cohort identifier">
+    Reset ID
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_EXPLANATION" desc="Description of what happens when a user chooses to reset their Federated Learning of Cohorts (FLoC) identifier">
+    When you reset ID, your current ID will become invalid and new one will be issued in 7 days.
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     Learn about and control new technologies that aim to replace third-party cookies
   </message>

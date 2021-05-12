@@ -7,15 +7,15 @@ import 'chrome://settings/privacy_sandbox/app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {flushTasks, isChildVisible} from '../test_util.m.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 
-suite('PrivacySandbox', function() {
-  /** @type {PrivacySandboxAppElement} */
+suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
+  /** @type {!PrivacySandboxAppElement} */
   let page;
 
   /** @type {?TestMetricsBrowserProxy} */
@@ -26,6 +26,12 @@ suite('PrivacySandbox', function() {
 
   /** @type {!TestHatsBrowserProxy} */
   let testHatsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacySandboxSettings2Enabled: false,
+    });
+  });
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
@@ -97,4 +103,31 @@ suite('PrivacySandbox', function() {
     return testHatsBrowserProxy.whenCalled('tryShowPrivacySandboxSurvey');
   });
 
+  test('flocCardVisibility', function() {
+    assertFalse(isChildVisible(page, '#flocCard'));
+  });
+});
+
+suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
+  /** @type {!PrivacySandboxAppElement} */
+  let page;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacySandboxSettings2Enabled: true,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = /** @type {!PrivacySandboxAppElement} */
+        (document.createElement('privacy-sandbox-app'));
+    document.body.appendChild(page);
+
+    return flushTasks();
+  });
+
+  test('flocCardVisibility', function() {
+    assertTrue(isChildVisible(page, '#flocCard'));
+  });
 });

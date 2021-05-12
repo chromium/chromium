@@ -282,6 +282,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::PREF_TYPE_BOOLEAN;
     (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
         settings_api::PrefType::PREF_TYPE_BOOLEAN;
+    (*s_allowlist)[::prefs::kPrivacySandboxFlocEnabled] =
+        settings_api::PrefType::PREF_TYPE_BOOLEAN;
   }
 
   // Security page
