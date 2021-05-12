@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/bubble_event_filter.h"
+#include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 
 #include <memory>
 
@@ -16,13 +16,14 @@ namespace ash {
 namespace {
 
 // Parameterized by mouse events vs. touch events.
-class BubbleEventFilterTest : public AshTestBase,
-                              public testing::WithParamInterface<bool> {
+class AppListBubbleEventFilterTest : public AshTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
-  BubbleEventFilterTest() = default;
-  BubbleEventFilterTest(const BubbleEventFilterTest&) = delete;
-  BubbleEventFilterTest& operator=(const BubbleEventFilterTest&) = delete;
-  ~BubbleEventFilterTest() override = default;
+  AppListBubbleEventFilterTest() = default;
+  AppListBubbleEventFilterTest(const AppListBubbleEventFilterTest&) = delete;
+  AppListBubbleEventFilterTest& operator=(const AppListBubbleEventFilterTest&) =
+      delete;
+  ~AppListBubbleEventFilterTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -58,12 +59,14 @@ class BubbleEventFilterTest : public AshTestBase,
   views::View* view_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(MouseOrTouch, BubbleEventFilterTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(MouseOrTouch,
+                         AppListBubbleEventFilterTest,
+                         testing::Bool());
 
-TEST_P(BubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
+TEST_P(AppListBubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
   int callback_count = 0;
   auto callback = base::BindLambdaForTesting([&]() { ++callback_count; });
-  BubbleEventFilter filter(widget_.get(), view_, callback);
+  AppListBubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click outside the widget.
   gfx::Point point_outside_widget = widget_->GetWindowBoundsInScreen().origin();
@@ -73,10 +76,10 @@ TEST_P(BubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
   EXPECT_EQ(callback_count, 1);
 }
 
-TEST_P(BubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
+TEST_P(AppListBubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
   bool callback_ran = false;
   auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
-  BubbleEventFilter filter(widget_.get(), view_, callback);
+  AppListBubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click inside the widget.
   ClickOrTapAt(widget_->GetWindowBoundsInScreen().CenterPoint());
@@ -84,10 +87,10 @@ TEST_P(BubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
   EXPECT_FALSE(callback_ran);
 }
 
-TEST_P(BubbleEventFilterTest, ClickInsideViewDoesNotRunCallback) {
+TEST_P(AppListBubbleEventFilterTest, ClickInsideViewDoesNotRunCallback) {
   bool callback_ran = false;
   auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
-  BubbleEventFilter filter(widget_.get(), view_, callback);
+  AppListBubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click inside the view.
   ClickOrTapAt(view_->GetBoundsInScreen().CenterPoint());

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/bubble/bubble_event_filter.h"
+#include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 
 #include "ash/shell.h"
 #include "base/callback.h"
@@ -14,7 +14,7 @@
 
 namespace ash {
 
-BubbleEventFilter::BubbleEventFilter(
+AppListBubbleEventFilter::AppListBubbleEventFilter(
     views::Widget* widget,
     views::View* button,
     base::RepeatingCallback<void()> on_click_outside)
@@ -25,21 +25,22 @@ BubbleEventFilter::BubbleEventFilter(
   Shell::Get()->AddPreTargetHandler(this);
 }
 
-BubbleEventFilter::~BubbleEventFilter() {
+AppListBubbleEventFilter::~AppListBubbleEventFilter() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
-void BubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
+void AppListBubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED)
     ProcessPressedEvent(*event);
 }
 
-void BubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
+void AppListBubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() == ui::ET_TOUCH_PRESSED)
     ProcessPressedEvent(*event);
 }
 
-void BubbleEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+void AppListBubbleEventFilter::ProcessPressedEvent(
+    const ui::LocatedEvent& event) {
   // TODO(https://crbug.com/1204554): Exclude events during capture mode.
   // TODO(https://crbug.com/1204554): Exclude accessibility autoclick bubble.
   // TODO(https://crbug.com/1204554): Exclude events that shouldn't close the

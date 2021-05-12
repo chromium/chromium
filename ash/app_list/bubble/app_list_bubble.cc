@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
-#include "ash/app_list/bubble/bubble_event_filter.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -44,7 +44,7 @@ void AppListBubble::Show(int64_t display_id) {
   // don't cause window activation changes (e.g. clicks on wallpaper or blank
   // areas of shelf).
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
-  bubble_event_filter_ = std::make_unique<BubbleEventFilter>(
+  bubble_event_filter_ = std::make_unique<AppListBubbleEventFilter>(
       bubble_widget_, home_button,
       base::BindRepeating(&AppListBubble::Dismiss, base::Unretained(this)));
 }
