@@ -355,7 +355,6 @@ Svolgi i passaggi che seguono:</translation>
 
 I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="4689564913179979534">Gestisci metodi di pagamento…</translation>
-<translation id="4704093130121805775">Attiva la sincronizzazione tra i tuoi dispositivi</translation>
 <translation id="470966556546083668">Non attivare la sincronizzazione</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4747097190499141774">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay. Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>

@@ -33,6 +33,7 @@
 <translation id="122699739164161391">Mbyll të gjitha skedat</translation>
 <translation id="1229222343402087523">Kërko ${searchPhrase} në Chrome</translation>
 <translation id="1231733316453485619">Të aktivizohet sinkronizimi?</translation>
+<translation id="1242044645101871359">Identifikohu përsëri</translation>
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -97,6 +98,7 @@
 <translation id="1820259098641718022">U shtua te lista e leximit</translation>
 <translation id="1870148520156231997">Zbulo fjalëkalimin</translation>
 <translation id="1872096359983322073">Elektriku</translation>
+<translation id="1894205589103145703">Ndodhi një gabim gjatë identifikimit.</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1923342640370224680">Ora e fundit</translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
@@ -110,6 +112,7 @@
 <translation id="2073572773299281212">Aktiv <ph name="DAYS" /> ditë më parë</translation>
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
+<translation id="2086623437239112659">Informacionet e tua të ruajtura mund të jenë të papërditësuara.</translation>
 <translation id="209018056901015185">Kërko sajtin për desktop</translation>
 <translation id="2103075008456228677">Hap history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u lëvizën</translation>
@@ -352,7 +355,6 @@ Ndiq hapat më poshtë:</translation>
 
 Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkronizimin. Fute atë për të nisur sinkronizimin.</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
-<translation id="4704093130121805775">Sinkronizo mes pajisjeve</translation>
 <translation id="470966556546083668">Mos e aktivizo sinkronizimin</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4747097190499141774">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -400,6 +402,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5140288047769711648">Chrome do ta kujtojë këtë fjalëkalimin për ty. Nuk është e nevojshme ta mbash mend.</translation>
 <translation id="5150492518600715772">Dërgo te pajisjet e tua</translation>
+<translation id="5168414296986405587">Krijuar për iPadOS</translation>
 <translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Cilësimet e tua të kukive zbatohen te të gjitha skedat. Për të zbatuar një cilësim të ri te një skedë e hapur, ringarkoje skedën.</translation>
@@ -429,6 +432,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5508435575041083207">Dil dhe pastro të dhënat nga kjo pajisje</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> orë më parë</translation>
 <translation id="5525269841082836315">Krijo fjalëkalim</translation>
+<translation id="5532698011560297095">Nuk mund të identifkohesh</translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një faqe interneti në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Faqja aktuale e hapur e internetit do të shfaqet në Dock të kompjuterit tënd Mac.
 
 Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme" te "Cilësimet", dhe pajisjet e tua duhet të përdorin të njëjtën llogari iCloud.</translation>

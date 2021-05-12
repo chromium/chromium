@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">банер</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> елемента</translation>
 <translation id="1480676835519562650">възможност за избиране на няколко опции, избрани са <ph name="SELECTED" /> от <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Нормално</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">Този месец</translation>
 <translation id="1637811476055996098">Избор на файлове</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">заглавка на ред</translation>
 <translation id="5143125788380636750">епилог</translation>
 <translation id="5164977714490026579">Стойността трябва да е по-голяма или равна на <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">Моля, въведете текст преди „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ е непълно.</translation>
 <translation id="5334352251556557839">Мултимедийното съдържание не може да бъде възпроизведено.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">За да изтеглите липсващите описания на изображения, отворете контекстното меню.</translation>
 <translation id="7750228210027921155">Картина в картината</translation>
 <translation id="775297008183122718">Въведеното е невалидно</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">поставяне на пауза</translation>
 <translation id="7802800022689234070">триъгълник за разкриване на съдържание</translation>
 <translation id="7852167693871241274">Плъзгач за цветови тон</translation>

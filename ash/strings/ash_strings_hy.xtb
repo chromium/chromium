@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">Բացել <ph name="USER_NAME" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
 <translation id="1165712434476988950">Թարմացումը կիրառելու համար անհրաժեշտ է վերագործարկել սարքը։</translation>
+<translation id="1170240434488307589">Սարքի խոսափողն անջատված է</translation>
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">Ներածման եղանակները կարգավորվում են ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
 <translation id="1761222317188459878">Միացնել/անջատել կապը: <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1782199038061388045">թարգմանություն</translation>
 <translation id="1787955149152357925">Անջատված է</translation>

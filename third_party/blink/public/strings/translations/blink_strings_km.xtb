@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">បដា</translation>
 <translation id="145015347812617860">ធាតុ <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">អាចជ្រើសរើសបានច្រើន បានជ្រើសរើស <ph name="SELECTED" /> ក្នុងចំណោម <ph name="COUNT" />។</translation>
+<translation id="1588438908519853928">ធម្មតា</translation>
 <translation id="1589122976691792535">តំបន់</translation>
 <translation id="1591562245178063882">ខែនេះ</translation>
 <translation id="1637811476055996098">ជ្រើសរើសឯកសារ</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">ផ្នែកក្បាលជួរដេក</translation>
 <translation id="5143125788380636750">អវសាន​កថា</translation>
 <translation id="5164977714490026579">តម្លៃត្រូវតែធំជាង ឬស្មើនឹង <ph name="MINIMUM" />។</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">សូមបញ្ចូលផ្នែកមួយនៅខាងមុខ '<ph name="ATSIGN" />'។ '<ph name="INVALIDADDRESS" />' មិនពេញលេញទេ។</translation>
 <translation id="5334352251556557839">មិនអាច​ចាក់មេឌៀបានទេ។</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">ដើម្បី​ទទួលបាន​ការពណ៌នា​អំពី​រូបភាព​ដែលបាត់ សូម​បើកម៉ឺនុយ​បរិបទ។</translation>
 <translation id="7750228210027921155">រូបក្នុងរូប​</translation>
 <translation id="775297008183122718">ធាតុគ្មានសុពលភាព</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">ផ្អាក</translation>
 <translation id="7802800022689234070">ត្រីកោណបង្ហាញ</translation>
 <translation id="7852167693871241274">របាររំកិល​ពណ៌</translation>

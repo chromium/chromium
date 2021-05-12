@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">배너</translation>
 <translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
 <translation id="1480676835519562650">여러 항목 선택 가능, <ph name="COUNT" />개 중 <ph name="SELECTED" />개 선택됨.</translation>
+<translation id="1588438908519853928">일반</translation>
 <translation id="1589122976691792535">지역</translation>
 <translation id="1591562245178063882">이번 달</translation>
 <translation id="1637811476055996098">파일 선택</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">행 헤더</translation>
 <translation id="5143125788380636750">에필로그</translation>
 <translation id="5164977714490026579">값은 <ph name="MINIMUM" /> 이상이어야 합니다.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' 앞 부분을 입력해 주세요. '<ph name="INVALIDADDRESS" />'(이)가 완전하지 않습니다.</translation>
 <translation id="5334352251556557839">미디어를 재생할 수 없습니다.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">누락된 이미지 설명을 확인하려면 컨텍스트 메뉴를 여세요.</translation>
 <translation id="7750228210027921155">PIP 모드</translation>
 <translation id="775297008183122718">입력값이 잘못되었습니다.</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">일시중지</translation>
 <translation id="7802800022689234070">펼치기/접기 삼각형</translation>
 <translation id="7852167693871241274">색조 슬라이더</translation>

@@ -355,7 +355,6 @@ Slijedite korake u nastavku:</translation>
 
 Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
-<translation id="4704093130121805775">Sinkronizacija između uređaja</translation>
 <translation id="470966556546083668">Ne uključuj sinkronizaciju</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

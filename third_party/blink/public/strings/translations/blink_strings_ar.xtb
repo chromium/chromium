@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">إعلان بانر</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
 <translation id="1480676835519562650">اختيار متعدد، تم اختيار <ph name="SELECTED" /> من أصل <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">عادي</translation>
 <translation id="1589122976691792535">منطقة</translation>
 <translation id="1591562245178063882">هذا الشهر</translation>
 <translation id="1637811476055996098">اختيار الملفات</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">عنوان الصف</translation>
 <translation id="5143125788380636750">تتِّمة</translation>
 <translation id="5164977714490026579">يجب أن تكون القيمة أكبر من أو تساوي <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
 <translation id="5307600278924710095">يُرجى إدخال جزء متبوع بعلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
 <translation id="5334352251556557839">تعذّر تشغيل الوسائط</translation>
@@ -251,6 +253,7 @@
 <translation id="7745230546936012372">للحصول على أوصاف الصور غير المتوفّرة، افتح قائمة السياقات.</translation>
 <translation id="7750228210027921155">نافذة ضمن النافذة</translation>
 <translation id="775297008183122718">إدخال غير صالح</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">إيقاف مؤقت</translation>
 <translation id="7802800022689234070">مثلث الإفصاح</translation>
 <translation id="7852167693871241274">شريط تمرير تدرُّج الألوان</translation>

@@ -3934,13 +3934,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengubah tema browser sesuai keinginan.</translation>
 <translation id="6195802366906945965">Menentukan apakah pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
-<translation id="6198375221792846439">Menentukan interval waktu target untuk batas akhir periode notifikasi peluncuran kembali.
-
-      Pengguna akan diberi tahu saat browser perlu diluncurkan kembali atau perangkat perlu dimulai ulang berdasarkan setelan kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> dan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Browser dan perangkat dimulai ulang dengan paksa pada batas akhir periode notifikasi jika kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> disetel ke 'Required'. Kebijakan <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> ini dapat digunakan untuk menunda batas akhir periode notifikasi agar batas akhir berada pada interval waktu tertentu.
-
-      Jika kebijakan ini tidak disetel, interval waktu target default untuk <ph name="PRODUCT_OS_NAME" /> adalah antara pukul 2 AM dan 4 AM. Interval waktu target default untuk <ph name="PRODUCT_NAME" /> adalah sepanjang hari (yang berarti batas akhir periode notifikasi tidak pernah ditunda).
-
-      Peringatan: Jika kebijakan ini disetel, penerapan update software mungkin tertunda.</translation>
 <translation id="6208896993204286313">Melaporkan Informasi Kebijakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Laporkan OS dan Informasi Versi <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Semua printer ditampilkan, kecuali printer yang tidak diizinkan.</translation>

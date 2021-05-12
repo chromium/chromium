@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Kërkohet përditësimi i Chrome OS</translation>
 <translation id="1067048845568873861">U krijua</translation>
 <translation id="1067922213147265141">Shërbime e tjera të Google</translation>
+<translation id="1069355737714877171">Hiq profilin e kartës eSIM me emrin <ph name="PROFILE_NAME" /></translation>
 <translation id="1070377999570795893">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën e funksionimit të Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -355,6 +356,7 @@
 <translation id="138784436342154190">Të restaurohet faqja e parazgjedhur e nisjes?</translation>
 <translation id="1388253969141979417">Lejohen të përdorin mikrofonin tënd</translation>
 <translation id="1388728792929436380">Pajisja <ph name="DEVICE_TYPE" /> do të riniset kur të përfundojnë përditësimet.</translation>
+<translation id="138900021244932468">Nuk u zbulua asnjë profil. Për të konfiguruar një rrjet të ri, skano kodin QR duke përdorur kamerën e pajisjes ose fut kodin e aktivizimit që të është dhënë nga operatori celular.</translation>
 <translation id="139013308650923562">Lejohen që të përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="1390548061267426325">Hape si skedë të zakonshme</translation>
 <translation id="1393283411312835250">Diell dhe re</translation>
@@ -980,6 +982,7 @@ Në rast të kundërt, dil tani që ndryshimet në këtë llogari të reflektohe
 Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Family Link në pajisjen tënde.  Të kemi dërguar udhëzime në një email.</translation>
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
+<translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">Ndihmësi i shkurtoreve të tastierës</translation>
 <translation id="2045969484888636535">Vazhdo bllokimin e kukive</translation>
@@ -4080,6 +4083,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5486261815000869482">Konfirmo fjalëkalimin</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> po ndan ekranin tënd me <ph name="TAB_NAME" />.</translation>
 <translation id="5486561344817861625">Simulo rifillimin e shfletimit</translation>
+<translation id="5487460042548760727">Riemërtoje profilin si <ph name="PROFILE_NAME" /></translation>
 <translation id="5487521232677179737">Pastro të dhënat</translation>
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" u kopjua</translation>
 <translation id="5488508217173274228">Opsionet e enkriptimit të sinkronizimit</translation>
@@ -4821,6 +4825,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6308937455967653460">Ruaje lidh&amp;jen si...</translation>
 <translation id="6309443618838462258">Administratori yt nuk e lejon këtë mënyrë hyrjeje</translation>
 <translation id="6309510305002439352">Mikrofoni është çaktivizuar</translation>
+<translation id="6310141306111263820">Profili i kartës eSIM nuk mund të instalohej. Për ndihmë, kontakto me operatorin celular.</translation>
 <translation id="6311220991371174222">Chrome nuk mund të niset sepse ka ndodhur një gabim gjatë hapjes së profilit tënd. Provo ta rinisësh Chrome.</translation>
 <translation id="6312403991423642364">Gabim i panjohur në rrjet</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 ditë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_DAYS} ditë më parë}}</translation>
@@ -5958,6 +5963,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7582582252461552277">Prefero këtë rrjet</translation>
 <translation id="7582844466922312471">Të dhëna celulare</translation>
 <translation id="7583948862126372804">Numri</translation>
+<translation id="7586051298768394542">Skedarët e ligjërimit nuk mund të shkarkohen. Diktimi do të vazhdojë të funksionojë duke e dërguar zërin tënd te Google.</translation>
 <translation id="7586498138629385861">Chrome do të vazhdojë të ekzekutohet gjatë kohës që aplikacionet e Chrome janë të hapura.</translation>
 <translation id="7589461650300748890">Ki kujdes!</translation>
 <translation id="7593653750169415785">Është bllokuar automatikisht sepse i ke refuzuar njoftimet disa herë</translation>
@@ -6545,6 +6551,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8191230140820435481">Menaxho aplikacionet e tua, shtesat dhe temat</translation>
 <translation id="8195027750202970175">Madhësia në disk</translation>
 <translation id="8198323535106903877">Do t'i instalojmë ato <ph name="NUMBER_OF_APPS" /> aplikacione për ty</translation>
+<translation id="8198456017687137612">Skeda e transmetimit</translation>
 <translation id="8199300056570174101">Vetitë e rrjetit (shërbimit) dhe pajisjes</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8201717382574620700">Zgjidh albumet e "<ph name="TOPIC_SOURCE" />"</translation>
@@ -7128,6 +7135,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8847523528195140327">Dil nga llogaria kur mbyllet kapaku</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">E fshehur</translation>
+<translation id="8849219423513870962">Anulo heqjen e profilit të kartës eSIM me emrin <ph name="PROFILE_NAME" /></translation>
 <translation id="8850251000316748990">Shiko më shumë...</translation>
 <translation id="885246833287407341">Argumentet e funksionit API</translation>
 <translation id="8853586775156634952">Kjo kartë do të ruhet vetëm në këtë pajisje</translation>

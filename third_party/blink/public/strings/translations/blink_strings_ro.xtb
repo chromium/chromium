@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banner</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elemente</translation>
 <translation id="1480676835519562650">Este posibilă selectarea multiplă, ai selectat <ph name="SELECTED" /> din <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">regiune</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
 <translation id="1637811476055996098">Alege fișierele</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">antet rând</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5164977714490026579">Valoarea trebuie să fie mai mare sau egală cu <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Introduceți o valoare urmată de semnul „<ph name="ATSIGN" />”. Adresa „<ph name="INVALIDADDRESS" />” nu este completă.</translation>
 <translation id="5334352251556557839">Nu se pot reda fișiere media.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Pentru a obține descrierile lipsă ale imaginilor, deschide meniul contextual.</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="775297008183122718">Intrare nevalidă</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">întrerupe</translation>
 <translation id="7802800022689234070">triunghi pentru afișare</translation>
 <translation id="7852167693871241274">Glisor pentru nuanță</translation>

@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">баннер</translation>
 <translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">можно выбрать несколько. Выбрано: <ph name="SELECTED" /> из <ph name="COUNT" /></translation>
+<translation id="1588438908519853928">Обычный</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">В этом месяце</translation>
 <translation id="1637811476055996098">Выбрать файлы</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">заголовок строки</translation>
 <translation id="5143125788380636750">эпилог</translation>
 <translation id="5164977714490026579">Значение должно быть больше или равно <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">Введите часть адреса до символа "<ph name="ATSIGN" />". Адрес "<ph name="INVALIDADDRESS" />" неполный.</translation>
 <translation id="5334352251556557839">Не удалось воспроизвести медиафайл.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Чтобы получить недостающие описания изображений, откройте контекстное меню.</translation>
 <translation id="7750228210027921155">Картинка в картинке</translation>
 <translation id="775297008183122718">Неверная запись</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">Пауза</translation>
 <translation id="7802800022689234070">треугольник развертывания</translation>
 <translation id="7852167693871241274">Ползунок для регулировки тона</translation>

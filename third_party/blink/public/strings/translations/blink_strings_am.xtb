@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">ሰንደቅ</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ንጥሎች</translation>
 <translation id="1480676835519562650">በብዛት ሊመረጥ የሚችል፣ <ph name="SELECTED" /> ከ<ph name="COUNT" /> ተመርጠዋል።</translation>
+<translation id="1588438908519853928">መደበኛ</translation>
 <translation id="1589122976691792535">ክልል</translation>
 <translation id="1591562245178063882">በዚህ ወር</translation>
 <translation id="1637811476055996098">ፋይሎችን ይምረጡ</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">የረድፍ ራስጌ</translation>
 <translation id="5143125788380636750">ድሕረ ታሪክ</translation>
 <translation id="5164977714490026579">ዋጋ ከ<ph name="MINIMUM" /> የሚበልጥ ወይም ከእሱ እኩል መሆን አለበት።</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ፔታ</translation>
 <translation id="5307600278924710095">እባክዎ አንድ ክፍል ያስገቡና «<ph name="ATSIGN" />»ን ያስከትሉ። «<ph name="INVALIDADDRESS" />» ያልተሟላ ነው።</translation>
 <translation id="5334352251556557839">ሚዲያን ማጫወት አልተቻለም።</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">የጎደሉ የምስል ዝርዝር መግለጫዎችን ለማግኘት፣ የአውድ ምናሌውን ይክፈቱ።</translation>
 <translation id="7750228210027921155">በሥዕል ውስጥ ሥዕል</translation>
 <translation id="775297008183122718">ትክክል ያልሆነ አገባብ </translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">ላፍታ አቁም</translation>
 <translation id="7802800022689234070">ይፋ ማሳወቂያ ሶስት ማዕዘን</translation>
 <translation id="7852167693871241274">የለይ ቀለም ተንሸራታች</translation>

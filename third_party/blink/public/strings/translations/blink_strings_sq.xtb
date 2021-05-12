@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banderolë</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> artikuj</translation>
 <translation id="1480676835519562650">me zgjedhje të shumëfishtë, <ph name="SELECTED" /> nga <ph name="COUNT" /> të zgjedhura.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">rajoni</translation>
 <translation id="1591562245178063882">Këtë muaj</translation>
 <translation id="1637811476055996098">Zgjidh skedarët</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">koka e rreshtit</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5164977714490026579">Vlera duhet të jetë më e madhe ose e barabartë me <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Fut një pjesë të ndjekur nga "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" është e paplotë.</translation>
 <translation id="5334352251556557839">Nuk mund të luajë media.</translation>

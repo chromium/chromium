@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" загварыг суулгасан</translation>
 <translation id="1546280085599573572">Таныг Нүүрний товчлуурыг дарахад энэ өргөтгөл нь хуудасны үзүүлж буй зүйлийг өөрчилсөн.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> нь <ph name="EXTENSION_TYPE" /> өргөтгөлийг суулгахыг хүсэж байгаа бөгөөд энэ нь дараахыг хийх боломжтой:</translation>
+<translation id="1547808936554660006">Би суулгасан eSIM профайлуудыг Powerwash-р хасахгүйг ойлгож байна</translation>
 <translation id="1549275686094429035">ARC-г идэвхжүүлсэн</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> нь <ph name="VOLUME_NAME" /> руу нэвтрэхийг хүсч байна. Энэ нь таны файлуудыг өөрчилж эсвэл устгаж болно.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" өргөтгөл хайлтыг <ph name="SEARCH_PROVIDER_DOMAIN" />-г ашиглах болгож өөрчилсөн байна</translation>
@@ -548,6 +549,7 @@
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1588870296199743671">Холбоосыг хэрхэн нээх...</translation>
+<translation id="1588919647604819635">Баруун талыг товших карт</translation>
 <translation id="1589055389569595240">Үг үсэг болон дүрмийн алдааг харуул</translation>
 <translation id="1591679663873027990">USB төхөөрөмжид хандах зөвшөөрлийг Parallels Desktop-д өгөх. USB төхөөрөмжийг салгасны дараа Parallels Desktop үүнийг санахгүй.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> нь таны <ph name="DEVICE_TYPE" />-г шинэчлэх ADB дебагийг идэвхгүй болгосон. Дахин эхлүүлэхийн өмнө файлуудаа хуулбарлана уу.</translation>
@@ -992,6 +994,7 @@
 
 Төхөөрөмж дээрээ Family Link аппыг суулгаснаар та энэ бүртгэлийн тохиргоог удирдах боломжтой.  Бид танд имэйлээр зааварчилгааг илгээсэн болно.</translation>
 <translation id="2040460856718599782">Өө! Таныг таниулахыг оролдож байх үед ямар нэг зүйл ажиллахаа больсон байна. Бүртгэлийн мэдээллээ давхар шалгаад дахин оролдож үзнэ үү.</translation>
+<translation id="2042279886444479655">Идэвхтэй профайлууд</translation>
 <translation id="2044014337866019681">Та харилцан үйлдлийн түгжээг тайлахын тулд <ph name="ACCOUNT" />-г баталгаажуулж байгаа эсэхээ шалгана уу.</translation>
 <translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="204497730941176055">Майкрософт гэрчилгээний загварын нэр</translation>
@@ -1333,6 +1336,7 @@
 <translation id="2395616325548404795">Таны <ph name="DEVICE_TYPE" />-г байгууллагын удирдлагад амжилттай бүртгэсэн хэдий ч үүний өмч болон байршлын мэдээллийг илгээж чадсангүй. Энэ мэдээллийг админ консолоосоо төхөөрөмжид гараар оруулна уу.</translation>
 <translation id="2396387085693598316">Таны админ "<ph name="EXTENSION_NAME" />"-г блоклосон</translation>
 <translation id="2396783860772170191">4 оронтой пинг (0000-9999) оруулна уу</translation>
+<translation id="2398546389094871088">Төхөөрөмжөө Powerwash хийх нь таны eSIM профайлуудыг хасахгүй. Эдгээр профайлыг гар аргаар хасахын тулд <ph name="LINK_BEGIN" />Мобайл тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="2399699884460174994">Мэдэгдлийг асаасан</translation>
 <translation id="2399939490305346086">Аюулгүй байдлын түлхүүрийн нэвтрэх өгөгдөл</translation>
 <translation id="2400664245143453337">Нэн даруй шинэчлэх шаардлагатай</translation>
@@ -1749,6 +1753,7 @@
 <translation id="2844809857160214557">Хэвлэх ажлуудыг харах болон удирдах</translation>
 <translation id="2845382757467349449">Хавчуургын мөрийг байнга харуулах</translation>
 <translation id="284805635805850872">Аюултай программыг устгах уу?</translation>
+<translation id="2849035674501872372">Хайх</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> ( <ph name="UNICODE_NAME" /> )</translation>
 <translation id="284975061945174219">Цэвэрлэж чадсангүй</translation>
 <translation id="2849936225196189499">Аюултай</translation>
@@ -2060,6 +2065,7 @@
 <translation id="3189187154924005138">Том курсор</translation>
 <translation id="3190558889382726167">Нууц үгийг хадгалсан</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
+<translation id="3197453258332670132">Баруун талыг товших эсвэл удаан дарснаар таны текстийн сонголттой холбоотой мэдээллийг харуулна</translation>
 <translation id="3199127022143353223">Серверүүд</translation>
 <translation id="3201422919974259695">Боломжтой USB төхөөрөмжүүд энд харагдана.</translation>
 <translation id="3202131003361292969">Зам</translation>
@@ -2081,6 +2087,7 @@
 <translation id="3223531857777746191">Шинэчлэх товчлуур</translation>
 <translation id="3225084153129302039">Өгөгдмөл нил ягаан аватар</translation>
 <translation id="3225319735946384299">Код баталгаажуулалт</translation>
+<translation id="3226487301970807183">Зүүн талд зэрэгцүүлсэн хажуугийн самбарыг асаах/унтраах</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Linux аппууд болон файлуудыг нөөцлөх</translation>
 <translation id="3238192140106069382">Холбогдож, баталгаажуулж байна</translation>
@@ -2350,6 +2357,7 @@
 <translation id="3515983984924808886">Шинэчлэлтийг баталгаажуулахын тулд аюулгүй байдлын түлхүүр дээрээ дахин хүрнэ үү. Аюулгүй байдлын түлхүүрт хадгалсан ПИН зэрэг бүх мэдээллийг устгана.</translation>
 <translation id="3518985090088779359">Зөвшөөрөөд үргэлжлүүлэх</translation>
 <translation id="3519564332031442870">Хэвлэх ар талын үйлчилгээ</translation>
+<translation id="3519938335881974273">Хуудсыг дараах хэлбэрээр хадгалах...</translation>
 <translation id="3521606918211282604">Дискийн хэмжээг өөрчлөх</translation>
 <translation id="3522088408596898827">Дискийн зай маш бага байна. Дискийн зайг суллаад, дахин оролдоно уу.</translation>
 <translation id="3524965460886318643">Үйл ажиллагааг экспортлох</translation>
@@ -2373,6 +2381,7 @@
 <translation id="3550593477037018652">Үүрэн холбооны сүлжээг салгах</translation>
 <translation id="3550915441744863158">Chrome автоматиор шинэчилдэг тул та хамгийн сүүлийн үеийн хувилбарыг үргэлж хэрэглэнэ</translation>
 <translation id="3551320343578183772">Цонхыг хаах</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Гарах үед цэвэрлэнэ</translation>
 <translation id="3554493885489666172">Таны төхөөрөмжийг <ph name="PROFILE_NAME" />-с удирддаг. Администратор энэ төхөөрөмж дээрх дурын профайлын өгөгдөлд хандах боломжтой.</translation>
 <translation id="3555812735919707620">Өргөтгөл арилгах</translation>
@@ -2425,6 +2434,7 @@
 <translation id="3604713164406837697">Дэлгэцийн зураг солих</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3608576286259426129">Хэрэглэгчийн зургийг урьдчилан үзэх</translation>
+<translation id="3609277884604412258">Шуурхай хайлт</translation>
 <translation id="3610369246614755442">Холбогчийн сэнсийг үйлчилгээнд хамруулах хэрэгтэй</translation>
 <translation id="361106536627977100">Флэш дата</translation>
 <translation id="3611655097742243705">Бусад аппыг олохын тулд Play Store-т зочилно уу</translation>
@@ -3368,6 +3378,7 @@
 <translation id="4636682061478263818">Драйвын файлууд</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
 <translation id="4637083375689622795">Нэмэлт үйлдлүүд, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Камерыг дахин ашиглана уу</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текст}other{# текст}}</translation>
 <translation id="4638930039313743000">ADB алдаа засахыг идэвхжүүлэх</translation>
 <translation id="4641539339823703554">Chrome-оос системийн цагийг тохируулах боломжгүй байсан. Доор байгаа цагийг шалгаад шаардлагатай бол зөв болгоно уу.</translation>
@@ -4118,6 +4129,7 @@
 <translation id="5499313591153584299">Энэ файл нь таны компьютерт хор хөнөөлтэй байж болно.</translation>
 <translation id="5499453227627332024">Таны Linux контейнерт сайжруулалт боломжтой байна. Та дараа нь мөн Тохиргоо аппаас сайжруулах боломжтой.</translation>
 <translation id="5500709606820808700">Аюулгүй байдлын шалгалтыг өнөөдөр хийсэн</translation>
+<translation id="5501322521654567960">Зүүн талд зэрэгцүүлсэн хажуугийн самбар</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авч чадсангүй}other{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" /> хүлээж авч чадсангүй}}</translation>
 <translation id="5502500733115278303">Firefox-оос импортолж авсан</translation>
 <translation id="5502915260472117187">Хүүхэд</translation>
@@ -5329,6 +5341,7 @@
 <translation id="6856348640027512653">Виртуал бодит байдлын төхөөрөмжүүд эсвэл өгөгдөл ашиглахыг зөвшөөрөхгүй</translation>
 <translation id="6856459657722366306">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="6856623341093082836">Мэдрэмтгий дэлгэцийнхээ нарийвчлалыг тохируулах</translation>
+<translation id="6857145580237920905">Powerwash хийхээс өмнө eSIM профайлуудыг хасна уу</translation>
 <translation id="6857699260879628349">Тохируулгын мэдээлэл авах</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Прокси тохиргоо...</translation>

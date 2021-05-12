@@ -513,6 +513,7 @@
 <translation id="1545775234664667895">Инсталирана тема: <ph name="THEME_NAME" /></translation>
 <translation id="1546280085599573572">Това разширение промени страницата, която се показва при кликване върху бутона „Начална страница“.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> иска да инсталира <ph name="EXTENSION_TYPE" />, което може да:</translation>
+<translation id="1547808936554660006">Разбирам, че инсталираните потребителски профили за електронната SIM карта няма да бъдат премахнати чрез Powerwash</translation>
 <translation id="1549275686094429035">СИПC (средата на изпълнение на приложенията в Chrome) е активирана</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> иска достъп до „<ph name="VOLUME_NAME" />“. Приложението може да промени или изтрие файловете ви.</translation>
 <translation id="1552301827267621511">Разширението <ph name="EXTENSION_NAME" /> промени търсещата машина на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -549,6 +550,7 @@
 <translation id="1588438908519853928">Нормално</translation>
 <translation id="158849752021629804">Необходима е собствена мрежа</translation>
 <translation id="1588870296199743671">Отваряне на връзката със...</translation>
+<translation id="1588919647604819635">Карта при кликване с десния бутон</translation>
 <translation id="1589055389569595240">Показване на проверката на правописа и граматиката</translation>
 <translation id="1591679663873027990">Предоставете на Parallels Desktop разрешение за достъп до USB устройствата. Parallels Desktop няма да помни USB устройство, след като то бъде премахнато.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> деактивира отстраняването на грешки през ADB, което ще нулира устройството ви <ph name="DEVICE_TYPE" />. Създайте резервно копие на файловете си, преди да рестартирате.</translation>
@@ -992,6 +994,7 @@
 
 Можете да управлявате настройките на профила, като инсталирате приложението Family Link на устройството си.  Изпратихме ви имейл с инструкции.</translation>
 <translation id="2040460856718599782">Ами сега! При опита да ви удостоверим нещо се обърка. Моля, проверете идентификационните си данни за вход и опитайте отново.</translation>
+<translation id="2042279886444479655">Активни потребителски профили</translation>
 <translation id="2044014337866019681">За да отключите сесията, трябва да потвърдите <ph name="ACCOUNT" />.</translation>
 <translation id="2044023416777079300">Модемът не е регистриран</translation>
 <translation id="204497730941176055">Име на шаблон за сертификат от Microsoft</translation>
@@ -1333,6 +1336,7 @@
 <translation id="2395616325548404795">Устройството ви <ph name="DEVICE_TYPE" /> е успешно записано за корпоративно управление, но не успя да изпрати идентификатора на актива и информацията за местоположението си. Моля, въведете ръчно съответните данни от Admin Console.</translation>
 <translation id="2396387085693598316">Администраторът ви е блокирал <ph name="EXTENSION_NAME" /></translation>
 <translation id="2396783860772170191">Въведете 4-цифрен ПИН (0000 – 9999)</translation>
+<translation id="2398546389094871088">Извършването на Powerwash на устройството ви няма да премахне потребителските профили за електронната SIM карта. За да ги премахнете ръчно, отворете <ph name="LINK_BEGIN" />Настройки за мобилни устройства<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Известията са включени</translation>
 <translation id="2399939490305346086">Данни за вход от ключа за сигурност</translation>
 <translation id="2400664245143453337">Изисква се незабавна актуализация</translation>
@@ -1750,6 +1754,7 @@
 <translation id="2844809857160214557">Преглеждайте и управлявайте заданията за отпечатване</translation>
 <translation id="2845382757467349449">Непрекъснато показване на лентата на отметките</translation>
 <translation id="284805635805850872">Да се премахне ли опасният софтуер?</translation>
+<translation id="2849035674501872372">Търсене</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Почистването бе неуспешно</translation>
 <translation id="2849936225196189499">Критично</translation>
@@ -2061,6 +2066,7 @@
 <translation id="3189187154924005138">Голям курсор</translation>
 <translation id="3190558889382726167">Паролата бе запазена</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
+<translation id="3197453258332670132">Показване на сродна информация за избрания от вас текст посредством кликване с десния бутон или продължително натискане</translation>
 <translation id="3199127022143353223">Сървъри</translation>
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202131003361292969">Път</translation>
@@ -2082,6 +2088,7 @@
 <translation id="3223531857777746191">Бутон за възстановяване на фабричните настройки</translation>
 <translation id="3225084153129302039">Стандартен виолетов аватар</translation>
 <translation id="3225319735946384299">Подписване на код</translation>
+<translation id="3226487301970807183">Превключване на подравнения вляво страничен панел</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Създаване на резервно копие за приложенията и файловете на Linux</translation>
 <translation id="3238192140106069382">Установява се връзка и се потвърждава</translation>
@@ -2351,6 +2358,7 @@
 <translation id="3515983984924808886">Докоснете отново ключа си за сигурност, за да потвърдите нулирането. Цялата съхранявана в ключа информация, включително ПИН кодът му, ще бъде изтрита.</translation>
 <translation id="3518985090088779359">Приемам и напред</translation>
 <translation id="3519564332031442870">Услуга за отпечатване в задния слой</translation>
+<translation id="3519938335881974273">Запазване на страницата като...</translation>
 <translation id="3521606918211282604">Промяна на размера на диска</translation>
 <translation id="3522088408596898827">Свободното място на диска е критично малко. Освободете място и опитайте отново.</translation>
 <translation id="3524965460886318643">Експортиране на активностите</translation>
@@ -2374,6 +2382,7 @@
 <translation id="3550593477037018652">Прекратяване на връзката с мобилната мрежа</translation>
 <translation id="3550915441744863158">Chrome се актуализира автоматично, така че винаги имате най-новата версия</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Изчистено при изход</translation>
 <translation id="3554493885489666172">Устройството ви се управлява от <ph name="PROFILE_NAME" />. Администраторите имат достъп до данните в потребителските профили на това устройство.</translation>
 <translation id="3555812735919707620">Премахване на разширението</translation>
@@ -2426,6 +2435,7 @@
 <translation id="3604713164406837697">Промяна на тапета</translation>
 <translation id="3605780360466892872">Костюмар</translation>
 <translation id="3608576286259426129">Визуализация на потребителското изображение</translation>
+<translation id="3609277884604412258">Бързо търсене</translation>
 <translation id="3610369246614755442">Вентилаторът на докинг станцията трябва да бъде обслужен</translation>
 <translation id="361106536627977100">Данни на Flash</translation>
 <translation id="3611655097742243705">Посетете Google Play Магазин, за да намерите още приложения</translation>
@@ -3371,6 +3381,7 @@
 <translation id="4636682061478263818">Файлове в Диск</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Още действия, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Повторно използване на камерата</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{SMS съобщение}other{# SMS съобщения}}</translation>
 <translation id="4638930039313743000">Активиране на отстраняването на грешки през ADB</translation>
 <translation id="4641539339823703554">Chrome не успя да зададе системния час. Моля, проверете го по-долу и го коригирайте при нужда.</translation>
@@ -4121,6 +4132,7 @@
 <translation id="5499313591153584299">Този файл може да навреди на компютъра ви.</translation>
 <translation id="5499453227627332024">Налице е надстройка за контейнера ви за Linux. Можете също да го надстроите по-късно от приложението „Настройки“.</translation>
 <translation id="5500709606820808700">Проверката на безопасността бе изпълнена днес</translation>
+<translation id="5501322521654567960">Подравнен вляво страничен панел</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}other{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}}</translation>
 <translation id="5502500733115278303">Импортирани от Firefox</translation>
 <translation id="5502915260472117187">Дете</translation>
@@ -5333,6 +5345,7 @@
 <translation id="6856348640027512653">Сайтове без разрешение за използване на устройствата и данните за виртуална реалност</translation>
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="6856623341093082836">Настройване и коригиране на точността на сензорния екран</translation>
+<translation id="6857145580237920905">Премахване на потребителските профили за електронната SIM карта преди Powerwash</translation>
 <translation id="6857699260879628349">Получаване на информация за конфигуриране</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Настройки за прокси сървър...</translation>

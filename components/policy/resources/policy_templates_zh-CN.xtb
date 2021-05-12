@@ -3834,13 +3834,6 @@
 
       如果此政策未设置，用户可根据自己的偏好更改所用浏览器的主题。</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
-<translation id="6198375221792846439">为重新启动通知时间段的结束指定目标时间范围。
-
-      系统会根据 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 和 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策设置向用户发送通知，指明他们需要重新启动浏览器或重启设备。如果 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策设为“必需”，系统会在通知时间段结束时强制重启浏览器和设备。此 <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> 政策可用于将通知时间段的结束时间推迟至特定的时间范围内。
-
-      如果此政策未设置，<ph name="PRODUCT_OS_NAME" />的默认目标时间范围会是凌晨 2 点到 4 点之间，而 <ph name="PRODUCT_NAME" /> 的默认目标时间范围会是全天（即，一律不推迟通知时间段的结束时间）。
-
-      警告：设置此政策可能会延迟应用软件更新。</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
 <translation id="6212868225782276239">系统会显示除黑名单中所列打印机之外的所有打印机。</translation>

@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">баннер</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> элемент</translation>
 <translation id="1480676835519562650">бірнешеуін таңдауға болады, <ph name="SELECTED" />/<ph name="COUNT" /> таңдалды.</translation>
+<translation id="1588438908519853928">Қалыпты</translation>
 <translation id="1589122976691792535">аймақ</translation>
 <translation id="1591562245178063882">Осы айда</translation>
 <translation id="1637811476055996098">Файлдарды таңдау</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">жол тақырыбы</translation>
 <translation id="5143125788380636750">эпилог</translation>
 <translation id="5164977714490026579">Мән <ph name="MINIMUM" /> мәнінен үлкен немесе тең болуы керек.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">"<ph name="ATSIGN" />" болып жалғасатын бөлікті енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
 <translation id="5334352251556557839">Медиафайл ойнатылмады.</translation>

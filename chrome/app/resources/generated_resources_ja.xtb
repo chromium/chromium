@@ -62,6 +62,7 @@
 <translation id="1066613507389053689">Chrome OS の更新が必要です</translation>
 <translation id="1067048845568873861">作成日</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
+<translation id="1069355737714877171"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルを削除します</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -355,6 +356,7 @@
 <translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
 <translation id="1388253969141979417">マイクの使用を許可するサイト</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
+<translation id="138900021244932468">プロファイルは検出されませんでした。ネットワークを設定するには、デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
 <translation id="1393283411312835250">太陽と雲</translation>
@@ -983,6 +985,7 @@
 デバイスにファミリー リンク アプリをインストールすると、このアカウントの設定を管理できます。手順を記載したメールをお送りしましたので、ご確認ください。</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
+<translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
 <translation id="2045117674524495717">キーボード ショートカット ヘルパー</translation>
 <translation id="2045969484888636535">Cookie のブロックを続行する</translation>
@@ -4083,6 +4086,7 @@
 <translation id="5486261815000869482">パスワードの確認入力</translation>
 <translation id="5486275809415469523"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の画面を共有しています。</translation>
 <translation id="5486561344817861625">ブラウザ再起動のシミュレート</translation>
+<translation id="5487460042548760727">プロファイル名を <ph name="PROFILE_NAME" /> に変更します</translation>
 <translation id="5487521232677179737">データを削除</translation>
 <translation id="5488093641312826914">「<ph name="COPIED_ITEM_NAME" />」がコピーされました</translation>
 <translation id="5488508217173274228">同期データの暗号化オプション</translation>
@@ -4824,6 +4828,7 @@
 <translation id="6308937455967653460">名前を付けてリンク先を保存(&amp;K)...</translation>
 <translation id="6309443618838462258">この入力方法は管理者によって許可されていません</translation>
 <translation id="6309510305002439352">マイクがオフになっています</translation>
+<translation id="6310141306111263820">eSIM プロファイルをインストールできませんでした。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
 <translation id="6312403991423642364">ネットワークが不明なためエラーが発生しました</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{安全確認を 1 日前に実行しました}other{安全確認を {NUM_DAYS} 日前に実行しました}}</translation>
@@ -5961,6 +5966,7 @@
 <translation id="7582582252461552277">このネットワークを優先する</translation>
 <translation id="7582844466922312471">モバイル データ</translation>
 <translation id="7583948862126372804">数</translation>
+<translation id="7586051298768394542">読み上げファイルをダウンロードできません。音声入力は引き続き動作し、音声は Google に送信されます。</translation>
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7593653750169415785">通知を数回拒否したため、自動的にブロックしました</translation>
@@ -6550,6 +6556,7 @@
 <translation id="8191230140820435481">アプリ、拡張機能、テーマを管理する</translation>
 <translation id="8195027750202970175">ディスク上のサイズ</translation>
 <translation id="8198323535106903877">この <ph name="NUMBER_OF_APPS" /> 個のアプリをインストールします</translation>
+<translation id="8198456017687137612">タブをキャスト中</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> アルバムを選択</translation>
@@ -7133,6 +7140,7 @@
 <translation id="8847523528195140327">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">非表示</translation>
+<translation id="8849219423513870962"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルの削除をキャンセルします</translation>
 <translation id="8850251000316748990">もっと見る...</translation>
 <translation id="885246833287407341">API 関数の引数</translation>
 <translation id="8853586775156634952">このカードはこのデバイスにのみ保存されます</translation>

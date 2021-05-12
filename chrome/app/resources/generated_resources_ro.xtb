@@ -514,6 +514,7 @@
 <translation id="1545775234664667895">S-a instalat tema „<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">Această extensie a modificat ce pagină se afișează când dai clic pe butonul Pagina principală.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vrea să instaleze o <ph name="EXTENSION_TYPE" /> care poate:</translation>
+<translation id="1547808936554660006">Înțeleg că profilurile eSIM instalate nu vor fi eliminate în urma rulării funcției Powerwash</translation>
 <translation id="1549275686094429035">ARC activat</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> dorește să acceseze <ph name="VOLUME_NAME" />. Poate modifica sau șterge fișierele.</translation>
 <translation id="1552301827267621511">Extensia „<ph name="EXTENSION_NAME" />” a modificat căutarea, astfel încât să folosească <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -550,6 +551,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="158849752021629804">Este necesară rețeaua de domiciliu</translation>
 <translation id="1588870296199743671">Deschide linkul cu...</translation>
+<translation id="1588919647604819635">Card afișat la clic dreapta</translation>
 <translation id="1589055389569595240">Afișează verificarea ortografiei și a gramaticii</translation>
 <translation id="1591679663873027990">Acordă Parallels Desktop permisiunea de a accesa dispozitive USB. Parallels Desktop nu își va aminti un dispozitiv USB după ce este eliminat.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> a dezactivat remedierea erorilor prin ADB, resetând astfel <ph name="DEVICE_TYPE" />. Fă backup fișierelor înainte de repornire.</translation>
@@ -985,6 +987,7 @@ Altfel, deconectează-te acum, pentru ca modificările din cont să se reflecte 
 
 Poți gestiona setările contului dacă instalezi aplicația Family Link pe dispozitiv.  Ți-am trimis instrucțiuni într-un e-mail.</translation>
 <translation id="2040460856718599782">Hopa! A apărut o eroare la autentificarea dvs. Verificați încă o dată datele de conectare și încercați din nou.</translation>
+<translation id="2042279886444479655">Profiluri active</translation>
 <translation id="2044014337866019681">Confirmă <ph name="ACCOUNT" /> pentru a debloca sesiunea.</translation>
 <translation id="2044023416777079300">Modemul nu este înregistrat</translation>
 <translation id="204497730941176055">Nume șablon de certificat Microsoft</translation>
@@ -1323,6 +1326,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2395616325548404795">Dispozitivul <ph name="DEVICE_TYPE" /> a fost înscris pentru gestionarea de întreprindere, dar nu a putut trimite informațiile despre locație și articol. Introdu manual aceste informații din consola de administrare pentru acest dispozitiv.</translation>
 <translation id="2396387085693598316">Administratorul a blocat extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="2396783860772170191">Introdu codul PIN de 4 cifre (0000 – 9999)</translation>
+<translation id="2398546389094871088">Rularea funcției Powerwash a dispozitivului nu va elimina profilurile eSIM. Accesează <ph name="LINK_BEGIN" />Setările pentru date mobile<ph name="LINK_END" /> ca să elimini manual aceste profiluri.</translation>
 <translation id="2399699884460174994">Notificări activate</translation>
 <translation id="2399939490305346086">Datele de conectare ale cheii de securitate</translation>
 <translation id="2400664245143453337">Este necesară actualizarea imediată</translation>
@@ -1740,6 +1744,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2844809857160214557">Afișează și gestionează sarcinile de printare</translation>
 <translation id="2845382757467349449">Afișează mereu bara de marcaje</translation>
 <translation id="284805635805850872">Elimini software-ul dăunător?</translation>
+<translation id="2849035674501872372">Ridică privirea</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Curățarea nu a reușit</translation>
 <translation id="2849936225196189499">Critic</translation>
@@ -2051,6 +2056,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3189187154924005138">Cursor mare</translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
+<translation id="3197453258332670132">Dacă dai clic dreapta sau apeși lung, se afișează informații conexe pentru textul selectat</translation>
 <translation id="3199127022143353223">Servere</translation>
 <translation id="3201422919974259695">Dispozitivele USB disponibile vor apărea aici.</translation>
 <translation id="3202131003361292969">Cale</translation>
@@ -2072,6 +2078,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3223531857777746191">Butonul Resetează</translation>
 <translation id="3225084153129302039">Avatar violet prestabilit</translation>
 <translation id="3225319735946384299">Semnarea codului</translation>
+<translation id="3226487301970807183">Activează / dezactivează panoul lateral aliniat la stânga</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3233271424239923319">Fă backup pentru aplicațiile și fișierele Linux</translation>
 <translation id="3238192140106069382">Se conectează și se verifică</translation>
@@ -2341,6 +2348,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3515983984924808886">Atinge cheia de securitate din nou pentru a confirma resetarea. Toate informațiile stocate pe cheia de securitate, inclusiv codul său PIN, vor fi șterse.</translation>
 <translation id="3518985090088779359">Acceptă și continuă</translation>
 <translation id="3519564332031442870">Serviciu backend pentru printare</translation>
+<translation id="3519938335881974273">Salvează pagina ca...</translation>
 <translation id="3521606918211282604">Modifică dimensiunea discului</translation>
 <translation id="3522088408596898827">Spațiul de pe disc este foarte redus. Eliberează spațiu pe disc și încearcă din nou.</translation>
 <translation id="3524965460886318643">Exportă activitățile</translation>
@@ -2364,6 +2372,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3550593477037018652">Deconectează rețeaua mobilă</translation>
 <translation id="3550915441744863158">Chrome se actualizează automat, astfel încât să aveți întotdeauna cea mai recentă versiune</translation>
 <translation id="3551320343578183772">Închide fila</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Șters la ieșire</translation>
 <translation id="3554493885489666172">Dispozitivul este gestionat de <ph name="PROFILE_NAME" />. Administratorii pot accesa datele din orice profil de pe acest dispozitiv.</translation>
 <translation id="3555812735919707620">Eliminați extensia</translation>
@@ -2416,6 +2425,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="3605780360466892872">Om de afaceri</translation>
 <translation id="3608576286259426129">Previzualizare a imaginii utilizatorului</translation>
+<translation id="3609277884604412258">Căutare rapidă</translation>
 <translation id="3610369246614755442">Ventilatorul dispozitivului de andocare necesită service</translation>
 <translation id="361106536627977100">Date Flash</translation>
 <translation id="3611655097742243705">Accesează Magazinul Play pentru a găsi mai multe aplicații</translation>
@@ -3359,6 +3369,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4636682061478263818">Fișiere Drive</translation>
 <translation id="4636930964841734540">Informații</translation>
 <translation id="4637083375689622795">Mai multe acțiuni, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Folosește din nou camera</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}few{# texte}other{# de texte}}</translation>
 <translation id="4638930039313743000">Activează remedierea erorilor prin ADB</translation>
 <translation id="4641539339823703554">Chrome nu a reușit să seteze ora sistemului. Verificați ora de mai jos și corectați-o dacă este necesar.</translation>
@@ -4109,6 +4120,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5499313591153584299">Este posibil ca acest fișier să fie dăunător pentru computer.</translation>
 <translation id="5499453227627332024">Este disponibil un upgrade pentru containerul Linux. Poți să faci upgrade și mai târziu, din aplicația Setări.</translation>
 <translation id="5500709606820808700">Verificarea de siguranță a rulat astăzi</translation>
+<translation id="5501322521654567960">Panou lateral aliniat la stânga</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nu s-a primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importate din Firefox</translation>
 <translation id="5502915260472117187">Un copil</translation>
@@ -5320,6 +5332,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6856348640027512653">Nu au permisiunea de a folosi dispozitive de realitate virtuală sau date conexe</translation>
 <translation id="6856459657722366306">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="6856623341093082836">Configurează și ajustează precizia ecranului tactil</translation>
+<translation id="6857145580237920905">Elimină profilurile eSIM înainte de rularea funcției Powerwash</translation>
 <translation id="6857699260879628349">Primește informații despre configurare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
 <translation id="6860097299815761905">Setări proxy...</translation>

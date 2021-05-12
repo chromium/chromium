@@ -75,6 +75,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1240347957665416060">Your device name</translation>
 <translation id="124116460088058876">More languages</translation>
 <translation id="1243027604378859286">Author:</translation>
+<translation id="1246424317317450637">Bold</translation>
 <translation id="1250759482327835220">To pay faster next time, save your card, name and billing address to your Google Account.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synced)</translation>
 <translation id="1256368399071562588">&lt;p&gt;If you try to visit a website and it doesn’t open, first try to fix the error with these troubleshooting steps:&lt;/p&gt;
@@ -1349,6 +1350,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5989320800837274978">Neither fixed proxy servers nor a .pac script URL are specified.</translation>
 <translation id="5992691462791905444">Engineering Z-fold</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6006484371116297560">Classic</translation>
 <translation id="6008122969617370890">N-to-1 order</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Check your passwords</translation>

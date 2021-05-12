@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banner</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="1480676835519562650">varias opciones disponibles; se seleccionaron <ph name="SELECTED" /> de <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">región</translation>
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1637811476055996098">Elegir archivos</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">encabezado de fila</translation>
 <translation id="5143125788380636750">epílogo</translation>
 <translation id="5164977714490026579">El valor debe ser mayor de o igual a <ph name="MINIMUM" /></translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Ingresa texto antes del signo "<ph name="ATSIGN" />". La dirección "<ph name="INVALIDADDRESS" />" está incompleta.</translation>
 <translation id="5334352251556557839">No es posible reproducir los archivos multimedia.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Para obtener las descripciones de imágenes faltantes, abre el menú contextual.</translation>
 <translation id="7750228210027921155">Pantalla en pantalla</translation>
 <translation id="775297008183122718">Entrada no válida</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">pausa</translation>
 <translation id="7802800022689234070">triángulo desplegable</translation>
 <translation id="7852167693871241274">Control deslizante de matiz</translation>

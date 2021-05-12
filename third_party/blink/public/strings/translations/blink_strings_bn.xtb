@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">ব্যানার</translation>
 <translation id="145015347812617860"><ph name="COUNT" />টি আইটেম</translation>
 <translation id="1480676835519562650">অনেক বিকল্প বেছে নেওয়ার সুবিধা, <ph name="COUNT" />টির মধ্যে <ph name="SELECTED" />টি বেছে নেওয়া হয়েছে।</translation>
+<translation id="1588438908519853928">সাধারণ</translation>
 <translation id="1589122976691792535">অঞ্চল</translation>
 <translation id="1591562245178063882">এই মাস</translation>
 <translation id="1637811476055996098">ফাইল বেছে নিন</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">সারি শিরোলেখ</translation>
 <translation id="5143125788380636750">উপসংহার</translation>
 <translation id="5164977714490026579">মানটি অবশ্যই <ph name="MINIMUM" />এর চেয়ে বেশি বা সমান হবে৷</translation>
+<translation id="5196716972587102051">২</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' অনুসরণ করে একটি অংশ লিখুন৷ '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ৷</translation>
 <translation id="5334352251556557839">মিডিয়া চালানো যাচ্ছে না।</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">ছবির বিবরণ অনুপস্থিত থাকলে, সেটি জানতে সংশ্লিষ্ট মেনু খুলুন।</translation>
 <translation id="7750228210027921155">ছবির-মধ্যে-ছবি</translation>
 <translation id="775297008183122718">নির্ভুল নয়</translation>
+<translation id="7782515065589691344">১.২৫</translation>
 <translation id="7789962463072032349">বিরাম</translation>
 <translation id="7802800022689234070">উম্মোচন ত্রিভুজ</translation>
 <translation id="7852167693871241274">হিউ স্লাইডার</translation>

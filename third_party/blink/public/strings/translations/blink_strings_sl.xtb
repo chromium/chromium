@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">pasica</translation>
 <translation id="145015347812617860">Št. elementov: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">Izbrati je mogoče več otrok, izbranih je toliko: <ph name="SELECTED" /> od <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Običajen</translation>
 <translation id="1589122976691792535">območje</translation>
 <translation id="1591562245178063882">Ta mesec</translation>
 <translation id="1637811476055996098">Izberi datoteke</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">glava vrstice</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5164977714490026579">Vrednost mora biti večja od <ph name="MINIMUM" /> ali enaka.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Vnesite nekaj in nato <ph name="ATSIGN" />. Naslov »<ph name="INVALIDADDRESS" />« je nepopoln.</translation>
 <translation id="5334352251556557839">Predstavnosti ni mogoče predvajati.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Če želite prejeti manjkajoče opise slike, odprite kontekstni meni.</translation>
 <translation id="7750228210027921155">Slika v sliki</translation>
 <translation id="775297008183122718">Neveljaven vnos</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">premor</translation>
 <translation id="7802800022689234070">trikotnik z dodatno vsebino</translation>
 <translation id="7852167693871241274">Drsnik za odtenek</translation>

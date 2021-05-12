@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">橫幅</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> 個項目</translation>
 <translation id="1480676835519562650">可選取多個項目，已選取 <ph name="SELECTED" /> 個，總共 <ph name="COUNT" /> 個。</translation>
+<translation id="1588438908519853928">一般</translation>
 <translation id="1589122976691792535">區域</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1637811476055996098">選擇檔案</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">列標題</translation>
 <translation id="5143125788380636750">結尾</translation>
 <translation id="5164977714490026579">值必須大於或等於 <ph name="MINIMUM" />。</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">請輸入「<ph name="ATSIGN" />」後面的部分。「<ph name="INVALIDADDRESS" />」不是完整值。</translation>
 <translation id="5334352251556557839">無法播放媒體。</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">如要為缺少說明的圖片取得說明，請開啟內容選單。</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="775297008183122718">無效的輸入值</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">暫停</translation>
 <translation id="7802800022689234070">顯示/隱藏三角標記</translation>
 <translation id="7852167693871241274">色調滑桿</translation>

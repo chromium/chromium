@@ -3886,13 +3886,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Lasciare il criterio non impostato consente agli utenti di modificare il tema del browser come preferiscono.</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
-<translation id="6198375221792846439">Consente di specificare un intervallo di tempo target per la fine del periodo di notifica per il riavvio.
-
-      Agli utenti viene inviata una notifica che informa che è necessario riavviare il browser o il dispositivo in base alle impostazioni dei criteri <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> e <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Se il criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostato su "Required", al termine del periodo di notifica viene forzato il riavvio dei browser e dei dispositivi. Questo criterio <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> può essere usato per rimandare il termine del periodo di notifica affinché rientri in un intervallo di tempo specifico.
-
-      Se questo criterio non viene impostato, l'intervallo di tempo target predefinito per <ph name="PRODUCT_OS_NAME" /> è 02:00-04:00. L'intervallo di tempo target predefinito per <ph name="PRODUCT_NAME" /> è l'intera giornata (vale a dire che il termine del periodo di notifica non viene mai rimandato).
-
-      Avviso: la configurazione di questo criterio potrebbe ritardare l'applicazione degli aggiornamenti software.</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista nera.</translation>

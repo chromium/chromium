@@ -3862,13 +3862,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Als je dit beleid niet instelt, kunnen gebruikers het thema voor de browser naar eigen inzicht instellen.</translation>
 <translation id="6195802366906945965">Bepaalt of de ingebouwde certificaatverificatie wordt gebruikt om servercertificaten te verifiëren</translation>
-<translation id="6198375221792846439">Geef een beoogd tijdvenster op voor het einde van de meldingsperiode voor herstarten.
-
-      Op basis van de instellingen voor het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> en <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> krijgen gebruikers een melding als de browser moet worden herstart of het apparaat opnieuw moet worden opgestart. Browsers en apparaten worden gedwongen opnieuw opgestart aan het einde van de meldingsperiode als het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> is ingesteld op Vereist. Dit beleid <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> kan worden gebruikt om het einde van de meldingsperiode uit te stellen zodat dit binnen een specifiek tijdvenster valt.
-
-      Als je dit beleid niet instelt, is het standaard beoogde tijdvenster voor <ph name="PRODUCT_OS_NAME" /> tussen 02:00 en 04:00 uur. Het standaard beoogde tijdvenster voor <ph name="PRODUCT_NAME" /> is de hele dag (dat wil zeggen, het einde van de meldingsperiode wordt nooit uitgesteld).
-
-      Waarschuwing: Als je dit beleid instelt, kan de toepassing van software-updates worden vertraagd.</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
 <translation id="6212868225782276239">Alle printers worden getoond, behalve printers op de blokkeerlijst.</translation>

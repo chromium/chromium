@@ -3933,13 +3933,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se asigna ningún valor a la política, los usuarios podrán cambiar al tema que prefieran en su navegador.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de los servidores</translation>
-<translation id="6198375221792846439">Especifica un periodo objetivo para el final del periodo de notificación de reinicio.
-
-      Los usuarios recibirán una notificación en la que se indica que es necesario reiniciar el navegador o el dispositivo en función de los ajustes de la políticas <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> y <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Si se asigna el valor "Required" a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, se forzará el reinicio de los navegadores y los dispositivos cuando termine el periodo de notificación. La política <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> puede utilizarse para retrasar el final del periodo de notificación y hacer que tenga lugar durante un periodo concreto.
-
-      Si no se asigna ningún valor a esta política, el periodo objetivo predeterminado para <ph name="PRODUCT_OS_NAME" /> será de 2:00 a 4:00. El periodo objetivo predeterminado para <ph name="PRODUCT_NAME" /> será todo el día (es decir, nunca se retrasará el final del periodo de notificación).
-
-      Advertencia: Si se establece esta política, es posible que se retrase la aplicación de actualizaciones de software.</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Se muestran todas las impresas excepto las que se incluyen en la lista negra.</translation>

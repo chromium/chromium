@@ -227,6 +227,7 @@
 <translation id="246532703174860178">Споделяне</translation>
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
 <translation id="2482878487686419369">Известия</translation>
+<translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2494974097748878569">Google Асистент в Chrome</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
@@ -469,6 +470,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4135200667068010335">Списъкът с устройства, с които да се сподели даден раздел, е затворен.</translation>
 <translation id="4141536112466364990">Научете повече за Chrome</translation>
 <translation id="4149994727733219643">Опростен изглед на уеб страниците</translation>
+<translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4170011742729630528">Няма достъп до услугата. Опитайте отново по-късно.</translation>
 <translation id="4179980317383591987">Използвани: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -1133,6 +1135,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
 <translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>
+<translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8410695015584479363">Следене на цени</translation>
 <translation id="8413126021676339697">Цялата история</translation>

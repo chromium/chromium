@@ -355,7 +355,6 @@ Följ stegen nedan:</translation>
 
 Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="4689564913179979534">Hantera betalningsmetoder …</translation>
-<translation id="4704093130121805775">Synkronisera mellan dina enheter</translation>
 <translation id="470966556546083668">Aktivera inte synkronisering</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4747097190499141774">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

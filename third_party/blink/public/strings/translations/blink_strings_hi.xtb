@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">बैनर</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> आइटम</translation>
 <translation id="1480676835519562650">कई विकल्प चुनने की सुविधा, <ph name="COUNT" /> में से <ph name="SELECTED" /> चुने गए.</translation>
+<translation id="1588438908519853928">सामान्य</translation>
 <translation id="1589122976691792535">क्षेत्र</translation>
 <translation id="1591562245178063882">इस माह</translation>
 <translation id="1637811476055996098">फ़ाइलें चुनें</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">पंक्ति शीर्षलेख</translation>
 <translation id="5143125788380636750">उपसंहार</translation>
 <translation id="5164977714490026579">मान <ph name="MINIMUM" /> से कम या इसके बराबर होना चाहिए.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' के पहले वाला भाग डालें. '<ph name="INVALIDADDRESS" />' अधूरा है.</translation>
 <translation id="5334352251556557839">मीडिया नहीं चला पा रहे हैं.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">ऐसी इमेज जो मौजूद नहीं हैं उनके बारे में जानकारी पाने के लिए, संदर्भ मेन्यू खोलें.</translation>
 <translation id="7750228210027921155">पिक्चर में पिक्चर</translation>
 <translation id="775297008183122718">अमान्य प्रविष्टि</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">रोकें</translation>
 <translation id="7802800022689234070">प्रकटीकरण त्रिकोण</translation>
 <translation id="7852167693871241274">रंगों का स्लाइडर</translation>

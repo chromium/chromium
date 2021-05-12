@@ -24,6 +24,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1148499908455722006">Buka dialog maklumat untuk <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Peranti digandingkan</translation>
 <translation id="1165712434476988950">Peranti perlu dimulakan semula untuk memasang kemaskinian.</translation>
+<translation id="1170240434488307589">Butang mikrofon peranti diredam.</translation>
 <translation id="1175572348579024023">Tatal</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -100,6 +101,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1746730358044914197">Kaedah masukan dikonfigurasi oleh pentadbir anda.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
 <translation id="1761222317188459878">Togol sambungan rangkaian. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Noktah telah berubah. Untuk menggunakan kekunci Insert, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Shift + Undur Ruang.</translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
 <translation id="1782199038061388045">terjemahan</translation>
 <translation id="1787955149152357925">Mati</translation>

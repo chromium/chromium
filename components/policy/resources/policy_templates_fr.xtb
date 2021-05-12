@@ -3898,13 +3898,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       En revanche, ils peuvent appliquer le thème de leur choix au navigateur si la règle n'est pas configurée.</translation>
 <translation id="6195802366906945965">Déterminer si l'outil de vérification des certificats intégré sera utilisé pour vérifier les certificats des serveurs</translation>
-<translation id="6198375221792846439">Cette règle permet de définir une fenêtre cible pour la fin de la période de notification du redémarrage.
-
-      Selon les paramètres des règles "<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />" et "<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />", les utilisateurs sont prévenus que le navigateur va devoir être relancé, ou l'appareil, redémarré. Si la règle "<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />" est définie sur "Obligatoire", les navigateurs ou appareils sont redémarrés de manière forcée une fois la période de notification écoulée. La règle "<ph name="RELAUNCH_WINDOW_POLICY_NAME" />" peut servir à différer la fin de la période de notification afin qu'elle coïncide avec une fenêtre spécifique.
-
-      Si cette règle n'est pas configurée, la fenêtre cible par défaut est comprise entre 2h et 4h du matin pour <ph name="PRODUCT_OS_NAME" /> ou étendue à toute la journée pour <ph name="PRODUCT_NAME" /> (la fin de la période de notification n'est alors jamais différée).
-
-      Avertissement : Configurer cette règle peut retarder l'application des mises à jour logicielles.</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
 <translation id="6212868225782276239">Toutes les imprimantes sont affichées à l'exception de celles qui sont répertoriées dans la liste noire.</translation>

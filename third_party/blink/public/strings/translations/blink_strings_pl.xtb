@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">baner</translation>
 <translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">wielokrotny wybór, wybrano <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Normalny</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
 <translation id="1637811476055996098">Wybierz pliki</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">nagłówek wiersza</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5164977714490026579">Wartość nie może być mniejsza niż <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Podaj część przed znakiem „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
 <translation id="5334352251556557839">Nie można odtworzyć multimediów.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Aby uzyskać brakujące opisy obrazów, otwórz menu kontekstowe.</translation>
 <translation id="7750228210027921155">Obraz w obrazie</translation>
 <translation id="775297008183122718">Nieprawidłowy wpis</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">wstrzymaj</translation>
 <translation id="7802800022689234070">trójkąt rozwinięcia</translation>
 <translation id="7852167693871241274">Suwak odcienia</translation>

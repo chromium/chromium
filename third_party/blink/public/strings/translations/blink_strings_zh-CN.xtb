@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">横幅</translation>
 <translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
 <translation id="1480676835519562650">可选择多项，已选择 <ph name="SELECTED" /> 项（共 <ph name="COUNT" /> 项）。</translation>
+<translation id="1588438908519853928">正常</translation>
 <translation id="1589122976691792535">区域</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1637811476055996098">选择文件</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">行标题</translation>
 <translation id="5143125788380636750">结语</translation>
 <translation id="5164977714490026579">值必须大于或等于 <ph name="MINIMUM" />。</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">请在“<ph name="ATSIGN" />”前面输入内容。“<ph name="INVALIDADDRESS" />”不完整。</translation>
 <translation id="5334352251556557839">无法播放媒体。</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">要获取缺失的图片说明，请打开上下文菜单。</translation>
 <translation id="7750228210027921155">画中画</translation>
 <translation id="775297008183122718">输入内容无效</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">暂停</translation>
 <translation id="7802800022689234070">开合三角标记</translation>
 <translation id="7852167693871241274">色调滑块</translation>

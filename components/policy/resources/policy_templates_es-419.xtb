@@ -390,6 +390,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1516486219683984217">Impide el uso de notificaciones del sistema</translation>
 <translation id="1522425503138261032">Permitir a los sitios que rastreen la ubicación física de los usuarios.</translation>
 <translation id="1523774894176285446">Navegador alternativo que se inicia para sitios web configurados</translation>
+<translation id="1524243669991877602">Si habilitas la política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> podrán combinarse en políticas de la máquina.
+
+      Solo pueden combinarse políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador mediante <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Se ignorarán siempre las políticas destinadas a los usuarios.
+
+      Las políticas que deban combinarse también deben establecerse en <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> o <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Se ignorará esta política si no se configura ninguna de las dos políticas mencionadas anteriormente.
+
+      Si no estableces la política o no la habilitas, las políticas de nube destinadas a los usuarios no podrán combinarse con políticas de cualquier otro origen.</translation>
 <translation id="152657506688053119">Lista de las URL alternativas para el proveedor de búsqueda predeterminado</translation>
 <translation id="1527298988676981599">Si estableces la política, podrás crear una lista de patrones de URL donde se indiquen los sitios a los cuales se les otorga permiso automáticamente para acceder a un dispositivo USB con los ID del producto y del proveedor especificados en la pantalla de acceso. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si omites el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo. Si omites el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo que tenga el ID de proveedor especificado. Las políticas que tengan el campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tengan el campo <ph name="VENDOR_ID_FIELD_NAME" />, no serán válidas.
 
@@ -1189,6 +1196,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no la estableces, la función de resaltar el signo de intercalación estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="2509748672176727116">El usuario podrá realizar capturas de paquetes de red</translation>
 <translation id="2509919237512982967">Utilizar los controles de formulario heredados hasta M84.</translation>
+<translation id="2512972020817284317">Habilitar la combinación de políticas de nube destinadas a los usuarios</translation>
 <translation id="2515699738406900920">Disponibilidad del selector de perfiles en el inicio</translation>
 <translation id="2517466659416174529">Permite la inmovilización de pestañas en segundo plano</translation>
 <translation id="2518231489509538392">Permitir la reproducción de audio</translation>
@@ -2739,6 +2747,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Nota: Esta configuración anulará <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, si se aplica.</translation>
 <translation id="4661889655253181651">La configuración del contenido permite especificar de qué manera se manipulará el contenido de un tipo específico (por ejemplo, cookies, imágenes o JavaScript).</translation>
+<translation id="4663509616441994711">Inhabilitar la combinación de políticas de nube destinadas a los usuarios</translation>
 <translation id="4665897631924472251">Configuración de la administración de extensiones</translation>
 <translation id="4666930704271463612">Especifica el subconjunto de servidores de impresión que se consultará para las impresoras de servidor.
 
@@ -3908,13 +3917,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no la estableces, los usuarios podrán cambiar el tema de su navegador como prefieran.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de servidores</translation>
-<translation id="6198375221792846439">Especifica un lapso fijado para la finalización del período de la notificación de reinicio.
-
-      Se notifica a los usuarios que se debe reiniciar el navegador o el dispositivo conforme a la configuración de las políticas <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> y <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />. Los navegadores y dispositivos se reinician de manera forzosa al finalizar el período de la notificación cuando se establece la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> como obligatoria. La política <ph name="RELAUNCH_WINDOW_POLICY_NAME" /> puede utilizarse para posponer la finalización del período de la notificación de modo que coincida con un lapso determinado.
-
-      Si no estableces esta política, el lapso fijado de forma predeterminada para <ph name="PRODUCT_OS_NAME" /> es entre 2 a.m. y 4 a.m. El lapso fijado de forma predeterminada para <ph name="PRODUCT_NAME" /> es todo el día (p. ej., no se pospone nunca el período de la notificación).
-
-      Advertencia: Si estableces esta política, es posible que se retrase la aplicación de las actualizaciones de software.</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Se muestran todas las impresoras, excepto las de la lista negra.</translation>
@@ -5264,6 +5266,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
           Si no la estableces, el contraste alto estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="7869986671709030417">Modo predeterminado de impresión de los gráficos de fondo</translation>
+<translation id="7877924399554599110">Permite combinar las políticas de nube destinadas a los usuarios con las políticas de la máquina</translation>
 <translation id="7881421274383404138">Si estableces esta política, se configurarán las impresoras empresariales. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />. Incluye un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> y <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Esta política no afecta la capacidad del usuario para configurar impresoras en dispositivos individuales, y su objetivo es complementar la configuración de impresoras a cargo de los usuarios.

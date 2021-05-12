@@ -355,7 +355,6 @@ Follow the steps below:</translation>
 
 Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
-<translation id="4704093130121805775">Sync between your devices</translation>
 <translation id="470966556546083668">Don't turn on sync</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4747097190499141774">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>

@@ -227,6 +227,7 @@
 <translation id="246532703174860178">မျှဝေရန်</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
+<translation id="2485422356828889247">ဖြုတ်ရန်</translation>
 <translation id="2494974097748878569">Chrome အတွင်းရှိ Google Assistant</translation>
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
 <translation id="2497852260688568942">စင့်ခ်ပြုလုပ်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်</translation>
@@ -469,6 +470,7 @@
 <translation id="4135200667068010335">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4141536112466364990">Chrome ကို လေ့လာခြင်း</translation>
 <translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
+<translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
 <translation id="4170011742729630528">ဝန်ဆောင်မှု မရနိုင်ပါ; နောက်မှထပ်မံကြိုးစားပါ။</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ကို အသုံးပြုထားသည်</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
@@ -1132,6 +1134,7 @@
 <translation id="8364299278605033898">လူကြိုက်များသော ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>
+<translation id="8387617938027387193">သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="8393700583063109961">စာပို့ရန်</translation>
 <translation id="8410695015584479363">ဈေးနှုန်းများ ခြေရာခံရန်</translation>
 <translation id="8413126021676339697">မှတ်တမ်း အပြည့် ပြရန်</translation>

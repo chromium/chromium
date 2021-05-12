@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banner</translation>
 <translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">možnost výběru více možností, vybráno <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
+<translation id="1588438908519853928">Normální</translation>
 <translation id="1589122976691792535">oblast</translation>
 <translation id="1591562245178063882">Tento měsíc</translation>
 <translation id="1637811476055996098">Zvolit soubory</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">záhlaví řádku</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5164977714490026579">Hodnota musí být větší nebo rovna <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Zadejte část před znakem <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> není úplná.</translation>
 <translation id="5334352251556557839">Médium nelze přehrát.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Chcete-li získat popisky obrázků, otevřete kontextovou nabídku.</translation>
 <translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="775297008183122718">Neplatný vstup</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">pozastavit</translation>
 <translation id="7802800022689234070">tlačítko k zobrazení skrytého obsahu</translation>
 <translation id="7852167693871241274">Posuvník odstínu</translation>

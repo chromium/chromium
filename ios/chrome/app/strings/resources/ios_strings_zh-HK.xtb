@@ -355,7 +355,6 @@
 
 您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="4689564913179979534">管理付款方法…</translation>
-<translation id="4704093130121805775">將所有裝置的資料保持同步</translation>
 <translation id="470966556546083668">不要開啟同步功能</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -612,6 +611,7 @@
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
+<translation id="708844789167408367">登出並關閉同步功能…</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隱藏</translation>

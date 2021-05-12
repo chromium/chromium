@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">ბანერი</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ელემენტი</translation>
 <translation id="1480676835519562650">შესაძლებელია რამდენიმე ვარიანტის არჩევა, არჩეულია <ph name="SELECTED" /> / <ph name="COUNT" />-დან.</translation>
+<translation id="1588438908519853928">ნორმალური</translation>
 <translation id="1589122976691792535">რეგიონი</translation>
 <translation id="1591562245178063882">ამ თვეში</translation>
 <translation id="1637811476055996098">აირჩიეთ ფაილები</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">მწკრივის სათაური</translation>
 <translation id="5143125788380636750">ეპილოგი</translation>
 <translation id="5164977714490026579">მნიშვნელობა უნდა იყოს მეტი ან უდრიდეს <ph name="MINIMUM" />-ს.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> პბაიტი</translation>
 <translation id="5307600278924710095">გთხოვთ შეიყვანოთ ნაწილი, რომელსაც მოსდევს „<ph name="ATSIGN" />“. „<ph name="INVALIDADDRESS" />“ არის არასრული.</translation>
 <translation id="5334352251556557839">მედიის დაკვრა ვერ მოხერხდა.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">სურათების ნაკლული აღწერილობების მისაღებად გახსენით კონტექსტური მენიუ.</translation>
 <translation id="7750228210027921155">გამოსახულება გამოსახულებაში</translation>
 <translation id="775297008183122718">არასწორი ჩანაწერი</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">პაუზა</translation>
 <translation id="7802800022689234070">გაშლის სამკუთხედი</translation>
 <translation id="7852167693871241274">ტონის სლაიდერი</translation>

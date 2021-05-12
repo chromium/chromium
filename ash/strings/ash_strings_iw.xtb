@@ -24,6 +24,7 @@
 <translation id="1148499908455722006">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
 <translation id="1165712434476988950">יש להפעיל מחדש את המכשיר כדי להחיל את העדכון.</translation>
+<translation id="1170240434488307589">לחצן המיקרופון של המכשיר מושתק.</translation>
 <translation id="1175572348579024023">גלילה</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
@@ -100,6 +101,7 @@
 <translation id="1746730358044914197">מנהל המערכת שלך מגדיר את שיטות הקלט.</translation>
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
 <translation id="1761222317188459878">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">‏מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + נקודה השתנו. כדי להשתמש במקש Insert, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + Shift + ‏Backspace.</translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>
 <translation id="1782199038061388045">תרגום</translation>
 <translation id="1787955149152357925">כבוי</translation>

@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">ປ້າຍ​ໂຄ​ສະ​ນາ</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
 <translation id="1480676835519562650">ເລືອກໄດ້ຫຼາຍລາຍການ, ເລືອກ <ph name="SELECTED" /> ຈາກທັງໝົດ <ph name="COUNT" /> ແລ້ວ.</translation>
+<translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
 <translation id="1589122976691792535">ພາກພື້ນ</translation>
 <translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
 <translation id="1637811476055996098">ເລືອກ​ໄຟລ​໌</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">ຫົວແຖວ</translation>
 <translation id="5143125788380636750">ຄຳກ່າວສົ່ງທ້າຍ</translation>
 <translation id="5164977714490026579">ຄ່າຕ້ອງໃຫຍ່ກ່ວາ ຫຼືເທົ່າກັບ <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">ກະ​ລຸ​ນາ​ໃສ່​ພາກ​ສ່ວນໜຶ່ງ​ຕາມມາ​ດ້ວຍ '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' ບໍ່ສົມບູນ.</translation>
 <translation id="5334352251556557839">ບໍ່ສາມາດຫຼິ້ນສື່ໄດ້.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">ເພື່ອຮັບລາຍລະອຽດຮູບພາບທີ່ຫາຍໄປ, ກະລຸນາເປີດເມນູກົດຄ້າງ.</translation>
 <translation id="7750228210027921155">ສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="775297008183122718">ປ້ອນຂໍ້ມູນບໍ່ຖືກຕ້ອງ</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="7802800022689234070">ສາມຫຼ່ຽມການເປີດເຜີຍ</translation>
 <translation id="7852167693871241274">ແຖບເລື່ອນໂທນສີ</translation>

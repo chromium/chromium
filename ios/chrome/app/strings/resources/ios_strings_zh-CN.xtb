@@ -352,7 +352,6 @@
 
 您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
-<translation id="4704093130121805775">在您的设备之间同步</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

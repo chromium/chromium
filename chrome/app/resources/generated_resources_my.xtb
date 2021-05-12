@@ -515,6 +515,7 @@
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" အပြင်အဆင်ကို ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="1546280085599573572">သင်မူလစာမျက်နှာခလုတ်ကို နှိပ်လျှင် ပြမည့် စာမျက်နှာပြမည်အား ဤအိတ်စတန်းရှင်းမှ ပြောင်းလဲပြီး ဖြစ်၏။</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> သည် အောက်ပါတို့ပြုလုပ်နိုင်သည့် <ph name="EXTENSION_TYPE" /> ကို ထည့်သွင်းလိုသည်-</translation>
+<translation id="1547808936554660006">Powerwash သည် ထည့်သွင်းထားသော eSIM ပရိုဖိုင်များကို ဖယ်ရှားမည်မဟုတ်ကြောင်း ကျွန်ုပ်နားလည်ပါသည်</translation>
 <translation id="1549275686094429035">ARC ဖွင့်ထားသည်</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> သည် <ph name="VOLUME_NAME" /> သို့ ဝင်ရောက်သုံးခွင့် ရလိုသည်။ ၎င်းသည် သင့်ဖိုင်များအား ပြင်ဆင်ခြင်း သို့မဟုတ် ဖျက်ပစ်ခြင်းများ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> အသုံးပြုရန် <ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲက ရှာဖွေမှုစနစ်ကို ပြောင်းလိုက်သည်</translation>
@@ -551,6 +552,7 @@
 <translation id="1588438908519853928">ပုံမှန်</translation>
 <translation id="158849752021629804">ပင်မ ကွန်ရက် လိုအပ်</translation>
 <translation id="1588870296199743671">လင့်ခ်ကို ဖြင့်ဖွင့်ရန်...</translation>
+<translation id="1588919647604819635">ညာဘက်ခလုတ်ကို နှိပ်ရန် ကတ်</translation>
 <translation id="1589055389569595240">စာလုံးပေါင်း နှင့် သဒ္ဒါကို ပြရန်</translation>
 <translation id="1591679663873027990">USB ကိရိယာများ သုံးရန် Parallels Desktop ကို ခွင့်ပြုချက်ပေးပါ။ USB ကိရိယာ ဖယ်ရှားလိုက်သောအခါ Parallels Desktop က ၎င်းကို မှတ်မိမည်မဟုတ်ပါ။</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်မည့် ADB အမှားရှာပြင်ခြင်းကို ပိတ်ထားသည်။ ပြန်မစတင်မီ သင့်ဖိုင်များကို အရန်သိမ်းပါ။</translation>
@@ -995,6 +997,7 @@
 
 သင့်စက်ပစ္စည်းတွင် Family Link အက်ပ်ကို ထည့်သွင်းခြင်းဖြင့် ဤအကောင့်၏ဆက်တင်များကို စီမံနိုင်သည်။  ညွှန်ကြားချက်များကို သင့်ထံသို့ အီးမေးလ်နှင့် ပို့ထားပါသည်။</translation>
 <translation id="2040460856718599782">အိုး! သင့်အား စစ်မှန်ကြောင်း သက်သေပြုရန် ကြိုးပန်းစဉ် တစ်စုံတစ်ခု မှားယွင်းခဲ့သည်။ ကျေးဇူးပြု၍ သင်၏ ဝင်ရောက်မှု လုံခြုံရေးအချက်လက်များအား နှစ်ထပ်ပြန်လည်စစ်ဆေး၍ ထပ်မံကြိုးစားပါ။</translation>
+<translation id="2042279886444479655">သုံးနေသော ပရိုဖိုင်များ</translation>
 <translation id="2044014337866019681">စက်ရှင်ဖွင့်ရန် <ph name="ACCOUNT" /> ကို စိစစ်နေကြောင်း သေချာပါစေ။</translation>
 <translation id="2044023416777079300">မိုဒမ်ကို မှတ်ပုံတင်မထားပါ</translation>
 <translation id="204497730941176055">Microsoft အသိမှတ်ပြုလက်မှတ် ပုံစံ အမည်</translation>
@@ -1336,6 +1339,7 @@
 <translation id="2395616325548404795">လုပ်ငန်းစီမံခန့်ခွဲမှုအတွက် <ph name="DEVICE_TYPE" /> ကို အောင်မြင်စွာ စာရင်းသွင်းပြီးပါပြီ။ သို့သော် ၎င်း၏ ပိုင်ဆိုင်မှုများနှင့် တည်နေရာအချက်အလက်များကို ပို့၍မရပါ။ ဤစက်ပစ္စည်းအတွက် စီမံခန့်ခွဲမှုကွန်ဆိုးလ်မှနေ၍ ဤအချက်အလက်များကို ကိုယ်တိုင်ထည့်သွင်းပါ။</translation>
 <translation id="2396387085693598316">သင့်စီမံခန့်ခွဲသူသည် "<ph name="EXTENSION_NAME" />" ကို ပိတ်ထားသည်</translation>
 <translation id="2396783860772170191">ဂဏန်း ၄ လုံးပါ ပင်နံပါတ်ထည့်ရန် (၀၀၀၀−၉၉၉၉)</translation>
+<translation id="2398546389094871088">စက်ကို powerwash ပြုလုပ်ခြင်းက သင့် eSIM ပရိုဖိုင်များကို ဖယ်ရှားမည်မဟုတ်ပါ။ ဤပရိုဖိုင်များကို ကိုယ်တိုင်ဖယ်ရှားရန် <ph name="LINK_BEGIN" />မိုဘိုင်း ဆက်တင်များ<ph name="LINK_END" /> သို့ သွားပါ။</translation>
 <translation id="2399699884460174994">အကြောင်းကြားချက်များ ဖွင့်ထားသည်</translation>
 <translation id="2399939490305346086">လုံခြုံရေးကီး လက်မှတ်ထိုးဝင်ခြင်းဒေတာများ</translation>
 <translation id="2400664245143453337">ချက်ချင်း အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်</translation>
@@ -1753,6 +1757,7 @@
 <translation id="2844809857160214557">ပရင့်ထုတ်ရန် ဖိုင်များ ကြည့်ရှုစီမံရန်</translation>
 <translation id="2845382757467349449">စာညှပ် ဘားကို အမြဲတမ်း ပြရန်</translation>
 <translation id="284805635805850872">အန္တရာယ်ဖြစ်စေနိုင်သော ဆော့ဖ်ဝဲကို ဖယ်ရှားလိုပါသလား။</translation>
+<translation id="2849035674501872372">ရှာရန်</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">ရှင်းလင်း၍မရပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
@@ -2064,6 +2069,7 @@
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
 <translation id="3190558889382726167">စကားဝှက် သိမ်းဆည်းပြီး၏</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
+<translation id="3197453258332670132">ညာဘက်ခလုတ်ကို နှိပ်လျှင် (သို့) ကြာရှည်စွာဖိထားလျှင် သင့်စာသားရွေးချယ်မှုအတွက် ဆက်စပ်သော အချက်အလက်ကို ပြနိုင်သည်</translation>
 <translation id="3199127022143353223">ဆာဗာများ</translation>
 <translation id="3201422919974259695">အသုံးပြုနိုင်သော USB စက်ပစ္စည်းများကို ဤနေရာတွင် တွေ့ရပါမည်။</translation>
 <translation id="3202131003361292969">လမ်းကြောင်း</translation>
@@ -2085,6 +2091,7 @@
 <translation id="3223531857777746191">ပြင်ဆင်သတ်မှတ်ရန် ခလုတ်</translation>
 <translation id="3225084153129302039">မူရင်းခရမ်းရောင်ချန်နယ်ပုံ</translation>
 <translation id="3225319735946384299">ကုဒ်ဖြင့် လက်မှတ်ထိုးရန်</translation>
+<translation id="3226487301970807183">ဘယ်ဘက်ညှိထားသော ဘေးအကန့် ပြောင်းရန်</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3233271424239923319">Linux အက်ပ်နှင့် ဖိုင်များ အရန်သိမ်းသည်</translation>
 <translation id="3238192140106069382">ချိတ်ဆက်ပြီး စိစစ်နေသည်</translation>
@@ -2354,6 +2361,7 @@
 <translation id="3515983984924808886">ပြင်ဆင်သတ်မှတ်ခြင်းကို အတည်ပြုရန် သင့်လုံခြုံရေးကီးကို ထပ်ထိပါ။ ပင်နံပါတ်အပါအဝင် လုံခြုံရေးကီးတွင် သိမ်းထားသော အချက်အလက်အားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="3518985090088779359">လက်ခံရန် &amp; ဆက်ရန်</translation>
 <translation id="3519564332031442870">ဆာဗာပိုင်းဆိုင်ရာ ဝန်ဆောင်မှုကို ပုံနှိပ်ထုတ်ယူရန်</translation>
+<translation id="3519938335881974273">စာမျက်နှာကို ဤအရာအဖြစ် သိမ်းရန်...</translation>
 <translation id="3521606918211282604">ဒစ်ခ်အရွယ်အစား ပြောင်းရန်</translation>
 <translation id="3522088408596898827">ဒစ်ခ်နေရာ အလွန်နည်းနေပါပြီ။ ဒစ်ခ်နေရာလွတ် ပြုလုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3524965460886318643">လုပ်ဆောင်ချက်များ ထုတ်ယူရန်</translation>
@@ -2377,6 +2385,7 @@
 <translation id="3550593477037018652">ဆယ်လူလာကွန်ရက် ချိတ်ဆက်မှုဖြုတ်ရန်</translation>
 <translation id="3550915441744863158">Chrome သည် အလိုအလျောက် မွမ်းမံယူသောကြောင့် သင်သည် အမြဲတမ်း နောက်ဆုံး ဗားရှင်းကို သုံးနိုင်မည်။</translation>
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">ထွက်သည့်အခါ ဖယ်ရှားထားသည်</translation>
 <translation id="3554493885489666172">သင့်စက်ပစ္စည်းကို <ph name="PROFILE_NAME" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက ဤစက်ပေါ်ရှိ ပရိုဖိုင်အားလုံးမှ ဒေတာများကို ဝင်ကြည့်နိုင်သည်။</translation>
 <translation id="3555812735919707620">တိုးချဲ့မှုကို ဖယ်ရှားရန်</translation>
@@ -2429,6 +2438,7 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="3605780360466892872">အမည်သစ်</translation>
 <translation id="3608576286259426129">အသုံးပြုသူ ပုံအစမ်းကြည့်</translation>
+<translation id="3609277884604412258">အမြန် ရှာဖွေရန်</translation>
 <translation id="3610369246614755442">အထိုင်ပန်ကာကို စစ်ဆေးကြည့်ရှုရန် လိုပါသည်</translation>
 <translation id="361106536627977100">ဖလက်ရှ် ဒေတာ</translation>
 <translation id="3611655097742243705">နောက်ထပ်အက်ပ်များ ရှာရန် Play Store တွင် ဝင်ကြည့်ပါ</translation>
@@ -3372,6 +3382,7 @@
 <translation id="4636682061478263818">Drive ဖိုင်များ</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4637083375689622795">နောက်ထပ် လုပ်ဆောင်ချက်များ၊ <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">ကင်မရာထပ်မံ အသုံးပြုရန်</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{စာတို}other{စာတို # စောင်}}</translation>
 <translation id="4638930039313743000">ADB အမှားရှာပြင်ကိရိယာကို ဖွင့်ပါ</translation>
 <translation id="4641539339823703554">Chrome သည် စနစ် အချိန်ကို မသတ်မှတ်နိုင်ခဲ့ပါ။ ကျေးဇူးပြုပြီး အောက်ပါ အချိန်ကို စစ်ကြည့်လျက် လိုအပ်လျှင် ပြင်ပေးပါ။</translation>
@@ -4122,6 +4133,7 @@
 <translation id="5499313591153584299">ဒီဖိုင်မှာ သင်၏ ကွန်ပျူတာအတွက် အန္တရာယ် ရှိနိုင်သည်။</translation>
 <translation id="5499453227627332024">သင်၏ Linux ကွန်တိန်နာအတွက် အဆင့်မြှင့်မှုတစ်ခု ရရှိပါပြီ။ နောက်ပိုင်းတွင် ၎င်းကို 'ဆက်တင်များ' အက်ပ်၌ အချိန်မရွေး အဆင့်မြှင့်နိုင်သည်။</translation>
 <translation id="5500709606820808700">ယနေ့ လုံခြုံရေး စစ်ဆေးထားသည်</translation>
+<translation id="5501322521654567960">ဘယ်ဘက်ညှိထားသော ဘေးအကန့်</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}other{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}}</translation>
 <translation id="5502500733115278303">Firefox ထဲမှ တင်သွင်းခဲ့</translation>
 <translation id="5502915260472117187">ကလေး</translation>
@@ -5331,6 +5343,7 @@
 <translation id="6856348640027512653">ပကတိအသွင်ကိရိယာများ (သို့) ဒေတာများသုံးရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="6856459657722366306">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="6856623341093082836">သင်၏ ထိတွေ့မျက်နှာပြင် တိကျမှန်ကန်မှုရှိစေရန် စနစ်ထည့်သွင်း၍ ချိန်ညှိပါ</translation>
+<translation id="6857145580237920905">Powerwash မလုပ်မီ eSIM ပရိုဖိုင်များ ဖယ်ရှားရန်</translation>
 <translation id="6857699260879628349">စီစဉ်သတ်မှတ်ရေး အချက်အလက်များ ရယူပါ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">ပရောက်စီ ဆက်တင်များ...</translation>

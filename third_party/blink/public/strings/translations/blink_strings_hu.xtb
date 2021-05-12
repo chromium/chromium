@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">szalaghirdetés</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="1480676835519562650">több is választható, <ph name="COUNT" />/<ph name="SELECTED" /> van kiválasztva.</translation>
+<translation id="1588438908519853928">Normál</translation>
 <translation id="1589122976691792535">régió</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">sorfejléc</translation>
 <translation id="5143125788380636750">végszó</translation>
 <translation id="5164977714490026579">Az érték legyen nagyobb vagy egyenlő, mint <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">Kérjük, adja meg a „<ph name="ATSIGN" />” előtti részt is. A „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Ha hiányzó képleírásokat szeretne lekérni, nyissa meg a helyi menüt.</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="775297008183122718">Érvénytelen bevitel</translation>
+<translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">szüneteltetés</translation>
 <translation id="7802800022689234070">plusz tartalom kibontására szolgáló háromszög</translation>
 <translation id="7852167693871241274">Színárnyalat csúszkája</translation>

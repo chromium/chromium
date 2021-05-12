@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">bannière</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> éléments</translation>
 <translation id="1480676835519562650">plusieurs éléments sélectionnables, <ph name="SELECTED" /> sur <ph name="COUNT" /> sélectionné.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">région</translation>
 <translation id="1591562245178063882">Ce mois-ci</translation>
 <translation id="1637811476055996098">Sélect. fichiers</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">en-tête de ligne</translation>
 <translation id="5143125788380636750">épilogue</translation>
 <translation id="5164977714490026579">La valeur doit être supérieure ou égale à <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
 <translation id="5307600278924710095">Veuillez entrer la partie manquante avant le caractère « <ph name="ATSIGN" /> ». L'adresse « <ph name="INVALIDADDRESS" /> » est incomplète.</translation>
 <translation id="5334352251556557839">Impossible de faire jouer le média.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Pour obtenir les descriptions d'image manquantes, ouvrez le menu contextuel.</translation>
 <translation id="7750228210027921155">Incrustation d'image</translation>
 <translation id="775297008183122718">Entrée non valide</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">pause</translation>
 <translation id="7802800022689234070">triangle d'affichage</translation>
 <translation id="7852167693871241274">Curseur des nuances de couleurs</translation>

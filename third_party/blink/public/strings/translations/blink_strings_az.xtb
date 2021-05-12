@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banner</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> element</translation>
 <translation id="1480676835519562650">çox sayda seçilə bilər, <ph name="SELECTED" />/<ph name="COUNT" /> seçilib.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1637811476055996098">Faylları seçin</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">sətir başlığı</translation>
 <translation id="5143125788380636750">epiloq</translation>
 <translation id="5164977714490026579">Dəyər daha böyük və ya <ph name="MINIMUM" /> ilə bərabər olmalıdır.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ilə davam edən hissəni daxil edin. '<ph name="INVALIDADDRESS" />' natamamdır.</translation>
 <translation id="5334352251556557839">Medianı oxutmaq mümkün deyil.</translation>

@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">баннер</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> зүйлс</translation>
 <translation id="1480676835519562650">олныг сонгох боломжтой, <ph name="COUNT" />-c <ph name="SELECTED" />-г сонгосон</translation>
+<translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1589122976691792535">хамрах бүс</translation>
 <translation id="1591562245178063882">Энэ сар</translation>
 <translation id="1637811476055996098">Файлуудыг сонгох</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">мөрний толгой</translation>
 <translation id="5143125788380636750">төгсгөлийн үг</translation>
 <translation id="5164977714490026579">Оруулсан утга нь <ph name="MINIMUM" />-тай тэнцүү эсвэл илүү байх ёстой.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' нь бүрэн гүйцэд биш бөгөөд бүрэн хаягаа оруулна уу.</translation>
 <translation id="5334352251556557839">Медиа тоглуулах боломжгүй байна.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Байхгүй зургийн тайлбарыг авахын тулд хам сэдвийн цэсийг нээнэ үү.</translation>
 <translation id="7750228210027921155">Дэлгэцэн доторх дэлгэц</translation>
 <translation id="775297008183122718">Буруу утга</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">Түр зогсох</translation>
 <translation id="7802800022689234070">тодруулгын гурвалжин</translation>
 <translation id="7852167693871241274">Өнгө тохируулагч</translation>

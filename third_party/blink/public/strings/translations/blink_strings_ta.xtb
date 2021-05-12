@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">பேனர்</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> உருப்படிகள்</translation>
 <translation id="1480676835519562650">பலவற்றைத் தேர்ந்தெடுக்கலாம், <ph name="SELECTED" />/<ph name="COUNT" /> தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
+<translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1589122976691792535">மண்டலம்</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1637811476055996098">கோப்புகளைத் தேர்வுசெய்க</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">வரிசை மேற்தலைப்பு</translation>
 <translation id="5143125788380636750">முடிவுரை</translation>
 <translation id="5164977714490026579">மதிப்பானது, கண்டிப்பாக <ph name="MINIMUM" /> ஐ விட அதிகமாக அல்லது அதற்குச் சமமாக இருக்க வேண்டும்.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> பெ.பை</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து ஒரு பகுதியை உள்ளிடவும். '<ph name="INVALIDADDRESS" />' முழுமைப் பெறாமல் உள்ளது.</translation>
 <translation id="5334352251556557839">மீடியாவை இயக்க முடியவில்லை.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">சூழல் மெனுவைத் திறந்தால் மறைந்துள்ள படங்களின் விவரங்களைப் பெறலாம்.</translation>
 <translation id="7750228210027921155">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="775297008183122718">தவறான உள்ளீடு</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">இடைநிறுத்து</translation>
 <translation id="7802800022689234070">கூடுதல் உள்ளடக்க முக்கோணம்</translation>
 <translation id="7852167693871241274">வண்ணச் சாயல் ஸ்லைடர்</translation>

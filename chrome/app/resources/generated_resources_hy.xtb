@@ -515,6 +515,7 @@
 <translation id="1545775234664667895">«<ph name="THEME_NAME" />» թեման տեղադրվեց</translation>
 <translation id="1546280085599573572">Այս ընդլայնումը փոխել է Սկիզբ կոճակի սեղմումով ցուցադրվող էջը:</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />-ն ուզում է տեղադրել <ph name="EXTENSION_TYPE" /> ընդլայնումը, որը կկարողանա՝</translation>
+<translation id="1547808936554660006">Ես հասկանում եմ, որ eSIM-ի տեղադրված պրոֆիլները չեն հեռացվի Powerwash գործառույթն օգտագործելու դեպքում</translation>
 <translation id="1549275686094429035">ARC-ն միացված է</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> հավելվածը ցանկանում է օգտվել <ph name="VOLUME_NAME" />-ից: Այն կարող է փոփոխել կամ ջնջել ձեր ֆայլերը:</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
@@ -551,6 +552,7 @@
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="158849752021629804">Հարկավոր է ներքին ցանց</translation>
 <translation id="1588870296199743671">Բացել հղումը, օգտագործելով…</translation>
+<translation id="1588919647604819635">Մկնիկի աջ կոճակի սեղմման քարտ</translation>
 <translation id="1589055389569595240">Ցույց տալ ուղղագրությունն ու քերականությունը</translation>
 <translation id="1591679663873027990">Հասանելի դարձրեք USB սարքերը Parallels Desktop-ին։ Երբ USB սարքը հեռացվի, Parallels Desktop-ը չի պահի այն։</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը, ինչի արդյունքում ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Վերագործարկելուց առաջ պահուստավորեք ձեր ֆայլերը։</translation>
@@ -986,6 +988,7 @@
 
 Այս հաշվի կարգավորումները կառավարելու համար կարող եք սարքում տեղադրել Family Link հավելվածը:  Մենք հրահանգներ ենք ուղարկել ձեր էլ. հասցեին:</translation>
 <translation id="2040460856718599782">Իսկորոշման ընթացքում սխալ տեղի ունեցավ: Եվս մեկ անգամ ստուգեք ձեր մուտքի հավատարմագրերը և նորից փորձեք:</translation>
+<translation id="2042279886444479655">Ակտիվ պրոֆիլներ</translation>
 <translation id="2044014337866019681">Հաստատեք <ph name="ACCOUNT" /> հաշիվը՝ աշխատաշրջանն ապակողպելու համար։</translation>
 <translation id="2044023416777079300">Մոդեմը գրանցված չէ</translation>
 <translation id="204497730941176055">Microsoft-ի վկայագրի ձևանմուշի անունը</translation>
@@ -1324,6 +1327,7 @@
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> սարքը բարեհաջող գրանցվել է ձեռնարկության կողմից կառավարման համար, սակայն չի հաջողվել ուղարկել սարքի տվյալներն և տեղադրությունը: Ձեռքով մուտքագրեք սարքի տեղեկությունները Admin console-ում:</translation>
 <translation id="2396387085693598316">Ձեր ադմինիստրատորն արգելափակել է «<ph name="EXTENSION_NAME" />» ընդլայնումը</translation>
 <translation id="2396783860772170191">Մուտքագրեք քառանիշ կոդը (0000-9999)</translation>
+<translation id="2398546389094871088">Powerwash գործառույթն օգտագործելու դեպքում eSIM-ի պրոֆիլները չեն հեռացվում։ Դա հնարավոր է անել ձեռքով <ph name="LINK_BEGIN" />շարժական սարքերի համար կարգավորումներում<ph name="LINK_END" />։</translation>
 <translation id="2399699884460174994">Ծանուցումները միացվեցին</translation>
 <translation id="2399939490305346086">Անվտանգության բանալու մուտքային տվյալներ</translation>
 <translation id="2400664245143453337">Անհապաղ թարմացրեք օպերացիոն համակարգը</translation>
@@ -1740,6 +1744,7 @@
 <translation id="2844809857160214557">Դիտեք և կառավարեք տպելու առաջադրանքները</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="284805635805850872">Հեռացնե՞լ վնասարար ծրագիրը</translation>
+<translation id="2849035674501872372">Փնտրել</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Չհաջողվեց մաքրել</translation>
 <translation id="2849936225196189499">Վճռական</translation>
@@ -2051,6 +2056,7 @@
 <translation id="3189187154924005138">Մեծ նշորդ</translation>
 <translation id="3190558889382726167">Գաղտնաբառը պահվեց</translation>
 <translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
+<translation id="3197453258332670132">Մկնիկի աջ կոճակը սեղմելու կամ երկար սեղմելու դեպքում կցուցադրվեն տեղեկություններ ընտրված տեքստի մասին</translation>
 <translation id="3199127022143353223">Սերվերներ</translation>
 <translation id="3201422919974259695">Հասանելի USB սարքերը կցուցադրվեն այստեղ:</translation>
 <translation id="3202131003361292969">Ուղի</translation>
@@ -2072,6 +2078,7 @@
 <translation id="3223531857777746191">«Զրոյացնել» կոճակ</translation>
 <translation id="3225084153129302039">Կանխադրված մանուշակագույն ավատար</translation>
 <translation id="3225319735946384299">Կոդի ստորագրում</translation>
+<translation id="3226487301970807183">Ցուցադրել/թաքցնել կողային վահանակը ձախ կողմում</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3233271424239923319">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
 <translation id="3238192140106069382">Միացում և ստուգում</translation>
@@ -2341,6 +2348,7 @@
 <translation id="3515983984924808886">Հաստատելու համար նորից հպեք անվտանգության բանալուն: Բանալու վրա պահված բոլոր տվյալները, այդ թվում՝ PIN կոդը, կջնջվեն:</translation>
 <translation id="3518985090088779359">Ընդունել և շարունակել</translation>
 <translation id="3519564332031442870">Տպման սերվերային ծառայություն</translation>
+<translation id="3519938335881974273">Պահել էջը որպես…</translation>
 <translation id="3521606918211282604">Փոխել սկավառակի չափը</translation>
 <translation id="3522088408596898827">Սկավառակում տարածքը շատ քիչ է։ Տարածք ազատեք և նորից փորձեք։</translation>
 <translation id="3524965460886318643">Արտահանել գործողությունների պատմությունը</translation>
@@ -2364,6 +2372,7 @@
 <translation id="3550593477037018652">Անջատել կապը բջջային ցանցի հետ</translation>
 <translation id="3550915441744863158">Chrome-ը ինքնաթարմացվում է, որպեսզի դուք միշտ ունենաք ամենավերջին տարբերակը</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
+<translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Կջնջվեն ելնելիս</translation>
 <translation id="3554493885489666172">Ձեր սարքը կառավարվում է <ph name="PROFILE_NAME" /> տիրույթի կողմից: Ադմինիստրատորներին հասանելի են այս սարքի բոլոր պրոֆիլների տվյալները։</translation>
 <translation id="3555812735919707620">Հեռացնել ընդլայնումը</translation>
@@ -2416,6 +2425,7 @@
 <translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="3605780360466892872">Գործարար</translation>
 <translation id="3608576286259426129">Օգտատիրոջ պատկերի նախադիտում</translation>
+<translation id="3609277884604412258">Արագ որոնում</translation>
 <translation id="3610369246614755442">Դոկ-կայանի հովացուցիչը տեխսպասարկման կարիք ունի</translation>
 <translation id="361106536627977100">Flash-ի տվյալներ</translation>
 <translation id="3611655097742243705">Հավելվածներ գտնելու համար այցելեք Play Խանութ</translation>
@@ -3359,6 +3369,7 @@
 <translation id="4636682061478263818">Drive-ի ֆայլեր</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4637083375689622795">Այլ գործողություններ, <ph name="EMAIL" /></translation>
+<translation id="4637189644956543313">Նորից օգտագործել տեսախցիկը</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Տեքստ}one{# տեքստ}other{# տեքստ}}</translation>
 <translation id="4638930039313743000">Միացնել ADB վրիպազերծումը</translation>
 <translation id="4641539339823703554">Chrome-ը չկարողացավ կայել համակարգի ժամանակը: Ստուգեք ժամը և, եթե կարիք կա, ուղղեք:</translation>
@@ -4112,6 +4123,7 @@
 <translation id="5499313591153584299">Այս ֆայլը կարող է վնասաբեր լինել ձեր համակարգչի համար:</translation>
 <translation id="5499453227627332024">Լինուքսի կոնտեյների համար հասանելի է նոր տարբերակ։ Դուք նաև կարող եք նորացնել կոնտեյներն ավելի ուշ Կարգավորումներում։</translation>
 <translation id="5500709606820808700">Անվտանգության ստուգումն այսօր է արվել</translation>
+<translation id="5501322521654567960">Ձախ կողմի կողային վահանակ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Չհաջողվեց <ph name="ATTACHMENTS" /> ստանալ <ph name="DEVICE_NAME" /> սարքից}one{Չհաջողվեց <ph name="ATTACHMENTS" /> ստանալ <ph name="DEVICE_NAME" /> սարքից}other{Չհաջողվեց <ph name="ATTACHMENTS" /> ստանալ <ph name="DEVICE_NAME" /> սարքից}}</translation>
 <translation id="5502500733115278303">Firefox-ից ներմուծված</translation>
 <translation id="5502915260472117187">Երեխա</translation>
@@ -5323,6 +5335,7 @@
 <translation id="6856348640027512653">Չի թույլատրվում օգտագործել վիրտուալ իրականության սարքեր և տվյալներ</translation>
 <translation id="6856459657722366306">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="6856623341093082836">Կարգավորել հպէկրանի ճշգրտությունը</translation>
+<translation id="6857145580237920905">Հեռացրեք eSIM-ի պրոֆիլները՝ նախքան Powerwash գործառույթն օգտագործելը</translation>
 <translation id="6857699260879628349">Ստացեք տեղեկություններ կազմաձևման մասին</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
 <translation id="6860097299815761905">Պրոքսի-սերվերի կարգավորումներ…</translation>

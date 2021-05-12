@@ -355,7 +355,6 @@ Järgige allolevaid juhiseid.</translation>
 
 Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="4689564913179979534">Makseviiside haldamine …</translation>
-<translation id="4704093130121805775">Sünkroonimine seadmete vahel</translation>
 <translation id="470966556546083668">Ära lülita sünkroonimist sisse</translation>
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4747097190499141774">Parooli krüpteerimine ei hõlma Google Pay makseviise ega aadresse. Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil sünkroonimine lähtestada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

@@ -353,7 +353,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 
 Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="4689564913179979534">Zarządzaj formami płatności…</translation>
-<translation id="4704093130121805775">Synchronizacja Twoich urządzeń</translation>
 <translation id="470966556546083668">Nie włączaj synchronizacji</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4747097190499141774">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>

@@ -24,6 +24,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1148499908455722006">Mở hộp thoại thông tin cho <ph name="USER_NAME" /></translation>
 <translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1165712434476988950">Bạn cần phải khởi động lại thiết bị để áp dụng bản cập nhật.</translation>
+<translation id="1170240434488307589">Nút micrô của thiết bị đang tắt.</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
@@ -100,6 +101,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
 <translation id="1761222317188459878">Bật/tắt kết nối mạng. <ph name="STATE_TEXT" /></translation>
+<translation id="1768366657309696705">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Dấu chấm đã thay đổi. Để sử dụng phím Insert, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Cuộn sang phải</translation>
 <translation id="1782199038061388045">dịch</translation>
 <translation id="1787955149152357925">Tắt</translation>

@@ -75,6 +75,7 @@
 <translation id="1240347957665416060">您的裝置名稱</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1243027604378859286">作者：</translation>
+<translation id="1246424317317450637">粗體</translation>
 <translation id="1250759482327835220">只要將您的付款卡、姓名和帳單地址儲存至您的 Google 帳戶，下次即可更快完成付款程序。</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
 <translation id="1256368399071562588">&lt;p&gt;如果您無法順利開啟網站，請先執行以下解決疑難步驟來修正錯誤：&lt;/p&gt;
@@ -173,6 +174,7 @@
 <translation id="1532118530259321453">此網頁顯示：</translation>
 <translation id="153384715582417236">暫時沒有其他項目</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
+<translation id="1539840569003678498">報告傳送時間：</translation>
 <translation id="154408704832528245">選擇速遞地址</translation>
 <translation id="1549470594296187301">必須啟用 JavaScript 才能使用此功能。</translation>
 <translation id="155039086686388498">Engineering-D</translation>
@@ -215,6 +217,7 @@
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
+<translation id="1696290444144917273">查看虛擬付款卡資料</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706954506755087368">{1,plural, =1{伺服器無法證明屬於 <ph name="DOMAIN" /> 網域；其安全性憑證預期於明天生效。這可能是由於設定錯誤，或有攻擊者攔截您的連線。}other{伺服器無法證明屬於 <ph name="DOMAIN" /> 網域；其安全性憑證預期於 # 天後生效。這可能是由於設定錯誤，或有攻擊者攔截您的連線。}}</translation>
@@ -226,6 +229,7 @@
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1718029547804390981">文件過大，無法加入註釋</translation>
 <translation id="1721424275792716183">* 為必填欄位</translation>
+<translation id="1727613060316725209">憑證有效</translation>
 <translation id="1727741090716970331">新增有效的信用卡號碼</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
 <translation id="173080396488393970">不支援此信用卡類型</translation>
@@ -693,6 +697,7 @@
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587738293690942763">中間</translation>
 <translation id="3590643883886679995">離開無痕模式後，登入資料會儲存在此裝置中。</translation>
+<translation id="359126217934908072">月/年：</translation>
 <translation id="3592413004129370115">Italian (信封)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">您的管理員已封鎖應用程式</translation>
@@ -748,6 +753,7 @@
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
+<translation id="3787675388804467730">虛擬卡號</translation>
 <translation id="3787705759683870569">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
@@ -1333,6 +1339,7 @@
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="5992691462791905444">大小風琴摺</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
+<translation id="6006484371116297560">經典主題</translation>
 <translation id="6008122969617370890">N 至 1 的順序</translation>
 <translation id="6008256403891681546">JCB 卡</translation>
 <translation id="6014801569448771146">請檢查您的密碼</translation>
@@ -1541,6 +1548,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過不安全連線擷取原始網頁。</translation>
 <translation id="6891596781022320156">系統不支援這項政策的層級。</translation>
+<translation id="6895143722905299846">虛擬卡號：</translation>
 <translation id="6895330447102777224">您的信用卡已完成驗證</translation>
 <translation id="6897140037006041989">使用者代理程式</translation>
 <translation id="6898699227549475383">機構 (O)</translation>
@@ -1579,6 +1587,7 @@
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。</translation>
 <translation id="7029809446516969842">密碼</translation>
+<translation id="7030436163253143341">憑證無效</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7050187094878475250">您曾嘗試前往 <ph name="DOMAIN" />，但其伺服器憑證有效期過長，並不值得信任。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{目前無法儲存此卡}other{目前無法儲存這些卡}}</translation>

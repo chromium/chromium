@@ -19,6 +19,7 @@
 <translation id="1359897965706325498">banner</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
 <translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> sa <ph name="COUNT" /> ang pinili.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1589122976691792535">rehiyon</translation>
 <translation id="1591562245178063882">Buwang ito</translation>
 <translation id="1637811476055996098">Pumili ng Mga File</translation>
@@ -147,6 +148,7 @@
 <translation id="512758898067543763">header ng row</translation>
 <translation id="5143125788380636750">epilogue</translation>
 <translation id="5164977714490026579">Dapat mas mataas kaysa sa o katumbas ng <ph name="MINIMUM" /> ang halaga.</translation>
+<translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> (na) PB</translation>
 <translation id="5307600278924710095">Mangyaring maglagay ng isang bahagi na sinusundan ng '<ph name="ATSIGN" />.' Hindi kumpleto ang '<ph name="INVALIDADDRESS" />.'</translation>
 <translation id="5334352251556557839">Hindi ma-play ang media.</translation>
@@ -250,6 +252,7 @@
 <translation id="7745230546936012372">Para kunin ang mga paglalarawan ng larawan, buksan ang menu ng konteksto.</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
 <translation id="775297008183122718">Di-wastong entry</translation>
+<translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">i-pause</translation>
 <translation id="7802800022689234070">disclosure triangle</translation>
 <translation id="7852167693871241274">Slider ng hue</translation>
