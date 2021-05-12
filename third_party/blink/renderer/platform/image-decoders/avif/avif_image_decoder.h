@@ -75,8 +75,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Creates |decoder_| if not yet created and decodes the size and frame count.
   bool UpdateDemuxer();
 
-  // Decodes the frame at index |index|. The decoded frame is available in
-  // decoder_->image.
+  // Decodes the frame at index |index| and checks if the frame's size, bit
+  // depth, and YUV format matches those reported by the container. The decoded
+  // frame is available in decoder_->image.
   avifResult DecodeImage(size_t index);
 
   // Updates or creates |color_transform_| for YUV-to-RGB conversion.

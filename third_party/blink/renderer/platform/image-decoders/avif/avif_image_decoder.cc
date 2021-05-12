@@ -359,25 +359,6 @@ void AVIFImageDecoder::DecodeToYUV() {
   }
 
   const auto* image = decoder_->image;
-  // Frame size must be equal to container size.
-  if (Size() != IntSize(image->width, image->height)) {
-    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
-             << " differs from container size " << Size();
-    SetFailed();
-    return;
-  }
-  // Frame bit depth must be equal to container bit depth.
-  if (image->depth != bit_depth_) {
-    DVLOG(1) << "Frame bit depth must be equal to container bit depth";
-    SetFailed();
-    return;
-  }
-  // Frame YUV format must be equal to container YUV format.
-  if (image->yuvFormat != avif_yuv_format_) {
-    DVLOG(1) << "Frame YUV format must be equal to container YUV format";
-    SetFailed();
-    return;
-  }
   DCHECK(!image->alphaPlane);
   static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
   static_assert(cc::YUVIndex::kU == static_cast<cc::YUVIndex>(AVIF_CHAN_U), "");
@@ -563,25 +544,6 @@ void AVIFImageDecoder::Decode(size_t index) {
   }
 
   const auto* image = decoder_->image;
-  // Frame size must be equal to container size.
-  if (Size() != IntSize(image->width, image->height)) {
-    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
-             << " differs from container size " << Size();
-    SetFailed();
-    return;
-  }
-  // Frame bit depth must be equal to container bit depth.
-  if (image->depth != bit_depth_) {
-    DVLOG(1) << "Frame bit depth must be equal to container bit depth";
-    SetFailed();
-    return;
-  }
-  // Frame YUV format must be equal to container YUV format.
-  if (image->yuvFormat != avif_yuv_format_) {
-    DVLOG(1) << "Frame YUV format must be equal to container YUV format";
-    SetFailed();
-    return;
-  }
 
   ImageFrame& buffer = frame_buffer_cache_[index];
   DCHECK_EQ(buffer.GetStatus(), ImageFrame::kFrameEmpty);
@@ -851,7 +813,27 @@ avifResult AVIFImageDecoder::DecodeImage(size_t index) {
   // |index| should be less than what DecodeFrameCount() returns, so we should
   // not get the AVIF_RESULT_NO_IMAGES_REMAINING error.
   DCHECK_NE(ret, AVIF_RESULT_NO_IMAGES_REMAINING);
-  return ret;
+  if (ret != AVIF_RESULT_OK)
+    return ret;
+
+  const auto* image = decoder_->image;
+  // Frame size must be equal to container size.
+  if (Size() != IntSize(image->width, image->height)) {
+    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
+             << " differs from container size " << Size();
+    return AVIF_RESULT_UNKNOWN_ERROR;
+  }
+  // Frame bit depth must be equal to container bit depth.
+  if (image->depth != bit_depth_) {
+    DVLOG(1) << "Frame bit depth must be equal to container bit depth";
+    return AVIF_RESULT_UNKNOWN_ERROR;
+  }
+  // Frame YUV format must be equal to container YUV format.
+  if (image->yuvFormat != avif_yuv_format_) {
+    DVLOG(1) << "Frame YUV format must be equal to container YUV format";
+    return AVIF_RESULT_UNKNOWN_ERROR;
+  }
+  return AVIF_RESULT_OK;
 }
 
 void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,
