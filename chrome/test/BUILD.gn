@@ -3999,6 +3999,7 @@ test("unit_tests") {
       "../browser/offline_pages/background_loader_offliner_unittest.cc",
       "../browser/offline_pages/download_archive_manager_unittest.cc",
       "../browser/offline_pages/offline_page_mhtml_archiver_unittest.cc",
+      "../browser/offline_pages/offline_page_navigation_throttle_unittest.cc",
       "../browser/offline_pages/offline_page_tab_helper_unittest.cc",
       "../browser/offline_pages/prefetch/offline_metrics_collector_impl_unittest.cc",
       "../browser/offline_pages/prefetch/prefetch_background_task_handler_impl_unittest.cc",
