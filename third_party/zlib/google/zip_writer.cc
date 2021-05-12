@@ -12,21 +12,15 @@
 namespace zip {
 namespace internal {
 
-namespace {
-
-// Numbers of pending entries that trigger writting them to the ZIP file.
-constexpr size_t kMaxPendingEntriesCount = 50;
-
-bool AddFileContentToZip(zipFile zip_file,
-                         base::File file,
-                         const base::FilePath& file_path) {
+bool ZipWriter::AddFileContent(const base::FilePath& file_path,
+                               base::File file) {
   int num_bytes;
   char buf[zip::internal::kZipBufSize];
   do {
     num_bytes = file.ReadAtCurrentPos(buf, zip::internal::kZipBufSize);
 
     if (num_bytes > 0) {
-      if (zipWriteInFileInZip(zip_file, buf, num_bytes) != ZIP_OK) {
+      if (zipWriteInFileInZip(zip_file_, buf, num_bytes) != ZIP_OK) {
         DLOG(ERROR) << "Could not write data to zip for path "
                     << file_path.value();
         return false;
@@ -37,10 +31,9 @@ bool AddFileContentToZip(zipFile zip_file,
   return true;
 }
 
-bool OpenNewFileEntry(zipFile zip_file,
-                      const base::FilePath& path,
-                      bool is_directory,
-                      base::Time last_modified) {
+bool ZipWriter::OpenNewFileEntry(const base::FilePath& path,
+                                 bool is_directory,
+                                 base::Time last_modified) {
   std::string str_path = path.AsUTF8Unsafe();
 #if defined(OS_WIN)
   base::ReplaceSubstringsAfterOffset(&str_path, 0u, "\\", "/");
@@ -48,40 +41,33 @@ bool OpenNewFileEntry(zipFile zip_file,
   if (is_directory)
     str_path += "/";
 
-  return zip::internal::ZipOpenNewFileInZip(zip_file, str_path, last_modified);
+  return zip::internal::ZipOpenNewFileInZip(zip_file_, str_path, last_modified);
 }
 
-bool CloseNewFileEntry(zipFile zip_file) {
-  return zipCloseFileInZip(zip_file) == ZIP_OK;
+bool ZipWriter::CloseNewFileEntry() {
+  return zipCloseFileInZip(zip_file_) == ZIP_OK;
 }
 
-bool AddFileEntryToZip(zipFile zip_file,
-                       const base::FilePath& path,
-                       base::File file) {
+bool ZipWriter::AddFileEntry(const base::FilePath& path, base::File file) {
   base::File::Info file_info;
   if (!file.GetInfo(&file_info))
     return false;
 
-  if (!OpenNewFileEntry(zip_file, path, /*is_directory=*/false,
-                        file_info.last_modified))
+  if (!OpenNewFileEntry(path, /*is_directory=*/false, file_info.last_modified))
     return false;
 
-  bool success = AddFileContentToZip(zip_file, std::move(file), path);
-  if (!CloseNewFileEntry(zip_file))
+  bool success = AddFileContent(path, std::move(file));
+  if (!CloseNewFileEntry())
     return false;
 
   return success;
 }
 
-bool AddDirectoryEntryToZip(zipFile zip_file,
-                            const base::FilePath& path,
-                            base::Time last_modified) {
-  return OpenNewFileEntry(zip_file, path, /*is_directory=*/true,
-                          last_modified) &&
-         CloseNewFileEntry(zip_file);
+bool ZipWriter::AddDirectoryEntry(const base::FilePath& path,
+                                  base::Time last_modified) {
+  return OpenNewFileEntry(path, /*is_directory=*/true, last_modified) &&
+         CloseNewFileEntry();
 }
-
-}  // namespace
 
 #if defined(OS_POSIX)
 // static
@@ -144,6 +130,9 @@ bool ZipWriter::Close() {
 }
 
 bool ZipWriter::FlushEntriesIfNeeded(bool force) {
+  // Numbers of pending entries that triggers writing them to the ZIP file.
+  const size_t kMaxPendingEntriesCount = 50;
+
   if (pending_entries_.size() < kMaxPendingEntriesCount && !force)
     return true;
 
@@ -174,7 +163,7 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force) {
       const base::FilePath& absolute_path = absolute_paths[i];
       base::File file = std::move(files[i]);
       if (file.IsValid()) {
-        if (!AddFileEntryToZip(zip_file_, relative_path, std::move(file))) {
+        if (!AddFileEntry(relative_path, std::move(file))) {
           LOG(ERROR) << "Failed to write file " << relative_path.value()
                      << " to ZIP file.";
           return false;
@@ -189,7 +178,7 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force) {
           return false;
         }
         DCHECK(file_accessor_->DirectoryExists(absolute_path));
-        if (!AddDirectoryEntryToZip(zip_file_, relative_path, last_modified)) {
+        if (!AddDirectoryEntry(relative_path, last_modified)) {
           LOG(ERROR) << "Failed to write directory " << relative_path.value()
                      << " to ZIP file.";
           return false;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -64,6 +65,23 @@ class ZipWriter {
   // Adds the files at |paths| to the ZIP file. These FilePaths must be relative
   // to |root_dir| specified in the Create method.
   bool AddEntries(const std::vector<base::FilePath>& paths);
+
+  // Adds file content to currently open file entry.
+  bool AddFileContent(const base::FilePath& path, base::File file);
+
+  // Adds a file entry (including file contents).
+  bool AddFileEntry(const base::FilePath& path, base::File file);
+
+  // Adds a directory entry.
+  bool AddDirectoryEntry(const base::FilePath& path, base::Time last_modified);
+
+  // Opens a file or directory entry.
+  bool OpenNewFileEntry(const base::FilePath& path,
+                        bool is_directory,
+                        base::Time last_modified);
+
+  // Closes the currently open entry.
+  bool CloseNewFileEntry();
 
   // Closes the ZIP file.
   // Returns true if successful, false otherwise (typically if an entry failed
