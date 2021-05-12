@@ -39,10 +39,6 @@ namespace extensions {
 
 namespace {
 
-bool AreWebAppsOffExtensions() {
-  return base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions);
-}
-
 template <typename Multimap, typename Key, typename Value>
 bool DoesMultimapContainKeyAndValue(const Multimap& map,
                                     const Key& key,
@@ -193,8 +189,6 @@ void ChromeAppSorting::MigrateAppIndex(
 }
 
 void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
-  if (!AreWebAppsOffExtensions())
-    return;
   auto* profile = Profile::FromBrowserContext(browser_context_);
   DCHECK(profile);
   auto* web_app_provider =
