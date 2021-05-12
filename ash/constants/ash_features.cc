@@ -965,6 +965,11 @@ bool IsSplitSettingsSyncEnabled() {
   return base::FeatureList::IsEnabled(kSplitSettingsSync);
 }
 
+bool IsSystemLatinPhysicalTypingEnabled() {
+  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
+         base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping);
+}
+
 bool IsWallpaperWebUIEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperWebUI);
 }

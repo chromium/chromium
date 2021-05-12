@@ -555,8 +555,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
   features->AppendString(GenerateFeatureFlag(
       "systemlatinphysicaltyping",
-      mojo_decoder && base::FeatureList::IsEnabled(
-                          chromeos::features::kSystemLatinPhysicalTyping)));
+      chromeos::features::IsSystemLatinPhysicalTypingEnabled()));
   features->AppendString(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
