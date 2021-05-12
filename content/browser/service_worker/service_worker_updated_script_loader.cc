@@ -65,7 +65,10 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     scoped_refptr<ServiceWorkerVersion> version)
     : request_url_(original_request.url),
-      request_destination_(original_request.destination),
+      is_main_script_(original_request.destination ==
+                          network::mojom::RequestDestination::kServiceWorker &&
+                      original_request.mode ==
+                          network::mojom::RequestMode::kSameOrigin),
       options_(options),
       version_(std::move(version)),
       network_watcher_(FROM_HERE,
@@ -78,7 +81,7 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
       request_start_(base::TimeTicks::Now()) {
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), request_destination_);
+      version_->status(), is_main_script_);
 #endif  // DCHECK_IS_ON()
 
   DCHECK(client_);
@@ -229,8 +232,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   auto client_response = response_head.Clone();
   client_response->request_start = request_start_;
 
-  if (request_destination_ ==
-      network::mojom::RequestDestination::kServiceWorker) {
+  if (is_main_script_) {
     version_->SetMainScriptResponse(
         std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
             *client_response));
