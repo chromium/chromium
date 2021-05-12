@@ -213,4 +213,25 @@ TEST(QuatTest, SlerpObtuseAngle) {
   EXPECT_QUATERNION(expected, interpolated);
 }
 
+TEST(QuatTest, Equals) {
+  EXPECT_TRUE(Quaternion() == Quaternion());
+  EXPECT_TRUE(Quaternion() == Quaternion(0, 0, 0, 1));
+  EXPECT_TRUE(Quaternion(1, 5.2, -8.5, 222.2) ==
+              Quaternion(1, 5.2, -8.5, 222.2));
+  EXPECT_FALSE(Quaternion() == Quaternion(1, 0, 0, 0));
+  EXPECT_FALSE(Quaternion() == Quaternion(0, 1, 0, 0));
+  EXPECT_FALSE(Quaternion() == Quaternion(0, 0, 1, 0));
+  EXPECT_FALSE(Quaternion() == Quaternion(1, 0, 0, 1));
+}
+
+TEST(QuatTest, NotEquals) {
+  EXPECT_FALSE(Quaternion() != Quaternion());
+  EXPECT_FALSE(Quaternion(1, 5.2, -8.5, 222.2) !=
+               Quaternion(1, 5.2, -8.5, 222.2));
+  EXPECT_TRUE(Quaternion() != Quaternion(1, 0, 0, 0));
+  EXPECT_TRUE(Quaternion() != Quaternion(0, 1, 0, 0));
+  EXPECT_TRUE(Quaternion() != Quaternion(0, 0, 1, 0));
+  EXPECT_TRUE(Quaternion() != Quaternion(1, 0, 0, 1));
+}
+
 }  // namespace gfx

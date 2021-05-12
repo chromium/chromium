@@ -501,18 +501,12 @@ class MockRuntime {
 
   setViews(views) {
     if (views) {
-      let changed = false;
+      this.displayInfo_.views = [];
       for (let i = 0; i < views.length; i++) {
-        if (views[i].eye == 'left') {
-          this.displayInfo_.leftEye = this.getEye(views[i]);
-          changed = true;
-        } else if (views[i].eye == 'right') {
-          this.displayInfo_.rightEye = this.getEye(views[i]);
-          changed = true;
-        }
+        this.displayInfo_.views[i] = this.getView(views[i]);
       }
 
-      if (changed && this.sessionClient_) {
+      if (this.sessionClient_) {
         this.sessionClient_.onChanged(this.displayInfo_);
       }
     }
@@ -714,14 +708,14 @@ class MockRuntime {
     const displayInfo = this.getImmersiveDisplayInfo();
 
     displayInfo.capabilities.canPresent = false;
-    displayInfo.leftEye = null;
-    displayInfo.rightEye = null;
+    displayInfo.views = [];
 
     return displayInfo;
   }
 
   // Function to generate some valid display information for the device.
   getImmersiveDisplayInfo() {
+    const viewport_size = 20;
     return {
       displayName: 'FakeDevice',
       capabilities: {
@@ -731,7 +725,8 @@ class MockRuntime {
         maxLayers: 1
       },
       stageParameters: null,
-      leftEye: {
+      views: [{
+        eye: vrMojom.XREye.kLeft,
         fieldOfView: {
           upDegrees: 48.316,
           downDegrees: 50.099,
@@ -742,10 +737,10 @@ class MockRuntime {
           position: [-0.032, 0, 0],
           orientation: [0, 0, 0, 1]
         }),
-        renderWidth: 20,
-        renderHeight: 20
+        viewport: { width: viewport_size, height: viewport_size }
       },
-      rightEye: {
+      {
+        eye: vrMojom.XREye.kRight,
         fieldOfView: {
           upDegrees: 48.316,
           downDegrees: 50.099,
@@ -756,15 +751,14 @@ class MockRuntime {
           position: [0.032, 0, 0],
           orientation: [0, 0, 0, 1]
         }),
-        renderWidth: 20,
-        renderHeight: 20
-      }
+        viewport: { width: viewport_size, height: viewport_size }
+      }]
     };
   }
 
   // This function converts between the matrix provided by the WebXR test API
   // and the internal data representation.
-  getEye(fakeXRViewInit) {
+  getView(fakeXRViewInit) {
     let fov = null;
 
     if (fakeXRViewInit.fieldOfView) {
@@ -794,11 +788,30 @@ class MockRuntime {
       };
     }
 
+    let viewEye = vrMojom.XREye.kNone;
+    // The eye passed in corresponds to the values in the WebXR spec, which are
+    // the strings "none", "left", and "right". They should be converted to the
+    // corresponding values of XREye in vr_service.mojom.
+    switch(fakeXRViewInit.eye) {
+      case "none":
+        viewEye = vrMojom.XREye.kNone;
+        break;
+      case "left":
+        viewEye = vrMojom.XREye.kLeft;
+        break;
+      case "right":
+        viewEye = vrMojom.XREye.kRight;
+        break;
+    }
+
     return {
+      eye: viewEye,
       fieldOfView: fov,
       headFromEye: composeGFXTransform(fakeXRViewInit.viewOffset),
-      renderWidth: fakeXRViewInit.resolution.width,
-      renderHeight: fakeXRViewInit.resolution.height
+      viewport: {
+        width: fakeXRViewInit.resolution.width,
+        height: fakeXRViewInit.resolution.height
+      }
     };
   }
 
@@ -870,6 +883,7 @@ class MockRuntime {
 
         const frameData = {
           pose: this.pose_,
+          views: [],
           mojoSpaceReset: mojo_space_reset,
           inputState: input_state,
           timeDelta: {

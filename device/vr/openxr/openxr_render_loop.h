@@ -75,10 +75,11 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   void OnContextLost() override;
 
   void InitializeDisplayInfo();
-  bool UpdateEyeParameters();
-  bool UpdateEye(const XrView& view_head,
-                 const gfx::Size& view_size,
-                 mojom::VREyeParametersPtr* eye) const;
+  bool UpdateViews();
+  bool UpdateView(const XrView& view_head,
+                  int width,
+                  int height,
+                  mojom::XRViewPtr* view) const;
   void UpdateStageParameters();
 
   // XREnvironmentIntegrationProvider

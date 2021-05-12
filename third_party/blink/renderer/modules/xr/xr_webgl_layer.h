@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_LAYER_H_
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
@@ -55,7 +56,7 @@ class XRWebGLLayer final : public XRLayer {
 
   static double getNativeFramebufferScaleFactor(XRSession* session);
 
-  XRViewport* GetViewportForEye(XRView::XREye);
+  XRViewport* GetViewportForEye(device::mojom::blink::XREye);
 
   void UpdateViewports();
 

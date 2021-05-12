@@ -425,8 +425,21 @@ struct XRHitResult {
                     // mojo supports optional numeric types.
 };
 
-// Information about the optical properties for an eye in a VRDisplay.
-struct VREyeParameters {
+// Describes the eye that a view is associated with. kNone represents views that
+// are not associated with an eye, such as monoscopic displays or views exposed
+// through secondary views.
+enum XREye {
+  kNone = 0,
+  kLeft = 1,
+  kRight = 2,
+};
+
+// Information about a view for a given XR frame. A frame contains the state of
+// the XR device for a particular timestamp. A view represents the display or
+// a portion of the display, and contains all the information required to render
+// content to the view.
+struct XRView {
+  XREye eye;
   VRFieldOfView field_of_view;
 
   // Describes the relationship between the head and eye space for this device.
@@ -435,8 +448,10 @@ struct VREyeParameters {
   // screens.
   gfx.mojom.Transform head_from_eye;
 
-  uint32 render_width;
-  uint32 render_height;
+  // A viewport describes the rectangular region that the underlying graphics
+  // API should use to render this view.
+  // See https://immersive-web.github.io/webxr/#xrviewport
+  gfx.mojom.Size viewport;
 };
 
 struct VRStageParameters {
@@ -453,8 +468,7 @@ struct VRStageParameters {
 struct VRDisplayInfo {
   // Parameters required to distort a scene for viewing in a VR headset. Only
   // required for devices which have the can_present capability.
-  VREyeParameters? left_eye;
-  VREyeParameters? right_eye;
+  array<XRView> views;
 };
 
 // Frame transport method from the Renderer's point of view.
@@ -800,17 +814,15 @@ struct XRFrameData {
   // imply no mapping.
   int16 frame_id;
 
-  // Eye parameters may be provided per-frame for some runtimes.  If both of
-  // these are null, it indicates that there was no change since the previous
-  // frame.  If either are non-null, it indicates that data has changed. If only
-  // one is null, it indicates that the data has changed and the display is
-  // mono. Some hardware have sliders to adjust the displays for the eyes, so
-  // Oculus, Vive, and Samsung headsets may have differen't eye offsets for each
-  // frame. These need to be synchronized with a frame because the runtimes
-  // distort textures assuming the view matrix they handed out was used for
-  // rendering.
-  VREyeParameters? left_eye;
-  VREyeParameters? right_eye;
+  // Information about all the views in a frame. This array is non-empty only if
+  // any of the views have changed since the last frame. In this case, since
+  // there is no way to identify which views have changed, all the views
+  // including unchanged views are present in the array. It is valid for the
+  // array to contain multiple views of the same eye. An example of this
+  // scenario are displays that have dominant left/right eyes and inset
+  // left/right eyes. In these scenarios, the dominant views comes before the
+  // inset views in the array.
+  array<XRView> views;
 
   // For immersive sessions only, reports the state of all active input devices
   // at the time of this frame. If a session has indicated that it

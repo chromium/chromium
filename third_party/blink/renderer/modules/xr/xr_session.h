@@ -275,7 +275,7 @@ class XRSession final
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (!pending_view_parameters_.size()) {
+    if (pending_views_.IsEmpty()) {
       return true;
     }
 
@@ -284,11 +284,9 @@ class XRSession final
 
   // Immersive sessions currently use two views for VR, and only a single view
   // for smartphone immersive AR mode.
-  bool StereoscopicViews() { return pending_view_parameters_.size() >= 2; }
+  bool StereoscopicViews() { return pending_views_.size() >= 2; }
 
-  void UpdateEyeParameters(
-      const device::mojom::blink::VREyeParametersPtr& left_eye,
-      const device::mojom::blink::VREyeParametersPtr& right_eye);
+  void UpdateViews(const Vector<device::mojom::blink::XRViewPtr>& views);
   void UpdateStageParameters(
       uint32_t stage_parameters_id,
       const device::mojom::blink::VRStageParametersPtr& stage_parameters);
@@ -556,9 +554,8 @@ class XRSession final
   // received a frame from the device that contained the camera image.
   base::Optional<gfx::Size> camera_image_size_;
 
-  uint32_t view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;
-  Vector<device::mojom::blink::VREyeParametersPtr> pending_view_parameters_;
+  Vector<device::mojom::blink::XRViewPtr> pending_views_;
 
   Member<XRInputSourceArray> input_sources_;
   Member<XRWebGLLayer> prev_base_layer_;

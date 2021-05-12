@@ -218,11 +218,11 @@ XRViewport* XRWebGLLayer::getViewport(XRView* view) {
   return GetViewportForEye(view->EyeValue());
 }
 
-XRViewport* XRWebGLLayer::GetViewportForEye(XRView::XREye eye) {
+XRViewport* XRWebGLLayer::GetViewportForEye(device::mojom::blink::XREye eye) {
   if (viewports_dirty_)
     UpdateViewports();
 
-  if (eye == XRView::kEyeRight)
+  if (eye == device::mojom::blink::XREye::kRight)
     return right_viewport_;
 
   // This code path also handles an eye of "none".

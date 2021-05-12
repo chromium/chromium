@@ -22,15 +22,17 @@ namespace {
 // to make the effect more obvious in initial testing.
 constexpr double kMinViewportScale = 0.05;
 
+const double kDegToRad = M_PI / 180.0;
+
 }  // namespace
 
 XRView::XRView(XRFrame* frame, XRViewData* view_data)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
   switch (eye_) {
-    case kEyeLeft:
+    case device::mojom::blink::XREye::kLeft:
       eye_string_ = "left";
       break;
-    case kEyeRight:
+    case device::mojom::blink::XREye::kRight:
       eye_string_ = "right";
       break;
     default:
@@ -59,6 +61,21 @@ DOMFloat32Array* XRView::projectionMatrix() const {
   }
 
   return projection_matrix_;
+}
+
+XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
+                       double depth_near,
+                       double depth_far)
+    : eye_(view->eye) {
+  const device::mojom::blink::VRFieldOfViewPtr& fov = view->field_of_view;
+
+  UpdateProjectionMatrixFromFoV(
+      fov->up_degrees * kDegToRad, fov->down_degrees * kDegToRad,
+      fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
+      depth_far);
+
+  const TransformationMatrix matrix(view->head_from_eye.matrix());
+  SetHeadFromEyeTransform(matrix);
 }
 
 void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,

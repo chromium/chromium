@@ -24,6 +24,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/base/features.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace vr {
@@ -158,13 +159,14 @@ VRUiHostImpl::~VRUiHostImpl() {
 
 bool IsValidInfo(device::mojom::VRDisplayInfoPtr& info) {
   // Numeric properties are validated elsewhere, but we expect a stereo headset.
-  if (!info)
+  if (!info) {
     return false;
-  if (!info->left_eye)
-    return false;
-  if (!info->right_eye)
-    return false;
-  return true;
+  }
+
+  return base::Contains(info->views, device::mojom::XREye::kLeft,
+                        &device::mojom::XRView::eye) &&
+         base::Contains(info->views, device::mojom::XREye::kRight,
+                        &device::mojom::XRView::eye);
 }
 
 void VRUiHostImpl::SetWebXRWebContents(content::WebContents* contents) {

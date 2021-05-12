@@ -31,11 +31,10 @@ namespace device {
 namespace {
 
 mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
-  mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
-  device->left_eye = mojom::VREyeParameters::New();
-  device->right_eye = nullptr;
-  mojom::VREyeParametersPtr& left_eye = device->left_eye;
-  left_eye->field_of_view = mojom::VRFieldOfView::New();
+  mojom::XRViewPtr view = mojom::XRView::New();
+  // ARCore is monoscopic and does not have an associated eye.
+  view->eye = mojom::XREye::kNone;
+  view->field_of_view = mojom::VRFieldOfView::New();
   // TODO(lincolnfrog): get these values for real (see gvr device).
   double fov_x = 1437.387;
   double fov_y = 1438.074;
@@ -44,12 +43,15 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
   int height = frame_size.height();
   float horizontal_degrees = atan(width / (2.0 * fov_x)) * kDegreesPerRadian;
   float vertical_degrees = atan(height / (2.0 * fov_y)) * kDegreesPerRadian;
-  left_eye->field_of_view->left_degrees = horizontal_degrees;
-  left_eye->field_of_view->right_degrees = horizontal_degrees;
-  left_eye->field_of_view->up_degrees = vertical_degrees;
-  left_eye->field_of_view->down_degrees = vertical_degrees;
-  left_eye->render_width = width;
-  left_eye->render_height = height;
+  view->field_of_view->left_degrees = horizontal_degrees;
+  view->field_of_view->right_degrees = horizontal_degrees;
+  view->field_of_view->up_degrees = vertical_degrees;
+  view->field_of_view->down_degrees = vertical_degrees;
+  view->viewport = gfx::Size(width, height);
+
+  mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
+  device->views.emplace_back(std::move(view));
+
   return device;
 }
 

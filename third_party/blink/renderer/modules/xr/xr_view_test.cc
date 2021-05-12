@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -17,7 +18,7 @@ namespace blink {
 namespace {
 
 TEST(XRViewTest, UpdatePoseMatrix) {
-  XRViewData view(XRView::kEyeLeft);
+  XRViewData view(device::mojom::blink::XREye::kLeft);
 
   TransformationMatrix head_from_eye;
   head_from_eye.Translate3d(-1.0, 2.0, 3.0);

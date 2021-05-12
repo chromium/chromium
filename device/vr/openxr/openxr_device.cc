@@ -30,23 +30,24 @@ constexpr unsigned int kRenderHeight = 1024;
 mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
 
-  display_info->left_eye = mojom::VREyeParameters::New();
-  display_info->right_eye = mojom::VREyeParameters::New();
+  mojom::XRViewPtr left_eye = mojom::XRView::New();
+  mojom::XRViewPtr right_eye = mojom::XRView::New();
 
-  display_info->left_eye->field_of_view =
-      mojom::VRFieldOfView::New(kFov, kFov, kFov, kFov);
-  display_info->right_eye->field_of_view =
-      display_info->left_eye->field_of_view.Clone();
+  left_eye->eye = mojom::XREye::kLeft;
+  right_eye->eye = mojom::XREye::kRight;
 
-  display_info->left_eye->head_from_eye =
-      vr_utils::DefaultHeadFromLeftEyeTransform();
-  display_info->right_eye->head_from_eye =
-      vr_utils::DefaultHeadFromRightEyeTransform();
+  left_eye->field_of_view = mojom::VRFieldOfView::New(kFov, kFov, kFov, kFov);
+  right_eye->field_of_view = left_eye->field_of_view.Clone();
 
-  display_info->left_eye->render_width = kRenderWidth;
-  display_info->left_eye->render_height = kRenderHeight;
-  display_info->right_eye->render_width = kRenderWidth;
-  display_info->right_eye->render_height = kRenderHeight;
+  left_eye->head_from_eye = vr_utils::DefaultHeadFromLeftEyeTransform();
+  right_eye->head_from_eye = vr_utils::DefaultHeadFromRightEyeTransform();
+
+  left_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
+  right_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
+
+  display_info->views.resize(2);
+  display_info->views[0] = std::move(left_eye);
+  display_info->views[1] = std::move(right_eye);
 
   return display_info;
 }

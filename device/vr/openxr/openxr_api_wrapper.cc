@@ -34,7 +34,6 @@ constexpr XrSystemId kInvalidSystem = -1;
 // Only supported view configuration:
 constexpr XrViewConfigurationType kSupportedViewConfiguration =
     XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-constexpr uint32_t kNumViews = 2;
 
 // We can get into a state where frames are not requested, such as when the
 // visibility state is hidden. Since OpenXR events are polled at the beginning
@@ -84,6 +83,7 @@ void OpenXrApiWrapper::Reset() {
   instance_ = XR_NULL_HANDLE;
 
   view_configs_.clear();
+  swapchain_size_ = gfx::Size(0, 0);
   color_swapchain_images_.clear();
   frame_state_ = {};
   origin_from_eye_views_.clear();
@@ -216,6 +216,13 @@ XrResult OpenXrApiWrapper::InitializeSystem() {
   // to be cleaned up because it is not allocated.
   system_ = system;
   view_configs_ = std::move(view_configs);
+  uint32_t width = 0;
+  uint32_t height = 0;
+  for (auto& view_config : view_configs_) {
+    width += view_config.recommendedImageRectWidth;
+    height = std::max(height, view_config.recommendedImageRectHeight);
+  }
+  swapchain_size_ = gfx::Size(width, height);
 
   return XR_SUCCESS;
 }
@@ -361,8 +368,6 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
   DCHECK(HasSession());
   DCHECK(!HasColorSwapChain());
 
-  gfx::Size view_size = GetViewSize();
-
   XrSwapchainCreateInfo swapchain_create_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
   swapchain_create_info.arraySize = 1;
   // OpenXR's swapchain format expects to describe the texture content.
@@ -374,11 +379,8 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
   // Therefore, the content in this openxr swapchain image is in sRGB format.
   swapchain_create_info.format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
-  // WebVR and WebXR textures are double wide, meaning the texture contains
-  // both the left and the right eye, so the width of the swapchain texture
-  // needs to be doubled.
-  swapchain_create_info.width = view_size.width() * 2;
-  swapchain_create_info.height = view_size.height();
+  swapchain_create_info.width = swapchain_size_.width();
+  swapchain_create_info.height = swapchain_size_.height();
   swapchain_create_info.mipCount = 1;
   swapchain_create_info.faceCount = 1;
   swapchain_create_info.sampleCount = GetRecommendedSwapchainSampleCount();
@@ -655,7 +657,7 @@ XrResult OpenXrApiWrapper::UpdateProjectionLayers() {
   RETURN_IF_XR_FAILED(
       LocateViews(XR_REFERENCE_SPACE_TYPE_VIEW, &head_from_eye_views_));
 
-  gfx::Size view_size = GetViewSize();
+  uint32_t x_offset = 0;
   for (uint32_t view_index = 0; view_index < origin_from_eye_views_.size();
        view_index++) {
     const XrView& view = origin_from_eye_views_[view_index];
@@ -671,11 +673,12 @@ XrResult OpenXrApiWrapper::UpdateProjectionLayers() {
     // Since we're in double wide mode, the texture
     // array only has one texture and is always index 0.
     layer_projection_view.subImage.imageArrayIndex = 0;
-    layer_projection_view.subImage.imageRect.extent.width = view_size.width();
-    layer_projection_view.subImage.imageRect.extent.height = view_size.height();
-    // x coordinates is 0 for first view, 0 + i*width for ith view.
-    layer_projection_view.subImage.imageRect.offset.x =
-        view_size.width() * view_index;
+    layer_projection_view.subImage.imageRect.extent.width =
+        view_configs_[view_index].recommendedImageRectWidth;
+    layer_projection_view.subImage.imageRect.extent.height =
+        view_configs_[view_index].recommendedImageRectHeight;
+    layer_projection_view.subImage.imageRect.offset.x = x_offset;
+    x_offset += view_configs_[view_index].recommendedImageRectWidth;
     layer_projection_view.subImage.imageRect.offset.y = 0;
 
     if (IsUsingSharedImages()) {
@@ -789,9 +792,10 @@ XrResult OpenXrApiWrapper::GetHeadPose(
 
 void OpenXrApiWrapper::GetHeadFromEyes(XrView* left, XrView* right) const {
   DCHECK(HasSession());
+  DCHECK_EQ(head_from_eye_views_.size(), kNumViews);
 
-  *left = head_from_eye_views_[0];
-  *right = head_from_eye_views_[1];
+  *left = head_from_eye_views_[kLeftView];
+  *right = head_from_eye_views_[kRightView];
 }
 
 std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
@@ -916,14 +920,16 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
   return xr_result;
 }
 
-gfx::Size OpenXrApiWrapper::GetViewSize() const {
+const std::vector<XrViewConfigurationView>& OpenXrApiWrapper::GetViewConfigs()
+    const {
   DCHECK(IsInitialized());
   CHECK(view_configs_.size() == kNumViews);
 
-  return gfx::Size(std::max(view_configs_[0].recommendedImageRectWidth,
-                            view_configs_[1].recommendedImageRectWidth),
-                   std::max(view_configs_[0].recommendedImageRectHeight,
-                            view_configs_[1].recommendedImageRectHeight));
+  return view_configs_;
+}
+
+gfx::Size OpenXrApiWrapper::GetSwapchainSize() const {
+  return swapchain_size_;
 }
 
 uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {

@@ -92,6 +92,18 @@ inline Quaternion operator/(const Quaternion& q, double s) {
   return q * inv;
 }
 
+// Returns true if the x, y, z, w values of |lhs| and |rhs| are equal. Note that
+// two quaternions can represent the same orientation with different values.
+// This operator will return false in that scenario.
+inline bool operator==(const Quaternion& lhs, const Quaternion& rhs) {
+  return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z() &&
+         lhs.w() == rhs.w();
+}
+
+inline bool operator!=(const Quaternion& lhs, const Quaternion& rhs) {
+  return !(lhs == rhs);
+}
+
 }  // namespace gfx
 
 #endif  // UI_GFX_GEOMETRY_QUATERNION_H_

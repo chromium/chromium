@@ -60,30 +60,31 @@ bool IsValidTransform(const gfx::Transform& transform,
   return true;
 }
 
-device::mojom::VREyeParametersPtr ValidateEyeParameters(
-    const device::mojom::VREyeParameters* eye) {
-  if (!eye)
+device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
+  if (!view) {
     return nullptr;
-  device::mojom::VREyeParametersPtr ret = device::mojom::VREyeParameters::New();
+  }
+  device::mojom::XRViewPtr ret = device::mojom::XRView::New();
+  ret->eye = view->eye;
   // FOV
   float kDefaultFOV = 45;
   ret->field_of_view = device::mojom::VRFieldOfView::New();
-  if (eye->field_of_view->up_degrees < 90 &&
-      eye->field_of_view->up_degrees > -90 &&
-      eye->field_of_view->up_degrees > -eye->field_of_view->down_degrees &&
-      eye->field_of_view->down_degrees < 90 &&
-      eye->field_of_view->down_degrees > -90 &&
-      eye->field_of_view->down_degrees > -eye->field_of_view->up_degrees &&
-      eye->field_of_view->left_degrees < 90 &&
-      eye->field_of_view->left_degrees > -90 &&
-      eye->field_of_view->left_degrees > -eye->field_of_view->right_degrees &&
-      eye->field_of_view->right_degrees < 90 &&
-      eye->field_of_view->right_degrees > -90 &&
-      eye->field_of_view->right_degrees > -eye->field_of_view->left_degrees) {
-    ret->field_of_view->up_degrees = eye->field_of_view->up_degrees;
-    ret->field_of_view->down_degrees = eye->field_of_view->down_degrees;
-    ret->field_of_view->left_degrees = eye->field_of_view->left_degrees;
-    ret->field_of_view->right_degrees = eye->field_of_view->right_degrees;
+  if (view->field_of_view->up_degrees < 90 &&
+      view->field_of_view->up_degrees > -90 &&
+      view->field_of_view->up_degrees > -view->field_of_view->down_degrees &&
+      view->field_of_view->down_degrees < 90 &&
+      view->field_of_view->down_degrees > -90 &&
+      view->field_of_view->down_degrees > -view->field_of_view->up_degrees &&
+      view->field_of_view->left_degrees < 90 &&
+      view->field_of_view->left_degrees > -90 &&
+      view->field_of_view->left_degrees > -view->field_of_view->right_degrees &&
+      view->field_of_view->right_degrees < 90 &&
+      view->field_of_view->right_degrees > -90 &&
+      view->field_of_view->right_degrees > -view->field_of_view->left_degrees) {
+    ret->field_of_view->up_degrees = view->field_of_view->up_degrees;
+    ret->field_of_view->down_degrees = view->field_of_view->down_degrees;
+    ret->field_of_view->left_degrees = view->field_of_view->left_degrees;
+    ret->field_of_view->right_degrees = view->field_of_view->right_degrees;
   } else {
     ret->field_of_view->up_degrees = kDefaultFOV;
     ret->field_of_view->down_degrees = kDefaultFOV;
@@ -93,21 +94,21 @@ device::mojom::VREyeParametersPtr ValidateEyeParameters(
 
   // Head-from-Eye Transform
   // Maximum 10m translation.
-  if (IsValidTransform(eye->head_from_eye, 10)) {
-    ret->head_from_eye = eye->head_from_eye;
+  if (IsValidTransform(view->head_from_eye, 10)) {
+    ret->head_from_eye = view->head_from_eye;
   }
   // else, ret->head_from_eye remains the identity transform
 
   // Renderwidth/height
-  uint32_t kMaxSize = 16384;
-  uint32_t kMinSize = 2;
+  int kMaxSize = 16384;
+  int kMinSize = 2;
   // DCHECK on debug builds to catch legitimate large sizes, but clamp on
   // release builds to ensure valid state.
-  DCHECK(eye->render_width < kMaxSize);
-  DCHECK(eye->render_height < kMaxSize);
-  ret->render_width = base::ClampToRange(eye->render_width, kMinSize, kMaxSize);
-  ret->render_height =
-      base::ClampToRange(eye->render_height, kMinSize, kMaxSize);
+  DCHECK_LT(view->viewport.width(), kMaxSize);
+  DCHECK_LT(view->viewport.height(), kMaxSize);
+  ret->viewport = gfx::Size(
+      base::ClampToRange(view->viewport.width(), kMinSize, kMaxSize),
+      base::ClampToRange(view->viewport.height(), kMinSize, kMaxSize));
   return ret;
 }
 
@@ -117,9 +118,11 @@ device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
     return nullptr;
 
   device::mojom::VRDisplayInfoPtr ret = device::mojom::VRDisplayInfo::New();
+  ret->views.resize(info->views.size());
+  for (size_t i = 0; i < info->views.size(); i++) {
+    ret->views[i] = ValidateXRView(info->views[i].get());
+  }
 
-  ret->left_eye = ValidateEyeParameters(info->left_eye.get());
-  ret->right_eye = ValidateEyeParameters(info->right_eye.get());
   return ret;
 }
 

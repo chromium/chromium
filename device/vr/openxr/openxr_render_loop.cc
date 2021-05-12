@@ -85,11 +85,11 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   UpdateStageParameters();
 
-  bool updated_eye_parameters = UpdateEyeParameters();
-
-  if (updated_eye_parameters) {
-    frame_data->left_eye = current_display_info_->left_eye.Clone();
-    frame_data->right_eye = current_display_info_->right_eye.Clone();
+  if (UpdateViews()) {
+    frame_data->views.resize(current_display_info_->views.size());
+    for (size_t i = 0; i < current_display_info_->views.size(); i++) {
+      frame_data->views[i] = current_display_info_->views[i].Clone();
+    }
 
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(on_display_info_changed_,
@@ -154,7 +154,7 @@ void OpenXrRenderLoop::StartRuntime(
   // Starting session succeeded so we can set the member variable.
   // Any additional code added below this should never fail.
   openxr_ = std::move(openxr);
-  texture_helper_.SetDefaultSize(openxr_->GetViewSize());
+  texture_helper_.SetDefaultSize(openxr_->GetSwapchainSize());
 
   InitializeDisplayInfo();
 
@@ -325,23 +325,30 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 
 // Return true if display info has changed.
 void OpenXrRenderLoop::InitializeDisplayInfo() {
-  if (!current_display_info_) {
-    current_display_info_ = mojom::VRDisplayInfo::New();
-    current_display_info_->right_eye = mojom::VREyeParameters::New();
-    current_display_info_->left_eye = mojom::VREyeParameters::New();
+  DCHECK(!current_display_info_);
+  current_display_info_ = mojom::VRDisplayInfo::New();
+
+  const std::vector<XrViewConfigurationView>& view_configs =
+      openxr_->GetViewConfigs();
+  DCHECK_EQ(view_configs.size(), OpenXrApiWrapper::kNumViews);
+  current_display_info_->views.resize(OpenXrApiWrapper::kNumViews);
+
+  for (size_t i = 0; i < OpenXrApiWrapper::kNumViews; i++) {
+    current_display_info_->views[i] = mojom::XRView::New();
+    auto* view = current_display_info_->views[i].get();
+    if (i == OpenXrApiWrapper::kLeftView) {
+      view->eye = mojom::XREye::kLeft;
+    } else if (i == OpenXrApiWrapper::kRightView) {
+      view->eye = mojom::XREye::kRight;
+    } else {
+      view->eye = mojom::XREye::kNone;
+    }
+
+    view->viewport = gfx::Size(view_configs[i].recommendedImageRectWidth,
+                               view_configs[i].recommendedImageRectHeight);
+
+    view->field_of_view = mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
   }
-
-  gfx::Size view_size = openxr_->GetViewSize();
-  current_display_info_->left_eye->render_width = view_size.width();
-  current_display_info_->right_eye->render_width = view_size.width();
-  current_display_info_->left_eye->render_height = view_size.height();
-  current_display_info_->right_eye->render_height = view_size.height();
-
-  // display info can't be send without fov info because of the mojo definition.
-  current_display_info_->left_eye->field_of_view =
-      mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
-  current_display_info_->right_eye->field_of_view =
-      current_display_info_->left_eye->field_of_view.Clone();
 
   main_thread_task_runner_->PostTask(
       FROM_HERE,
@@ -349,39 +356,54 @@ void OpenXrRenderLoop::InitializeDisplayInfo() {
 }
 
 // return true if either left_eye or right_eye updated.
-bool OpenXrRenderLoop::UpdateEyeParameters() {
+bool OpenXrRenderLoop::UpdateViews() {
   bool changed = false;
 
   XrView left;
   XrView right;
   openxr_->GetHeadFromEyes(&left, &right);
-  gfx::Size view_size = openxr_->GetViewSize();
+  const std::vector<XrViewConfigurationView>& view_configs =
+      openxr_->GetViewConfigs();
+  DCHECK_EQ(view_configs.size(), OpenXrApiWrapper::kNumViews);
+  DCHECK_EQ(current_display_info_->views.size(), OpenXrApiWrapper::kNumViews);
+  DCHECK_EQ(current_display_info_->views[OpenXrApiWrapper::kLeftView]->eye,
+            mojom::XREye::kLeft);
+  DCHECK_EQ(current_display_info_->views[OpenXrApiWrapper::kRightView]->eye,
+            mojom::XREye::kRight);
 
-  changed |= UpdateEye(left, view_size, &current_display_info_->left_eye);
+  changed |= UpdateView(
+      left, view_configs[OpenXrApiWrapper::kLeftView].recommendedImageRectWidth,
+      view_configs[OpenXrApiWrapper::kLeftView].recommendedImageRectHeight,
+      &current_display_info_->views[OpenXrApiWrapper::kLeftView]);
 
-  changed |= UpdateEye(right, view_size, &current_display_info_->right_eye);
+  changed |= UpdateView(
+      right,
+      view_configs[OpenXrApiWrapper::kRightView].recommendedImageRectWidth,
+      view_configs[OpenXrApiWrapper::kRightView].recommendedImageRectHeight,
+      &current_display_info_->views[OpenXrApiWrapper::kRightView]);
 
   return changed;
 }
 
-bool OpenXrRenderLoop::UpdateEye(const XrView& view_head,
-                                 const gfx::Size& view_size,
-                                 mojom::VREyeParametersPtr* eye) const {
+bool OpenXrRenderLoop::UpdateView(const XrView& view_head,
+                                  int width,
+                                  int height,
+                                  mojom::XRViewPtr* view) const {
   bool changed = false;
 
   gfx::Transform head_from_eye = XrPoseToGfxTransform(view_head.pose);
-  if ((*eye)->head_from_eye != head_from_eye) {
-    (*eye)->head_from_eye = head_from_eye;
+  if ((*view)->head_from_eye != head_from_eye) {
+    (*view)->head_from_eye = head_from_eye;
     changed = true;
   }
 
-  if ((*eye)->render_width != static_cast<uint32_t>(view_size.width())) {
-    (*eye)->render_width = static_cast<uint32_t>(view_size.width());
+  if ((*view)->viewport.width() != width) {
+    (*view)->viewport.set_width(width);
     changed = true;
   }
 
-  if ((*eye)->render_height != static_cast<uint32_t>(view_size.height())) {
-    (*eye)->render_height = static_cast<uint32_t>(view_size.height());
+  if ((*view)->viewport.height() != height) {
+    (*view)->viewport.set_height(height);
     changed = true;
   }
 
@@ -390,8 +412,8 @@ bool OpenXrRenderLoop::UpdateEye(const XrView& view_head,
                                 gfx::RadToDeg(-view_head.fov.angleDown),
                                 gfx::RadToDeg(-view_head.fov.angleLeft),
                                 gfx::RadToDeg(view_head.fov.angleRight));
-  if (!(*eye)->field_of_view || !fov->Equals(*(*eye)->field_of_view)) {
-    (*eye)->field_of_view = std::move(fov);
+  if (!(*view)->field_of_view || !fov->Equals(*(*view)->field_of_view)) {
+    (*view)->field_of_view = std::move(fov);
     changed = true;
   }
 

@@ -106,29 +106,11 @@ const char kImageTrackingFeatureNotSupported[] =
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
-const double kDegToRad = M_PI / 180.0;
-
 const float kMinDefaultFramebufferScale = 0.1f;
 const float kMaxDefaultFramebufferScale = 1.0f;
 
 // Indices into the views array.
 const unsigned int kMonoView = 0;
-
-void UpdateViewFromEyeParameters(
-    XRViewData* view,
-    const device::mojom::blink::VREyeParametersPtr& eye,
-    double depth_near,
-    double depth_far) {
-  const device::mojom::blink::VRFieldOfViewPtr& fov = eye->field_of_view;
-
-  view->UpdateProjectionMatrixFromFoV(
-      fov->up_degrees * kDegToRad, fov->down_degrees * kDegToRad,
-      fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
-      depth_far);
-
-  const TransformationMatrix matrix(eye->head_from_eye.matrix());
-  view->SetHeadFromEyeTransform(matrix);
-}
 
 // Returns the session feature corresponding to the given reference space type.
 base::Optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
@@ -518,40 +500,24 @@ const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
   return depth_manager_->depthDataFormat();
 }
 
-void XRSession::UpdateEyeParameters(
-    const device::mojom::blink::VREyeParametersPtr& left_eye,
-    const device::mojom::blink::VREyeParametersPtr& right_eye) {
-  wtf_size_t required_size = left_eye ? 1 : 0;
-  required_size += right_eye ? 1 : 0;
-
+void XRSession::UpdateViews(
+    const Vector<device::mojom::blink::XRViewPtr>& views) {
   bool updated = false;
-  if (pending_view_parameters_.size() != required_size) {
-    pending_view_parameters_.resize(required_size);
+
+  if (pending_views_.size() != views.size()) {
+    pending_views_.resize(views.size());
     updated = true;
   }
 
-  wtf_size_t view_index = 0;
-  if (left_eye) {
-    if (!pending_view_parameters_[view_index] ||
-        !pending_view_parameters_[view_index]->Equals(*left_eye)) {
-      pending_view_parameters_[view_index] = left_eye.Clone();
+  for (wtf_size_t i = 0; i < views.size(); i++) {
+    if (!pending_views_[i] || !pending_views_[i]->Equals(*views[i])) {
+      pending_views_[i] = views[i].Clone();
       updated = true;
     }
-    view_index++;
-  }
-
-  if (right_eye) {
-    if (!pending_view_parameters_[view_index] ||
-        !pending_view_parameters_[view_index]->Equals(*right_eye)) {
-      pending_view_parameters_[view_index] = right_eye.Clone();
-      updated = true;
-    }
-    view_index++;
   }
 
   if (updated) {
     update_views_next_frame_ = true;
-    view_parameters_id_++;
   }
 }
 
@@ -1416,9 +1382,9 @@ DoubleSize XRSession::DefaultFramebufferSize() const {
 
   // For the moment, concatenate all the views into a big strip.
   // Won't scale well for displays that use more than a stereo pair.
-  for (const auto& view : pending_view_parameters_) {
-    width += view->render_width;
-    height = std::max(height, static_cast<double>(view->render_height));
+  for (const auto& view : pending_views_) {
+    width += view->viewport.width();
+    height = std::max(height, static_cast<double>(view->viewport.height()));
   }
 
   return DoubleSize(width * scale, height * scale);
@@ -2233,7 +2199,7 @@ bool XRSession::RemoveHitTestSource(
 
 void XRSession::SetXRDisplayInfo(
     device::mojom::blink::VRDisplayInfoPtr display_info) {
-  UpdateEyeParameters(display_info->left_eye, display_info->right_eye);
+  UpdateViews(display_info->views);
 }
 
 const HeapVector<Member<XRViewData>>& XRSession::views() {
@@ -2246,28 +2212,20 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
     if (immersive()) {
       // In immersive mode the projection and view matrices must be aligned with
       // the device's physical optics.
-      if (views_.size() != pending_view_parameters_.size()) {
+      if (views_.size() != pending_views_.size()) {
         views_.clear();
+        views_.resize(pending_views_.size());
       }
 
-      for (wtf_size_t i = 0; i < pending_view_parameters_.size(); ++i) {
-        if (views_.size() <= i) {
-          // TODO(crbug.com/998146): Replace with eyes communicated from the
-          // XR runtime.
-          XRView::XREye eye = i ? XRView::kEyeRight : XRView::kEyeLeft;
-          if (pending_view_parameters_.size() == 1) {
-            eye = XRView::kEyeNone;
-          }
-
-          views_.emplace_back(MakeGarbageCollected<XRViewData>(eye));
-        }
-        UpdateViewFromEyeParameters(views_[i], pending_view_parameters_[i],
-                                    render_state_->depthNear(),
-                                    render_state_->depthFar());
+      for (wtf_size_t i = 0; i < pending_views_.size(); ++i) {
+        views_[i] = MakeGarbageCollected<XRViewData>(pending_views_[i],
+                                                     render_state_->depthNear(),
+                                                     render_state_->depthFar());
       }
     } else {
       if (views_.IsEmpty()) {
-        views_.emplace_back(MakeGarbageCollected<XRViewData>(XRView::kEyeNone));
+        views_.emplace_back(MakeGarbageCollected<XRViewData>(
+            device::mojom::blink::XREye::kNone));
       }
 
       float aspect = 1.0f;

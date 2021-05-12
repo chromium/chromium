@@ -76,7 +76,8 @@ class OpenXrApiWrapper {
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
       bool hand_input_enabled);
 
-  gfx::Size GetViewSize() const;
+  const std::vector<XrViewConfigurationView>& GetViewConfigs() const;
+  gfx::Size GetSwapchainSize() const;
   XrTime GetPredictedDisplayTime() const;
   XrResult GetLuid(LUID* luid,
                    const OpenXrExtensionHelper& extension_helper) const;
@@ -97,6 +98,18 @@ class OpenXrApiWrapper {
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
   void StoreFence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
                   int16_t frame_index);
+
+  // The number of views the OpenXR runtime is returning on each frame.
+  static constexpr uint32_t kNumViews = 2;
+
+  // Per the OpenXR 1.0 spec, the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO view
+  // configuration must have the left view in index 0 and right view in index 1.
+  static constexpr uint32_t kLeftView = 0;
+  static constexpr uint32_t kRightView = 1;
+  // Since kNumViews is used to size a vector that uses kLeftView/kRightView as
+  // indices, ensure that kNumViews is greater than the largest index.
+  static_assert(kRightView < kNumViews,
+                "kNumViews must be greater than kRightView");
 
  private:
   void Reset();
@@ -153,6 +166,7 @@ class OpenXrApiWrapper {
   XrInstance instance_;
   XrSystemId system_;
   std::vector<XrViewConfigurationView> view_configs_;
+  gfx::Size swapchain_size_;
   XrEnvironmentBlendMode blend_mode_;
   XrExtent2Df stage_bounds_;
 

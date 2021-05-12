@@ -484,9 +484,8 @@ void XRFrameProvider::ProcessScheduledFrame(
       DCHECK(buffer_mailbox_holder_);
     }
 #endif
-    if (frame_data && (frame_data->left_eye || frame_data->right_eye)) {
-      immersive_session_->UpdateEyeParameters(frame_data->left_eye,
-                                              frame_data->right_eye);
+    if (frame_data && !frame_data->views.IsEmpty()) {
+      immersive_session_->UpdateViews(frame_data->views);
     }
 
     if (frame_data) {
@@ -696,8 +695,10 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
   DCHECK(layer->session() == immersive_session_);
   DCHECK(immersive_presentation_provider_.is_bound());
 
-  XRViewport* left = layer->GetViewportForEye(XRView::kEyeLeft);
-  XRViewport* right = layer->GetViewportForEye(XRView::kEyeRight);
+  XRViewport* left =
+      layer->GetViewportForEye(device::mojom::blink::XREye::kLeft);
+  XRViewport* right =
+      layer->GetViewportForEye(device::mojom::blink::XREye::kRight);
   float width = layer->framebufferWidth();
   float height = layer->framebufferHeight();
 

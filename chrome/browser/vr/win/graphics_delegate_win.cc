@@ -68,9 +68,9 @@ void GraphicsDelegateWin::ClearContext() {
 }
 
 gfx::Rect GraphicsDelegateWin::GetTextureSize() {
-  int width = info_->left_eye->render_width + info_->right_eye->render_width;
-  int height =
-      std::max(info_->left_eye->render_height, info_->right_eye->render_width);
+  int width = left_->viewport.width() + right_->viewport.width();
+  int height = std::max(left_->viewport.height(), right_->viewport.height());
+
   return gfx::Rect(width, height);
 }
 
@@ -138,16 +138,16 @@ mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
 gfx::RectF GraphicsDelegateWin::GetLeft() {
   gfx::Rect size = GetTextureSize();
   return gfx::RectF(
-      0, 0, static_cast<float>(info_->left_eye->render_width) / size.width(),
-      static_cast<float>(info_->left_eye->render_height) / size.height());
+      0, 0, static_cast<float>(left_->viewport.width()) / size.width(),
+      static_cast<float>(left_->viewport.height()) / size.height());
 }
 
 gfx::RectF GraphicsDelegateWin::GetRight() {
   gfx::Rect size = GetTextureSize();
   return gfx::RectF(
-      static_cast<float>(info_->left_eye->render_width) / size.width(), 0,
-      static_cast<float>(info_->right_eye->render_width) / size.width(),
-      static_cast<float>(info_->right_eye->render_height) / size.height());
+      static_cast<float>(left_->viewport.width()) / size.width(), 0,
+      static_cast<float>(right_->viewport.width()) / size.width(),
+      static_cast<float>(right_->viewport.height()) / size.height());
 }
 
 bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
@@ -186,23 +186,39 @@ void GraphicsDelegateWin::ResetMemoryBuffer() {
 
 void GraphicsDelegateWin::SetVRDisplayInfo(
     device::mojom::VRDisplayInfoPtr info) {
-  info_ = std::move(info);
+  // Store the first left and right views. VRUiHostImpl::SetVRDisplayInfo has
+  // already validated that the left and right views exist.
+  for (auto& view : info->views) {
+    if (!left_ && view->eye == device::mojom::XREye::kLeft) {
+      left_ = std::move(view);
+    } else if (!right_ && view->eye == device::mojom::XREye::kRight) {
+      right_ = std::move(view);
+    }
+
+    if (left_ && right_) {
+      break;
+    }
+  }
+
+  DCHECK(left_);
+  DCHECK(right_);
 }
 
 FovRectangles GraphicsDelegateWin::GetRecommendedFovs() {
-  DCHECK(info_);
+  DCHECK(left_);
+  DCHECK(right_);
   FovRectangle left = {
-      info_->left_eye->field_of_view->left_degrees,
-      info_->left_eye->field_of_view->right_degrees,
-      info_->left_eye->field_of_view->down_degrees,
-      info_->left_eye->field_of_view->up_degrees,
+      left_->field_of_view->left_degrees,
+      left_->field_of_view->right_degrees,
+      left_->field_of_view->down_degrees,
+      left_->field_of_view->up_degrees,
   };
 
   FovRectangle right = {
-      info_->right_eye->field_of_view->left_degrees,
-      info_->right_eye->field_of_view->right_degrees,
-      info_->right_eye->field_of_view->down_degrees,
-      info_->right_eye->field_of_view->up_degrees,
+      right_->field_of_view->left_degrees,
+      right_->field_of_view->right_degrees,
+      right_->field_of_view->down_degrees,
+      right_->field_of_view->up_degrees,
   };
 
   return std::pair<FovRectangle, FovRectangle>(left, right);
@@ -214,25 +230,23 @@ float GraphicsDelegateWin::GetZNear() {
 
 namespace {
 
-CameraModel CameraModelViewProjFromVREyeParameters(
-    const device::mojom::VREyeParametersPtr& eye_params,
-    gfx::Transform head_from_world) {
+CameraModel CameraModelViewProjFromXRView(const device::mojom::XRViewPtr& view,
+                                          gfx::Transform head_from_world) {
   CameraModel model = {};
 
-  DCHECK(eye_params->head_from_eye.IsInvertible());
+  DCHECK(view->head_from_eye.IsInvertible());
   gfx::Transform eye_from_head;
-  if (eye_params->head_from_eye.GetInverse(&eye_from_head)) {
+  if (view->head_from_eye.GetInverse(&eye_from_head)) {
     model.view_matrix = eye_from_head * head_from_world;
   }
 
-  float up_tan =
-      tanf(eye_params->field_of_view->up_degrees * base::kPiFloat / 180.0);
+  float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
   float left_tan =
-      tanf(eye_params->field_of_view->left_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->left_degrees * base::kPiFloat / 180.0);
   float right_tan =
-      tanf(eye_params->field_of_view->right_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->right_degrees * base::kPiFloat / 180.0);
   float down_tan =
-      tanf(eye_params->field_of_view->down_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->down_degrees * base::kPiFloat / 180.0);
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
@@ -254,19 +268,17 @@ RenderInfo GraphicsDelegateWin::GetRenderInfo(FrameType frame_type,
   RenderInfo info;
   info.head_pose = head_pose;
 
-  CameraModel left =
-      CameraModelViewProjFromVREyeParameters(info_->left_eye, head_pose);
+  CameraModel left = CameraModelViewProjFromXRView(left_, head_pose);
   left.eye_type = kLeftEye;
-  left.viewport = gfx::Rect(0, 0, info_->left_eye->render_width,
-                            info_->left_eye->render_height);
+  left.viewport =
+      gfx::Rect(0, 0, left_->viewport.width(), left_->viewport.height());
   info.left_eye_model = left;
 
-  CameraModel right =
-      CameraModelViewProjFromVREyeParameters(info_->right_eye, head_pose);
+  CameraModel right = CameraModelViewProjFromXRView(right_, head_pose);
   right.eye_type = kRightEye;
-  right.viewport = gfx::Rect(info_->left_eye->render_width, 0,
-                             info_->right_eye->render_width,
-                             info_->right_eye->render_height);
+  right.viewport =
+      gfx::Rect(left_->viewport.width(), 0, right_->viewport.width(),
+                right_->viewport.height());
   info.right_eye_model = right;
   cached_info_ = info;
   return info;

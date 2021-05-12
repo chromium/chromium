@@ -57,23 +57,30 @@ gfx::Size GetMaximumWebVrSize(gvr::GvrApi* gvr_api) {
   return webvr_size;
 }
 
-mojom::VREyeParametersPtr CreateEyeParamater(
-    gvr::GvrApi* gvr_api,
-    gvr::Eye eye,
-    const gvr::BufferViewportList& buffers,
-    const gfx::Size& maximum_size) {
-  mojom::VREyeParametersPtr eye_params = mojom::VREyeParameters::New();
-  eye_params->field_of_view = mojom::VRFieldOfView::New();
-  eye_params->render_width = maximum_size.width() / 2;
-  eye_params->render_height = maximum_size.height();
+mojom::XRViewPtr CreateView(gvr::GvrApi* gvr_api,
+                            gvr::Eye eye,
+                            const gvr::BufferViewportList& buffers,
+                            const gfx::Size& maximum_size) {
+  mojom::XRViewPtr view = mojom::XRView::New();
+
+  if (eye == GVR_LEFT_EYE) {
+    view->eye = mojom::XREye::kLeft;
+  } else if (eye == GVR_RIGHT_EYE) {
+    view->eye = mojom::XREye::kRight;
+  } else {
+    NOTREACHED();
+  }
+
+  view->field_of_view = mojom::VRFieldOfView::New();
+  view->viewport = gfx::Size(maximum_size.width() / 2, maximum_size.height());
 
   gvr::BufferViewport eye_viewport = gvr_api->CreateBufferViewport();
   buffers.GetBufferViewport(eye, &eye_viewport);
   gvr::Rectf eye_fov = eye_viewport.GetSourceFov();
-  eye_params->field_of_view->up_degrees = eye_fov.top;
-  eye_params->field_of_view->down_degrees = eye_fov.bottom;
-  eye_params->field_of_view->left_degrees = eye_fov.left;
-  eye_params->field_of_view->right_degrees = eye_fov.right;
+  view->field_of_view->up_degrees = eye_fov.top;
+  view->field_of_view->down_degrees = eye_fov.bottom;
+  view->field_of_view->left_degrees = eye_fov.left;
+  view->field_of_view->right_degrees = eye_fov.right;
 
   gvr::Mat4f eye_mat = gvr_api->GetEyeFromHeadMatrix(eye);
   gfx::Transform eye_from_head;
@@ -81,10 +88,10 @@ mojom::VREyeParametersPtr CreateEyeParamater(
   DCHECK(eye_from_head.IsInvertible());
   gfx::Transform head_from_eye;
   if (eye_from_head.GetInverse(&head_from_eye)) {
-    eye_params->head_from_eye = head_from_eye;
+    view->head_from_eye = head_from_eye;
   }
 
-  return eye_params;
+  return view;
 }
 
 mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
@@ -97,11 +104,11 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
   gvr_buffer_viewports.SetToRecommendedBufferViewports();
 
   gfx::Size maximum_size = GetMaximumWebVrSize(gvr_api);
-  device->left_eye = CreateEyeParamater(gvr_api, GVR_LEFT_EYE,
-                                        gvr_buffer_viewports, maximum_size);
-  device->right_eye = CreateEyeParamater(gvr_api, GVR_RIGHT_EYE,
-                                         gvr_buffer_viewports, maximum_size);
-
+  device->views.resize(2);
+  device->views[0] =
+      CreateView(gvr_api, GVR_LEFT_EYE, gvr_buffer_viewports, maximum_size);
+  device->views[1] =
+      CreateView(gvr_api, GVR_RIGHT_EYE, gvr_buffer_viewports, maximum_size);
   return device;
 }
 

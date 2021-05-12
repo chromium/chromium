@@ -17,30 +17,33 @@ FakeVRDevice::~FakeVRDevice() {}
 
 mojom::VRDisplayInfoPtr FakeVRDevice::InitBasicDevice() {
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
-  display_info->left_eye = InitEye(45, -0.03f, 1024);
-  display_info->right_eye = InitEye(45, 0.03f, 1024);
+  display_info->views.resize(2);
+  display_info->views[0] = InitView(mojom::XREye::kLeft, 45, -0.03f, 1024);
+  display_info->views[1] = InitView(mojom::XREye::kRight, 45, 0.03f, 1024);
+
   return display_info;
 }
 
-mojom::VREyeParametersPtr FakeVRDevice::InitEye(float fov,
-                                                float offset,
-                                                uint32_t size) {
-  mojom::VREyeParametersPtr eye = mojom::VREyeParameters::New();
+mojom::XRViewPtr FakeVRDevice::InitView(mojom::XREye eye,
+                                        float fov,
+                                        float offset,
+                                        uint32_t size) {
+  mojom::XRViewPtr view = mojom::XRView::New();
+  view->eye = eye;
 
-  eye->field_of_view = mojom::VRFieldOfView::New();
-  eye->field_of_view->up_degrees = fov;
-  eye->field_of_view->down_degrees = fov;
-  eye->field_of_view->left_degrees = fov;
-  eye->field_of_view->right_degrees = fov;
+  view->field_of_view = mojom::VRFieldOfView::New();
+  view->field_of_view->up_degrees = fov;
+  view->field_of_view->down_degrees = fov;
+  view->field_of_view->left_degrees = fov;
+  view->field_of_view->right_degrees = fov;
 
   gfx::DecomposedTransform decomp;
   decomp.translate[0] = offset;
-  eye->head_from_eye = gfx::ComposeTransform(decomp);
+  view->head_from_eye = gfx::ComposeTransform(decomp);
 
-  eye->render_width = size;
-  eye->render_height = size;
+  view->viewport = gfx::Size(size, size);
 
-  return eye;
+  return view;
 }
 
 void FakeVRDevice::RequestSession(

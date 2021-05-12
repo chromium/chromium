@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
@@ -28,10 +29,8 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
  public:
   XRView(XRFrame*, XRViewData*);
 
-  enum XREye { kEyeNone = 0, kEyeLeft = 1, kEyeRight = 2 };
-
   const String& eye() const { return eye_string_; }
-  XREye EyeValue() const { return eye_; }
+  device::mojom::blink::XREye EyeValue() const { return eye_; }
   XRViewData* ViewData() const { return view_data_; }
 
   XRFrame* frame() const;
@@ -53,7 +52,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  XREye eye_;
+  device::mojom::blink::XREye eye_;
   String eye_string_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
@@ -63,7 +62,10 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
 class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  public:
-  XRViewData(XRView::XREye eye) : eye_(eye) {}
+  explicit XRViewData(device::mojom::blink::XREye eye) : eye_(eye) {}
+  XRViewData(const device::mojom::blink::XRViewPtr& view,
+             double depth_near,
+             double depth_far);
 
   void UpdatePoseMatrix(const TransformationMatrix& ref_space_from_head);
   void UpdateProjectionMatrixFromFoV(float up_rad,
@@ -84,7 +86,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
                                         double canvas_width,
                                         double canvas_height);
 
-  XRView::XREye Eye() const { return eye_; }
+  device::mojom::blink::XREye Eye() const { return eye_; }
   const TransformationMatrix& Transform() const { return ref_space_from_eye_; }
   const TransformationMatrix& ProjectionMatrix() const {
     return projection_matrix_;
@@ -110,7 +112,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   void Trace(Visitor*) const {}
 
  private:
-  const XRView::XREye eye_;
+  const device::mojom::blink::XREye eye_;
   TransformationMatrix ref_space_from_eye_;
   TransformationMatrix projection_matrix_;
   TransformationMatrix inv_projection_;
