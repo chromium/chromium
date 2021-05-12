@@ -811,6 +811,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
       match->associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));
+#if defined(OS_ANDROID)
+      match->UpdateJavaAnswer();
+#endif
       continue;
     }
 
@@ -875,6 +878,10 @@ void AutocompleteController::UpdateKeywordDescriptions(
           i->description_class.push_back(
               ACMatchClassification(0, ACMatchClassification::DIM));
         }
+#if defined(OS_ANDROID)
+        i->UpdateJavaDescription();
+#endif
+
         last_keyword = i->keyword;
       }
     } else {

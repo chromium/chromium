@@ -45,9 +45,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> description_class_offsets;
   std::vector<int> description_class_styles;
-  for (auto description_class : description_class) {
-    description_class_offsets.push_back(description_class.offset);
-    description_class_styles.push_back(description_class.style);
+  for (auto description_class_item : description_class) {
+    description_class_offsets.push_back(description_class_item.offset);
+    description_class_styles.push_back(description_class_item.style);
   }
 
   base::android::ScopedJavaLocalRef<jobject> janswer;
@@ -181,5 +181,29 @@ void AutocompleteMatch::UpdateJavaDestinationUrl() {
     Java_AutocompleteMatch_setDestinationUrl(
         env, *java_match_,
         url::GURLAndroid::FromNativeGURL(env, destination_url));
+  }
+}
+
+void AutocompleteMatch::UpdateJavaAnswer() {
+  if (java_match_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AutocompleteMatch_setAnswer(
+        env, *java_match_, answer ? answer->CreateJavaObject() : nullptr);
+  }
+}
+
+void AutocompleteMatch::UpdateJavaDescription() {
+  if (java_match_) {
+    std::vector<int> description_class_offsets;
+    std::vector<int> description_class_styles;
+    for (auto description_class_item : description_class) {
+      description_class_offsets.push_back(description_class_item.offset);
+      description_class_styles.push_back(description_class_item.style);
+    }
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AutocompleteMatch_setDescription(
+        env, *java_match_, ConvertUTF16ToJavaString(env, description),
+        ToJavaIntArray(env, description_class_offsets),
+        ToJavaIntArray(env, description_class_styles));
   }
 }

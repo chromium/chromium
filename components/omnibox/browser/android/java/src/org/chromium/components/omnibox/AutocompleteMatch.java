@@ -84,9 +84,9 @@ public class AutocompleteMatch {
     private final boolean mIsSearchType;
     private String mDisplayText;
     private final List<MatchClassification> mDisplayTextClassifications;
-    private final String mDescription;
-    private final List<MatchClassification> mDescriptionClassifications;
-    private final SuggestionAnswer mAnswer;
+    private String mDescription;
+    private List<MatchClassification> mDescriptionClassifications;
+    private SuggestionAnswer mAnswer;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -157,13 +157,6 @@ public class AutocompleteMatch {
                     contentClassificationOffsets[i], contentClassificationStyles[i]));
         }
 
-        assert descriptionClassificationOffsets.length == descriptionClassificationStyles.length;
-        List<MatchClassification> descriptionClassifications = new ArrayList<>();
-        for (int i = 0; i < descriptionClassificationOffsets.length; i++) {
-            descriptionClassifications.add(new MatchClassification(
-                    descriptionClassificationOffsets[i], descriptionClassificationStyles[i]));
-        }
-
         assert navsuggestTitles.length == navsuggestUrls.length;
         List<NavsuggestTile> navsuggestTiles = new ArrayList<>();
         for (int i = 0; i < navsuggestTitles.length; i++) {
@@ -177,10 +170,12 @@ public class AutocompleteMatch {
 
         AutocompleteMatch match = new AutocompleteMatch(nativeType, subtypes, isSearchType,
                 relevance, transition, contents, contentClassifications, description,
-                descriptionClassifications, answer, fillIntoEdit, url, imageUrl, imageDominantColor,
+                new ArrayList<>(), answer, fillIntoEdit, url, imageUrl, imageDominantColor,
                 isDeletable, postContentType, postData, groupId, tiles, clipboardImageData,
                 hasTabMatch, navsuggestTiles);
         match.updateNativeObjectRef(nativeObject);
+        match.setDescription(
+                description, descriptionClassificationOffsets, descriptionClassificationStyles);
         return match;
     }
 
@@ -222,6 +217,23 @@ public class AutocompleteMatch {
     @CalledByNative
     private void setDestinationUrl(GURL url) {
         mUrl = url;
+    }
+
+    @CalledByNative
+    private void setAnswer(SuggestionAnswer answer) {
+        mAnswer = answer;
+    }
+
+    @CalledByNative
+    private void setDescription(String description, int[] descriptionClassificationOffsets,
+            int[] descriptionClassificationStyles) {
+        assert descriptionClassificationOffsets.length == descriptionClassificationStyles.length;
+        mDescription = description;
+        mDescriptionClassifications.clear();
+        for (int i = 0; i < descriptionClassificationOffsets.length; i++) {
+            mDescriptionClassifications.add(new MatchClassification(
+                    descriptionClassificationOffsets[i], descriptionClassificationStyles[i]));
+        }
     }
 
     public int getType() {
