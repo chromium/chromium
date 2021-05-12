@@ -1339,9 +1339,8 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
     // clang-format off
+    @DisabledTest(message="https://crbug.com/1170553, https://crbug.com/1205410")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true" +
             "/exclude_mv_tiles/true/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurfaceV2() {
