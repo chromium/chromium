@@ -5,16 +5,26 @@
 import {assertTrue} from '../../chai_assert.js';
 
 /**
- * Helper function for getting an array of data-point elements.
+ * Helper function for getting a data-point element.
  * @param {?T} element
- * @param {string=} selector
+ * @param {string} selector
  * @template T
- * @return {!NodeList<!DataPointElement>}
+ * @return {!DataPointElement}
  */
-export function getDataPointElements(element, selector) {
-  return /** @type {!NodeList<!DataPointElement>} */ (
-      element.shadowRoot.querySelectorAll(
-          selector ? `${selector} > data-point` : 'data-point'));
+export function getDataPoint(element, selector) {
+  return /** @type {!DataPointElement} */ (
+      element.shadowRoot.querySelector(`data-point${selector}`));
+}
+
+/**
+ * Helper function for getting the value property from a data-point element.
+ * @param {?T} element
+ * @param {string} selector
+ * @template T
+ * @return {string}
+ */
+export function getDataPointValue(element, selector) {
+  return `${getDataPoint(element, selector).value}`;
 }
 
 /**

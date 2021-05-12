@@ -39,16 +39,18 @@ export function ethernetInfoTestSuite() {
 
   test('EthernetInfoPopulated', () => {
     return initializeEthernetInfo().then(() => {
-      const dataPoints = dx_utils.getDataPointElements(
-          ethernetInfoElement, '#ethernetInfoContainer');
       dx_utils.assertTextContains(
-          `${dataPoints[0].value}`, `${fakeEthernetNetwork.state}`);
+          dx_utils.getDataPointValue(ethernetInfoElement, '#state'),
+          `${fakeEthernetNetwork.state}`);
       dx_utils.assertTextContains(
-          dataPoints[1].value, fakeEthernetNetwork.name);
+          dx_utils.getDataPointValue(ethernetInfoElement, '#name'),
+          fakeEthernetNetwork.name);
       dx_utils.assertTextContains(
-          dataPoints[2].value, fakeEthernetNetwork.guid);
+          dx_utils.getDataPointValue(ethernetInfoElement, '#guid'),
+          fakeEthernetNetwork.guid);
       dx_utils.assertTextContains(
-          dataPoints[3].value, fakeEthernetNetwork.macAddress);
+          dx_utils.getDataPointValue(ethernetInfoElement, '#macAddress'),
+          fakeEthernetNetwork.macAddress);
     });
   });
 }

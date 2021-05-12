@@ -39,16 +39,18 @@ export function cellularInfoTestSuite() {
 
   test('CellularInfoPopulated', () => {
     return initializeCellularInfo().then(() => {
-      const dataPoints = dx_utils.getDataPointElements(
-          cellularInfoElement, '#cellularInfoContainer');
       dx_utils.assertTextContains(
-          `${dataPoints[0].value}`, `${fakeCellularNetwork.state}`);
+          dx_utils.getDataPointValue(cellularInfoElement, '#state'),
+          `${fakeCellularNetwork.state}`);
       dx_utils.assertTextContains(
-          dataPoints[1].value, fakeCellularNetwork.name);
+          dx_utils.getDataPointValue(cellularInfoElement, '#name'),
+          fakeCellularNetwork.name);
       dx_utils.assertTextContains(
-          dataPoints[2].value, fakeCellularNetwork.guid);
+          dx_utils.getDataPointValue(cellularInfoElement, '#guid'),
+          fakeCellularNetwork.guid);
       dx_utils.assertTextContains(
-          dataPoints[3].value, fakeCellularNetwork.macAddress);
+          dx_utils.getDataPointValue(cellularInfoElement, '#macAddress'),
+          fakeCellularNetwork.macAddress);
     });
   });
 }

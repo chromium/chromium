@@ -135,23 +135,27 @@ export function batteryStatusCardTestSuite() {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
-          const dataPoints =
-              dx_utils.getDataPointElements(batteryStatusElement);
           dx_utils.assertTextContains(
-              dataPoints[0].value,
+              dx_utils.getDataPointValue(
+                  batteryStatusElement, '#batteryHealth'),
               `${fakeBatteryHealth[0].batteryWearPercentage}`);
           dx_utils.assertTextContains(
-              dataPoints[0].tooltipText,
+              dx_utils.getDataPoint(batteryStatusElement, '#batteryHealth')
+                  .tooltipText,
               loadTimeData.getString('batteryHealthTooltipText'));
-          assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[1].value);
           dx_utils.assertTextContains(
-              dataPoints[1].tooltipText,
+              dx_utils.getDataPointValue(batteryStatusElement, '#cycleCount'),
+              `${fakeBatteryHealth[0].cycleCount}`);
+          dx_utils.assertTextContains(
+              dx_utils.getDataPoint(batteryStatusElement, '#cycleCount')
+                  .tooltipText,
               loadTimeData.getString('cycleCountTooltipText'));
           dx_utils.assertTextContains(
-              dataPoints[2].value,
+              dx_utils.getDataPointValue(batteryStatusElement, '#currentNow'),
               `${fakeBatteryChargeStatus[0].currentNowMilliamps}`);
           dx_utils.assertTextContains(
-              dataPoints[2].tooltipText,
+              dx_utils.getDataPoint(batteryStatusElement, '#currentNow')
+                  .tooltipText,
               loadTimeData.getString('currentNowTooltipText'));
           dx_utils.assertElementContainsText(
               batteryStatusElement.$$('#batteryStatusChipInfo'),
