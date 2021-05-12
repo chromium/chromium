@@ -127,8 +127,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private void focusTextBox() {
         mUrlBarFocusRequested |= !mUrlBar.hasFocus();
         ensureUrlBarFocusedAndTriggerZeroSuggest();
-
-        mUrlCoordinator.setKeyboardVisibility(true, false);
     }
 
     @Override
@@ -147,10 +145,17 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
      * #onWindowFocusChanged(boolean)}, if call mUrlBar.requestFocus() before onWindowFocusChanged
      * is called, clipboard data will not been received since receive clipboard data needs focus
      * (https://developer.android.com/reference/android/content/ClipboardManager#getPrimaryClip()).
+     *
+     * Requesting focus ahead of window activation completion results with inability to call up
+     * soft keyboard on an early releases of Android S. The remedy is to defer the focus requests
+     * until after Window focus change completes. This is tracked by Android bug http://b/186331446.
      */
     private void ensureUrlBarFocusedAndTriggerZeroSuggest() {
         if (mUrlBarFocusRequested && mHasWindowFocus) {
-            mUrlBar.requestFocus();
+            mUrlBar.post(() -> {
+                mUrlBar.requestFocus();
+                mUrlCoordinator.setKeyboardVisibility(true, false);
+            });
             mUrlBarFocusRequested = false;
         }
         // Use cached suggestions only if native is not yet ready.
