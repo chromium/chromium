@@ -540,6 +540,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // TODO(crbug.com/1173160): Split and move to the StartSurfaceSceneAgent after
 // refactoring the scene states.
 - (void)handleShowStartSurfaceIfNecessary {
+  if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
+    return;
+  }
+
   // Do not show the Start Surface no matter whether it is enabled or not when
   // the Tab grid is active by design.
   if (self.mainCoordinator.isTabGridActive) {
@@ -552,13 +556,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // for now.
   web::WebState* currentWebState =
       self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
-  if (IsURLNtp(currentWebState->GetVisibleURL())) {
+  if (!currentWebState || IsURLNtp(currentWebState->GetVisibleURL())) {
     return;
   }
 
-  if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
-    return;
-  }
   self.sceneState.modifytVisibleNTPForStartSurface = YES;
 
   // Activate the existing NTP tab for the Start surface.
