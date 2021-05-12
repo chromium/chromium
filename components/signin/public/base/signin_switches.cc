@@ -30,6 +30,9 @@ const base::Feature kForceAccountIdMigration{"ForceAccountIdMigration",
 // Menagerie API.
 const base::Feature kDeprecateMenagerieAPI{"DeprecateMenagerieAPI",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// This feature flag is used to wipe device data on child account signin.
+const base::Feature kWipeDataOnChildAccountSignin{
+    "WipeDataOnChildAccountSignin", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

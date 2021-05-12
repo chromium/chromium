@@ -913,6 +913,9 @@ extern const char kMobileIdentityConsistencyDescription[];
 extern const char kMobileIdentityConsistencyFREName[];
 extern const char kMobileIdentityConsistencyFREDescription[];
 
+extern const char kWipeDataOnChildAccountSigninName[];
+extern const char kWipeDataOnChildAccountSigninDescription[];
+
 extern const char kMobileIdentityConsistencyVarName[];
 extern const char kMobileIdentityConsistencyVarDescription[];
 

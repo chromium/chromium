@@ -13,9 +13,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
@@ -139,22 +141,27 @@ public class SigninChecker
             mSigninManager.onFirstRunCheckDone();
             if (mSigninManager.isSignInAllowed()) {
                 Log.d(TAG, "The child account sign-in starts.");
-                mSigninManager.signinAndEnableSync(
-                        SigninAccessPoint.FORCED_SIGNIN, account, new SignInCallback() {
-                            @Override
-                            public void onSignInComplete() {
-                                final ProfileSyncService profileSyncService =
-                                        ProfileSyncService.get();
-                                if (profileSyncService != null) {
-                                    profileSyncService.setFirstSetupComplete(
-                                            SyncFirstSetupCompleteSource.BASIC_FLOW);
-                                }
-                                ++mNumOfChildAccountChecksDone;
-                            }
+                final SignInCallback signInCallback = new SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        final ProfileSyncService profileSyncService = ProfileSyncService.get();
+                        if (profileSyncService != null) {
+                            profileSyncService.setFirstSetupComplete(
+                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                        }
+                        ++mNumOfChildAccountChecksDone;
+                    }
 
-                            @Override
-                            public void onSignInAborted() {}
-                        });
+                    @Override
+                    public void onSignInAborted() {}
+                };
+                boolean shouldWipeData = ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN);
+                SyncUserDataWiper.wipeSyncUserDataIfRequired(shouldWipeData)
+                        .then((Void v)
+                                        -> mSigninManager.signinAndEnableSync(
+                                                SigninAccessPoint.FORCED_SIGNIN, account,
+                                                signInCallback));
                 return;
             }
         }

@@ -31,6 +31,8 @@ extern const base::Feature kForceAccountIdMigration;
 // This feature flag is for the deprecating of the Android profile data
 // Menagerie API.
 extern const base::Feature kDeprecateMenagerieAPI;
+// This feature flag is used to wipe device data on child account signin.
+extern const base::Feature kWipeDataOnChildAccountSignin;
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1556,6 +1556,11 @@ const char kMobileIdentityConsistencyVarDescription[] =
     "Enables stronger identity consistency on mobile with different UI "
     "variations";
 
+const char kWipeDataOnChildAccountSigninName[] =
+    "Wipe Data On Child account signin";
+const char kWipeDataOnChildAccountSigninDescription[] =
+    "Wipe Data from previous account when signing in a child account";
+
 const char kMobileIdentityConsistencyFREName[] =
     "Mobile identity consistency FRE";
 const char kMobileIdentityConsistencyFREDescription[] =

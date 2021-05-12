@@ -501,6 +501,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_AUTH_PHONE_SUPPORT = "WebAuthenticationPhoneSupport";
     public static final String WEB_FEED = "WebFeed";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
+    public static final String WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN = "WipeDataOnChildAccountSignin";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
 
     @NativeMethods

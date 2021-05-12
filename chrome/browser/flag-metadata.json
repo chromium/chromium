@@ -5420,6 +5420,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "wipe-data-on-child-account-signin",
+    "owners": [ "aliceywang", "msarda", "triploblastic" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "xsurface-metrics-reporting",
     "owners": [ "//chrom/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 99
