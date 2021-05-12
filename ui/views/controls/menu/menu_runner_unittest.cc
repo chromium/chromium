@@ -403,7 +403,6 @@ TEST_F(MenuRunnerWidgetTest, WidgetDoesntTakeCapture) {
             internal::NativeWidgetPrivate::GetGlobalCapture(
                 widget()->GetNativeView()));
   auto generator(EventGeneratorForWidget(widget()));
-  generator->MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
   // Implicit capture should not be held by |widget|.
   generator->PressLeftButton();
   EXPECT_EQ(1, event_count_view()->GetEventCount(ui::ET_MOUSE_PRESSED));

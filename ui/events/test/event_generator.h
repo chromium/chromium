@@ -167,6 +167,20 @@ class EventGenerator {
   void set_flags(int flags) { flags_ = flags; }
   int flags() const { return flags_; }
 
+  // Many tests assume a window created at (0,0) will remain there when shown.
+  // However, an operating system's window manager may reposition the window
+  // into the work area. This can disrupt the coordinates used on test events,
+  // so an EventGeneratorDelegate may skip the step that remaps coordinates in
+  // the root window to window coordinates when dispatching events.
+  // Setting this to false skips that step, in which case the test must ensure
+  // it correctly maps coordinates in window coordinates to root window (screen)
+  // coordinates when calling, e.g., set_current_screen_location().
+  // Default is true. This only has any effect on Mac.
+  void set_assume_window_at_origin(bool assume_window_at_origin) {
+    assume_window_at_origin_ = assume_window_at_origin;
+  }
+  bool assume_window_at_origin() { return assume_window_at_origin_; }
+
   // Generates a left button press event.
   void PressLeftButton();
 
@@ -469,6 +483,10 @@ class EventGenerator {
   bool grab_ = false;
 
   ui::PointerDetails touch_pointer_details_;
+
+  // Whether to skip mapping of coordinates from the root window to a hit window
+  // when dispatching events.
+  bool assume_window_at_origin_ = true;
 
   Target target_ = Target::WIDGET;
 

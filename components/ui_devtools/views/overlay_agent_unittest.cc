@@ -270,6 +270,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
     overlay_agent()->setInspectMode(
         "searchForNode", protocol::Maybe<protocol::Overlay::HighlightConfig>());
     ui::test::EventGenerator generator(GetRootWindow(widget()));
+    generator.set_assume_window_at_origin(false);
 
     // Highlight child 1.
     generator.MoveMouseTo(GetOriginInScreen(child_1));
@@ -318,7 +319,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   // Moving the mouse cursor over the widget bounds should request a node
   // highlight.
   ui::test::EventGenerator generator(GetRootWindow(widget()));
-  generator.MoveMouseTo(widget()->GetClientAreaBoundsInScreen().origin());
+  generator.MoveMouseBy(p.x(), p.y());
 
   // Aura platforms generate both ET_MOUSE_ENTERED and ET_MOUSE_MOVED for
   // this but Mac just generates ET_MOUSE_ENTERED, so just ensure we sent

@@ -176,6 +176,7 @@ class ButtonTest : public ViewsTestBase {
 
     event_generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget()));
+    event_generator_->set_assume_window_at_origin(false);
   }
 
   void TearDown() override {

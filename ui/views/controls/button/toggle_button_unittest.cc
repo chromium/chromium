@@ -112,7 +112,6 @@ TEST_F(ToggleButtonTest, ShutdownWithFocus) {
 TEST_F(ToggleButtonTest, AcceptEvents) {
   EXPECT_FALSE(button()->GetIsOn());
   ui::test::EventGenerator generator(GetRootWindow(widget()));
-  generator.MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
 
   // Clicking toggles.
   generator.ClickLeftButton();

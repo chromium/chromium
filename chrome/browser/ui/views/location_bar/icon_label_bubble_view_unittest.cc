@@ -159,8 +159,6 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     view_->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
 
     widget_->Show();
-
-    generator_->MoveMouseTo(view_->GetBoundsInScreen().CenterPoint());
   }
 
   void TearDown() override {

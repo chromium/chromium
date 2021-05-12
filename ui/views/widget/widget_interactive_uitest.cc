@@ -1460,8 +1460,7 @@ TEST_F(WidgetCaptureTest, FailedCaptureRequestIsNoop) {
   widget.Show();
   ui::test::EventGenerator generator(GetRootWindow(&widget),
                                      widget.GetNativeWindow());
-  generator.set_current_screen_location(
-      widget.GetClientAreaBoundsInScreen().CenterPoint());
+  generator.set_current_screen_location(gfx::Point(300, 10));
   generator.PressLeftButton();
 
   EXPECT_FALSE(mouse_view1->pressed());
@@ -1608,8 +1607,6 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
   // Click on child1.
   ui::test::EventGenerator generator(GetRootWindow(top_level.get()),
                                      child1->GetNativeWindow());
-  generator.set_current_screen_location(
-      child1->GetClientAreaBoundsInScreen().CenterPoint());
   generator.PressLeftButton();
 
   EXPECT_FALSE(top_level->HasCapture());
@@ -1624,7 +1621,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
   // Click on child2.
   generator.SetTargetWindow(child2->GetNativeWindow());
   generator.set_current_screen_location(
-      child2->GetClientAreaBoundsInScreen().CenterPoint());
+      generator.delegate()->CenterOfWindow(child2->GetNativeWindow()));
   generator.PressLeftButton();
 
   EXPECT_FALSE(top_level->HasCapture());
@@ -1638,8 +1635,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 
   // Click on top_level.
   generator.SetTargetWindow(top_level->GetNativeWindow());
-  generator.set_current_screen_location(
-      top_level->GetClientAreaBoundsInScreen().origin());
+  generator.set_current_screen_location(gfx::Point());
   generator.PressLeftButton();
 
   EXPECT_TRUE(top_level->HasCapture());

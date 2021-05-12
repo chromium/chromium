@@ -217,6 +217,7 @@ void SliderTest::SetUp() {
 
   event_generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
+  event_generator_->set_assume_window_at_origin(false);
 }
 
 void SliderTest::TearDown() {

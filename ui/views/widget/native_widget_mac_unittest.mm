@@ -889,6 +889,7 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
 
   ui::test::EventGenerator event_generator(GetContext(),
                                            widget->GetNativeWindow());
+  event_generator.set_assume_window_at_origin(false);
 
   // Initially, there should be no tooltip.
   const gfx::Rect widget_bounds = widget->GetClientAreaBoundsInScreen();
@@ -958,6 +959,7 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
   // for second. Despite that event was handled in the first one.
   ui::test::EventGenerator event_generator(GetContext(),
                                            widget_below->GetNativeWindow());
+  event_generator.set_assume_window_at_origin(false);
   event_generator.MoveMouseTo(
       widget_above->GetWindowBoundsInScreen().CenterPoint());
   EXPECT_EQ(tooltip_above, TooltipTextForWidget(widget_below));
