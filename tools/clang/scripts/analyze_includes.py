@@ -8,15 +8,22 @@ It produces the .js file that accompanies include-analysis.html.
 
 Usage:
 
-$ gn gen --args="show_includes=true" out/Debug
-$ autoninja -C out/Debug -v base_unittests | tee /tmp/build_log
-$ analyze_includes.py base_unittests $(git rev-parse --short HEAD) \
-    /tmp/build_log /tmp/include-analysis.js
+$ gn gen --args="show_includes=true symbol_level=0" out/Debug
+$ autoninja -C out/Debug -v chrome | tee /tmp/build_log
+$ analyze_includes.py --target=chrome --revision=$(git rev-parse --short HEAD) \
+    --json-out=/tmp/include-analysis.js /tmp/build_log
 
-(Optionally, add use_goma=true to the gn args.)
+(If you have goma access, add use_goma=true to the gn args.)
 
-The script takes a little under an hour to run on a fast machine for the chrome
-build target, which is considered fast enough for batch job purposes for now.
+The script takes roughly half an hour on a fast machine for the chrome build
+target, which is considered fast enough for batch job purposes for now.
+
+If --json-out is not provided, the script exits after printing some statistics
+to stdout. This is significantly faster than generating the full JSON data. For
+example:
+
+$ autoninja -C out/Debug -v chrome | analyze_includes.py - 2>/dev/null
+build_size 270237664463
 """
 
 from __future__ import print_function
@@ -310,32 +317,44 @@ def trans_size(root, includes, sizes):
   return sum([sizes[n] for n in post_order_nodes(root, includes)])
 
 
+def log(*args, **kwargs):
+  """Log output to stderr."""
+  print(*args, file=sys.stderr, **kwargs)
+
+
 def analyze(target, revision, build_log_file, json_file):
-  print('Parsing build log...')
+  log('Parsing build log...')
   (roots, includes) = parse_build(build_log_file)
 
-  print('Getting file sizes...')
+  log('Getting file sizes...')
   sizes = {name: os.path.getsize(name) for name in includes}
 
-  print('Computing transitive sizes...')
+  log('Computing transitive sizes...')
   trans_sizes = {n: trans_size(n, includes, sizes) for n in includes}
 
-  print('Counting prevalence...')
+  build_size = sum([trans_sizes[n] for n in roots])
+
+  print('build_size', build_size)
+
+  if json_file is None:
+    log('--json-out not set; exiting.')
+    return 0
+
+  log('Counting prevalence...')
   prevalence = {name: 0 for name in includes}
   for r in roots:
     for n in post_order_nodes(r, includes):
       prevalence[n] += 1
 
   # Map from file to files that include it.
-  print('Building reverse include map...')
+  log('Building reverse include map...')
   included_by = {k: set() for k in includes}
   for k in includes:
     for i in includes[k]:
       included_by[i].add(k)
 
-  build_size = sum([trans_sizes[n] for n in roots])
 
-  print('Computing added sizes...')
+  log('Computing added sizes...')
   added_sizes = {name: 0 for name in includes}
   for r in roots:
     doms = compute_doms(r, includes)
@@ -353,7 +372,7 @@ def analyze(target, revision, build_log_file, json_file):
   def nr(name):
     return name2nr[name]
 
-  print('Writing output...')
+  log('Writing output...')
 
   # Provide a JS object for convenient inclusion in the HTML file.
   # If someone really wants a proper JSON file, maybe we can reconsider this.
@@ -374,7 +393,7 @@ def analyze(target, revision, build_log_file, json_file):
           'prevalence': [prevalence[n] for n in names],
       }, json_file)
 
-  print('All done!')
+  log('All done!')
 
 
 def main():
@@ -383,15 +402,24 @@ def main():
     return 1
 
   parser = argparse.ArgumentParser(description='Analyze an #include graph.')
-  parser.add_argument('target', nargs=1, help='The target that was built.')
-  parser.add_argument('revision', nargs=1, help='The build revision.')
-  parser.add_argument('build_log', nargs=1, help='The build log to analyze.')
-  parser.add_argument('output_file', nargs=1, help='The JSON output file.')
+  parser.add_argument('build_log',
+                      type=argparse.FileType('r'),
+                      help='The build log to analyze (- for stdin).')
+  parser.add_argument('--target',
+                      help='The target that was built (e.g. chrome).')
+  parser.add_argument('--revision',
+                      help='The revision that was built (e.g. 016588d4ee20).')
+  parser.add_argument(
+      '--json-out',
+      type=argparse.FileType('w'),
+      help='Write full analysis data to a JSON file (- for stdout).')
   args = parser.parse_args()
 
-  with open(args.build_log[0], 'r') as build_log_file:
-    with open(args.output_file[0], 'w') as json_file:
-      analyze(args.target[0], args.revision[0], build_log_file, json_file)
+  if args.json_out and not (args.target and args.revision):
+    print('error: --jsoun-out requires both --target and --revision to be set')
+    return 1
+
+  analyze(args.target, args.revision, args.build_log, args.json_out)
 
 
 if __name__ == '__main__':
