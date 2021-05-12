@@ -81,7 +81,8 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
   auto it = std::find_if(results_.begin(), results_.end(),
                          [&resource, &is_main_frame](const auto& pair) {
                            return pair.first.url == resource.url &&
-                                  is_main_frame == pair.first.IsMainFrame();
+                                  is_main_frame == pair.first.IsMainFrame() &&
+                                  !pair.second.resource;
                          });
   if (it == results_.end())
     return;
