@@ -34,6 +34,7 @@ import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -47,6 +48,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS})
 @DisableIf.Device(type = {UiDisableIf.TABLET})
 public class BookmarkPersonalizedPromoRenderTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
