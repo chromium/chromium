@@ -59,7 +59,7 @@
 #include "ui/base/layout.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry_observer.h"
 #endif
 
@@ -94,9 +94,8 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
 class ThemeService::ThemeObserver
     : public extensions::ExtensionRegistryObserver {
  public:
-  explicit ThemeObserver(ThemeService* service)
-      : theme_service_(service), extension_registry_observer_(this) {
-    extension_registry_observer_.Add(
+  explicit ThemeObserver(ThemeService* service) : theme_service_(service) {
+    extension_registry_observation_.Observe(
         extensions::ExtensionRegistry::Get(theme_service_->profile_));
   }
 
@@ -150,9 +149,9 @@ class ThemeService::ThemeObserver
 
   ThemeService* theme_service_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThemeObserver);
 };
@@ -273,7 +272,7 @@ void ThemeService::Init() {
   // TODO(https://crbug.com/953978): Use GetNativeTheme() for all platforms.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   if (native_theme)
-    native_theme_observer_.Add(native_theme);
+    native_theme_observation_.Observe(native_theme);
 
   InitFromPrefs();
 
@@ -319,7 +318,7 @@ void ThemeService::Shutdown() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   theme_observer_.reset();
 #endif
-  native_theme_observer_.RemoveAll();
+  native_theme_observation_.Reset();
 }
 
 void ThemeService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {

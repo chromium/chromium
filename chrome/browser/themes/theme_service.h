@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/common/buildflags.h"
@@ -320,8 +320,8 @@ class ThemeService : public KeyedService,
   // RemoveUnusedThemes while it's still being built.
   std::string building_extension_id_;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver>
-      native_theme_observer_{this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
 
   base::WeakPtrFactory<ThemeService> weak_ptr_factory_{this};
 };
