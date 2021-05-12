@@ -10,7 +10,7 @@ This is a Node.js project, so install dependencies as usual:
 
 Then set the `CHROME_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
 
-    export CHROME_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium" 
+    export CHROME_PATH="example/path/to/Chromium.app/Contents/MacOS/Chromium"
     export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
     export CHROME_PATH="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
 
@@ -46,3 +46,7 @@ This will run the tests against an already running server on port
 8080. Use the `PORT` environment variable to connect to another port:
 
     PORT=8081 python3 -m pytest --rootdir=tests
+
+
+## Contributing
+The BiDi commands are processed in the `src/bidiMapper/bidiCommandsProcessor.js`. To add a new command, add it to `processCommand`, write and call processor for it.
