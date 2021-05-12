@@ -1858,7 +1858,7 @@ bool RenderProcessHostImpl::Init() {
     // in-process-render-thread using ChannelMojo there.
     OnProcessLaunched();  // Fake a callback that the process is ready.
 
-    in_process_renderer_->StartWithOptions(options);
+    in_process_renderer_->StartWithOptions(std::move(options));
 
     g_in_process_thread = in_process_renderer_.get();
 
