@@ -324,6 +324,34 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmFromSuspending) {
       vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED);
 }
 
+TEST_F(PluginVmManagerImplTest, LaunchPluginVmInterrupted) {
+  test_helper_->AllowPluginVm();
+
+  // Skip StartVm call.
+  SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
+  NotifyVmToolsStateChanged(
+      vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_OUTDATED);
+  MockLaunchPluginVmCallback callback1;
+  plugin_vm_manager_->LaunchPluginVm(callback1.Get());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
+
+  // VM is shown, but we are waiting for tools to be installed. If the VM is
+  // suspended now, we consider the launch to have failed.
+  EXPECT_CALL(callback1, Run(false));
+  NotifyVmStateChanged(
+      vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
+  SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
+  task_environment_.RunUntilIdle();
+
+  MockLaunchPluginVmCallback callback2;
+  EXPECT_CALL(callback2, Run(true));
+  plugin_vm_manager_->LaunchPluginVm(callback2.Get());
+  NotifyVmToolsStateChanged(
+      vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmInvalidLicense) {
   test_helper_->AllowPluginVm();
   EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));

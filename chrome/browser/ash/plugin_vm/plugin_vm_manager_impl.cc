@@ -69,6 +69,12 @@ bool VmIsStopping(vm_tools::plugin_dispatcher::VmState state) {
          state == vm_tools::plugin_dispatcher::VmState::VM_STATE_PAUSING;
 }
 
+bool VmIsStopped(vm_tools::plugin_dispatcher::VmState state) {
+  return state == vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED ||
+         state == vm_tools::plugin_dispatcher::VmState::VM_STATE_PAUSED ||
+         state == vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED;
+}
+
 void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
   LOG(ERROR) << "Failed to start VM with launch result "
              << static_cast<int>(result);
@@ -326,6 +332,7 @@ void PluginVmManagerImpl::OnVmToolsStateChanged(
   if (vm_tools_state_ ==
           vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED &&
       pending_vm_tools_installed_) {
+    pending_vm_tools_installed_ = false;
     LaunchSuccessful();
   }
 }
@@ -341,8 +348,22 @@ void PluginVmManagerImpl::OnVmStateChanged(
 
   vm_state_ = signal.vm_state();
 
-  if (pending_start_vm_ && !VmIsStopping(vm_state_))
+  if (pending_start_vm_ && VmIsStopped(vm_state_)) {
+    // We attempted to the launch when the VM was in the middle of stopping.
+    VLOG(1) << "VM finished transition to a stopped state.";
+    pending_start_vm_ = false;
     StartVm();
+  }
+
+  if (pending_vm_tools_installed_ &&
+      (VmIsStopping(vm_state_) || VmIsStopped(vm_state_))) {
+    // StartVm succeeded but the VM was stopped while waiting for the signal
+    // indicating VM tools are installed.
+    VLOG(1) << "VM stopped without tools installed.";
+    pending_vm_tools_installed_ = false;
+    LaunchFailed(PluginVmLaunchResult::kStoppedWaitingForVmTools);
+  }
+
   if (pending_destroy_disk_image_ && !VmIsStopping(vm_state_))
     DestroyDiskImage();
 
@@ -358,10 +379,7 @@ void PluginVmManagerImpl::OnVmStateChanged(
         std::move(concierge_request),
         base::BindOnce(&PluginVmManagerImpl::OnGetVmInfoForSharing,
                        weak_ptr_factory_.GetWeakPtr()));
-  } else if (vm_state_ ==
-                 vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED ||
-             vm_state_ ==
-                 vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED) {
+  } else if (VmIsStopped(vm_state_)) {
     // The previous seneschal handle is no longer valid.
     seneschal_server_handle_ = 0;
 
@@ -515,7 +533,6 @@ void PluginVmManagerImpl::StartVm() {
   // and the containing directory get deleted.
   RemoveDriveDownloadDirectoryIfExists();
 
-  pending_start_vm_ = false;
   vm_is_starting_ = true;
 
   vm_tools::plugin_dispatcher::StartVmRequest request;
@@ -627,8 +644,8 @@ void PluginVmManagerImpl::OnDefaultSharedDirExists(const base::FilePath& dir,
 
 void PluginVmManagerImpl::LaunchSuccessful() {
   LOG_FUNCTION_CALL();
-  pending_start_vm_ = false;
-  pending_vm_tools_installed_ = false;
+  DCHECK(!pending_start_vm_);
+  DCHECK(!pending_vm_tools_installed_);
 
   std::vector<LaunchPluginVmCallback> observers;
   observers.swap(launch_vm_callbacks_);  // Ensure reentrancy.
@@ -639,6 +656,9 @@ void PluginVmManagerImpl::LaunchSuccessful() {
 
 void PluginVmManagerImpl::LaunchFailed(PluginVmLaunchResult result) {
   LOG_FUNCTION_CALL();
+  DCHECK(!pending_start_vm_);
+  DCHECK(!pending_vm_tools_installed_);
+
   if (result == PluginVmLaunchResult::kVmMissing) {
     profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmImageExists,
                                      false);
@@ -649,9 +669,6 @@ void PluginVmManagerImpl::LaunchFailed(PluginVmLaunchResult result) {
 
   ChromeShelfController::instance()->GetShelfSpinnerController()->CloseSpinner(
       kPluginVmShelfAppId);
-
-  pending_start_vm_ = false;
-  pending_vm_tools_installed_ = false;
 
   std::vector<LaunchPluginVmCallback> observers;
   observers.swap(launch_vm_callbacks_);  // Ensure reentrancy.

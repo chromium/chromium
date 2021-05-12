@@ -25,6 +25,8 @@ class PluginVmManager : public KeyedService {
 
   virtual void OnPrimaryUserSessionStarted() = 0;
 
+  // Start and show the VM. The callback is called once the VM is running and
+  // we have confirmed VM tools are installed.
   virtual void LaunchPluginVm(LaunchPluginVmCallback callback) = 0;
   virtual void RelaunchPluginVm() = 0;
   virtual void StopPluginVm(const std::string& name, bool force) = 0;

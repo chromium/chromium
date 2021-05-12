@@ -151,35 +151,39 @@ class PluginVmManagerImpl
   vm_tools::plugin_dispatcher::VmState vm_state_ =
       vm_tools::plugin_dispatcher::VmState::VM_STATE_UNKNOWN;
 
+  base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
+
+  // Members used in the launch flow.
+
+  std::vector<LaunchPluginVmCallback> launch_vm_callbacks_;
+  // We can't immediately start the VM when it is in states like suspending, so
+  // delay until an in progress operation finishes.
+  bool pending_start_vm_ = false;
+  // |launch_vm_callbacks_| cannot be run before the vm tools are installed, so
+  // delay until the tools are installed. This is set only after StartVm() runs
+  // successfully.
+  bool pending_vm_tools_installed_ = false;
+
+  // Members used in the relaunch flow.
+
   // Indicates that we are attempting to start the VM. This fact may not yet
   // be reflected in VM state as the dispatcher may not have had a chance
   // to update it, or maybe it even is not yet aware that we issued StartVm
   // request.
   bool vm_is_starting_ = false;
-
   // Indicates that we are executing VM relaunch.
   bool relaunch_in_progress_ = false;
-
-  // We can't immediately start the VM when it is in states like suspending, so
-  // delay until an in progress operation finishes.
-  bool pending_start_vm_ = false;
-
   // If we receive second or third relaunch request while already in the middle
   // of relaunch, we need to repeat it to ensure that privileges are set up
   // according to the latest settings.
   bool pending_relaunch_vm_ = false;
 
+  // Members used in the uninstall flow
+
+  std::unique_ptr<PluginVmUninstallerNotification> uninstaller_notification_;
   // We can't immediately destroy the VM when it is in states like
   // suspending, so delay until an in progress operation finishes.
   bool pending_destroy_disk_image_ = false;
-  // |launch_vm_callbacks_| cannot be run before the vm tools are installed, so
-  // delay until the tools are installed.
-  bool pending_vm_tools_installed_ = false;
-
-  std::unique_ptr<PluginVmUninstallerNotification> uninstaller_notification_;
-
-  base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
-  std::vector<LaunchPluginVmCallback> launch_vm_callbacks_;
 
   base::WeakPtrFactory<PluginVmManagerImpl> weak_ptr_factory_{this};
 
