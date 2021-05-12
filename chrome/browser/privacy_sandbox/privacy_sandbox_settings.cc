@@ -175,9 +175,24 @@ PrivacySandboxSettings::~PrivacySandboxSettings() = default;
   return base::FeatureList::IsEnabled(features::kPrivacySandboxSettings);
 }
 
-bool PrivacySandboxSettings::IsFlocAllowed(
+bool PrivacySandboxSettings::IsFlocAllowed() const {
+  if (!PrivacySandboxSettingsFunctional()) {
+    // Simply respect 3rd-party cookies blocking settings if the UI is not
+    // available.
+    return !cookie_settings_->ShouldBlockThirdPartyCookies();
+  }
+
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled) &&
+         pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+}
+
+bool PrivacySandboxSettings::IsFlocAllowedForContext(
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) const {
+  // If FLoC is disabled completely, it is not available in any context.
+  if (!IsFlocAllowed())
+    return false;
+
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 

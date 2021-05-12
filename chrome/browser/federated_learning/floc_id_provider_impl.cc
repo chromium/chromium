@@ -133,13 +133,15 @@ FlocIdProviderImpl::~FlocIdProviderImpl() {
 blink::mojom::InterestCohortPtr FlocIdProviderImpl::GetInterestCohortForJsApi(
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) const {
-  // Check the Privacy Sandbox general settings.
-  if (!IsPrivacySandboxAllowed())
+  // Check the general floc setting.
+  if (!IsFlocAllowed())
     return blink::mojom::InterestCohort::New();
 
-  // Check the Privacy Sandbox context specific settings.
-  if (!privacy_sandbox_settings_->IsFlocAllowed(url, top_frame_origin))
+  // Check the context specific floc setting.
+  if (!privacy_sandbox_settings_->IsFlocAllowedForContext(url,
+                                                          top_frame_origin)) {
     return blink::mojom::InterestCohort::New();
+  }
 
   if (!floc_id_.IsValid())
     return blink::mojom::InterestCohort::New();
@@ -291,7 +293,7 @@ void FlocIdProviderImpl::ComputeFloc() {
 }
 
 void FlocIdProviderImpl::CheckCanComputeFloc(CanComputeFlocCallback callback) {
-  if (!IsPrivacySandboxAllowed()) {
+  if (!IsFlocAllowed()) {
     std::move(callback).Run(false);
     return;
   }
@@ -312,8 +314,8 @@ void FlocIdProviderImpl::OnCheckCanComputeFlocCompleted(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool FlocIdProviderImpl::IsPrivacySandboxAllowed() const {
-  return privacy_sandbox_settings_->IsPrivacySandboxAllowed();
+bool FlocIdProviderImpl::IsFlocAllowed() const {
+  return privacy_sandbox_settings_->IsFlocAllowed();
 }
 
 void FlocIdProviderImpl::GetRecentlyVisitedURLs(

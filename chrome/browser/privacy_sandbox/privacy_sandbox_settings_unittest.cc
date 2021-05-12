@@ -200,7 +200,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -235,10 +235,10 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://another-test.com"), base::nullopt));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
@@ -270,10 +270,10 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"), base::nullopt));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
@@ -314,7 +314,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -351,7 +351,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -389,7 +389,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -429,7 +429,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
@@ -467,10 +467,10 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://unrelated.com"),
       url::Origin::Create(GURL("https://unrelated.com"))));
 
@@ -517,7 +517,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
         ContentSetting::CONTENT_SETTING_BLOCK}},
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -540,7 +540,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       {{"https://embedded.com", "https://test.com",
         ContentSetting::CONTENT_SETTING_BLOCK}});
 
-  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"), base::nullopt));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
@@ -572,9 +572,9 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"), base::nullopt));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
 
@@ -608,10 +608,10 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
 
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://embedded.com"))));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed(
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"), base::nullopt));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
@@ -801,6 +801,68 @@ TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
       /*managed_cookie_setting=*/kNoSetting,
       /*managed_cookie_exceptions=*/{});
   EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+}
+
+TEST_F(PrivacySandboxSettingsTest, IsFlocAllowed) {
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/false,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  profile()->GetTestingPrefService()->SetBoolean(
+      prefs::kPrivacySandboxFlocEnabled, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowed());
 }
 
 TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {

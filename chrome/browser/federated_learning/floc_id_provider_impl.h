@@ -132,7 +132,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
                                       bool can_compute_floc);
 
   bool IsSyncHistoryEnabled() const;
-  bool IsPrivacySandboxAllowed() const;
+  bool IsFlocAllowed() const;
 
   void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
 

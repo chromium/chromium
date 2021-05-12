@@ -58,11 +58,17 @@ class PrivacySandboxSettings : public KeyedService,
   // TODO(crbug.com/1174572) Remove this when one API is fully launched.
   static bool PrivacySandboxSettingsFunctional();
 
+  // Returns whether FLoC is allowed at all. If false, FLoC calculations should
+  // not occur. If true, the more specific function, IsFlocAllowedForContext(),
+  // should be consulted for the relevant context.
+  bool IsFlocAllowed() const;
+
   // Determines whether FLoC is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both
   // affect 1P and 3P contexts.
-  bool IsFlocAllowed(const GURL& url,
-                     const base::Optional<url::Origin>& top_frame_origin) const;
+  bool IsFlocAllowedForContext(
+      const GURL& url,
+      const base::Optional<url::Origin>& top_frame_origin) const;
 
   // Returns the point in time from which history is eligible to be used when
   // calculating a user's FLoC ID. Reset when a user clears all cookies, or
@@ -103,9 +109,10 @@ class PrivacySandboxSettings : public KeyedService,
       const url::Origin& top_frame_origin,
       const std::vector<GURL>& auction_parties);
 
-  // Used by FLoC to determine whether the FLoC calculation can start in general
-  // and whether the FLoC ID can be queried. If the sandbox experiment is
-  // disabled, this check is equivalent to
+  // Returns whether the Privacy Sandbox is "generally" available. A return
+  // value of false indicates that the sandbox is completely disabled. A return
+  // value of true *must* be followed up by the appropriate context specific
+  // check. If the sandbox experiment is disabled, this check is equivalent to
   // |!cookie_settings_->ShouldBlockThirdPartyCookies()|; but if the experiment
   // is enabled, this will check prefs::kPrivacySandboxApisEnabled instead.
   bool IsPrivacySandboxAllowed();
