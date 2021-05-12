@@ -1,19 +1,4 @@
 {
-  "Android CFI": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_cfi": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "target_os": "android",
-      "use_cfi_cast": true,
-      "use_cfi_diag": true,
-      "use_goma": true,
-      "use_thin_lto": true
-    }
-  },
   "Linux ASan LSan Builder": {
     "gn_args": {
       "dcheck_always_on": true,

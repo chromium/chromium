@@ -5537,22 +5537,6 @@ ci.mac_ios_builder(
 )
 
 ci.memory_builder(
-    name = "Android CFI",
-    console_view_entry = consoles.console_view_entry(
-        # TODO(https://crbug.com/1008094) When this builder is not consistently
-        # failing, remove the console_view value
-        console_view = "chromium.android.fyi",
-        category = "memory",
-        short_name = "cfi",
-    ),
-    cores = 32,
-    # TODO(https://crbug.com/919430) Remove the larger timeout once compile
-    # times have been brought down to reasonable level
-    execution_timeout = 4 * time.hour + 30 * time.minute,
-    tree_closing = False,
-)
-
-ci.memory_builder(
     name = "Linux ASan LSan Builder",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

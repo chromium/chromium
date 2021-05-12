@@ -898,12 +898,6 @@
       'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
-      'Android CFI': {
-        'args': [
-          '--exclude-annotation',
-          'Feature=RenderTest', # https://crbug.com/1068294
-        ],
-      },
       'Marshmallow 64 bit Tester': {
         'swarming': {
           'shards': 14,
@@ -2417,7 +2411,6 @@
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
       'android-11-x86-fyi-rel',
-      'Android CFI',
       'Lollipop Phone Tester',
       'Lollipop Tablet Tester',
       'Marshmallow 64 bit Tester',
