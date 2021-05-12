@@ -288,11 +288,13 @@ export class ActionManager {
     const response = this.actionNode_.performAction(action);
     if (response === SAConstants.ActionResponse.CLOSE_MENU) {
       ActionManager.exitAllMenus();
-    } else {
-      Navigator.byItem.jumpToSwitchAccessMenu();
+      return;
     }
 
     switch (response) {
+      case SAConstants.ActionResponse.EXIT_MENU:
+        ActionManager.exitCurrentMenu();
+        return;
       case SAConstants.ActionResponse.RELOAD_MENU:
         ActionManager.refreshMenuUnconditionally();
         break;

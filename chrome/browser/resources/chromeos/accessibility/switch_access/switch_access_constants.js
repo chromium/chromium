@@ -44,9 +44,12 @@ export const SAConstants = {
   ActionResponse: {
     NO_ACTION_TAKEN: -1,
     REMAIN_OPEN: 0,
+    // Closes the menu entirely.
     CLOSE_MENU: 1,
-    RELOAD_MENU: 2,
-    OPEN_TEXT_NAVIGATION_MENU: 3,
+    // Exits the current menu.
+    EXIT_MENU: 2,
+    RELOAD_MENU: 3,
+    OPEN_TEXT_NAVIGATION_MENU: 4,
   },
 
   /**
