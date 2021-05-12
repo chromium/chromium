@@ -2199,12 +2199,12 @@ TEST(TimeDelta, Overflows) {
   static_assert((TimeDelta::FiniteMax() /= 0.5).is_max(), "");
   static_assert((TimeDelta::FiniteMin() /= 0.5).is_min(), "");
 
-  TimeDelta delta = kOneSecond;
-  delta %= TimeDelta::Max();
-  EXPECT_EQ(kOneSecond, delta);
-  delta = kOneSecond;
-  delta %= TimeDelta();
-  EXPECT_EQ(kOneSecond, delta);
+  static_assert((TimeDelta::FromSeconds(1) %= TimeDelta::Max()) ==
+                    TimeDelta::FromSeconds(1),
+                "");
+  static_assert(
+      (TimeDelta::FromSeconds(1) %= TimeDelta()) == TimeDelta::FromSeconds(1),
+      "");
 
   // Test operations with Time and TimeTicks.
   EXPECT_TRUE((kLargeDelta + Time::Now()).is_max());
