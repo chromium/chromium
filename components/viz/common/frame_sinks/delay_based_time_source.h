@@ -10,7 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace base {
@@ -75,11 +75,10 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
   base::TimeTicks last_tick_time_;
   base::TimeTicks next_tick_time_;
 
-  base::CancelableOnceClosure tick_closure_;
-
   base::SingleThreadTaskRunner* task_runner_;
 
-  base::WeakPtrFactory<DelayBasedTimeSource> weak_factory_{this};
+  base::RepeatingClosure tick_closure_;
+  base::OneShotTimer timer_;
 
   DISALLOW_COPY_AND_ASSIGN(DelayBasedTimeSource);
 };
