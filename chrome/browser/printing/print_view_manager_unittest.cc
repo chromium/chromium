@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -91,6 +92,20 @@ class TestPrintViewManager : public PrintViewManagerBase {
     print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
 #endif  // defined(OS_CHROMEOS)
     return true;
+  }
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override {
+    NOTREACHED();
+  }
+  void ShowScriptedPrintPreview(bool is_modifiable) override { NOTREACHED(); }
+  void RequestPrintPreview(
+      mojom::RequestPrintPreviewParamsPtr params) override {
+    NOTREACHED();
+  }
+  void CheckForCancel(int32_t preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override {
+    NOTREACHED();
   }
 
  private:

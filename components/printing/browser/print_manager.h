@@ -19,10 +19,6 @@
 #include "base/callback.h"
 #endif
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-#include "ui/accessibility/ax_tree_update_forward.h"
-#endif
-
 namespace printing {
 
 class PrintManager : public content::WebContentsObserver,
@@ -45,26 +41,9 @@ class PrintManager : public content::WebContentsObserver,
   void DidGetDocumentCookie(int32_t cookie) override;
   void DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override;
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-  void SetAccessibilityTree(
-      int32_t cookie,
-      const ui::AXTreeUpdate& accessibility_tree) override;
-#endif
   void DidShowPrintDialog() override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(int32_t cookie,
-                           base::Value job_settings,
-                           UpdatePrintSettingsCallback callback) override;
-  void SetupScriptedPrintPreview(
-      SetupScriptedPrintPreviewCallback callback) override;
-  void ShowScriptedPrintPreview(bool source_is_modifiable) override;
-  void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
-  void CheckForCancel(int32_t preview_ui_id,
-                      int32_t request_id,
-                      CheckForCancelCallback callback) override;
-#endif
 
  protected:
   explicit PrintManager(content::WebContents* contents);

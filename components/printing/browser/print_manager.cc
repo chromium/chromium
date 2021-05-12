@@ -33,12 +33,6 @@ void PrintManager::DidGetDocumentCookie(int32_t cookie) {
   cookie_ = cookie;
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-void PrintManager::SetAccessibilityTree(
-    int32_t cookie,
-    const ui::AXTreeUpdate& accessibility_tree) {}
-#endif
-
 void PrintManager::DidShowPrintDialog() {}
 
 void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
@@ -58,30 +52,6 @@ void PrintManager::PrintingFailed(int32_t cookie) {
   PdfWritingDone(0);
 #endif
 }
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PrintManager::UpdatePrintSettings(int32_t cookie,
-                                       base::Value job_settings,
-                                       UpdatePrintSettingsCallback callback) {
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
-  std::move(callback).Run(std::move(params), false);
-}
-
-void PrintManager::SetupScriptedPrintPreview(
-    SetupScriptedPrintPreviewCallback callback) {
-  std::move(callback).Run();
-}
-
-void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
-
-void PrintManager::RequestPrintPreview(
-    mojom::RequestPrintPreviewParamsPtr params) {}
-
-void PrintManager::CheckForCancel(int32_t preview_ui_id,
-                                  int32_t request_id,
-                                  CheckForCancelCallback callback) {}
-#endif
 
 bool PrintManager::IsPrintRenderFrameConnected(
     content::RenderFrameHost* rfh) const {

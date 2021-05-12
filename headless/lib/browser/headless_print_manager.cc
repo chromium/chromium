@@ -20,20 +20,33 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "mojo/public/cpp/bindings/message.h"
 #endif
 
 namespace headless {
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 namespace {
 
-constexpr char kInvalidPathForCheckForCancel[] =
-    "Invalid path for CheckForCancel";
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+constexpr char kInvalidUpdatePrintSettingsCall[] =
+    "Invalid UpdatePrintSettings Call";
+constexpr char kInvalidSetupScriptedPrintPreviewCall[] =
+    "Invalid SetupScriptedPrintPreview Call";
+constexpr char kInvalidShowScriptedPrintPreviewCall[] =
+    "Invalid ShowScriptedPrintPreview Call";
+constexpr char kInvalidRequestPrintPreviewCall[] =
+    "Invalid RequestPrintPreview Call";
+constexpr char kInvalidCheckForCancelCall[] = "Invalid CheckForCancel Call";
+#endif
+
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+constexpr char kInvalidSetAccessibilityTreeCall[] =
+    "Invalid SetAccessibilityTree Call";
+#endif
 
 }  // namespace
-#endif
 
 HeadlessPrintSettings::HeadlessPrintSettings()
     : prefer_css_page_size(false),
@@ -250,12 +263,51 @@ void HeadlessPrintManager::PrintingFailed(int32_t cookie) {
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void HeadlessPrintManager::UpdatePrintSettings(
+    int32_t cookie,
+    base::Value job_settings,
+    UpdatePrintSettingsCallback callback) {
+  // UpdatePrintSettingsCallback() should never be called on
+  // HeadlessPrintManager, since it is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidUpdatePrintSettingsCall);
+}
+
+void HeadlessPrintManager::SetupScriptedPrintPreview(
+    SetupScriptedPrintPreviewCallback callback) {
+  // SetupScriptedPrintPreview() should never be called on HeadlessPrintManager,
+  // since it is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidSetupScriptedPrintPreviewCall);
+}
+
+void HeadlessPrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
+  // ShowScriptedPrintPreview() should never be called on HeadlessPrintManager,
+  // since it is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidShowScriptedPrintPreviewCall);
+}
+
+void HeadlessPrintManager::RequestPrintPreview(
+    printing::mojom::RequestPrintPreviewParamsPtr params) {
+  // RequestPrintPreview() should never be called on HeadlessPrintManager, since
+  // it is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidRequestPrintPreviewCall);
+}
+
 void HeadlessPrintManager::CheckForCancel(int32_t preview_ui_id,
                                           int32_t request_id,
                                           CheckForCancelCallback callback) {
-  // CheckForCancel should never be called on HeadlessPrintManager, since this
+  // CheckForCancel() should never be called on HeadlessPrintManager, since it
   // is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidPathForCheckForCancel);
+  mojo::ReportBadMessage(kInvalidCheckForCancelCall);
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+void HeadlessPrintManager::SetAccessibilityTree(
+    int32_t cookie,
+    const ui::AXTreeUpdate& accessibility_tree) {
+  // SetAccessibilityTree() should never be called on HeadlessPrintManager,
+  // since it is only triggered by Print Preview.
+  mojo::ReportBadMessage(kInvalidSetAccessibilityTreeCall);
 }
 #endif
 
