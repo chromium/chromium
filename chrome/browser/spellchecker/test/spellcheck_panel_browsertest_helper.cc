@@ -54,6 +54,12 @@ void SpellCheckPanelBrowserTestHelper::BindSpellCheckPanelHost(
     spell_check_panel_host = hosts_.back().get();
   }
   spell_check_panel_host->BindReceiver(std::move(receiver));
-  std::move(quit_on_bind_closure_).Run();
+
+  // BindSpellCheckPanelHost() is sometimes invoked as a side-effect of
+  // calling spellcheck::SpellCheckMockPanelHost::SpellingPanelVisible(),
+  // which does not call RunUntilBind(). See crbug.com/1032617 .
+  if (quit_on_bind_closure_) {
+    std::move(quit_on_bind_closure_).Run();
+  }
 }
 }  // namespace spellcheck
