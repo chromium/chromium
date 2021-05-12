@@ -19,13 +19,19 @@ testOverriddenError()
 restoreError()
 {result: "PASS"}
 testOverriddenToString(function func() {}, true)
-ƒ Function
+ƒ func() {}
 testOverriddenToString(function func() {}, false)
-ƒ Function
+ƒ func() {}
 testOverriddenToString(new Function, true)
-ƒ Function
+ƒ anonymous(
+) {
+
+}
 testOverriddenToString(new Function, false)
-ƒ Function
+ƒ anonymous(
+) {
+
+}
 testOverriddenToString(/^regex$/, true)
 RegExp
 testOverriddenToString(/^regex$/, false)
