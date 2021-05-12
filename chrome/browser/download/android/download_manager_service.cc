@@ -238,7 +238,7 @@ void DownloadManagerService::OnProfileAdded(
 
 void DownloadManagerService::OnProfileAdded(Profile* profile) {
   InitializeForProfile(profile->GetProfileKey());
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
   for (Profile* otr : profile->GetAllOffTheRecordProfiles())
     InitializeForProfile(otr->GetProfileKey());
 }

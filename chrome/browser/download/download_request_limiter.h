@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -214,8 +214,8 @@ class DownloadRequestLimiter
     using DownloadStatusMap = std::map<url::Origin, DownloadStatus>;
     DownloadStatusMap download_status_map_;
 
-    ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-        observer_{this};
+    base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+        observation_{this};
 
     // Weak pointer factory for generating a weak pointer to pass to the
     // infobar.  User responses to the throttling prompt will be returned

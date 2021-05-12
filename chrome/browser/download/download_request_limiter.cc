@@ -103,7 +103,7 @@ DownloadRequestLimiter::TabDownloadState::TabDownloadState(
       origin_(url::Origin::Create(contents->GetVisibleURL())),
       download_count_(0),
       download_seen_(false) {
-  observer_.Add(GetContentSettings(contents));
+  observation_.Observe(GetContentSettings(contents));
   NavigationEntry* last_entry =
       contents->GetController().GetLastCommittedEntry();
   if (last_entry)
@@ -300,8 +300,7 @@ DownloadRequestLimiter::TabDownloadState::TabDownloadState()
       status_(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD),
       ui_status_(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT),
       download_count_(0),
-      download_seen_(false),
-      observer_(this) {}
+      download_seen_(false) {}
 
 bool DownloadRequestLimiter::TabDownloadState::is_showing_prompt() const {
   return factory_.HasWeakPtrs();
