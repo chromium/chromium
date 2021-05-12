@@ -58,7 +58,7 @@ void TestWebThread::StartIOThread() {
 void TestWebThread::StartIOThreadUnregistered() {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  CHECK(real_thread_->StartWithOptions(options));
+  CHECK(real_thread_->StartWithOptions(std::move(options)));
 }
 
 void TestWebThread::RegisterAsWebThread() {
