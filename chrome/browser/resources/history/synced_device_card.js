@@ -14,7 +14,7 @@ import './strings.m.js';
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {dom, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
@@ -172,7 +172,7 @@ Polymer({
    */
   onMenuButtonTap_(e) {
     this.fire('open-menu', {
-      target: dom(e).localTarget,
+      target: e.target,
       tag: this.sessionTag,
     });
     e.stopPropagation();  // Prevent iron-collapse.
