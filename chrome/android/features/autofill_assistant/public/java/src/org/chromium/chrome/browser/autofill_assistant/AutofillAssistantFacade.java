@@ -167,15 +167,15 @@ public class AutofillAssistantFacade {
         }
 
         // The tab is not yet available. We need to register as listener and wait for it.
-        activity.getActivityTabProvider().addObserverAndTrigger(
-                new ActivityTabProvider.HintlessActivityTabObserver() {
-                    @Override
-                    public void onActivityTabChanged(Tab tab) {
-                        if (tab == null) return;
-                        activity.getActivityTabProvider().removeObserver(this);
-                        callback.onResult(tab);
-                    }
-                });
+        activity.getActivityTabProvider().addObserver(new Callback<Tab>() {
+            @Override
+            public void onResult(Tab tab) {
+                if (tab == null) return;
+                activity.getActivityTabProvider().removeObserver(this);
+                assert tab.getWebContents() != null;
+                callback.onResult(tab);
+            }
+        });
     }
 
     public static boolean isAutofillAssistantEnabled(Intent intent) {

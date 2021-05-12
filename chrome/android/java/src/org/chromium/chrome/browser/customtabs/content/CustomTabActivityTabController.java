@@ -20,7 +20,6 @@ import androidx.browser.trusted.sharing.ShareTarget;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.HintlessActivityTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.WarmupManager;
@@ -114,14 +113,6 @@ public class CustomTabActivityTabController implements InflationObserver {
     @Nullable
     private final CustomTabsSessionToken mSession;
     private final Intent mIntent;
-
-    @Nullable
-    private HintlessActivityTabObserver mTabSwapObserver = new HintlessActivityTabObserver() {
-        @Override
-        public void onActivityTabChanged(@Nullable Tab tab) {
-            mTabProvider.swapTab(tab);
-        }
-    };
 
     @Inject
     public CustomTabActivityTabController(ChromeActivity<?> activity,
@@ -370,7 +361,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         } // else we've already set the initial tab.
 
         // Listen to tab swapping and closing.
-        mActivityTabProvider.addObserverAndTrigger(mTabSwapObserver);
+        mActivityTabProvider.addObserver(mTabProvider::swapTab);
     }
 
     @Nullable
