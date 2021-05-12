@@ -23,6 +23,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -46,6 +47,9 @@ class CrostiniUpgradeAvailableNotificationTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -59,6 +63,7 @@ class CrostiniUpgradeAvailableNotificationTest
     display_service_.reset();
     BrowserWithTestWindowTest::TearDown();
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

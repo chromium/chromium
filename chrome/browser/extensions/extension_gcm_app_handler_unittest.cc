@@ -69,6 +69,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #endif
 
@@ -267,6 +268,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     // creating a DBusThreadManager, which is needed for testing.
     // We don't actually need the setter so we ignore the return value.
     chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 #endif
 
     // Create a new profile.
@@ -302,6 +304,12 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     auto* partition = profile()->GetDefaultStoragePartition();
     if (partition)
       partition->WaitForDeletionTasksForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    gcm_app_handler_.reset();
+    profile_.reset();
+    chromeos::ConciergeClient::Shutdown();
+#endif
   }
 
   // Returns a barebones test extension.

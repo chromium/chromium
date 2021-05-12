@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
@@ -38,8 +39,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // This setter will initialize DBusThreadManager.
     // This is required before ArcSessionManager's constructor calls
     // DBusThreadManager::Get().
-    auto dbus_thread_manager_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SeneschalClient::InitializeFake();
 
     arc::SetArcAvailableCommandLineForTesting(
@@ -58,9 +59,10 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc_service_manager_->set_browser_context(profile());
 
-    fake_concierge_client_ = new chromeos::FakeConciergeClient();
-    dbus_thread_manager_setter->SetConciergeClient(
-        base::WrapUnique(fake_concierge_client_));
+    // TODO(yusukes): Stop re-creating the client here.
+    chromeos::ConciergeClient::Shutdown();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
   }
 
   void TearDown() override {
@@ -75,6 +77,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     chromeos::CryptohomeMiscClient::Shutdown();
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

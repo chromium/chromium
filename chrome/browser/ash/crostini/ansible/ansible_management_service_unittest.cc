@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -20,7 +21,11 @@ class AnsibleManagementServiceTest : public testing::Test {
  public:
   AnsibleManagementServiceTest() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
+
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
     ansible_management_service_ =
@@ -42,7 +47,9 @@ class AnsibleManagementServiceTest : public testing::Test {
     ansible_management_service_->Shutdown();
     crostini_manager_->Shutdown();
     profile_.reset();
+
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

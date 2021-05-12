@@ -22,6 +22,7 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_virtual_file_provider_client.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -55,6 +56,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -79,6 +81,7 @@ class ArcFileSystemBridgeTest : public testing::Test {
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
     profile_manager_.reset();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -32,7 +32,7 @@ namespace policy {
 namespace {
 
 chromeos::ConciergeClient* GetConciergeClient() {
-  return chromeos::DBusThreadManager::Get()->GetConciergeClient();
+  return chromeos::ConciergeClient::Get();
 }
 
 LockToSingleUserManager* g_lock_to_single_user_manager_instance;

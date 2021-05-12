@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
@@ -62,6 +63,9 @@ class CrostiniSshfsHelperTest : public testing::Test {
  public:
   CrostiniSshfsHelperTest() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(
+        reinterpret_cast<chromeos::FakeCiceroneClient*>(
+            chromeos::DBusThreadManager::Get()->GetCiceroneClient()));
     chromeos::SeneschalClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     crostini_test_helper_ =
@@ -81,8 +85,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     base::Base64Encode("privkey", &identity);
     default_mount_options_ = {"UserKnownHostsBase64=" + known_hosts,
                               "IdentityBase64=" + identity, "Port=2222"};
-    fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
-        chromeos::DBusThreadManager::Get()->GetConciergeClient());
+    fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
   }
 
   ~CrostiniSshfsHelperTest() override {
@@ -95,6 +98,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
     chromeos::SeneschalClient::Shutdown();
+    chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

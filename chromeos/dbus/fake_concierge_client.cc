@@ -7,16 +7,36 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace chromeos {
 
-FakeConciergeClient::FakeConciergeClient() {
+namespace {
+
+FakeConciergeClient* g_instance = nullptr;
+
+}  // namespace
+
+// static
+FakeConciergeClient* FakeConciergeClient::Get() {
+  return g_instance;
+}
+
+FakeConciergeClient::FakeConciergeClient(
+    FakeCiceroneClient* fake_cicerone_client)
+    : fake_cicerone_client_(fake_cicerone_client) {
+  DCHECK(!g_instance);
+  g_instance = this;
+
   InitializeProtoResponses();
 }
-FakeConciergeClient::~FakeConciergeClient() = default;
+
+FakeConciergeClient::~FakeConciergeClient() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
 void FakeConciergeClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -191,9 +211,12 @@ void FakeConciergeClient::StartTerminaVm(
 
 void FakeConciergeClient::NotifyTremplinStarted(
     const vm_tools::cicerone::TremplinStartedSignal& signal) {
-  static_cast<FakeCiceroneClient*>(
-      chromeos::DBusThreadManager::Get()->GetCiceroneClient())
-      ->NotifyTremplinStarted(signal);
+  DCHECK(fake_cicerone_client_)
+      << "|fake_cicerone_client_| is not set. Your test has to call "
+      << "ConciergeClient::InitializeFake() with a non-null pointer to "
+      << "CiceroniClient e.g. the one returned from FakeCiceroneClient::Get().";
+  if (fake_cicerone_client_)
+    fake_cicerone_client_->NotifyTremplinStarted(signal);
 }
 
 void FakeConciergeClient::StopVm(

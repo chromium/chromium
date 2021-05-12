@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "components/crx_file/id_util.h"
@@ -28,6 +29,9 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
  public:
   class WaitingFakeConciergeClient : public chromeos::FakeConciergeClient {
    public:
+    explicit WaitingFakeConciergeClient(chromeos::FakeCiceroneClient* client)
+        : chromeos::FakeConciergeClient(client) {}
+
     void StopVm(
         const vm_tools::concierge::StopVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
@@ -54,10 +58,11 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
       : CrostiniUninstallerViewBrowserTest(true /*register_termina*/) {}
 
   explicit CrostiniUninstallerViewBrowserTest(bool register_termina)
-      : CrostiniDialogBrowserTest(register_termina),
-        waiting_fake_concierge_client_(new WaitingFakeConciergeClient()) {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetConciergeClient(
-        base::WrapUnique(waiting_fake_concierge_client_));
+      : CrostiniDialogBrowserTest(register_termina) {
+    chromeos::ConciergeClient::Shutdown();
+    // After the browser's mainloop is terminated. chromeos::ShutdownDBus() will
+    // delete the object.
+    waiting_fake_concierge_client_ = new WaitingFakeConciergeClient(nullptr);
   }
 
   // DialogBrowserTest:
@@ -82,7 +87,6 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
  protected:
-  // Owned by chromeos::DBusThreadManager
   WaitingFakeConciergeClient* waiting_fake_concierge_client_;
 
  private:

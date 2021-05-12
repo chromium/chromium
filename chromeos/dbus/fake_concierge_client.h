@@ -16,12 +16,14 @@
 
 namespace chromeos {
 
+class FakeCiceroneClient;
+
 // FakeConciergeClient is a light mock of ConciergeClient used for testing.
 class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
     : public ConciergeClient {
  public:
-  FakeConciergeClient();
-  ~FakeConciergeClient() override;
+  // Returns the fake global instance if initialized. May return null.
+  static FakeConciergeClient* Get();
 
   // ConciergeClient:
   void AddObserver(Observer* observer) override;
@@ -306,6 +308,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   void NotifyConciergeStarted();
 
  protected:
+  friend class ConciergeClient;
+
+  explicit FakeConciergeClient(FakeCiceroneClient* fake_cicerone_client);
+  ~FakeConciergeClient() override;
+
   void Init(dbus::Bus* bus) override {}
 
  private:
@@ -319,6 +326,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   // Notifies observers with a DiskImageStatus signal.
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal);
+
+  FakeCiceroneClient* const fake_cicerone_client_;
 
   int wait_for_service_to_be_available_call_count_ = 0;
   int create_disk_image_call_count_ = 0;
