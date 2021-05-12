@@ -148,7 +148,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
       const base::Optional<blink::WebImpression>& impression) override;
-  blink::WebPagePopup* CreatePopup(blink::WebLocalFrame* creator) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;

@@ -304,10 +304,6 @@ WebPagePopupImpl::~WebPagePopupImpl() {
   DCHECK(!page_);
 }
 
-void WebPagePopupImpl::InitializeForTesting(WebView* opener_web_view) {
-  SetWebView(static_cast<WebViewImpl*>(opener_web_view));
-}
-
 void WebPagePopupImpl::SetWebView(WebViewImpl* opener_web_view) {
   DCHECK(opener_web_view);
   DCHECK(!opener_web_view_);

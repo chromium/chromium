@@ -119,14 +119,6 @@ class MockFrameHost : public mojom::FrameHost {
     return true;
   }
 
-  void CreateNewPopupWidget(
-      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
-          blink_popup_widget_host,
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
-      override {}
-
   void CreateChildFrame(
       int new_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,

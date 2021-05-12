@@ -558,15 +558,6 @@ interface FrameHost {
           blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
 
-
-  // Similar to CreateNewWindow, except used for sub-widgets, like <select>
-  // dropdowns. Upon return, the renderer side popup will be owned by the
-  // PopupWidgetHost.
-  CreateNewPopupWidget(
-         pending_associated_receiver<blink.mojom.PopupWidgetHost> popup_host,
-         pending_associated_receiver<blink.mojom.WidgetHost> blink_widget_host,
-         pending_associated_remote<blink.mojom.Widget> blink_widget);
-
   // Asynchronously creates a child frame. A routing ID must be allocated first
   // by calling RenderMessageFilter::GenerateFrameRoutingID()
   // Each of these messages will have a corresponding mojom::FrameHost::Detach
