@@ -172,7 +172,6 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_FocusFakeBox() throws Exception {
         ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
                                                     .getRootUiCoordinatorForTesting()
@@ -187,19 +186,6 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testRender_SignInPromoLegacy() throws Exception {
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
-                "sign_in_promo_legacy");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SignInPromoNoAccounts() throws Exception {
         // Scroll to the sign in promo in case it is not visible.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -211,7 +197,6 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SignInPromoWithAccount() throws Exception {
         mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
@@ -225,7 +210,6 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SyncPromo() throws Exception {
         mAccountManagerTestRule.addTestAccountThenSignin();
         // Scroll to the sign in promo in case it is not visible.

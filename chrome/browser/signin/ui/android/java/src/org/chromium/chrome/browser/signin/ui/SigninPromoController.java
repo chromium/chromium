@@ -280,11 +280,7 @@ public class SigninPromoController {
 
         view.getDescription().setText(mDescriptionStringIdNoAccount);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
-        } else {
-            view.getPrimaryButton().setText(R.string.sign_in_to_chrome);
-        }
+        view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getPrimaryButton().setOnClickListener(v -> signinWithNewAccount(context));
 
         view.getSecondaryButton().setVisibility(View.GONE);
@@ -299,12 +295,7 @@ public class SigninPromoController {
 
         String continueAsButtonText = context.getString(
                 R.string.signin_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail());
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            view.getPrimaryButton().setText(continueAsButtonText);
-        } else if (!ChromeFeatureList.isEnabled(
-                           ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)) {
-            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
-        } else {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             boolean hasPrimaryAccount =
@@ -312,6 +303,8 @@ public class SigninPromoController {
             view.getPrimaryButton().setText(hasPrimaryAccount
                             ? context.getString(R.string.sync_promo_turn_on_sync)
                             : continueAsButtonText);
+        } else {
+            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         }
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
 
