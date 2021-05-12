@@ -883,7 +883,9 @@ void CupsPrintersHandler::ResolveManufacturersDone(
     const std::vector<std::string>& manufacturers) {
   auto manufacturers_value = std::make_unique<base::ListValue>();
   if (result_code == PpdProvider::SUCCESS) {
-    manufacturers_value->AppendStrings(manufacturers);
+    for (const std::string& manufacturer : manufacturers) {
+      manufacturers_value->Append(manufacturer);
+    }
   }
   base::DictionaryValue response;
   response.SetBoolean("success", result_code == PpdProvider::SUCCESS);
