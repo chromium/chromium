@@ -206,11 +206,6 @@ extern const char kIncognitoAuthenticationDescription[];
 extern const char kIncognitoBrandConsistencyForIOSName[];
 extern const char kIncognitoBrandConsistencyForIOSDescription[];
 
-// Title and description for the flag to enable new illustrations and
-// UI on empty states.
-extern const char kIllustratedEmptyStatesName[];
-extern const char kIllustratedEmptyStatesDescription[];
-
 // Title and description for the flag to present the new UI Reboot on Infobars
 // using OverlayPresenter.
 extern const char kInfobarOverlayUIName[];

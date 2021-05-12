@@ -3187,11 +3187,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "illustrated-empty-states",
-    "owners": [ "sebsg", "tmartino" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

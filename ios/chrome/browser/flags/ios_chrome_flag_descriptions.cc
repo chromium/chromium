@@ -233,10 +233,6 @@ const char kIncognitoBrandConsistencyForIOSDescription[] =
     "When enabled, keeps Incognito UI consistent regardless of any selected "
     "theme.";
 
-const char kIllustratedEmptyStatesName[] = "Illustrated empty states";
-const char kIllustratedEmptyStatesDescription[] =
-    "Display new illustrations and layout on empty states.";
-
 const char kInfobarOverlayUIName[] = "Use OverlayPresenter for infobars";
 const char kInfobarOverlayUIDescription[] =
     "When enabled alongside the Infobar UI Reboot, infobars will be presented "
