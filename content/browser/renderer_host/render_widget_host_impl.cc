@@ -2030,14 +2030,6 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   blink::ScreenInfo current_screen_info;
   GetScreenInfo(&current_screen_info);
 
-  // TODO(enne): RenderWidgetHostViewMac caches the ScreenInfo and chooses
-  // not to change it during resizes.  This means that the RWHV::GetScreenInfo
-  // returned might be stale wrt GetAllDisplays() below.  Fix this.
-  // For now, just return the legacy screen info for mac.
-#if defined(OS_MAC)
-  return blink::ScreenInfos(current_screen_info);
-#else
-
   // If this widget has not been connected to a view yet (or has been
   // disconnected), the display code may be using a fake primary display.
   // In these cases, temporarily return the legacy screen info until
@@ -2055,12 +2047,10 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
     return blink::ScreenInfos(current_screen_info);
   }
 
-  display::Screen* screen = display::Screen::GetScreen();
-  if (!screen) {
-    return blink::ScreenInfos(current_screen_info);
-  }
-
-  const std::vector<display::Display>& displays = screen->GetAllDisplays();
+  // Get displays from RenderWidgetHostView, not directly from display::Screen.
+  // This helps maintain consistency with the legacy singular GetScreenInfo().
+  // For example, Mac may cache display info from a remote process NSWindow.
+  const std::vector<display::Display>& displays = view_->GetDisplays();
 
   // Just return the legacy singular ScreenInfo, if its id is invalid or if the
   // display::Screen is not initialized; each of which occurs in various tests.
@@ -2072,9 +2062,8 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
     return blink::ScreenInfos(current_screen_info);
   }
 
-  // If we get here, we are asserting that the current display as reported
-  // by the RenderWidgetHostView is inside of GetAllDisplays().
-
+  // Build multi-screen info from the displays returned by RenderWidgetHostView,
+  // ensure its legacy singular screen info struct is included in this set.
   blink::ScreenInfos result;
   bool current_display_added = false;
   for (const auto& display : displays) {
@@ -2121,7 +2110,6 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
 
   // Fall back to legacy screen info, if we are in a bad state.
   return blink::ScreenInfos(current_screen_info);
-#endif
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(

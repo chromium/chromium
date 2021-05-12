@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "ui/display/mojom/display.mojom";
+
+// A vector of Displays and indices of notable entries.
+// Corresponds to display::DisplayList and roughly parallels blink::ScreenInfos.
+// WARNING: This does not convey observers held by display::DisplayList.
+struct DisplayList {
+  // The array of Display objects for the set of relevant displays.
+  array<Display> displays;
+
+  // The id of the primary Display in `displays` for the aggregate Screen.
+  int64 primary_id;
+  // The id of the current Display in `displays` for a context (e.g. a window).
+  int64 current_id;
+};

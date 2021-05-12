@@ -107,5 +107,70 @@ TEST(DisplayListTest, AddUpdateRemove) {
   EXPECT_EQ(3, display_list.GetPrimaryDisplayIterator()->id());
 }
 
+TEST(DisplayListTest, EmptyIsValid) {
+  DisplayList display_list;
+  EXPECT_TRUE(display_list.IsValid());
+}
+
+TEST(DisplayListTest, FirstDisplayAddedIsForcedToBePrimary) {
+  DisplayList display_list;
+  display_list.AddDisplay(Display(1), DisplayList::Type::NOT_PRIMARY);
+  EXPECT_EQ(1, display_list.primary_id());
+}
+
+TEST(DisplayListTest, SinglePrimaryDisplayNoCurrentIdIsValid) {
+  DisplayList display_list({Display(1)}, /*primary_id=*/1,
+                           /*current_id=*/kInvalidDisplayId);
+  EXPECT_TRUE(display_list.IsValid());
+}
+
+TEST(DisplayListTest, SinglePrimaryDisplayWithCurrentIdIsValid) {
+  DisplayList display_list({Display(1)}, /*primary_id=*/1, /*current_id=*/1);
+  EXPECT_TRUE(display_list.IsValid());
+}
+
+// This macro helps test for DEATH via DCHECKs if supported.
+#if DCHECK_IS_ON()
+#define EXPECT_DCHECK(statement) EXPECT_DEATH_IF_SUPPORTED(statement, "")
+#else
+#define EXPECT_DCHECK(statement) GTEST_EXECUTE_STATEMENT_(statement, "")
+#endif  // DCHECK_IS_ON() for EXPECT_DCHECK
+
+TEST(DisplayListTest, PrimaryMustBeInvalidWhenEmpty) {
+  // `primary_id` must be kInvalidDisplayId if `displays` is empty.
+  EXPECT_DCHECK(EXPECT_FALSE(
+      DisplayList({}, /*primary_id=*/1, /*current_id=*/kInvalidDisplayId)
+          .IsValid()));
+}
+
+TEST(DisplayListTest, CurrentMustBeInvalidWhenEmpty) {
+  // `primary_id` must be kInvalidDisplayId if `displays` is empty.
+  EXPECT_DCHECK(EXPECT_FALSE(DisplayList({}, /*primary_id=*/kInvalidDisplayId,
+                                         /*current_id=*/1)
+                                 .IsValid()));
+}
+
+TEST(DisplayListTest, PrimaryIdMustBePresent) {
+  // `primary_id` must match an element of `displays`.
+  EXPECT_DCHECK(EXPECT_FALSE(DisplayList({Display(1)}, /*primary_id=*/2,
+                                         /*current_id=*/1)
+                                 .IsValid()));
+}
+
+TEST(DisplayListTest, CurrentIdMustBePresent) {
+  // `current_id` must match an element of `displays`.
+  EXPECT_DCHECK(EXPECT_FALSE(DisplayList({Display(1)}, /*primary_id=*/1,
+                                         /*current_id=*/2)
+                                 .IsValid()));
+}
+
+TEST(DisplayListTest, DisplaysIdsMustBeUnique) {
+  // `displays` must use unique id values.
+  EXPECT_DCHECK(EXPECT_FALSE(DisplayList({Display(1), Display(1)},
+                                         /*primary_id=*/1,
+                                         /*current_id=*/1)
+                                 .IsValid()));
+}
+
 }  // namespace
 }  // namespace display

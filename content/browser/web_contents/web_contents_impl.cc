@@ -1354,12 +1354,20 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnScreensChange",
                         "is_multi_screen_changed", is_multi_screen_changed);
   // Allow fullscreen requests shortly after user-generated screens changes.
+  // TODO(crbug.com/1169291): Mac should not activate this on local process
+  // display::Screen signals, but via RenderWidgetHostViewMac screen updates.
   transient_allow_fullscreen_.Activate();
+
+  // Mac display info may originate from a remote process hosting the NSWindow;
+  // this local process display::Screen signal should not trigger updates.
+  // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
+#if !defined(OS_MAC)
   // Send |is_multi_screen_changed| events to all visible frames, but limit
   // other events to frames with the Window Placement permission. This obviates
   // the most pressing need for sites to poll isMultiScreen(), which is exposed
   // without explicit permission, while also protecting privacy.
   // TODO(crbug.com/1109989): Postpone events; refine utility/privacy balance.
+  // TODO(crbug.com/1205676): Remove this deprecated window.screenschange code.
   for (FrameTreeNode* node : frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
     if ((is_multi_screen_changed &&
@@ -1377,6 +1385,7 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
           GetRenderViewHost()->GetWidget()->GetView()) {
     view->UpdateScreenInfo(view->GetNativeView());
   }
+#endif  // !OS_MAC
 }
 
 void WebContentsImpl::OnScreenOrientationChange() {

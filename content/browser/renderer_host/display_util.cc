@@ -48,6 +48,8 @@ void DisplayUtil::DisplayToScreenInfo(blink::ScreenInfo* screen_info,
   screen_info->orientation_type = GetOrientationTypeForDesktop(display);
 #endif
 
+  // TODO(crbug.com/1194700 and crbug.com/1182855): Use cross-process screen
+  // info caches, not local-process info, for child frames and Mac's shim.
   auto* screen = display::Screen::GetScreen();
   // Some tests are run with no Screen initialized.
   screen_info->is_extended = screen && screen->GetNumDisplays() > 1;

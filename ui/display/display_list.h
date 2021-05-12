@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -16,8 +15,6 @@
 
 namespace display {
 
-class Display;
-class DisplayList;
 class DisplayObserver;
 
 // Maintains an ordered list of Displays as well as operations to add, remove
@@ -35,14 +32,23 @@ class DISPLAY_EXPORT DisplayList {
   DisplayList();
   ~DisplayList();
 
+  // WARNING: These constructors and operators do not consider observers.
+  DisplayList(const Displays& displays, int64_t primary_id, int64_t current_id);
+  DisplayList(const DisplayList& other);
+  DisplayList& operator=(const DisplayList& other);
+  bool operator==(const DisplayList& other) const;
+
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
 
   const Displays& displays() const { return displays_; }
+  int64_t primary_id() const { return primary_id_; }
+  int64_t current_id() const { return current_id_; }
 
   Displays::const_iterator FindDisplayById(int64_t id) const;
 
   Displays::const_iterator GetPrimaryDisplayIterator() const;
+  Displays::const_iterator GetCurrentDisplayIterator() const;
 
   void AddOrUpdateDisplay(const Display& display, Type type);
 
@@ -62,6 +68,9 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
+  // Checks expectations around DisplayList validity.
+  bool IsValid() const;
+
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
@@ -70,10 +79,9 @@ class DISPLAY_EXPORT DisplayList {
   Displays::iterator FindDisplayByIdInternal(int64_t id);
 
   std::vector<Display> displays_;
-  int primary_display_index_ = -1;
+  int64_t primary_id_ = kInvalidDisplayId;
+  int64_t current_id_ = kInvalidDisplayId;
   base::ObserverList<DisplayObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayList);
 };
 
 }  // namespace display

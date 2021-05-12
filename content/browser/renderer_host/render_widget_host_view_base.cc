@@ -500,40 +500,73 @@ void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
   NOTREACHED();
 }
 
+const std::vector<display::Display>& RenderWidgetHostViewBase::GetDisplays()
+    const {
+  // Get the latest info directly from display::Screen, like GetScreenInfo().
+  // TODO(crbug.com/1169312): Unify display info caching and change detection.
+  if (auto* screen = display::Screen::GetScreen())
+    return screen->GetAllDisplays();
+  static const base::NoDestructor<std::vector<display::Display>> kEmptyDisplays;
+  return *kEmptyDisplays;
+}
+
 void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
   if (host() && host()->delegate())
     host()->delegate()->SendScreenRects();
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
-  display::Display::Rotation old_display_rotation = current_display_.rotation();
-  if (HasDisplayPropertyChanged(view) && host()) {
-    OnSynchronizedDisplayPropertiesChanged(old_display_rotation !=
-                                           current_display_.rotation());
-    host()->NotifyScreenInfoChanged();
+  bool has_display_property_changed = true;
+  bool has_rotation_changed = false;
+  auto* screen = display::Screen::GetScreen();
+  display::DisplayList new_display_list(
+      screen->GetAllDisplays(), screen->GetPrimaryDisplay().id(),
+      screen->GetDisplayNearestView(view).id());
+  if (!display_list_.displays().empty()) {
+    const display::Display& current_display =
+        *display_list_.GetCurrentDisplayIterator();
+    const display::Display& new_display =
+        *new_display_list.GetCurrentDisplayIterator();
+    // Proposed multi-screen APIs expose the current display's status as the
+    // primary display, and whether it is one of several extended displays, so
+    // those changes should also be surfaced via RenderWidgetHostImpl.
+    const bool current_display_is_primary =
+        display_list_.primary_id() == current_display.id();
+    const bool current_display_is_extended =
+        display_list_.displays().size() > 1;
+    const bool new_display_is_primary =
+        new_display_list.primary_id() == new_display.id();
+    const bool new_display_is_extended = new_display_list.displays().size() > 1;
+    has_display_property_changed =
+        current_display.id() != new_display.id() ||
+        current_display.bounds() != new_display.bounds() ||
+        current_display.work_area() != new_display.work_area() ||
+        current_display.device_scale_factor() !=
+            new_display.device_scale_factor() ||
+        current_display.rotation() != new_display.rotation() ||
+        current_display.color_spaces() != new_display.color_spaces() ||
+        current_display.IsInternal() != new_display.IsInternal() ||
+        current_display_is_primary != new_display_is_primary ||
+        current_display_is_extended != new_display_is_extended;
+    has_rotation_changed = current_display.rotation() != new_display.rotation();
+  }
+
+  if (has_display_property_changed) {
+    display_list_ = new_display_list;
+
+    // Notify the associated RenderWidgetHostImpl when screen info has changed.
+    // That will synchronize visual properties needed for frame tree rendering
+    // and for web platform APIs that expose screen and window info and events.
+    if (host()) {
+      OnSynchronizedDisplayPropertiesChanged(has_rotation_changed);
+      host()->NotifyScreenInfoChanged();
+    }
   }
 }
 
-bool RenderWidgetHostViewBase::HasDisplayPropertyChanged(gfx::NativeView view) {
-  auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayNearestView(view);
-  bool display_is_extended = screen->GetNumDisplays() > 1;
-  bool display_is_primary = screen->GetPrimaryDisplay().id() == display.id();
-  if (current_display_.id() == display.id() &&
-      current_display_.bounds() == display.bounds() &&
-      current_display_.work_area() == display.work_area() &&
-      current_display_.device_scale_factor() == display.device_scale_factor() &&
-      current_display_.rotation() == display.rotation() &&
-      current_display_.color_spaces() == display.color_spaces() &&
-      current_display_.IsInternal() == display.IsInternal() &&
-      current_display_is_extended_ == display_is_extended &&
-      current_display_is_primary_ == display_is_primary) {
-    return false;
-  }
-
-  current_display_ = display;
-  current_display_is_extended_ = display_is_extended;
-  current_display_is_primary_ = display_is_primary;
-  return true;
+float RenderWidgetHostViewBase::GetCurrentDeviceScaleFactor() const {
+  if (display_list_.displays().empty())
+    return display::Display().device_scale_factor();
+  return display_list_.GetCurrentDisplayIterator()->device_scale_factor();
 }
 
 void RenderWidgetHostViewBase::DidUnregisterFromTextInputManager(

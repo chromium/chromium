@@ -38,6 +38,8 @@
 
 namespace blink {
 
+// This structure roughly parallels display::Display. It may be desirable to
+// deprecate derived counterparts of ui/display types; see crbug.com/1208469.
 struct BLINK_COMMON_EXPORT ScreenInfo {
   // Device scale factor. Specifies the ratio between physical and logical
   // pixels.

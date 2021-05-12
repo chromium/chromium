@@ -12,6 +12,8 @@ namespace blink {
 
 // Information about a set of screens that are relevant to a particular widget.
 // This includes an id for the screen currently showing the widget.
+// This structure roughly parallels display::DisplayList. It may be desirable to
+// deprecate derived counterparts of ui/display types; see crbug.com/1208469.
 struct BLINK_COMMON_EXPORT ScreenInfos {
   ScreenInfos();
   explicit ScreenInfos(const ScreenInfo& screen_info);
