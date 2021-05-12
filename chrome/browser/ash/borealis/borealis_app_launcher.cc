@@ -23,7 +23,7 @@ namespace borealis {
 void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                                  const std::string& app_id,
                                  OnLaunchedCallback callback) {
-  Launch(std::move(ctx), std::move(app_id), {}, std::move(callback));
+  Launch(ctx, app_id, {}, std::move(callback));
 }
 
 void BorealisAppLauncher::Launch(const BorealisContext& ctx,
