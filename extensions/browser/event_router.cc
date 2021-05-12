@@ -60,11 +60,23 @@ const char kFilteredEvents[] = "filtered_events";
 // Similar to |kFilteredEvents|, but applies to extension service worker events.
 const char kFilteredServiceWorkerEvents[] = "filtered_service_worker_events";
 
-// A message when mojom::EventRouter::AddListenerForRenderer() is called with an
-// invalid param.
+// A message when mojom::EventRouter::AddListenerForMainThread() is called with
+// an invalid param.
 constexpr char kAddEventListenerWithInvalidParam[] =
     "Tried to add an event listener without a valid extension ID nor listener "
     "URL";
+
+// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
+// with an invalid worker scope URL.
+constexpr char kAddEventListenerWithInvalidWorkerScopeURL[] =
+    "Tried to add an event listener for a service worker without a valid "
+    "worker scope URL.";
+
+// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
+// with an invalid extension ID.
+constexpr char kAddEventListenerWithInvalidExtensionID[] =
+    "Tried to add an event listener for a service worker without a valid "
+    "extension ID.";
 
 // Sends a notification about an event to the API activity monitor and the
 // ExtensionHost for |extension_id| on the UI thread. Can be called from any
@@ -199,8 +211,8 @@ EventRouter::~EventRouter() {
     process->RemoveObserver(this);
 }
 
-void EventRouter::AddListenerForRenderer(mojom::EventListenerParamPtr param,
-                                         const std::string& event_name) {
+void EventRouter::AddListenerForMainThread(mojom::EventListenerParamPtr param,
+                                           const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process = RenderProcessHost::FromID(receivers_.current_context());
   if (!process)
@@ -213,6 +225,29 @@ void EventRouter::AddListenerForRenderer(mojom::EventListenerParamPtr param,
     AddEventListenerForURL(event_name, process, param->get_listener_url());
   } else {
     mojo::ReportBadMessage(kAddEventListenerWithInvalidParam);
+  }
+}
+
+void EventRouter::AddListenerForServiceWorker(const std::string& extension_id,
+                                              const GURL& worker_scope_url,
+                                              const std::string& event_name,
+                                              int64_t service_worker_version_id,
+                                              int32_t worker_thread_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  if (!process)
+    return;
+
+  if (crx_file::id_util::IdIsValid(extension_id)) {
+    if (!worker_scope_url.is_valid()) {
+      mojo::ReportBadMessage(kAddEventListenerWithInvalidWorkerScopeURL);
+      return;
+    }
+    AddServiceWorkerEventListener(event_name, process, extension_id,
+                                  worker_scope_url, service_worker_version_id,
+                                  worker_thread_id);
+  } else {
+    mojo::ReportBadMessage(kAddEventListenerWithInvalidExtensionID);
   }
 }
 

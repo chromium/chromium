@@ -294,6 +294,8 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   DISALLOW_COPY_AND_ASSIGN(DownloadOpenObserver);
 };
 
+}  // namespace
+
 class DownloadExtensionTest : public ExtensionApiTest {
  public:
   DownloadExtensionTest()
@@ -684,6 +686,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
   DISALLOW_COPY_AND_ASSIGN(DownloadExtensionTest);
 };
+
+namespace {
 
 class MockIconExtractorImpl : public DownloadFileIconExtractor {
  public:

@@ -15,10 +15,13 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sync_message_filter.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 
 namespace base {
 class ListValue;
+class SingleThreadTaskRunner;
 }
 
 namespace content {
@@ -90,6 +93,19 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   // each Service Workers.
   bool UpdateBindingsForWorkers(const ExtensionId& extension_id);
 
+  // Posts mojom::EventRouter::AddListenerForServiceWorker to the IO thread to
+  // call it with GetEventRouterOnIO().
+  void SendAddEventListener(const std::string& extension_id,
+                            const GURL& scope,
+                            const std::string& event_name,
+                            int64_t service_worker_version_id,
+                            int worker_thread_id);
+
+  // NOTE: This must be called on the IO thread because it can call
+  // SyncMessageFilter::GetRemoteAssociatedInterface() which must be called on
+  // the IO thread.
+  mojom::EventRouter* GetEventRouterOnIO();
+
  private:
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
@@ -127,6 +143,8 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  mojo::SharedAssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerThreadDispatcher);
 };

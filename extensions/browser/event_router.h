@@ -43,6 +43,12 @@ class BrowserContext;
 class RenderProcessHost;
 }
 
+namespace chromeos {
+namespace file_system_provider {
+class FileSystemProviderProvidedFileSystemTest;
+}
+}  // namespace chromeos
+
 namespace extensions {
 class Extension;
 class ExtensionPrefs;
@@ -138,23 +144,20 @@ class EventRouter : public KeyedService,
   ~EventRouter() override;
 
   // mojom::EventRouter:
-  void AddListenerForRenderer(mojom::EventListenerParamPtr param,
-                              const std::string& name) override;
+  void AddListenerForMainThread(mojom::EventListenerParamPtr param,
+                                const std::string& name) override;
 
-  // Add or remove an extension as an event listener for |event_name|.
+  void AddListenerForServiceWorker(const std::string& extension_id,
+                                   const GURL& worker_scope_url,
+                                   const std::string& name,
+                                   int64_t service_worker_version_id,
+                                   int32_t worker_thread_id) override;
+
+  // Removes an extension as an event listener for |event_name|.
   //
   // Note that multiple extensions can share a process due to process
   // collapsing. Also, a single extension can have 2 processes if it is a split
   // mode extension.
-  void AddEventListener(const std::string& event_name,
-                        content::RenderProcessHost* process,
-                        const ExtensionId& extension_id);
-  void AddServiceWorkerEventListener(const std::string& event_name,
-                                     content::RenderProcessHost* process,
-                                     const ExtensionId& extension_id,
-                                     const GURL& service_worker_scope,
-                                     int64_t service_worker_version_id,
-                                     int worker_thread_id);
   void RemoveEventListener(const std::string& event_name,
                            content::RenderProcessHost* process,
                            const ExtensionId& extension_id);
@@ -279,7 +282,24 @@ class EventRouter : public KeyedService,
  private:
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
+  friend class chromeos::file_system_provider::
+      FileSystemProviderProvidedFileSystemTest;
+  friend class UpdateInstallGateTest;
+  friend class DownloadExtensionTest;
+  friend class SystemInfoAPITest;
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
+  FRIEND_TEST_ALL_PREFIXES(
+      DeveloperPrivateApiUnitTest,
+      UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
+                           ExtensionUpdatedEventOnPermissionsChange);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
+                           ExtensionUpdatedEventOnAllowlistWarningChange);
+  FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, StorageAreaOnChanged);
+  FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest,
+                           StorageAreaOnChangedOtherListener);
+  FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest,
+                           StorageAreaOnChangedOnlyOneListener);
 
   enum class RegisteredEventType {
     kLazy,
@@ -297,6 +317,21 @@ class EventRouter : public KeyedService,
       base::ListValue* event_args,
       UserGestureState user_gesture,
       const extensions::EventFilteringInfo& info);
+
+  // Adds an extension as an event listener for |event_name|.
+  //
+  // Note that multiple extensions can share a process due to process
+  // collapsing. Also, a single extension can have 2 processes if it is a split
+  // mode extension.
+  void AddEventListener(const std::string& event_name,
+                        content::RenderProcessHost* process,
+                        const ExtensionId& extension_id);
+  void AddServiceWorkerEventListener(const std::string& event_name,
+                                     content::RenderProcessHost* process,
+                                     const ExtensionId& extension_id,
+                                     const GURL& service_worker_scope,
+                                     int64_t service_worker_version_id,
+                                     int worker_thread_id);
 
   // Returns or sets the list of events for which the given extension has
   // registered.

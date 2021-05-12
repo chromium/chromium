@@ -12,12 +12,20 @@ union EventListenerParam {
 };
 
 // Implemented in the browser, this interface defines methods for handling
-// event router messages from render thread or service worker.
+// event router messages from the main thread or service worker.
 interface EventRouter {
   // Notifies the browser that the given |extension_id| or |listener_url| added
   // a listener to an event. If it has |extension_id| in |param|, the listener
   // is added for the extension. Otherwise, it has a |listener_url| in |param|
   // and the listener is added for the URL.
-  AddListenerForRenderer(EventListenerParam param,
-                         string event_name);
+  AddListenerForMainThread(EventListenerParam param,
+                           string event_name);
+
+  // Notifies the browser that the given extension added a listener to an event
+  // in a service worker.
+  AddListenerForServiceWorker(string extension_id,
+                              url.mojom.Url worker_scope_url,
+                              string event_name,
+                              int64 service_worker_version_id,
+                              int32 worker_thread_id);
 };

@@ -174,7 +174,6 @@ void ExtensionMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     BrowserThread::ID* thread) {
   switch (message.type()) {
-    case ExtensionHostMsg_AddListener::ID:
     case ExtensionHostMsg_RemoveListener::ID:
     case ExtensionHostMsg_AddLazyListener::ID:
     case ExtensionHostMsg_RemoveLazyListener::ID:
@@ -203,8 +202,6 @@ void ExtensionMessageFilter::OnDestruct() const {
 bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddListener,
-                        OnExtensionAddListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveListener,
                         OnExtensionRemoveListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_AddLazyListener,
@@ -232,40 +229,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void ExtensionMessageFilter::OnExtensionAddListener(
-    const std::string& extension_id,
-    const GURL& listener_or_worker_scope_url,
-    const std::string& event_name,
-    int64_t service_worker_version_id,
-    int worker_thread_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  EventRouter* event_router = GetEventRouter();
-  if (crx_file::id_util::IdIsValid(extension_id)) {
-    const bool is_service_worker_context = worker_thread_id != kMainThreadId;
-    if (is_service_worker_context) {
-      DCHECK(listener_or_worker_scope_url.is_valid());
-      event_router->AddServiceWorkerEventListener(
-          event_name, process, extension_id, listener_or_worker_scope_url,
-          service_worker_version_id, worker_thread_id);
-    } else {
-      // Since ExtensionHostMsg_AddListener for the render thread has been
-      // converted to Mojo, this path should work only for service
-      NOTREACHED() << "Adding an event listener for the render thread should "
-                      "work with Mojo.";
-    }
-  } else {
-    NOTREACHED() << "Tried to add an event listener without a valid "
-                 << "extension ID nor listener URL";
-  }
 }
 
 void ExtensionMessageFilter::OnExtensionRemoveListener(

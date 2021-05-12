@@ -61,11 +61,11 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     if (!context->GetExtensionID().empty()) {
-      GetEventRouter()->AddListenerForRenderer(
+      GetEventRouter()->AddListenerForMainThread(
           mojom::EventListenerParam::NewExtensionId(context->GetExtensionID()),
           event_name);
     } else {
-      GetEventRouter()->AddListenerForRenderer(
+      GetEventRouter()->AddListenerForMainThread(
           mojom::EventListenerParam::NewListenerUrl(context->url()),
           event_name);
     }
@@ -260,10 +260,10 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
               context->service_worker_version_id());
 
-    dispatcher_->Send(new ExtensionHostMsg_AddListener(
+    dispatcher_->SendAddEventListener(
         context->GetExtensionID(), context->service_worker_scope(), event_name,
         context->service_worker_version_id(),
-        content::WorkerThread::GetCurrentId()));
+        content::WorkerThread::GetCurrentId());
   }
 
   void SendRemoveUnfilteredEventListenerIPC(

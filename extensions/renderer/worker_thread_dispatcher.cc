@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "base/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 #include "base/values.h"
@@ -41,6 +42,19 @@ ServiceWorkerData* GetServiceWorkerDataChecked() {
   return data;
 }
 
+// Calls mojom::EventRouter::AddListenerForServiceWorker(). It should be called
+// on the IO thread.
+void AddEventListenerOnIO(const std::string& extension_id,
+                          const GURL& scope,
+                          const std::string& event_name,
+                          int64_t service_worker_version_id,
+                          int worker_thread_id) {
+  auto* dispatcher = WorkerThreadDispatcher::Get();
+  dispatcher->GetEventRouterOnIO()->AddListenerForServiceWorker(
+      extension_id, scope, event_name, service_worker_version_id,
+      worker_thread_id);
+}
+
 }  // namespace
 
 WorkerThreadDispatcher::WorkerThreadDispatcher() {}
@@ -55,6 +69,7 @@ void WorkerThreadDispatcher::Init(content::RenderThread* render_thread) {
   DCHECK_EQ(content::RenderThread::Get(), render_thread);
   DCHECK(!message_filter_);
   message_filter_ = render_thread->GetSyncMessageFilter();
+  io_task_runner_ = render_thread->GetIOTaskRunner();
   render_thread->AddObserver(this);
 }
 
@@ -139,6 +154,18 @@ bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
   return success;
 }
 
+void WorkerThreadDispatcher::SendAddEventListener(
+    const std::string& extension_id,
+    const GURL& scope,
+    const std::string& event_name,
+    int64_t service_worker_version_id,
+    int worker_thread_id) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AddEventListenerOnIO, extension_id, scope, event_name,
+                     service_worker_version_id, worker_thread_id));
+}
+
 void WorkerThreadDispatcher::OnMessageReceivedOnWorkerThread(
     int worker_thread_id,
     const IPC::Message& message) {
@@ -178,6 +205,18 @@ bool WorkerThreadDispatcher::PostTaskToWorkerThread(int worker_thread_id,
 
 bool WorkerThreadDispatcher::Send(IPC::Message* message) {
   return message_filter_->Send(message);
+}
+
+mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  if (!event_router_remote_) {
+    mojo::PendingAssociatedRemote<mojom::EventRouter>
+        pending_event_router_remote;
+    message_filter_->GetRemoteAssociatedInterface(&pending_event_router_remote);
+    event_router_remote_ = mojo::SharedAssociatedRemote<mojom::EventRouter>(
+        std::move(pending_event_router_remote));
+  }
+  return event_router_remote_.get();
 }
 
 void WorkerThreadDispatcher::OnResponseWorker(int worker_thread_id,

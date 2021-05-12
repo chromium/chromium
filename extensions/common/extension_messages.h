@@ -535,14 +535,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 
 // Messages sent from the renderer to the browser:
 
-// Notify the browser that the given extension added a listener to an event.
-IPC_MESSAGE_CONTROL5(ExtensionHostMsg_AddListener,
-                     std::string /* extension_id */,
-                     GURL /* listener_or_worker_scope_url */,
-                     std::string /* name */,
-                     int64_t /* service_worker_version_id */,
-                     int /* worker_thread_id */)
-
 // Notify the browser that the given extension removed a listener from an
 // event.
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_RemoveListener,
