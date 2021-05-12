@@ -186,6 +186,9 @@ void StarterAndroid::ShowOnboarding(
 }
 
 void StarterAndroid::HideOnboarding() {
+  if (!java_dependencies_) {
+    return;
+  }
   Java_Starter_hideOnboarding(base::android::AttachCurrentThread(),
                               java_object_, java_dependencies_);
 }
