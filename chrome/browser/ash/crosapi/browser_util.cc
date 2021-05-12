@@ -538,6 +538,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->web_apps_enabled =
       base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
+  params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
 
   return params;
 }

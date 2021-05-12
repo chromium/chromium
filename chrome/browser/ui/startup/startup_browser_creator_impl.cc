@@ -87,10 +87,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/browser/lacros/lacros_startup_infobar_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/infobars/core/simple_alert_infobar_delegate.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
@@ -639,23 +637,13 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     PrefService* local_state = g_browser_process->local_state();
-    if (local_state) {
-      if (!local_state->GetBoolean(
-              lacros_prefs::kShowedExperimentalBannerPref)) {
-        // Show the experimental lacros info bar. auto_expire must be set to
-        // false, since otherwise an automated navigation [which can happen at
-        // launch] will cause the info bar to disappear.
-        CreateSimpleAlertInfoBar(
-            infobar_manager,
-            infobars::InfoBarDelegate::EXPERIMENTAL_INFOBAR_DELEGATE_LACROS,
-            /*vector_icon=*/nullptr,
-            l10n_util::GetStringUTF16(IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE),
-            /*auto_expire=*/false, /*should_animate=*/false);
+    if (local_state &&
+        !local_state->GetBoolean(lacros_prefs::kShowedExperimentalBannerPref)) {
+      LacrosStartupInfoBarDelegate::Create(infobar_manager);
 
-        // Mark the pref as shown, so that we don't show the banner again.
-        local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
-                                true);
-      }
+      // Mark the pref as shown, so that we don't show the banner again.
+      local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
+                              true);
     }
 #endif
 

@@ -5191,8 +5191,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Experimental Lacros Infobar-->
-      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE" desc="Message shown when user uses Lacros, an experimental feature.">
-        Lacros is an experimental Browser. Please report issues with: Help > "Report an issue..." The standard browser can be found by typing "Chrome" into Launcher.
+      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE" desc="Message shown when user launches Lacros, an experimental feature, for the first time.">
+        Lacros is an experimental Browser. Please report issues with: Help > "Report an issue...".
+      </message>
+
+      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE_PRIMARY" desc="Addendum which is sometimes added to the initial warning message.">
+        The standard browser can be found by typing "Chrome" into Launcher.
+      </message>
+
+      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE_MANAGED" desc="Addendum which is sometimes added to the initial warning message.">
+        For more information, contact your administrator.
+      </message>
+
+      <message name="IDS_EXPERIMENTAL_LACROS_WARNING_LEARN_MORE" desc="A section of text that the user can click on to learn more about Lacros.">
+        Learn More
       </message>
 
       <!-- Bad Flags Infobar-->

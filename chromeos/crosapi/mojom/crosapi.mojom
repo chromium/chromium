@@ -339,8 +339,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 19
-// Next id: 19
+// Next version: 20
+// Next id: 20
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -462,6 +462,14 @@ struct BrowserInitParams {
   // Specifies whether lacros-chrome should use new account manager logic.
   [MinVersion=18]
   bool use_new_account_manager@18;
+
+  // When this flag is |true|, Lacros is the primary browser and Ash is the
+  // secondary backup.
+  // When this flag is |false|, Lacros is a secondary browser.
+  // This flag should be deprecated before a full launch of Lacros, as it relies
+  // on the assumption that Ash is always available as a browser.
+  [MinVersion=19]
+  bool standalone_browser_is_primary@19;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
