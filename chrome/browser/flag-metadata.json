@@ -4607,8 +4607,8 @@
   },
   {
     "name": "screen-capture-android",
-    "owners": [ "alcooper", "guidou", "miu" ],
-    "expiry_milestone": 91
+    "owners": [ "alcooper", "guidou" ],
+    "expiry_milestone": 96
   },
   {
     "name": "screen-time-integration-ios",
