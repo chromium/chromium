@@ -15,6 +15,8 @@ This zip archive is then used by the signing bots to:
 TODO(garykac) We should consider merging this with build-webapp.py.
 """
 
+from __future__ import print_function
+
 import os
 import shutil
 import subprocess
@@ -39,7 +41,7 @@ def cleanDir(dir):
       raise
     else:
       pass
-  os.makedirs(dir, 0775)
+  os.makedirs(dir, 0o775)
 
 
 def buildDefDictionary(definitions):
@@ -103,7 +105,7 @@ def remapSrcFile(dst_root, src_roots, src_file):
   # Make sure target directory exists.
   dst_dir = os.path.dirname(dst_file)
   if not os.path.exists(dst_dir):
-    os.makedirs(dst_dir, 0775)
+    os.makedirs(dst_dir, 0o775)
   return dst_file
 
 
@@ -119,11 +121,11 @@ def copyFileWithDefs(src_file, dst_file, defs):
     defs: Dictionary of variable definitions.
   """
   data = open(src_file, 'r').read()
-  for key, val in defs.iteritems():
+  for key, val in defs.items():
     try:
       data = data.replace('@@' + key + '@@', val)
     except TypeError:
-      print repr(key), repr(val)
+      print(repr(key), repr(val))
   open(dst_file, 'w').write(data)
   shutil.copystat(src_file, dst_file)
 
@@ -206,14 +208,14 @@ def error(msg):
 
 def usage():
   """Display basic usage information."""
-  print ('Usage: %s\n'
-         '  <temp-dir> <zip-path>\n'
-         '  --source-file-roots <list of roots to strip off source files...>\n'
-         '  --source-files <list of source files...>\n'
-         '  --generated-files <list of generated target files...>\n'
-         '  --generated-files-dst <dst for each generated file...>\n'
-         '  --defs <list of VARIABLE=value definitions...>'
-         ) % sys.argv[0]
+  print('Usage: %s\n'
+        '  <temp-dir> <zip-path>\n'
+        '  --source-file-roots <list of roots to strip off source files...>\n'
+        '  --source-files <list of source files...>\n'
+        '  --generated-files <list of generated target files...>\n'
+        '  --generated-files-dst <dst for each generated file...>\n'
+        '  --defs <list of VARIABLE=value definitions...>'
+        ) % sys.argv[0]
 
 
 def main():
@@ -262,7 +264,7 @@ def main():
 
   # Sort roots to ensure the longest one is first. See comment in remapSrcFile
   # for why this is necessary.
-  source_file_roots = map(os.path.normpath, source_file_roots)
+  source_file_roots = list(map(os.path.normpath, source_file_roots))
   source_file_roots.sort(key=len, reverse=True)
 
   # Verify that the 2 generated_files arrays have the same number of elements.
