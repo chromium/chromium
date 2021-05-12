@@ -267,9 +267,9 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ClientRedirect) {
   ASSERT_TRUE(RunTest("webnavigation/clientRedirect")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirect) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ServerRedirect) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirect")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/serverRedirect")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
@@ -289,15 +289,15 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Download) {
   ASSERT_TRUE(result) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
+                       ServerRedirectSingleProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirectSingleProcess"))
-      << message_;
+  ASSERT_TRUE(RunTest("webnavigation/serverRedirectSingleProcess")) << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
@@ -396,10 +396,9 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, UserAction) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, RequestOpenTab) {
-
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTest("webnavigation/requestOpenTab")) << message_;
+  ASSERT_TRUE(RunTest("webnavigation/requestOpenTab")) << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
