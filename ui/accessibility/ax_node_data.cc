@@ -1521,8 +1521,8 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kContainerLiveStatus:
         result += " container_live=" + value;
         break;
-      case ax::mojom::StringAttribute::kParentTreeNodeAppId:
-        result += " parent_tree_node_app_id=" + value.substr(0, 8);
+      case ax::mojom::StringAttribute::kAppId:
+        result += " app_id=" + value.substr(0, 8);
         break;
       case ax::mojom::StringAttribute::kPlaceholder:
         result += " placeholder=" + value;

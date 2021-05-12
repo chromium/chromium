@@ -494,6 +494,7 @@ enum Mutation {
 enum StringAttribute {
   kNone,
   kAccessKey,
+  kAppId,
   // Only used when invalid_state == invalid_state_other.
   kAriaInvalidValue,
   kAutoComplete,
@@ -520,7 +521,6 @@ enum StringAttribute {
   kName,
   kLiveRelevant,
   kLiveStatus,
-  kParentTreeNodeAppId,
   // Only if not already exposed in kName (NameFrom::kPlaceholder)
   kPlaceholder,
   kRole,

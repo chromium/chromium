@@ -285,12 +285,12 @@ TEST_F(AutomationInternalCustomBindingsTest,
   // same app id.
   wrapper0_button_data.AddStringAttribute(
       ax::mojom::StringAttribute::kChildTreeNodeAppId, "app1");
-  wrapper1_link_data.AddStringAttribute(
-      ax::mojom::StringAttribute::kParentTreeNodeAppId, "app1");
+  wrapper1_link_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                        "app1");
   wrapper0_link_data.AddStringAttribute(
       ax::mojom::StringAttribute::kChildTreeNodeAppId, "app2");
-  wrapper2_button_data.AddStringAttribute(
-      ax::mojom::StringAttribute::kParentTreeNodeAppId, "app2");
+  wrapper2_button_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                          "app2");
 
   for (auto& bundle : bundles)
     SendOnAccessibilityEvents(bundle, true /* active profile */);
@@ -370,8 +370,8 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
   // same app id.
   wrapper0_button_data.AddStringAttribute(
       ax::mojom::StringAttribute::kChildTreeNodeAppId, "app1");
-  wrapper1_button_data.AddStringAttribute(
-      ax::mojom::StringAttribute::kParentTreeNodeAppId, "app1");
+  wrapper1_button_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                          "app1");
 
   for (auto& bundle : bundles)
     SendOnAccessibilityEvents(bundle, true /* active profile */);

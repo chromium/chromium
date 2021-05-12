@@ -2021,8 +2021,7 @@ chrome.automation.AutomationNode.prototype.fontSize;
 chrome.automation.AutomationNode.prototype.fontFamily;
 
 /**
- * Indicates whether the object is at the root of a content editable region, or
- * at a <body> element that has "design-mode" set to "on".
+ * Indicates whether the object is at the root of a content editable region, or at a <body> element that has "design-mode" set to "on".
  * @type {boolean}
  * @see https://developer.chrome.com/extensions/automation#type-contentEditableRoot
  */
@@ -2034,6 +2033,13 @@ chrome.automation.AutomationNode.prototype.contentEditableRoot;
  * @see https://developer.chrome.com/extensions/automation#type-ariaCurrentState
  */
 chrome.automation.AutomationNode.prototype.ariaCurrentState;
+
+/**
+ * The application id for a tree rooted at this node.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-appId
+ */
+chrome.automation.AutomationNode.prototype.appId;
 
 /**
  * Walking the tree.

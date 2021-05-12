@@ -149,8 +149,8 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
           window_tree_host_platform->platform_window()->GetWindowUniqueId();
 
       if (!window_id.empty())
-        out_node_data->AddStringAttribute(
-            ax::mojom::StringAttribute::kParentTreeNodeAppId, window_id);
+        out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                          window_id);
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

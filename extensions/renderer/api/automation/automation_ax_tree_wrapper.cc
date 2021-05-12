@@ -408,7 +408,7 @@ void AutomationAXTreeWrapper::OnStringAttributeChanged(
     }
   }
 
-  if (attr == ax::mojom::StringAttribute::kParentTreeNodeAppId) {
+  if (attr == ax::mojom::StringAttribute::kAppId) {
     if (new_value.empty()) {
       GetAppIDToParentTreeNodeMap().erase(old_value);
       all_parent_tree_node_app_ids_.erase(old_value);
@@ -433,10 +433,9 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
         ax::mojom::StringAttribute::kChildTreeNodeAppId));
   }
 
-  if (node->data().HasStringAttribute(
-          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
-    const std::string& app_id = node->data().GetStringAttribute(
-        ax::mojom::StringAttribute::kParentTreeNodeAppId);
+  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+    const std::string& app_id =
+        node->data().GetStringAttribute(ax::mojom::StringAttribute::kAppId);
     GetAppIDToParentTreeNodeMap().erase(app_id);
     all_parent_tree_node_app_ids_.erase(app_id);
   }
@@ -451,10 +450,9 @@ void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
         node->tree()->GetAXTreeID(), node->id()};
   }
 
-  if (node->data().HasStringAttribute(
-          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
-    const std::string& app_id = node->data().GetStringAttribute(
-        ax::mojom::StringAttribute::kParentTreeNodeAppId);
+  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+    const std::string& app_id =
+        node->data().GetStringAttribute(ax::mojom::StringAttribute::kAppId);
     GetAppIDToParentTreeNodeMap()[app_id] = {node->tree()->GetAXTreeID(),
                                              node->id()};
     all_parent_tree_node_app_ids_.insert(app_id);

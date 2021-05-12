@@ -1292,6 +1292,9 @@ enum SortDirectionType {
     // Indicates aria-current state.
     AriaCurrentState? ariaCurrentState;
 
+    // The application id for a tree rooted at this node.
+    DOMString? appId;
+
     //
     // Walking the tree.
     //

@@ -2104,13 +2104,10 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
     AutomationAXTreeWrapper** in_out_tree_wrapper) const {
-  if (node->HasStringAttribute(
-          ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     ui::AXNode* parent_app_node =
         AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
-            node->GetStringAttribute(
-                ax::mojom::StringAttribute::kParentTreeNodeAppId),
-            this);
+            node->GetStringAttribute(ax::mojom::StringAttribute::kAppId), this);
     if (parent_app_node) {
       *in_out_tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(
           parent_app_node->tree()->GetAXTreeID());
@@ -2860,14 +2857,13 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
       // walk the ancestry of |node| to find the specific app id and resolve to
       // the parent tree node.
       ui::AXNode* found_node = node;
-      while (found_node &&
-             !found_node->HasStringAttribute(
-                 ax::mojom::StringAttribute::kParentTreeNodeAppId)) {
+      while (found_node && !found_node->HasStringAttribute(
+                               ax::mojom::StringAttribute::kAppId)) {
         found_node = found_node->parent();
       }
       if (found_node) {
-        const std::string& app_id = found_node->GetStringAttribute(
-            ax::mojom::StringAttribute::kParentTreeNodeAppId);
+        const std::string& app_id =
+            found_node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
         parent_of_root =
             AutomationAXTreeWrapper::GetParentTreeNodeForAppID(app_id, this);
         tree_wrapper =

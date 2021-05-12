@@ -788,8 +788,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "liveRelevant";
     case ax::mojom::StringAttribute::kLiveStatus:
       return "liveStatus";
-    case ax::mojom::StringAttribute::kParentTreeNodeAppId:
-      return "parentTreeNodeAppId";
+    case ax::mojom::StringAttribute::kAppId:
+      return "appId";
     case ax::mojom::StringAttribute::kPlaceholder:
       return "placeholder";
     case ax::mojom::StringAttribute::kRole:
