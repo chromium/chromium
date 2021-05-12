@@ -125,20 +125,20 @@ class WebRTCInternalsForTest : public WebRTCInternals {
 
 class WebRtcInternalsTest : public testing::Test {
  protected:
-  void VerifyString(const base::DictionaryValue* dict,
+  void VerifyString(const base::DictionaryValue& dict,
                     const std::string& key,
                     const std::string& expected) {
-    std::string actual;
-    EXPECT_TRUE(dict->GetString(key, &actual));
-    EXPECT_EQ(expected, actual);
+    const std::string* actual = dict.FindStringKey(key);
+    ASSERT_TRUE(actual);
+    EXPECT_EQ(expected, *actual);
   }
 
-  void VerifyInt(const base::DictionaryValue* dict,
+  void VerifyInt(const base::DictionaryValue& dict,
                  const std::string& key,
                  int expected) {
-    int actual;
-    EXPECT_TRUE(dict->GetInteger(key, &actual));
-    EXPECT_EQ(expected, actual);
+    base::Optional<int> actual = dict.FindIntKey(key);
+    ASSERT_TRUE(actual.has_value());
+    EXPECT_EQ(expected, actual.value());
   }
 
   void VerifyList(const base::Value& dict,
@@ -157,8 +157,9 @@ class WebRtcInternalsTest : public testing::Test {
                               const std::string& origin,
                               const std::string& audio,
                               const std::string& video) {
-    base::DictionaryValue* dict = nullptr;
-    EXPECT_TRUE(actual_data->GetAsDictionary(&dict));
+    ASSERT_TRUE(actual_data->is_dict());
+    const base::DictionaryValue& dict =
+        base::Value::AsDictionaryValue(*actual_data);
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
@@ -270,8 +271,9 @@ TEST_F(WebRtcInternalsTest, SendAddPeerConnectionUpdate) {
 
   ASSERT_EQ("add-peer-connection", observer.event_name());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  ASSERT_TRUE(observer.event_data()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*observer.event_data());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -299,8 +301,9 @@ TEST_F(WebRtcInternalsTest, SendRemovePeerConnectionUpdate) {
 
   ASSERT_EQ("remove-peer-connection", observer.event_name());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  ASSERT_TRUE(observer.event_data()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*observer.event_data());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -327,17 +330,18 @@ TEST_F(WebRtcInternalsTest, SendUpdatePeerConnectionUpdate) {
 
   ASSERT_EQ("update-peer-connection", observer.event_name());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  ASSERT_TRUE(observer.event_data()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*observer.event_data());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
   VerifyString(dict, "type", update_type);
   VerifyString(dict, "value", update_value);
 
-  std::string time;
-  EXPECT_TRUE(dict->GetString("time", &time));
-  EXPECT_FALSE(time.empty());
+  const std::string* time = dict.FindStringKey("time");
+  ASSERT_TRUE(time);
+  EXPECT_FALSE(time->empty());
 
   webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
   webrtc_internals.RemoveObserver(&observer);
@@ -405,12 +409,13 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   EXPECT_EQ("update-all-peer-connections", observer.event_name());
   ASSERT_TRUE(observer.event_data());
 
-  base::ListValue* list = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsList(&list));
-  EXPECT_EQ(1U, list->GetSize());
+  ASSERT_TRUE(observer.event_data()->is_list());
+  base::Value::ConstListView list = observer.event_data()->GetList();
+  EXPECT_EQ(1U, list.size());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE((*list->GetList().begin()).GetAsDictionary(&dict));
+  ASSERT_TRUE(list.begin()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*list.begin());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -419,16 +424,20 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   VerifyString(dict, "rtcConfiguration", kRtcConfiguration);
   VerifyString(dict, "constraints", kConstraints);
 
-  base::ListValue* log = nullptr;
-  ASSERT_TRUE(dict->GetList("log", &log));
-  EXPECT_EQ(1U, log->GetSize());
+  const base::Value* log_value = dict.FindListKey("log");
+  ASSERT_TRUE(log_value);
+  base::Value::ConstListView log = log_value->GetList();
+  EXPECT_EQ(1U, log.size());
 
-  EXPECT_TRUE((*log->GetList().begin()).GetAsDictionary(&dict));
-  VerifyString(dict, "type", update_type);
-  VerifyString(dict, "value", update_value);
-  std::string time;
-  EXPECT_TRUE(dict->GetString("time", &time));
-  EXPECT_FALSE(time.empty());
+  ASSERT_TRUE(log.begin()->is_dict());
+  const base::DictionaryValue& inner_dict =
+      base::Value::AsDictionaryValue(*log.begin());
+  VerifyString(inner_dict, "type", update_type);
+  VerifyString(inner_dict, "value", update_value);
+
+  const std::string* time = inner_dict.FindStringKey("time");
+  ASSERT_TRUE(time);
+  EXPECT_FALSE(time->empty());
 
   base::RunLoop().RunUntilIdle();
 }
@@ -451,12 +460,13 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   EXPECT_EQ("add-standard-stats", observer.event_name());
   ASSERT_TRUE(observer.event_data());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  ASSERT_TRUE(observer.event_data()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*observer.event_data());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
-  VerifyList(*dict, "reports", list);
+  VerifyList(dict, "reports", list);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -479,12 +489,13 @@ TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
   EXPECT_EQ("add-legacy-stats", observer.event_name());
   ASSERT_TRUE(observer.event_data());
 
-  base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(observer.event_data()->GetAsDictionary(&dict));
+  ASSERT_TRUE(observer.event_data()->is_dict());
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(*observer.event_data());
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
-  VerifyList(*dict, "reports", list);
+  VerifyList(dict, "reports", list);
 
   base::RunLoop().RunUntilIdle();
 }
