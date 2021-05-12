@@ -179,8 +179,11 @@ void DisableBackForwardCacheIfNecessary(
   } else {
     // Compute whether we need to disable it.
     for (const auto& extension : enabled_extensions) {
-      // Skip component extensions and google docs pre-installed extension.
+      // Skip component extensions, apps, themes, shared modules and the google
+      // docs pre-installed extension.
       if (Manifest::IsComponentLocation(extension->location()) ||
+          extension->is_app() || extension->is_theme() ||
+          extension->is_shared_module() ||
           extension->id() == extension_misc::kDocsOfflineExtensionId) {
         continue;
       }
