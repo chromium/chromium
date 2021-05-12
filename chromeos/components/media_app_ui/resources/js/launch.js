@@ -478,9 +478,15 @@ function getMimeTypeFromFilename(filename) {
     'xslt': 'text/xml',
     'mpeg': 'video/mpeg',
     'mpg': 'video/mpeg',
-    // Add .mkv explicitly because it is not a web-supported type, but is in
-    // common use on ChromeOS.
-    'mkv': 'video/x-matroska'
+
+    // Add more video file types. These are not web-supported types, but are
+    // supported on ChromeOS, and have file handlers in media_web_app_info.cc.
+    'mkv': 'video/x-matroska',
+    '3gp': 'video/3gpp',
+    'mov': 'video/quicktime',
+    'avi': 'video/x-msvideo',
+    'mpeg4': 'video/mp4',
+    'mpg4': 'video/mp4',
   };
 
   const fileParts = filename.split('.');
