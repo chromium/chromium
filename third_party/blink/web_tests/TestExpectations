@@ -6206,6 +6206,10 @@ virtual/scroll-unification/fast/scrolling/scrollbars/dsf-ready/mouse-interaction
 # Sheriff 2020-09-21
 crbug.com/1130500 [ Mac10.13 Debug ] virtual/plz-dedicated-worker/external/wpt/xhr/xhr-timeout-longtask.any.worker.html [ Pass Failure ]
 
+# Rebase and reenable after https://crrev.com/c/2887508 landed.
+crbug.com/1207867 inspector-protocol/runtime/runtime-command-line-api-can-be-overriden.js [ Pass Failure ]
+crbug.com/1207867 http/tests/devtools/console/console-tainted-globals.js [ Pass Failure ]
+
 # Sheriff 2020-09-22
 crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.html [ Pass Failure ]
 
