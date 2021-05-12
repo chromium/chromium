@@ -2528,6 +2528,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   if (enable_frame_rate_throttling_) {
     metadata.preferred_frame_interval = viz::BeginFrameArgs::MaxInterval();
   } else if (mutator_host_->MainThreadAnimationsCount() == 0 &&
+             mutator_host_->NeedsTickAnimations() &&
+             !frame_rate_estimator_.input_priority_mode() &&
              mutator_host_->MinimumTickInterval() > kMinDelta) {
     // All animations are impl-thread animations that tick at no more than
     // half the default display compositing fps.
@@ -2543,7 +2545,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     // to general webpages.
     metadata.preferred_frame_interval = kTwiceOfDefaultInterval;
   } else {
-    // There are main-thread or high frequency impl-thread animations.
+    // There are main-thread, high frequency impl-thread animations, or input
+    // events.
     frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
     metadata.preferred_frame_interval =
         frame_rate_estimator_.GetPreferredInterval();
