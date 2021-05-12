@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MaxOffscreenTabs) {
 
 // Tests that tab capture video frames can be received in a VIDEO element.
 // Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, EndToEndWithoutRemoting) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndWithoutRemoting) {
   if (IsTooIntensiveForThisPlatform()) {
     LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
     return;
