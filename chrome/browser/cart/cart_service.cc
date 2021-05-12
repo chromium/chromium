@@ -8,18 +8,22 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
+const int kDelayStartMs = 10;
 
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -73,6 +77,10 @@ CartService::CartService(Profile* profile)
   } else {
     // In case last deconstruction is interrupted and fake data is not deleted.
     DeleteCartsWithFakeData();
+  }
+
+  if (IsCartDiscountEnabled()) {
+    StartGettingDiscount();
   }
 }
 
@@ -176,6 +184,14 @@ void CartService::AcknowledgeDiscountConsent(bool should_enable) {
   }
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, should_enable);
+
+  if (should_enable &&
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
+          "true") {
+    StartGettingDiscount();
+  }
 }
 
 bool CartService::ShouldShowDiscountConsent() {
@@ -210,6 +226,14 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
              ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
          "true");
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, enabled);
+
+  if (enabled) {
+    StartGettingDiscount();
+  } else {
+    // TODO(crbug.com/1207197): Use sequence checker instead.
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    fetch_discount_worker_.reset();
+  }
 }
 
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
@@ -547,4 +571,21 @@ void CartService::OnUpdateDiscount(
   cart_db_->AddCart(domain, std::move(cart_proto),
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::StartGettingDiscount() {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(IsCartDiscountEnabled())
+      << "Should be called only if the discount feature is enabled.";
+  DCHECK(!fetch_discount_worker_)
+      << "fetch_discount_worker_ should not be valid at this point.";
+
+  fetch_discount_worker_ = std::make_unique<FetchDiscountWorker>(
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      std::make_unique<CartDiscountFetcherFactory>(),
+      std::make_unique<CartLoaderAndUpdaterFactory>(profile_));
+
+  fetch_discount_worker_->Start(
+      base::TimeDelta::FromMilliseconds(kDelayStartMs));
 }

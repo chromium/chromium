@@ -18,6 +18,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 
+class FetchDiscountWorker;
+
 // Service to maintain and read/write data for chrome cart module.
 // TODO(crbug.com/1157892) Make this BrowserContext-based and get rid of Profile
 // usage so that we can modularize this.
@@ -139,6 +141,8 @@ class CartService : public history::HistoryServiceObserver,
       const double timestamp,
       bool success,
       std::vector<CartDB::KeyAndValue> proto_pairs);
+  // Gets called when users has enabled the rule-based discount feature.
+  void StartGettingDiscount();
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
@@ -147,6 +151,7 @@ class CartService : public history::HistoryServiceObserver,
       history_service_observation_{this};
   base::Optional<base::Value> domain_name_mapping_;
   base::Optional<base::Value> domain_cart_url_mapping_;
+  std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
