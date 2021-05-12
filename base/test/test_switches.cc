@@ -64,6 +64,17 @@ const char switches::kTestLauncherPrintTempLeaks[] =
 const char switches::kTestLauncherPrintTestStdio[] =
     "test-launcher-print-test-stdio";
 
+// Print timestamps in test launcher. This is helpful for debugging test
+// slowness. Currently it prints out the following log:
+//   * The time at the end of each test.
+//   * The time while waiting for a test to run.
+// Using this flag helps you answer questions like "how long did it take
+// to run the first 10000 tests".
+// Please only keep this flag on builders temporarily because those logs
+// are a bit spammy.
+const char switches::kTestLauncherPrintTimestamps[] =
+    "test-launcher-print-timestamps";
+
 // Print a writable path and exit (for internal use).
 const char switches::kTestLauncherPrintWritablePath[] =
     "test-launcher-print-writable-path";

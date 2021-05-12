@@ -49,6 +49,7 @@
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher_tracer.h"
 #include "base/test/launcher/test_results_tracker.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -1210,6 +1211,12 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   fprintf(stdout, "%s\n", status_line.c_str());
   fflush(stdout);
 
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherPrintTimestamps)) {
+    ::logging::ScopedLoggingSettings scoped_logging_setting;
+    ::logging::SetLogItems(true, true, true, true);
+    LOG(INFO) << "Test_finished_timestamp";
+  }
   // We just printed a status line, reset the watchdog timer.
   watchdog_timer_.Reset();
 
@@ -1962,6 +1969,12 @@ void TestLauncher::OnOutputTimeout() {
 
   fflush(stdout);
 
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherPrintTimestamps)) {
+    ::logging::ScopedLoggingSettings scoped_logging_setting;
+    ::logging::SetLogItems(true, true, true, true);
+    LOG(INFO) << "Waiting_timestamp";
+  }
   // Arm the timer again - otherwise it would fire only once.
   watchdog_timer_.Reset();
 }
