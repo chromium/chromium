@@ -5,7 +5,9 @@
 #include "ui/display/manager/display_change_observer.h"
 
 #include <cmath>
+#include <set>
 #include <string>
+#include <tuple>
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -235,10 +237,19 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
   EXPECT_EQ(kDsf_2_666,
             DisplayChangeObserver::FindDeviceScaleFactor(310, gfx::Size()));
 
+  std::set<std::tuple<float, int, int>> dup_check;
+
   for (auto& entry : display_configs) {
+    std::tuple<float, int, int> key{entry.diagonal_size,
+                                    entry.resolution.width(),
+                                    entry.resolution.height()};
+    DCHECK(!dup_check.count(key));
+    dup_check.emplace(key);
+
     SCOPED_TRACE(base::StringPrintf(
         "%dx%d, diag=%1.3f inch, expected=%1.10f", entry.resolution.width(),
         entry.resolution.height(), entry.diagonal_size, entry.expected_dsf));
+
     float dpi = ComputeDpi(entry.diagonal_size, entry.resolution);
     // Check ScaleFactor.
     float scale_factor = ComputeDeviceScaleFactor(dpi, entry.resolution);
@@ -496,19 +507,23 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResoutionUMAIndex) {
     const float dsf = display_config.expected_dsf;
 
     std::array<float, kNumOfZoomFactors> zoom_levels;
-
+    bool found = false;
     if (dsf == 1.f) {
       for (const ZoomListBucket& zoom_list_bucket : kZoomListBuckets) {
-        if (size.width() >= zoom_list_bucket.first)
+        if (size.width() >= zoom_list_bucket.first) {
           zoom_levels = zoom_list_bucket.second;
+          found = true;
+        }
       }
     } else {
       for (const ZoomListBucketDsf& zoom_list_bucket : kZoomListBucketsForDsf) {
-        if (cc::MathUtil::IsWithinEpsilon(dsf, zoom_list_bucket.first))
+        if (cc::MathUtil::IsWithinEpsilon(dsf, zoom_list_bucket.first)) {
           zoom_levels = zoom_list_bucket.second;
+          found = true;
+        }
       }
     }
-
+    EXPECT_TRUE(found);
     for (float zoom_level : zoom_levels) {
       float effective_scale = 1.f / (zoom_level * dsf);
       gfx::SizeF effective_resolution_f(size);
@@ -539,10 +554,20 @@ TEST_F(DisplayResolutionTest, CheckEffectiveResoutionUMAIndex) {
     }
   }
 
-  // With the current set of display configs and zoom levels, there are only 288
+#if 0
+  // Enable this code to re-generate the "EffectiveResolution" in enums.xml.
+  for (auto pair : effective_resolutions) {
+    LOG(ERROR) << "<int value=\"" << pair.first << "\" label=\""
+               << pair.second.width() << " x " << pair.second.height()
+               << "\"/>";
+  }
+#endif
+
+  // With the current set of display configs and zoom levels, there are only 314
   // possible effective resolutions for internal displays in chromebooks. Update
-  // this value when adding a new display config.
-  EXPECT_EQ(effective_resolutions.size(), 288ul);
+  // this value when adding a new display config, and re-generate the
+  // EffectiveResolution value in enum.xml.
+  EXPECT_EQ(effective_resolutions.size(), 322ul);
 }
 #endif
 

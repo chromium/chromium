@@ -4535,6 +4535,13 @@ TEST_F(DisplayManagerTest, DPSizeTest) {
               display::Screen::GetScreen()->GetPrimaryDisplay().size());
     EXPECT_EQ(expected, Shell::GetPrimaryRootWindow()->bounds().size());
   }
+  UpdateDisplay(base::StringPrintf("2160x1440*%s", display::kDsfStr_1_8));
+  {
+    gfx::Size expected(1200, 800);
+    EXPECT_EQ(expected,
+              display::Screen::GetScreen()->GetPrimaryDisplay().size());
+    EXPECT_EQ(expected, Shell::GetPrimaryRootWindow()->bounds().size());
+  }
 }
 
 TEST_F(DisplayManagerTest, PanelOrientation) {

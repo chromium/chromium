@@ -95,10 +95,11 @@ enum PrivacyScreenState {
 constexpr float kDsf_1_777 = 1.77777779102325439453125f;
 constexpr float kDsf_2_252 = 2.2522523403167724609375f;
 constexpr float kDsf_2_666 = 2.6666667461395263671875f;
-
+constexpr float kDsf_1_8 = 1.80000007152557373046875f;
 constexpr char kDsfStr_1_777[] = "1.77777779102325439453125";
 constexpr char kDsfStr_2_252[] = "2.2522523403167724609375";
 constexpr char kDsfStr_2_666[] = "2.6666667461395263671875";
+constexpr char kDsfStr_1_8[] = "1.80000007152557373046875";
 
 // The total number of display zoom factors to enumerate.
 constexpr int kNumOfZoomFactors = 9;
@@ -131,11 +132,13 @@ constexpr std::array<ZoomListBucket, 8> kZoomListBuckets{{
 // zoom values that includes a zoom level to go to the native resolution of the
 // display. Ensure that the list of DSFs are in sync with the list of default
 // device scale factors in display_change_observer.cc.
-constexpr std::array<ZoomListBucketDsf, 7> kZoomListBucketsForDsf{{
+constexpr std::array<ZoomListBucketDsf, 8> kZoomListBucketsForDsf{{
     {1.25f, {0.7f, 1.f / 1.25f, 0.85f, 0.9f, 0.95f, 1.f, 1.1f, 1.2f, 1.3f}},
     {1.6f, {1.f / 1.6f, 0.7f, 0.75f, 0.8f, 0.85f, 0.9f, 1.f, 1.15f, 1.3f}},
     {kDsf_1_777,
      {1.f / kDsf_1_777, 0.65f, 0.75f, 0.8f, 0.9f, 1.f, 1.1f, 1.2f, 1.3f}},
+    {kDsf_1_8,
+     {1.f / kDsf_1_8, 0.65f, 0.75f, 0.8f, 0.9f, 1.f, 1.1f, 1.2f, 1.3f}},
     {2.f, {1.f / 2.f, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.1f, 1.25f, 1.5f}},
     {kDsf_2_252,
      {1.f / kDsf_2_252, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 1.15f, 1.3f, 1.5f}},
@@ -149,13 +152,14 @@ constexpr gfx::Size kWXGA_768{1366, 768};
 constexpr gfx::Size kWXGA_800{1280, 800};
 constexpr gfx::Size kHD_PLUS{1600, 900};
 constexpr gfx::Size kFHD{1920, 1080};
+constexpr gfx::Size kSHD{1280, 720};
 constexpr gfx::Size kWUXGA{1920, 1200};
 // Dru
 constexpr gfx::Size kQXGA_P{1536, 2048};
 constexpr gfx::Size kQHD{2560, 1440};
 // Chell
 constexpr gfx::Size kQHD_PLUS{3200, 1800};
-constexpr gfx::Size kUHD{3840, 2160};
+constexpr gfx::Size k4K_UHD{3840, 2160};
 
 // Chromebook special panels
 constexpr gfx::Size kLux{2160, 1440};
@@ -180,32 +184,48 @@ constexpr struct Data {
 } display_configs[] = {
     // clang-format off
     // inch, resolution, DSF,        size in DP,  Bad range, size error
-    {10.1f,  kWXGA_800,  1.f,        kWXGA_800,   false,     kExact},
-    {12.1f,  kWXGA_800,  1.f,       kWXGA_800,   true,      kExact},
-    {11.6f,  kWXGA_768,  1.f,        kWXGA_768,   false,     kExact},
-    {13.3f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
-    {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
-    {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
     {9.7f,   kQXGA_P,    2.0f,       {768, 1024}, false,     kExact},
-    {11.6f,  kFHD,       1.6f,       {1200, 675}, false,     kExact},
-    {13.0f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
-    {13.3f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
-    {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
+    {10.f,   kWXGA_800,  1.25f,      {1024, 640}, false,     kExact},
+    {10.1f,  kWXGA_800,  1.f,        kWXGA_800,   false,     kExact},
+    {10.1f,  kFHD,       1.6,        {1200, 675}, true,      kExact},
     {10.1f,  kWUXGA,     kDsf_1_777, {1080, 675}, false,     kExact},
+    {10.5f,  kWUXGA,     1.6f,       {1200, 750}, true,      kExact},
+    {11.6f,  kWXGA_768,  1.f,        kWXGA_768,   false,     kExact},
+    {11.6f,  kSHD,       1.f,        kSHD,        false,     kExact},
+    {11.6f,  kFHD,       1.6f,       {1200, 675}, false,     kExact},
+    {12.f,   kFHD,       1.6f,       {1200, 675}, false,     kExact},
+    {12.1f,  kWXGA_800,  1.f,        kWXGA_800,   true,      kExact},
     {12.2f,  kWUXGA,     1.6f,       {1200, 750}, false,     kExact},
-    {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},
+    {12.2f,  kFHD,       1.6f,       {1200, 675}, false,     kExact},
     {12.3f,  kQHD,       2.f,        {1280, 720}, false,     kExact},
+    {13.0f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
+    {13.1f,  k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
+    {13.3f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+    {13.3f,  kFHD,       1.25f,      {1536, 864}, true,      kExact},
+    {13.3f,  k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
+    {13.5f,  kFHD,       1.25f,      {1536, 864}, false,     kExact},
+    {14.f,   kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+    {14.f,   kFHD,       1.25f,      {1536, 864}, false,     kExact},
+    {14.f,   kWUXGA,     1.25f,      {1536, 960}, false,     kExact},
+    {14.f,   k4K_UHD,    kDsf_2_666, {1440, 810}, false,     kExact},
+    {15.6f,  kWXGA_768,  1.f,        kWXGA_768,   true,      kExact},
+    {15.6f,  kWUXGA,     1.f,        kWUXGA,      false,     kExact},
+    {15.6f,  kFHD,       1.f,        kFHD,        false,     kExact},
+    {15.6f,  k4K_UHD,    2.4f,       {1600, 900}, false,     kEpsilon},
+    {17.f,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
+    {17.f,   kFHD,       1.0f,       {1920, 1080},false,     kExact},
+    {17.3f,  kFHD,       1.0f,       {1920, 1080},false,     kExact},
+    {18.51f, kWXGA_768,  1.0f,       kWXGA_768,   true,      kExact},
 
     // Non standard panels
-    {11.0f,  kLux,       2.f,        {1080, 720}, false,     kExact},
-    {12.02f, kLux,       1.6f,       {1350, 900}, true,      kExact},
-    {13.3f,  kQHD_PLUS,  2.f,        {1600, 900}, false,     kSkip},
-    {13.3f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
+    {11.0f,  kLux,       kDsf_1_8,   {1200, 800}, false,     kExact},
+    {12.f,   {1366, 912},1.f,        {1366, 912}, false,     kExact},
     {12.3f,  kEveDisplay,2.0f,       {1200, 800}, false,     kExact},
     {12.85f, kLink,      2.0f,       {1280, 850}, false,     kExact},
     {12.3f,  kNocturne,  kDsf_2_252, {1332, 888}, false,     kEpsilon},
-    {13.1f,  kUHD,       kDsf_2_666, {1440, 810}, false,     kExact},
-    {15.6f,  kUHD,       2.4f,       {1600, 900}, false,     kEpsilon},
+    {13.3f,  kQHD_PLUS,  2.f,        {1600, 900}, false,     kExact},
+    {13.3f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
+    {13.6f,  kAkaliQHD,  1.6f,       {1410, 940}, false,     kExact},
 
     // Chromebase
     {19.5,   kHD_PLUS,   1.f,        kHD_PLUS,    true,      kExact},
