@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -639,6 +640,33 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash2) {
   // trigger a DCHECK failure updating the style recalc root.
   GetElementById("sel")->setAttribute(html_names::kMultipleAttr,
                                       AtomicString("true"));
+}
+
+TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
+  SetHtmlInnerHTML(R"HTML(
+    <div id="host">
+      <select id="select">
+        <option></option>
+      </select>
+    </div>
+    <div id="green">Green</div>
+  )HTML");
+
+  auto* host = GetDocument().getElementById("host");
+  auto* select = GetDocument().getElementById("select");
+  auto* green = GetDocument().getElementById("green");
+
+  // Make sure the select is outside the flat tree.
+  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Changing the select rendering should not clear the style recalc root set by
+  // the color change on #green.
+  green->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  select->setAttribute(html_names::kMultipleAttr, AtomicString("true"));
+
+  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_TRUE(green->NeedsStyleRecalc());
 }
 
 TEST_F(HTMLSelectElementTest, ChangeRenderingSelectRoot) {
