@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -121,6 +122,7 @@ class FeedStream : public FeedApi,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(base::StringPiece data) override;
   void ProcessViewAction(base::StringPiece data) override;
+  bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging() override;
   std::string DumpStateForDebugging() override;
@@ -132,10 +134,12 @@ class FeedStream : public FeedApi,
                          const std::string& slice_id) override;
   void ReportFeedViewed(SurfaceId surface_id) override;
   void ReportPageLoaded() override;
-  void ReportOpenAction(const StreamType& stream_type,
+  void ReportOpenAction(const GURL& url,
+                        const StreamType& stream_type,
                         const std::string& slice_id) override;
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
-  void ReportOpenInNewTabAction(const StreamType& stream_type,
+  void ReportOpenInNewTabAction(const GURL& url,
+                                const StreamType& stream_type,
                                 const std::string& slice_id) override;
   void ReportStreamScrolled(const StreamType& stream_type,
                             int distance_dp) override;
@@ -379,6 +383,8 @@ class FeedStream : public FeedApi,
   NoticeCardTracker notice_card_tracker_;
 
   bool clear_all_in_progress_ = false;
+
+  std::vector<GURL> recent_feed_navigations_;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

@@ -65,6 +65,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
     private static final String TEST_DATA = "test";
-    private static final String TEST_URL = "https://www.chromium.org";
+    private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String HEADER_PREFIX = "header";
 
     private Activity mActivity;
@@ -144,6 +145,7 @@ public class FeedStreamTest {
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
                 mShareDelegateSupplier, /* isInterestFeed= */ true);
+        mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mDependencyProvider =
                 new FeedSurfaceScopeDependencyProvider(mActivity, mActivity, false, mFeedStream);
         mRecyclerView = new RecyclerView(mActivity);
@@ -543,7 +545,7 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testSendFeedback() {
-        final String testUrl = "https://www.chromium.org";
+        final String testUrl = TEST_URL;
         final String testTitle = "Chromium based browsers for the win!";
         final String xSurfaceCardTitle = "Card Title";
         final String cardTitle = "CardTitle";

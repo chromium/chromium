@@ -319,6 +319,7 @@ static_library("test_support") {
     public_deps += [
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
+      "//components/feed/core/v2:feed_core_stubs",
     ]
     if (enable_vr) {
       public_deps += [ "//chrome/browser/android/vr:test_support" ]

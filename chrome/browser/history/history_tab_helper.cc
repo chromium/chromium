@@ -26,18 +26,54 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
-#include "components/feed/feed_feature_list.h"
+#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/feed_service.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #endif
 
+namespace {
+
+using content::NavigationEntry;
+using content::WebContents;
 #if defined(OS_ANDROID)
 using chrome::android::BackgroundTabManager;
 #endif
 
-using content::NavigationEntry;
-using content::WebContents;
+#if defined(OS_ANDROID)
+bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
+  feed::FeedService* feed_service =
+      feed::FeedServiceFactory::GetForBrowserContext(
+          web_contents.GetBrowserContext());
+  if (!feed_service)
+    return false;
+
+  return feed_service->GetStream()->WasUrlRecentlyNavigatedFromFeed(url);
+}
+
+#endif
+
+bool ShouldConsiderForNtpMostVisited(
+    content::WebContents& web_contents,
+    content::NavigationHandle* navigation_handle) {
+#if defined(OS_ANDROID)
+  // Clicks on content suggestions on the NTP should not contribute to the
+  // Most Visited tiles in the NTP.
+  DCHECK(!navigation_handle->GetRedirectChain().empty());
+  if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
+      IsNavigationFromFeed(web_contents,
+                           navigation_handle->GetRedirectChain()[0])) {
+    return false;
+  }
+#endif
+
+  return true;
+}
+
+}  // namespace
 
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
@@ -57,17 +93,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     int nav_entry_id,
     content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-#if defined(OS_ANDROID)
-  // Clicks on content suggestions on the NTP should not contribute to the
-  // Most Visited tiles in the NTP.
-  const GURL& referrer_url = navigation_handle->GetReferrer().url;
-  const bool content_suggestions_navigation =
-      referrer_url == feed::GetFeedReferrerUrl() &&
-      ui::PageTransitionCoreTypeIs(page_transition,
-                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-#else
-  const bool content_suggestions_navigation = false;
-#endif
 
   const bool status_code_is_error =
       navigation_handle->GetResponseHeaders() &&
@@ -104,7 +129,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetReferrer().url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
-      !content_suggestions_navigation, /*floc_allowed=*/false,
+      ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
+      /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
           ? base::Optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Function;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -80,6 +81,8 @@ import java.util.Map;
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
 
+    Function<String, GURL> mMakeGURL = url -> new GURL(url);
+
     /**
      * Implementation of SurfaceActionsHandler methods.
      */
@@ -88,8 +91,8 @@ public class FeedStream implements Stream {
         @Override
         public void navigateTab(String url, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOpenAction(
-                    mNativeFeedStream, FeedStream.this, getSliceIdFromView(actionSourceView));
+            FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
             NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
             openUrl(url, org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB);
@@ -101,8 +104,8 @@ public class FeedStream implements Stream {
         @Override
         public void navigateNewTab(String url, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOpenInNewTabAction(
-                    mNativeFeedStream, FeedStream.this, getSliceIdFromView(actionSourceView));
+            FeedStreamJni.get().reportOpenInNewTabAction(mNativeFeedStream, FeedStream.this,
+                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
             NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
             openUrl(url, org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB);
@@ -1046,8 +1049,9 @@ public class FeedStream implements Stream {
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);
-        void reportOpenAction(long nativeFeedStream, FeedStream caller, String sliceId);
-        void reportOpenInNewTabAction(long nativeFeedStream, FeedStream caller, String sliceId);
+        void reportOpenAction(long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
+        void reportOpenInNewTabAction(
+                long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
         void reportOtherUserAction(
                 long nativeFeedStream, FeedStream caller, @FeedUserActionType int userAction);
         void reportStreamScrolled(long nativeFeedStream, FeedStream caller, int distanceDp);
