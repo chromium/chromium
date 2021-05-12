@@ -35,7 +35,7 @@ class ThreadPoolTaskTrackerPosixTest : public testing::Test {
   ThreadPoolTaskTrackerPosixTest() : service_thread_("ServiceThread") {
     Thread::Options service_thread_options;
     service_thread_options.message_pump_type = MessagePumpType::IO;
-    service_thread_.StartWithOptions(service_thread_options);
+    service_thread_.StartWithOptions(std::move(service_thread_options));
     tracker_.set_io_thread_task_runner(service_thread_.task_runner());
   }
   ThreadPoolTaskTrackerPosixTest(const ThreadPoolTaskTrackerPosixTest&) =
