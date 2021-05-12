@@ -29,10 +29,7 @@ compiled_action("generate_chrome_colors_info") {
 }
 
 mojom("mojo_bindings") {
-  sources = [
-    "omnibox.mojom",
-    "search.mojom",
-  ]
+  sources = [ "search.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",

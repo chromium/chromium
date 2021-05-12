@@ -54,7 +54,7 @@ class RealboxIconElement extends PolymerElement {
       },
 
       /**
-       * @type {!search.mojom.AutocompleteMatch}
+       * @type {!realbox.mojom.AutocompleteMatch}
        */
       match: {
         type: Object,

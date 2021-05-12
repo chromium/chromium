@@ -395,8 +395,8 @@ generate_grd("build_grd") {
     "$target_gen_dir/modules/cart/icons/resources.grdp",
     "$target_gen_dir/new_tab_page_mojo_resources.grdp",
     "$target_gen_dir/promo_browser_command_mojo_resources.grdp",
+    "$target_gen_dir/realbox/icons/resources.grdp",
     "$target_gen_dir/realbox/realbox_mojo_resources.grdp",
-    "$target_gen_dir/realbox/search_mojo_resources.grdp",
     "$target_gen_dir/task_module_mojo_resources.grdp",
     "$target_gen_dir/chrome_cart_mojo_resources.grdp",
     "$target_gen_dir/drive_mojo_resources.grdp",
@@ -410,7 +410,7 @@ generate_grd("build_grd") {
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
     "realbox:build_realbox_mojo_grdp",
-    "realbox:build_search_mojo_grdp",
+    "realbox/icons:build_grdp",
   ]
 
   if (optimize_webui) {
@@ -504,7 +504,6 @@ if (optimize_webui) {
       "chrome://resources/mojo/url/mojom/origin.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "new_tab_page.mojom-lite.js",
-      "realbox/omnibox.mojom-lite.js",
       "realbox/realbox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",
       "modules/drive/drive.mojom-lite.js",

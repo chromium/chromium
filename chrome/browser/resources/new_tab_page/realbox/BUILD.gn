@@ -119,12 +119,3 @@ generate_grd("build_realbox_mojo_grdp") {
       rebase_path("$root_gen_dir/chrome/browser/ui/webui/realbox",
                   root_build_dir)
 }
-
-generate_grd("build_search_mojo_grdp") {
-  grd_prefix = "new_tab_page"
-  resource_path_prefix = "realbox"
-  out_grd = "$target_gen_dir/search_mojo_resources.grdp"
-  input_files = [ "omnibox.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/common/search", root_build_dir)
-}
