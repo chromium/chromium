@@ -48,7 +48,7 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
   void SetUp() override {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    ASSERT_TRUE(io_thread_.StartWithOptions(options));
+    ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(MockLaunchd::MakeABundle(GetTempDirPath(), "Test",
                                          &bundle_path_, &executable_path_));
