@@ -146,7 +146,23 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 @interface PolicyTestCase : ChromeTestCase
 @end
 
-@implementation PolicyTestCase
+@implementation PolicyTestCase {
+  BOOL _settingsOpened;
+}
+
+- (void)tearDown {
+  if (_settingsOpened) {
+    [ChromeEarlGrey dismissSettings];
+    [ChromeEarlGreyUI waitForAppToIdle];
+  }
+  [PolicyAppInterface clearPolicies];
+  [super tearDown];
+}
+
+- (void)openSettingsMenu {
+  [ChromeEarlGreyUI openSettingsMenu];
+  _settingsOpened = YES;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   // Use commandline args to insert fake policy data into NSUserDefaults. To the
@@ -171,7 +187,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 - (void)testDefaultSearchProviderUpdate {
   SetPolicy(true, policy::key::kDefaultSearchProviderEnabled);
 
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
 
   // Check that the non-managed item is present.
   [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -203,7 +219,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   [ChromeEarlGrey openNewTab];
 
   // Open settings menu.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
 
   VerifyManagedSettingItem(kSettingsManagedSearchEngineCellId,
                            kSettingsTableViewId);
@@ -224,7 +240,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
           userBooleanPref:password_manager::prefs::kCredentialsEnableService],
       @"Preference was unexpectedly true");
   // Open settings menu and tap password settings.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
 
@@ -240,7 +256,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
       [ChromeEarlGrey userBooleanPref:autofill::prefs::kAutofillProfileEnabled],
       @"Preference was unexpectedly true");
   // Open settings menu and tap Address and More setting.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
 
@@ -257,7 +273,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
           userBooleanPref:autofill::prefs::kAutofillCreditCardEnabled],
       @"Preference was unexpectedly true");
   // Open settings menu and tap Payment Method setting.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::PaymentMethodsButton()];
 
@@ -369,7 +385,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   SetPolicy(2, policy::key::kDefaultPopupsSetting);
 
   // Open settings menu and tap Content Settings setting.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
   [[EarlGrey
@@ -401,7 +417,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
       assertWithMatcher:grey_nil()];
 
   // Open settings menu and check that it is disabled.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   VerifyManagedSettingItem(kSettingsArticleSuggestionsCellId,
                            kSettingsTableViewId);
 }
@@ -411,7 +427,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   SetPolicy(false, policy::key::kTranslateEnabled);
 
   // Open settings menu and tap Languages setting.
-  [ChromeEarlGreyUI openSettingsMenu];
+  [self openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:chrome_test_util::LanguagesButton()];
 
   VerifyManagedSettingItem(kTranslateManagedAccessibilityIdentifier,

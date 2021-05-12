@@ -94,4 +94,9 @@ base::Optional<base::Value> DeserializeValue(NSString* json_value) {
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
 }
 
++ (void)clearPolicies {
+  policy::PolicyMap values;
+  GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
+}
+
 @end
